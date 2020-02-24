@@ -35,10 +35,11 @@ $color-brand: #1b71b5;
 $border-color: #4a4a4a;
 $shadow-base-color: #111111;
 
-$text-muted: #9d9fa1;
-$input-bg: $color-gray-light;
+$text-muted: #6b6b6b;
+$input-bg: $color-bg;
 $input-color: $color-fg;
-$input-disabled-bg: $color-bg;
+$input-border-color: #6b6b6b;
+$input-disabled-bg: inherit;
 
 $popover-bg: $color-bg;
 $popover-body-color: $color-fg;
@@ -74,3 +75,7 @@ $scrollbar-base-color: #616161;
 
 $loader-icon : url("data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='utf-8'?%3e%3csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 38 38' style='enable-background:new 0 0 38 38;' xml:space='preserve'%3e%3cstyle type='text/css'%3e .st0%7bfill:none;stroke:%23ebeef3;stroke-width:2;%7d .st1%7bfill:none;stroke:%2340617d;stroke-width:2;%7d %3c/style%3e%3cg%3e%3cg transform='translate(1 1)'%3e%3ccircle class='st0' cx='18' cy='18' r='18'/%3e%3cpath class='st1' d='M36,18c0-9.9-8.1-18-18-18 '%3e%3canimateTransform accumulate='none' additive='replace' attributeName='transform' calcMode='linear' dur='0.7s' fill='remove' from='0 18 18' repeatCount='indefinite' restart='always' to='360 18 18' type='rotate'%3e%3c/animateTransform%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/svg%3e ") !default;
 $loader-icon-small: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Generator: Adobe Illustrator 23.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0) --%3E%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 38 38' style='enable-background:new 0 0 38 38;' xml:space='preserve'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:none;stroke:%23EBEEF3;stroke-width:5;%7D .st1%7Bfill:none;stroke:%2340617d;stroke-width:5;%7D%0A%3C/style%3E%3Cg%3E%3Cg transform='translate(1 1)'%3E%3Ccircle class='st0' cx='18' cy='18' r='16'/%3E%3Cpath class='st1' d='M34,18c0-8.8-7.2-16-16-16 '%3E%3CanimateTransform accumulate='none' additive='replace' attributeName='transform' calcMode='linear' dur='0.7s' fill='remove' from='0 18 18' repeatCount='indefinite' restart='always' to='360 18 18' type='rotate'%3E%3C/animateTransform%3E%3C/path%3E%3C/g%3E%3C/g%3E%3C/svg%3E%0A") !default;
+
+$schemadiff-diff-row-color: #807a48 !default;
+$schemadiff-source-row-color: #402025 !default;
+$schemadiff-target-row-color: #6b5438 !default;

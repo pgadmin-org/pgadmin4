@@ -201,7 +201,7 @@ define('pgadmin.browser', [
         isCloseable: false,
         isPrivate: true,
         elContainer: true,
-        content: '<div class="obj_properties container-fluid"><div role="status" class="alert alert-info pg-panel-message">' + select_object_msg + '</div></div>',
+        content: '<div class="obj_properties container-fluid"><div role="status" class="pg-panel-message">' + select_object_msg + '</div></div>',
         events: panelEvents,
         onCreate: function(myPanel, $container) {
           $container.addClass('pg-no-overflow');
@@ -215,7 +215,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="negative-space p-2"><div role="status" class="alert alert-info pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container d-none"></div></div>',
+        content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container d-none"></div></div>',
         events: panelEvents,
       }),
       // Reversed engineered SQL for the object
@@ -236,7 +236,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="negative-space p-2"><div role="status" class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependencies-container d-none"></div></div>',
+        content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependencies-container d-none"></div></div>',
         events: panelEvents,
       }),
       // Dependents of the object
@@ -247,7 +247,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="negative-space p-2"><div role="status" class="alert alert-info pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependents-container d-none"></div></div>',
+        content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependents-container d-none"></div></div>',
         events: panelEvents,
       }),
     },

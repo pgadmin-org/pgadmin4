@@ -20,7 +20,7 @@
 }
 .aciTree .aciTreeText {
 	font-family: $font-family-primary;
-	font-size: 0.815rem;
+	font-size: $tree-font-size;
 }
 
 .aciTree .aciTreeSelected > .aciTreeLine {

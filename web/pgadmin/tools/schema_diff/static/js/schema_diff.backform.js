@@ -287,25 +287,25 @@ let SchemaDiffHeaderView = Backform.Form.extend({
   },
   template: _.template(`
     <div class="row pgadmin-control-group">
-      <div class="control-label">Select Source</div>
+      <div class="col-1 control-label">Select Source</div>
       <div class="col-6 source row"></div>
     </div>
     <div class="row pgadmin-control-group">
-      <div class="control-label">Select Target</div>
+      <div class="col-1 control-label">Select Target</div>
       <div class="col-6 target row"></div>
       <div class="col-5 target-buttons">
           <div class="action-btns d-flex">
               <button class="btn btn-primary mr-auto"><i class="icon-schema-diff-white"></i>&nbsp;` + gettext('Compare') + `</button>
               <button id="generate-script" class="btn btn-secondary mr-1" disabled><i class="fa fa-file-code-o sql-icon-lg"></i>&nbsp;` + gettext('Generate Script') + `</button>
               <div class="btn-group mr-1" role="group" aria-label="">
-                <button id="btn-filter" type="button" class="btn btn-sm btn-secondary"
+                <button id="btn-filter" type="button" class="btn btn-secondary"
                         title=""
                         accesskey=""
                         tabindex="0"
                         style="pointer-events: none;">
                     <i class="fa fa-filter sql-icon-lg" aria-hidden="true"></i>&nbsp;` + gettext('Filter') + `
                 </button>
-                <button id="btn-filter-dropdown" type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
+                <button id="btn-filter-dropdown" type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                         title=""
                         accesskey=""

@@ -2,6 +2,7 @@ import moment from 'moment';
 import $ from 'jquery';
 import _ from 'underscore';
 import 'bootstrap.toggle';
+import gettext from 'sources/gettext';
 
 const ARROWUP = 38;
 const ARROWDOWN = 40;
@@ -71,7 +72,7 @@ export class QueryHistoryItem {
       `<li class='list-item' tabindex='0' data-key='${this.dataKey()}'>
           <div class='entry ${this.entry.status ? '' : 'error'}'>
               <div class='query'>
-                  <i id="query_source_icon" class="query-history-icon sql-icon-lg"></i>
+                  <span id="query_source_icon" class="query-history-icon sql-icon-lg"></span>
                   ${_.escape(this.entry.query)}
               </div>
               <div class='other-info'>
@@ -251,12 +252,12 @@ export class QueryHistoryEntries {
         <div class="toggle-and-history-container">
             <div class="query-history-toggle">
                 <label class="control-label">
-                    Show queries generated internally by pgAdmin?
+                    ${gettext('Show queries generated internally by pgAdmin')}?
                 </label>
                 <input id="generated-queries-toggle" type="checkbox"
                   class="pgadmin-controls" data-style="quick"
-                  data-size="mini" data-on="Yes" data-off="No"
-                  data-onstyle="success" data-offstyle="primary" checked>
+                  data-size="mini" data-on="${gettext('Yes')}" data-off="${gettext('No')}"
+                  data-onstyle="success" data-offstyle="ternary" checked>
             </div>
             <div id='query_list' class='query-history' tabindex='0'></div>
         </div>

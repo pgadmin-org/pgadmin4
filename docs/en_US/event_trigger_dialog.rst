@@ -35,15 +35,15 @@ Click the *Definition* tab to continue.
 
 Use the fields in the *Definition* tab to define the event trigger:
 
-* Select a radio button in the *Enabled Status* field to specify a status for
-  the trigger: *Enable* *Disable*, *Replica* *Always*.
+* Select a value from the drop down of *Trigger Enabled* field to specify a status
+  for the trigger: *Enable* *Disable*, *Replica* *Always*.
 * Use the drop-down listbox next to *Trigger function* to specify an existing
   function.  A trigger function takes an empty argument list, and returns a
   value of type event_trigger.
-* Select a radio button in the *Events* field to specify when the event trigger
-  will fire: *DDL COMMAND START*, *DDL COMMAND END*, or *SQL DROP*.
-* Use the *When* field to write a condition for the event trigger that must be
-  satisfied before the event trigger can execute.
+* Select a value from the drop down of *Events* field to specify when the event
+  trigger will fire: *DDL COMMAND START*, *DDL COMMAND END*, or *SQL DROP*.
+* Use the *When TAG in* field to enter filter values for TAG for which the trigger
+  will be executed. The values must be in single quotes separated by comma.
 
 Click the *Security Labels* tab to continue.
 

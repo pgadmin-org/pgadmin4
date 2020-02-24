@@ -103,10 +103,21 @@ define([
 
         // Do not use parent's render function. It set's tabindex to -1 on
         // checkboxes.
-        this.$el.empty().append('<input type="checkbox" />');
-        this.delegateEvents();
+
+
 
         var col = this.column.get('name');
+        let id = `row-${_.uniqueId(col)}`;
+        this.$el.empty().append(`
+          <div class="custom-control custom-checkbox custom-checkbox-no-label">
+            <input tabindex="-1" type="checkbox" class="custom-control-input" id="${id}" />
+            <label class="custom-control-label" for="${id}">
+              <span class="sr-only">Select All<span>
+            </label>
+          </div>
+        `);
+        this.delegateEvents();
+
         if (this.model && this.model.has(col)) {
           if (this.model.get(col)) {
             this.$el.parent().toggleClass('selected', true);

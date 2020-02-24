@@ -621,7 +621,7 @@ define([
         onText: gettext('Yes'),
         offText: gettext('No'),
         onColor: 'success',
-        offColor: 'primary',
+        offColor: 'ternary',
         size: 'mini',
         width: null,
         height: null,

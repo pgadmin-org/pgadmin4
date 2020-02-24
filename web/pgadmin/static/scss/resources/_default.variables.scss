@@ -1,5 +1,5 @@
 /** Dividing a pixel var with 1px or rem var with 1rem removes the unit px/rem **/
-$enable-flex: true ;
+$enable-flex: true;
 
 $white: #fff;
 $black: #000;
@@ -14,6 +14,9 @@ $color-primary-light-fg: $color-primary !default;
 $color-primary-dark: #295c85 !default;
 
 $color-secondary: $white !default;
+
+$color-ternary: #5b6d7c !default;
+$color-ternary-fg: $white !default;
 
 $color-danger: #e53935 !default;
 $color-danger-fg: $white !default;
@@ -60,6 +63,7 @@ $border-radius: 0.25rem;
 $text-muted: $color-gray-dark !default;
 $header-bg: $color-bg !default;
 
+$tree-font-size: 0.815rem;
 
 $navbar-bg: $color-primary;
 $navbar-font-size: 0.925rem;
@@ -135,7 +139,7 @@ $table-head-color: $color-primary-fg;
 $input-bg: $white !default;
 $input-color: $color-fg !default;
 $input-placeholder-color: $text-muted;
-$input-border-color: $border-color;
+$input-border-color: $border-color !default;
 $input-border-radius: $border-radius;
 $input-disabled-bg: $color-gray-lighter !default;
 $input-btn-border-width: $border-width;
@@ -200,7 +204,7 @@ $table-hover-bg-color: $color-primary-light;
 $datagrid-bg: $color-gray-light;
 
 $tree-fg-hover: $color-fg;
-$tree-bg-hover: $color-gray-lighter;
+$tree-bg-hover: $color-gray-light;
 $tree-fg-selected: $color-fg;
 $tree-bg-selected: $color-primary-light;
 
@@ -210,8 +214,8 @@ $sql-grid-title-cell-fg: $input-color;
 $sql-grid-title-cell-bg: $input-bg;
 
 $sql-title-padding: 3px;
-$sql-title-bg: #5b6d7c;
-$sql-title-fg: $white;
+$sql-title-bg: $color-ternary;
+$sql-title-fg: $color-ternary-fg;
 // Toolbar + editor title heights + title bottom border
 $sql-editor-panel-top: $title-height + $text-height-calc*16px + $sql-title-padding*2 + $panel-border-width - 0.5px;
 $sql-gutters-bg: $negative-bg;
@@ -241,6 +245,9 @@ $alertify-borderremove-margin: $panel-border-width;
 $btn-secondary-border: $color-gray;
 $btn-secondary-hover-bg: $color-gray-light;
 
+$btn-ternary-border: $color-ternary !default;
+$btn-ternary-hover-bg: darken($color-ternary, 7.5%) !default;
+
 $card-header-padding : 0.25rem 0.5rem;
 $no-border-radius: 0px !important;
 
@@ -261,6 +268,11 @@ $loader-icon-small: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='ut
 
 /***************/
 
-$schemadiff-diff-row-color: #fff9c4;
-$schemadiff-source-row-color: #ffebee;
-$schemadiff-target-row-color: #fbe3bf;
+$schemadiff-diff-row-color: #fff9c4 !default;
+$schemadiff-source-row-color: #ffebee !default;
+$schemadiff-target-row-color: #fbe3bf !default;
+
+/* Custom controls bootstrap changes */
+$custom-forms-transition: none;
+$custom-control-indicator-focus-border-color: $input-focus-border-color;
+$custom-control-indicator-border-color: $input-border-color;

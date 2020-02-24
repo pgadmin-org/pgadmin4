@@ -103,6 +103,10 @@
     background-color: $color-gray-light;
 }
 
+.backgrid:not(.presentation) td.renderable.editable:not(.delete-cell):not(.edit-cell) {
+    background-color: $input-bg;
+}
+
 .sql-editor-grid-container .backgrid > thead > th.renderable,
 .sql-editor-grid-container .backgrid > tbody > td.renderable {
     white-space: pre-wrap;
@@ -144,8 +148,8 @@ table.backgrid {
 
 /* Latest backgrid adds column name like `label` to td element, override color*/
 .backgrid td.label {
-  color:  $color-gray-dark;
-  font-size: 14px;
+  color: $color-fg;
+  font-size: $font-size-base;
   font-weight: normal;
 }
 
@@ -324,4 +328,19 @@ table.backgrid {
 
 table tr th button {
   font-weight: bold;
+}
+
+.custom-control.custom-checkbox.custom-checkbox-no-label {
+   padding-left: 0;
+
+   .custom-control-label {
+     // set same width/height as before and after
+     width: 1em;
+     height: 1em;
+
+     &::before,
+     &::after {
+       left: 0;
+     }
+   }
 }

@@ -219,7 +219,7 @@ define('pgadmin.node.column', [
           deps:['name'], cellHeaderClasses:'width_percent_5',
           options: {
             onText: gettext('Yes'), offText: gettext('No'),
-            onColor: 'success', offColor: 'primary',
+            onColor: 'success', offColor: 'ternary',
           },
           visible: function(m) {
             return _.isUndefined(
@@ -524,7 +524,7 @@ define('pgadmin.node.column', [
           id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
           type: 'switch', cellHeaderClasses:'width_percent_20',
           group: gettext('Constraints'), editable: 'editable_check_for_table',
-          options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success', offColor: 'primary' },
+          options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success', offColor: 'ternary' },
           deps: ['colconstype'],
           disabled: function(m) {
             if (m.get('colconstype') == 'i') {

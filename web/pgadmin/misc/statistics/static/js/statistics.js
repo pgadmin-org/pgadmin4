@@ -103,7 +103,7 @@ define('misc.statistics', [
       onText: gettext('True'),
       offText: gettext('False'),
       onColor: 'success',
-      offColor: 'primary',
+      offColor: 'ternary',
       size: 'mini',
     }
   );

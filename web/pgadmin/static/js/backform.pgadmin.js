@@ -468,14 +468,42 @@ define([
       helpMessage: '',
       name: '',
     },
+    events: _.extend({}, Backform.InputControl.prototype.events, {
+      'click label.btn': 'toggle',
+    }),
+    toggle: function(e) {
+      /* Toggle the other buttons to unchecked and current to checked */
+      let $curr = $(e.currentTarget),
+        $btn_group = $curr.closest('.btn-group');
+
+      $btn_group.find('.btn')
+        .removeClass('btn-primary')
+        .addClass('btn-secondary')
+        .find('.fa')
+        .addClass('visibility-hidden')
+        .siblings('input')
+        .prop('checked', false);
+
+      $curr.removeClass('btn-secondary')
+        .addClass('btn-primary')
+        .find('.fa')
+        .removeClass('visibility-hidden')
+        .siblings('input')
+        .prop('checked', true)
+        .trigger('change');
+
+      e.preventDefault();
+      e.stopPropagation();
+    },
     template: _.template([
       '<label class="<%=controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
-      ' <div class="btn-group pgadmin-controls-radio-none<% if (disabled) {%> disabled <%}%>"  data-toggle="buttons">',
+      ' <div class="btn-group pgadmin-controls-radio-none<% if (disabled) {%> disabled <%}%>" >',
       '  <% for (var i=0; i < options.length; i++) { %>',
       '  <% var option = options[i]; %>',
-      '  <label class="btn btn-primary<% if (option.value == value) { %> active<%}%><% if (!option.disabled && !disabled) { %>" tabindex="0"<% } else { %> disabled"<% } %>>',
-      '   <input type="radio" name="<%=name%>" autocomplete="off" value=<%-formatter.fromRaw(option.value)%> <% if (option.value == value) { %> checked<%}%> <% if (option.disabled || disabled) { %> disabled <%}%>> <%-option.label%>',
+      '  <label class="btn btn-radiomodern <% if (option.value == value) { %> btn-primary <%} else {%> btn-secondary <%}%> <% if (!option.disabled && !disabled) { %>" tabindex="0"<% } else { %> disabled"<% } %>>',
+      '    <i class="fa fa-check  <% if (option.value != value) { %>visibility-hidden <%}%>"></i>',
+      '    <input type="radio" name="<%=name%>" autocomplete="off" value=<%-formatter.fromRaw(option.value)%> <% if (option.value == value) { %> checked<%}%> <% if (option.disabled || disabled) { %> disabled <%}%>> <%-option.label%>',
       '  </label>',
       '  <% } %>',
       ' </div>',
@@ -539,7 +567,7 @@ define([
         onText: gettext('Yes'),
         offText: gettext('No'),
         onColor: 'success',
-        offColor: 'primary',
+        offColor: 'ternary',
         size: 'mini',
         width: null,
         height: null,
@@ -3237,16 +3265,19 @@ define([
       '<label class="<%=Backform.controlLabelClassName%>"><%=controlLabel%></label>',
       '<div class="<%=Backform.controlContainerClassName%>">',
       '  <button class="btn btn-secondary btn-checkbox">',
-      '    <input type="<%=type%>" class="<%=extraClasses.join(\' \')%>" id="<%=cId%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
-      '    <%=label%>',
+      '  <div class="custom-control custom-checkbox <%=extraClasses.join(\' \')%>">',
+      '    <input tabindex="-1" type="checkbox" class="custom-control-input" id="<%=cId%>" name="<%=name%>" <%=value ? "checked=\'checked\'" : ""%> <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '    <label class="custom-control-label" for="<%=cId%>">',
+      '      <%=label%>',
+      '    </label>',
+      '  </div>',
       '  </button>',
       '</div>',
     ].join('\n')),
     onButtonClick: function(e) {
       if (e.target.nodeName !== 'BUTTON')
         return;
-      var $el = this.$el.find('input[type=checkbox]');
-      $el.prop('checked', !$el.prop('checked'));
+      this.$el.find('input[type=checkbox]').trigger('click');
     },
   });
 

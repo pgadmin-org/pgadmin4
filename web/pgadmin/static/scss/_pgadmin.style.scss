@@ -290,6 +290,17 @@
     margin: 0 auto;
     position: relative;
     text-align: center;
+
+    &:before {
+        font-family: $font-family-icon;
+        content: "\f05a" !important;
+        font-size: 1rem;
+        margin-right: 0.5rem;
+    }
+
+    &.pg-panel-error:before {
+        content: "\f06a" !important;
+    }
 }
 
 .pgadmin-control {
@@ -519,9 +530,15 @@ fieldset.inline-fieldset > div {
   }
 }
 
-.pgadmin-controls input[type="checkbox"]{
+.pgadmin-controls input[type=checkbox]{
   margin-left: 0 !important;
   margin-top: 10px !important;
+}
+
+/* custom-control-label is used for checkbox */
+.pgadmin-controls .custom-control-label{
+  margin-left: 0 !important;
+  margin-top: 5px !important;
 }
 
 .pgadmin-controls.sql_field_layout {
@@ -668,7 +685,7 @@ div.rolmembership {
 
 .inline-tab-panel {
     float: left; width: 100%;
-    background-color: $color-primary-fg;
+    background-color: $header-bg;
     border: 1px solid $border-color;
     border-radius: $card-border-radius;
 }
@@ -761,8 +778,15 @@ table tr td {
   }
 }
 
-.privilege_label{
-  font-size: 10px!important;
+.privilege-checkbox{
+    & .custom-control-label {
+        font-size: 0.7rem;
+        line-height: 1.7;
+        &:before, &:after {
+            height: 0.8rem;
+            width: 0.8rem;
+        }
+    }
 }
 
 span.button-label {
@@ -1080,4 +1104,9 @@ select:-webkit-autofill:focus {
   -webkit-text-fill-color: $color-primary-light-fg;
   -webkit-box-shadow: 0 0 0px 1000px $color-primary-light inset;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Left side has a check icon, right side corrected */
+.btn-radiomodern {
+    padding-right: 1.75*$input-btn-padding-x !important;
 }

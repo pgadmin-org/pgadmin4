@@ -448,11 +448,11 @@ define([
               if (d._type == 'primary_key' || d._type == 'unique_constraint' ||
                 d._type == 'index') {
                 var vacuum_analyze_btns = $container.find(
-                  '.pgadmin-controls label:lt(2)'
-                ).removeClass('active').addClass('disabled');
+                  '.btn-group label.btn:lt(2)'
+                ).addClass('disabled');
                 // Find reindex button element & add active class to it
                 var reindex_btn = vacuum_analyze_btns[1].nextElementSibling;
-                $(reindex_btn).addClass('active');
+                $(reindex_btn).trigger('click');
               }
 
               view.$el.attr('tabindex', -1);

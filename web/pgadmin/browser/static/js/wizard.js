@@ -100,7 +100,7 @@ define([
       '        <% } %>' +
       '        <div class="col-sm-<% if (this.options.show_left_panel) { %>9<% }' +
       '          else { %>12<% } %> wizard-right-panel">' +
-      '          <% if ( typeof show_description !=  "undefined"){ %>' +
+      '          <% if ( typeof show_description !=  "undefined" && show_description != ""){ %>' +
       '            <div class="wizard-description">' +
       '              <%= show_description %>' +
       '            </div>' +

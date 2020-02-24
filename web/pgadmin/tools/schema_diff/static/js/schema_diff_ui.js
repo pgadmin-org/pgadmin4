@@ -761,7 +761,7 @@ export default class SchemaDiffUI {
 
     footer_panel.$container.find('#schema-diff-ddl-comp').append(self.footer.render().$el);
     header_panel.$container.find('#schema-diff-grid').append(`<div class='obj_properties container-fluid'>
-    <div class='alert alert-info pg-panel-message'>` + gettext('Select the server, database and schema for the source and target and click <b>Compare</b> to compare them.') + '</div></div>');
+    <div class='pg-panel-message'>` + gettext('Select the server, database and schema for the source and target and click <b>Compare</b> to compare them.') + '</div></div>');
 
     self.grid_width = $('#schema-diff-grid').width();
     self.grid_height = this.panel_obj.height();

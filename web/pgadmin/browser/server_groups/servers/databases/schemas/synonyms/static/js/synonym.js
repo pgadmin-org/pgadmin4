@@ -183,7 +183,7 @@ define('pgadmin.node.synonym', [
           id: 'is_public_synonym', label: gettext('Public synonym?'),
           type: 'switch', mode: ['properties'], cell: 'switch',
           options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success',
-            offColor: 'primary', size: 'mini'},
+            offColor: 'ternary', size: 'mini'},
         },
         ],
         validate: function() {

@@ -248,7 +248,7 @@ define('pgadmin.dashboard', [
                       ajaxHook();
                     } else {
                       $(div).html(
-                        '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+                        '<div class="pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
                       );
                     }
                   }
@@ -256,7 +256,7 @@ define('pgadmin.dashboard', [
               });
           };
           $(div).html(
-            '<div class="alert alert-info pg-panel-message" role="alert">' + gettext('Loading dashboard...') + '</div>'
+            '<div class="pg-panel-message" role="alert">' + gettext('Loading dashboard...') + '</div>'
           );
           ajaxHook();
 
@@ -379,7 +379,7 @@ define('pgadmin.dashboard', [
                             ajaxHook();
                           } else {
                             $(div).html(
-                              '<div class="alert alert-danger pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+                              '<div class="pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
                             );
                           }
                         }
@@ -387,7 +387,7 @@ define('pgadmin.dashboard', [
                     });
                 };
                 $(div).html(
-                  '<div class="alert alert-info pg-panel-message" role="alert">' + gettext('Loading dashboard...') + '</div>'
+                  '<div class="pg-panel-message" role="alert">' + gettext('Loading dashboard...') + '</div>'
                 );
                 ajaxHook();
                 $(dashboardPanel).data('server_status', true);
@@ -402,7 +402,7 @@ define('pgadmin.dashboard', [
                 self.clearChartFromStore();
               }
               $(div).html(
-                '<div class="alert alert-info pg-panel-message" role="alert">' + gettext('Please connect to the selected server to view the dashboard.') + '</div>'
+                '<div class="pg-panel-message" role="alert">' + gettext('Please connect to the selected server to view the dashboard.') + '</div>'
               );
               $(dashboardPanel).data('server_status', false);
             }
@@ -602,7 +602,7 @@ define('pgadmin.dashboard', [
                 }
               } else {
                 msg = gettext('An error occurred whilst rendering the graph.');
-                cls = 'danger';
+                cls = 'error';
               }
             }
 
@@ -610,7 +610,7 @@ define('pgadmin.dashboard', [
               let chart_obj = chart_store[chart_name].chart_obj;
               $(chart_obj.getContainer()).addClass('graph-error');
               $(chart_obj.getContainer()).html(
-                '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
+                '<div class="pg-panel-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
               );
             }
           })
@@ -737,7 +737,7 @@ define('pgadmin.dashboard', [
               }
             } else {
               msg = gettext('An error occurred whilst rendering the table.');
-              cls = 'danger';
+              cls = 'error';
             }
           }
 
@@ -748,7 +748,7 @@ define('pgadmin.dashboard', [
           }
 
           $(container).html(
-            '<div class="alert alert-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
+            '<div class="pg-panel-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
           );
 
           // Try again

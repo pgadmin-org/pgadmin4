@@ -162,13 +162,18 @@ define([
               },
               render: function() {
                 let model = this.model.toJSON();
-
                 // canDrop can be set to false for individual row from the server side to disable the checkbox
-                if ('canDrop' in model && model.canDrop === false)
-                  this.$el.empty().append('<input tabindex="-1" type="checkbox" title="Select" disabled="disabled"/>');
-                else
-                  this.$el.empty().append('<input tabindex="-1" type="checkbox" title="Select" />');
+                let disabled = ('canDrop' in model && model.canDrop === false);
+                let id = `row-${_.uniqueId(model.oid || model.name)}`;
 
+                this.$el.empty().append(`
+                  <div class="custom-control custom-checkbox custom-checkbox-no-label">
+                    <input tabindex="-1" type="checkbox" class="custom-control-input" id="${id}" ${disabled?'disabled':''}/>
+                    <label class="custom-control-label" for="${id}">
+                      <span class="sr-only">Select<span>
+                    </label>
+                  </div>
+                `);
                 this.delegateEvents();
                 return this;
               },
@@ -216,7 +221,7 @@ define([
         j.empty();
         j.data('obj-view', gridView);
 
-        $msgContainer = '<div role="status" class="alert alert-info pg-panel-message pg-panel-properties-message">' +
+        $msgContainer = '<div role="status" class="pg-panel-message pg-panel-properties-message">' +
          gettext('Retrieving data from the server...') + '</div>';
 
         $msgContainer = $($msgContainer).appendTo(j);

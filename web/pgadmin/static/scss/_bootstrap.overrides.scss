@@ -103,6 +103,14 @@ legend {
 	@include button-variant($color-secondary, $btn-secondary-border, $btn-secondary-hover-bg);
 }
 
+/** Overriding secondary button of bootstrap **/
+/* Used Bootstrap 4 Mixin button-variant
+ * Refer file : bootstrap/scss/mixins/_buttons.scss
+ */
+.btn-ternary {
+	@include button-variant($color-ternary, $btn-ternary-border, $btn-ternary-hover-bg);
+}
+
 .form-group fieldset {
 	background-color: $color-gray-lighter;
 	border-color: $color-gray-lighter;
@@ -330,4 +338,11 @@ td.switch-cell > div.toggle {
 
 .btn-group.pgadmin-controls-radio-none > label.btn.btn-primary.disabled {
   pointer-events: none;
+}
+
+/* Bootstrap custom controls */
+.custom-control-input {
+  &:focus:checked ~ .custom-control-label::before {
+    border-color: $custom-control-indicator-focus-border-color;
+  }
 }

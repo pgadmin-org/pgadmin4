@@ -108,28 +108,30 @@ define('pgadmin.node.event_trigger', [
         },{
           id: 'comment', label: gettext('Comment'), type: 'multiline',
         },{
-          id: 'enabled', label: gettext('Enabled?'),
-          type:'radio', group: gettext('Definition'), mode: ['properties', 'edit','create'],
+          id: 'enabled', label: gettext('Trigger enabled?'),
+          group: gettext('Definition'), mode: ['properties', 'edit','create'],
           options: [
             {label: 'Enable', value: 'O'},
             {label: 'Disable', value: 'D'},
             {label: 'Replica', value: 'R'},
             {label: 'Always', value: 'A'},
           ],
+          control: 'select2', select2: { allowClear: false, width: '100%' },
         },{
           id: 'eventfunname', label: gettext('Trigger function'),
           type: 'text', control: 'node-ajax-options', group: gettext('Definition'),
           url:'fopts', cache_node: 'trigger_function',
         },{
-          id: 'eventname', label: gettext('Events'),
-          type:'radio', group: gettext('Definition'), cell: 'string',
+          id: 'eventname', label: gettext('Event'),
+          group: gettext('Definition'), cell: 'string',
           options: [
             {label: 'DDL COMMAND START', value: 'DDL_COMMAND_START'},
             {label: 'DDL COMMAND END', value: 'DDL_COMMAND_END'},
             {label: 'SQL DROP', value: 'SQL_DROP'},
           ],
+          control: 'select2', select2: { allowClear: false, width: '100%' },
         },{
-          id: 'when', label: gettext('When'),  cell: 'string',
+          id: 'when', label: gettext('When TAG in'),  cell: 'string',
           type: 'text', group: gettext('Definition'),
           control: Backform.SqlFieldControl,
           extraClasses:['custom_height_css_class'],

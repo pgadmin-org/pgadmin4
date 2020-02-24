@@ -328,16 +328,20 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
       template: _.template([
         '<tr class="<%= header ? "header" : "" %>">',
         ' <td class="renderable">',
-        '  <label class="privilege_label">',
-        '   <input type="checkbox" tabindex="1" name="privilege" privilege="<%- privilege_type %>" target="<%- target %>" <%= privilege ? \'checked\' : "" %>></input>',
-        '   <%- privilege_label %>',
-        '  </label>',
+        '  <div class="custom-control custom-checkbox privilege-checkbox">',
+        '    <input tabindex="0" type="checkbox" class="custom-control-input" id="<%= checkbox_id %>" name="privilege" privilege="<%- privilege_type %>" target="<%- target %>" <%= privilege ? \'checked\' : "" %>/>',
+        '    <label class="custom-control-label" for="<%= checkbox_id %>">',
+        '      <%- privilege_label %>',
+        '    </label>',
+        '  </div>',
         ' </td>',
         ' <td class="renderable">',
-        '  <label class="privilege_label">',
-        '   <input type="checkbox" tabindex="1" name="with_grant" privilege="<%- privilege_type %>" target="<%- target %>" <%= with_grant ? \'checked\' : "" %> <%= enable_with_grant ? "" : \'disabled\'%>></input>',
-        '   WITH GRANT OPTION',
-        '  </label>',
+        '  <div class="custom-control custom-checkbox privilege-checkbox">',
+        '    <input tabindex="0" type="checkbox" class="custom-control-input" id="wgo_<%= checkbox_id %>" name="with_grant" privilege="<%- privilege_type %>" target="<%- target %>" <%= with_grant ? \'checked\' : "" %> <%= enable_with_grant ? "" : \'disabled\'%>/>',
+        '    <label class="custom-control-label" for="wgo_<%= checkbox_id %>">',
+        '      WITH GRANT OPTION',
+        '    </label>',
+        '  </div>',
         ' </td>',
         '</tr>'].join(' '), null, {variable: null}),
 
@@ -359,6 +363,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
 
         // For each privilege generate html template.
         // List down all the Privilege model.
+        var checkbox_id = _.uniqueId();
         collection.each(function(m) {
           var d = m.toJSON();
 
@@ -372,6 +377,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
               'privilege_label': self.Labels[d.privilege_type],
               'with_grant': (self.model.get('grantee') != 'PUBLIC' && d.with_grant),
               'enable_with_grant': (self.model.get('grantee') != 'PUBLIC' && d.privilege),
+              'checkbox_id': d.privilege_type + '' + checkbox_id,
             });
           privilege = (privilege && d.privilege);
           with_grant = (with_grant && privilege && d.with_grant);
@@ -389,6 +395,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
               'with_grant': (self.model.get('grantee') != 'PUBLIC' && with_grant),
               'enable_with_grant': (self.model.get('grantee') != 'PUBLIC' && privilege),
               'header': true,
+              'checkbox_id': 'all' + '' + checkbox_id,
             }));
         }
         self.$el.find('input[type=checkbox]').first().trigger('focus');
