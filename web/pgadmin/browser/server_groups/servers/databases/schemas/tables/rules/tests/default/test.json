@@ -33,7 +33,7 @@
         "name": "test_insert_rule_$%{}[]()&*^!@\"'`\\/#",
         "schema": "public",
         "view": "test_emp_rule",
-        "event": "Insert",
+        "event": "INSERT",
         "condition": "new.salary > 5000",
         "statements": "UPDATE test_emp_rule SET salary = 5000\n  WHERE test_emp_rule.emp_id = new.emp_id"
       },
@@ -49,7 +49,7 @@
         "name": "test_insert_rule1_$%{}[]()&*^!@\"'`\\/#",
         "schema": "public",
         "view": "test_emp_rule",
-        "event": "Insert",
+        "event": "INSERT",
         "do_instead": true,
         "comment": "This is a insert rule",
         "condition": "new.salary > 8000",
@@ -59,7 +59,7 @@
       "expected_msql_file": "alter_insert_event_rule_msql.sql"
     }, {
       "type": "alter",
-      "name": "Alter Rule for insert event with complex commands",
+      "name": "Alter Rule insert to update event with complex commands",
       "endpoint": "NODE-rule.obj_id",
       "sql_endpoint": "NODE-rule.sql_id",
       "msql_endpoint": "NODE-rule.msql_id",
@@ -68,6 +68,28 @@
       },
       "expected_sql_file": "alter_insert_event_rule_complex.sql",
       "expected_msql_file": "alter_insert_event_rule_complex_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Rule for insert event to statements NOTHING",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "statements": "NOTHING"
+      },
+      "expected_sql_file": "alter_insert_event_rule_nothing.sql",
+      "expected_msql_file": "alter_insert_event_rule_nothing_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Rule for insert with NOTHING to Update",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "event": "UPDATE"
+      },
+      "expected_sql_file": "alter_insert_event_rule_nothing_update.sql",
+      "expected_msql_file": "alter_insert_event_rule_nothing_update_msql.sql"
     }, {
       "type": "delete",
       "name": "Drop Rule",
@@ -85,7 +107,7 @@
         "name": "test_update_rule_$%{}[]()&*^!@\"'`\\/#",
         "schema": "public",
         "view": "test_emp_rule",
-        "event": "Update",
+        "event": "UPDATE",
         "condition": "old.name = 'Joe'",
         "statements": "UPDATE test_emp_rule SET salary = new.salary\n  WHERE test_emp_rule.name = 'Sam'"
       },
@@ -101,7 +123,7 @@
         "name": "test_update_rule1_$%{}[]()&*^!@\"'`\\/#",
         "schema": "public",
         "view": "test_emp_rule",
-        "event": "Update",
+        "event": "UPDATE",
         "do_instead": true,
         "comment": "This is a update rule",
         "condition": "old.name = 'Sam'",

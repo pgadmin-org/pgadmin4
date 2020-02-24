@@ -30,3 +30,4 @@ Bug fixes
 | `Issue #5107 <https://redmine.postgresql.org/issues/5107>`_ -  Set proper focus on tab navigation for file manager dialog.
 | `Issue #5115 <https://redmine.postgresql.org/issues/5115>`_ -  Fix an issue where command and statements were parsed incorrectly for Rules.
 | `Issue #5184 <https://redmine.postgresql.org/issues/5184>`_ -  Fixed Firefox monospaced issue by updating the font to the latest version.
+| `Issue #5215 <https://redmine.postgresql.org/issues/5215>`_ -  Fix syntax error when changing the event type for the existing rule.
