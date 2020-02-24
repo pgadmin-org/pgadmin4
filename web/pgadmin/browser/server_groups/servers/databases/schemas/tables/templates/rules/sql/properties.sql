@@ -3,6 +3,8 @@
 SELECT
     rw.oid AS oid,
     rw.rulename AS name,
+    rw.ev_type,
+    rw.is_instead,
     relname AS view,
     CASE WHEN relkind = 'r' THEN TRUE ELSE FALSE END AS parentistable,
     nspname AS schema,
@@ -10,7 +12,7 @@ SELECT
     {# ===== Check whether it is system rule or not ===== #}
     CASE WHEN rw.rulename = '_RETURN' THEN True ELSE False END AS system_rule,
     CASE WHEN rw.ev_enabled != 'D' THEN True ELSE False END AS enabled,
-    pg_get_ruledef(rw.oid, true) AS definition
+    pg_get_ruledef(rw.oid) AS definition
 FROM
     pg_rewrite rw
 JOIN pg_class cl ON cl.oid=rw.ev_class

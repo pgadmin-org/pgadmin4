@@ -9,17 +9,17 @@
 CREATE OR REPLACE RULE {{ conn|qtIdent(data.name) }} AS
     ON {{ data.event|upper if data.event else 'SELECT' }} TO {{ conn|qtIdent(data.schema, data.view) }}
 {% if data.condition %}
-    WHERE {{ data.condition }}
+    WHERE ({{ data.condition }})
 {% endif %}
     DO{% if data.do_instead in ['true', True] %}
-{{ ' INSTEAD' }}
+{{ ' INSTEAD' }}{% else %}{{ '' }}{% endif %}
+{% if data.statements is defined and data.statements.strip() in ['', 'NOTHING'] %}
+ NOTHING;
+{% elif data.statements is defined %}
+
+({{ data.statements.rstrip(';') }});
 {% else %}
-{{ '' }}
-{% endif %}
-{% if data.statements %}
-{{ data.statements.rstrip(';') }};
-{% else %}
-  NOTHING;
+ NOTHING;
 {% endif %}
 {% if data.comment %}
 

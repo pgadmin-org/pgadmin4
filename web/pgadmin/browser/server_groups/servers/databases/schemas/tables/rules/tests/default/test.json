@@ -58,6 +58,17 @@
       "expected_sql_file": "alter_insert_event_rule.sql",
       "expected_msql_file": "alter_insert_event_rule_msql.sql"
     }, {
+      "type": "alter",
+      "name": "Alter Rule for insert event with complex commands",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "statements": "UPDATE test_emp_rule SET salary = 8000\n\tWHERE test_emp_rule.emp_id = new.emp_id;\nINSERT INTO test_emp_rule(emp_id, name, salary)\nSELECT 1, 'xyz', 2000 WHERE 1=2;"
+      },
+      "expected_sql_file": "alter_insert_event_rule_complex.sql",
+      "expected_msql_file": "alter_insert_event_rule_complex_msql.sql"
+    }, {
       "type": "delete",
       "name": "Drop Rule",
       "endpoint": "NODE-rule.delete_id",

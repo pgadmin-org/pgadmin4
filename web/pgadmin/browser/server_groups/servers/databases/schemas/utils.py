@@ -428,32 +428,43 @@ def parse_rule_definition(res):
         res_data = res['rows'][0]
         data_def = res_data['definition']
         import re
-        # Parse data for event
-        e_match = re.search(r"ON\s+(.*)\s+TO", data_def)
-        event_data = e_match.group(1) if e_match is not None else None
-        event = event_data if event_data is not None else ''
-
-        # Parse data for do instead
-        inst_match = re.search(r"\s+(INSTEAD)\s+", data_def)
-        instead_data = inst_match.group(1) if inst_match is not None else None
-        instead = True if instead_data is not None else False
 
         # Parse data for condition
-        condition_match = re.search(r"(?:WHERE)\s+([\s\S]*)\s+(?:DO)",
-                                    data_def)
-        condition_data = condition_match.group(1) \
-            if condition_match is not None else None
-        condition = condition_data if condition_data is not None else ''
+        condition = ''
+        condition_part_match = re.search(
+            r"((?:ON)\s+(?:[\s\S]+?)"
+            r"(?:TO)\s+(?:[\s\S]+?)(?:DO))", data_def)
+        if condition_part_match is not None:
+            condition_part = condition_part_match.group(1)
 
-        # Parse data for statements
+            condition_match = re.search(
+                r"(?:WHERE)\s+(\([\s\S]*\))\s+(?:DO)", condition_part)
+
+            if condition_match is not None:
+                condition = condition_match.group(1)
+                # also remove enclosing brackets
+                if condition.startswith('(') and condition.endswith(')'):
+                    condition = condition[1:-1]
+
+            # Parse data for statements
         statement_match = re.search(
-            r"(?:DO\s+)(?:INSTEAD\s+)?((.|\n)*)", data_def)
-        statement_data = statement_match.group(1) if statement_match else None
-        statement = statement_data if statement_data is not None else ''
+            r"(?:DO\s+)(?:INSTEAD\s+)?([\s\S]*)(?:;)", data_def)
+
+        statement = ''
+        if statement_match is not None:
+            statement = statement_match.group(1)
+            # also remove enclosing brackets
+            if statement.startswith('(') and statement.endswith(')'):
+                statement = statement[1:-1]
 
         # set columns parse data
-        res_data['event'] = event.lower().capitalize()
-        res_data['do_instead'] = instead
+        res_data['event'] = {
+            '1': 'SELECT',
+            '2': 'UPDATE',
+            '3': 'INSERT',
+            '4': 'DELETE'
+        }[res_data['ev_type']]
+        res_data['do_instead'] = res_data['is_instead']
         res_data['statements'] = statement
         res_data['condition'] = condition
     except Exception as e:

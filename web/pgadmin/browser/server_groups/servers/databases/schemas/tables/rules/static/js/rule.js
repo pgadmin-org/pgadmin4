@@ -169,10 +169,10 @@ define('pgadmin.node.rule', [
             allowClear: false,
           },
           options:[
-            {label: 'Select', value: 'Select'},
-            {label: 'Insert', value: 'Insert'},
-            {label: 'Update', value: 'Update'},
-            {label: 'Delete', value: 'Delete'},
+            {label: 'SELECT', value: 'SELECT'},
+            {label: 'INSERT', value: 'INSERT'},
+            {label: 'UPDATE', value: 'UPDATE'},
+            {label: 'DELETE', value: 'DELETE'},
           ],
         },
         {
