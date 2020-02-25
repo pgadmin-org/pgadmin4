@@ -64,7 +64,7 @@ export class DialogWrapper {
     $(alertifyDialog.elements.footer).on('keydown', 'button', function(event) {
       if (event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
         // set focus back to first editable input element of current active tab once we cycle through all enabled buttons.
-        commonUtils.findAndSetFocus($(alertifyDialog.elements.body).find('.tab-content div.active'));
+        commonUtils.findAndSetFocus($(alertifyDialog.elements.dialog));
         return false;
       }
     });

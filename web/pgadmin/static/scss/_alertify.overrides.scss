@@ -279,3 +279,10 @@
     transform: none;
   }
 }
+
+
+.ajs-maximize {
+    @extend .btn-secondary;
+    outline: none !important;
+}
+

@@ -44,6 +44,7 @@ export class BackupDialogWrapper extends DialogWrapper {
           type: 'button',
           url: 'backup.html',
           label: gettext('Backup'),
+          'aria-label': gettext('Backup')
         },
       }, {
         text: '',
@@ -52,7 +53,7 @@ export class BackupDialogWrapper extends DialogWrapper {
         attrs: {
           name: 'dialog_help',
           type: 'button',
-          label: gettext('Backup'),
+          label: gettext('Help'),
           'aria-label': gettext('Help'),
           url: url_for('help.static', {
             'filename': get_help_file(this.typeOfDialog),

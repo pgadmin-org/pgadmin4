@@ -37,6 +37,7 @@ export function findAndSetFocus(container) {
         .find(`
           .pgadmin-controls:first input:enabled,
           .pgadmin-controls:first .btn:not(.toggle),
+          .ajs-commands:first,
           .CodeMirror-scroll`)
         .find('*[tabindex]:not([tabindex="-1"])');
     }

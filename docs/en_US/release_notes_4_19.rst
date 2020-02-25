@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5154 <https://redmine.postgresql.org/issues/5154>`_ -  Added accessibility support in AlertifyJS.
 | `Issue #5170 <https://redmine.postgresql.org/issues/5170>`_ -  Added Czech language support.
 | `Issue #5179 <https://redmine.postgresql.org/issues/5179>`_ -  Added Python 3.8 support.
 
@@ -29,5 +30,6 @@ Bug fixes
 | `Issue #5077 <https://redmine.postgresql.org/issues/5077>`_ -  Changed background pattern for geometry viewer to use #fff for all themes.
 | `Issue #5107 <https://redmine.postgresql.org/issues/5107>`_ -  Set proper focus on tab navigation for file manager dialog.
 | `Issue #5115 <https://redmine.postgresql.org/issues/5115>`_ -  Fix an issue where command and statements were parsed incorrectly for Rules.
+| `Issue #5143 <https://redmine.postgresql.org/issues/5143>`_ -  Fix accessibility issue for the maximize button of the Alertify dialog.
 | `Issue #5184 <https://redmine.postgresql.org/issues/5184>`_ -  Fixed Firefox monospaced issue by updating the font to the latest version.
 | `Issue #5215 <https://redmine.postgresql.org/issues/5215>`_ -  Fix syntax error when changing the event type for the existing rule.

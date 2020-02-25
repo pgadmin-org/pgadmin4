@@ -910,10 +910,9 @@ ajv@^6.1.0, ajv@^6.10.2, ajv@^6.9.1:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-alertifyjs@1.7.1:
+"alertifyjs@git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263":
   version "1.7.1"
-  resolved "https://registry.yarnpkg.com/alertifyjs/-/alertifyjs-1.7.1.tgz#3c7b8ac67609aea737fe8e06d7fac885ce18ba8f"
-  integrity sha1-PHuKxnYJrqc3/o4G1/rIhc4Yuo8=
+  resolved "git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263"
 
 alphanum-sort@^1.0.0:
   version "1.0.2"
