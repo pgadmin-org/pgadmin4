@@ -44,7 +44,7 @@ export class BackupDialogWrapper extends DialogWrapper {
           type: 'button',
           url: 'backup.html',
           label: gettext('Backup'),
-          'aria-label': gettext('Backup')
+          'aria-label': gettext('Backup'),
         },
       }, {
         text: '',
