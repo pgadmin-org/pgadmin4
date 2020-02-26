@@ -22,7 +22,7 @@ Flask-Login==0.4.1
 Flask-Mail==0.9.1
 Flask-Migrate==2.4.0
 Flask-Principal==0.4.0
-Flask-SQLAlchemy==2.3.2
+Flask-SQLAlchemy==2.4.1
 Flask-WTF==0.14.3
 Flask-Compress==1.4.0
 passlib==1.7.2
@@ -36,6 +36,6 @@ Flask-Paranoid==0.2.0
 psutil==5.5.1
 psycopg2>=2.8
 python-dateutil>=2.8.0
-SQLAlchemy>=1.2.18
+SQLAlchemy>=1.3.13
 Flask-Security-Too>=3.0.0
 sshtunnel>=0.1.4

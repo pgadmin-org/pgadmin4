@@ -32,4 +32,5 @@ Bug fixes
 | `Issue #5115 <https://redmine.postgresql.org/issues/5115>`_ -  Fix an issue where command and statements were parsed incorrectly for Rules.
 | `Issue #5143 <https://redmine.postgresql.org/issues/5143>`_ -  Fix accessibility issue for the maximize button of the Alertify dialog.
 | `Issue #5184 <https://redmine.postgresql.org/issues/5184>`_ -  Fixed Firefox monospaced issue by updating the font to the latest version.
+| `Issue #5214 <https://redmine.postgresql.org/issues/5214>`_ -  Update Flask-SQLAlchemy and SQLAlchemy package which is not working on Windows with Python 3.8.
 | `Issue #5215 <https://redmine.postgresql.org/issues/5215>`_ -  Fix syntax error when changing the event type for the existing rule.
