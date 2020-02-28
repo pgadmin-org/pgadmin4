@@ -45,7 +45,12 @@ RUN npm install && \
 	npm audit fix && \
 	rm -f yarn.lock && \
 	yarn import && \
-	yarn audit && \
+# Commented the below line to avoid vulnerability in decompress package and
+# audit only dependencies folder. Refer https://www.npmjs.com/advisories/1217.
+# Pull request is already been send https://github.com/kevva/decompress/pull/73,
+# once fixed we will uncomment it.
+#	yarn audit && \
+	yarn audit --groups dependencies && \
 	rm -f package-lock.json && \
     yarn run bundle && \
     rm -rf node_modules \

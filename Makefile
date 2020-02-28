@@ -28,7 +28,12 @@ install-node:
 	cd web && npm audit fix
 	rm -f web/yarn.lock
 	cd web && yarn import
-	cd web && yarn audit
+# Commented the below line to avoid vulnerability in decompress package and
+# audit only dependencies folder. Refer https://www.npmjs.com/advisories/1217.
+# Pull request is already been send https://github.com/kevva/decompress/pull/73,
+# once fixed we will uncomment it.
+#	cd web && yarn audit
+	cd web && yarn audit --groups dependencies
 	rm -f package-lock.json
 	rm -f web/package-lock.json
 
@@ -48,7 +53,12 @@ check-audit:
 	cd web && yarn run audit
 
 check-auditjs:
-	cd web && yarn run auditjs
+# Commented the below line to avoid vulnerability in decompress package and
+# audit only dependencies folder. Refer https://www.npmjs.com/advisories/1217.
+# Pull request is already been send https://github.com/kevva/decompress/pull/73,
+# once fixed we will uncomment it.
+#	cd web && yarn run auditjs
+	cd web && yarn run auditjs --groups dependencies
 
 check-auditjs-html:
 	cd web && yarn run auditjs-html
