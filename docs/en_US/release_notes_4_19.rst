@@ -28,6 +28,7 @@ Bug fixes
 | `Issue #4996 <https://redmine.postgresql.org/issues/4996>`_ -  Improve the style of the highlighted code after query execution for Dark mode.
 | `Issue #5058 <https://redmine.postgresql.org/issues/5058>`_ -  Ensure that AlertifyJS should not be visible as a title for alert dialog.
 | `Issue #5077 <https://redmine.postgresql.org/issues/5077>`_ -  Changed background pattern for geometry viewer to use #fff for all themes.
+| `Issue #5101 <https://redmine.postgresql.org/issues/5101>`_ -  Fix an issue where debugger not showing all arguments anymore after hitting SQL error while debugging.
 | `Issue #5107 <https://redmine.postgresql.org/issues/5107>`_ -  Set proper focus on tab navigation for file manager dialog.
 | `Issue #5115 <https://redmine.postgresql.org/issues/5115>`_ -  Fix an issue where command and statements were parsed incorrectly for Rules.
 | `Issue #5142 <https://redmine.postgresql.org/issues/5142>`_ -  Ensure that all the transactions should be canceled before closing the connections when a server is disconnected using pgAdmin.

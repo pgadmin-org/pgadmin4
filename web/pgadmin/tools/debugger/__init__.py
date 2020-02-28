@@ -241,7 +241,7 @@ class DebuggerModule(PgAdminModule):
                 'debugger.start_execution', 'debugger.set_breakpoint',
                 'debugger.clear_all_breakpoint', 'debugger.deposit_value',
                 'debugger.select_frame', 'debugger.get_arguments',
-                'debugger.set_arguments',
+                'debugger.set_arguments', 'debugger.clear_arguments',
                 'debugger.poll_end_execution_result', 'debugger.poll_result'
                 ]
 
@@ -1797,14 +1797,60 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
                 db.session.add(debugger_func_args)
 
-            db.session.commit()
+        db.session.commit()
 
     except Exception as e:
+        db.session.rollback()
         current_app.logger.exception(e)
         return make_json_response(
             status=410,
             success=0,
             errormsg=e.message
+        )
+
+    return make_json_response(data={'status': True, 'result': 'Success'})
+
+
+@blueprint.route(
+    '/clear_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
+    methods=['POST'], endpoint='clear_arguments'
+)
+@login_required
+def clear_arguments_sqlite(sid, did, scid, func_id):
+    """
+    clear_arguments_sqlite(sid, did, scid, func_id)
+
+    This method is responsible for clearing function arguments
+    from sqlite database
+
+    Parameters:
+        sid
+        - Server Id
+        did
+        - Database Id
+        scid
+        - Schema Id
+        func_id
+        - Function Id
+    """
+
+    try:
+        db.session.query(DebuggerFunctionArguments) \
+            .filter(DebuggerFunctionArguments.server_id == sid,
+                    DebuggerFunctionArguments.database_id == did,
+                    DebuggerFunctionArguments.schema_id == scid,
+                    DebuggerFunctionArguments.function_id == func_id) \
+            .delete()
+
+        db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(e)
+        return make_json_response(
+            status=410,
+            success=0,
+            errormsg=str(e)
         )
 
     return make_json_response(data={'status': True, 'result': 'Success'})

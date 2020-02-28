@@ -81,6 +81,8 @@ Use the fields on the *Debugger* dialog to provide a value for each parameter:
 
 Provide values required by the program, and click the *Debug* button to start
 stepping through the program.
+The values of the arguments provided here are saved. The values will be pre-filled
+next time the dialog opens. To clear the values, use the *Clear All* button.
 
 .. image:: images/debug_step_in.png
     :alt: Debugger step-in demo

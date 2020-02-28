@@ -1916,6 +1916,58 @@ define([
     },
   });
 
+  Backgrid.BooleanCell = Backgrid.BooleanCell.extend({
+    className: 'boolean-cell',
+
+    enterEditMode: function() {
+      this.$el.addClass('editor');
+      $(this.$el.find('input[type=checkbox]')).trigger('focus');
+    },
+
+    exitEditMode: function() {
+      this.$el.removeClass('editor');
+    },
+
+    events: {
+      'change input': 'onChange',
+      'blur input': 'exitEditMode',
+      'keydown': 'onKeyDown',
+    },
+
+    onChange: function(e) {
+      var model = this.model,
+        column = this.column,
+        val = this.formatter.toRaw(this.$input.prop('checked'), model);
+
+      this.enterEditMode();
+      // on bootstrap change we also need to change model's value
+      model.set(column.get('name'), val);
+      model.trigger('backgrid:edited', model, column, new Backgrid.Command(e));
+    },
+
+    render: function () {
+      this.$el.empty();
+      var model = this.model, column = this.column;
+      var editable = Backgrid.callByNeed(column.editable(), column, model);
+      var align_center = column.get('align_center') || false;
+      let checked =  this.formatter.fromRaw(model.get(column.get('name')), model);
+      let id = `column.get('name')_${_.uniqueId()}`;
+
+      this.$el.empty();
+      this.$el.append(
+        $(`<div class="custom-control custom-checkbox custom-checkbox-no-label ${align_center?'text-center':''}">
+          <input tabindex="0" type="checkbox" class="custom-control-input" id="${id}" ${!editable?'disabled':''} ${checked?'checked':''}/>
+          <label class="custom-control-label" for="${id}">
+            <span class="sr-only">Select<span>
+          </label>
+        </div>`)
+      );
+      this.$input = this.$el.find('input');
+      this.delegateEvents();
+      return this;
+    },
+  });
+
   return Backgrid;
 
 });

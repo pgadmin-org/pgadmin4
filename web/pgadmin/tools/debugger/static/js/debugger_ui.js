@@ -69,7 +69,7 @@ define([
         // As we are getting this value as text from sqlite database so we need to type cast it.
         if (model.get('value') != undefined) {
           model.set({
-            'value': parseInt(model.get('value')),
+            'value': isNaN(parseInt(model.get('value'))) ? null : parseInt(model.get('value')),
           }, {
             silent: true,
           });
@@ -176,6 +176,7 @@ define([
             this.set('debug_info', debug_info);
             this.set('restart_debug', restart_debug);
             this.set('trans_id', trans_id);
+            this.set('is_edb_proc', is_edb_proc);
 
             // Variables to store the data sent from sqlite database
             var func_args_data = this.func_args_data = [];
@@ -289,6 +290,7 @@ define([
                 label: gettext('Null?'),
                 type: 'boolean',
                 cell: 'boolean',
+                align_center: true,
               },
               {
                 name: 'expr',
@@ -296,6 +298,7 @@ define([
                 type: 'boolean',
                 cellFunction: cellExprControlFunction,
                 editable: disableExpressionControl,
+                align_center: true,
               },
               {
                 name: 'value',
@@ -304,6 +307,7 @@ define([
                 editable: true,
                 cellFunction: cellFunction,
                 headerCell: value_header,
+                align_center: true,
               },
               {
                 name: 'use_default',
@@ -413,12 +417,12 @@ define([
               // Need to update the func_obj variable from sqlite database if available
               if (func_args_data.length != 0) {
                 for (i = 0; i < func_args_data.length; i++) {
+                  index = func_args_data[i]['arg_id'];
                   if (debug_info['proargmodes'] != null &&
-                    (argmode[i] == 'o' && !is_edb_proc)) {
+                    (argmode[index] == 'o' && !is_edb_proc)) {
                     continue;
                   }
 
-                  index = func_args_data[i]['arg_id'];
                   values = [];
                   if (argtype[index].indexOf('[]') != -1) {
                     vals = func_args_data[i]['value'].split(',');
@@ -565,14 +569,17 @@ define([
             });
 
             grid.render();
-            $(this.elements.content).html(grid.el);
+            let wrap_div = document.createElement('div');
+            wrap_div.classList.add('debugger-args');
+            wrap_div.appendChild(grid.el);
+            $(this.elements.content).html(wrap_div);
 
             // For keyboard navigation in the grid
             // we'll set focus on checkbox from the first row if any
             var grid_checkbox = $(grid.el).find('input:checkbox').first();
             if (grid_checkbox.length) {
               setTimeout(function() {
-                grid_checkbox.trigger('click');
+                grid_checkbox.trigger('focus');
               }, 250);
             }
 
@@ -585,6 +592,9 @@ define([
           setup: function() {
             return {
               buttons: [{
+                text: gettext('Clear All'),
+                className: 'btn btn-secondary pull-left fa fa-eraser pg-alertify-button',
+              },{
                 text: gettext('Cancel'),
                 key: 27,
                 className: 'btn btn-secondary fa fa-times pg-alertify-button',
@@ -899,6 +909,69 @@ define([
 
               return false;
             }
+
+            if (e.button.text === gettext('Clear All')) {
+              let self = this;
+              let baseUrl = null;
+
+              if (self.setting('restart_debug') == 0) {
+                let selected_item = pgBrowser.tree.selected();
+                let item_data = pgBrowser.tree.itemData(selected_item);
+                if (!item_data)
+                  return;
+
+                let node = pgBrowser.Nodes[item_data._type];
+                let treeInfo = node.getTreeNodeHierarchy.call(node, selected_item);
+
+                let f_id;
+                if (item_data._type == 'function') {
+                  f_id = item_data._id;
+                } else if (item_data._type == 'procedure') {
+                  f_id = item_data._id;
+                } else if (item_data._type == 'edbfunc') {
+                  f_id = item_data._id;
+                } else if (item_data._type == 'edbproc') {
+                  f_id = item_data._id;
+                }
+
+                baseUrl = url_for('debugger.clear_arguments', {
+                  'sid': treeInfo.server._id,
+                  'did': treeInfo.database._id,
+                  'scid': treeInfo.schema._id,
+                  'func_id': f_id,
+                });
+              } else {
+                baseUrl = url_for('debugger.clear_arguments', {
+                  'sid': self.setting('debug_info').server_id,
+                  'did': self.setting('debug_info').database_id,
+                  'scid': self.setting('debug_info').schema_id,
+                  'func_id': self.setting('debug_info').function_id,
+                });
+              }
+              $.ajax({
+                url: baseUrl,
+                method: 'POST',
+                data: {
+                  'data': JSON.stringify(args_value_list),
+                },
+              }).done(function() {
+                /* Disable debug button */
+                self.__internal.buttons[2].element.disabled = true;
+                self.main(self.setting('title'), self.setting('debug_info'),
+                  self.setting('restart_debug'), self.setting('is_edb_proc'),
+                  self.setting('trans_id')
+                );
+                self.prepare();
+              }).fail(function(e) {
+                Alertify.alert(
+                  gettext('Clear failed'),
+                  e.responseJSON.errormsg
+                );
+              });
+
+              e.cancel = true;
+              return true;
+            }
           },
           build: function() {
             Alertify.pgDialogBuild.apply(this);
@@ -914,9 +987,9 @@ define([
              enable the debug button otherwise disable the debug button.
             */
             if (this.func_args_data.length == 0) {
-              this.__internal.buttons[1].element.disabled = true;
+              this.__internal.buttons[2].element.disabled = true;
             } else {
-              this.__internal.buttons[1].element.disabled = false;
+              this.__internal.buttons[2].element.disabled = false;
             }
 
             /*
@@ -933,7 +1006,7 @@ define([
                   for (var i = 0; i < this.collection.length; i++) {
 
                     if (this.collection.models[i].get('is_null')) {
-                      obj.__internal.buttons[1].element.disabled = false;
+                      obj.__internal.buttons[2].element.disabled = false;
                       enable_btn = true;
                       continue;
                     }
@@ -944,15 +1017,15 @@ define([
                       enable_btn = true;
 
                       if (this.collection.models[i].get('use_default')) {
-                        obj.__internal.buttons[1].element.disabled = false;
+                        obj.__internal.buttons[2].element.disabled = false;
                       } else {
-                        obj.__internal.buttons[1].element.disabled = true;
+                        obj.__internal.buttons[2].element.disabled = true;
                         break;
                       }
                     }
                   }
                   if (!enable_btn)
-                    obj.__internal.buttons[1].element.disabled = false;
+                    obj.__internal.buttons[2].element.disabled = false;
                 };
               })(this)
             );
@@ -960,7 +1033,7 @@ define([
             this.grid.listenTo(this.debuggerInputArgsColl, 'backgrid:error',
               (function(obj) {
                 return function() {
-                  obj.__internal.buttons[1].element.disabled = true;
+                  obj.__internal.buttons[2].element.disabled = true;
                 };
               })(this)
             );
