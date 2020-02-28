@@ -1460,6 +1460,16 @@ Failed to reset the connection to the server due to following error:
                 )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             is_error = True
+        except OSError as e:
+            # Bad File descriptor
+            if e.errno == 9:
+                raise ConnectionLost(
+                    self.manager.sid,
+                    self.db,
+                    self.conn_id[5:]
+                )
+            else:
+                raise e
 
         if self.conn.notices and self.__notices is not None:
             self.__notices.extend(self.conn.notices)
@@ -1648,8 +1658,13 @@ Failed to reset the connection to the server due to following error:
         Returns the list of the messages/notices send from the database server.
         """
         resp = []
-        while self.__notices:
-            resp.append(self.__notices.pop(0))
+
+        if self.__notices is not None:
+            while self.__notices:
+                resp.append(self.__notices.pop(0))
+
+        if self.__notifies is None:
+            return resp
 
         for notify in self.__notifies:
             if notify.payload is not None and notify.payload != '':

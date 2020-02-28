@@ -403,8 +403,14 @@ WHERE db.oid = {0}""".format(did))
             else:
                 return False
 
-        for con in self.connections:
-            self.connections[con]._release()
+        for con_key in list(self.connections.keys()):
+            conn = self.connections[con_key]
+            # Cancel the ongoing transaction before closing the connection
+            # as it may hang forever
+            if conn.connected() and conn.conn_id is not None and \
+               conn.conn_id.startswith('CONN:'):
+                conn.cancel_transaction(conn.conn_id[5:])
+            conn._release()
 
         self.connections = dict()
         self.ver = None
