@@ -51,7 +51,7 @@ APP_ICON = 'pg-icon'
 
 # Application version number components
 APP_RELEASE = 4
-APP_REVISION = 18
+APP_REVISION = 19
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -60,7 +60,7 @@ APP_SUFFIX = ''
 # Numeric application version for upgrade checks. Should be in the format:
 # [X]XYYZZ, where X is the release version, Y is the revision, with a leading
 # zero if needed, and Z represents the suffix, with a leading zero if needed
-APP_VERSION_INT = 41800
+APP_VERSION_INT = 41900
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
