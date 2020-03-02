@@ -22,28 +22,28 @@ Name                                                             Version        
 ----                                                             -------          -------                              ---
 blinker                                                          1.4              MIT License                          http://pythonhosted.org/blinker/
 Flask                                                            1.0.2            BSD                                  https://www.palletsprojects.com/p/flask/
-Werkzeug                                                         0.16.0           BSD-3-Clause                         https://palletsprojects.com/p/werkzeug/
+Werkzeug                                                         1.0.0            BSD-3-Clause                         https://palletsprojects.com/p/werkzeug/
 Flask-Gravatar                                                   0.5.0            BSD                                  https://github.com/zzzsochi/Flask-Gravatar/
 Flask-Login                                                      0.4.1            MIT                                  https://github.com/maxcountryman/flask-login
 Flask-Mail                                                       0.9.1            BSD                                  https://github.com/rduplain/flask-mail
 Flask-Migrate                                                    2.4.0            MIT                                  http://github.com/miguelgrinberg/flask-migrate/
 Flask-Principal                                                  0.4.0            MIT                                  http://packages.python.org/Flask-Principal/
-Flask-SQLAlchemy                                                 2.3.2            BSD                                  http://github.com/mitsuhiko/flask-sqlalchemy
-Flask-WTF                                                        0.14.2           BSD                                  https://github.com/lepture/flask-wtf
+Flask-SQLAlchemy                                                 2.4.1            BSD-3-Clause                         https://github.com/pallets/flask-sqlalchemy
+Flask-WTF                                                        0.14.3           BSD                                  https://github.com/lepture/flask-wtf
 Flask-Compress                                                   1.4.0            MIT                                  https://libwilliam.github.io/flask-compress/
-passlib                                                          1.7.1            BSD                                  https://bitbucket.org/ecollins/passlib
+passlib                                                          1.7.2            BSD                                  https://bitbucket.org/ecollins/passlib
 pytz                                                             2018.9           MIT                                  http://pythonhosted.org/pytz
 simplejson                                                       3.16.0           MIT License                          https://github.com/simplejson/simplejson
-six                                                              1.12.0           MIT                                  https://github.com/benjaminp/six
+six                                                              1.14.0           MIT                                  https://github.com/benjaminp/six
 speaklater                                                       1.3              UNKNOWN                              http://github.com/mitsuhiko/speaklater
 sqlparse                                                         0.2.4            BSD                                  https://github.com/andialbrecht/sqlparse
 WTForms                                                          2.2.1            BSD                                  https://wtforms.readthedocs.io/
 Flask-Paranoid                                                   0.2.0            MIT                                  http://github.com/miguelgrinberg/flask-paranoid/
 psutil                                                           5.5.1            BSD                                  https://github.com/giampaolo/psutil
-psycopg2                                                         2.8.3            LGPL with exceptions or ZPL          http://initd.org/psycopg/
-python-dateutil                                                  2.8.0            Dual License                         https://dateutil.readthedocs.io
-SQLAlchemy                                                       1.3.10           MIT                                  http://www.sqlalchemy.org
-Flask-Security                                                   3.0.0            MIT                                  https://github.com/mattupstate/flask-security
+psycopg2                                                         2.8.4            LGPL with exceptions or ZPL          http://initd.org/psycopg/
+python-dateutil                                                  2.8.1            Dual License                         https://dateutil.readthedocs.io
+SQLAlchemy                                                       1.3.13           MIT                                  http://www.sqlalchemy.org
+Flask-Security-Too                                               3.3.3            MIT                                  https://github.com/jwag956/flask-security
 sshtunnel                                                        0.1.5            MIT                                  https://github.com/pahaz/sshtunnel
 
 25 dependencies listed.
