@@ -167,7 +167,7 @@ define('pgadmin.dashboard', [
       label: gettext('Backend type'),
       type: 'text',
       editable: true,
-      disabled: true,
+      readonly: true,
       group: gettext('Details'),
       visible: function() {
         return this.version >= 100000;
@@ -177,21 +177,21 @@ define('pgadmin.dashboard', [
       label: gettext('Query started at'),
       type: 'text',
       editable: false,
-      disabled: true,
+      readonly: true,
       group: gettext('Details'),
     }, {
       id: 'state_change',
       label: gettext('Last state changed at'),
       type: 'text',
       editable: true,
-      disabled: true,
+      readonly: true,
       group: gettext('Details'),
     }, {
       id: 'query',
       label: gettext('SQL'),
       type: 'text',
       editable: true,
-      disabled: true,
+      readonly: true,
       control: Backform.SqlFieldControl,
       group: gettext('Details'),
     }],
