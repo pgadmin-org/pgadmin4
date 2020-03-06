@@ -13,13 +13,14 @@ define([
   'pgadmin.alertifyjs', 'pgadmin.backgrid', 'pgadmin.backform',
   'pgadmin.browser', 'pgadmin.browser.node',
   'tools/grant_wizard/static/js/menu_utils',
+  'sources/utils',
   'sources/nodes/supported_database_node',
   'backgrid.select.all',
   'backgrid.filter', 'pgadmin.browser.server.privilege',
   'pgadmin.browser.wizard',
 ], function(
   gettext, url_for, $, _, Backbone, Alertify, Backgrid, Backform, pgBrowser,
-  pgNode, menuUtils, supportedNodes
+  pgNode, menuUtils, commonUtils, supportedNodes
 ) {
 
   // if module is already initialized, refer to that.
@@ -103,8 +104,6 @@ define([
 
         // Do not use parent's render function. It set's tabindex to -1 on
         // checkboxes.
-
-
 
         var col = this.column.get('name');
         let id = `row-${_.uniqueId(col)}`;
@@ -429,6 +428,35 @@ define([
               });
 
             },
+            hooks: {
+              onshow: function() {
+                commonUtils.findAndSetFocus($(this.elements.body));
+                let self = this;
+                let containerFooter = $(this.elements.content).find('.wizard-buttons').find('.ml-auto');
+                //To get last header button
+                let lastHeaderButton = $(this.elements.content).find('.wizard-header').find('.ml-auto').find('button:first');
+
+                $(containerFooter).on('keydown', 'button', function(event) {
+                  if (!event.shiftKey && event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
+                    // set focus back to first editable input element of current active tab once we cycle through all enabled buttons.
+                    let container = $(self.elements.content).find('.wizard-header');
+                    commonUtils.findAndSetFocus(container.find('button:not([disabled]):first'));
+                    return false;
+                  }
+                });
+
+                $(lastHeaderButton).on('keydown', function(event) {
+                  if (event.shiftKey && event.keyCode == 9) {
+                    // set focus back to first element of current active tab once we cycle through all enabled buttons.
+                    let container = $(self.elements.content).find('.wizard-footer');
+                    commonUtils.findAndSetFocus(container.find('button:not([disabled]):last'));
+                    return false;
+                  }
+                });
+
+              },
+            },
+
             prepare: function() {
               var that = this;
               $container.empty().append('<div class=\'grant_wizard_container\'></div>');

@@ -60,14 +60,6 @@ export class DialogWrapper {
     this.pgBrowser.keyboardNavigation.getDialogTabNavigator($(alertifyDialog.elements.dialog));
     const container = backform_tab.find('.tab-content:first > .tab-pane.active:first');
     commonUtils.findAndSetFocus(container);
-
-    $(alertifyDialog.elements.footer).on('keydown', 'button', function(event) {
-      if (event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
-        // set focus back to first editable input element of current active tab once we cycle through all enabled buttons.
-        commonUtils.findAndSetFocus($(alertifyDialog.elements.dialog));
-        return false;
-      }
-    });
   }
 
   isNodeSelected(selectedTreeNode) {

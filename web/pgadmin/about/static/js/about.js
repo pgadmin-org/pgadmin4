@@ -9,9 +9,9 @@
 
 define(
   ['jquery', 'alertify', 'sources/pgadmin', 'sources/gettext',
-    'sources/url_for',
+    'sources/url_for','sources/utils',
   ],
-  function($, alertify, pgAdmin, gettext, url_for) {
+  function($, alertify, pgAdmin, gettext, url_for, commonUtils) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /* Return back, this has been called more than once */
@@ -43,8 +43,16 @@ define(
               build: function() {
                 alertify.pgDialogBuild.apply(this);
               },
+              hooks:{
+                onshow:function(){
+                  var container = $(this.elements.footer).find('button:not([disabled])');
+                  commonUtils.findAndSetFocus(container);
+                },
+              },
+
               prepare:function() {
                 this.setContent(this.message);
+
               },
             };
           });
