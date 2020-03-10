@@ -2821,6 +2821,7 @@ define([
         'focusout input': 'closePicker',
         'change.datetimepicker': 'onChange',
         'click .input-group': 'togglePicker',
+        'keydown .datetimepicker-input': 'keyboardEvent',
       },
       togglePicker: function() {
         if (this.has_datepicker) {
@@ -2846,6 +2847,109 @@ define([
         '</div>',
         '<% } %>',
       ].join('\n')),
+
+      keyboardEvent: function(event) {
+        let stopBubble = false;
+        if (!event.altKey && event.keyCode == 38) {
+          this.up();
+        }
+        if (!event.altKey && event.keyCode == 40) {
+          this.down();
+        }
+        if (event.keyCode == 37) {
+          this.left();
+        }
+        if (event.keyCode == 39) {
+          this.right();
+        }
+        if (event.keyCode == 27){
+          this.$el.find('input').datetimepicker('hide');
+          stopBubble = true;
+        }
+        if (event.keyCode == 13){
+          if ((this.$el.find('.datepicker').is(':visible')) || (this.$el.find('.timepicker').is(':visible'))){
+            this.$el.find('input').datetimepicker('hide');
+          }else{
+            this.$el.find('input').datetimepicker('show');
+          }
+        }
+        if (event.altKey && event.keyCode == 84) {
+          this.timePicker();
+        }
+        if(event.altKey && event.keyCode == 38){
+          this.controlUp();
+        }
+        if(event.altKey && event.keyCode == 40){
+          this.controlDown();
+        }
+
+        if(stopBubble) {
+          event.stopImmediatePropagation();
+        }
+      },
+
+      down: function() {
+        if (this.$el.find('.datepicker').is(':visible')) {
+          let $el = this.$el.find('.datetimepicker-input');
+          let currdate = $el.data('datetimepicker').date().clone();
+          $el.datetimepicker('date', currdate.add(7, 'd'));
+        } else {
+          let $el = this.$el.find('.datetimepicker-input');
+          let currdate = $el.data('datetimepicker').date().clone();
+          $el.datetimepicker('date', currdate.subtract(1, 'm'));
+        }
+      },
+
+      up: function() {
+        if (this.$el.find('.datepicker').is(':visible')) {
+          let $el = this.$el.find('.datetimepicker-input');
+          let currdate = $el.data('datetimepicker').date().clone();
+          $el.datetimepicker('date', currdate.subtract(7, 'd'));
+        } else {
+          let $el = this.$el.find('.datetimepicker-input');
+          let currdate = $el.data('datetimepicker').date().clone();
+          $el.datetimepicker('date', currdate.add(1, 'm'));
+        }
+      },
+
+      left: function() {
+        if (this.$el.find('.datepicker').is(':visible')) {
+          let $el = this.$el.find('.datetimepicker-input');
+          let currdate = $el.data('datetimepicker').date().clone();
+          $el.datetimepicker('date', currdate.subtract(1, 'd'));
+        }
+      },
+
+      right: function() {
+        if (this.$el.find('.datepicker').is(':visible')) {
+          let $el = this.$el.find('.datetimepicker-input');
+          let currdate = $el.data('datetimepicker').date().clone();
+          $el.datetimepicker('date', currdate.add(1, 'd'));
+        }
+      },
+
+      timePicker:function() {
+        if (this.$el.find('.timepicker').is(':visible')){
+          this.$el.find('.fa-calendar').click();
+        }else{
+          this.$el.find('.fa-clock-o').click();
+        }
+      },
+
+      controlUp:function() {
+        this.$el.find('.fa-clock-o').click();
+        let $el = this.$el.find('.datetimepicker-input');
+        let currdate = $el.data('datetimepicker').date().clone();
+        $el.datetimepicker('date', currdate.add(1, 'h'));
+      },
+
+      controlDown:function() {
+        this.$el.find('.fa-clock-o').click();
+        let $el = this.$el.find('.datetimepicker-input');
+        let currdate = $el.data('datetimepicker').date().clone();
+        $el.datetimepicker('date', currdate.subtract(1, 'h'));
+      },
+
       render: function() {
         var field = _.defaults(this.field.toJSON(), this.defaults),
           attributes = this.model.toJSON(),
