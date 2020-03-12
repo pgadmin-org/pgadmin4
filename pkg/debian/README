@@ -1,0 +1,47 @@
+This directory contains the build runner script for creating .DEB packages for
+Debian and Ubuntu. 
+
+Build configuration
+===================
+
+To build Debian/Ubuntu packages, first run the setup.sh script as root to
+install the required pre-requisites, e.g.
+
+    # pkg/debian/setup.sh
+
+Building packages
+=================
+
+To build a set of packages, from the top-level source directory run:
+
+    $ make debian
+
+or
+
+    $ pkg/debian/build.sh
+
+Four .deb packages will be created in the dist/ directory:
+
+pgadmin4_<version>_<distro>_<distro_version>_all.deb
+  A convenience package that depends on all the others.
+
+pgadmin4-server_<version>_<distro>_<distro_version>_<arch>.deb
+  The core server, e.g. the Python and JS code and the online documentation.
+
+pgadmin4-desktop_<version>_<distro>_<distro_version>_<arch>.deb
+  The desktop runtime. Requires the server package.
+
+pgadmin4-web_<version>_<distro>_<distro_version>_<arch>.deb
+  The server mode setup script for configuring Apache HTTPD. Requires the 
+  server package.
+
+Supported platforms
+===================
+
+Debian 10
+Ubuntu 18.04
+
+Warning
+=======
+
+These scripts are experimental - use at your own risk!

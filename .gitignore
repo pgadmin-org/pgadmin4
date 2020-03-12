@@ -12,13 +12,14 @@
 .idea
 .vscode
 /dist
+/debian-build
 /docker-build
 /mac-build
 /pip-build
 /src-build
 /win-build
 _build
-build-*
+/build-*
 pgadmin4.log
 pkg/win32/installer.iss
 pkg/mac/codesign.conf
