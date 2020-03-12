@@ -496,13 +496,13 @@ define([
       e.stopPropagation();
     },
     template: _.template([
-      '<label class="<%=controlLabelClassName%>"><%=label%></label>',
+      '<label class="<%=controlLabelClassName%>" id="<%=cId%>_grplabel"><%=label%></label>',
       '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
-      ' <div class="btn-group pgadmin-controls-radio-none<% if (disabled) {%> disabled <%}%>" >',
+      ' <div class="btn-group pgadmin-controls-radio-none<% if (disabled) {%> disabled <%}%>" role="radiogroup" aria-labelledby="<%=cId%>_grplabel">',
       '  <% for (var i=0; i < options.length; i++) { %>',
       '  <% var option = options[i]; %>',
-      '  <label class="btn btn-radiomodern <% if (option.value == value) { %> btn-primary <%} else {%> btn-secondary <%}%> <% if (!option.disabled && !disabled) { %>" tabindex="0"<% } else { %> disabled"<% } %>>',
-      '    <i class="fa fa-check  <% if (option.value != value) { %>visibility-hidden <%}%>"></i>',
+      '  <label role="radio" class="btn btn-radiomodern <% if (option.value == value) { %> btn-primary <%} else {%> btn-secondary <%}%> <% if (!option.disabled && !disabled) { %>" tabindex="0"<% } else { %> disabled"<% } %>>',
+      '    <i class="fa fa-check  <% if (option.value != value) { %>visibility-hidden <%}%>" role="img"></i>',
       '    <input type="radio" name="<%=name%>" autocomplete="off" value=<%-formatter.fromRaw(option.value)%> <% if (option.value == value) { %> checked<%}%> <% if (option.disabled || disabled) { %> disabled <%}%>> <%-option.label%>',
       '  </label>',
       '  <% } %>',
@@ -540,6 +540,7 @@ define([
         required: evalF(data.required, data, this.model),
       }); // Clean up first
 
+      data.cId = data.cId || _.uniqueId('pgC_');
       data.options = _.isFunction(data.options) ?
         data.options.apply(data, [this.model]) : data.options;
 

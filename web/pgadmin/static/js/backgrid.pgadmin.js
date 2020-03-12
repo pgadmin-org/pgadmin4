@@ -432,7 +432,7 @@ define([
 
         if (editable) {
           this.$el.html(
-            '<i class=\'fa fa-pencil-square subnode-edit-in-process\' title=\'' + _('Edit row') + '\'></i>'
+            '<i class=\'fa fa-pencil-square subnode-edit-in-process\' title=\'' + _('Edit row') +  '\' aria-label=\'' + _('Edit row') +  '\'></i>'
           );
           let body = $(this.$el).parents()[1],
             container = $(body).find('.tab-content:first > .tab-pane.active:first');
@@ -451,7 +451,7 @@ define([
     },
     render: function() {
       this.$el.empty();
-      this.$el.html('<i class=\'fa fa-pencil-square-o\' title=\'' + _('Edit row') + '\'></i>');
+      this.$el.html('<i class=\'fa fa-pencil-square-o\' title=\'' + _('Edit row') + '\' aria-label=\'' + _('Edit row') +  '\'></i>');
       this.delegateEvents();
       if (this.grabFocus)
         this.$el.trigger('focus');
@@ -603,8 +603,12 @@ define([
       // Here, we will add custom classes to header cell
       Backgrid.HeaderCell.prototype.initialize.apply(this, arguments);
       var getClassName = this.column.get('cellHeaderClasses');
+      var getAriaLabel = this.column.get('cellAriaLabel');
       if (getClassName) {
         this.$el.addClass(getClassName);
+      }
+      if (getAriaLabel) {
+        this.$el.attr('aria-label', getAriaLabel);
       }
     },
   });
