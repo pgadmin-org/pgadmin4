@@ -102,6 +102,11 @@ def get_chrome_version(args):
             print('The specified Chrome executable output an unexpected '
                   'version string: {}.'.format(version_str))
             sys.exit(1)
+        # On some linux distro `chrome--version` gives output like
+        # 'Google Chrome 80.0.3987.132 unknown\n'
+        # so we need to check and remove the unknown string from the version
+        if version_str.endswith("unknown\n"):
+            version_str = version_str.strip("unknown\n").strip()
 
         chrome_version = '.'.join(version_str.split()[-1].split('.')[:-1])
 
