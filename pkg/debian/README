@@ -38,8 +38,8 @@ pgadmin4-web_<version>_<distro>_<distro_version>_<arch>.deb
 Supported platforms
 ===================
 
-Debian 10
-Ubuntu 18.04
+Debian 9 & 10
+Ubuntu 16.04 & 18.04
 
 Warning
 =======
