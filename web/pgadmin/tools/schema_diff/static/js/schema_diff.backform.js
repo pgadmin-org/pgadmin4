@@ -63,6 +63,8 @@ let SchemaDiffSqlControl =
     },
     render: function() {
       let obj = Backform.SqlFieldControl.prototype.render.apply(this, arguments);
+
+      obj.sqlCtrl.setOption('readOnly', true);
       if(this.$el.find('.ddl-copy')) this.$el.find('.ddl-copy').on('click', this.copyData);
       return obj;
     },

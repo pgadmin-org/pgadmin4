@@ -3,9 +3,13 @@ ALTER TRIGGER {{ conn|qtIdent(o_data.name) }} ON {{ conn|qtIdent(o_data.nspname,
     RENAME TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}
-{% if ((data.prosrc is defined or data.is_row_trigger is defined or data.evnt_insert is defined or data.evnt_delete is defined or data.evnt_update is defined or data.fires is defined) and o_data.lanname == 'edbspl' and (o_data.prosrc != data.prosrc or data.is_row_trigger != o_data.is_row_trigger or data.evnt_insert != o_data.evnt_insert or data.evnt_delete != o_data.evnt_delete or data.evnt_update != o_data.evnt_update or o_data.fires != data.fires))  %}
+{% if ((data.prosrc is defined or data.is_row_trigger is defined or data.evnt_insert is defined or data.evnt_delete is defined or data.evnt_update is defined or data.fires is defined or data.is_constraint_trigger is defined) and (o_data.prosrc != data.prosrc or data.is_row_trigger != o_data.is_row_trigger or data.evnt_insert != o_data.evnt_insert or data.evnt_delete != o_data.evnt_delete or data.evnt_update != o_data.evnt_update or o_data.fires != data.fires or data.is_constraint_trigger != o_data.is_constraint_trigger))  %}
 {% set or_flag = False %}
+{% if data.lanname == 'edbspl' or data.tfunction == 'Inline EDB-SPL' %}
 CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
+{% else %}
+CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|qtIdent(data.name) }}
+{% endif %}
     {% if data.fires is defined %}{{data.fires}} {% else %}{{o_data.fires}} {% endif %}{% if data.evnt_insert is not defined %}{% if o_data.evnt_insert %}INSERT{% set or_flag = True %}
 {% endif %}{% else %}{% if data.evnt_insert %}INSERT{% set or_flag = True %}{% endif %}{% endif %}{% if data.evnt_delete is not defined %}{% if o_data.evnt_delete %}
 {% if or_flag %} OR {% endif %}DELETE{% set or_flag = True %}
@@ -16,23 +20,29 @@ CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
 {% if or_flag %} OR {% endif %}TRUNCATE{% set or_flag = True %}{%endif %}{% endif %}{% if data.evnt_update is not defined %}{% if o_data.evnt_update %}
 {% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}
 {% endif %}{% else %}{% if data.evnt_update %}
-{% if or_flag %} OR {% endif %}UPDATE {% if o_data.columns|length > 0 %}OF {% for c in o_data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}{% endif %}
+{% if or_flag %} OR {% endif %}UPDATE {% if data.columns|length > 0 %}OF {% for c in data.columns %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(c) }}{% endfor %}{% endif %}{% endif %}
 {% endif %}
 
     ON {{ conn|qtIdent(data.schema, data.table) }}
-{% if o_data.tgdeferrable %}
+{% if data.tgdeferrable %}
+    DEFERRABLE{% if data.tginitdeferred %} INITIALLY DEFERRED{% endif %}
+
+{% elif o_data.tgdeferrable %}
     DEFERRABLE{% if o_data.tginitdeferred %} INITIALLY DEFERRED{% endif %}
+
 {% endif %}{% if data.is_row_trigger is not defined %}
     FOR EACH{% if o_data.is_row_trigger %} ROW{% else %} STATEMENT{% endif %} {% else %}
     FOR EACH{% if data.is_row_trigger %} ROW{% else %} STATEMENT{% endif %} {% endif %}
-{% if o_data.whenclause %}
+
+{% if data.whenclause %}
+    WHEN {{ data.whenclause }}
+{% elif o_data.whenclause %}
     WHEN {{ o_data.whenclause }}
 {% endif %}
-
-{% if (data.prosrc is not defined) %}
-{{ o_data.prosrc }};
+{% if (data.tfunction is defined) %}
+    EXECUTE PROCEDURE {{ data.tfunction }}{% if data.tgargs %}({{ data.tgargs }}){% else %}(){% endif%};
 {% else %}
-{{ data.prosrc }};
+    EXECUTE PROCEDURE {{ o_data.tfunction }}{% if o_data.tgargs %}({{ o_data.tgargs }}){% else %}(){% endif%};
 {% endif %}
 
 {% if data.description is not defined and o_data.description %}

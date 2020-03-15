@@ -29,6 +29,8 @@ from pgadmin.utils import IS_PY2
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.tools.schema_diff.directory_compare import directory_diff,\
+    parce_acl
 
 
 # If we are in Python3
@@ -938,8 +940,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         return SQL
 
     @check_precondition
-    def fetch_objects_to_compare(self, sid, did, scid, tid, oid=None,
-                                 ignore_keys=False):
+    def fetch_objects_to_compare(self, sid, did, scid, tid, oid=None):
         """
         This function will fetch the list of all the triggers for
         specified schema id.
@@ -969,13 +970,59 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             for row in triggers['rows']:
                 status, data = self._fetch_properties(tid, row['oid'])
                 if status:
-                    if ignore_keys:
-                        for key in self.keys_to_ignore:
-                            if key in data:
-                                del data[key]
                     res[row['name']] = data
 
         return res
+
+    def ddl_compare(self, **kwargs):
+        """
+        This function returns the DDL/DML statements based on the
+        comparison status.
+
+        :param kwargs:
+        :return:
+        """
+
+        src_params = kwargs.get('source_params')
+        tgt_params = kwargs.get('target_params')
+        source = kwargs.get('source')
+        target = kwargs.get('target')
+        target_schema = kwargs.get('target_schema')
+        comp_status = kwargs.get('comp_status')
+
+        diff = ''
+        if comp_status == 'source_only':
+            diff = self.get_sql_from_diff(gid=src_params['gid'],
+                                          sid=src_params['sid'],
+                                          did=src_params['did'],
+                                          scid=src_params['scid'],
+                                          tid=src_params['tid'],
+                                          oid=source['oid'],
+                                          diff_schema=target_schema)
+        elif comp_status == 'target_only':
+            diff = self.get_sql_from_diff(gid=tgt_params['gid'],
+                                          sid=tgt_params['sid'],
+                                          did=tgt_params['did'],
+                                          scid=tgt_params['scid'],
+                                          tid=tgt_params['tid'],
+                                          oid=target['oid'],
+                                          drop_sql=True)
+        elif comp_status == 'different':
+            diff_dict = directory_diff(
+                source, target,
+                ignore_keys=self.keys_to_ignore, difference={}
+            )
+            diff_dict.update(parce_acl(source, target))
+
+            diff = self.get_sql_from_diff(gid=tgt_params['gid'],
+                                          sid=tgt_params['sid'],
+                                          did=tgt_params['did'],
+                                          scid=tgt_params['scid'],
+                                          tid=tgt_params['tid'],
+                                          oid=target['oid'],
+                                          data=diff_dict)
+
+        return diff
 
 
 SchemaDiffRegistry(blueprint.node_type, CompoundTriggerView, 'table')

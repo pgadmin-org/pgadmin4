@@ -3,10 +3,7 @@
 -- DROP VIEW public."testview_$%{}[]()&*^!@""'`\/#";
 
 CREATE OR REPLACE VIEW public."testview_$%{}[]()&*^!@""'`\/#"
-WITH (
-  check_option=cascaded,
-  security_barrier=true
-) AS
+ AS
  SELECT test_view_table.col1
    FROM test_view_table;
 

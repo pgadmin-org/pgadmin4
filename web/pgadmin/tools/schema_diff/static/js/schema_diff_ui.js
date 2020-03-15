@@ -197,7 +197,6 @@ export default class SchemaDiffUI {
       baseServerUrl = url_for('schema_diff.get_server', {'sid': self.selection['target_sid'],
         'did': self.selection['target_did']}),
       sel_rows = self.grid ? self.grid.getSelectedRows() : [],
-      sel_rows_data = [],
       url_params = self.selection,
       generated_script = undefined,
       open_query_tool,
@@ -261,45 +260,16 @@ export default class SchemaDiffUI {
     };
 
     if (sel_rows.length > 0) {
+      let script_body = '';
       for (var row = 0; row < sel_rows.length; row++) {
         let data = self.grid.getData().getItem(sel_rows[row]);
-
-        if (data.type) {
-          let tmp_data = {
-            'node_type': data.type,
-            'source_oid': parseInt(data.oid, 10),
-            'target_oid': parseInt(data.oid, 10),
-            'comp_status': data.status,
-          };
-
-          if(data.status && (data.status.toLowerCase() == 'different' || data.status.toLowerCase() == 'identical')) {
-            tmp_data['target_oid'] = data.target_oid;
-          }
-          sel_rows_data.push(tmp_data);
+        if(!_.isUndefined(data.diff_ddl)) {
+          script_body += data.diff_ddl + '\n\n';
         }
       }
 
-      url_params['sel_rows'] = sel_rows_data;
-
-      let baseUrl = url_for('schema_diff.generate_script', {'trans_id': self.trans_id});
-
-      $.ajax({
-        url: baseUrl,
-        method: 'POST',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify(url_params),
-      })
-        .done(function (res) {
-          if (res) {
-            generated_script  = script_header + 'BEGIN;' + '\n' + res.diff_ddl + '\n' + 'END;';
-          }
-          open_query_tool();
-        })
-        .fail(function (xhr) {
-          self.raise_error_on_fail(gettext('Generate script error'), xhr);
-          $('#diff_fetching_data').addClass('d-none');
-        });
+      generated_script = script_header + 'BEGIN;' + '\n' + script_body + 'END;';
+      open_query_tool();
     } else if (!_.isUndefined(self.model.get('diff_ddl'))) {
       open_query_tool();
     }
@@ -448,6 +418,7 @@ export default class SchemaDiffUI {
   render_grid_data(data) {
     var self = this;
     self.grid.setSelectedRows([]);
+    data.sort((a, b) => (a.label > b.label) ? 1 : (a.label === b.label) ? ((a.title > b.title) ? 1 : -1) : -1);
     self.dataView.beginUpdate();
     self.dataView.setItems(data);
     self.dataView.setFilter(self.filter.bind(self));
@@ -489,8 +460,13 @@ export default class SchemaDiffUI {
       contentType: 'application/json',
     })
       .done(function (res) {
-        let msg = res.data.compare_msg + res.data.diff_percentage + '% completed';
-        $('#diff_fetching_data').find('.schema-diff-busy-text').text(msg);
+        let msg = res.data.compare_msg;
+        if (res.data.diff_percentage != 100) {
+          msg = msg + ' (this may take a few minutes)...';
+        }
+
+        msg = msg + '<br>'+ res.data.diff_percentage + '% completed.';
+        $('#diff_fetching_data').find('.schema-diff-busy-text').html(msg);
       })
       .fail(function (xhr) {
         self.raise_error_on_fail(gettext('Poll error'), xhr);
@@ -528,37 +504,44 @@ export default class SchemaDiffUI {
       'diff_ddl': undefined,
     });
 
-    var url_params = self.selection;
-
-    if(data.status && (data.status.toLowerCase() == 'different' || data.status.toLowerCase() == 'identical')) {
+    if(data.status && data.status.toLowerCase() == 'identical') {
+      var url_params = self.selection;
       target_oid = data.target_oid;
+
+      url_params['trans_id'] = self.trans_id;
+      url_params['source_oid'] = source_oid;
+      url_params['target_oid'] = target_oid;
+      url_params['comp_status'] = data.status;
+      url_params['node_type'] = node_type;
+
+      _.each(url_params, function(key, val) {
+        url_params[key] = parseInt(val, 10);
+      });
+
+      $('#ddl_comp_fetching_data').removeClass('d-none');
+
+      var baseUrl = url_for('schema_diff.ddl_compare', url_params);
+      self.model.url = baseUrl;
+
+      self.model.fetch({
+        success: function() {
+          self.footer.render();
+          $('#ddl_comp_fetching_data').addClass('d-none');
+        },
+        error: function() {
+          self.footer.render();
+          $('#ddl_comp_fetching_data').addClass('d-none');
+        },
+      });
+    } else {
+      self.model.set({
+        'source_ddl': data.source_ddl,
+        'target_ddl': data.target_ddl,
+        'diff_ddl': data.diff_ddl,
+      });
+
+      self.footer.render();
     }
-
-    url_params['trans_id'] = self.trans_id;
-    url_params['source_oid'] = source_oid;
-    url_params['target_oid'] = target_oid;
-    url_params['comp_status'] = data.status;
-    url_params['node_type'] = node_type;
-
-    _.each(url_params, function(key, val) {
-      url_params[key] = parseInt(val, 10);
-    });
-
-    $('#ddl_comp_fetching_data').removeClass('d-none');
-
-    var baseUrl = url_for('schema_diff.ddl_compare', url_params);
-    self.model.url = baseUrl;
-
-    self.model.fetch({
-      success: function() {
-        self.footer.render();
-        $('#ddl_comp_fetching_data').addClass('d-none');
-      },
-      error: function() {
-        self.footer.render();
-        $('#ddl_comp_fetching_data').addClass('d-none');
-      },
-    });
   }
 
   render() {

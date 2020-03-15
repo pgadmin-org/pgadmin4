@@ -11,8 +11,6 @@
 
 import simplejson as json
 import re
-import copy
-import random
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify, url_for, current_app
@@ -25,11 +23,6 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from .utils import BaseTableView
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from pgadmin.tools.schema_diff.directory_compare import compare_dictionaries,\
-    directory_diff
-from pgadmin.tools.schema_diff.model import SchemaDiffModel
-from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.foreign_key import utils as fkey_utils
 from .schema_diff_utils import SchemaDiffTableCompare
@@ -1212,8 +1205,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         json_resp = kwargs['json_resp'] if 'json_resp' in kwargs else True
         diff_schema = kwargs['diff_schema'] if 'diff_schema' in kwargs else\
             None
-        schema_diff_table = kwargs['schema_diff_table'] if\
-            'schema_diff_table' in kwargs else None
 
         if diff_data:
             return self._fetch_sql(did, scid, tid, diff_data, json_resp)
@@ -1239,24 +1230,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             if diff_schema:
                 data['schema'] = diff_schema
 
-            if schema_diff_table:
-                data['orig_name'] = data['name']
-                data['name'] = 'schema_diff_temp_{0}'.format(
-                    random.randint(1, 9999999))
-
-                sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
-                    self, did, scid, tid, main_sql, data, json_resp,
-                    diff_partition_sql=True)
-            else:
-                sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
-                    self, did, scid, tid, main_sql, data, json_resp)
-
-            if schema_diff_table:
-                # If partition tables have different partitions
-                sql += render_template(
-                    "/".join([self.table_template_path, 'schema_diff.sql']),
-                    conn=self.conn, data=data, partition_sql=partition_sql
-                )
+            sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
+                self, did, scid, tid, main_sql, data, json_resp)
 
             return sql
 
@@ -1625,7 +1600,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return sql
 
     @BaseTableView.check_precondition
-    def fetch_tables(self, sid, did, scid, tid=None, keys_to_remove=None):
+    def fetch_tables(self, sid, did, scid, tid=None):
         """
         This function will fetch the list of all the tables
         and will be used by schema diff.
@@ -1634,9 +1609,13 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         :param did: Database Id
         :param scid: Schema Id
         :param tid: Table Id
-        :param keys_to_remove: Table columns to be removed from the dataset
         :return: Table dataset
         """
+        sub_modules = ['index', 'rule', 'trigger']
+        if self.manager.server_type == 'ppas' and \
+                self.manager.version >= 120000:
+            sub_modules.append('compound_trigger')
+
         if tid:
             status, data = self._fetch_properties(did, scid, tid)
 
@@ -1647,7 +1626,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             data = super(TableView, self).properties(
                 0, sid, did, scid, tid, data, False
             )
-            self.remove_keys_for_comparision(data, keys_to_remove)
+
             return data
 
         else:
@@ -1667,7 +1646,17 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                         0, sid, did, scid, row['oid'], data, False
                     )
 
-                    self.remove_keys_for_comparision(data, keys_to_remove)
+                    # Get sub module data of a specified table for object
+                    # comparison
+                    for module in sub_modules:
+                        module_view = SchemaDiffRegistry.get_node_view(module)
+                        if module_view.blueprint.server_type is None or \
+                            self.manager.server_type in \
+                                module_view.blueprint.server_type:
+                            sub_data = module_view.fetch_objects_to_compare(
+                                sid=sid, did=did, scid=scid, tid=row['oid'],
+                                oid=None)
+                            data[module] = sub_data
                     res[row['name']] = data
 
             return res

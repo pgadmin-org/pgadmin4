@@ -11,365 +11,96 @@
 
 import copy
 
-from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.tools.schema_diff.directory_compare import compare_dictionaries,\
-    directory_diff
-from pgadmin.tools.schema_diff.model import SchemaDiffModel
+    are_dictionaries_identical
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 
 class SchemaDiffTableCompare(SchemaDiffObjectCompare):
+    table_keys_to_ignore = ['oid', 'schema', 'edit_types', 'attnum',
+                            'col_type', 'references', 'reltuples', 'oid-2',
+                            'rows_cnt', 'seqrelid', 'atttypid', 'elemoid',
+                            'hastoasttable', 'relhassubclass']
 
-    keys_to_ignore = ['oid', 'schema', 'vacuum_table',
-                      'vacuum_toast', 'edit_types', 'attnum', 'col_type',
-                      'references', 'reltuples', 'rows_cnt']
+    constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
+                                 'attrelid', 'adrelid', 'fknsp', 'confrelid',
+                                 'references', 'refnsp', 'remote_schema']
 
-    keys_to_ignore_ddl_comp = ['oid',
-                               'schema',
-                               'columns',
-                               'edit_types',
-                               'primary_key',
-                               'unique_constraint',
-                               'exclude_constraint',
-                               'check_constraint',
-                               'foreign_key',
-                               'reltuples',
-                               'rows_cnt'
-                               ]
+    trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tfunction',
+                              'tgqual', 'tgconstraint']
+    index_keys_to_ignore = ['relowner', 'indrelid']
 
-    keys_to_remove = {
-        'columns': ['relname', 'nspname', 'parent_tbl', 'attrelid', 'adrelid'],
-        'primary_key': ['oid'],
-        'unique_constraint': ['oid'],
-        'check_constraint': ['oid', 'nspname'],
-        'foreign_key': ['oid', 'fknsp', 'confrelid'],
-        'exclude_constraint': ['oid'],
-        'partitions': ['oid'],
-    }
-
-    keys_to_remove_ddl_comp = {
-        'columns': ['relname', 'nspname', 'parent_tbl', 'attrelid', 'adrelid'],
-        'check_constraint': ['nspname'],
-        'foreign_key': ['fknsp', 'confrelid']
-    }
+    keys_to_ignore = table_keys_to_ignore + constraint_keys_to_ignore \
+        + trigger_keys_to_ignore + index_keys_to_ignore
 
     def compare(self, **kwargs):
         """
         This function is used to compare all the table objects
         from two different schemas.
 
-        :return: Comparison Dictionary
+        :param kwargs:
+        :return:
         """
-        src_sid = kwargs.get('source_sid')
-        src_did = kwargs.get('source_did')
-        src_scid = kwargs.get('source_scid')
-        tar_sid = kwargs.get('target_sid')
-        tar_did = kwargs.get('target_did')
-        tar_scid = kwargs.get('target_scid')
-        sub_modules = ['index', 'rule', 'trigger']
+        source_params = {'sid': kwargs.get('source_sid'),
+                         'did': kwargs.get('source_did'),
+                         'scid': kwargs.get('source_scid')}
+        target_params = {'sid': kwargs.get('target_sid'),
+                         'did': kwargs.get('target_did'),
+                         'scid': kwargs.get('target_scid')}
 
-        source_tables = self.fetch_tables(sid=src_sid, did=src_did,
-                                          scid=src_scid)
+        status, target_schema = self.get_schema(**target_params)
+        if not status:
+            return internal_server_error(errormsg=target_schema)
 
-        target_tables = self.fetch_tables(sid=tar_sid, did=tar_did,
-                                          scid=tar_scid)
-
-        if self.manager.version >= 120000:
-            sub_modules.append('compound_trigger')
+        source_tables = self.fetch_tables(**source_params)
+        target_tables = self.fetch_tables(**target_params)
 
         # If both the dict have no items then return None.
         if not (source_tables or target_tables) or (
                 len(source_tables) <= 0 and len(target_tables) <= 0):
             return None
 
-        src_server_type, tar_server_type = self.get_server_type(src_sid,
-                                                                tar_sid)
-        for module in sub_modules:
-
-            module_view = SchemaDiffRegistry.get_node_view(
-                module)
-
-            # Get sub module data for source tables
-            if module_view.blueprint.server_type is None or \
-                    src_server_type in module_view.blueprint.server_type:
-                for key, val in source_tables.items():
-                    source = module_view.fetch_objects_to_compare(
-                        sid=src_sid,
-                        did=src_did,
-                        scid=src_scid,
-                        tid=val['oid'],
-                        oid=None,
-                        ignore_keys=True
-                    )
-                    source_tables[key][module] = source
-
-            # Get sub module data for target tables
-            if module_view.blueprint.server_type is None or \
-                    tar_server_type in module_view.blueprint.server_type:
-                for key, val in target_tables.items():
-                    target = module_view.fetch_objects_to_compare(
-                        sid=tar_sid,
-                        did=tar_did,
-                        scid=tar_scid,
-                        tid=val['oid'],
-                        oid=None,
-                        ignore_keys=True
-                    )
-                    target_tables[key][module] = target
-
-        return compare_dictionaries(source_tables, target_tables,
+        return compare_dictionaries(self, source_params, target_params,
+                                    target_schema, source_tables,
+                                    target_tables,
                                     self.node_type,
                                     self.blueprint.COLLECTION_LABEL,
                                     self.keys_to_ignore)
-
-    @staticmethod
-    def get_server_type(src_id, tar_id):
-        """Get server types of source and target servers."""
-        driver = get_driver(PG_DEFAULT_DRIVER)
-        src_manager = driver.connection_manager(src_id)
-        tar_manager = driver.connection_manager(tar_id)
-
-        return src_manager.server_type, tar_manager.server_type
 
     def ddl_compare(self, **kwargs):
         """
         This function will compare properties of 2 tables and
         return the source DDL, target DDL and Difference of them.
+
+        :param kwargs:
+        :return:
         """
+        source_params = {'sid': kwargs.get('source_sid'),
+                         'did': kwargs.get('source_did'),
+                         'scid': kwargs.get('source_scid'),
+                         'tid': kwargs.get('source_oid'),
+                         'json_resp': False
+                         }
 
-        src_sid = kwargs.get('source_sid')
-        src_did = kwargs.get('source_did')
-        src_scid = kwargs.get('source_scid')
-        src_oid = kwargs.get('source_oid')
-        tar_sid = kwargs.get('target_sid')
-        tar_did = kwargs.get('target_did')
-        tar_scid = kwargs.get('target_scid')
-        tar_oid = kwargs.get('target_oid')
-        comp_status = kwargs.get('comp_status')
-        generate_script = False
+        target_params = {'sid': kwargs.get('target_sid'),
+                         'did': kwargs.get('target_did'),
+                         'scid': kwargs.get('target_scid'),
+                         'tid': kwargs.get('target_oid'),
+                         'json_resp': False
+                         }
 
-        if 'generate_script' in kwargs and kwargs['generate_script']:
-            generate_script = True
-
-        source = ''
-        target = ''
-        diff = ''
-        ignore_sub_modules = ['column', 'constraints']
-
-        src_server_type, tar_server_type = self.get_server_type(src_sid,
-                                                                tar_sid)
-
-        status, target_schema = self.get_schema(tar_sid,
-                                                tar_did,
-                                                tar_scid
-                                                )
-
-        if not status:
-            return internal_server_error(errormsg=target_schema)
-
-        if comp_status == SchemaDiffModel.COMPARISON_STATUS['source_only']:
-            if not generate_script:
-                source = self.get_sql_from_table_diff(sid=src_sid,
-                                                      did=src_did,
-                                                      scid=src_scid,
-                                                      tid=src_oid,
-                                                      json_resp=False)
-            diff = self.get_sql_from_table_diff(sid=src_sid, did=src_did,
-                                                scid=src_scid, tid=src_oid,
-                                                diff_schema=target_schema,
-                                                json_resp=False)
-
-        elif comp_status == SchemaDiffModel.COMPARISON_STATUS['target_only']:
-            if not generate_script:
-                target = self.get_sql_from_table_diff(sid=tar_sid,
-                                                      did=tar_did,
-                                                      scid=tar_scid,
-                                                      tid=tar_oid,
-                                                      json_resp=False)
-
-            diff = self.get_drop_sql(sid=tar_sid, did=tar_did,
-                                     scid=tar_scid, tid=tar_oid)
-
-        elif comp_status == SchemaDiffModel.COMPARISON_STATUS['different']:
-            source = self.fetch_tables(
-                sid=src_sid, did=src_did,
-                scid=src_scid, tid=src_oid,
-                keys_to_remove=self.keys_to_remove_ddl_comp
-            )
-            target = self.fetch_tables(
-                sid=tar_sid, did=tar_did,
-                scid=tar_scid, tid=tar_oid,
-                keys_to_remove=self.keys_to_remove_ddl_comp
-            )
-
-            if self.manager.version < 100000:
-                ignore_sub_modules.append('partition')
-
-            if self.manager.version < 120000:
-                ignore_sub_modules.append('compound_trigger')
-
-            # In case of error return None
-            if not (source or target):
-                return None
-
-            diff_dict = directory_diff(
-                source, target, ignore_keys=self.keys_to_ignore_ddl_comp,
-                difference={}
-            )
-
-            # Column comparison
-            col_diff = self.table_col_ddl_comp(source, target)
-            diff_dict.update(col_diff)
-
-            # Constraint comparison
-            pk_diff = self.constraint_ddl_comp(source, target, diff_dict)
-            diff_dict.update(pk_diff)
-
-            diff_dict.update(self.parce_acl(source, target))
-
-            if not generate_script:
-                source = self.get_sql_from_table_diff(sid=src_sid,
-                                                      did=src_did,
-                                                      scid=src_scid,
-                                                      tid=src_oid,
-                                                      json_resp=False)
-                target = self.get_sql_from_table_diff(sid=tar_sid,
-                                                      did=tar_did,
-                                                      scid=tar_scid,
-                                                      tid=tar_oid,
-                                                      json_resp=False)
-            diff = self.get_sql_from_table_diff(sid=tar_sid, did=tar_did,
-                                                scid=tar_scid, tid=tar_oid,
-                                                diff_data=diff_dict,
-                                                json_resp=False)
-
-            for module in self.blueprint.submodules:
-                if module.NODE_TYPE not in ignore_sub_modules:
-                    module_view = SchemaDiffRegistry.get_node_view(
-                        module.NODE_TYPE)
-
-                    if module_view.blueprint.server_type and (
-                            src_server_type not in
-                            module_view.blueprint.server_type and
-                            tar_server_type not in
-                            module_view.blueprint.server_type
-                    ):
-                        continue
-
-                    if module_view.blueprint.server_type and (
-                            (src_server_type in
-                             module_view.blueprint.server_type and
-                             tar_server_type not in
-                             module_view.blueprint.server_type) or (
-                            src_server_type not in
-                            module_view.blueprint.server_type and
-                            tar_server_type in
-                            module_view.blueprint.server_type)
-                    ):
-                        continue
-
-                    result = module_view.compare(
-                        source_sid=src_sid, source_did=src_did,
-                        source_scid=src_scid, source_tid=src_oid,
-                        target_sid=tar_sid, target_did=tar_did,
-                        target_scid=tar_scid, target_tid=tar_oid
-                    )
-                    if result and module.NODE_TYPE != 'partition':
-                        child_diff = ''
-                        for res in result:
-                            if res['status'] == \
-                                    SchemaDiffModel.COMPARISON_STATUS[
-                                        'different']:
-                                source_oid = res['source_oid']
-                                target_oid = res['target_oid']
-                            else:
-                                source_oid = res['oid']
-                                target_oid = res['oid']
-
-                            if res['status'] != \
-                                    SchemaDiffModel.COMPARISON_STATUS[
-                                        'identical']:
-                                child_diff = module_view.ddl_compare(
-                                    source_sid=src_sid, source_did=src_did,
-                                    source_scid=src_scid,
-                                    source_oid=source_oid,
-                                    source_tid=src_oid, target_sid=tar_sid,
-                                    target_did=tar_did, target_scid=tar_scid,
-                                    target_tid=tar_oid, target_oid=target_oid,
-                                    comp_status=res['status']
-
-                                )
-                                if child_diff:
-                                    diff += '\n' + child_diff
-                    elif result:
-                        # For partition module
-                        identical = False
-                        source_only = False
-                        target_only = False
-                        different = False
-                        for res in result:
-                            if res['status'] == \
-                                    SchemaDiffModel.COMPARISON_STATUS[
-                                        'identical']:
-                                identical = True
-                            elif res['status'] == \
-                                    SchemaDiffModel.COMPARISON_STATUS[
-                                        'source_only']:
-                                source_only = True
-                            elif res['status'] == \
-                                    SchemaDiffModel.COMPARISON_STATUS[
-                                        'target_only']:
-                                target_only = True
-                            else:
-                                different = True
-
-                        if identical:
-                            pass
-                        elif (source_only or target_only) and not different:
-                            for res in result:
-                                source_oid = res['oid']
-                                target_oid = res['oid']
-
-                                child_diff = module_view.ddl_compare(
-                                    source_sid=src_sid, source_did=src_did,
-                                    source_scid=src_scid,
-                                    source_oid=source_oid,
-                                    source_tid=src_oid, target_sid=tar_sid,
-                                    target_did=tar_did, target_scid=tar_scid,
-                                    target_tid=tar_oid, target_oid=target_oid,
-                                    comp_status=res['status']
-
-                                )
-                                if child_diff:
-                                    diff += child_diff
-                        else:
-                            diff = self.get_sql_from_table_diff(
-                                sid=src_sid,
-                                did=src_did,
-                                scid=src_scid,
-                                tid=src_oid,
-                                diff_schema=target_schema,
-                                json_resp=False,
-                                schema_diff_table=True
-                            )
-        else:
-            source = self.get_sql_from_table_diff(sid=src_sid, did=src_did,
-                                                  scid=src_scid, tid=src_oid,
-                                                  json_resp=False)
-            target = self.get_sql_from_table_diff(sid=tar_sid, did=tar_did,
-                                                  scid=tar_scid, tid=tar_oid,
-                                                  json_resp=False)
+        source = self.get_sql_from_table_diff(**source_params)
+        target = self.get_sql_from_table_diff(**target_params)
 
         return {'source_ddl': source,
                 'target_ddl': target,
-                'diff_ddl': diff
+                'diff_ddl': ''
                 }
 
     @staticmethod
-    def table_col_ddl_comp(source, target):
+    def table_col_comp(source, target):
         """
         Table Column comparison
         :param source: Source columns
@@ -413,17 +144,14 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         return different
 
     @staticmethod
-    def constraint_ddl_comp(source_table, target_table, diff_dict):
+    def table_constraint_comp(source_table, target_table):
         """
         Table Constraint DDL comparison
-        :param source: Source Table
-        :param target: Target Table
+        :param source_table: Source Table
+        :param target_table: Target Table
         :return: Difference of constraints
         """
         different = {}
-        non_editable_keys = {}
-        columns_to_be_dropped = []
-
         non_editable_keys = {'primary_key': ['col_count',
                                              'condeferrable',
                                              'condeffered',
@@ -456,14 +184,16 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                     if type(target_cols) is list and len(
                             target_cols) > 0:
                         tmp_src = copy.deepcopy(source)
-                        tmp_src.pop('oid')
+                        if 'oid' in tmp_src:
+                            tmp_src.pop('oid')
                         tmp_tar = None
                         tmp = None
                         for item in target_cols:
                             if item['name'] == source['name']:
                                 tmp_tar = copy.deepcopy(item)
                                 tmp = copy.deepcopy(item)
-                                tmp_tar.pop('oid')
+                                if 'oid' in tmp_tar:
+                                    tmp_tar.pop('oid')
                         if tmp_tar and tmp_src != tmp_tar:
                             tmp_updated = copy.deepcopy(source)
                             for key in non_editable_keys[constraint]:
@@ -474,7 +204,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     tmp_updated = None
                                     break
                             if tmp_updated:
-                                tmp_updated['oid'] = tmp['oid']
+                                if 'oid' in tmp:
+                                    tmp_updated['oid'] = tmp['oid']
                                 updated.append(tmp_updated)
                             target_cols.remove(tmp)
                         elif tmp_tar and tmp_src == tmp_tar:
@@ -492,18 +223,109 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
         return different
 
-    def remove_keys_for_comparision(self, data, keys=None):
+    def get_sql_from_submodule_diff(self, source_params, target_params,
+                                    target_schema, source, target, diff_dict):
         """
-        This function is used to remove specific keys from data
+        This function returns the DDL/DML statements of the
+        submodules of table based on the comparison status.
+
+        :param source_params:
+        :param target_params:
+        :param target_schema:
+        :param source:
+        :param target:
+        :param diff_dict:
+        :return:
         """
+        # Get the difference result for source and target columns
+        col_diff = self.table_col_comp(source, target)
+        diff_dict.update(col_diff)
 
-        keys_to_remove = keys if keys else self.keys_to_remove
+        # Get the difference result for source and target constraints
+        pk_diff = self.table_constraint_comp(source, target)
+        diff_dict.update(pk_diff)
 
-        for p_key, p_val in keys_to_remove.items():
-            if p_key in data and data[p_key] is not None \
-                    and len(data[p_key]) > 0:
-                for item in data[p_key]:
-                    # Remove keys that should not be the part of comparision.
-                    for key in p_val:
-                        if key in item:
-                            item.pop(key)
+        # Get the difference DDL/DML statements for table
+        target_params['diff_data'] = diff_dict
+        diff = self.get_sql_from_table_diff(**target_params)
+
+        ignore_sub_modules = ['column', 'constraints']
+        if self.manager.version < 100000:
+            ignore_sub_modules.append('partition')
+        if self.manager.server_type == 'pg' or self.manager.version < 120000:
+            ignore_sub_modules.append('compound_trigger')
+
+        # Iterate through all the sub modules of the table
+        for module in self.blueprint.submodules:
+            if module.NODE_TYPE not in ignore_sub_modules:
+                module_view = \
+                    SchemaDiffRegistry.get_node_view(module.NODE_TYPE)
+
+                if module.NODE_TYPE == 'partition' and \
+                    ('is_partitioned' in source and source['is_partitioned'])\
+                        and ('is_partitioned' in target and
+                             target['is_partitioned']):
+                    target_ddl = module_view.ddl_compare(
+                        target_params=target_params,
+                        parent_source_data=source,
+                        parent_target_data=target
+                    )
+
+                    diff += '\n' + target_ddl
+                elif module.NODE_TYPE != 'partition':
+                    dict1 = copy.deepcopy(source[module.NODE_TYPE])
+                    dict2 = copy.deepcopy(target[module.NODE_TYPE])
+
+                    # Find the duplicate keys in both the dictionaries
+                    dict1_keys = set(dict1.keys())
+                    dict2_keys = set(dict2.keys())
+                    intersect_keys = dict1_keys.intersection(dict2_keys)
+
+                    # Keys that are available in source and missing in target.
+                    added = dict1_keys - dict2_keys
+                    for item in added:
+                        source_ddl = module_view.ddl_compare(
+                            source_params=source_params,
+                            target_params=target_params,
+                            source=dict1[item],
+                            target=None,
+                            target_schema=target_schema,
+                            comp_status='source_only'
+                        )
+
+                        diff += '\n' + source_ddl
+
+                    # Keys that are available in target and missing in source.
+                    removed = dict2_keys - dict1_keys
+                    for item in removed:
+                        target_ddl = module_view.ddl_compare(
+                            source_params=source_params,
+                            target_params=target_params,
+                            source=None,
+                            target=dict2[item],
+                            target_schema=target_schema,
+                            comp_status='target_only'
+                        )
+
+                        diff += '\n' + target_ddl
+
+                    # Keys that are available in both source and target.
+                    for key in intersect_keys:
+                        # Recursively Compare the two dictionary
+                        if not are_dictionaries_identical(
+                                dict1[key], dict2[key], self.keys_to_ignore):
+
+                            diff_ddl = module_view.ddl_compare(
+                                source_params=source_params,
+                                target_params=target_params,
+                                source=dict1[key],
+                                target=dict2[key],
+                                target_schema=target_schema,
+                                comp_status='different',
+                                parent_source_data=source,
+                                parent_target_data=target
+                            )
+
+                            diff += '\n' + diff_ddl
+
+        return diff

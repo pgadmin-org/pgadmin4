@@ -30,9 +30,9 @@ CREATE MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% if data.fillfactor or o_data.fillfactor %}
 WITH(
 {% if data.fillfactor %}
-FILLFACTOR = {{ data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) or (o_data['vacuum_data'] is defined and o_data['vacuum_data']['changed']|length > 0)  %},{% endif %}
+FILLFACTOR = {{ data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% elif o_data.fillfactor %}
-FILLFACTOR = {{ o_data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) or (o_data['vacuum_data'] is defined and o_data['vacuum_data']['changed']|length > 0)  %},{% endif %}
+FILLFACTOR = {{ o_data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% endif %}
 
 {% if data['vacuum_data']['changed']|length > 0 %}

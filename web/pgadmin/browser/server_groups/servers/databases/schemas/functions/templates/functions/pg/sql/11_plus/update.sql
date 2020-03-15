@@ -19,7 +19,8 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if d
 {% endfor %}
 {% endif -%}
 )
-    RETURNS {{ o_data.prorettypename }}
+    RETURNS {% if 'prorettypename' in data %}{{ data.prorettypename }}{% else %}{{ o_data.prorettypename }}{% endif %}
+
 {% if 'lanname' in data %}
     LANGUAGE {{ data.lanname|qtLiteral }} {% else %}
     LANGUAGE {{ o_data.lanname|qtLiteral }}
@@ -31,7 +32,7 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if d
 
     {% if 'proparallel' in data and data.proparallel %}PARALLEL {{ data.proparallel }}{% elif 'proparallel' not in data and o_data.proparallel %}PARALLEL {{ o_data.proparallel }}{% endif %}
 
-    {% if data.procost %}COST {{data.procost}}{% elif o_data.procost %}COST {{o_data.procost}}{% endif %}{% if data.prorows %}
+    {% if data.procost %}COST {{data.procost}}{% elif o_data.procost %}COST {{o_data.procost}}{% endif %}{% if data.prorows and data.prorows != '0'%}
 
     ROWS {{data.prorows}}{% elif data.prorows is not defined and o_data.prorows and o_data.prorows != '0' %}    ROWS {{o_data.prorows}} {%endif -%}{% if data.merged_variables %}{% for v in data.merged_variables %}
 

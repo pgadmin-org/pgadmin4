@@ -6,17 +6,18 @@
 {% if data.name and data.name != o_data.name %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     RENAME {{conn|qtIdent(o_data.name)}} TO {{conn|qtIdent(data.name)}};
+
 {% endif %}
+{###  Alter column type and collation ###}
+{% if (data.cltype and data.cltype != o_data.cltype) or (data.attlen is defined and data.attlen != o_data.attlen) or (data.attprecision is defined and data.attprecision != o_data.attprecision) or (data.collspcname and data.collspcname != o_data.collspcname) or data.col_type_conversion is defined %}
 {% if data.col_type_conversion is defined and data.col_type_conversion == False %}
 -- WARNING:
 -- The SQL statement below would normally be used to alter the datatype for the {{o_data.name}} column, however,
 -- the current datatype cannot be cast to the target datatype so this conversion cannot be made automatically.
 
 {% endif %}
-{###  Alter column type and collation ###}
-{% if (data.cltype and data.cltype != o_data.cltype) or (data.attlen is defined and data.attlen != o_data.attlen) or (data.attprecision is defined and data.attprecision != o_data.attprecision) or (data.collspcname and data.collspcname != o_data.collspcname)%}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname != o_data.collspcname %}
+{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname != o_data.collspcname %}
  COLLATE {{data.collspcname}}{% elif o_data.collspcname %} COLLATE {{o_data.collspcname}}{% endif %};
 {% endif %}
 {###  Alter column default value ###}

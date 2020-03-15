@@ -18,7 +18,8 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if d
 {% endfor %}
 {% endif -%}
 )
-    RETURNS {{ o_data.prorettypename }}
+    RETURNS {% if 'prorettypename' in data %}{{ data.prorettypename }}{% else %}{{ o_data.prorettypename }}{% endif %}
+
 {% if 'lanname' in data %}
     LANGUAGE {{ data.lanname|qtLiteral }} {% else %}
     LANGUAGE {{ o_data.lanname|qtLiteral }}

@@ -220,7 +220,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     })
 
     keys_to_ignore = ['oid', 'proowner', 'typnsp', 'xmin', 'prokind',
-                      'proisagg', 'pronamespace', 'proargdefaults']
+                      'proisagg', 'pronamespace', 'proargdefaults',
+                      'prorettype', 'proallargtypes', 'proacl']
 
     @property
     def required_args(self):
@@ -1125,7 +1126,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = re.sub('\n{2,}', '\n\n', SQL)
             return SQL
 
-    def _get_sql(self, gid, sid, did, scid, data, fnid=None, is_sql=False):
+    def _get_sql(self, gid, sid, did, scid, data, fnid=None, is_sql=False,
+                 is_schema_diff=False):
         """
         Generates the SQL statements to create/update the Function.
 
@@ -1239,8 +1241,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     for v in data['variables']['added']:
                         chngd_variables[v['name']] = v['value']
 
-                for v in old_data['variables']:
-                    old_data['chngd_variables'][v['name']] = v['value']
+                # In case of schema diff we don't want variables from
+                # old data
+                if not is_schema_diff:
+                    for v in old_data['variables']:
+                        old_data['chngd_variables'][v['name']] = v['value']
 
                 # Prepare final dict of new and old variables
                 for name, val in old_data['chngd_variables'].items():
@@ -1624,7 +1629,15 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if data:
             if diff_schema:
                 data['schema'] = diff_schema
-            status, sql = self._get_sql(gid, sid, did, scid, data, oid)
+            status, sql = self._get_sql(gid, sid, did, scid, data, oid, False,
+                                        True)
+            # Check if return type is changed then we need to drop the
+            # function first and then recreate it.
+            drop_fun_sql = ''
+            if 'prorettypename' in data:
+                drop_fun_sql = self.delete(gid=gid, sid=sid, did=did,
+                                           scid=scid, fnid=oid, only_sql=True)
+                sql = drop_fun_sql + '\n' + sql
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

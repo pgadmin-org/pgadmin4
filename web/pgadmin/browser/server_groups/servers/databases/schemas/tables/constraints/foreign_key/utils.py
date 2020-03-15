@@ -82,10 +82,10 @@ def get_foreign_keys(conn, tid, fkid=None, template_path=None):
         coveringindex = search_coveringindex(conn, tid, cols)
         fk['coveringindex'] = coveringindex
         if coveringindex:
-            fk['autoindex'] = True
+            fk['autoindex'] = False
             fk['hasindex'] = True
         else:
-            fk['autoindex'] = False
+            fk['autoindex'] = True
             fk['hasindex'] = False
 
     return True, result['rows']

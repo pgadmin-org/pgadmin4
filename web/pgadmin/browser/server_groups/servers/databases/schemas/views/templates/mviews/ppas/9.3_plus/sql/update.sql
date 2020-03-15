@@ -30,12 +30,13 @@ CREATE MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% if data.fillfactor or o_data.fillfactor %}
 WITH(
 {% if data.fillfactor %}
-FILLFACTOR = {{ data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) or (o_data['vacuum_data'] is defined and o_data['vacuum_data']['changed']|length > 0)  %},{% endif %}
+FILLFACTOR = {{ data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% elif o_data.fillfactor %}
-FILLFACTOR = {{ o_data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) or (o_data['vacuum_data'] is defined and o_data['vacuum_data']['changed']|length > 0)  %},{% endif %}
+FILLFACTOR = {{ o_data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% endif %}
+
 {% if data['vacuum_data']['changed']|length > 0 %}
-{% for field in data['vacuum_data']['changed'] %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{% endif %}{{ '\n' }}
+{% for field in data['vacuum_data']['changed'] %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{{ '\n' }}{% endif %}
 {% endfor %}
 {% endif %}
 )
@@ -44,7 +45,6 @@ FILLFACTOR = {{ o_data.fillfactor }}{% if (data['vacuum_data'] is defined and da
 {{ def }}
 {% if data.with_data is defined %}
  WITH {{ 'DATA' if data.with_data else 'NO DATA' }};
-
 {% elif o_data.with_data is defined %}
  WITH {{ 'DATA' if o_data.with_data else 'NO DATA' }};
 
@@ -128,8 +128,7 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
 {% if('vacuum_table' in data and data['vacuum_table']['changed']|length > 0) %}
 ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
 {% for field in data['vacuum_table']['changed'] %}
-{% if field.value != None %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{% endif %}
-{% endif %}
+{% if field.value != None %}  {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{% endif %}{% endif %}
 {% endfor %}
 );
 

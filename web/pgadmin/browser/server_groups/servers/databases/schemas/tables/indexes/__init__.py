@@ -26,9 +26,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from pgadmin.tools.schema_diff.directory_compare import compare_dictionaries,\
-    directory_diff
-from pgadmin.tools.schema_diff.model import SchemaDiffModel
+from pgadmin.tools.schema_diff.directory_compare import directory_diff
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 from pgadmin.browser.server_groups.servers.databases.schemas. \
     tables.indexes import utils as index_utils
@@ -830,11 +828,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
     def get_sql_from_index_diff(self, sid, did, scid, tid, idx, data=None,
                                 diff_schema=None, drop_req=False):
 
-        tmp_idx = idx
-        schema = ''
+        sql = ''
         if data:
-            schema = self.schema
-
             data['schema'] = self.schema
             data['nspname'] = self.schema
             data['table'] = self.table
@@ -987,8 +982,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def fetch_objects_to_compare(self, sid, did, scid, tid, oid=None,
-                                 ignore_keys=False):
+    def fetch_objects_to_compare(self, sid, did, scid, tid, oid=None):
         """
         This function will fetch the list of all the indexes for
         specified schema id.
@@ -996,6 +990,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         :param sid: Server Id
         :param did: Database Id
         :param scid: Schema Id
+        :param oid: Index Id
         :return:
         """
 
@@ -1013,10 +1008,6 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 status, data = self._fetch_properties(did, tid,
                                                       row['oid'])
                 if status:
-                    if ignore_keys:
-                        for key in self.keys_to_ignore:
-                            if key in data:
-                                del data[key]
                     res[row['name']] = data
         else:
             status, data = self._fetch_properties(did, tid,
@@ -1030,55 +1021,35 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
     def ddl_compare(self, **kwargs):
         """
-        This function will compare index properties and
-         return the difference of SQL
+        This function returns the DDL/DML statements based on the
+        comparison status.
+
+        :param kwargs:
+        :return:
         """
 
-        src_sid = kwargs.get('source_sid')
-        src_did = kwargs.get('source_did')
-        src_scid = kwargs.get('source_scid')
-        src_tid = kwargs.get('source_tid')
-        src_oid = kwargs.get('source_oid')
-        tar_sid = kwargs.get('target_sid')
-        tar_did = kwargs.get('target_did')
-        tar_scid = kwargs.get('target_scid')
-        tar_tid = kwargs.get('target_tid')
-        tar_oid = kwargs.get('target_oid')
+        src_params = kwargs.get('source_params')
+        tgt_params = kwargs.get('target_params')
+        source = kwargs.get('source')
+        target = kwargs.get('target')
+        target_schema = kwargs.get('target_schema')
         comp_status = kwargs.get('comp_status')
 
-        source = ''
-        target = ''
         diff = ''
-
-        status, target_schema = self.get_schema(tar_sid,
-                                                tar_did,
-                                                tar_scid
-                                                )
-        if not status:
-            return internal_server_error(errormsg=target_schema)
-
-        if comp_status == SchemaDiffModel.COMPARISON_STATUS['source_only']:
-            diff = self.get_sql_from_index_diff(sid=src_sid,
-                                                did=src_did, scid=src_scid,
-                                                tid=src_tid, idx=src_oid,
+        if comp_status == 'source_only':
+            diff = self.get_sql_from_index_diff(sid=src_params['sid'],
+                                                did=src_params['did'],
+                                                scid=src_params['scid'],
+                                                tid=src_params['tid'],
+                                                idx=source['oid'],
                                                 diff_schema=target_schema)
+        elif comp_status == 'target_only':
+            diff = self.delete(gid=1, sid=tgt_params['sid'],
+                               did=tgt_params['did'], scid=tgt_params['scid'],
+                               tid=tgt_params['tid'], idx=target['oid'],
+                               only_sql=True)
 
-        elif comp_status == SchemaDiffModel.COMPARISON_STATUS['target_only']:
-            diff = self.delete(gid=1, sid=tar_sid, did=tar_did,
-                               scid=tar_scid, tid=tar_tid,
-                               idx=tar_oid, only_sql=True)
-
-        else:
-            source = self.fetch_objects_to_compare(sid=src_sid, did=src_did,
-                                                   scid=src_scid, tid=src_tid,
-                                                   oid=src_oid)
-            target = self.fetch_objects_to_compare(sid=tar_sid, did=tar_did,
-                                                   scid=tar_scid, tid=tar_tid,
-                                                   oid=tar_oid)
-
-            if not (source or target):
-                return None
-
+        elif comp_status == 'different':
             diff_dict = directory_diff(
                 source, target, ignore_keys=self.keys_to_ignore,
                 difference={}
@@ -1102,19 +1073,19 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                         create_req = True
 
             if create_req:
-                diff = self.get_sql_from_index_diff(sid=tar_sid,
-                                                    did=tar_did,
-                                                    scid=tar_scid,
-                                                    tid=tar_tid,
-                                                    idx=tar_oid,
+                diff = self.get_sql_from_index_diff(sid=tgt_params['sid'],
+                                                    did=tgt_params['did'],
+                                                    scid=tgt_params['scid'],
+                                                    tid=tgt_params['tid'],
+                                                    idx=target['oid'],
                                                     diff_schema=target_schema,
                                                     drop_req=True)
             else:
-                diff = self.get_sql_from_index_diff(sid=tar_sid,
-                                                    did=tar_did,
-                                                    scid=tar_scid,
-                                                    tid=tar_tid,
-                                                    idx=tar_oid,
+                diff = self.get_sql_from_index_diff(sid=tgt_params['sid'],
+                                                    did=tgt_params['did'],
+                                                    scid=tgt_params['scid'],
+                                                    tid=tgt_params['tid'],
+                                                    idx=target['oid'],
                                                     data=diff_dict)
 
         return diff

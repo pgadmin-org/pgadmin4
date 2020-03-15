@@ -141,7 +141,7 @@ def get_trigger_function_and_columns(conn, data, tid,
 
 @get_template_path
 def get_sql(conn, data, tid, trid, datlastsysoid,
-            show_system_objects, template_path=None):
+            show_system_objects, is_schema_diff=False, template_path=None):
     """
     This function will generate sql from model data.
 
@@ -151,6 +151,7 @@ def get_sql(conn, data, tid, trid, datlastsysoid,
     :param trid: Trigger ID
     :param datlastsysoid:
     :param show_system_objects: Show System Object value True or False
+    :param is_schema_diff:
     :param template_path: Optional template path
     :return:
     """
@@ -173,6 +174,35 @@ def get_sql(conn, data, tid, trid, datlastsysoid,
         if 'name' not in data:
             name = data['name'] = old_data['name']
 
+        drop_sql = ''
+        if is_schema_diff:
+            if 'table' not in data:
+                data['table'] = old_data['relname']
+            if 'schema' not in data:
+                data['schema'] = old_data['nspname']
+
+            # If any of the below key is present in data then we need to drop
+            # trigger and re-create it.
+            key_array = ['prosrc', 'is_row_trigger', 'evnt_insert',
+                         'evnt_delete', 'evnt_update', 'fires', 'tgdeferrable',
+                         'whenclause', 'tfunction', 'tgargs', 'columns',
+                         'is_constraint_trigger', 'tginitdeferred']
+
+            is_drop_trigger = False
+            for key in key_array:
+                if key in data:
+                    is_drop_trigger = True
+                    break
+
+            if is_drop_trigger:
+                tmp_data = dict()
+                tmp_data['name'] = data['name']
+                tmp_data['nspname'] = old_data['nspname']
+                tmp_data['relname'] = old_data['relname']
+                drop_sql = render_template("/".join([template_path,
+                                                     'delete.sql']),
+                                           data=tmp_data, conn=conn)
+
         old_data = get_trigger_function_and_columns(
             conn, old_data, tid, show_system_objects)
 
@@ -182,6 +212,9 @@ def get_sql(conn, data, tid, trid, datlastsysoid,
             "/".join([template_path, 'update.sql']),
             data=data, o_data=old_data, conn=conn
         )
+
+        if is_schema_diff:
+            SQL = drop_sql + '\n' + SQL
     else:
         required_args = {
             'name': 'Name',

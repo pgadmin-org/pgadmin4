@@ -588,6 +588,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             if not json_resp:
                 display_comments = False
             res_data = parse_rule_definition(res)
+            # Update the correct table name for rules
+            if 'view' in res_data:
+                res_data['view'] = table
+
             rules_sql += render_template("/".join(
                 [self.rules_template_path, 'create.sql']),
                 data=res_data, display_comments=display_comments)
@@ -1298,11 +1302,12 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             status=200
         )
 
-    def get_partitions_sql(self, partitions):
+    def get_partitions_sql(self, partitions, schema_diff=False):
         """
         This function will iterate all the partitions and create SQL.
 
         :param partitions: List of partitions
+        :param schema_diff: If true then create sql accordingly.
         """
         sql = ''
 
@@ -1370,12 +1375,17 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     data=part_data, conn=self.conn
                 )
             else:
+                # For schema diff we create temporary partitions to copy the
+                # data from original table to temporary table.
+                if schema_diff:
+                    part_data['name'] = row['temp_partition_name']
+
                 partition_sql = render_template(
                     "/".join([self.partition_template_path, 'create.sql']),
                     data=part_data, conn=self.conn
                 )
 
-            sql += partition_sql + '\n'
+            sql += partition_sql
 
         return sql
 

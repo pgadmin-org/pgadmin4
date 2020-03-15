@@ -15,11 +15,17 @@ from pgadmin.tools.schema_diff.model import SchemaDiffModel
 count = 1
 
 
-def compare_dictionaries(source_dict, target_dict, node, node_label,
+def compare_dictionaries(view_object, source_params, target_params,
+                         target_schema, source_dict, target_dict, node,
+                         node_label,
                          ignore_keys=None):
     """
     This function will compare the two dictionaries.
 
+    :param view_object: View Object
+    :param source_params: Source Parameters
+    :param target_params: Target Parameters
+    :param target_schema: Target Schema Name
     :param source_dict: First Dictionary
     :param target_dict: Second Dictionary
     :param node: node type
@@ -36,18 +42,43 @@ def compare_dictionaries(source_dict, target_dict, node, node_label,
     dict2_keys = set(dict2.keys())
     intersect_keys = dict1_keys.intersection(dict2_keys)
 
+    # Add gid to the params
+    source_params['gid'] = target_params['gid'] = 1
+
     # Keys that are available in source and missing in target.
     source_only = []
     added = dict1_keys - dict2_keys
     global count
     for item in added:
+        if node == 'table':
+            temp_src_params = copy.deepcopy(source_params)
+            temp_src_params['tid'] = source_dict[item]['oid']
+            temp_src_params['json_resp'] = False
+            source_ddl = \
+                view_object.get_sql_from_table_diff(**temp_src_params)
+            temp_src_params.update({
+                'diff_schema': target_schema
+            })
+            diff_ddl = view_object.get_sql_from_table_diff(**temp_src_params)
+        else:
+            temp_src_params = copy.deepcopy(source_params)
+            temp_src_params['oid'] = source_dict[item]['oid']
+            source_ddl = view_object.get_sql_from_diff(**temp_src_params)
+            temp_src_params.update({
+                'diff_schema': target_schema
+            })
+            diff_ddl = view_object.get_sql_from_diff(**temp_src_params)
+
         source_only.append({
             'id': count,
             'type': node,
             'label': node_label,
             'title': item,
             'oid': source_dict[item]['oid'],
-            'status': SchemaDiffModel.COMPARISON_STATUS['source_only']
+            'status': SchemaDiffModel.COMPARISON_STATUS['source_only'],
+            'source_ddl': source_ddl,
+            'target_ddl': '',
+            'diff_ddl': diff_ddl
         })
         count += 1
 
@@ -55,13 +86,34 @@ def compare_dictionaries(source_dict, target_dict, node, node_label,
     # Keys that are available in target and missing in source.
     removed = dict2_keys - dict1_keys
     for item in removed:
+        if node == 'table':
+            temp_tgt_params = copy.deepcopy(target_params)
+            temp_tgt_params['tid'] = target_dict[item]['oid']
+            temp_tgt_params['json_resp'] = False
+            target_ddl = view_object.get_sql_from_table_diff(**temp_tgt_params)
+            if 'gid' in temp_tgt_params:
+                del temp_tgt_params['gid']
+            if 'json_resp' in temp_tgt_params:
+                del temp_tgt_params['json_resp']
+            diff_ddl = view_object.get_drop_sql(**temp_tgt_params)
+        else:
+            temp_tgt_params = copy.deepcopy(target_params)
+            temp_tgt_params['oid'] = target_dict[item]['oid']
+            target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
+            temp_tgt_params.update(
+                {'drop_sql': True})
+            diff_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
+
         target_only.append({
             'id': count,
             'type': node,
             'label': node_label,
             'title': item,
             'oid': target_dict[item]['oid'],
-            'status': SchemaDiffModel.COMPARISON_STATUS['target_only']
+            'status': SchemaDiffModel.COMPARISON_STATUS['target_only'],
+            'source_ddl': '',
+            'target_ddl': target_ddl,
+            'diff_ddl': diff_ddl
         })
         count += 1
 
@@ -69,13 +121,6 @@ def compare_dictionaries(source_dict, target_dict, node, node_label,
     identical = []
     different = []
     for key in intersect_keys:
-        # ignore the keys if available.
-        for ig_key in ignore_keys:
-            if ig_key in dict1[key]:
-                dict1[key].pop(ig_key)
-            if ig_key in dict2[key]:
-                dict2[key].pop(ig_key)
-
         # Recursively Compare the two dictionary
         if are_dictionaries_identical(dict1[key], dict2[key], ignore_keys):
             identical.append({
@@ -89,6 +134,50 @@ def compare_dictionaries(source_dict, target_dict, node, node_label,
                 'status': SchemaDiffModel.COMPARISON_STATUS['identical']
             })
         else:
+            if node == 'table':
+                temp_src_params = copy.deepcopy(source_params)
+                temp_tgt_params = copy.deepcopy(target_params)
+                # Add submodules into the ignore keys so that directory
+                # difference won't include those in added, deleted and changed
+                sub_module = ['index', 'rule', 'trigger', 'compound_trigger']
+                temp_ignore_keys = view_object.keys_to_ignore + sub_module
+
+                diff_dict = directory_diff(
+                    dict1[key], dict2[key],
+                    ignore_keys=temp_ignore_keys,
+                    difference={}
+                )
+                diff_dict.update(parce_acl(dict1[key], dict2[key]))
+
+                temp_src_params['tid'] = source_dict[key]['oid']
+                temp_tgt_params['tid'] = target_dict[key]['oid']
+                temp_src_params['json_resp'] = \
+                    temp_tgt_params['json_resp'] = False
+
+                source_ddl = \
+                    view_object.get_sql_from_table_diff(**temp_src_params)
+                target_ddl = \
+                    view_object.get_sql_from_table_diff(**temp_tgt_params)
+                diff_ddl = view_object.get_sql_from_submodule_diff(
+                    temp_src_params, temp_tgt_params, target_schema,
+                    dict1[key], dict2[key], diff_dict)
+            else:
+                temp_src_params = copy.deepcopy(source_params)
+                temp_tgt_params = copy.deepcopy(target_params)
+                diff_dict = directory_diff(
+                    dict1[key], dict2[key],
+                    ignore_keys=view_object.keys_to_ignore, difference={}
+                )
+                diff_dict.update(parce_acl(dict1[key], dict2[key]))
+
+                temp_src_params['oid'] = source_dict[key]['oid']
+                temp_tgt_params['oid'] = target_dict[key]['oid']
+                source_ddl = view_object.get_sql_from_diff(**temp_src_params)
+                target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
+                temp_tgt_params.update(
+                    {'data': diff_dict})
+                diff_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
+
             different.append({
                 'id': count,
                 'type': node,
@@ -97,7 +186,10 @@ def compare_dictionaries(source_dict, target_dict, node, node_label,
                 'oid': source_dict[key]['oid'],
                 'source_oid': source_dict[key]['oid'],
                 'target_oid': target_dict[key]['oid'],
-                'status': SchemaDiffModel.COMPARISON_STATUS['different']
+                'status': SchemaDiffModel.COMPARISON_STATUS['different'],
+                'source_ddl': source_ddl,
+                'target_ddl': target_ddl,
+                'diff_ddl': diff_ddl
             })
         count += 1
 
@@ -143,13 +235,6 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
     src_keys = set(source_dict.keys())
     tar_keys = set(target_dict.keys())
 
-    # ignore the keys if available.
-    for ig_key in ignore_keys:
-        if ig_key in src_keys:
-            source_dict.pop(ig_key)
-        if ig_key in target_dict:
-            target_dict.pop(ig_key)
-
     # Keys that are available in source and missing in target.
     src_only = src_keys - tar_keys
     # Keys that are available in target and missing in source.
@@ -167,6 +252,10 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
                 return False
 
     for key in source_dict.keys():
+        # Continue if key is available in ignore_keys
+        if key in ignore_keys:
+            continue
+
         if type(source_dict[key]) is dict:
             if not are_dictionaries_identical(source_dict[key],
                                               target_dict[key], ignore_keys):
@@ -235,33 +324,32 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                         # TODO
                         pass
                     elif type(source) is dict:
-                        if 'name' in source or 'colname' in source:
-                            if type(target_dict[key]) is list and len(
-                                    target_dict[key]) > 0:
-                                tmp = None
-                                tmp_target = copy.deepcopy(target_dict[key])
-                                for item in tmp_target:
-                                    if (
-                                            'name' in item and
-                                            item['name'] == source['name']
-                                    ) or (
-                                            'colname' in item and
-                                            item['colname'] == source[
-                                                'colname']
-                                    ):
-                                        tmp = copy.deepcopy(item)
-                                if tmp and source != tmp:
-                                    updated.append(copy.deepcopy(source))
-                                    tmp_target.remove(tmp)
-                                elif tmp and source == tmp:
-                                    tmp_target.remove(tmp)
-                                elif tmp is None:
+                        tmp_key_array = ['name', 'colname', 'argid']
+                        for tmp_key in tmp_key_array:
+                            if tmp_key in source:
+                                if type(target_dict[key]) is list and \
+                                        len(target_dict[key]) > 0:
+                                    tmp = None
+                                    tmp_target = \
+                                        copy.deepcopy(target_dict[key])
+                                    for item in tmp_target:
+                                        if tmp_key in item and \
+                                                item[tmp_key] == \
+                                                source[tmp_key]:
+                                            tmp = copy.deepcopy(item)
+                                    if tmp and source != tmp:
+                                        updated.append(copy.deepcopy(source))
+                                        tmp_target.remove(tmp)
+                                    elif tmp and source == tmp:
+                                        tmp_target.remove(tmp)
+                                    elif tmp is None:
+                                        added.append(source)
+                                else:
                                     added.append(source)
-                            else:
-                                added.append(source)
-                        difference[key] = {}
-                        difference[key]['added'] = added
-                        difference[key]['changed'] = updated
+
+                            difference[key] = {}
+                            difference[key]['added'] = added
+                            difference[key]['changed'] = updated
                     elif target_dict[key] is None or \
                             (type(target_dict[key]) is list and
                              len(target_dict[key]) < index and
@@ -271,7 +359,7 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                             len(target_dict[key]) > index:
                         difference[key] = source
             else:
-                target_dict[key] = source_dict[key]
+                difference[key] = source_dict[key]
 
             if type(source) is dict and tmp_target and key in tmp_target and \
                     tmp_target[key] and len(tmp_target[key]) > 0:
@@ -286,6 +374,34 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
 
         else:
             if source_dict[key] != target_dict[key]:
-                difference[key] = source_dict[key]
+                if (key == 'comment' or key == 'description') and \
+                        source_dict[key] is None:
+                    difference[key] = ''
+                else:
+                    difference[key] = source_dict[key]
 
     return difference
+
+
+def parce_acl(source, target):
+    key = 'acl'
+
+    if 'datacl' in source:
+        key = 'datacl'
+    elif 'relacl' in source:
+        key = 'relacl'
+
+    tmp_source = source[key] if\
+        key in source and source[key] is not None else []
+    tmp_target = copy.deepcopy(target[key]) if\
+        key in target and target[key] is not None else []
+
+    diff = {'added': [], 'deleted': []}
+    for acl in tmp_source:
+        if acl in tmp_target:
+            tmp_target.remove(acl)
+        elif acl not in tmp_target:
+            diff['added'].append(acl)
+    diff['deleted'] = tmp_target
+
+    return {key: diff}
