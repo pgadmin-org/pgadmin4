@@ -100,7 +100,9 @@ _build_runtime() {
     echo "Building the desktop runtime..."
     _create_python_virtualenv
     cd ${SOURCEDIR}/runtime
-    make clean
+    if [ -f Makefile ]; then
+        make clean
+    fi
     qmake
     make
     mkdir -p "${DESKTOPROOT}/usr/${APP_NAME}/bin"
