@@ -16,6 +16,7 @@
 /docker-build
 /mac-build
 /pip-build
+/redhat-build
 /src-build
 /win-build
 _build

@@ -18,9 +18,9 @@ source pkg/linux/build-functions.sh
 _setup_env $0 "debian"
 _cleanup "deb"
 _setup_dirs
-_create_python_virtualenv
+_create_python_virtualenv "debian"
 _build_runtime
-_build_docs
+_build_docs "debian"
 _copy_code
 
 #

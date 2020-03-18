@@ -91,7 +91,7 @@ runtime:
 	cd runtime && qmake CONFIG+=release && make
 
 # Include all clean sub-targets in clean
-clean: clean-appbundle clean-debian clean-dist clean-docs clean-node clean-pip clean-src clean-runtime
+clean: clean-appbundle clean-debian clean-dist clean-docs clean-node clean-pip clean-redhat clean-src clean-runtime
 	rm -rf web/pgadmin/static/js/generated/*
 	rm -rf web/pgadmin/static/js/generated/.cache
 	rm -rf web/pgadmin/static/css/generated/*
@@ -119,11 +119,14 @@ clean-node:
 clean-pip:
 	rm -rf pip-build/
 
+clean-redhat:
+	rm -rf redhat-build/
+
 clean-src:
 	rm -rf src-build/
 
 debian:
-	pkg/debian/build.sh
+	./pkg/debian/build.sh
 
 docker:
 	echo $(APP_NAME)
@@ -153,6 +156,9 @@ msg-update:
 
 pip: docs
 	./pkg/pip/build.sh
+
+redhat:
+	./pkg/redhat/build.sh
 
 src:
 	./pkg/src/build.sh

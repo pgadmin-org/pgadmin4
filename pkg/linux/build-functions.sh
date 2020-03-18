@@ -61,8 +61,12 @@ _create_python_virtualenv() {
     DIR_PYMODULES_PATH=`dirname ${PYMODULES_PATH}`
     
     # Use /usr/bin/python3 here as we want the system path
-    PYSYSLIB_PATH=$(/usr/bin/python3 -c "import sys; print('%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
-    
+    if [ $1 == "debian" ]; then
+        PYSYSLIB_PATH=$(/usr/bin/python3 -c "import sys; print('%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
+    else
+        PYSYSLIB_PATH=$(/usr/bin/python3 -c "import sys; print('%s/lib64/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
+    fi
+
     # Symlink in the rest of the Python libs. This is required because the runtime
     # will clear PYTHONHOME for safety, which has the side-effect of preventing
     # it from finding modules that are not explicitly included in the venv
@@ -98,12 +102,15 @@ _create_python_virtualenv() {
 
 _build_runtime() {
     echo "Building the desktop runtime..."
-    _create_python_virtualenv
     cd ${SOURCEDIR}/runtime
     if [ -f Makefile ]; then
         make clean
     fi
-    qmake
+    if hash qmake-qt5 2>/dev/null; then
+        qmake-qt5
+    else
+        qmake
+    fi
     make
     mkdir -p "${DESKTOPROOT}/usr/${APP_NAME}/bin"
     cp pgAdmin4 "${DESKTOPROOT}/usr/${APP_NAME}/bin/pgadmin4"
@@ -118,7 +125,11 @@ _build_docs() {
     cd "${SERVERROOT}" && mkdir -p "usr/${APP_NAME}/share/docs/en_US/html"
     cd "${SOURCEDIR}/docs/en_US"
     python3 build_code_snippet.py
-    PYTHONPATH=$PYTHONPATH:/usr/lib/python3/:/usr/lib/python3/dist-packages python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
+    if [ $1 == "redhat" ]; then
+        PYTHONPATH=$PYTHONPATH:/usr/lib/python3.6/site-packages python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
+    else
+        PYTHONPATH=$PYTHONPATH:/usr/lib/python3/:/usr/lib/python3/dist-packages python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
+    fi
 }
 
 _copy_code() {
