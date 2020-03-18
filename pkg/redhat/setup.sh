@@ -6,7 +6,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 # EPEL & other repos
-yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 yum config-manager --enable PowerTools AppStream BaseOS *epel
 
 # Node repo
