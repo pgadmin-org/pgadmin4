@@ -14,6 +14,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5271 <https://redmine.postgresql.org/issues/5271>`_ -  Enhance the color of switch control for both light and dark theme.
 
 Bug fixes
 *********
