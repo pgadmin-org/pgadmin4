@@ -309,3 +309,89 @@ COMMENT ON RULE rule1 ON source.table_for_rule IS 'comments';
 CREATE RULE rule2 AS
     ON INSERT TO source.table_for_rule DO NOTHING;
 
+-- Collation scripts
+CREATE COLLATION source.coll_src
+    FROM pg_catalog."POSIX";
+
+ALTER COLLATION source.coll_src
+    OWNER TO postgres;
+
+COMMENT ON COLLATION source.coll_src
+    IS 'Test Comment';
+
+CREATE COLLATION source.coll_diff
+    (LC_COLLATE = 'POSIX', LC_CTYPE = 'POSIX');
+
+ALTER COLLATION source.coll_diff
+    OWNER TO postgres;
+
+COMMENT ON COLLATION source.coll_diff
+    IS 'Test Comment';
+
+-- FTS Configuration scripts
+CREATE TEXT SEARCH CONFIGURATION source.fts_con_src (
+    COPY=german
+);
+
+ALTER TEXT SEARCH CONFIGURATION source.fts_con_src OWNER TO postgres;
+
+COMMENT ON TEXT SEARCH CONFIGURATION source.fts_con_src
+    IS 'Test Comment';
+
+CREATE TEXT SEARCH CONFIGURATION source.fts_con_diff (
+	PARSER = default
+);
+ALTER TEXT SEARCH CONFIGURATION source.fts_con_diff ADD MAPPING FOR asciiword WITH german_stem;
+ALTER TEXT SEARCH CONFIGURATION source.fts_con_diff ADD MAPPING FOR email WITH simple;
+ALTER TEXT SEARCH CONFIGURATION source.fts_con_diff ADD MAPPING FOR hword WITH dutch_stem;
+
+-- FTS Dictionary scripts
+CREATE TEXT SEARCH DICTIONARY source.fts_dict_src (
+    TEMPLATE = simple,
+    stopwords = 'english'
+);
+
+COMMENT ON TEXT SEARCH DICTIONARY source.fts_dict_src
+    IS 'Test Comment';
+
+CREATE TEXT SEARCH DICTIONARY source.fts_dict_diff (
+    TEMPLATE = simple,
+    stopwords = 'english'
+);
+
+COMMENT ON TEXT SEARCH DICTIONARY source.fts_dict_diff
+    IS 'Test Comment';
+
+-- FTS Parser scripts
+CREATE TEXT SEARCH PARSER source.fts_par_src (
+    START = prsd_start,
+    GETTOKEN = prsd_nexttoken,
+    END = prsd_end,
+    LEXTYPES = prsd_lextype);
+
+COMMENT ON TEXT SEARCH PARSER source.fts_par_src
+      IS 'Test Comment';
+
+CREATE TEXT SEARCH PARSER source.fts_par_diff (
+    START = prsd_start,
+    GETTOKEN = prsd_nexttoken,
+    END = prsd_end,
+    LEXTYPES = prsd_lextype);
+
+COMMENT ON TEXT SEARCH PARSER source.fts_par_diff
+      IS 'Test Comment';
+
+-- FTS Template scripts
+CREATE TEXT SEARCH TEMPLATE source.fts_templ_src (
+    INIT = dispell_init,
+    LEXIZE = dispell_lexize
+);
+
+COMMENT ON TEXT SEARCH TEMPLATE source.fts_templ_src IS 'Test Comment';
+
+CREATE TEXT SEARCH TEMPLATE source.fts_templ_diff (
+    INIT = dispell_init,
+    LEXIZE = dispell_lexize
+);
+
+COMMENT ON TEXT SEARCH TEMPLATE source.fts_templ_diff IS 'Test Comment';

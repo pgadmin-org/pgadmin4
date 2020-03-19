@@ -527,7 +527,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, dcid=None):
+    def delete(self, gid, sid, did, scid, dcid=None, only_sql=False):
         """
         This function will drop the FTS Dictionary object
         :param gid: group id
@@ -535,6 +535,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         :param did: database id
         :param scid: schema id
         :param dcid: FTS Dictionary id
+        :param only_sql: Return only sql if True
         """
         if dcid is None:
             data = request.form if request.form else json.loads(
@@ -580,6 +581,10 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                                       schema=result['schema'],
                                       cascade=cascade
                                       )
+
+                # Used for schema diff tool
+                if only_sql:
+                    return sql
 
                 status, res = self.conn.execute_scalar(sql)
                 if not status:
@@ -766,7 +771,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, dcid):
+    def sql(self, gid, sid, did, scid, dcid, diff_schema=None,
+            json_resp=True):
         """
         This function will reverse generate sql for sql panel
         :param gid: group id
@@ -774,6 +780,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         :param did: database id
         :param scid: schema id
         :param dcid: FTS Dictionary id
+        :param diff_schema: Target Schema for schema diff
+        :param json_resp: True then return json response
         """
 
         sql = render_template(
@@ -819,6 +827,9 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         # Replace schema oid with schema name
         res['rows'][0]['schema'] = schema
 
+        if diff_schema:
+            res['rows'][0]['schema'] = diff_schema
+
         sql = render_template("/".join([self.template_path, 'create.sql']),
                               data=res['rows'][0],
                               conn=self.conn, is_displaying=True)
@@ -831,6 +842,9 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                         res['rows'][0]['name']))
 
         sql = sql_header + sql
+
+        if not json_resp:
+            return sql
 
         return ajax_response(response=sql.strip('\n'))
 
@@ -897,5 +911,38 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return res
 
+    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
+                          diff_schema=None, drop_sql=False):
+        """
+        This function is used to get the DDL/DML statements.
+        :param gid: Group ID
+        :param sid: Serve ID
+        :param did: Database ID
+        :param scid: Schema ID
+        :param oid: Collation ID
+        :param data: Difference data
+        :param diff_schema: Target Schema
+        :param drop_sql: True if need to drop the fts configuration
+        :return:
+        """
+        sql = ''
+        if data:
+            if diff_schema:
+                data['schema'] = diff_schema
+            sql, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                     data=data, dcid=oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  scid=scid, dcid=oid, only_sql=True)
+            elif diff_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, dcid=oid,
+                               diff_schema=diff_schema, json_resp=False)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, dcid=oid,
+                               json_resp=False)
+        return sql
 
+
+SchemaDiffRegistry(blueprint.node_type, FtsDictionaryView)
 FtsDictionaryView.register_node_view(blueprint)

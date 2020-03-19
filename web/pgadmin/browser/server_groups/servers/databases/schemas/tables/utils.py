@@ -1366,7 +1366,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
             # Check if partition is again declare as partitioned table.
             if 'is_sub_partitioned' in row and row['is_sub_partitioned']:
-                part_data['partition_scheme'] = self.get_partition_scheme(row)
+                part_data['partition_scheme'] = row['sub_partition_scheme'] \
+                    if 'sub_partition_scheme' in row else \
+                    self.get_partition_scheme(row)
+
                 part_data['is_partitioned'] = True
 
             if 'is_attach' in row and row['is_attach']:

@@ -435,7 +435,7 @@ def compare(trans_id, source_sid, source_did, source_scid,
     status, msg = check_version_compatibility(source_sid, target_sid)
 
     if not status:
-        return make_json_response(success=0, errormsg=msg, status=404)
+        return make_json_response(success=0, errormsg=msg, status=428)
 
     comparison_result = []
 

@@ -415,3 +415,73 @@ CREATE PROCEDURE target.dodaj_klijenta(v_naziv character varying, v_oib characte
 
 
 ALTER PROCEDURE target.dodaj_klijenta(v_naziv character varying, v_oib character varying, v_pdv_id character varying, v_adresa character varying, v_mjesto integer, v_drzava character varying, v_tip_p_sub character varying, v_vlasnik character varying, v_pdv boolean, v_fisk boolean, v_iban character varying, v_k_osoba character varying, v_email character varying, v_br_tel character varying, v_radna_god numeric, v_schema character varying) OWNER TO postgres;
+
+-- Collation scripts
+CREATE COLLATION target.coll_tar
+    FROM pg_catalog."POSIX";
+
+ALTER COLLATION target.coll_tar
+    OWNER TO postgres;
+
+CREATE COLLATION target.coll_diff
+    (LC_COLLATE = 'C', LC_CTYPE = 'C');
+
+ALTER COLLATION target.coll_diff
+    OWNER TO postgres;
+
+-- FTS Configuration scripts
+CREATE TEXT SEARCH CONFIGURATION target.fts_con_tar (
+    COPY=german
+);
+
+ALTER TEXT SEARCH CONFIGURATION target.fts_con_tar OWNER TO postgres;
+
+CREATE TEXT SEARCH CONFIGURATION target.fts_con_diff (
+	PARSER = default
+);
+ALTER TEXT SEARCH CONFIGURATION target.fts_con_diff ADD MAPPING FOR asciiword WITH dutch_stem;
+ALTER TEXT SEARCH CONFIGURATION target.fts_con_diff ADD MAPPING FOR email WITH simple;
+ALTER TEXT SEARCH CONFIGURATION target.fts_con_diff ADD MAPPING FOR hword WITH german_stem;
+
+-- FTS Dictionary scripts
+CREATE TEXT SEARCH DICTIONARY target.fts_dict_tar (
+    TEMPLATE = simple,
+    stopwords = 'english'
+);
+
+CREATE TEXT SEARCH DICTIONARY target.fts_dict_diff (
+    TEMPLATE = simple,
+    stopwords = 'german'
+);
+
+COMMENT ON TEXT SEARCH DICTIONARY target.fts_dict_diff
+    IS 'Comment';
+
+-- FTS Parser scripts
+CREATE TEXT SEARCH PARSER target.fts_par_tar (
+    START = prsd_start,
+    GETTOKEN = prsd_nexttoken,
+    END = prsd_end,
+    LEXTYPES = prsd_lextype);
+
+CREATE TEXT SEARCH PARSER target.fts_par_diff (
+    START = int4_accum,
+    GETTOKEN = inet_gist_penalty,
+    END = btint2sortsupport,
+    LEXTYPES = dispell_init);
+
+COMMENT ON TEXT SEARCH PARSER target.fts_par_diff
+      IS 'Comment';
+
+-- FTS Template scripts
+CREATE TEXT SEARCH TEMPLATE target.fts_templ_tar (
+    INIT = dispell_init,
+    LEXIZE = dispell_lexize
+);
+
+CREATE TEXT SEARCH TEMPLATE target.fts_templ_diff (
+    INIT = dsimple_init,
+    LEXIZE = dsimple_lexize
+);
+
+COMMENT ON TEXT SEARCH TEMPLATE target.fts_templ_diff IS 'Comment';

@@ -165,6 +165,8 @@ class SchemaDiffTestCase(BaseTestGenerator):
                     self.assertEquals(response.status_code, 200)
                     response_data = json.loads(response.data.decode('utf-8'))
                     file_obj.write(response_data['diff_ddl'])
+            elif 'diff_ddl' in diff:
+                file_obj.write(diff['diff_ddl'])
 
         file_obj.close()
         try:

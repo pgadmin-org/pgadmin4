@@ -318,37 +318,40 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
             ))
 
             if len(tmp_list) > 0:
+                tmp_target = copy.deepcopy(target_dict[key])
                 for index in range(len(source_dict[key])):
                     source = copy.deepcopy(source_dict[key][index])
                     if type(source) is list:
                         # TODO
                         pass
                     elif type(source) is dict:
-                        tmp_key_array = ['name', 'colname', 'argid']
-                        for tmp_key in tmp_key_array:
-                            if tmp_key in source:
-                                if type(target_dict[key]) is list and \
-                                        len(target_dict[key]) > 0:
-                                    tmp = None
-                                    tmp_target = \
-                                        copy.deepcopy(target_dict[key])
-                                    for item in tmp_target:
-                                        if tmp_key in item and \
-                                                item[tmp_key] == \
-                                                source[tmp_key]:
-                                            tmp = copy.deepcopy(item)
-                                    if tmp and source != tmp:
-                                        updated.append(copy.deepcopy(source))
-                                        tmp_target.remove(tmp)
-                                    elif tmp and source == tmp:
-                                        tmp_target.remove(tmp)
-                                    elif tmp is None:
-                                        added.append(source)
-                                else:
+                        tmp_key_array = ['name', 'colname', 'argid', 'token',
+                                         'option']
+                        # Check the above keys are exist in the dictionary
+                        tmp_key = is_key_exists(tmp_key_array, source)
+                        if tmp_key is not None:
+                            if type(target_dict[key]) is list and \
+                                    len(target_dict[key]) > 0:
+                                tmp = None
+                                for item in tmp_target:
+                                    if tmp_key in item and \
+                                            item[tmp_key] == \
+                                            source[tmp_key]:
+                                        tmp = copy.deepcopy(item)
+                                if tmp and source != tmp:
+                                    updated.append(copy.deepcopy(source))
+                                    tmp_target.remove(tmp)
+                                elif tmp and source == tmp:
+                                    tmp_target.remove(tmp)
+                                elif tmp is None:
                                     added.append(source)
+                            else:
+                                added.append(source)
 
-                            difference[key] = {}
+                        difference[key] = {}
+                        if len(added) > 0:
                             difference[key]['added'] = added
+                        if len(updated) > 0:
                             difference[key]['changed'] = updated
                     elif target_dict[key] is None or \
                             (type(target_dict[key]) is list and
@@ -358,7 +361,7 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                     elif type(target_dict[key]) is list and\
                             len(target_dict[key]) > index:
                         difference[key] = source
-            else:
+            elif len(source_dict[key]) > 0:
                 difference[key] = source_dict[key]
 
             if type(source) is dict and tmp_target and key in tmp_target and \
@@ -381,6 +384,21 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                     difference[key] = source_dict[key]
 
     return difference
+
+
+def is_key_exists(key_list, target_dict):
+    """
+    This function is used to iterate the key list and check that key is
+    present in the given dictionary
+    :param key_list:
+    :param target_dict:
+    :return:
+    """
+    for key in key_list:
+        if key in target_dict:
+            return key
+
+    return None
 
 
 def parce_acl(source, target):
