@@ -126,7 +126,11 @@ _build_docs() {
     cd "${SOURCEDIR}/docs/en_US"
     python3 build_code_snippet.py
     if [ $1 == "redhat" ]; then
-        PYTHONPATH=$PYTHONPATH:/usr/lib/python3.6/site-packages python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
+        if [ "${OS_VERSION}" == "7" ]; then
+            PYTHONPATH=$PYTHONPATH:/usr/local/lib64/python3.6/site-packages:/usr/local/lib/python3.6/site-packages:/usr/lib/python3.6/site-packages python3 /usr/local/bin/sphinx-build . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
+        else
+            PYTHONPATH=$PYTHONPATH:/usr/lib/python3.6/site-packages python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
+        fi
     else
         PYTHONPATH=$PYTHONPATH:/usr/lib/python3/:/usr/lib/python3/dist-packages python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
     fi

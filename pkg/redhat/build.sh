@@ -34,6 +34,11 @@ cat << EOF > "${BUILDROOT}/server.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
 
+# Bytecompiling Python 3 doesn't work on RHEL/CentOS 7, so make it a no-op
+%if 0%{?rhel} && 0%{?rhel} == 7
+%define __python /bin/true
+%endif
+
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
 
@@ -43,8 +48,12 @@ Release:	1%{?dist}
 Summary:	The core server package for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
+%if 0%{?rhel} && 0%{?rhel} != 7
 Requires:	python3, libpq
 Recommends:	postgresql
+%else
+Requires:	python3, postgresql
+%endif
 
 %description
 The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -82,7 +91,6 @@ Summary:	The desktop user interface for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
 Requires:	${APP_NAME}-server, qt5-qtbase, qt5-qtbase-gui
-Recommends:	gnome-shell-extension-topicons-plus gnome-shell
 
 %description
 The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -122,7 +130,11 @@ Release:	1%{?dist}
 Summary:	The web interface for pgAdmin, hosted under Apache HTTPD.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
+%if 0%{?rhel} && 0%{?rhel} == 7
+Requires:	${APP_NAME}-server, httpd, pgadmin4-python3-mod_wsgi
+%else
 Requires:	${APP_NAME}-server, httpd, python3-mod_wsgi
+%endif
 
 %description
 The web interface for pgAdmin, hosted under Apache HTTPD. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -182,8 +194,20 @@ EOF
 rpmbuild --define "pga_build_root ${BUILDROOT}" -bb "${BUILDROOT}/meta.spec"
 
 #
+# mod_wsgi for CentOS 7
+#
+if [ ${OS_VERSION} == 7 ]; then
+    cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi-exports.patch" ${HOME}/rpmbuild/SOURCES
+    cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi.conf" ${HOME}/rpmbuild/SOURCES
+    curl -o ${HOME}/rpmbuild/SOURCES/mod_wsgi-4.7.1.tar.gz https://codeload.github.com/GrahamDumpleton/mod_wsgi/tar.gz/4.7.1
+    rpmbuild -bb "${SOURCEDIR}/pkg/redhat/pgadmin4-python-mod_wsgi.spec"
+fi
+
+#
 # Get the results!
 #
 cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/${APP_NAME}-*${APP_LONG_VERSION}-*.${OS_ARCH}.rpm "${DISTROOT}/"
 cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*${APP_LONG_VERSION}-*.noarch.rpm "${DISTROOT}/"
-
+if [ ${OS_VERSION} == 7 ]; then
+    cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.7.1-2.el7.x86_64.rpm "${DISTROOT}/"
+fi

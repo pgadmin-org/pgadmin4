@@ -1,8 +1,6 @@
 *.autosave
 *.db
-*.diff
 *.o
-*.patch
 *.psp
 *.pyc
 *.pyo
@@ -11,6 +9,8 @@
 .DS_Store
 .idea
 .vscode
+/*.diff
+/*.patch
 /dist
 /debian-build
 /docker-build

@@ -5,8 +5,10 @@ if [ "$EUID" -ne 0 ]
   exit 1
 fi
 
+OS_VERSION=$(cat /etc/os-release | grep "^VERSION_ID=" | awk -F "=" '{ print $2 }' | sed 's/"//g')
+
 # EPEL & other repos
-yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm
 yum config-manager --enable PowerTools AppStream BaseOS *epel
 
 # Node repo
@@ -20,7 +22,15 @@ curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yu
 # Install pre-reqs
 echo "Installing build pre-requisites..."
 yum groupinstall -y "Development Tools"
-yum install -y fakeroot qt5-qtbase-devel libpq-devel python3-devel python3-sphinx nodejs yarn
+
+if [ ${OS_VERSION} == 7 ]; then
+    yum install -y fakeroot httpd-devel qt5-qtbase-devel postgresql-devel python3-devel nodejs yarn
+    pip3 install sphinx
+else
+    yum install -y fakeroot qt5-qtbase-devel libpq-devel python3-devel python3-sphinx nodejs yarn
+fi
+
+
 
 
 
