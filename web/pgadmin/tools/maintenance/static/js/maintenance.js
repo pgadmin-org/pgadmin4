@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
@@ -277,6 +276,7 @@ define([
                     type: 'button',
                     url: 'maintenance.html',
                     label: gettext('Maintenance'),
+                    'aria-label': gettext('Object Help'),
                   },
                 }, {
                   text: '',
@@ -417,7 +417,6 @@ define([
             prepare: function() {
               // Main maintenance tool dialog container
               var $container = $('<div class=\'maintenance_dlg\'></div>');
-
               var t = pgBrowser.tree,
                 i = t.selected(),
                 d = i && i.length == 1 ? t.itemData(i) : undefined,

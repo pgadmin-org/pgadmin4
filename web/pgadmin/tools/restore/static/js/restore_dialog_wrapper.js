@@ -38,6 +38,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
           type: 'button',
           url: 'backup.html',
           label: gettext('Restore'),
+          'aria-label': gettext('Object Help'),
         },
       }, {
         text: '',

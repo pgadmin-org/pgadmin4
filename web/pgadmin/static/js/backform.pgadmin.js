@@ -1581,7 +1581,7 @@ define([
     showGridControl: function(data) {
       var self = this,
         gridHeader = ['<div class=\'subnode-header\'>',
-          '  <label class=\'control-label pg-el-sm-10\'>' + data.label + '</label>',
+          '  <span class=\'control-label pg-el-sm-10\'>' + data.label + '</span>',
           '  <button aria-label="' + _('Add') + '" class=\'btn btn-sm-sq btn-secondary add fa fa-plus\' title=\'' + _('Add new row') + '\'></button>',
           '</div>',
         ].join('\n'),
@@ -2890,41 +2890,40 @@ define([
       },
 
       down: function() {
+        let $el = this.$el.find('.datetimepicker-input');
+        let currdate = $el.data('datetimepicker').date().clone();
         if (this.$el.find('.datepicker').is(':visible')) {
-          let $el = this.$el.find('.datetimepicker-input');
-          let currdate = $el.data('datetimepicker').date().clone();
           $el.datetimepicker('date', currdate.add(7, 'd'));
         } else {
-          let $el = this.$el.find('.datetimepicker-input');
-          let currdate = $el.data('datetimepicker').date().clone();
           $el.datetimepicker('date', currdate.subtract(1, 'm'));
         }
       },
 
       up: function() {
+        let $el = this.$el.find('.datetimepicker-input');
+        let currdate = $el.data('datetimepicker').date().clone();
+
         if (this.$el.find('.datepicker').is(':visible')) {
-          let $el = this.$el.find('.datetimepicker-input');
-          let currdate = $el.data('datetimepicker').date().clone();
           $el.datetimepicker('date', currdate.subtract(7, 'd'));
         } else {
-          let $el = this.$el.find('.datetimepicker-input');
-          let currdate = $el.data('datetimepicker').date().clone();
           $el.datetimepicker('date', currdate.add(1, 'm'));
         }
       },
 
       left: function() {
+        let $el = this.$el.find('.datetimepicker-input');
+        let currdate = $el.data('datetimepicker').date().clone();
+
         if (this.$el.find('.datepicker').is(':visible')) {
-          let $el = this.$el.find('.datetimepicker-input');
-          let currdate = $el.data('datetimepicker').date().clone();
           $el.datetimepicker('date', currdate.subtract(1, 'd'));
         }
       },
 
       right: function() {
+        let $el = this.$el.find('.datetimepicker-input');
+        let currdate = $el.data('datetimepicker').date().clone();
+
         if (this.$el.find('.datepicker').is(':visible')) {
-          let $el = this.$el.find('.datetimepicker-input');
-          let currdate = $el.data('datetimepicker').date().clone();
           $el.datetimepicker('date', currdate.add(1, 'd'));
         }
       },
@@ -3193,7 +3192,7 @@ define([
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%> keyboard-shortcut-label"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <input type="<%=type%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" oncopy="return false; oncut="return false; onpaste="return false;" maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '  <input aria-label="<%=name%>" type="<%=type%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" oncopy="return false; oncut="return false; onpaste="return false;" maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',

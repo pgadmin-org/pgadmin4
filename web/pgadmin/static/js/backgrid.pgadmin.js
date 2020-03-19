@@ -698,6 +698,7 @@ define([
         $('<input>', {
           tabIndex: 0,
           type: 'checkbox',
+          'aria-label': gettext('data toggle'),
         }).prop('checked', rawValue).prop('disabled', !editable).attr('data-toggle', 'toggle')
           .attr('data-size', options.size).attr('data-on', options.onText).attr('data-off', options.offText)
           .attr('data-width', options.width).attr('data-height', options.height)
