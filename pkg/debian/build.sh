@@ -42,7 +42,7 @@ Description: The core server package for pgAdmin. pgAdmin is the most popular an
 EOF
 
 # Build the Debian package for the server
-fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_LONG_VERSION}_${OS_NAME}_${OS_VERSION}_amd64.deb"
+fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_LONG_VERSION}_${OS_NAME}_${OS_VERSION}_${OS_ARCH}.deb"
 
 #
 # Desktop package
@@ -62,7 +62,7 @@ Description: The desktop user interface for pgAdmin. pgAdmin is the most popular
 EOF
 
 # Build the Debian package for the server
-fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}_${OS_NAME}_${OS_VERSION}_amd64.deb"
+fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}_${OS_NAME}_${OS_VERSION}_${OS_ARCH}.deb"
 
 #
 # Web package
