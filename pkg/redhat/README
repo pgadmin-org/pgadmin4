@@ -35,6 +35,10 @@ pgadmin4-web-<version>.<distro>.<arch>.rpm
   The server mode setup script for configuring Apache HTTPD. Requires the 
   server package.
 
+pgadmin4-python3-mod_wsgi-4.7.1-2.el7.<arch>.rpm
+  The Python 3 build of mod_wsgi for the Apache HTTPD server. Only built
+  on RHEL/CentOS 7.
+
 Supported platforms
 ===================
 
