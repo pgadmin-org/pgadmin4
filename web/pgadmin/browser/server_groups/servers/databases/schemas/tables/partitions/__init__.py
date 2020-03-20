@@ -495,7 +495,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         partition_data['default_partition_header'] = \
             '-- Create a default partition to prevent the data loss.\n' \
             '-- It helps when none of the partitions of a relation\n' \
-            '-- matches the inserted data.'
+            '-- matches the inserted data.'
 
         # Create temporary name for partitions
         for item in source_data['partitions']:

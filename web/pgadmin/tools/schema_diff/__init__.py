@@ -568,7 +568,7 @@ def check_version_compatibility(sid, tid):
     tar_manager = driver.connection_manager(tar_server.id)
 
     if src_manager.server_type != tar_manager.server_type:
-        return False, gettext('Schema diff does not support the comparison '
+        return False, gettext('Schema diff does not support the comparison '
                               'between Postgres Server and EDB Postgres '
                               'Advanced Server.')
 
