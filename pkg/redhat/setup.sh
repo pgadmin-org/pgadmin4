@@ -24,10 +24,10 @@ echo "Installing build pre-requisites..."
 yum groupinstall -y "Development Tools"
 
 if [ ${OS_VERSION} == 7 ]; then
-    yum install -y fakeroot httpd-devel qt5-qtbase-devel postgresql-devel python3-devel nodejs yarn
+    yum install -y fakeroot httpd-devel qt5-qtbase-devel postgresql-devel python3-devel nodejs yarn rpm-build
     pip3 install sphinx
 else
-    yum install -y fakeroot qt5-qtbase-devel libpq-devel python3-devel python3-sphinx nodejs yarn
+    yum install -y fakeroot qt5-qtbase-devel libpq-devel python3-devel python3-sphinx nodejs yarn rpm-build
 fi
 
 
