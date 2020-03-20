@@ -127,6 +127,7 @@ cat << EOF > "${BUILDROOT}/web.spec"
 Name:		${APP_NAME}-web
 Version:	${APP_LONG_VERSION}
 Release:	1%{?dist}
+BuildArch:	noarch
 Summary:	The web interface for pgAdmin, hosted under Apache HTTPD.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
