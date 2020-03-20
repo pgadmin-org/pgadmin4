@@ -42,7 +42,7 @@ Description: The core server package for pgAdmin. pgAdmin is the most popular an
 EOF
 
 # Build the Debian package for the server
-fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_LONG_VERSION}_${OS_NAME}_${OS_VERSION}_${OS_ARCH}.deb"
+fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_LONG_VERSION}_${OS_ARCH}.deb"
 
 #
 # Desktop package
@@ -62,7 +62,7 @@ Description: The desktop user interface for pgAdmin. pgAdmin is the most popular
 EOF
 
 # Build the Debian package for the server
-fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}_${OS_NAME}_${OS_VERSION}_${OS_ARCH}.deb"
+fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}_${OS_ARCH}.deb"
 
 #
 # Web package
@@ -85,7 +85,7 @@ mkdir -p "${WEBROOT}/etc/apache2/conf-available"
 cp "${SOURCEDIR}/pkg/debian/pgadmin4.conf" "${WEBROOT}/etc/apache2/conf-available"
 
 # Build the Debian package for the web
-fakeroot dpkg-deb --build "${WEBROOT}" "${DISTROOT}/${APP_NAME}-web_${APP_LONG_VERSION}_${OS_NAME}_${OS_VERSION}_all.deb"
+fakeroot dpkg-deb --build "${WEBROOT}" "${DISTROOT}/${APP_NAME}-web_${APP_LONG_VERSION}_all.deb"
 
 #
 # Meta package
@@ -105,4 +105,4 @@ Description: Installs all required components to run pgAdmin in desktop and web 
 EOF
 
 # Build the Debian meta package
-fakeroot dpkg-deb --build "${METAROOT}" "${DISTROOT}/${APP_NAME}_${APP_LONG_VERSION}_${OS_NAME}_${OS_VERSION}_all.deb"
+fakeroot dpkg-deb --build "${METAROOT}" "${DISTROOT}/${APP_NAME}_${APP_LONG_VERSION}_all.deb"
