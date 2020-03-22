@@ -143,10 +143,6 @@
             "grantee":"PUBLIC",
             "grantor":"enterprisedb",
             "privileges":[{
-              "privilege_type":"a",
-              "privilege":true,
-              "with_grant":false
-            },{
               "privilege_type":"r",
               "privilege":true,
               "with_grant":false
