@@ -23,7 +23,7 @@ $color-danger-fg: $white !default;
 $color-danger-light: #F39999 !default;
 $color-danger-lighter: #FAECEC !default;
 
-$color-success: #43a047 !default;
+$color-success: #26852B !default;
 $color-success-fg: $black !default;
 $color-success-light: #D9ECDA !default;
 
@@ -60,7 +60,7 @@ $text-height-calc: $line-height-base*$font-size-base/1rem;
 $grid-gutter-width: 15px;
 $border-radius: 0.25rem;
 
-$text-muted: $color-gray-dark !default;
+$text-muted: #667185 !default;
 $header-bg: $color-bg !default;
 
 $tree-font-size: 0.815rem;
@@ -101,7 +101,7 @@ $popover-border-color: $dropdown-border-color;
 $popover-box-shadow: $dropdown-box-shadow;
 
 $input-btn-focus-width: 0.1rem;
-$btn-disabled-opacity: 0.5;
+$btn-disabled-opacity: 0.65;
 $btn-transition: color .05s ease-in-out, background-color .05s ease-in-out, border-color .05s ease-in-out, box-shadow .05s ease-in-out;
 
 $card-spacer-y: 0rem;
@@ -218,7 +218,7 @@ $sql-title-bg: $color-ternary;
 $sql-title-fg: $color-ternary-fg;
 // Toolbar + editor title heights + title bottom border
 $sql-editor-panel-top: $title-height + $text-height-calc*16px + $sql-title-padding*2 + $panel-border-width - 0.5px;
-$sql-gutters-bg: $negative-bg;
+$sql-gutters-bg: $datagrid-bg;
 $sql-history-detail-bg: $color-gray-lighter;
 $sql-history-success-bg: $color-primary-light;
 $sql-history-success-fg: $active-color;
