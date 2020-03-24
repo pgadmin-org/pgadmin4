@@ -50,7 +50,7 @@ class CastModule(CollectionNodeModule):
     """
 
     NODE_TYPE = 'cast'
-    COLLECTION_LABEL = 'Casts'
+    COLLECTION_LABEL = gettext('Casts')
 
     def __init__(self, *args, **kwargs):
         super(CastModule, self).__init__(*args, **kwargs)

@@ -75,7 +75,7 @@ define('misc.dependencies', [
       var $container = this.dependenciesPanel.layout().scene().find('.pg-panel-content'),
         $gridContainer = $container.find('.pg-panel-dependencies-container'),
         grid = new Backgrid.Grid({
-          emptyText: 'No data found',
+          emptyText: gettext('No data found'),
           columns: [{
             name: 'type',
             label: gettext('Type'),

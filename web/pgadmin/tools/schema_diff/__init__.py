@@ -36,7 +36,7 @@ class SchemaDiffModule(PgAdminModule):
         A module class for Schema Diff derived from PgAdminModule.
     """
 
-    LABEL = "Schema Diff"
+    LABEL = gettext("Schema Diff")
 
     def get_own_menuitems(self):
         return {}
@@ -439,7 +439,7 @@ def compare(trans_id, source_sid, source_did, source_scid,
 
     comparison_result = []
 
-    diff_model_obj.set_comparison_info("Comparing objects...", 0)
+    diff_model_obj.set_comparison_info(gettext("Comparing objects..."), 0)
     update_session_diff_transaction(trans_id, session_obj,
                                     diff_model_obj)
 
@@ -451,7 +451,8 @@ def compare(trans_id, source_sid, source_did, source_scid,
         for node_name, node_view in all_registered_nodes.items():
             view = SchemaDiffRegistry.get_node_view(node_name)
             if hasattr(view, 'compare'):
-                msg = "Comparing " + view.blueprint.COLLECTION_LABEL
+                msg = gettext('Comparing {0}').\
+                    format(gettext(view.blueprint.COLLECTION_LABEL))
                 diff_model_obj.set_comparison_info(msg, total_percent)
                 # Update the message and total percentage in session object
                 update_session_diff_transaction(trans_id, session_obj,
@@ -468,7 +469,7 @@ def compare(trans_id, source_sid, source_did, source_scid,
                     comparison_result = comparison_result + res
             total_percent = total_percent + node_percent
 
-        msg = "Successfully compare the specified schemas."
+        msg = gettext("Successfully compare the specified schemas.")
         total_percent = 100
         diff_model_obj.set_comparison_info(msg, total_percent)
         # Update the message and total percentage done in session object
@@ -501,7 +502,7 @@ def poll(trans_id):
     msg, diff_percentage = diff_model_obj.get_comparison_info()
 
     if diff_percentage == 100:
-        diff_model_obj.set_comparison_info("Comparing objects...", 0)
+        diff_model_obj.set_comparison_info(gettext("Comparing objects..."), 0)
         update_session_diff_transaction(trans_id, session_obj,
                                         diff_model_obj)
 

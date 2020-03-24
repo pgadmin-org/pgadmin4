@@ -113,7 +113,7 @@ define([
         url_with_id: false,
         select2: {
           allowClear: true,
-          placeholder: 'Select an item...',
+          placeholder: gettext('Select an item...'),
           width: 'style',
         },
       }),
@@ -256,7 +256,7 @@ define([
       },
       select2: {
         allowClear: true,
-        placeholder: 'Select an item...',
+        placeholder: gettext('Select an item...'),
         width: 'style',
         templateResult: formatNode,
         templateSelection: formatNode,
@@ -375,7 +375,7 @@ define([
       url_with_id: false,
       select2: {
         allowClear: true,
-        placeholder: 'Select an item...',
+        placeholder: gettext('Select an item...'),
         width: 'style',
       },
       opt: {
@@ -510,7 +510,7 @@ define([
         return res;
       },
       select2: {
-        placeholder: 'Select an item...',
+        placeholder: gettext('Select an item...'),
         width: 'style',
         templateResult: formatNode,
         templateSelection: formatNode,
@@ -555,7 +555,7 @@ define([
         return res;
       },
       select2: {
-        placeholder: 'Select an item...',
+        placeholder: gettext('Select an item...'),
         width: 'style',
         templateResult: formatNode,
         templateSelection: formatNode,
@@ -570,7 +570,7 @@ define([
       url_with_id: false,
       select2: {
         allowClear: true,
-        placeholder: 'Select an item...',
+        placeholder: gettext('Select an item...'),
         width: 'style',
         multiple: true,
       },

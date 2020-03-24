@@ -7,6 +7,8 @@
 #
 ##########################################################################
 
+from flask_babelex import gettext
+
 
 class SchemaDiffModel(object):
     """
@@ -30,7 +32,7 @@ class SchemaDiffModel(object):
             **kwargs : N number of parameters
         """
         self._comparison_result = dict()
-        self._comparison_msg = 'Comparision started...'
+        self._comparison_msg = gettext('Comparision started...')
         self._comparison_percentage = 0
 
     def clear_data(self):

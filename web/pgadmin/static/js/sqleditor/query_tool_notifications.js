@@ -97,7 +97,7 @@ let queryToolNotifications = {
 
     // Set up the grid
     let notifications_grid = new Backgrid.Grid({
-      emptyText: 'No data found',
+      emptyText: gettext('No data found'),
       columns: gridCols,
       collection: queryToolNotifications.collection,
       className: 'backgrid presentation table table-bordered table-hover table-noouter-border table-bottom-border',

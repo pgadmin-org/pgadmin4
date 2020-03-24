@@ -27,7 +27,7 @@ define([
     userFilter = function(collection) {
       return (new Backgrid.Extension.ClientSideFilter({
         collection: collection,
-        placeholder: _('Filter by email'),
+        placeholder: gettext('Filter by email'),
         // How long to wait after typing has stopped before searching can start
         wait: 150,
       }));
@@ -763,7 +763,7 @@ define([
                       <div class="input-group-prepend">
                         <span class="input-group-text fa fa-search" id="labelSearch"></span>
                         </div>
-                          <input type="search" class="form-control" id="txtGridSearch" placeholder="Search" aria-label="Search" aria-describedby="labelSearch" />
+                          <input type="search" class="form-control" id="txtGridSearch" placeholder="` + gettext('Search') + `" aria-label="Search" aria-describedby="labelSearch" />
                         </div>
                         <button id="btn_refresh" type="button" class="btn btn-secondary btn-navtab-inline add" title="Add">
                           <span class="fa fa-plus "></span>

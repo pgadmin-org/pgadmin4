@@ -85,7 +85,7 @@ define('pgadmin.schemadiff', [
       })
         .done(function(res) {
           self.trans_id = res.data.schemaDiffTransId;
-          res.data.panel_title = 'Schema Diff (Beta)'; //TODO: Set the panel title
+          res.data.panel_title = gettext('Schema Diff (Beta)'); //TODO: Set the panel title
           // TODO: Following function is used to test the fetching of the
           // databases this should be moved to server selection event later.
           self.launch_schema_diff(res.data);

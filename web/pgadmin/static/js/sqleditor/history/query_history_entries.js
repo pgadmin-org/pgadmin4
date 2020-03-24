@@ -252,11 +252,11 @@ export class QueryHistoryEntries {
         <div class="toggle-and-history-container">
             <div class="query-history-toggle">
                 <label class="control-label">
-                    ${gettext('Show queries generated internally by pgAdmin')}?
+                    ` + gettext('Show queries generated internally by pgAdmin?') + `
                 </label>
                 <input id="generated-queries-toggle" type="checkbox"
                   class="pgadmin-controls" data-style="quick"
-                  data-size="mini" data-on="${gettext('Yes')}" data-off="${gettext('No')}"
+                  data-size="mini" data-on="` + gettext('Yes') + '" data-off="' + gettext('No') + `"
                   data-onstyle="success" data-offstyle="ternary" checked>
             </div>
             <div id='query_list' class='query-history' tabindex='0'></div>

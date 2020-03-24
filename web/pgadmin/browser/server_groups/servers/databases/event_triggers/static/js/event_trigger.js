@@ -111,10 +111,10 @@ define('pgadmin.node.event_trigger', [
           id: 'enabled', label: gettext('Trigger enabled?'),
           group: gettext('Definition'), mode: ['properties', 'edit','create'],
           options: [
-            {label: 'Enable', value: 'O'},
-            {label: 'Disable', value: 'D'},
-            {label: 'Replica', value: 'R'},
-            {label: 'Always', value: 'A'},
+            {label: gettext('Enable'), value: 'O'},
+            {label: gettext('Disable'), value: 'D'},
+            {label: gettext('Replica'), value: 'R'},
+            {label: gettext('Always'), value: 'A'},
           ],
           control: 'select2', select2: { allowClear: false, width: '100%' },
         },{
@@ -125,9 +125,9 @@ define('pgadmin.node.event_trigger', [
           id: 'eventname', label: gettext('Event'),
           group: gettext('Definition'), cell: 'string',
           options: [
-            {label: 'DDL COMMAND START', value: 'DDL_COMMAND_START'},
-            {label: 'DDL COMMAND END', value: 'DDL_COMMAND_END'},
-            {label: 'SQL DROP', value: 'SQL_DROP'},
+            {label: gettext('DDL COMMAND START'), value: 'DDL_COMMAND_START'},
+            {label: gettext('DDL COMMAND END'), value: 'DDL_COMMAND_END'},
+            {label: gettext('SQL DROP'), value: 'SQL_DROP'},
           ],
           control: 'select2', select2: { allowClear: false, width: '100%' },
         },{

@@ -673,7 +673,7 @@ define('pgadmin.dashboard', [
 
       // Set up the grid
       var grid = new Backgrid.Grid({
-        emptyText: 'No data found',
+        emptyText: gettext('No data found'),
         columns: columns,
         collection: data,
         className: 'backgrid presentation table table-bordered table-noouter-border table-hover',

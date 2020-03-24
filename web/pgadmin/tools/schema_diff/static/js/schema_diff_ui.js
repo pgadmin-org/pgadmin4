@@ -302,11 +302,11 @@ export default class SchemaDiffUI {
     var grid_width =  (self.grid_width - 47) / 2 ;
     var columns = [
       checkboxSelector.getColumnDefinition(),
-      {id: 'title', name: 'Schema Objects', field: 'title', minWidth: grid_width, formatter: formatColumnTitle},
-      {id: 'status', name: 'Comparison Result', field: 'status', minWidth: grid_width},
-      {id: 'label', name: 'Schema Objects', field: 'label',  width: 0, minWidth: 0, maxWidth: 0,
+      {id: 'title', name: gettext('Schema Objects'), field: 'title', minWidth: grid_width, formatter: formatColumnTitle},
+      {id: 'status', name: gettext('Comparison Result'), field: 'status', minWidth: grid_width},
+      {id: 'label', name: gettext('Schema Objects'), field: 'label',  width: 0, minWidth: 0, maxWidth: 0,
         cssClass: 'really-hidden', headerCssClass: 'really-hidden'},
-      {id: 'type', name: 'Schema Objects', field: 'type',  width: 0, minWidth: 0, maxWidth: 0,
+      {id: 'type', name: gettext('Schema Objects'), field: 'type',  width: 0, minWidth: 0, maxWidth: 0,
         cssClass: 'really-hidden', headerCssClass: 'really-hidden'},
       {id: 'id', name: 'id', field: 'id', width: 0, minWidth: 0, maxWidth: 0,
         cssClass: 'really-hidden', headerCssClass: 'really-hidden' },
@@ -462,10 +462,10 @@ export default class SchemaDiffUI {
       .done(function (res) {
         let msg = res.data.compare_msg;
         if (res.data.diff_percentage != 100) {
-          msg = msg + ' (this may take a few minutes)...';
+          msg = msg + gettext(' (this may take a few minutes)...');
         }
 
-        msg = msg + '<br>'+ res.data.diff_percentage + '% completed.';
+        msg = msg + '<br>' + gettext('%s completed.', res.data.diff_percentage + '%');
         $('#diff_fetching_data').find('.schema-diff-busy-text').html(msg);
       })
       .fail(function (xhr) {

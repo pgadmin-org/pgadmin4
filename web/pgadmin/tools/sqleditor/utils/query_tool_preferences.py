@@ -212,9 +212,9 @@ def RegisterQueryToolPreferences(self):
         'CSV_output', 'csv_quoting',
         gettext("CSV quoting"), 'options', 'strings',
         category_label=gettext('CSV Output'),
-        options=[{'label': 'None', 'value': 'none'},
-                 {'label': 'All', 'value': 'all'},
-                 {'label': 'Strings', 'value': 'strings'}],
+        options=[{'label': gettext('None'), 'value': 'none'},
+                 {'label': gettext('All'), 'value': 'all'},
+                 {'label': gettext('Strings'), 'value': 'strings'}],
         select2={
             'allowClear': False,
             'tags': False
@@ -240,7 +240,7 @@ def RegisterQueryToolPreferences(self):
         options=[{'label': ';', 'value': ';'},
                  {'label': ',', 'value': ','},
                  {'label': '|', 'value': '|'},
-                 {'label': 'Tab', 'value': '\t'}],
+                 {'label': gettext('Tab'), 'value': '\t'}],
         select2={
             'allowClear': False,
             'tags': True
@@ -262,9 +262,9 @@ def RegisterQueryToolPreferences(self):
         'Results_grid', 'results_grid_quoting',
         gettext("Result copy quoting"), 'options', 'strings',
         category_label=gettext('Results grid'),
-        options=[{'label': 'None', 'value': 'none'},
-                 {'label': 'All', 'value': 'all'},
-                 {'label': 'Strings', 'value': 'strings'}],
+        options=[{'label': gettext('None'), 'value': 'none'},
+                 {'label': gettext('All'), 'value': 'all'},
+                 {'label': gettext('Strings'), 'value': 'strings'}],
         select2={
             'allowClear': False,
             'tags': False
@@ -290,7 +290,7 @@ def RegisterQueryToolPreferences(self):
         options=[{'label': ';', 'value': ';'},
                  {'label': ',', 'value': ','},
                  {'label': '|', 'value': '|'},
-                 {'label': 'Tab', 'value': '\t'}],
+                 {'label': gettext('Tab'), 'value': '\t'}],
         select2={
             'allowClear': False,
             'tags': True

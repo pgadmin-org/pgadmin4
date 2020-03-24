@@ -432,7 +432,7 @@ define([
 
         if (editable) {
           this.$el.html(
-            '<i class=\'fa fa-pencil-square subnode-edit-in-process\' title=\'' + _('Edit row') +  '\' aria-label=\'' + _('Edit row') +  '\'></i>'
+            '<i class=\'fa fa-pencil-square subnode-edit-in-process\' title=\'' + gettext('Edit row') +  '\' aria-label=\'' + gettext('Edit row') +  '\'></i>'
           );
           let body = $(this.$el).parents()[1],
             container = $(body).find('.tab-content:first > .tab-pane.active:first');
@@ -451,7 +451,7 @@ define([
     },
     render: function() {
       this.$el.empty();
-      this.$el.html('<i class=\'fa fa-pencil-square-o\' title=\'' + _('Edit row') + '\' aria-label=\'' + _('Edit row') +  '\'></i>');
+      this.$el.html('<i class=\'fa fa-pencil-square-o\' title=\'' + gettext('Edit row') + '\' aria-label=\'' + gettext('Edit row') +  '\'></i>');
       this.delegateEvents();
       if (this.grabFocus)
         this.$el.trigger('focus');
@@ -555,7 +555,7 @@ define([
       var self = this;
       this.$el.empty();
       $(this.$el).attr('tabindex', 0);
-      this.$el.html('<i aria-label="' + _('Delete row') + '" class=\'fa fa-trash\' title=\'' + _('Delete row') + '\'></i>');
+      this.$el.html('<i aria-label="' + gettext('Delete row') + '" class=\'fa fa-trash\' title=\'' + gettext('Delete row') + '\'></i>');
       // Listen for Tab/Shift-Tab key
       this.$el.on('keydown', function(e) {
         // with keyboard navigation on space key, mark row for deletion

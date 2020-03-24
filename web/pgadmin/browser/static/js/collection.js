@@ -183,7 +183,7 @@ define([
         }
         // Initialize a new Grid instance
         that.grid = new Backgrid.Grid({
-          emptyText: 'No data found',
+          emptyText: gettext('No data found'),
           columns: gridSchema.columns,
           collection: that.collection,
           className: 'backgrid table presentation table-bordered table-noouter-border table-hover',

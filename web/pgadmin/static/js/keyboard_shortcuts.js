@@ -87,7 +87,7 @@ function shortcut_title(title, shortcut) {
  * shortcut object is browser.get_preference().value
  */
 function shortcut_accesskey_title(title, shortcut) {
-  return `${title} (${gettext('accesskey')} + ${shortcut_key(shortcut)})`;
+  return `${title} (` + gettext('accesskey') + ` + ${shortcut_key(shortcut)})`;
 }
 
 

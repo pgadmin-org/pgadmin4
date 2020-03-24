@@ -1258,12 +1258,12 @@ define([
           }
 
           select_box = `<div class='change_file_types d-flex align-items-center p-1'>
-          <div>
-            ${gettext('Show hidden files and folders')}?
-            <input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='0'>
+          <div>` +
+            gettext('Show hidden files and folders?') +
+            `<input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='0'>
           </div>
           <div class="ml-auto">
-            <label class="my-auto">${gettext('Format')}</label>
+            <label class="my-auto">` + gettext('Format') + `</label>
             <select name='type' tabindex='0'>${fileFormats}</select>
           <div>`;
         }

@@ -609,11 +609,11 @@ define([
 
       if(this.$el.find('.toggle.btn').hasClass('off')) {
         this.$el.find('.sr-value').text(`
-          ${label}, ${offText}, ${gettext('Toggle button')}
+          ${label}, ${offText}, ` + gettext('Toggle button') + `
         `);
       } else {
         this.$el.find('.sr-value').text(`
-          ${label}, ${onText}, ${gettext('Toggle button')}
+          ${label}, ${onText}, ` + gettext('Toggle button') + `
         `);
       }
     },
@@ -1295,7 +1295,7 @@ define([
         gridHeader = _.template([
           '<div class="subnode-header">',
           '  <span  class="control-label pg-el-sm-10" id="<%=cId%>"><%-label%></span>',
-          '  <button aria-label="' + _('Add new row') + '" class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"><%-add_label%></button>',
+          '  <button aria-label="' + gettext('Add new row') + '" class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + gettext('Add new row') + '"><%-add_label%></button>',
           '</div>',
         ].join('\n')),
         gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-12 object subnode "></div>').append(
@@ -1582,7 +1582,7 @@ define([
       var self = this,
         gridHeader = ['<div class=\'subnode-header\'>',
           '  <span class=\'control-label pg-el-sm-10\'>' + data.label + '</span>',
-          '  <button aria-label="' + _('Add') + '" class=\'btn btn-sm-sq btn-secondary add fa fa-plus\' title=\'' + _('Add new row') + '\'></button>',
+          '  <button aria-label="' + gettext('Add') + '" class=\'btn btn-sm-sq btn-secondary add fa fa-plus\' title=\'' + gettext('Add new row') + '\'></button>',
           '</div>',
         ].join('\n'),
         gridBody = $('<div class=\'pgadmin-control-group backgrid form-group pg-el-12 object subnode\'></div>').append(gridHeader);

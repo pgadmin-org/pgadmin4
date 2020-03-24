@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import moment from 'moment';
+import gettext from 'sources/gettext';
 
 export function calculateQueryRunTime(startTime, endTime) {
   let total_ms = moment(endTime).diff(startTime);
@@ -26,9 +27,9 @@ export function calculateQueryRunTime(startTime, endTime) {
   hrs = parseInt(mins/60);
   mins = mins%60;
 
-  result = (hrs>0 ? hrs + ' hr ': '')
-          + (mins>0 ? mins + ' min ': '')
-          + (hrs<=0 && secs>0 ? secs + ' secs ': '')
-          + (hrs<=0 && mins<=0 ? total_ms + ' msec ':'');
+  result = (hrs>0 ? hrs + ' ' + gettext('hr') + ' ': '')
+          + (mins>0 ? mins + ' ' + gettext('min') + ' ': '')
+          + (hrs<=0 && secs>0 ? secs + ' ' + gettext('secs') + ' ': '')
+          + (hrs<=0 && mins<=0 ? total_ms + ' ' + gettext('msec') + ' ':'');
   return result.trim();
 }

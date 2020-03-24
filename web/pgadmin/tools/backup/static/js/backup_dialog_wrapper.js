@@ -98,7 +98,7 @@ export class BackupDialogWrapper extends DialogWrapper {
 
     const node = this.pgBrowser.Nodes[selectedTreeNodeData._type];
     if (this.dialogTitle === null) {
-      const title = `Backup (${node.label}: ${selectedTreeNodeData.label})`;
+      let title = gettext('Backup (%s: %s)', node.label, selectedTreeNodeData.label);
       this.main(title);
     }
 

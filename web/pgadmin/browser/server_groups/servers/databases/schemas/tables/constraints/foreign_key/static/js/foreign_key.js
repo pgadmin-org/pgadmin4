@@ -378,7 +378,7 @@ define('pgadmin.node.foreign_key', [
           titleTmpl = _.template([
             '<div class="subnode-header">',
             '  <label class="control-label pg-el-sm-10"><%-label%></label>',
-            '  <button class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + _('Add new row') + '"></button>',
+            '  <button class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + gettext('Add new row') + '"></button>',
             '</div>'].join('\n')),
           $gridBody =
           $('<div class=\'pgadmin-control-group backgrid form-group col-12 object subnode\'></div>').append(

@@ -2237,7 +2237,7 @@ define('tools.querytool', [
 
         self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
-        self.gridView.set_editor_title(`(${gettext('Obtaining connection...')} ${_.unescape(url_params.title)}`);
+        self.gridView.set_editor_title('(' + gettext('Obtaining connection...') + ` ${_.unescape(url_params.title)}`);
 
         let afterConn = function() {
           let enableBtns = [];

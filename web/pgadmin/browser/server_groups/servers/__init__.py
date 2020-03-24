@@ -1266,13 +1266,14 @@ class ServerNode(PGChildNodeView):
                     data={
                         'status': 1,
                         'result': gettext(
-                            'Named restore point created: {0}'.format(
-                                restore_point_name))
+                            'Named restore point created: {0}').format(
+                                restore_point_name)
                     })
 
         except Exception as e:
-            current_app.logger.error(
-                'Named restore point creation failed ({0})'.format(str(e))
+            current_app.logger.error(gettext(
+                'Named restore point creation failed ({0})').format(
+                    str(e))
             )
             return internal_server_error(errormsg=str(e))
 

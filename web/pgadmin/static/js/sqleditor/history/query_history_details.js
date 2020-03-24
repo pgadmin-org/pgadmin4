@@ -87,10 +87,10 @@ export default class QueryHistoryDetails {
   updateCopyButton(copied) {
     if (copied) {
       this.$copyBtn.addClass('was-copied').removeClass('copy-all');
-      this.$copyBtn.text('Copied!');
+      this.$copyBtn.text(gettext('Copied!'));
     } else {
       this.$copyBtn.addClass('copy-all').removeClass('was-copied');
-      this.$copyBtn.text('Copy');
+      this.$copyBtn.text(gettext('Copy'));
     }
   }
 
@@ -106,14 +106,14 @@ export default class QueryHistoryDetails {
     };
 
     this.$metaData.empty().append(
-      `<div class='metadata'>
-                ${itemTemplate(this.formatDate(this.entry.start_time), 'Date')}
-                ${itemTemplate(
-    this.entry.row_affected.toLocaleString(),
-    'Rows Affected'
-  )}
-                ${itemTemplate(this.entry.total_time, 'Duration')}
-            </div>`
+      '<div class="metadata">' +
+      itemTemplate(this.formatDate(this.entry.start_time), gettext('Date')) +
+      itemTemplate(
+        this.entry.row_affected.toLocaleString(),
+        gettext('Rows Affected')
+      ) +
+      itemTemplate(this.entry.total_time, gettext('Duration')) +
+      '</div>'
     );
   }
 
@@ -179,7 +179,7 @@ export default class QueryHistoryDetails {
             </div>
             <div class='message-block'>
               <div class='message'>
-                <div class='message-header'>Messages</div>
+                <div class='message-header'>` + gettext('Messages') + `</div>
                 <div class='content'></div>
               </div>
             </div>

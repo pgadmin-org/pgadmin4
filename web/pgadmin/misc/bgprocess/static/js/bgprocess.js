@@ -311,8 +311,8 @@ define('misc.bgprocess', [
                   </div>
                   <div class="pg-bg-etime my-auto mr-2"></div>
                   <div class="ml-auto">
-                    <button class="btn btn-secondary pg-bg-more-details"><span class="fa fa-info-circle" role="img"></span>&nbsp;${gettext('More details...')}</button>
-                    <button class="btn btn-danger bg-process-stop"><span class="fa fa-times-circle" role="img"></span>&nbsp;${gettext('Stop Process')}</button>
+                    <button class="btn btn-secondary pg-bg-more-details"><span class="fa fa-info-circle" role="img"></span>&nbsp;` + gettext('More details...') + `</button>
+                    <button class="btn btn-danger bg-process-stop"><span class="fa fa-times-circle" role="img"></span>&nbsp;` + gettext('Stop Process') + `</button>
                   </div>
                 </div>
                 <div class="pg-bg-status py-1">
@@ -393,7 +393,7 @@ define('misc.bgprocess', [
           is_new = true;
           panel = this.panel =
             pgBrowser.BackgroundProcessObsorver.create_panel();
-          panel.title('Process Watcher - ' + self.type_desc);
+          panel.title(gettext('Process Watcher - %s', self.type_desc));
           panel.focus();
         }
 
@@ -419,7 +419,7 @@ define('misc.bgprocess', [
           setTimeout(function() {
             self.logs[0].scrollTop = self.logs[0].scrollHeight;
           });
-          self.logs_loading = $(`<li class="pg-bg-res-out loading-logs">${gettext('Loading process logs...')}</li>`);
+          self.logs_loading = $('<li class="pg-bg-res-out loading-logs">' + gettext('Loading process logs...') + '</li>');
           self.logs.append(self.logs_loading);
           // set bgprocess detailed description
           $header.find('.bg-detailed-desc').html(self.detailed_desc);

@@ -59,9 +59,9 @@ export default class QueryHistory {
       this.parentNode.empty()
         .removeClass('d-flex')
         .append(
-          `<div role="status" class='pg-panel-message'>${gettext(
-            'No history found'
-          )}</div>`
+          '<div role="status" class="pg-panel-message">' +
+            gettext('No history found') +
+          '</div>'
         );
     } else {
       this.parentNode.empty().addClass('d-flex');

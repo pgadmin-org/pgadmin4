@@ -52,8 +52,8 @@ class Properties:
         execute_on_text = self.translate_execute_on_text(execute_on)
         response = dict(
             name=table_information_result['name'],
-            type=gettext('readable' if not table_information_result[
-                'writable'] else 'writable'),
+            type=gettext('readable') if not table_information_result[
+                'writable'] else gettext('writable'),
             format_type=table_information_result['pg_encoding_to_char'],
             format_options=table_information_result['fmtopts'],
             external_options=table_information_result['options'],
@@ -65,14 +65,14 @@ class Properties:
     @staticmethod
     def translate_execute_on_text(execute_on):
         if execute_on['type'] == 'host':
-            return 'host %s' % execute_on['value']
+            return gettext('host %s') % execute_on['value']
         elif execute_on['type'] == 'per_host':
-            return 'per host'
+            return gettext('per host')
         elif execute_on['type'] == 'master_only':
-            return 'master segment'
+            return gettext('master segment')
         elif execute_on['type'] == 'all_segments':
-            return 'all segments'
+            return gettext('all segments')
         elif execute_on['type'] == 'segment':
-            return '%s segment' % execute_on['value']
+            return gettext('%s segment') % execute_on['value']
         elif execute_on['type'] == 'segments':
-            return '%d segments' % execute_on['value']
+            return gettext('%d segments') % execute_on['value']

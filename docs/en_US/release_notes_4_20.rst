@@ -15,6 +15,7 @@ Housekeeping
 ************
 
 | `Issue #5271 <https://redmine.postgresql.org/issues/5271>`_ -  Enhance the color of switch control for both light and dark theme.
+| `Issue #5284 <https://redmine.postgresql.org/issues/5284>`_ -  Added and fixed gettext usage for better translation coverage.
 
 Bug fixes
 *********

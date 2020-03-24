@@ -266,7 +266,7 @@ def create_maintenance_job(sid, did):
     # Return response
     return make_json_response(
         data={'job_id': jid, 'status': True,
-              'info': 'Maintenance job created.'}
+              'info': _('Maintenance job created.')}
     )
 
 

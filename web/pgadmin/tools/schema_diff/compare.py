@@ -12,6 +12,7 @@
 import copy
 
 from flask import render_template
+from flask_babelex import gettext
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import internal_server_error
@@ -86,7 +87,7 @@ class SchemaDiffObjectCompare:
         return compare_dictionaries(self, source_params, target_params,
                                     target_schema, source, target,
                                     self.node_type,
-                                    self.blueprint.COLLECTION_LABEL,
+                                    gettext(self.blueprint.COLLECTION_LABEL),
                                     self.keys_to_ignore)
 
     def ddl_compare(self, **kwargs):

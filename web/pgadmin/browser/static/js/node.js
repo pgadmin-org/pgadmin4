@@ -216,7 +216,7 @@ define('pgadmin.browser.node', [
             callback: 'show_script',
             priority: 4,
             label: type_label,
-            category: 'Scripts',
+            category: gettext('Scripts'),
             data: {
               'script': stype,
             },
