@@ -55,20 +55,18 @@ if [ ${IS_REDHAT} == 1 ]; then
     restorecon -R -v /var/log/pgadmin
 fi
 
-# Setup Apache
-read -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
-case ${RESPONSE} in
-    y|Y )
-        if [ ${IS_REDHAT} == 1 ]; then
-	    # TODO
-            true
-        else
+# Setup Apache on Debian/Ubuntu
+if [ ${IS_DEBIAN} == 1 ]; then
+    read -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
+    case ${RESPONSE} in
+        y|Y )
             a2enmod wsgi 1> /dev/null
             a2enconf pgadmin4 1> /dev/null
-        fi;;
-    * ) 
-        exit 1;;
-esac
+            ;;
+        * )
+            exit 1;;
+    esac
+fi
 
 APACHE_STATUS=`ps cax | grep ${APACHE}`
 if [ $? -eq 0 ]; then
