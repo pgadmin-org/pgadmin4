@@ -13,7 +13,7 @@ dpkg -r yarn
 
 # Node repo
 echo "Setting up the NodeJS repo..."
-curl -sL https://deb.nodesource.com/setup_10.x | bash -
+curl -sL https://deb.nodesource.com/setup_12.x | bash -
 
 # Yarn repo
 echo "Setting up the Yarn repo..."
