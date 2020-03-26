@@ -717,7 +717,11 @@ define([
           gotoCell = e.shiftKey ? self.$el.prev() : self.$el.next();
         }
 
-        if (gotoCell) {
+        if (gotoCell && gotoCell.length > 0) {
+          if(gotoCell.hasClass('editable')){
+            e.preventDefault();
+            e.stopPropagation();
+          }
           let command = new Backgrid.Command({
             key: 'Tab',
             keyCode: 9,
@@ -727,12 +731,8 @@ define([
           setTimeout(function() {
             // When we have Editable Cell
             if (gotoCell.hasClass('editable') && gotoCell.hasClass('edit-cell')) {
-              e.preventDefault();
-              e.stopPropagation();
               gotoCell.trigger('focus');
             } else if (gotoCell.hasClass('editable')) {
-              e.preventDefault();
-              e.stopPropagation();
               setTimeout(function() {
                 self.model.trigger('backgrid:edited', self.model,
                   self.column, command);
