@@ -281,8 +281,18 @@
 }
 
 
-.ajs-maximize {
+.ajs-commands {
+  button {
     @extend .btn-secondary;
     outline: none !important;
+  }
 }
 
+.wizard-header {
+  .ml-auto {
+    button {
+      @extend .btn-secondary;
+      outline: none !important;
+     }
+  }
+}
