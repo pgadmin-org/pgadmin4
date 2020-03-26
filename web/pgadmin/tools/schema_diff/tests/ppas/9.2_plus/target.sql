@@ -405,3 +405,148 @@ CREATE TEXT SEARCH TEMPLATE target.fts_templ_diff (
 );
 
 COMMENT ON TEXT SEARCH TEMPLATE target.fts_templ_diff IS 'Comment';
+
+-- Domain and Domain Constraint script
+CREATE DOMAIN target.dom_src
+    AS bigint
+    DEFAULT 100
+    NOT NULL;
+
+ALTER DOMAIN target.dom_src OWNER TO enterprisedb;
+
+ALTER DOMAIN target.dom_src
+    ADD CONSTRAINT con_src CHECK (VALUE <> 100);
+
+CREATE DOMAIN target.dom_cons_diff
+    AS bigint
+    DEFAULT 400;
+
+ALTER DOMAIN target.dom_cons_diff OWNER TO enterprisedb;
+
+ALTER DOMAIN target.dom_cons_diff
+    ADD CONSTRAINT cons_diff_1 CHECK (VALUE <> 40);
+
+ALTER DOMAIN target.dom_cons_diff
+    ADD CONSTRAINT cons_tar_only CHECK (VALUE <> 25);
+
+CREATE DOMAIN target.dom_type_diff
+    AS numeric(8,4);
+
+ALTER DOMAIN target.dom_type_diff OWNER TO enterprisedb;
+
+ALTER DOMAIN target.dom_type_diff
+    ADD CONSTRAINT cons1 CHECK (VALUE <> 45::numeric);
+
+ALTER DOMAIN target.dom_type_diff
+    ADD CONSTRAINT cons2 CHECK (VALUE <> 50::numeric);
+
+COMMENT ON DOMAIN target.dom_type_diff
+    IS 'Comment';
+
+-- Type Script composite type
+CREATE TYPE target.typ_comp_tar AS
+(
+	m1 bit(5),
+	m2 text COLLATE pg_catalog."POSIX"
+);
+ALTER TYPE target.typ_comp_tar
+    OWNER TO enterprisedb;
+CREATE TYPE target.typ_comp_diff AS
+(
+	m1 bit(5),
+	m2 text COLLATE pg_catalog."POSIX"
+);
+ALTER TYPE target.typ_comp_diff
+    OWNER TO enterprisedb;
+
+-- Type Script ENUM type
+CREATE TYPE target.typ_enum_tar AS ENUM
+    ('test_enum');
+ALTER TYPE target.typ_enum_tar
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_enum_diff AS ENUM
+    ('test_enum', 'test_enum_1');
+ALTER TYPE target.typ_enum_diff
+    OWNER TO enterprisedb;
+
+-- Type Script RANGE type
+CREATE TYPE target.typ_range_tar AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."POSIX",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE target.typ_range_tar
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_range_col_diff AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."POSIX",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE target.typ_range_col_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_range_subtype_diff AS RANGE
+(
+    SUBTYPE=bool,
+    SUBTYPE_OPCLASS = bool_ops
+);
+ALTER TYPE target.typ_range_subtype_diff
+    OWNER TO enterprisedb;
+
+-- Type Script SHELL type
+CREATE TYPE target.typ_shell_tar;
+ALTER TYPE target.typ_shell_tar
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_shell_diff;
+ALTER TYPE target.typ_shell_diff
+    OWNER TO enterprisedb;
+
+-- Type script to test when Type is different
+CREATE TYPE target.typ_comp_range_diff AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."C",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE target.typ_comp_range_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_comp_enum_diff AS ENUM
+    ('test_enum', 'test_enum_1');
+ALTER TYPE target.typ_comp_enum_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_range_comp_diff AS
+(
+	m1 bigint,
+	m2 text[] COLLATE pg_catalog."POSIX"
+);
+ALTER TYPE target.typ_range_comp_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_range_enum_diff AS ENUM
+    ('test_enum', 'test_enum_1');
+ALTER TYPE target.typ_range_enum_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_enum_comp_diff AS
+(
+	m1 bigint,
+	m2 text[] COLLATE pg_catalog."POSIX"
+);
+ALTER TYPE target.typ_enum_comp_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE target.typ_enum_range_diff AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."C",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE target.typ_enum_range_diff
+    OWNER TO enterprisedb;

@@ -179,6 +179,8 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
+    keys_to_ignore = ['oid', 'basensp', 'conoid', 'nspname']
+
     def validate_request(f):
         """
         Works as a decorator.
@@ -584,7 +586,7 @@ AND relkind != 'c'))"""
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, doid=None):
+    def delete(self, gid, sid, did, scid, doid=None, only_sql=False):
         """
         Drops the Domain object.
 
@@ -594,6 +596,7 @@ AND relkind != 'c'))"""
             did: Database Id
             scid: Schema Id
             doid: Domain Id
+            only_sql: Return only sql if True
         """
         if doid is None:
             data = request.form if request.form else json.loads(
@@ -602,7 +605,7 @@ AND relkind != 'c'))"""
         else:
             data = {'ids': [doid]}
 
-        if self.cmd == 'delete':
+        if self.cmd == 'delete' or only_sql:
             # This is a cascade operation
             cascade = True
         else:
@@ -634,6 +637,11 @@ AND relkind != 'c'))"""
             SQL = render_template("/".join([self.template_path,
                                             'delete.sql']),
                                   name=name, basensp=basensp, cascade=cascade)
+
+            # Used for schema diff tool
+            if only_sql:
+                return SQL
+
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -684,7 +692,8 @@ AND relkind != 'c'))"""
         )
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, doid=None, return_ajax_response=True):
+    def sql(self, gid, sid, did, scid, doid=None, diff_schema=None,
+            json_resp=True):
         """
         Returns the SQL for the Domain object.
 
@@ -694,7 +703,8 @@ AND relkind != 'c'))"""
             did: Database Id
             scid: Schema Id
             doid: Domain Id
-            return_ajax_response:
+            diff_schema: Target Schema for schema diff
+            json_resp: True then return json response
         """
 
         SQL = render_template("/".join([self.template_path,
@@ -709,6 +719,9 @@ AND relkind != 'c'))"""
             )
 
         data = res['rows'][0]
+
+        if diff_schema:
+            data['basensp'] = diff_schema
 
         # Get Type Length and Precision
         data.update(self._parse_type(data['fulltype']))
@@ -737,7 +750,7 @@ AND relkind != 'c'))"""
 """.format(self.qtIdent(self.conn, data['basensp'], data['name']))
         SQL = sql_header + SQL
 
-        if not return_ajax_response:
+        if not json_resp:
             return SQL.strip('\n')
 
         return ajax_response(response=SQL.strip('\n'))
@@ -780,7 +793,7 @@ AND relkind != 'c'))"""
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, gid, sid, data, scid, doid=None):
+    def get_sql(self, gid, sid, data, scid, doid=None, is_schema_diff=False):
         """
         Generates the SQL statements to create/update the Domain.
 
@@ -790,6 +803,7 @@ AND relkind != 'c'))"""
             did: Database Id
             scid: Schema Id
             doid: Domain Id
+            is_schema_diff: True is function gets called from schema diff
         """
 
         if doid is not None:
@@ -821,9 +835,19 @@ AND relkind != 'c'))"""
 
             old_data['constraints'] = con_data
 
-            SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
-                data=data, o_data=old_data)
+            # If fulltype or basetype or collname is changed while comparing
+            # two schemas then we need to drop domain and recreate it
+            if 'fulltype' in data or 'basetype' in data or 'collname' in data:
+                SQL = render_template(
+                    "/".join([self.template_path, 'domain_schema_diff.sql']),
+                    data=data, o_data=old_data)
+            else:
+                if is_schema_diff:
+                    data['is_schema_diff'] = True
+
+                SQL = render_template(
+                    "/".join([self.template_path, 'update.sql']),
+                    data=data, o_data=old_data)
             return SQL.strip('\n'), data['name'] if 'name' in data else \
                 old_data['name']
         else:
@@ -892,18 +916,43 @@ AND relkind != 'c'))"""
             status, data = self._fetch_properties(did, scid, row['oid'])
 
             if status:
-                if 'constraints' in data and len(data['constraints']) > 0:
-                    for item in data['constraints']:
-                        # Remove keys that should not be the part
-                        # of comparision.
-                        if 'conoid' in item:
-                            item.pop('conoid')
-                        if 'nspname' in item:
-                            item.pop('nspname')
-
                 res[row['name']] = data
 
         return res
 
+    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
+                          diff_schema=None, drop_sql=False):
+        """
+        This function is used to get the DDL/DML statements.
+        :param gid: Group ID
+        :param sid: Serve ID
+        :param did: Database ID
+        :param scid: Schema ID
+        :param oid: Collation ID
+        :param data: Difference data
+        :param diff_schema: Target Schema
+        :param drop_sql: True if need to drop the domains
+        :return:
+        """
+        sql = ''
+        if data:
+            if diff_schema:
+                data['schema'] = diff_schema
+            sql, name = self.get_sql(gid=gid, sid=sid, scid=scid,
+                                     data=data, doid=oid,
+                                     is_schema_diff=True)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  scid=scid, doid=oid, only_sql=True)
+            elif diff_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, doid=oid,
+                               diff_schema=diff_schema, json_resp=False)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, doid=oid,
+                               json_resp=False)
+        return sql
 
+
+SchemaDiffRegistry(blueprint.node_type, DomainView)
 DomainView.register_node_view(blueprint)

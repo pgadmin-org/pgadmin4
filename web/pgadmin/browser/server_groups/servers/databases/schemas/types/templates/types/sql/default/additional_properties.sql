@@ -26,12 +26,14 @@ FROM pg_enum
 {# The SQL given below will fetch range type#}
 {% if type == 'r' %}
 SELECT rngsubtype, st.typname,
-    rngcollation, col.collname,
+    rngcollation,
+    CASE WHEN n.nspname IS NOT NULL THEN concat(quote_ident(n.nspname), '.', quote_ident(col.collname)) ELSE col.collname END AS collname,
     rngsubopc, opc.opcname,
     rngcanonical, rngsubdiff
 FROM pg_range
     LEFT JOIN pg_type st ON st.oid=rngsubtype
     LEFT JOIN pg_collation col ON col.oid=rngcollation
+    LEFT JOIN pg_namespace n ON col.collnamespace=n.oid
     LEFT JOIN pg_opclass opc ON opc.oid=rngsubopc
     WHERE rngtypid={{tid}}::oid;
 {% endif %}

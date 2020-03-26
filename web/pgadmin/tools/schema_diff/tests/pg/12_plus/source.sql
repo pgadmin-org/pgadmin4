@@ -526,3 +526,129 @@ CREATE TEXT SEARCH TEMPLATE source.fts_templ_diff (
 );
 
 COMMENT ON TEXT SEARCH TEMPLATE source.fts_templ_diff IS 'Test Comment';
+
+-- Domain and Domain Constraint script
+CREATE DOMAIN source.dom_src
+    AS bigint
+    DEFAULT 100
+    NOT NULL;
+
+ALTER DOMAIN source.dom_src OWNER TO postgres;
+
+ALTER DOMAIN source.dom_src
+    ADD CONSTRAINT con_src CHECK (VALUE <> 100);
+
+CREATE DOMAIN source.dom_cons_diff
+    AS bigint
+    DEFAULT 100
+    NOT NULL;
+
+ALTER DOMAIN source.dom_cons_diff OWNER TO postgres;
+
+ALTER DOMAIN source.dom_cons_diff
+    ADD CONSTRAINT cons_diff_1 CHECK (VALUE <> 50);
+
+ALTER DOMAIN source.dom_cons_diff
+    ADD CONSTRAINT cons_src_only CHECK (VALUE <> 25);
+
+CREATE DOMAIN source.dom_type_diff
+    AS character varying(40)
+    COLLATE pg_catalog."POSIX";
+
+ALTER DOMAIN source.dom_type_diff OWNER TO postgres;
+
+ALTER DOMAIN source.dom_type_diff
+    ADD CONSTRAINT cons1 CHECK (VALUE::text <> 'pgAdmin3'::text);
+
+ALTER DOMAIN source.dom_type_diff
+    ADD CONSTRAINT cons2 CHECK (VALUE::text <> 'pgAdmin4'::text);
+
+COMMENT ON DOMAIN source.dom_type_diff
+    IS 'Test comment';
+
+-- Type Script RANGE type
+CREATE TYPE source.typ_range_src AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."POSIX",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE source.typ_range_src
+    OWNER TO postgres;
+
+CREATE TYPE source.typ_range_col_diff AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."C",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE source.typ_range_col_diff
+    OWNER TO pg_monitor;
+COMMENT ON TYPE source.typ_range_col_diff
+    IS 'Test Comment';
+GRANT USAGE ON TYPE source.typ_range_col_diff TO PUBLIC;
+GRANT USAGE ON TYPE source.typ_range_col_diff TO pg_monitor WITH GRANT OPTION;
+
+CREATE TYPE source.typ_range_subtype_diff AS RANGE
+(
+    SUBTYPE=bpchar,
+    COLLATION = pg_catalog."POSIX"
+);
+ALTER TYPE source.typ_range_subtype_diff
+    OWNER TO postgres;
+
+-- Type Script SHELL type
+CREATE TYPE source.typ_shell_src;
+ALTER TYPE source.typ_shell_src
+    OWNER TO postgres;
+
+CREATE TYPE source.typ_shell_diff;
+ALTER TYPE source.typ_shell_diff
+    OWNER TO postgres;
+COMMENT ON TYPE source.typ_shell_diff
+    IS 'Test Comment';
+
+-- Type script to test when Type is different
+CREATE TYPE source.typ_comp_range_diff AS
+(
+	m1 bigint,
+	m2 text[] COLLATE pg_catalog."POSIX"
+);
+ALTER TYPE source.typ_comp_range_diff
+    OWNER TO postgres;
+
+CREATE TYPE source.typ_comp_enum_diff AS
+(
+	m1 bigint,
+	m2 text[] COLLATE pg_catalog."POSIX"
+);
+ALTER TYPE source.typ_comp_range_diff
+    OWNER TO postgres;
+
+CREATE TYPE source.typ_range_comp_diff AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."C",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE source.typ_range_comp_diff
+    OWNER TO postgres;
+
+CREATE TYPE source.typ_range_enum_diff AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."C",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE source.typ_range_enum_diff
+    OWNER TO postgres;
+
+CREATE TYPE source.typ_enum_comp_diff AS ENUM
+    ('test_enum', 'test_enum_1');
+ALTER TYPE source.typ_enum_comp_diff
+    OWNER TO postgres;
+
+CREATE TYPE source.typ_enum_range_diff AS ENUM
+    ('test_enum', 'test_enum_1');
+ALTER TYPE source.typ_enum_range_diff
+    OWNER TO postgres;

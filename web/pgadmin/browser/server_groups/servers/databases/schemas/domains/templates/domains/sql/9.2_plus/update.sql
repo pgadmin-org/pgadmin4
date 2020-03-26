@@ -20,7 +20,7 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
 
 ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
     SET DEFAULT {{ data.typdefault }};
-{% elif data.typdefault == '' and o_data.typdefault %}
+{% elif (data.typdefault == '' or data.typdefault == None) and data.typdefault != o_data.typdefault %}
 
 ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
     DROP DEFAULT;
@@ -34,6 +34,19 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
 ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
     DROP CONSTRAINT {{ conn|qtIdent(o_data['constraints'][c.conoid]['conname']) }};
 {% endfor -%}
+{% if data.is_schema_diff is defined and data.is_schema_diff %}
+{% for c in data.constraints.changed %}
+ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
+    DROP CONSTRAINT {{ conn|qtIdent(c.conname) }};
+
+ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
+    ADD CONSTRAINT {{ conn|qtIdent(c.conname) }} CHECK ({{ c.consrc }}){% if not c.convalidated %} NOT VALID{% endif %}{% if c.connoinherit %} NO INHERIT{% endif -%};
+
+{% if c.description is defined and c.description != '' %}
+COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
+    IS {{ c.description|qtLiteral }};{% endif %}
+{% endfor -%}
+{% else %}
 {% for c in data.constraints.changed %}
 {% if c.conname and c.conname !=o_data['constraints'][c.conoid]['conname'] %}
 
@@ -46,6 +59,7 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
      VALIDATE CONSTRAINT {{ conn|qtIdent(c.conname) }};
 {% endif %}
 {% endfor -%}
+{% endif %}
 {% for c in data.constraints.added %}
 {% if c.conname and c.consrc %}
 

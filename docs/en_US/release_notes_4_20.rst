@@ -9,7 +9,8 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
-| `Issue #5261 <https://redmine.postgresql.org/issues/5261>`_ -  Added support of Collation, FTS Configuration, FTS Dictionary, FTS Parser, and FTS Template to the Schema Diff.
+| `Issue #5261 <https://redmine.postgresql.org/issues/5261>`_ -  Added support of Collation, FTS Configuration, FTS Dictionary, FTS Parser and FTS Template to the Schema Diff.
+| `Issue #5262 <https://redmine.postgresql.org/issues/5262>`_ -  Added support of Domain, Domain Constraints and Types to the Schema Diff.
 
 Housekeeping
 ************

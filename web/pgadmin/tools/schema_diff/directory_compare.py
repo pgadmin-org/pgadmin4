@@ -326,7 +326,8 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                         pass
                     elif type(source) is dict:
                         tmp_key_array = ['name', 'colname', 'argid', 'token',
-                                         'option']
+                                         'option', 'conname', 'member_name',
+                                         'label']
                         # Check the above keys are exist in the dictionary
                         tmp_key = is_key_exists(tmp_key_array, source)
                         if tmp_key is not None:
@@ -408,6 +409,8 @@ def parce_acl(source, target):
         key = 'datacl'
     elif 'relacl' in source:
         key = 'relacl'
+    elif 'typacl' in source:
+        key = 'typacl'
 
     tmp_source = source[key] if\
         key in source and source[key] is not None else []
