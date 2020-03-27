@@ -221,7 +221,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     keys_to_ignore = ['oid', 'proowner', 'typnsp', 'xmin', 'prokind',
                       'proisagg', 'pronamespace', 'proargdefaults',
-                      'prorettype', 'proallargtypes', 'proacl']
+                      'prorettype', 'proallargtypes', 'proacl', 'oid-2']
 
     @property
     def required_args(self):

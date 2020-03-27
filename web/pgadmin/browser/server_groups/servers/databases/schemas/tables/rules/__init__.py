@@ -186,7 +186,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
     })
 
     # Schema Diff: Keys to ignore while comparing
-    keys_to_ignore = ['oid', 'schema', 'definition']
+    keys_to_ignore = ['oid', 'schema', 'definition', 'oid-2']
 
     def check_precondition(f):
         """

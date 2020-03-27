@@ -233,8 +233,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
     # Schema Diff: Keys to ignore while comparing
     keys_to_ignore = ['oid', 'relowner', 'schema',
-                      'indrelid', 'nspname'
-                      ]
+                      'indrelid', 'nspname', 'oid-2']
 
     def check_precondition(f):
         """

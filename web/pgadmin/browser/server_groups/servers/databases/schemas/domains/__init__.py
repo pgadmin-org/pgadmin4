@@ -179,7 +179,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
-    keys_to_ignore = ['oid', 'basensp', 'conoid', 'nspname']
+    keys_to_ignore = ['oid', 'basensp', 'conoid', 'nspname', 'oid-2']
 
     def validate_request(f):
         """

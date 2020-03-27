@@ -220,7 +220,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     })
 
     keys_to_ignore = ['oid', 'typnamespace', 'typrelid', 'typarray', 'alias',
-                      'schema']
+                      'schema', 'oid-2']
 
     def check_precondition(f):
         """

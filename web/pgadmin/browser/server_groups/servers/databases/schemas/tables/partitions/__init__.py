@@ -223,7 +223,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
     # Schema Diff: Keys to ignore while comparing
     keys_to_ignore = ['oid', 'schema', 'vacuum_table',
-                      'vacuum_toast', 'edit_types']
+                      'vacuum_toast', 'edit_types', 'oid-2']
 
     def get_children_nodes(self, manager, **kwargs):
         nodes = []

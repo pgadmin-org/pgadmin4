@@ -254,7 +254,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
     # Schema Diff: Keys to ignore while comparing
     keys_to_ignore = ['oid', 'xmin', 'nspname', 'tfunction',
-                      'tgrelid', 'tgfoid']
+                      'tgrelid', 'tgfoid', 'oid-2']
 
     def check_precondition(f):
         """
