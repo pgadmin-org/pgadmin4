@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-02-28 17:53+0530\n"
+"POT-Creation-Date: 2020-03-27 18:58+0530\n"
 "PO-Revision-Date: 2019-08-03 13:09+0800\n"
 "Last-Translator: maikebing <mysticboy@live.com>\n"
 "Language: zh\n"
@@ -52,14 +52,14 @@ msgstr "桌面"
 #: pgadmin/tools/datagrid/static/js/show_data.js:218
 #: pgadmin/tools/import_export/static/js/import_export.js:500
 #: pgadmin/tools/maintenance/static/js/maintenance.js:302
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:847
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:865
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:830
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:848
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2012
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2042
 msgid "OK"
 msgstr "确定"
 
-#: pgadmin/about/static/js/about.js:56
+#: pgadmin/about/static/js/about.js:64
 #, python-format
 msgid "About %s"
 msgstr "关于 %s"
@@ -111,6 +111,8 @@ msgstr "锁定布局"
 
 #: pgadmin/browser/__init__.py:232
 #: pgadmin/browser/register_browser_preferences.py:82
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:215
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:265
 msgid "None"
 msgstr "无"
 
@@ -208,7 +210,7 @@ msgstr "是否显示系统对象？"
 #: pgadmin/dashboard/__init__.py:120 pgadmin/dashboard/__init__.py:128
 #: pgadmin/dashboard/__init__.py:136 pgadmin/dashboard/__init__.py:144
 #: pgadmin/tools/debugger/__init__.py:75
-#: pgadmin/tools/schema_diff/__init__.py:79
+#: pgadmin/tools/schema_diff/__init__.py:78
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:21
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:36
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:151
@@ -464,7 +466,7 @@ msgstr "缺少必需的属性。"
 #: pgadmin/browser/utils.py:422
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:102
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:163
-#: pgadmin/static/js/alertify.pgadmin.defaults.js:305
+#: pgadmin/static/js/alertify.pgadmin.defaults.js:322
 #: pgadmin/tools/grant_wizard/__init__.py:129 pgadmin/utils/exception.py:35
 msgid "Connection to the server has been lost."
 msgstr "到服务器的连接已丢失。"
@@ -518,10 +520,10 @@ msgstr "服务器已经被删除"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:501
 #: pgadmin/browser/server_groups/servers/__init__.py:676
-#: pgadmin/browser/server_groups/servers/__init__.py:1416
-#: pgadmin/browser/server_groups/servers/__init__.py:1500
-#: pgadmin/browser/server_groups/servers/__init__.py:1576
-#: pgadmin/browser/server_groups/servers/__init__.py:1611
+#: pgadmin/browser/server_groups/servers/__init__.py:1417
+#: pgadmin/browser/server_groups/servers/__init__.py:1501
+#: pgadmin/browser/server_groups/servers/__init__.py:1577
+#: pgadmin/browser/server_groups/servers/__init__.py:1612
 msgid "Could not find the required server."
 msgstr "找不到所需的服务器。"
 
@@ -592,27 +594,27 @@ msgstr "未更改任何参数。"
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:455
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:572
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:459
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:216
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:218
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:213
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:259
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:424
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:433
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:381
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:356
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:278
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:279
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:380
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:557
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:383
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:587
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:452
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:917
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:910
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:394
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:511
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:513
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:478
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:544
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:342
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:541
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:945
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:344
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:544
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:948
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:494
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:286
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:365
@@ -638,13 +640,13 @@ msgstr "服务器没有用于生成统计信息的活动连接。"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1019
 #: pgadmin/browser/server_groups/servers/__init__.py:1188
-#: pgadmin/browser/server_groups/servers/__init__.py:1295
+#: pgadmin/browser/server_groups/servers/__init__.py:1296
 msgid "Server not found."
 msgstr "服务器未找到."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1025
 #: pgadmin/browser/server_groups/servers/__init__.py:1027
-#: pgadmin/browser/server_groups/servers/__init__.py:1300
+#: pgadmin/browser/server_groups/servers/__init__.py:1301
 #: pgadmin/utils/driver/psycopg2/connection.py:261
 #: pgadmin/utils/driver/psycopg2/connection.py:1294
 #: pgadmin/utils/driver/psycopg2/connection.py:1592
@@ -683,40 +685,44 @@ msgid ""
 "closed."
 msgstr "未连接到服务器或与服务器的连接已关闭。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1269
+#: pgadmin/browser/server_groups/servers/__init__.py:1268
 msgid "Named restore point created: {0}"
 msgstr "命名还原点已创建: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1320
-#: pgadmin/browser/server_groups/servers/__init__.py:1332
+#: pgadmin/browser/server_groups/servers/__init__.py:1274
+msgid "Named restore point creation failed ({0})"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/__init__.py:1321
+#: pgadmin/browser/server_groups/servers/__init__.py:1333
 msgid "Could not find the required parameter(s)."
 msgstr "未找到所需参数。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1341
+#: pgadmin/browser/server_groups/servers/__init__.py:1342
 #: pgadmin/browser/server_groups/servers/static/js/server.js:498
 #: pgadmin/tools/user_management/__init__.py:101
 msgid "Passwords do not match."
 msgstr "密码不匹配。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1357
+#: pgadmin/browser/server_groups/servers/__init__.py:1358
 msgid "Incorrect password."
 msgstr "密码错误。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1397
+#: pgadmin/browser/server_groups/servers/__init__.py:1398
 msgid "Password changed successfully."
 msgstr "密码已成功更改。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1447
+#: pgadmin/browser/server_groups/servers/__init__.py:1448
 msgid "WAL replay paused"
 msgstr "WAL 回放已暂停"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1450
-#: pgadmin/browser/server_groups/servers/__init__.py:1508
+#: pgadmin/browser/server_groups/servers/__init__.py:1451
+#: pgadmin/browser/server_groups/servers/__init__.py:1509
 msgid "Please connect the server."
 msgstr "请连接服务器。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1590
-#: pgadmin/browser/server_groups/servers/__init__.py:1626
+#: pgadmin/browser/server_groups/servers/__init__.py:1591
+#: pgadmin/browser/server_groups/servers/__init__.py:1627
 msgid "The saved password cleared successfully."
 msgstr "已成功清除保存的密码。"
 
@@ -810,28 +816,28 @@ msgstr "数据库连接已断开。"
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:520
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/__init__.py:528
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:685
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:623
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:626
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:484
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:737
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:572
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:566
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:516
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:480
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:839
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:573
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:567
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:517
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:481
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:840
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:458
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:480
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1080
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1073
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:475
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:592
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:594
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:591
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:671
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:712
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:717
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:696
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:754
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:425
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:621
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1115
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:693
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:750
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:427
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:624
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1119
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:614
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:513
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:411
@@ -847,6 +853,11 @@ msgstr "找不到指定的数据库。 \n"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1656
 msgid " -- definition incomplete"
 msgstr " --定义不完整"
+
+#: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:53
+#: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:20
+msgid "Casts"
+msgstr "强制转换"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:311
 msgid "Could not find the specified cast."
@@ -881,10 +892,6 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:672
 msgid "Could not generate reversed engineered SQL for the cast node.\n"
 msgstr "无法生成cast节点,反向工程SQL\n"
-
-#: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:20
-msgid "Casts"
-msgstr "强制转换"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:36
 msgid "Cast"
@@ -974,7 +981,7 @@ msgstr "转换..."
 #: pgadmin/tools/debugger/static/js/direct.js:1014
 #: pgadmin/tools/debugger/static/js/direct.js:1158
 #: pgadmin/tools/debugger/static/js/direct.js:1244
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:156
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:155
 msgid "Name"
 msgstr "名称"
 
@@ -1368,6 +1375,29 @@ msgstr "所有者"
 msgid "Trigger enabled?"
 msgstr "触发已启用？"
 
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:114
+msgid "Enable"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:115
+#: pgadmin/browser/server_groups/servers/static/js/server.js:830
+#: pgadmin/tools/backup/static/js/backup.js:478
+#: pgadmin/tools/backup/static/js/backup.js:488
+#: pgadmin/tools/backup/static/js/backup.js:501
+#: pgadmin/tools/restore/static/js/restore.js:320
+#: pgadmin/tools/restore/static/js/restore.js:330
+#: pgadmin/tools/restore/static/js/restore.js:339
+msgid "Disable"
+msgstr "禁用"
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:116
+msgid "Replica"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:117
+msgid "Always"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:121
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:39
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:316
@@ -1380,6 +1410,18 @@ msgstr "触发器函数"
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:80
 msgid "Event"
 msgstr "事件"
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:128
+msgid "DDL COMMAND START"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:129
+msgid "DDL COMMAND END"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:130
+msgid "SQL DROP"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:134
 msgid "When TAG in"
@@ -1523,7 +1565,7 @@ msgstr "扩展..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:336
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:158
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:121
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:151
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:150
 msgid "Schema"
 msgstr "架构"
 
@@ -1573,8 +1615,39 @@ msgid "Could not find the external table."
 msgstr "找不到外部表。"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:55
-msgid "readablewritablewritable"
-msgstr "readablewritablewritable"
+msgid "readable"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:56
+msgid "writable"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:68
+#, python-format
+msgid "host %s"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:70
+msgid "per host"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:72
+msgid "master segment"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:74
+msgid "all segments"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:76
+#, python-format
+msgid "%s segment"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:78
+#, python-format
+msgid "%d segments"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:54
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:55
@@ -1662,9 +1735,9 @@ msgstr "外部服务器已经被删除"
 #: pgadmin/tools/import_export/static/js/import_export.js:54
 #: pgadmin/tools/import_export/static/js/import_export.js:64
 #: pgadmin/tools/import_export/static/js/import_export.js:263
-#: pgadmin/tools/maintenance/static/js/maintenance.js:57
-#: pgadmin/tools/maintenance/static/js/maintenance.js:81
-#: pgadmin/tools/maintenance/static/js/maintenance.js:117
+#: pgadmin/tools/maintenance/static/js/maintenance.js:56
+#: pgadmin/tools/maintenance/static/js/maintenance.js:80
+#: pgadmin/tools/maintenance/static/js/maintenance.js:116
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:80
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:88
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:96
@@ -1763,8 +1836,8 @@ msgstr "类型"
 #: pgadmin/browser/server_groups/servers/static/js/privilege.js:157
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:359
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:371
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:596
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:828
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:624
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:856
 msgid "Privileges"
 msgstr "权限"
 
@@ -1933,7 +2006,7 @@ msgid "Schema dropped"
 msgstr "架构已被删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:782
-#: pgadmin/static/js/backform.pgadmin.js:1871
+#: pgadmin/static/js/backform.pgadmin.js:1872
 msgid "Definition incomplete."
 msgstr "定义不完整。"
 
@@ -2035,9 +2108,9 @@ msgid "Could not find the specified collation."
 msgstr "找不到指定的排序规则。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:354
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:539
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:659
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:708
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:540
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:665
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:717
 msgid "Could not find the collation object in the database."
 msgstr "在数据库中找不到对象的排序规则。"
 
@@ -2048,7 +2121,7 @@ msgid ""
 "LC_TYPE/LC_COLLATE."
 msgstr "定义不完整。请提供区域设置或复制排序规则或LC_TYPE/LC_COLLATE."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:557
+#: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:563
 msgid "Collation dropped"
 msgstr "排序规则已经被删除"
 
@@ -2079,13 +2152,13 @@ msgstr "LC_TYPE"
 msgid "Domains"
 msgstr "域"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:365
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:708
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:805
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:367
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:718
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:819
 msgid "Could not find the specified domain."
 msgstr "找不到指定的域。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:403
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:405
 msgid ""
 "\n"
 "Could not find the domain in the database.\n"
@@ -2095,11 +2168,11 @@ msgstr ""
 "无法在数据库中找到该域。\n"
 "它可能已被另一个用户删除或移动到另一个架构\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:626
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:629
 msgid "The specified domain could not be found.\n"
 msgstr "找不到指定的域。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:643
+#: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:651
 msgid "Domain dropped"
 msgstr "删除的域"
 
@@ -2248,8 +2321,8 @@ msgstr "外部表已经被删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1283
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1326
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1469
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1519
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1444
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1494
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1397
 msgid "-- Please create column(s) first..."
 msgstr "--请先创建列..."
@@ -2322,7 +2395,7 @@ msgid "FTS Configurations"
 msgstr "FTS配置"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:326
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:661
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:666
 msgid "Could not find the FTS Configuration node."
 msgstr "找不到 FTS 配置节点。"
 
@@ -2338,15 +2411,15 @@ msgstr "至少提供复制配置或解析器。"
 msgid "Could not find the FTS Configuration node to update."
 msgstr "找不到要更新的 FTS 配置节点。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:575
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:576
 msgid "The specified FTS configuration could not be found.\n"
 msgstr "找不到指定的FTS配置。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:596
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:601
 msgid "FTS Configuration dropped"
 msgstr "FTS 配置删除"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:891
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:899
 msgid ""
 "Could not generate reversed engineered query for the FTS Configuration.\n"
 "{0}"
@@ -2354,7 +2427,7 @@ msgstr ""
 "无法为 FTS 配置生成反向工程查询。\n"
 "{0}"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:899
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:907
 msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr "无法为 FTS 配置节点生成反向工程查询。"
 
@@ -2428,12 +2501,12 @@ msgid "FTS Dictionaries"
 msgstr "FTS 词典"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:336
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:657
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:662
 msgid "Could not find the FTS Dictionary node."
 msgstr "找不到 FTS 字典点节点。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:389
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:790
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:798
 msgid "Could not find the FTS Dictionary node in the database node."
 msgstr "在数据库节点中找不到 FTS 配置节点。"
 
@@ -2441,11 +2514,11 @@ msgstr "在数据库节点中找不到 FTS 配置节点。"
 msgid "Could not find the FTS Dictionary node to update."
 msgstr "找不到要更新的 FTS 字典节点。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:569
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:570
 msgid "The specified FTS dictionary could not be found.\n"
 msgstr "找不到指定的 FTS 字典。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:590
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:595
 msgid "FTS Dictionary dropped"
 msgstr "FTS 词典已删除"
 
@@ -2482,7 +2555,7 @@ msgid "FTS Parsers"
 msgstr "FTS 解析器"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:296
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:605
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:610
 msgid "Could not find the FTS Parser node."
 msgstr "找不到 FTS 解析器节点。"
 
@@ -2494,21 +2567,21 @@ msgstr "在数据库节点中找不到 FTS 解析器节点。"
 msgid "Could not find the FTS Parser node to update."
 msgstr "找不到要更新的 FTS 解析器节点。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:519
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:520
 msgid "The specified FTS parser could not be found.\n"
 msgstr "找不到指定的 FTS 分析器。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:539
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:544
 msgid "FTS Parser dropped"
 msgstr "FTS 解析器被删除"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:835
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:843
 msgid ""
 "Could not generate reversed engineered query for the FTS Parser.\n"
 "{0}"
 msgstr "无法为FTS解析器生成反向工程查询.{0}"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:843
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:851
 msgid "Could not generate reversed engineered query for FTS Parser node"
 msgstr "无法生成反向工程的查询 FTS 解析器节点"
 
@@ -2565,19 +2638,19 @@ msgstr "FTS 模板"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:284
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:326
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:566
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:571
 msgid "Could not find the requested FTS template."
 msgstr "找不到要求的 FTS 模板。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:483
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:484
 msgid "The specified FTS template could not be found.\n"
 msgstr "找不到指定的 FTS 模板。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:502
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:507
 msgid "FTS Template dropped"
 msgstr "FTS 模板已删除"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:712
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:720
 msgid ""
 "Could not generate reversed engineered query for the FTS Template.\n"
 "{0}"
@@ -2585,7 +2658,7 @@ msgstr ""
 "无法为 FTS 模板生成反向工程查询。\n"
 "{0}"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:719
+#: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:727
 msgid "Could not generate reversed engineered query for FTS Template node."
 msgstr "无法为 FTS 模板节点生成反向工程查询。"
 
@@ -2620,38 +2693,38 @@ msgstr "必须选中Lexize函数。"
 msgid "Functions"
 msgstr "函数"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:400
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:401
 #, python-format
 msgid "Could not find the specified %s."
 msgstr "找不到指定的 %s。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:452
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:453
 msgid "Could not find the function node in the database."
 msgstr "在数据库中找不到该函数节点。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:842
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:843
 msgid "The specified function could not be found.\n"
 msgstr "找不到指定的函数。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:861
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:862
 msgid "Function dropped."
 msgstr "函数已经删除。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1162
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1341
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1164
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1346
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:337
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:514
 msgid "Could not find the function in the database."
 msgstr "在数据库中找不到该函数。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1708
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1721
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:24
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:624
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbproc.js:24
 msgid "Procedures"
 msgstr "存储过程"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1809
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1822
 msgid "Trigger Functions"
 msgstr "触发器函数"
 
@@ -3210,7 +3283,7 @@ msgid "Default privileges"
 msgstr "默认权限"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:443
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:64
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:29
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:422
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:130
@@ -3289,8 +3362,9 @@ msgstr "要公开同义词吗？"
 #: pgadmin/browser/static/js/node.js:1317
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:71
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:78
-#: pgadmin/static/js/backform.pgadmin.js:567
-#: pgadmin/static/js/backgrid.pgadmin.js:621
+#: pgadmin/static/js/backform.pgadmin.js:568
+#: pgadmin/static/js/backgrid.pgadmin.js:625
+#: pgadmin/static/js/sqleditor/history/query_history_entries.js:259
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1748
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1793
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2398
@@ -3309,8 +3383,9 @@ msgstr "是"
 #: pgadmin/browser/static/js/node.js:1318
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:70
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:77
-#: pgadmin/static/js/backform.pgadmin.js:568
-#: pgadmin/static/js/backgrid.pgadmin.js:622
+#: pgadmin/static/js/backform.pgadmin.js:569
+#: pgadmin/static/js/backgrid.pgadmin.js:626
+#: pgadmin/static/js/sqleditor/history/query_history_entries.js:259
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1749
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:1794
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2399
@@ -3325,38 +3400,38 @@ msgstr "目标架构不能为空."
 msgid "Target object cannot be empty."
 msgstr "目标对象不能为空."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:374
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:367
 msgid "Could not find the table."
 msgstr "找不到表."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:627
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1233
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1373
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:620
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1224
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1348
 msgid "The specified table could not be found."
 msgstr "找不到指定的表。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1083
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1076
 msgid "The specified table could not be found.\n"
 msgstr "找不到指定的表。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1096
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1089
 msgid "Table dropped"
 msgstr "表被删除"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1174
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1167
 msgid "Trigger(s) have been disabled"
 msgstr "触发器已禁用"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1176
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1169
 msgid "Trigger(s) have been enabled"
 msgstr "触发器已启用"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1606
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1581
 #, python-format
 msgid "Table rows counted: %s"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:667
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:671
 msgid "Table statistics have been reset"
 msgstr "表统计信息已重置"
 
@@ -3372,17 +3447,17 @@ msgstr "表统计信息已重置"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/utils.py:233
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/utils.py:236
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/utils.py:213
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:193
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:998
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:226
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1002
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:850
 msgid "-- definition incomplete"
 msgstr "-- 定义不完整"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1008
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1012
 msgid "-- definition incomplete for {0}"
 msgstr "--{0} 的定义不完整"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1411
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1424
 msgid "Table truncated"
 msgstr "表被截断"
 
@@ -3524,29 +3599,29 @@ msgstr ""
 msgid "Expression value cannot be empty."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:63
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:65
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:25
 msgid "Compound Triggers"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:358
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:441
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:676
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:796
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:360
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:443
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:678
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:798
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/utils.py:112
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/utils.py:169
 msgid "Could not find the compound trigger in the table."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:595
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:597
 msgid "The specified compound trigger could not be found.\n"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:618
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:620
 msgid "Compound Trigger is dropped"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:905
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:907
 msgid ""
 "Could not find the compound\n"
 "                     trigger in the table."
@@ -3775,10 +3850,10 @@ msgstr "请指定列的运算符: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:453
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:381
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:341
-#: pgadmin/static/js/backform.pgadmin.js:1297
-#: pgadmin/static/js/backform.pgadmin.js:1407
-#: pgadmin/static/js/backform.pgadmin.js:1584
-#: pgadmin/static/js/backform.pgadmin.js:1703
+#: pgadmin/static/js/backform.pgadmin.js:1298
+#: pgadmin/static/js/backform.pgadmin.js:1408
+#: pgadmin/static/js/backform.pgadmin.js:1585
+#: pgadmin/static/js/backform.pgadmin.js:1704
 msgid "Add new row"
 msgstr "添加新行"
 
@@ -4062,25 +4137,25 @@ msgstr ""
 msgid "Oid"
 msgstr "Oid"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:64
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:62
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:25
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:131
 msgid "Indexes"
 msgstr "索引"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:436
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:533
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:956
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:433
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:530
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:950
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/utils.py:186
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/utils.py:256
 msgid "Could not find the index in the table."
 msgstr "在表中找不到索引."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:699
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:696
 msgid "The specified index could not be found.\n"
 msgstr "找不到指定的索引\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:719
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:716
 msgid "Index is dropped"
 msgstr "删除索引"
 
@@ -4158,7 +4233,7 @@ msgstr "你必须指定列名称."
 msgid "You must specify at least one column."
 msgstr "你需要指定至少一个列."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:76
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:73
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:26
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:867
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:354
@@ -4167,22 +4242,21 @@ msgstr "你需要指定至少一个列."
 msgid "Partitions"
 msgstr "分区"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:324
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:368
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:456
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:506
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:321
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:365
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:453
 msgid "The specified partitioned table could not be found."
 msgstr "找不到指定的分区表。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:597
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:593
 msgid "Partition detached."
 msgstr "分区已分离。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:757
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:753
 msgid "The specified partition could not be found.\n"
 msgstr "找不到指定的分区。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:770
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:766
 msgid "Partition dropped"
 msgstr "分区已删除"
 
@@ -4245,6 +4319,7 @@ msgstr "可用空间"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:63
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:85
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:90
 msgid "Truncate"
 msgstr "截断"
 
@@ -4252,6 +4327,13 @@ msgstr "截断"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:90
 msgid "Truncate Cascade"
 msgstr "级联截断"
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:74
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:79
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:96
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:101
+msgid "Trigger(s)"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:74
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:96
@@ -4601,24 +4683,24 @@ msgstr "表所有者不能为空。"
 msgid "Please specify at least one key for partitioned table."
 msgstr "请至少为分区表指定一个键。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:48
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:50
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:27
 msgid "Rules"
 msgstr "规则"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:249
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:321
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:485
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:507
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:537
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:251
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:323
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:487
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:509
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:540
 msgid "Could not find the rule in the table."
 msgstr "在表中找不到规则."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:428
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:430
 msgid "The specified rule could not be found.\n"
 msgstr "找不到指定的规则。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:450
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:452
 msgid "Rule dropped"
 msgstr "删除规则"
 
@@ -5121,25 +5203,25 @@ msgstr "可用百分比"
 msgid "Table name"
 msgstr "表名"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:61
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:63
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:25
 msgid "Triggers"
 msgstr "触发器"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:393
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:493
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:706
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:852
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:168
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:229
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:396
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:496
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:709
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:855
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:169
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:262
 msgid "Could not find the trigger in the table."
 msgstr "在表中找不到触发器。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:624
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:627
 msgid "The specified trigger could not be found.\n"
 msgstr "不能够找到指定的触发器\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:645
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:648
 msgid "Trigger is dropped"
 msgstr "触发器被删除"
 
@@ -5219,26 +5301,26 @@ msgstr "ANSI"
 msgid "pgAgent Job Scheduler"
 msgstr "pgAgent 计划任务"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:324
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:598
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1255
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1357
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:327
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:601
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1264
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1378
 msgid "Could not find the type in the database."
 msgstr "在数据库中找不到该类型。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:957
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:960
 msgid "Subtype must be defined for range types."
 msgstr "子类型必须为定义范围类型。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:973
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:976
 msgid "External types require both input and output conversion functions."
 msgstr "外部类型需要输入和输出转换函数。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1118
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1122
 msgid "The specified type could not be found.\n"
 msgstr "找不到指定的类型。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1137
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1146
 msgid "Type dropped"
 msgstr "类型已删除"
 
@@ -6247,6 +6329,7 @@ msgid "<any>"
 msgstr "<任何>"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:153
+#: pgadmin/static/js/sqleditor/history/query_history_details.js:110
 msgid "Date"
 msgstr "日期"
 
@@ -6490,7 +6573,7 @@ msgstr "种类"
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:139
 #: pgadmin/browser/static/js/browser.js:224
 #: pgadmin/dashboard/static/js/dashboard.js:191
-#: pgadmin/static/js/backform.pgadmin.js:2068
+#: pgadmin/static/js/backform.pgadmin.js:2069
 msgid "SQL"
 msgstr "SQL"
 
@@ -6601,6 +6684,7 @@ msgstr "起始时间"
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:5
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:7
+#: pgadmin/static/js/sqleditor/history/query_history_details.js:115
 msgid "Duration"
 msgstr "持续时间"
 
@@ -7040,6 +7124,7 @@ msgstr "登录/组角色..."
 #: pgadmin/browser/server_groups/servers/static/js/server.js:799
 #: pgadmin/browser/server_groups/servers/static/js/server.js:944
 #: pgadmin/browser/server_groups/servers/static/js/server.js:965
+#: pgadmin/browser/templates/browser/master_password.html:5
 msgid "Password"
 msgstr "密码"
 
@@ -7219,8 +7304,8 @@ msgstr "更改密码 "
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:903
 #: pgadmin/tools/import_export/static/js/import_export.js:495
 #: pgadmin/tools/maintenance/static/js/maintenance.js:297
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:56
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:844
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:57
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:827
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2017
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2171
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4236
@@ -7350,16 +7435,6 @@ msgstr "首选"
 msgid "Require"
 msgstr "必填"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:830
-#: pgadmin/tools/backup/static/js/backup.js:478
-#: pgadmin/tools/backup/static/js/backup.js:488
-#: pgadmin/tools/backup/static/js/backup.js:501
-#: pgadmin/tools/restore/static/js/restore.js:320
-#: pgadmin/tools/restore/static/js/restore.js:330
-#: pgadmin/tools/restore/static/js/restore.js:339
-msgid "Disable"
-msgstr "禁用"
-
 #: pgadmin/browser/server_groups/servers/static/js/server.js:831
 msgid "Verify-CA"
 msgstr "Verify-CA"
@@ -7443,7 +7518,7 @@ msgid "Connection timeout (seconds)"
 msgstr "连接超时 (秒)"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1126
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:810
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:793
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2199
 msgid "Connect to Server"
 msgstr "连接到服务器"
@@ -7497,6 +7572,8 @@ msgid "Object type"
 msgstr "对象类型"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:129
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:216
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:266
 msgid "All"
 msgstr "所有"
 
@@ -7545,6 +7622,11 @@ msgid ""
 "Please enter the password for the user '{0}' to connect the server - "
 "\"{1}\""
 msgstr "请输入用户'{0}'的密码以连接服务器 - '{1}'"
+
+#: pgadmin/browser/server_groups/servers/templates/servers/password.html:18
+#: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:38
+msgid "Save Password"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:5
 msgid ""
@@ -7749,6 +7831,19 @@ msgstr "刷新..."
 msgid "Query Tool..."
 msgstr "查询工具..."
 
+#: pgadmin/browser/static/js/collection.js:186
+#: pgadmin/dashboard/static/js/dashboard.js:676
+#: pgadmin/misc/dependencies/static/js/dependencies.js:78
+#: pgadmin/misc/dependents/static/js/dependents.js:79
+#: pgadmin/misc/statistics/static/js/statistics.js:285
+#: pgadmin/static/js/sqleditor/query_tool_notifications.js:100
+#: pgadmin/tools/debugger/static/js/direct.js:1050
+#: pgadmin/tools/debugger/static/js/direct.js:1115
+#: pgadmin/tools/debugger/static/js/direct.js:1193
+#: pgadmin/tools/debugger/static/js/direct.js:1279
+msgid "No data found"
+msgstr ""
+
 #: pgadmin/browser/static/js/collection.js:225
 #: pgadmin/browser/static/js/collection.js:281
 #: pgadmin/browser/static/js/node.js:400 pgadmin/misc/sql/static/js/sql.js:134
@@ -7840,6 +7935,10 @@ msgstr ""
 msgid "%s Script"
 msgstr "%s 脚本"
 
+#: pgadmin/browser/static/js/node.js:219
+msgid "Scripts"
+msgstr ""
+
 #: pgadmin/browser/static/js/node.js:503
 msgid "Please wait while we fetch information about the node from the server..."
 msgstr "请稍候, 我们正在从服务器获取有关节点的信息..."
@@ -7919,7 +8018,7 @@ msgid "Warning"
 msgstr ""
 
 #: pgadmin/browser/static/js/node.js:1375
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1163
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1191
 msgid "Error saving properties"
 msgstr "保存属性时出错"
 
@@ -7968,6 +8067,16 @@ msgstr "全选"
 msgid "Unselect All"
 msgstr "取消全选"
 
+#: pgadmin/browser/static/js/node.ui.js:116
+#: pgadmin/browser/static/js/node.ui.js:259
+#: pgadmin/browser/static/js/node.ui.js:378
+#: pgadmin/browser/static/js/node.ui.js:513
+#: pgadmin/browser/static/js/node.ui.js:558
+#: pgadmin/browser/static/js/node.ui.js:573
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:100
+msgid "Select an item..."
+msgstr ""
+
 #: pgadmin/browser/static/js/toolbar.js:20
 #: pgadmin/browser/static/js/toolbar.js:21
 #: pgadmin/browser/static/js/toolbar.js:89
@@ -7981,7 +8090,7 @@ msgstr "查询工具"
 #: pgadmin/browser/static/js/wizard.js:86
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:261
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:263
-#: pgadmin/static/js/alertify.pgadmin.defaults.js:457
+#: pgadmin/static/js/alertify.pgadmin.defaults.js:474
 #: pgadmin/templates/security/messages.html:7
 #: pgadmin/tools/user_management/static/js/user_management.js:81
 #: pgadmin/tools/user_management/static/js/user_management.js:174
@@ -7993,7 +8102,7 @@ msgstr "关闭"
 #: pgadmin/browser/static/js/wizard.js:89
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:262
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:264
-#: pgadmin/static/js/alertify.pgadmin.defaults.js:458
+#: pgadmin/static/js/alertify.pgadmin.defaults.js:475
 msgid "Maximize"
 msgstr "最大化"
 
@@ -8014,7 +8123,7 @@ msgstr ""
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:57
 #: pgadmin/tools/datagrid/static/js/show_data.js:133
 #: pgadmin/tools/maintenance/static/js/maintenance.js:289
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:50
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:51
 msgid "Help"
 msgstr "帮助"
 
@@ -8437,6 +8546,9 @@ msgstr "准备事务"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:84
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:86
+#: pgadmin/dashboard/templates/dashboard/server_dashboard.html:90
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:744
+#: pgadmin/tools/user_management/static/js/user_management.js:766
 msgid "Search"
 msgstr ""
 
@@ -8702,14 +8814,28 @@ msgstr "已成功完成。"
 msgid "Failed (exit code: %s)."
 msgstr "失败 (退出代码: %s)。"
 
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:314
+msgid "More details..."
+msgstr ""
+
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:315
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:624
+msgid "Stop Process"
+msgstr "停止进程"
+
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:370
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:442
 msgid "seconds"
 msgstr "秒"
 
-#: pgadmin/misc/bgprocess/static/js/bgprocess.js:624
-msgid "Stop Process"
-msgstr "停止进程"
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:396
+#, python-format
+msgid "Process Watcher - %s"
+msgstr ""
+
+#: pgadmin/misc/bgprocess/static/js/bgprocess.js:422
+msgid "Loading process logs..."
+msgstr ""
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:635
 msgid "Execution time"
@@ -8759,6 +8885,7 @@ msgid "Grid"
 msgstr "网格"
 
 #: pgadmin/misc/file_manager/__init__.py:187
+#: pgadmin/misc/file_manager/static/js/utility.js:1262
 msgid "Show hidden files and folders?"
 msgstr "显示隐藏文件和文件夹？"
 
@@ -8825,6 +8952,13 @@ msgstr "加载中..."
 #: pgadmin/misc/file_manager/static/js/utility.js:1257
 msgid "All Files"
 msgstr "所有文件"
+
+#: pgadmin/misc/file_manager/static/js/utility.js:1266
+#: pgadmin/tools/backup/static/js/backup.js:143
+#: pgadmin/tools/import_export/static/js/import_export.js:87
+#: pgadmin/tools/restore/static/js/restore.js:85
+msgid "Format"
+msgstr "格式"
 
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:11
 msgid "Home"
@@ -9066,37 +9200,42 @@ msgstr "未知错误"
 msgid "INTERNAL SERVER ERROR"
 msgstr "INTERNAL SERVER ERROR"
 
-#: pgadmin/static/js/backform.pgadmin.js:1584
+#: pgadmin/static/js/backform.pgadmin.js:612
+#: pgadmin/static/js/backform.pgadmin.js:616
+msgid "Toggle button"
+msgstr ""
+
+#: pgadmin/static/js/backform.pgadmin.js:1585
 msgid "Add"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:1875
+#: pgadmin/static/js/backform.pgadmin.js:1876
 msgid "No updates."
 msgstr "无更新。"
 
-#: pgadmin/static/js/backform.pgadmin.js:1990
+#: pgadmin/static/js/backform.pgadmin.js:1991
 msgid "General"
 msgstr "常规"
 
-#: pgadmin/static/js/backform.pgadmin.js:2200
+#: pgadmin/static/js/backform.pgadmin.js:2201
 msgid "Preview not available..."
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:2671
+#: pgadmin/static/js/backform.pgadmin.js:2672
 #: pgadmin/tools/backup/static/js/backup.js:95
 #: pgadmin/tools/backup/static/js/backup.js:230
 msgid "Note"
 msgstr "注意"
 
-#: pgadmin/static/js/backform.pgadmin.js:3031
+#: pgadmin/static/js/backform.pgadmin.js:3135
 msgid "More"
 msgstr "更多"
 
-#: pgadmin/static/js/backform.pgadmin.js:3032
+#: pgadmin/static/js/backform.pgadmin.js:3136
 msgid "Less"
 msgstr "更少"
 
-#: pgadmin/static/js/backform.pgadmin.js:3116
+#: pgadmin/static/js/backform.pgadmin.js:3220
 msgid "Space"
 msgstr "空间"
 
@@ -9129,13 +9268,21 @@ msgstr "无法删除此对象。"
 msgid "Delete row"
 msgstr "删除行"
 
-#: pgadmin/static/js/backgrid.pgadmin.js:1098
+#: pgadmin/static/js/backgrid.pgadmin.js:701
+msgid "data toggle"
+msgstr ""
+
+#: pgadmin/static/js/backgrid.pgadmin.js:1103
 msgid "Array Values"
 msgstr "数组值"
 
 #: pgadmin/static/js/keyboard_shortcuts.js:73
 msgid "Alt"
 msgstr "Alt"
+
+#: pgadmin/static/js/keyboard_shortcuts.js:90
+msgid "accesskey"
+msgstr ""
 
 #: pgadmin/static/js/sqleditor_utils.js:153
 msgid "An unexpected error occurred - ensure you are logged into the application."
@@ -9161,13 +9308,13 @@ msgstr "请从树浏览器中选择服务器或子节点。"
 
 #: pgadmin/static/js/alertify/dialog.js:86
 #: pgadmin/tools/import_export/static/js/import_export.js:447
-#: pgadmin/tools/maintenance/static/js/maintenance.js:221
+#: pgadmin/tools/maintenance/static/js/maintenance.js:220
 msgid "Please configure the PostgreSQL Binary Path in the Preferences dialog."
 msgstr "请在首选项对话框中配置PostgreSQL二进制路径。"
 
 #: pgadmin/static/js/alertify/dialog.js:91
 #: pgadmin/tools/import_export/static/js/import_export.js:452
-#: pgadmin/tools/maintenance/static/js/maintenance.js:226
+#: pgadmin/tools/maintenance/static/js/maintenance.js:225
 msgid ""
 "Please configure the EDB Advanced Server Binary Path in the Preferences "
 "dialog."
@@ -9175,13 +9322,13 @@ msgstr "请在配置对话框中配置EDB Advanced Server二进制路径。"
 
 #: pgadmin/static/js/alertify/dialog.js:97
 #: pgadmin/tools/import_export/static/js/import_export.js:459
-#: pgadmin/tools/maintenance/static/js/maintenance.js:233
+#: pgadmin/tools/maintenance/static/js/maintenance.js:232
 msgid "Configuration required"
 msgstr "所需的配置"
 
 #: pgadmin/static/js/alertify/dialog.js:103
 #: pgadmin/tools/import_export/static/js/import_export.js:463
-#: pgadmin/tools/maintenance/static/js/maintenance.js:237
+#: pgadmin/tools/maintenance/static/js/maintenance.js:236
 #, python-format
 msgid "Failed to load preference %s of module %s"
 msgstr "未能加载的到偏好%s 模块 %s"
@@ -9271,6 +9418,22 @@ msgstr "数组必须以 \"{\" 开头, 以 \"}\" 结尾"
 msgid "Please enter a valid number"
 msgstr "请输入一个有效的数字"
 
+#: pgadmin/static/js/sqleditor/calculate_query_run_time.js:30
+msgid "hr"
+msgstr ""
+
+#: pgadmin/static/js/sqleditor/calculate_query_run_time.js:31
+msgid "min"
+msgstr ""
+
+#: pgadmin/static/js/sqleditor/calculate_query_run_time.js:32
+msgid "secs"
+msgstr ""
+
+#: pgadmin/static/js/sqleditor/calculate_query_run_time.js:33
+msgid "msec"
+msgstr ""
+
 #: pgadmin/static/js/sqleditor/call_render_after_poll.js:38
 #, python-format
 msgid "Query returned successfully in %s."
@@ -9280,6 +9443,10 @@ msgstr "耗时%s 成功返回查询。"
 #: pgadmin/static/js/sqleditor/filter_dialog.js:57
 msgid "Sort/Filter options"
 msgstr "\"筛选器\" 选项"
+
+#: pgadmin/static/js/sqleditor/filter_dialog.js:142
+msgid "Loading data..."
+msgstr ""
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:239
 msgid "Filter updated successfully"
@@ -9373,10 +9540,11 @@ msgstr ""
 msgid "Find"
 msgstr "查找"
 
+#: pgadmin/static/js/sqleditor/history/query_history_details.js:93
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:45
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:46
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:46
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:77
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:79
 msgid "Copy"
 msgstr ""
 
@@ -9392,7 +9560,7 @@ msgstr ""
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:60
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:61
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:306
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:308
 msgid "Filter"
 msgstr ""
 
@@ -9467,9 +9635,32 @@ msgstr "提交"
 msgid "Rollback"
 msgstr "回滚"
 
+#: pgadmin/static/js/sqleditor/history/query_history.js:63
+msgid "No history found"
+msgstr ""
+
+#: pgadmin/static/js/sqleditor/history/query_history_details.js:90
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:74
+msgid "Copied!"
+msgstr ""
+
+#: pgadmin/static/js/sqleditor/history/query_history_details.js:113
+msgid "Rows Affected"
+msgstr ""
+
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:173
 msgid "Copy to Query Editor"
 msgstr "复制到查询编辑器"
+
+#: pgadmin/static/js/sqleditor/history/query_history_details.js:182
+#: pgadmin/tools/debugger/static/js/direct.js:1730
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:260
+msgid "Messages"
+msgstr "消息"
+
+#: pgadmin/static/js/sqleditor/history/query_history_entries.js:255
+msgid "Show queries generated internally by pgAdmin?"
+msgstr ""
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:89
 msgid "Error resetting the tree saved state.\""
@@ -9531,7 +9722,7 @@ msgid "Reset Password"
 msgstr "重置密码"
 
 #: pgadmin/tools/__init__.py:59 pgadmin/tools/datagrid/__init__.py:98
-#: pgadmin/tools/schema_diff/__init__.py:92
+#: pgadmin/tools/schema_diff/__init__.py:91
 #: pgadmin/tools/sqleditor/__init__.py:133
 msgid "This URL cannot be requested directly."
 msgstr "不能直接请求此 URL。"
@@ -9632,12 +9823,6 @@ msgid ""
 "Only objects global to the entire database will be backed up, in PLAIN "
 "format"
 msgstr "只有全局到整个数据库的对象才会以 纯文本格式进行备份"
-
-#: pgadmin/tools/backup/static/js/backup.js:143
-#: pgadmin/tools/import_export/static/js/import_export.js:87
-#: pgadmin/tools/restore/static/js/restore.js:85
-msgid "Format"
-msgstr "格式"
 
 #: pgadmin/tools/backup/static/js/backup.js:152
 msgid "Custom"
@@ -9819,8 +10004,8 @@ msgstr "备份..."
 #: pgadmin/tools/backup/static/js/backup_dialog.js:71
 #: pgadmin/tools/import_export/static/js/import_export.js:685
 #: pgadmin/tools/import_export/static/js/import_export.js:699
-#: pgadmin/tools/maintenance/static/js/maintenance.js:477
-#: pgadmin/tools/maintenance/static/js/maintenance.js:488
+#: pgadmin/tools/maintenance/static/js/maintenance.js:476
+#: pgadmin/tools/maintenance/static/js/maintenance.js:487
 #: pgadmin/tools/restore/static/js/restore_dialog.js:51
 #: pgadmin/tools/restore/static/js/restore_dialog.js:75
 msgid "Utility not found"
@@ -9828,10 +10013,15 @@ msgstr "找不到实用程序"
 
 #: pgadmin/tools/backup/static/js/backup_dialog.js:72
 #: pgadmin/tools/import_export/static/js/import_export.js:700
-#: pgadmin/tools/maintenance/static/js/maintenance.js:489
+#: pgadmin/tools/maintenance/static/js/maintenance.js:488
 #: pgadmin/tools/restore/static/js/restore_dialog.js:76
 msgid "Failed to fetch Utility information"
 msgstr "无法获取实用程序信息"
+
+#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:101
+#, python-format
+msgid "Backup (%s: %s)"
+msgstr ""
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:160
 msgid "Backup job created."
@@ -9846,7 +10036,7 @@ msgid "Backup job failed."
 msgstr "备份作业失败。"
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:243
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:229
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:230
 msgid "Please provide a filename"
 msgstr "请输入文件名"
 
@@ -10096,7 +10286,7 @@ msgid "Debugger"
 msgstr "调试器"
 
 #: pgadmin/tools/debugger/__init__.py:74
-#: pgadmin/tools/schema_diff/__init__.py:78
+#: pgadmin/tools/schema_diff/__init__.py:77
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:35
 msgid "Open in new browser tab"
 msgstr "在新浏览器选项卡中打开"
@@ -10477,11 +10667,6 @@ msgstr "获取消息信息时出错。"
 msgid "Local variables"
 msgstr "本地变量"
 
-#: pgadmin/tools/debugger/static/js/direct.js:1730
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:260
-msgid "Messages"
-msgstr "消息"
-
 #: pgadmin/tools/debugger/static/js/direct.js:1741
 msgid "Results"
 msgstr "结果"
@@ -10534,66 +10719,70 @@ msgstr ""
 msgid "Unable to fetch the {} objects"
 msgstr "无法获取 {} 对象"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:80
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:81
 msgid "Please select any database object."
 msgstr "请选择任何数据库对象。"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:135
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:134
 msgid "Object Type"
 msgstr "对象类型"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:176
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:192
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:175
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:191
 msgid "Grant Wizard..."
 msgstr "授权向导..."
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:255
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:254
 msgid "Search by object type or name"
 msgstr "按对象类型或名称搜索"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:589
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:592
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:617
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:620
 msgid "Objects"
 msgstr "对象"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:623
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:676
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:651
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:704
 msgid "Please wait while fetching records..."
 msgstr "正在获取记录, 请稍候..."
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:638
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:642
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:666
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:670
 msgid "Unable to fetch the database objects"
 msgstr "无法获取数据库对象"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:672
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:700
 msgid "Object Selection (step 1 of 3)"
 msgstr "对象选择 (第1步, 共3步)"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:797
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:738
+msgid "Please select the objects to grant privileges to from the list below."
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:825
 msgid "Privilege Selection (step 2 of 3)"
 msgstr "权限选择 (第2步, 共3步)"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:798
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:826
 msgid "Please add the required privileges for the selected objects."
 msgstr "请添加所选对象所需的权限。"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:996
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1024
 msgid "Sql Tab"
 msgstr "SQL Tab"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1066
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1094
 msgid "Final (Review Selection) (step 3 of 3)"
 msgstr "完成 (复审选择) (第3步, 共3步)"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1067
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1095
 msgid ""
 "The SQL below will be executed on the database server to grant the "
 "selected privileges. Please click on <b>Finish</b> to complete the "
 "process."
 msgstr "下面的 SQL 将在数据库服务器上执行, 以授予所选的权限。请点击 <b> 完成 </b> 完成该操作。"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1126
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1154
 msgid "Grant Wizard"
 msgstr "授权向导"
 
@@ -10747,7 +10936,7 @@ msgid "Import/Export..."
 msgstr "导入/导出..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:436
-#: pgadmin/tools/maintenance/static/js/maintenance.js:210
+#: pgadmin/tools/maintenance/static/js/maintenance.js:209
 msgid "Please select server or child node from tree."
 msgstr "请在树中选择服务器或子节点。"
 
@@ -10786,7 +10975,7 @@ msgstr "导入/导出数据的表 '%s'"
 
 #: pgadmin/tools/maintenance/__init__.py:43
 #: pgadmin/tools/maintenance/__init__.py:98
-#: pgadmin/tools/maintenance/static/js/maintenance.js:279
+#: pgadmin/tools/maintenance/static/js/maintenance.js:278
 #: pgadmin/tools/maintenance/static/js/maintenance.js:288
 msgid "Maintenance"
 msgstr "维护"
@@ -10796,10 +10985,10 @@ msgid "Maintenance ({0})"
 msgstr "维护({0})"
 
 #: pgadmin/tools/maintenance/__init__.py:88
-#: pgadmin/tools/maintenance/static/js/maintenance.js:80
-#: pgadmin/tools/maintenance/static/js/maintenance.js:85
-#: pgadmin/tools/maintenance/static/js/maintenance.js:102
-#: pgadmin/tools/maintenance/static/js/maintenance.js:112
+#: pgadmin/tools/maintenance/static/js/maintenance.js:79
+#: pgadmin/tools/maintenance/static/js/maintenance.js:84
+#: pgadmin/tools/maintenance/static/js/maintenance.js:101
+#: pgadmin/tools/maintenance/static/js/maintenance.js:111
 msgid "Vacuum"
 msgstr "整理"
 
@@ -10820,12 +11009,12 @@ msgid "VACUUM ({0})"
 msgstr "VACUUM ({0})"
 
 #: pgadmin/tools/maintenance/__init__.py:109
-#: pgadmin/tools/maintenance/static/js/maintenance.js:91
+#: pgadmin/tools/maintenance/static/js/maintenance.js:90
 msgid "FULL"
 msgstr "FULL"
 
 #: pgadmin/tools/maintenance/__init__.py:111
-#: pgadmin/tools/maintenance/static/js/maintenance.js:101
+#: pgadmin/tools/maintenance/static/js/maintenance.js:100
 msgid "FREEZE"
 msgstr "FREEZE"
 
@@ -10835,7 +11024,7 @@ msgid "VERBOSE"
 msgstr "VERBOSE"
 
 #: pgadmin/tools/maintenance/__init__.py:118
-#: pgadmin/tools/maintenance/static/js/maintenance.js:111
+#: pgadmin/tools/maintenance/static/js/maintenance.js:110
 msgid "ANALYZE"
 msgstr "ANALYZE"
 
@@ -10859,29 +11048,38 @@ msgstr "CLUSTER"
 msgid "Running Query:"
 msgstr "运行查询:"
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:52
+#: pgadmin/tools/maintenance/__init__.py:269
+msgid "Maintenance job created."
+msgstr ""
+
+#: pgadmin/tools/maintenance/static/js/maintenance.js:51
 msgid "Maintenance operation"
 msgstr "维护操作"
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:120
+#: pgadmin/tools/maintenance/static/js/maintenance.js:119
 msgid "Verbose Messages"
 msgstr "详细消息"
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:167
-#: pgadmin/tools/maintenance/static/js/maintenance.js:183
-#: pgadmin/tools/maintenance/static/js/maintenance.js:483
+#: pgadmin/tools/maintenance/static/js/maintenance.js:166
+#: pgadmin/tools/maintenance/static/js/maintenance.js:182
+#: pgadmin/tools/maintenance/static/js/maintenance.js:482
 msgid "Maintenance..."
 msgstr "维护..."
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:256
+#: pgadmin/tools/maintenance/static/js/maintenance.js:255
 msgid "Maintenance error"
 msgstr "维护错误"
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:257
+#: pgadmin/tools/maintenance/static/js/maintenance.js:256
 msgid ""
 "Maintenance job creation failed. Databases with = symbols in the name "
 "cannot be maintained using this utility."
 msgstr "维护作业创建失败。不能使用此实用程序维护名称中包含 = 符号的数据库。"
+
+#: pgadmin/tools/maintenance/static/js/maintenance.js:279
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:41
+msgid "Object Help"
+msgstr ""
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:387
 #: pgadmin/tools/maintenance/static/js/maintenance.js:394
@@ -10890,8 +11088,8 @@ msgstr "维护任务创建失败。"
 
 #: pgadmin/tools/restore/__init__.py:41
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:40
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:49
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:62
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:50
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:63
 msgid "Restore"
 msgstr "还原"
 
@@ -10957,28 +11155,31 @@ msgstr "还原中..."
 msgid "Restore (%s: %s)"
 msgstr "恢复 (%s: %s)"
 
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:149
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:150
 msgid "Restore job created."
 msgstr "还原任务创建."
 
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:153
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:154
 msgid "Restore job creation failed."
 msgstr "还原作业创建失败。"
 
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:161
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:162
 msgid "Restore job failed."
 msgstr "还原作业失败。"
 
-#: pgadmin/tools/schema_diff/__init__.py:80
+#: pgadmin/tools/schema_diff/__init__.py:39
+msgid "Schema Diff"
+msgstr ""
+
+#: pgadmin/tools/schema_diff/__init__.py:79
 msgid "If set to True, the Schema Diff will be opened in a new browser tab."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/__init__.py:147
-#: pgadmin/tools/schema_diff/__init__.py:155
-#: pgadmin/tools/schema_diff/__init__.py:432
+#: pgadmin/tools/schema_diff/__init__.py:146
+#: pgadmin/tools/schema_diff/__init__.py:154
+#: pgadmin/tools/schema_diff/__init__.py:431
 #: pgadmin/tools/schema_diff/__init__.py:499
-#: pgadmin/tools/schema_diff/__init__.py:527
-#: pgadmin/tools/schema_diff/__init__.py:585
+#: pgadmin/tools/schema_diff/__init__.py:532
 #: pgadmin/tools/sqleditor/__init__.py:151
 #: pgadmin/tools/sqleditor/__init__.py:159
 #: pgadmin/tools/sqleditor/__init__.py:211
@@ -11002,55 +11203,92 @@ msgstr ""
 msgid "Transaction ID not found in the session."
 msgstr "事务 ID 在该会话中找不到."
 
-#: pgadmin/tools/schema_diff/__init__.py:602
+#: pgadmin/tools/schema_diff/__init__.py:442
+#: pgadmin/tools/schema_diff/__init__.py:505
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:86
+msgid "Comparing objects..."
+msgstr ""
+
+#: pgadmin/tools/schema_diff/__init__.py:454
+msgid "Comparing {0}"
+msgstr ""
+
+#: pgadmin/tools/schema_diff/__init__.py:472
+msgid "Successfully compare the specified schemas."
+msgstr ""
+
+#: pgadmin/tools/schema_diff/__init__.py:549
 msgid "Selected object is not supported for DDL comparison."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/__init__.py:626
+#: pgadmin/tools/schema_diff/__init__.py:572
+msgid ""
+"Schema diff does not support the comparison between Postgres Server and "
+"EDB Postgres Advanced Server."
+msgstr ""
+
+#: pgadmin/tools/schema_diff/__init__.py:577
 msgid "Server(s) disconnected."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/__init__.py:638
+#: pgadmin/tools/schema_diff/__init__.py:589
 msgid "Source and Target database server must be of the same major version."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:72
-msgid "Copied!"
+#: pgadmin/tools/schema_diff/model.py:35
+msgid "Comparision started..."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:98
-msgid "Select an item..."
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:292
+msgid "Select Source"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:298
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:296
+msgid "Select Target"
+msgstr ""
+
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:300
 msgid "Compare"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:299
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:301
 msgid "Generate Script"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:319
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:366
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:321
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:336
 msgid "Identical"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:325
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:366
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:327
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:336
 msgid "Different"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:331
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:366
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:333
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:336
 msgid "Source Only"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:337
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:366
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:339
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:336
 msgid "Target Only"
 msgstr ""
 
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:424
+msgid "Source"
+msgstr ""
+
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:425
+msgid "Target"
+msgstr ""
+
+#: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:426
+msgid "Difference"
+msgstr ""
+
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:40
+#: pgadmin/tools/schema_diff/static/js/schema_diff.js:88
 msgid "Schema Diff (Beta)"
 msgstr ""
 
@@ -11060,10 +11298,6 @@ msgstr ""
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:76
 msgid "DDL Comparison"
-msgstr ""
-
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:86
-msgid "Comparing objects..."
 msgstr ""
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:155
@@ -11078,57 +11312,75 @@ msgstr ""
 msgid "Schema compare error"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:206
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:205
 msgid ""
 "-- This script was generated by a beta version of the Schema Diff utility"
 " in pgAdmin 4. \n"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:207
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:206
 msgid ""
 "-- This version does not include dependency resolution, and may require "
 "manual changes \n"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:208
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:207
 msgid "-- to the script to ensure changes are applied in the correct order.\n"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:209
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:208
 msgid "-- Please report an issue for any failure with the reproduction steps. \n"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:257
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:300
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:256
 msgid "Generate script error"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:496
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:305
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:307
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:309
+msgid "Schema Objects"
+msgstr ""
+
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:306
+msgid "Comparison Result"
+msgstr ""
+
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:465
+msgid " (this may take a few minutes)..."
+msgstr ""
+
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:468
+#, python-format
+msgid "%s completed."
+msgstr ""
+
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:472
 msgid "Poll error"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:579
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:660
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:562
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:643
 msgid "Select server..."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:600
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:680
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:583
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:663
 msgid "Select database..."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:634
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:714
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:617
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:697
 msgid "Select schema..."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:764
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:747
 msgid ""
 "Select the server, database and schema for the source and target and "
 "click <b>Compare</b> to compare them."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:798
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:781
 msgid "Failed to connect the database."
 msgstr ""
 
@@ -11253,6 +11505,10 @@ msgstr "是否要继续并建立新的会话？"
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2170
 msgid "Continue"
 msgstr "继续"
+
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2240
+msgid "Obtaining connection..."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2306
 #, python-format
@@ -11609,6 +11865,11 @@ msgstr "CSV引用"
 msgid "CSV Output"
 msgstr "CSV输出"
 
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:217
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:267
+msgid "Strings"
+msgstr ""
+
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:226
 msgid "CSV quote character"
 msgstr "CSV引用符号"
@@ -11621,6 +11882,11 @@ msgstr "CSV字段分隔符"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:253
 msgid "CSV output"
 msgstr "CSV输出"
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:243
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:293
+msgid "Tab"
+msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:252
 msgid "Replace null values with"
@@ -12260,4 +12526,7 @@ msgstr "找不到指定的数据库。"
 #~ "some dependent database object differences."
 #~ " \n"
 #~ msgstr ""
+
+#~ msgid "readablewritablewritable"
+#~ msgstr "readablewritablewritable"
 
