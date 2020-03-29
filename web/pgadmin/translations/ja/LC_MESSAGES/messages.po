@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-27 18:58+0530\n"
-"PO-Revision-Date: 2020-02-29 01:44+0900\n"
+"PO-Revision-Date: 2020-03-28 12:55+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -687,11 +687,11 @@ msgstr "サーバに接続できなかったか、接続が切断されました
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1268
 msgid "Named restore point created: {0}"
-msgstr "名前付きのリストアポイントが作成されました： {0}"
+msgstr "名前付きリストアポイントが作成されました： {0}"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1274
 msgid "Named restore point creation failed ({0})"
-msgstr ""
+msgstr "名前付きリストアポイントの作成に失敗しました （{0}）"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1321
 #: pgadmin/browser/server_groups/servers/__init__.py:1333
@@ -1377,7 +1377,7 @@ msgstr "トリガを有効化"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:114
 msgid "Enable"
-msgstr ""
+msgstr "有効"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:115
 #: pgadmin/browser/server_groups/servers/static/js/server.js:830
@@ -1392,11 +1392,11 @@ msgstr "無効"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:116
 msgid "Replica"
-msgstr ""
+msgstr "REPLICA"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:117
 msgid "Always"
-msgstr ""
+msgstr "ALWAYS"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:121
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:39
@@ -1413,15 +1413,15 @@ msgstr "イベント"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:128
 msgid "DDL COMMAND START"
-msgstr ""
+msgstr "DDL コマンド開始"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:129
 msgid "DDL COMMAND END"
-msgstr ""
+msgstr "DDL コマンド終了"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:130
 msgid "SQL DROP"
-msgstr ""
+msgstr "DROP コマンド実行"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.js:134
 msgid "When TAG in"
@@ -1616,38 +1616,38 @@ msgstr "外部テーブルが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:55
 msgid "readable"
-msgstr ""
+msgstr "読取可"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:56
 msgid "writable"
-msgstr ""
+msgstr "書込可"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:68
 #, python-format
 msgid "host %s"
-msgstr ""
+msgstr "ホスト %s"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:70
 msgid "per host"
-msgstr ""
+msgstr "ホストごと"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:72
 msgid "master segment"
-msgstr ""
+msgstr "マスタセグメント"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:74
 msgid "all segments"
-msgstr ""
+msgstr "すべてのセグメント"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:76
 #, python-format
 msgid "%s segment"
-msgstr ""
+msgstr "%s セグメント"
 
 #: pgadmin/browser/server_groups/servers/databases/external_tables/properties.py:78
 #, python-format
 msgid "%d segments"
-msgstr ""
+msgstr "%d セグメント"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:54
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:55
@@ -4371,7 +4371,7 @@ msgstr "強制消去"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:96
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:101
 msgid "Trigger(s)"
-msgstr ""
+msgstr "トリガ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:74
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:96
@@ -7672,7 +7672,7 @@ msgstr "ユーザ「{0}」のサーバ「{1}」に接続するためのパスワ
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:18
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:38
 msgid "Save Password"
-msgstr ""
+msgstr "パスワードを保存"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:5
 msgid ""
@@ -7888,7 +7888,7 @@ msgstr "クエリツール..."
 #: pgadmin/tools/debugger/static/js/direct.js:1193
 #: pgadmin/tools/debugger/static/js/direct.js:1279
 msgid "No data found"
-msgstr ""
+msgstr "データがありません"
 
 #: pgadmin/browser/static/js/collection.js:225
 #: pgadmin/browser/static/js/collection.js:281
@@ -7983,7 +7983,7 @@ msgstr "%s スクリプト"
 
 #: pgadmin/browser/static/js/node.js:219
 msgid "Scripts"
-msgstr ""
+msgstr "スクリプト"
 
 #: pgadmin/browser/static/js/node.js:503
 msgid "Please wait while we fetch information about the node from the server..."
@@ -8864,7 +8864,7 @@ msgstr "失敗しました（終了コード： %s）"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:314
 msgid "More details..."
-msgstr ""
+msgstr "詳細..."
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:315
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:624
@@ -8879,11 +8879,11 @@ msgstr "秒"
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:396
 #, python-format
 msgid "Process Watcher - %s"
-msgstr ""
+msgstr "プロセスウォッチャー - %s"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:422
 msgid "Loading process logs..."
-msgstr ""
+msgstr "プロセスログを読み込み中..."
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:635
 msgid "Execution time"
@@ -9251,7 +9251,7 @@ msgstr "内部サーバエラー"
 #: pgadmin/static/js/backform.pgadmin.js:612
 #: pgadmin/static/js/backform.pgadmin.js:616
 msgid "Toggle button"
-msgstr ""
+msgstr "ボタンを切り替え"
 
 #: pgadmin/static/js/backform.pgadmin.js:1585
 msgid "Add"
@@ -9318,7 +9318,7 @@ msgstr "行を削除"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:701
 msgid "data toggle"
-msgstr ""
+msgstr "データの切り替え"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:1103
 msgid "Array Values"
@@ -9330,7 +9330,7 @@ msgstr "Alt"
 
 #: pgadmin/static/js/keyboard_shortcuts.js:90
 msgid "accesskey"
-msgstr ""
+msgstr "アクセスキー"
 
 #: pgadmin/static/js/sqleditor_utils.js:153
 msgid "An unexpected error occurred - ensure you are logged into the application."
@@ -9468,19 +9468,19 @@ msgstr "有効な数字を入力してください"
 
 #: pgadmin/static/js/sqleditor/calculate_query_run_time.js:30
 msgid "hr"
-msgstr ""
+msgstr "時間"
 
 #: pgadmin/static/js/sqleditor/calculate_query_run_time.js:31
 msgid "min"
-msgstr ""
+msgstr "分"
 
 #: pgadmin/static/js/sqleditor/calculate_query_run_time.js:32
 msgid "secs"
-msgstr ""
+msgstr "秒"
 
 #: pgadmin/static/js/sqleditor/calculate_query_run_time.js:33
 msgid "msec"
-msgstr ""
+msgstr "ミリ秒"
 
 #: pgadmin/static/js/sqleditor/call_render_after_poll.js:38
 #, python-format
@@ -9494,7 +9494,7 @@ msgstr "ソート/フィルタのオプション"
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:142
 msgid "Loading data..."
-msgstr ""
+msgstr "データを読み込み中..."
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:239
 msgid "Filter updated successfully"
@@ -9685,7 +9685,7 @@ msgstr "ロールバック"
 
 #: pgadmin/static/js/sqleditor/history/query_history.js:63
 msgid "No history found"
-msgstr ""
+msgstr "履歴がありません"
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:90
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:74
@@ -9694,7 +9694,7 @@ msgstr "コピーしました"
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:113
 msgid "Rows Affected"
-msgstr ""
+msgstr "行が影響を受けました"
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:173
 msgid "Copy to Query Editor"
@@ -9708,7 +9708,7 @@ msgstr "メッセージ"
 
 #: pgadmin/static/js/sqleditor/history/query_history_entries.js:255
 msgid "Show queries generated internally by pgAdmin?"
-msgstr ""
+msgstr "pgAdmin が内部的に生成したクエリを表示する"
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:89
 msgid "Error resetting the tree saved state.\""
@@ -10069,7 +10069,7 @@ msgstr "ユーティリティ情報を取得できませんでした"
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:101
 #, python-format
 msgid "Backup (%s: %s)"
-msgstr ""
+msgstr "バックアップ （%s： %s）"
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:160
 msgid "Backup job created."
@@ -10805,7 +10805,7 @@ msgstr "オブジェクト選択 (1/3)"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:738
 msgid "Please select the objects to grant privileges to from the list below."
-msgstr ""
+msgstr "以下の一覧から、権限を付与するオブジェクトを選択してください"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:825
 msgid "Privilege Selection (step 2 of 3)"
@@ -11100,7 +11100,7 @@ msgstr "クエリ実行中："
 
 #: pgadmin/tools/maintenance/__init__.py:269
 msgid "Maintenance job created."
-msgstr ""
+msgstr "メンテナンスジョブが作成されました"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:51
 msgid "Maintenance operation"
@@ -11129,7 +11129,7 @@ msgstr "メンテナンスジョブの作成に失敗しました。名前に「
 #: pgadmin/tools/maintenance/static/js/maintenance.js:279
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:41
 msgid "Object Help"
-msgstr ""
+msgstr "オブジェクトのヘルプ"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:387
 #: pgadmin/tools/maintenance/static/js/maintenance.js:394
@@ -11219,7 +11219,7 @@ msgstr "リストアジョブが失敗しました"
 
 #: pgadmin/tools/schema_diff/__init__.py:39
 msgid "Schema Diff"
-msgstr ""
+msgstr "スキーマ差異"
 
 #: pgadmin/tools/schema_diff/__init__.py:79
 msgid "If set to True, the Schema Diff will be opened in a new browser tab."
@@ -11261,11 +11261,11 @@ msgstr "オブジェクトを比較中..."
 
 #: pgadmin/tools/schema_diff/__init__.py:454
 msgid "Comparing {0}"
-msgstr ""
+msgstr "{0} を比較中"
 
 #: pgadmin/tools/schema_diff/__init__.py:472
 msgid "Successfully compare the specified schemas."
-msgstr ""
+msgstr "指定されたスキーマが正常に比較されました"
 
 #: pgadmin/tools/schema_diff/__init__.py:549
 msgid "Selected object is not supported for DDL comparison."
@@ -11276,6 +11276,8 @@ msgid ""
 "Schema diff does not support the comparison between Postgres Server and "
 "EDB Postgres Advanced Server."
 msgstr ""
+"スキーマ差異ツールは PostgreSQL サーバと EDB Postgres Advanced Server 間の"
+"比較をサポートしていません"
 
 #: pgadmin/tools/schema_diff/__init__.py:577
 msgid "Server(s) disconnected."
@@ -11287,15 +11289,15 @@ msgstr "比較元と比較対象のデータベースサーバは同じメジャ
 
 #: pgadmin/tools/schema_diff/model.py:35
 msgid "Comparision started..."
-msgstr ""
+msgstr "比較が開始されました..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:292
 msgid "Select Source"
-msgstr ""
+msgstr "比較元を選択"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:296
 msgid "Select Target"
-msgstr ""
+msgstr "比較対象を選択"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:300
 msgid "Compare"
@@ -11327,15 +11329,15 @@ msgstr "比較対象のみ"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:424
 msgid "Source"
-msgstr ""
+msgstr "比較元"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:425
 msgid "Target"
-msgstr ""
+msgstr "比較対象"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:426
 msgid "Difference"
-msgstr ""
+msgstr "差異"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:40
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:88
@@ -11390,20 +11392,20 @@ msgstr "スクリプトの生成エラー"
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:307
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:309
 msgid "Schema Objects"
-msgstr ""
+msgstr "スキーマオブジェクト"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:306
 msgid "Comparison Result"
-msgstr ""
+msgstr "比較結果"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:465
 msgid " (this may take a few minutes)..."
-msgstr ""
+msgstr " （しばらく時間がかかります）..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:468
 #, python-format
 msgid "%s completed."
-msgstr ""
+msgstr "%s が完了しました"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:472
 msgid "Poll error"
@@ -11558,7 +11560,7 @@ msgstr "続行"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2240
 msgid "Obtaining connection..."
-msgstr ""
+msgstr "接続を確立中..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2306
 #, python-format
@@ -11918,7 +11920,7 @@ msgstr "CSV 出力"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:217
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:267
 msgid "Strings"
-msgstr ""
+msgstr "文字列"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:226
 msgid "CSV quote character"
@@ -11936,7 +11938,7 @@ msgstr "CSV 出力"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:243
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:293
 msgid "Tab"
-msgstr ""
+msgstr "タブ"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:252
 msgid "Replace null values with"
