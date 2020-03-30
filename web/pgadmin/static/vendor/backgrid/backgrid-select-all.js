@@ -101,9 +101,10 @@
       }
       else if (command.save() || command.moveLeft() || command.moveRight() ||
                command.moveUp() || command.moveDown()) {
-        e.preventDefault();
-        e.stopPropagation();
+
         if(this.model) {
+          e.preventDefault();
+          e.stopPropagation();
           this.model.trigger("backgrid:edited", this.model, this.column, command);
         }
       }
@@ -127,7 +128,7 @@
       var id = 'selectall-' + _.uniqueId(this.column.get('name'));
       this.$el.empty().append([
         '<div class="custom-control custom-checkbox custom-checkbox-no-label">',
-        '  <input tabindex="-1" type="checkbox" class="custom-control-input" id="'+ id +'" />',
+        '  <input tabindex="0" type="checkbox" class="custom-control-input" id="'+ id +'" />',
         '  <label class="custom-control-label" for="'+ id +'">',
         '    <span class="sr-only">Select All<span>',
         '  </label>',

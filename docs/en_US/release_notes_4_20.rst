@@ -27,5 +27,6 @@ Bug fixes
 | `Issue #5128 <https://redmine.postgresql.org/issues/5128>`_ -  Change some colors and opacity to comply with WCAG color contrast standards.
 | `Issue #5143 <https://redmine.postgresql.org/issues/5143>`_ -  Fix an accessibility issue to maximize the panel for all alertify dialog.
 | `Issue #5221 <https://redmine.postgresql.org/issues/5221>`_ -  Improve logic to get the DDL statements as a part of the comparison.
+| `Issue #5241 <https://redmine.postgresql.org/issues/5241>`_ -  Fixed tab key navigation issue for Grant Wizard.
 | `Issue #5279 <https://redmine.postgresql.org/issues/5279>`_ -  Fixed Unicode character issue causing error on Python2 environment.
 | `Issue #5292 <https://redmine.postgresql.org/issues/5292>`_ -  Fixed focus color issue for Alertify dialog buttons.

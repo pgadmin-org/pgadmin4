@@ -1772,7 +1772,7 @@ define([
       this.tabKeyPress = false;
       this.$el.datetimepicker(options);
       this.$el.datetimepicker('show');
-      this.picker = this.$el.data('DateTimePicker');
+      this.picker = this.$el.data('datetimepicker');
     },
     events: {
       'hide.datetimepicker': 'closeIt',
@@ -1780,9 +1780,56 @@ define([
       'keydown': 'keydownHandler',
     },
     keydownHandler: function(event) {
+      let stopBubble = false;
+      let self = this;
+      if (!event.altKey && event.keyCode == 38){
+        let currdate = self.$el.data('datetimepicker').date().clone();
+        if (self.$el.data('datetimepicker').widget.find('.datepicker').is(':visible')){
+          $(this.el).datetimepicker('date', currdate.subtract(7, 'd'));
+        }else{
+          $(this.el).datetimepicker('date', currdate.add(7, 'm'));
+        }
+      }else if (!event.altKey && event.keyCode == 40){
+        let currdate = self.$el.data('datetimepicker').date().clone();
+        if (self.$el.data('datetimepicker').widget.find('.datepicker').is(':visible')){
+          $(this.el).datetimepicker('date', currdate.add(7, 'd'));
+        }else{
+          $(this.el).datetimepicker('date', currdate.subtract(7, 'm'));
+        }
+      }else if (event.keyCode == 39){
+        let currdate = self.$el.data('datetimepicker').date().clone();
+        $(this.el).datetimepicker('date', currdate.add(1, 'd'));
+      }else if (event.keyCode == 37){
+        let currdate = self.$el.data('datetimepicker').date().clone();
+        $(this.el).datetimepicker('date', currdate.subtract(1, 'd'));
+      }
+
+      if (event.altKey && event.keyCode == 84){
+        if (self.$el.data('datetimepicker').widget.find('.timepicker').is(':visible')){
+          self.$el.data('datetimepicker').widget.find('.fa-calendar').click();
+        }else{
+          self.$el.data('datetimepicker').widget.find('.fa-clock-o').click();
+        }
+      }
+
+      if(event.altKey && event.keyCode == 38){
+        let currdate = self.$el.data('datetimepicker').date().clone();
+        $(this.el).datetimepicker('date', currdate.add(1, 'h'));
+      }else if(event.altKey && event.keyCode == 40){
+        let currdate = self.$el.data('datetimepicker').date().clone();
+        $(this.el).datetimepicker('date', currdate.subtract(1, 'h'));
+      }
+
+      if (event.keyCode == 27){
+        this.$el.datetimepicker('hide');
+        stopBubble = true;
+      }
+
+      if(stopBubble) {
+        event.stopImmediatePropagation();
+      }
       // If Tab key pressed from Cell and not from Datetime picker element
       // then we should trigger edited event so that we can goto next cell
-      let self = this;
       let tabKeyPressed = true;
       if (event.keyCode === 9 && self.el === event.target) {
         self.closeIt(event, tabKeyPressed);

@@ -281,7 +281,7 @@
 }
 
 
-.ajs-commands {
+.ajs-commands, .ajs-close {
   button {
     @extend .btn-secondary;
     outline: none !important;
