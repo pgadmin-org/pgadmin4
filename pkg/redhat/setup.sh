@@ -30,6 +30,25 @@ else
     yum install -y expect fakeroot qt5-qtbase-devel libpq-devel python3-devel python3-sphinx nodejs yarn rpm-build
 fi
 
+# Setup RPM macros for signing
+read -p "Do you want to append RPM macros for signing packages to ~/.rpmmacros (y/n)? " RESPONSE
+case ${RESPONSE} in
+    y|Y )
+        cat << EOF >> ~/.rpmmacros
+# Macros for signing RPMs.
+# Added by the pgAdmin 4 build environment setup script at the users request.
+
+%_signature gpg
+%_gpg_path ~/.gnupg
+%_gpg_name Package Manager
+%_gpgbin /usr/bin/gpg2
+%__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor --passphrase-fd 3 --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename} --digest-algo sha256 %{__plaintext_filename}'
+EOF
+        ;;
+    * )
+        exit 1;;
+esac
+
 
 
 
