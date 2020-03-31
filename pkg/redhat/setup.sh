@@ -9,7 +9,9 @@ OS_VERSION=$(cat /etc/os-release | grep "^VERSION_ID=" | awk -F "=" '{ print $2 
 
 # EPEL & other repos
 yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm
-yum config-manager --enable PowerTools AppStream BaseOS *epel
+if [ ${OS_VERSION} == 8 ]; then
+    yum config-manager --enable PowerTools AppStream BaseOS *epel
+fi
 
 # Node repo
 echo "Setting up the NodeJS repo..."
