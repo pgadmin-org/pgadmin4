@@ -31,10 +31,9 @@ else
 fi
 
 # Setup RPM macros for signing
-echo "Please add the following macros to ~/.rpmmacros for the user that will "
-echo "sign the RPMs if required:"
+echo "Please add the following macros to ~/.rpmmacros for the user that will sign the RPMs if required:"
 echo
-echo << EOF
+cat << EOF
 # Macros for signing RPMs.
 
 %_signature gpg
