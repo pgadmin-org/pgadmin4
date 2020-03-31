@@ -31,12 +31,11 @@ else
 fi
 
 # Setup RPM macros for signing
-read -p "Do you want to append RPM macros for signing packages to ~/.rpmmacros (y/n)? " RESPONSE
-case ${RESPONSE} in
-    y|Y )
-        cat << EOF >> ~$USER/.rpmmacros
+echo "Please add the following macros to ~/.rpmmacros for the user that will "
+echo "sign the RPMs if required:"
+echo
+echo << EOF
 # Macros for signing RPMs.
-# Added by the pgAdmin 4 build environment setup script at the users request.
 
 %_signature gpg
 %_gpg_path ~/.gnupg
@@ -44,11 +43,8 @@ case ${RESPONSE} in
 %_gpgbin /usr/bin/gpg2
 %__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor --passphrase-fd 3 --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename} --digest-algo sha256 %{__plaintext_filename}'
 EOF
-        echo "RPM macros for signing appended to ~$USER/.rpmmacros."
-        ;;
-    * )
-        exit 1;;
-esac
+echo
+
 
 
 
