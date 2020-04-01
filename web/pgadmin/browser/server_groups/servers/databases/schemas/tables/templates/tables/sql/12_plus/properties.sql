@@ -27,6 +27,8 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 		WHERE i.inhrelid = rel.oid) AS inherited_tables_cnt,
 	(CASE WHEN rel.relpersistence = 'u' THEN true ELSE false END) AS relpersistence,
 	substring(array_to_string(rel.reloptions, ',') FROM 'fillfactor=([0-9]*)') AS fillfactor,
+	substring(array_to_string(rel.reloptions, ',') FROM 'parallel_workers=([0-9]*)') AS parallel_workers,
+	substring(array_to_string(rel.reloptions, ',') FROM 'toast_tuple_target=([0-9]*)') AS toast_tuple_target,
 	(CASE WHEN (substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)') = 'true')
 	  THEN true ELSE false END) AS autovacuum_enabled,
 	substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS autovacuum_vacuum_threshold,
@@ -56,7 +58,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 	typ.typrelid AS typoid,
 	(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
     -- Added for pgAdmin4
-	(CASE WHEN array_length(rel.reloptions, 1) > 0 THEN true ELSE false END) AS autovacuum_custom,
+	(array_to_string(rel.reloptions, ',') like '%autovacuum%') AS autovacuum_custom,
 	(CASE WHEN array_length(tst.reloptions, 1) > 0 AND rel.reltoastrelid != 0 THEN true ELSE false END) AS toast_autovacuum,
 
 	(SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels,

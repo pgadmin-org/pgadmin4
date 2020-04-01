@@ -43,6 +43,14 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% endfor %}
 {% endif %}
 {#####################################################}
+{## Change hasOID attribute of table ##}
+{#####################################################}
+{% if data.relhasoids is defined and data.relhasoids != o_data.relhasoids %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    SET {% if data.relhasoids %}WITH{% else %}WITHOUT{% endif %} OIDS;
+
+{% endif %}
+{#####################################################}
 {## Change tablespace ##}
 {#####################################################}
 {% if data.spcname and data.spcname != o_data.spcname %}
@@ -51,7 +59,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 
 {% endif %}
 {#####################################################}
-{## change fillfactore settings ##}
+{## change fillfactor settings ##}
 {#####################################################}
 {% if data.fillfactor and data.fillfactor != o_data.fillfactor %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}

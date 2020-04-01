@@ -77,7 +77,8 @@ CACHE {{c.seqcache|int}} {% endif %}
 {% endif %}
 WITH (
     OIDS = {% if data.relhasoids %}TRUE{% else %}FALSE{% endif %}{% if data.fillfactor %},
-    FILLFACTOR = {{ data.fillfactor }}{% endif %}{% if data.autovacuum_custom %},
+    FILLFACTOR = {{ data.fillfactor }}{% endif %}{% if data.parallel_workers is defined and data.parallel_workers != '' and data.parallel_workers != None %},
+    parallel_workers = {{ data.parallel_workers }}{% endif %}{% if data.autovacuum_custom %},
     autovacuum_enabled = {% if data.autovacuum_enabled %}TRUE{% else %}FALSE{% endif %}{% endif %}{% if data.toast_autovacuum %},
     toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled %}TRUE{% else %}FALSE{% endif %}
 {% endif %}{% if data.autovacuum_enabled and data.vacuum_table|length > 0 %}

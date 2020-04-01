@@ -5,8 +5,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
     WHERE dtb.oid = {{ did }}::oid)
   END) as spcname,
   (select nspname FROM pg_namespace WHERE oid = {{scid}}::oid ) as schema,
-  pg_get_userbyid(rel.relowner) AS relowner, rel.relhasoids, rel.relkind,
-  (CASE WHEN rel.relkind = 'p' THEN true ELSE false END) AS is_partitioned,
+  pg_get_userbyid(rel.relowner) AS relowner, rel.relhasoids,
   rel.relhassubclass, rel.reltuples::bigint, des.description, con.conname, con.conkey,
 	EXISTS(select 1 FROM pg_trigger
 			JOIN pg_proc pt ON pt.oid=tgfoid AND pt.proname='logtrigger'
@@ -62,15 +61,12 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 
 	(SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels,
 	(CASE WHEN rel.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_table
-	-- Added for partition table
-    {% if tid %}, (CASE WHEN rel.relkind = 'p' THEN pg_get_partkeydef({{ tid }}::oid) ELSE '' END) AS partition_scheme {% endif %}
 FROM pg_class rel
   LEFT OUTER JOIN pg_tablespace spc on spc.oid=rel.reltablespace
   LEFT OUTER JOIN pg_description des ON (des.objoid=rel.oid AND des.objsubid=0 AND des.classoid='pg_class'::regclass)
   LEFT OUTER JOIN pg_constraint con ON con.conrelid=rel.oid AND con.contype='p'
   LEFT OUTER JOIN pg_class tst ON tst.oid = rel.reltoastrelid
   LEFT JOIN pg_type typ ON rel.reloftype=typ.oid
-WHERE rel.relkind IN ('r','s','t','p') AND rel.relnamespace = {{ scid }}::oid
-AND NOT rel.relispartition
+WHERE rel.relkind IN ('r','s','t') AND rel.relnamespace = {{ scid }}::oid
 {% if tid %}  AND rel.oid = {{ tid }}::oid {% endif %}
 ORDER BY rel.relname;

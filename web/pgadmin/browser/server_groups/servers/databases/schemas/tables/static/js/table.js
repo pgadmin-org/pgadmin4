@@ -291,6 +291,8 @@ define('pgadmin.node.table', [
           triggercount: undefined,
           relpersistence: undefined,
           fillfactor: undefined,
+          toast_tuple_target: undefined,
+          parallel_workers: undefined,
           reloftype: undefined,
           typname: undefined,
           labels: undefined,
@@ -779,6 +781,26 @@ define('pgadmin.node.table', [
             return m.inSchema();
           },
         },{
+          id: 'toast_tuple_target', label: gettext('Toast tuple target'), type: 'int',
+          mode: ['create', 'edit'], min: 128, min_version: 110000,
+          group: gettext('advanced'),
+          disabled: function(m) {
+            if(m.get('is_partitioned')) {
+              return true;
+            }
+            return m.inSchema();
+          },
+        },{
+          id: 'parallel_workers', label: gettext('Parallel workers'), type: 'int',
+          mode: ['create', 'edit'], group: gettext('advanced'), min_version: 90600,
+          disabled: function(m) {
+            if(m.get('is_partitioned')) {
+              return true;
+            }
+            return m.inSchema();
+          },
+        },
+        {
           id: 'relhasoids', label: gettext('Has OIDs?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
           group: gettext('advanced'),

@@ -43,6 +43,14 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% endfor %}
 {% endif %}
 {#####################################################}
+{## Change hasOID attribute of table ##}
+{#####################################################}
+{% if data.relhasoids is defined and data.relhasoids != o_data.relhasoids %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    SET {% if data.relhasoids %}WITH{% else %}WITHOUT{% endif %} OIDS;
+
+{% endif %}
+{#####################################################}
 {## Change tablespace ##}
 {#####################################################}
 {% if data.spcname and data.spcname != o_data.spcname %}
@@ -51,7 +59,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 
 {% endif %}
 {#####################################################}
-{## change fillfactore settings ##}
+{## change fillfactor settings ##}
 {#####################################################}
 {% if data.fillfactor and data.fillfactor != o_data.fillfactor %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
@@ -72,18 +80,6 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
     SET (parallel_workers={{data.parallel_workers}});
 
 {% endif %}
-
-{## change toast_tuple_target settings ##}
-{#####################################################}
-{% if (data.toast_tuple_target == '' or data.toast_tuple_target == None) and data.toast_tuple_target != o_data.toast_tuple_target %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
-    RESET (toast_tuple_target);
-{% elif data.toast_tuple_target is defined and data.toast_tuple_target != o_data.toast_tuple_target %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
-    SET (toast_tuple_target={{data.toast_tuple_target}});
-
-{% endif %}
-
 {###############################}
 {## Table AutoVacuum settings ##}
 {###############################}
