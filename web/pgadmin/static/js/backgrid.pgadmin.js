@@ -1851,15 +1851,11 @@ define([
       this.$el.datetimepicker('destroy');
       this.is_closing = false;
 
-      if (_.isUndefined(newValue)) {
-        model.trigger('backgrid:error', model, column, val);
-      } else {
-        model.set(column.get('name'), newValue);
-        let command = new Backgrid.Command(ev);
-        setTimeout(() => {
-          model.trigger('backgrid:edited', model, column, command);
-        }, 20);
-      }
+      model.set(column.get('name'), newValue);
+      let command = new Backgrid.Command(ev);
+      setTimeout(() => {
+        model.trigger('backgrid:edited', model, column, command);
+      }, 20);
     },
   });
 

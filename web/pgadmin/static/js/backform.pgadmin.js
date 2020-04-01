@@ -2977,7 +2977,7 @@ define([
 
         data.cId = data.cId || _.uniqueId('pgC_');
 
-        if (!data.disabled) {
+        if (!data.disabled && data.mode != 'properties') {
           data.placeholder = data.placeholder || this.defaults.placeholder;
         }
 
