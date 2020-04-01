@@ -19,8 +19,9 @@ define('pgadmin.node.fts_dictionary', [
 
   // Extend the browser's node model class to create a option/value pair
   var OptionLabelModel = pgAdmin.Browser.Node.Model.extend({
+    idAttribute: 'option',
     defaults: {
-      options: undefined,
+      option: undefined,
       value: undefined,
     },
     // Define the schema for the Options

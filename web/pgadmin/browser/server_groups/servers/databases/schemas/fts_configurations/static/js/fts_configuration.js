@@ -19,6 +19,7 @@ define('pgadmin.node.fts_configuration', [
 
   // Model for tokens control
   var TokenModel = pgAdmin.Browser.Node.Model.extend({
+    idAttribute: 'token',
     defaults: {
       token: undefined,
       dictname: undefined,
