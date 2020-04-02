@@ -496,9 +496,11 @@ define([
       e.stopPropagation();
     },
     template: _.template([
+      '<% if (label) { %>',
       '<label class="<%=controlLabelClassName%>" id="<%=cId%>_grplabel"><%=label%></label>',
+      '<% } %>',
       '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
-      ' <div class="btn-group pgadmin-controls-radio-none<% if (disabled) {%> disabled <%}%>" role="radiogroup" aria-labelledby="<%=cId%>_grplabel">',
+      ' <div class="btn-group pgadmin-controls-radio-none<% if (disabled) {%> disabled <%}%>" role="radiogroup" <% if (label) {%> aria-labelledby="<%=cId%>_grplabel" <%}%>>',
       '  <% for (var i=0; i < options.length; i++) { %>',
       '  <% var option = options[i]; %>',
       '  <label role="radio" class="btn btn-radiomodern <% if (option.value == value) { %> btn-primary <%} else {%> btn-secondary <%}%> <% if (!option.disabled && !disabled) { %>" tabindex="0"<% } else { %> disabled"<% } %>>',

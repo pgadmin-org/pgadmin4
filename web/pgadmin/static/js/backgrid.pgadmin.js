@@ -611,6 +611,17 @@ define([
         this.$el.attr('aria-label', getAriaLabel);
       }
     },
+    render: function() {
+      Backgrid.HeaderCell.prototype.render.apply(this, arguments);
+      // If table header label is not present then screen reader will raise
+      // an error we will add span for screen reader only
+      if (this.column.get('label') == '' || !this.column.get('label')) {
+        let getAriaLabel = this.column.get('cellAriaLabel');
+        if (getAriaLabel)
+          this.$el.append(`<span class="sr-only">${getAriaLabel}</span>`);
+      }
+      return this;
+    },
   });
 
   /**
