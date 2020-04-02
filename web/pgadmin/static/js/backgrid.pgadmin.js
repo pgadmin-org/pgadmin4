@@ -641,7 +641,7 @@ define([
 
     enterEditMode: function() {
       this.$el.addClass('editor');
-      $(this.$el.find('input[type=checkbox]')).trigger('focus');
+      $(this.$el.find('.toggle.btn')).trigger('focus');
     },
 
     exitEditMode: function() {
@@ -650,16 +650,8 @@ define([
 
     events: {
       'change input': 'onChange',
-      'keyup': 'toggleSwitch',
       'blur input': 'exitEditMode',
       'keydown': 'onKeyDown',
-    },
-
-    toggleSwitch: function(e) {
-      if (e.keyCode == 32) {
-        this.$el.find('input[type=checkbox]').bootstrapToggle('toggle');
-        e.preventDefault();
-      }
     },
 
     onKeyDown: function(e) {
@@ -677,8 +669,20 @@ define([
       this.enterEditMode();
       // on bootstrap change we also need to change model's value
       model.set(column.get('name'), val);
+      this.setSrValue();
     },
-
+    setSrValue: function() {
+      let {onText, offText} = _.defaults({}, this.column.get('options'), this.defaults.options);
+      if(this.$el.find('.toggle.btn').hasClass('off')) {
+        this.$el.find('.sr-value').text(`
+          ${offText}, ${gettext('Toggle button')}
+        `);
+      } else {
+        this.$el.find('.sr-value').text(`
+          ${onText}, ${gettext('Toggle button')}
+        `);
+      }
+    },
     render: function() {
       var self = this,
         col = _.defaults(this.column.toJSON(), this.defaults),
@@ -688,17 +692,19 @@ define([
           model.get(column.get('name')), model
         ),
         editable = Backgrid.callByNeed(col.editable, column, model),
-        options =  _.defaults({}, col.options, this.defaults.options);
+        options =  _.defaults({}, col.options, this.defaults.options),
+        cId = _.uniqueId('pgC_');
 
       this.undelegateEvents();
 
       this.$el.empty();
-
+      this.$el.append('<label class="sr-value sr-only" for="' + cId + '"></label>');
       this.$el.append(
         $('<input>', {
-          tabIndex: 0,
+          tabIndex: -1,
           type: 'checkbox',
-          'aria-label': gettext('data toggle'),
+          'aria-hidden': 'true',
+          'aria-label': column.get('name'),
         }).prop('checked', rawValue).prop('disabled', !editable).attr('data-toggle', 'toggle')
           .attr('data-size', options.size).attr('data-on', options.onText).attr('data-off', options.offText)
           .attr('data-width', options.width).attr('data-height', options.height)
@@ -709,6 +715,20 @@ define([
       // Override BooleanCell checkbox with Bootstraptoggle
       this.$input.bootstrapToggle();
 
+      this.$el.find('.toggle.btn')
+        .attr('tabindex', !editable ? '-1' : '0')
+        .attr('id', cId)
+        .on('keydown', function(e) {
+          if (e.keyCode == 32) {
+            self.$el.find('input[type=checkbox]').bootstrapToggle('toggle');
+            e.preventDefault();
+            e.stopPropagation();
+            self.setSrValue();
+          }
+        });
+
+      this.$el.find('.toggle.btn .toggle-group .btn').attr('aria-hidden', true);
+      this.setSrValue();
       // Listen for Tab key
       this.$el.on('keydown', function(e) {
         var gotoCell;
