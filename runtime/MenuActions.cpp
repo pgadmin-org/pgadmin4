@@ -79,6 +79,7 @@ void MenuActions::onConfig()
     dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
     dlg->setFixedPort(settings.value("FixedPort").toBool());
     dlg->setPortNumber(settings.value("PortNumber").toInt());
+    dlg->setOpenTabAtStartup(settings.value("OpenTabAtStartup", true).toBool());
     dlg->setPythonPath(settings.value("PythonPath").toString());
     dlg->setApplicationPath(settings.value("ApplicationPath").toString());
     dlg->setModal(true);
@@ -87,6 +88,7 @@ void MenuActions::onConfig()
     QString browsercommand = dlg->getBrowserCommand();
     bool fixedport = dlg->getFixedPort();
     int portnumber = dlg->getPortNumber();
+    bool opentabatstartup = dlg->getOpenTabAtStartup();
     QString pythonpath = dlg->getPythonPath();
     QString applicationpath = dlg->getApplicationPath();
 
@@ -100,6 +102,7 @@ void MenuActions::onConfig()
         settings.setValue("BrowserCommand", browsercommand);
         settings.setValue("FixedPort", fixedport);
         settings.setValue("PortNumber", portnumber);
+        settings.setValue("OpenTabAtStartup", opentabatstartup);
         settings.setValue("PythonPath", pythonpath);
         settings.setValue("ApplicationPath", applicationpath);
 

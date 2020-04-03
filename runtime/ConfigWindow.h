@@ -29,12 +29,14 @@ public:
     QString getBrowserCommand();
     bool getFixedPort();
     int getPortNumber();
+    bool getOpenTabAtStartup();
     QString getPythonPath();
     QString getApplicationPath();
 
     void setBrowserCommand(QString command);
     void setFixedPort(bool fixedPort);
     void setPortNumber(int port);
+    void setOpenTabAtStartup(bool openTabAtStartup);
     void setPythonPath(QString path);
     void setApplicationPath(QString path);
 

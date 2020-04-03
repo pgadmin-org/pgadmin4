@@ -57,6 +57,11 @@ int ConfigWindow::getPortNumber()
     return ui->spinPortNumber->value();
 }
 
+bool ConfigWindow::getOpenTabAtStartup()
+{
+    return ui->chkOpenTabAtStartup->isChecked();
+}
+
 QString ConfigWindow::getPythonPath()
 {
     return ui->pythonPathLineEdit->text();
@@ -90,6 +95,18 @@ void ConfigWindow::setFixedPort(bool fixedPort)
 void ConfigWindow::setPortNumber(int port)
 {
     ui->spinPortNumber->setValue(port);
+}
+
+void ConfigWindow::setOpenTabAtStartup(bool openTabAtStartup)
+{
+    if (openTabAtStartup)
+    {
+        ui->chkOpenTabAtStartup->setCheckState(Qt::Checked);
+    }
+    else
+    {
+        ui->chkOpenTabAtStartup->setCheckState(Qt::Unchecked);
+    }
 }
 
 void ConfigWindow::setPythonPath(QString path)

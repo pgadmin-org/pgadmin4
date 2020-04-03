@@ -313,6 +313,7 @@ int main(int argc, char * argv[])
             dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
             dlg->setFixedPort(settings.value("FixedPort").toBool());
             dlg->setPortNumber(settings.value("PortNumber").toInt());
+            dlg->setOpenTabAtStartup(settings.value("OpenTabAtStartup", true).toBool());
             dlg->setPythonPath(settings.value("PythonPath").toString());
             dlg->setApplicationPath(settings.value("ApplicationPath").toString());
             dlg->setModal(true);
@@ -321,6 +322,7 @@ int main(int argc, char * argv[])
             QString browsercommand = dlg->getBrowserCommand();
             bool fixedport = dlg->getFixedPort();
             int portnumber = dlg->getPortNumber();
+            bool opentabatstartup = dlg->getOpenTabAtStartup();
             QString pythonpath = dlg->getPythonPath();
             QString applicationpath = dlg->getApplicationPath();
 
@@ -329,6 +331,7 @@ int main(int argc, char * argv[])
                 settings.setValue("BrowserCommand", browsercommand);
                 settings.setValue("FixedPort", fixedport);
                 settings.setValue("PortNumber", portnumber);
+                settings.setValue("OpenTabAtStartup", opentabatstartup);
                 settings.setValue("PythonPath", pythonpath);
                 settings.setValue("ApplicationPath", applicationpath);
                 settings.sync();
@@ -416,23 +419,26 @@ int main(int argc, char * argv[])
     if (floatingWindow != Q_NULLPTR)
         floatingWindow->enableShutdownMenu();
 
-    QString cmd = settings.value("BrowserCommand").toString();
+    if (settings.value("OpenTabAtStartup", true).toBool())
+    {
+        QString cmd = settings.value("BrowserCommand").toString();
 
-    if (!cmd.isEmpty())
-    {
-        cmd.replace("%URL%", appServerUrl);
-        QProcess::startDetached(cmd);
-    }
-    else
-    {
-        if (!QDesktopServices::openUrl(appServerUrl))
+        if (!cmd.isEmpty())
         {
-            QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
-            QMessageBox::critical(Q_NULLPTR, QString(QWidget::tr("Fatal Error")), error);
+            cmd.replace("%URL%", appServerUrl);
+            QProcess::startDetached(cmd);
+        }
+        else
+        {
+            if (!QDesktopServices::openUrl(appServerUrl))
+            {
+                QString error(QWidget::tr("Failed to open the system default web browser. Is one installed?."));
+                QMessageBox::critical(Q_NULLPTR, QString(QWidget::tr("Fatal Error")), error);
 
-            Logger::GetLogger()->Log(error);
-            Logger::ReleaseLogger();
-            exit(1);
+                Logger::GetLogger()->Log(error);
+                Logger::ReleaseLogger();
+                exit(1);
+            }
         }
     }
 
