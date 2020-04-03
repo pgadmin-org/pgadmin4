@@ -118,10 +118,6 @@ var webpackShimConfig = {
     'pgadmin.browser.messages': {
       'deps': ['pgadmin.browser.datamodel'],
     },
-    'spectrum': {
-      'deps': ['jquery'],
-      'exports': '$.fn.spectrum',
-    },
   },
 
   // Map module id to file path used in 'define(['baseurl', 'misc']). It is
@@ -153,7 +149,7 @@ var webpackShimConfig = {
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
     'json-bignumber': path.join(__dirname, './node_modules/json-bignumber/dist/JSONBigNumber.min'),
     'snap.svg': path.join(__dirname, './node_modules/snapsvg/dist/snap.svg-min'),
-    'spectrum': path.join(__dirname, './node_modules/spectrum-colorpicker/spectrum'),
+    'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.min'),
     'mousetrap': path.join(__dirname, './node_modules/mousetrap'),
     'tablesorter-metric': path.join(__dirname, './node_modules/tablesorter/dist/js/parsers/parser-metric.min'),
 

@@ -76,7 +76,7 @@ module.exports = {
       'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
       'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.3.0'),
       'jquery.ui': path.join(__dirname, './node_modules/slickgrid/lib/jquery-ui-1.11.3'),
-      'spectrum': path.join(__dirname, './node_modules/spectrum-colorpicker/spectrum'),
+      'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.min'),
       'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
       'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
       'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle'),

@@ -50,6 +50,7 @@
     "yarn-audit-html": "^1.1.0"
   },
   "dependencies": {
+    "@simonwep/pickr": "^1.5.1",
     "acitree": "git+https://github.com/imsurinder90/jquery-aciTree.git#rc.7",
     "alertifyjs": "git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263",
     "axios": "^0.18.1",
@@ -89,7 +90,6 @@
     "shim-loader": "^1.0.1",
     "slickgrid": "git+https://github.com/6pac/SlickGrid.git#2.3.16",
     "snapsvg": "^0.5.1",
-    "spectrum-colorpicker": "^1.8.0",
     "split.js": "^1.5.10",
     "tablesorter": "^2.31.2",
     "tempusdominus-bootstrap-4": "^5.1.2",

@@ -11,9 +11,10 @@ define([
   'sources/gettext', 'underscore', 'jquery',
   'backbone', 'backform', 'backgrid', 'codemirror', 'sources/sqleditor_utils',
   'sources/keyboard_shortcuts', 'sources/window', 'sources/select2/configure_show_on_scroll',
-  'spectrum', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle',
+  'color-picker', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle',
 ], function(gettext, _, $, Backbone, Backform, Backgrid, CodeMirror,
-  SqlEditorUtils, keyboardShortcuts, pgWindow, configure_show_on_scroll) {
+  SqlEditorUtils, keyboardShortcuts, pgWindow, configure_show_on_scroll,
+  Pickr) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {}),
     pgBrowser = pgAdmin.Browser;
@@ -3071,25 +3072,36 @@ define([
       label: '',
       extraClasses: [],
       helpMessage: null,
-      showButtons: false,
       showPalette: true,
       allowEmpty: true,
-      colorFormat: 'hex',
-      defaultColor: '',
+      colorFormat: 'HEX',
+      defaultColor: null,
+      position: 'right-middle',
+      clearText: gettext('No color'),
     },
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <input id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '  <input id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%> d-none" name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> />',
+      '  <p></p>',
       '  <% if (helpMessage && helpMessage.length) { %>',
       '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
       '  <% } %>',
       '</div>',
     ].join('\n')),
+    applyColor: function(name, instance, color) {
+      if(!color) {
+        this.model.set(name, '', {silent: true});
+      } else {
+        instance.applyColor(true);
+        this.model.set(name, instance.getSelectedColor().toHEXA().toString(), {silent: true});
+      }
+    },
     render: function() {
       // Clear first
-      if (this.$picker && this.$picker.hasOwnProperty('destroy')) {
-        this.$picker('destroy');
+      if (this.picker) {
+        this.picker.destroyAndRemove();
+        this.picker = null;
       }
 
       var field = _.defaults(this.field.toJSON(), this.defaults),
@@ -3124,32 +3136,69 @@ define([
 
       this.$el.html(this.template(data)).addClass(field.name);
 
+      data.colorFormat = (data.colorFormat) ? data.colorFormat.toUpperCase() : 'HEX';
+      data.value = (!data.value || data.value == '') ?  data.defaultColor : data.value;
       // Creating default Color picker
-      this.$picker = this.$el.find('input').spectrum({
-        allowEmpty: data.allowEmpty,
-        preferredFormat: data.colorFormat,
-        disabled: data.disabled,
-        hideAfterPaletteSelect: true,
-        clickoutFiresChange: true,
-        showButtons: data.showButtons,
-        showPaletteOnly: data.showPalette,
-        togglePaletteOnly: data.showPalette,
-        togglePaletteMoreText: gettext('More'),
-        togglePaletteLessText: gettext('Less'),
-        color: data.value || data.defaultColor,
-        // Predefined palette colors
-        palette: [
-          ['#000', '#444', '#666', '#999', '#ccc', '#eee', '#f3f3f3', '#fff'],
-          ['#f00', '#f90', '#ff0', '#0f0', '#0ff', '#00f', '#90f', '#f0f'],
-          ['#f4cccc', '#fce5cd', '#fff2cc', '#d9ead3', '#d0e0e3', '#cfe2f3', '#d9d2e9', '#ead1dc'],
-          ['#ea9999', '#f9cb9c', '#ffe599', '#b6d7a8', '#a2c4c9', '#9fc5e8', '#b4a7d6', '#d5a6bd'],
-          ['#e06666', '#f6b26b', '#ffd966', '#93c47d', '#76a5af', '#6fa8dc', '#8e7cc3', '#c27ba0'],
-          ['#c00', '#e69138', '#f1c232', '#6aa84f', '#45818e', '#3d85c6', '#674ea7', '#a64d79'],
-          ['#900', '#b45f06', '#bf9000', '#38761d', '#134f5c', '#0b5394', '#351c75', '#741b47'],
-          ['#600', '#783f04', '#7f6000', '#274e13', '#0c343d', '#073763', '#20124d', '#4c1130'],
+      this.picker = new Pickr({
+        el: this.$el.find('p')[0],
+        theme: 'monolith',
+        swatches: [
+          '#000', '#666', '#ccc', '#fff', '#f90', '#ff0', '#0f0',
+          '#f0f', '#f4cccc', '#fce5cd', '#d0e0e3', '#cfe2f3', '#ead1dc', '#ea9999',
+          '#b6d7a8', '#a2c4c9', '#d5a6bd', '#e06666','#93c47d', '#76a5af', '#c27ba0',
+          '#f1c232', '#6aa84f', '#45818e', '#a64d79', '#bf9000', '#0c343d', '#4c1130',
         ],
-
+        position: data.position,
+        strings: {
+          clear: data.clearText,
+        },
+        components: {
+          palette: data.showPalette,
+          preview: true,
+          hue: data.showPalette,
+          interaction: {
+            clear: data.allowEmpty,
+            defaultRepresentation: data.colorFormat,
+            disabled: data.disabled,
+          },
+        },
       });
+
+      this.picker.on('init', instance => {
+        this.picker.setColor(data.value, true);
+        data.disabled && this.picker.disable();
+
+        const {lastColor} = instance.getRoot().preview;
+        const {clear} = instance.getRoot().interaction;
+
+        /* Cycle the keyboard navigation within the color picker */
+        clear.addEventListener('keydown', (e)=>{
+          if(e.keyCode === 9) {
+            e.preventDefault();
+            e.stopPropagation();
+            lastColor.focus();
+          }
+        });
+
+        lastColor.addEventListener('keydown', (e)=>{
+          if(e.keyCode === 9 && e.shiftKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            clear.focus();
+          }
+        });
+      }).on('clear', (instance) => {
+        this.applyColor(name, instance, null);
+      }).on('change', (color, instance) => {
+        this.applyColor(name, instance, color);
+      }).on('show', (color, instance) => {
+        const {palette} = instance.getRoot().palette;
+        palette.focus();
+      }).on('hide', (color, instance) => {
+        const button = instance.getRoot().button;
+        button.focus();
+      });
+
       this.updateInvalid();
       return this;
     },
