@@ -303,9 +303,9 @@ bool Server::Init()
         QDir dir;
 
         if (paths[i].startsWith('/'))
-            dir = paths[i];
+            dir.setPath(paths[i]);
         else
-            dir = QCoreApplication::applicationDirPath() + "/" + paths[i];
+            dir.setPath(QCoreApplication::applicationDirPath() + "/" + paths[i]);
 
         m_appfile = dir.canonicalPath() + "/pgAdmin4.py";
 
