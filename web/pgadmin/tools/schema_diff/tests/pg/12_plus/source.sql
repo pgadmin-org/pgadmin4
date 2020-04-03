@@ -652,3 +652,50 @@ CREATE TYPE source.typ_enum_range_diff AS ENUM
     ('test_enum', 'test_enum_1');
 ALTER TYPE source.typ_enum_range_diff
     OWNER TO postgres;
+
+-- Sequences Script
+CREATE SEQUENCE source.seq_src
+    CYCLE
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 3
+    CACHE 6;
+ALTER SEQUENCE source.seq_src
+    OWNER TO postgres;
+COMMENT ON SEQUENCE source.seq_src
+    IS 'Test Comment';
+GRANT ALL ON SEQUENCE source.seq_src TO PUBLIC;
+GRANT ALL ON SEQUENCE source.seq_src TO postgres;
+
+CREATE SEQUENCE source.seq_diff_comment_acl
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+ALTER SEQUENCE source.seq_diff_comment_acl
+    OWNER TO postgres;
+COMMENT ON SEQUENCE source.seq_diff_comment_acl
+    IS 'Test Comment';
+GRANT ALL ON SEQUENCE source.seq_diff_comment_acl TO PUBLIC;
+GRANT ALL ON SEQUENCE source.seq_diff_comment_acl TO postgres;
+
+CREATE SEQUENCE source.seq_diff_comment_acl_remove
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+ALTER SEQUENCE source.seq_diff_comment_acl_remove
+    OWNER TO postgres;
+
+CREATE SEQUENCE source.seq_diff
+    CYCLE
+    INCREMENT 3
+    START 3
+    MINVALUE 3
+    MAXVALUE 100
+    CACHE 2;
+ALTER SEQUENCE source.seq_diff
+    OWNER TO postgres;

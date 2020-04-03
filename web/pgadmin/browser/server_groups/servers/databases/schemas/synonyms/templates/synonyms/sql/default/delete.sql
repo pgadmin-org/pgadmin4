@@ -4,5 +4,4 @@
 {% endif %}
 DROP {% if is_public %}
 PUBLIC SYNONYM {{ conn|qtIdent(data.name) }}{% else %}
-SYNONYM {{ conn|qtIdent(data.schema, data.name) }}
-{% endif %};
+SYNONYM {{ conn|qtIdent(data.schema, data.name) }}{% endif %};

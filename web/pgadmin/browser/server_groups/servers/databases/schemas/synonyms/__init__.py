@@ -483,7 +483,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, syid=None):
+    def delete(self, gid, sid, did, scid, syid=None, only_sql=False):
         """
         This function will delete existing the synonym object
 
@@ -493,6 +493,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
            did: Database ID
            scid: Schema ID
            syid: Synonym ID
+           only_sql: Return SQL only if True
         """
         if syid is None:
             data = request.form if request.form else json.loads(
@@ -525,6 +526,9 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                                                 'delete.sql']),
                                       data=data,
                                       conn=self.conn)
+                if only_sql:
+                    return SQL
+
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -648,7 +652,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         return SQL.strip('\n')
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, syid):
+    def sql(self, gid, sid, did, scid, syid, diff_schema=None,
+            json_resp=True):
         """
         This function will generates reverse engineered sql for synonym object
 
@@ -658,6 +663,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
            did: Database ID
            scid: Schema ID
            syid: Synonym ID
+           diff_schema:
+           json_resp:
         """
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
@@ -673,9 +680,14 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 gettext('The specified synonym could not be found.')
             )
 
+        if diff_schema:
+            data['schema'] = diff_schema
+
         SQL = render_template("/".join([self.template_path,
                                         'create.sql']),
                               data=data, conn=self.conn, comment=True)
+        if not json_resp:
+            return SQL
 
         return ajax_response(response=SQL)
 
@@ -751,5 +763,38 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return res
 
+    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
+                          diff_schema=None, drop_sql=False):
+        """
+        This function is used to get the DDL/DML statements.
+        :param gid: Group ID
+        :param sid: Serve ID
+        :param did: Database ID
+        :param scid: Schema ID
+        :param oid: Synonyms ID
+        :param data: Difference data
+        :param diff_schema: Target Schema
+        :param drop_sql: True if need to drop the domains
+        :return:
+        """
+        sql = ''
+        if data:
+            if diff_schema:
+                data['schema'] = diff_schema
+            sql = self.get_sql(gid, sid, data, scid, oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  scid=scid, syid=oid, only_sql=True)
 
+            elif diff_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, syid=oid,
+                               diff_schema=diff_schema, json_resp=False)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, syid=oid,
+                               json_resp=False)
+        return sql
+
+
+SchemaDiffRegistry(blueprint.node_type, SynonymView)
 SynonymView.register_node_view(blueprint)

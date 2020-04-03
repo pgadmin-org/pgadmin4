@@ -50,9 +50,16 @@ def compare_dictionaries(view_object, source_params, target_params,
     added = dict1_keys - dict2_keys
     global count
     for item in added:
+        source_object_id = None
+        if 'oid' in source_dict[item]:
+            source_object_id = source_dict[item]['oid']
+        elif 'name' in source_dict[item]:
+            # For synonyms use name as OID
+            source_object_id = source_dict[item]['name']
+
         if node == 'table':
             temp_src_params = copy.deepcopy(source_params)
-            temp_src_params['tid'] = source_dict[item]['oid']
+            temp_src_params['tid'] = source_object_id
             temp_src_params['json_resp'] = False
             source_ddl = \
                 view_object.get_sql_from_table_diff(**temp_src_params)
@@ -62,7 +69,7 @@ def compare_dictionaries(view_object, source_params, target_params,
             diff_ddl = view_object.get_sql_from_table_diff(**temp_src_params)
         else:
             temp_src_params = copy.deepcopy(source_params)
-            temp_src_params['oid'] = source_dict[item]['oid']
+            temp_src_params['oid'] = source_object_id
             source_ddl = view_object.get_sql_from_diff(**temp_src_params)
             temp_src_params.update({
                 'diff_schema': target_schema
@@ -74,7 +81,7 @@ def compare_dictionaries(view_object, source_params, target_params,
             'type': node,
             'label': node_label,
             'title': item,
-            'oid': source_dict[item]['oid'],
+            'oid': source_object_id,
             'status': SchemaDiffModel.COMPARISON_STATUS['source_only'],
             'source_ddl': source_ddl,
             'target_ddl': '',
@@ -86,9 +93,16 @@ def compare_dictionaries(view_object, source_params, target_params,
     # Keys that are available in target and missing in source.
     removed = dict2_keys - dict1_keys
     for item in removed:
+        target_object_id = None
+        if 'oid' in target_dict[item]:
+            target_object_id = target_dict[item]['oid']
+        elif 'name' in target_dict[item]:
+            # For synonyms use name as OID
+            target_object_id = target_dict[item]['name']
+
         if node == 'table':
             temp_tgt_params = copy.deepcopy(target_params)
-            temp_tgt_params['tid'] = target_dict[item]['oid']
+            temp_tgt_params['tid'] = target_object_id
             temp_tgt_params['json_resp'] = False
             target_ddl = view_object.get_sql_from_table_diff(**temp_tgt_params)
             if 'gid' in temp_tgt_params:
@@ -98,7 +112,7 @@ def compare_dictionaries(view_object, source_params, target_params,
             diff_ddl = view_object.get_drop_sql(**temp_tgt_params)
         else:
             temp_tgt_params = copy.deepcopy(target_params)
-            temp_tgt_params['oid'] = target_dict[item]['oid']
+            temp_tgt_params['oid'] = target_object_id
             target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
             temp_tgt_params.update(
                 {'drop_sql': True})
@@ -109,7 +123,7 @@ def compare_dictionaries(view_object, source_params, target_params,
             'type': node,
             'label': node_label,
             'title': item,
-            'oid': target_dict[item]['oid'],
+            'oid': target_object_id,
             'status': SchemaDiffModel.COMPARISON_STATUS['target_only'],
             'source_ddl': '',
             'target_ddl': target_ddl,
@@ -121,6 +135,16 @@ def compare_dictionaries(view_object, source_params, target_params,
     identical = []
     different = []
     for key in intersect_keys:
+        source_object_id = None
+        target_object_id = None
+        if 'oid' in source_dict[key]:
+            source_object_id = source_dict[key]['oid']
+            target_object_id = target_dict[key]['oid']
+        elif 'name' in target_dict[key]:
+            # For synonyms use name as OID
+            source_object_id = source_dict[key]['name']
+            target_object_id = target_dict[key]['name']
+
         # Recursively Compare the two dictionary
         if are_dictionaries_identical(dict1[key], dict2[key], ignore_keys):
             identical.append({
@@ -128,9 +152,9 @@ def compare_dictionaries(view_object, source_params, target_params,
                 'type': node,
                 'label': node_label,
                 'title': key,
-                'oid': source_dict[key]['oid'],
-                'source_oid': source_dict[key]['oid'],
-                'target_oid': target_dict[key]['oid'],
+                'oid': source_object_id,
+                'source_oid': source_object_id,
+                'target_oid': target_object_id,
                 'status': SchemaDiffModel.COMPARISON_STATUS['identical']
             })
         else:
@@ -149,8 +173,8 @@ def compare_dictionaries(view_object, source_params, target_params,
                 )
                 diff_dict.update(parce_acl(dict1[key], dict2[key]))
 
-                temp_src_params['tid'] = source_dict[key]['oid']
-                temp_tgt_params['tid'] = target_dict[key]['oid']
+                temp_src_params['tid'] = source_object_id
+                temp_tgt_params['tid'] = target_object_id
                 temp_src_params['json_resp'] = \
                     temp_tgt_params['json_resp'] = False
 
@@ -170,8 +194,8 @@ def compare_dictionaries(view_object, source_params, target_params,
                 )
                 diff_dict.update(parce_acl(dict1[key], dict2[key]))
 
-                temp_src_params['oid'] = source_dict[key]['oid']
-                temp_tgt_params['oid'] = target_dict[key]['oid']
+                temp_src_params['oid'] = source_object_id
+                temp_tgt_params['oid'] = target_object_id
                 source_ddl = view_object.get_sql_from_diff(**temp_src_params)
                 target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
                 temp_tgt_params.update(
@@ -183,9 +207,9 @@ def compare_dictionaries(view_object, source_params, target_params,
                 'type': node,
                 'label': node_label,
                 'title': key,
-                'oid': source_dict[key]['oid'],
-                'source_oid': source_dict[key]['oid'],
-                'target_oid': target_dict[key]['oid'],
+                'oid': source_object_id,
+                'source_oid': source_object_id,
+                'target_oid': target_object_id,
                 'status': SchemaDiffModel.COMPARISON_STATUS['different'],
                 'source_ddl': source_ddl,
                 'target_ddl': target_ddl,
@@ -403,14 +427,22 @@ def is_key_exists(key_list, target_dict):
 
 
 def parce_acl(source, target):
-    key = 'acl'
+    """
+    This function is used to parse acl.
 
-    if 'datacl' in source:
-        key = 'datacl'
-    elif 'relacl' in source:
-        key = 'relacl'
-    elif 'typacl' in source:
-        key = 'typacl'
+    :param source:
+    :param target:
+    :return:
+    """
+    acl_keys = ['datacl', 'relacl', 'typacl', 'pkgacl']
+    key = is_key_exists(acl_keys, source)
+
+    # If key is not found in source then check the key is available
+    # in target.
+    if key is None:
+        key = is_key_exists(acl_keys, target)
+        if key is None:
+            key = 'acl'
 
     tmp_source = source[key] if\
         key in source and source[key] is not None else []

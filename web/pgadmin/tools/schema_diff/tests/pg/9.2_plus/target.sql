@@ -548,3 +548,47 @@ CREATE TYPE target.typ_enum_range_diff AS RANGE
 );
 ALTER TYPE target.typ_enum_range_diff
     OWNER TO postgres;
+
+-- Sequences Script
+CREATE SEQUENCE target.seq_tar
+    CYCLE
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 3
+    CACHE 6;
+ALTER SEQUENCE target.seq_tar
+    OWNER TO postgres;
+
+CREATE SEQUENCE target.seq_diff_comment_acl
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE target.seq_diff_comment_acl
+    OWNER TO postgres;
+
+CREATE SEQUENCE target.seq_diff_comment_acl_remove
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+ALTER SEQUENCE target.seq_diff_comment_acl_remove
+    OWNER TO postgres;
+COMMENT ON SEQUENCE target.seq_diff_comment_acl_remove
+    IS 'Test Comment';
+GRANT ALL ON SEQUENCE target.seq_diff_comment_acl_remove TO PUBLIC;
+GRANT ALL ON SEQUENCE target.seq_diff_comment_acl_remove TO postgres;
+
+CREATE SEQUENCE target.seq_diff
+    INCREMENT 5
+    START 3
+    MINVALUE 3
+    MAXVALUE 80
+    CACHE 1;
+
+ALTER SEQUENCE target.seq_diff
+    OWNER TO postgres;

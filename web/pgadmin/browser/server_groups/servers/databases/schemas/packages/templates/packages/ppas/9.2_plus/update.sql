@@ -1,7 +1,9 @@
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 
 {% if data %}
+{% set recreate_pkg_body = false %}
 {% if data.pkgheadsrc is defined and data.pkgheadsrc != o_data.pkgheadsrc and o_data.pkgbodysrc != None or (data.pkgbodysrc is defined and data.pkgbodysrc == '')  %}
+{% set recreate_pkg_body = true %}
 DROP PACKAGE BODY {{ conn|qtIdent(data.schema,data.name) }};
 {% endif %}
 {% if data.pkgheadsrc %}
@@ -12,11 +14,12 @@ IS
 END {{ conn|qtIdent(data.name) }};
 
 {% endif %}
-{% if data.pkgbodysrc %}
+{% if data.pkgbodysrc or (o_data.pkgbodysrc and recreate_pkg_body) %}
 
 CREATE OR REPLACE PACKAGE BODY {{ conn|qtIdent(data.schema,data.name) }}
 IS
-{{data.pkgbodysrc}}
+{% if data.pkgbodysrc %}{{data.pkgbodysrc}}{% else %}{{o_data.pkgbodysrc}}{% endif %}
+
 END {{ conn|qtIdent(data.name) }};
 {% endif %}
 {% if data.pkgacl %}

@@ -423,6 +423,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
           did: Database ID
           scid: Schema ID
           pkgid: Package ID
+          only_sql: Return SQL only if True
 
         Returns:
 
@@ -583,6 +584,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             did: Database ID
             scid: Schema ID
             pkgid: Package ID
+            sqltab: True
+            diff_schema: Target Schema
         """
 
         required_args = [
@@ -818,16 +821,27 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
     def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
                           diff_schema=None, drop_sql=False):
+        """
+        This function is used to get the DDL/DML statements.
+        :param gid: Group ID
+        :param sid: Serve ID
+        :param did: Database ID
+        :param scid: Schema ID
+        :param oid: Package ID
+        :param data: Difference data
+        :param diff_schema: Target Schema
+        :param drop_sql: True if need to drop the domains
+        :return:
+        """
         sql = ''
         if data:
             if diff_schema:
                 data['schema'] = diff_schema
-            status, sql = self.getSQL(gid, sid, did, data, scid, oid)
+            sql, name = self.getSQL(gid, sid, did, data, scid, oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, pkgid=oid, only_sql=True)
-
             elif diff_schema:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, pkgid=oid,
                                diff_schema=diff_schema, json_resp=False)
@@ -837,4 +851,5 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         return sql
 
 
+SchemaDiffRegistry(blueprint.node_type, PackageView)
 PackageView.register_node_view(blueprint)

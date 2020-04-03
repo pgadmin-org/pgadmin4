@@ -550,3 +550,195 @@ CREATE TYPE target.typ_enum_range_diff AS RANGE
 );
 ALTER TYPE target.typ_enum_range_diff
     OWNER TO enterprisedb;
+
+-- Package script (target only)
+CREATE OR REPLACE PACKAGE target.pkg_tar
+IS
+    FUNCTION get_dept_name(p_deptno numeric) RETURN character varying;
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric);
+END pkg_tar;
+
+
+CREATE OR REPLACE PACKAGE BODY target.pkg_tar
+IS
+    FUNCTION get_dept_name(p_deptno numeric) RETURN character varying IS
+        v_dname         VARCHAR2(14);
+    BEGIN
+        SELECT dname INTO v_dname FROM dept WHERE deptno = p_deptno;
+        RETURN v_dname;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Invalid department number ' || p_deptno);
+            RETURN '';
+    END;
+
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric) IS
+    BEGIN
+        INSERT INTO emp(empno, ename, job, sal, hiredate, comm, mgr, deptno)
+            VALUES(p_empno, p_ename, p_job, p_sal,
+                   p_hiredate, p_comm, p_mgr, p_deptno);
+    END;
+END pkg_tar;
+
+COMMENT ON PACKAGE target.pkg_tar
+    IS 'Target';
+
+-- Package script difference in header, acl and comment
+CREATE OR REPLACE PACKAGE target.pkg_header_diff
+IS
+    FUNCTION get_dept_name(p_deptno numeric) RETURN character varying;
+END pkg_header_diff;
+
+CREATE OR REPLACE PACKAGE BODY target.pkg_header_diff
+IS
+    FUNCTION get_dept_name(p_deptno numeric) RETURN character varying IS
+        v_dname         VARCHAR2(14);
+    BEGIN
+        SELECT dname INTO v_dname FROM dept WHERE deptno = p_deptno;
+        RETURN v_dname;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Invalid department number ' || p_deptno);
+            RETURN '';
+    END;
+END pkg_header_diff;
+
+-- Package script difference in body, acl and comment
+CREATE OR REPLACE PACKAGE target.pkg_body_diff
+IS
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric);
+END pkg_body_diff;
+
+CREATE OR REPLACE PACKAGE BODY target.pkg_body_diff
+IS
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('Before Insert ');
+        INSERT INTO emp(empno, ename, job, sal, hiredate, comm, mgr, deptno)
+            VALUES(p_empno, p_ename, p_job, p_sal,
+                   p_hiredate, p_comm, p_mgr, p_deptno);
+        DBMS_OUTPUT.PUT_LINE('After Insert ');
+    END;
+END pkg_body_diff;
+
+COMMENT ON PACKAGE target.pkg_body_diff
+    IS 'Header Diff';
+
+GRANT EXECUTE ON PACKAGE target.pkg_body_diff TO PUBLIC;
+GRANT EXECUTE ON PACKAGE target.pkg_body_diff TO enterprisedb WITH GRANT OPTION;
+
+-- Synonyms Scripts
+-- Prerequisite for synonyms
+CREATE OR REPLACE FUNCTION target.fun_for_syn()
+RETURNS void
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+
+AS $BODY$BEGIN
+SELECT 1;
+END;$BODY$;
+ALTER FUNCTION target.fun_for_syn()
+    OWNER TO enterprisedb;
+
+CREATE OR REPLACE PROCEDURE target.proc_for_syn()
+AS $BODY$BEGIN
+SELECT 1;
+END;$BODY$;
+
+CREATE OR REPLACE PACKAGE target.pkg_for_syn
+IS
+FUNCTION get_dept_name(p_deptno numeric) RETURN character varying;
+END pkg_for_syn;
+CREATE OR REPLACE PACKAGE BODY target.pkg_for_syn
+IS
+FUNCTION get_dept_name(p_deptno numeric) RETURN character varying IS
+BEGIN
+    RETURN '';
+END;
+END pkg_for_syn;
+
+CREATE TABLE target.table_for_syn
+(
+    id bigint,
+    name text COLLATE pg_catalog."default"
+)
+TABLESPACE pg_default;
+ALTER TABLE target.table_for_syn
+    OWNER to enterprisedb;
+
+CREATE SEQUENCE target.seq_for_syn
+    INCREMENT 5
+    START 1
+    MINVALUE 1
+    MAXVALUE 100
+    CACHE 1;
+ALTER SEQUENCE target.seq_for_syn
+    OWNER TO enterprisedb;
+
+CREATE OR REPLACE SYNONYM target.syn_fun_src
+    FOR target.fun_for_syn;
+
+CREATE OR REPLACE SYNONYM target.syn_pkg_src
+    FOR target.pkg_for_syn;
+
+CREATE OR REPLACE SYNONYM target.syn_proc_src
+    FOR target.proc_for_syn;
+
+CREATE OR REPLACE SYNONYM target.syn_seq_src
+    FOR target.seq_for_syn;
+
+CREATE OR REPLACE SYNONYM target.syn_table_src
+    FOR target.table_for_syn;
+
+CREATE OR REPLACE PROCEDURE public.proc_for_syn()
+AS $BODY$BEGIN
+SELECT 1;
+END;$BODY$;
+
+CREATE OR REPLACE SYNONYM target.syn_diff
+    FOR public.proc_for_syn;
+
+-- Sequences Script
+CREATE SEQUENCE target.seq_tar
+    CYCLE
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 3
+    CACHE 6;
+ALTER SEQUENCE target.seq_tar
+    OWNER TO enterprisedb;
+
+CREATE SEQUENCE target.seq_diff_comment_acl
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE target.seq_diff_comment_acl
+    OWNER TO enterprisedb;
+
+CREATE SEQUENCE target.seq_diff_comment_acl_remove
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+ALTER SEQUENCE target.seq_diff_comment_acl_remove
+    OWNER TO enterprisedb;
+COMMENT ON SEQUENCE target.seq_diff_comment_acl_remove
+    IS 'Test Comment';
+GRANT ALL ON SEQUENCE target.seq_diff_comment_acl_remove TO PUBLIC;
+GRANT ALL ON SEQUENCE target.seq_diff_comment_acl_remove TO enterprisedb;
+
+CREATE SEQUENCE target.seq_diff
+    INCREMENT 5
+    START 3
+    MINVALUE 3
+    MAXVALUE 80
+    CACHE 1;
+
+ALTER SEQUENCE target.seq_diff
+    OWNER TO enterprisedb;

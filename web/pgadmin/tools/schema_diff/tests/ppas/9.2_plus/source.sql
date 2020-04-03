@@ -80,7 +80,7 @@ CREATE TABLE source.table_for_identical (
 );
 
 
-ALTER TABLE source.table_for_identical OWNER TO enterprisedb;;
+ALTER TABLE source.table_for_identical OWNER TO enterprisedb;
 
 --
 -- TOC entry 12260 (class 1259 OID 148977)
@@ -521,4 +521,210 @@ ALTER TYPE source.typ_enum_comp_diff
 CREATE TYPE source.typ_enum_range_diff AS ENUM
     ('test_enum', 'test_enum_1');
 ALTER TYPE source.typ_enum_range_diff
+    OWNER TO enterprisedb;
+
+-- Package script (source only)
+CREATE OR REPLACE PACKAGE source.pkg_src
+IS
+    FUNCTION get_dept_name(p_deptno numeric) RETURN character varying;
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric);
+END pkg_src;
+
+CREATE OR REPLACE PACKAGE BODY source.pkg_src
+IS
+    FUNCTION get_dept_name(p_deptno numeric) RETURN character varying IS
+        v_dname         VARCHAR2(14);
+    BEGIN
+        SELECT dname INTO v_dname FROM dept WHERE deptno = p_deptno;
+        RETURN v_dname;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Invalid department number ' || p_deptno);
+            RETURN '';
+    END;
+
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric) IS
+    BEGIN
+        INSERT INTO emp(empno, ename, job, sal, hiredate, comm, mgr, deptno)
+            VALUES(p_empno, p_ename, p_job, p_sal,
+                   p_hiredate, p_comm, p_mgr, p_deptno);
+    END;
+END pkg_src;
+
+COMMENT ON PACKAGE source.pkg_src
+    IS 'Target';
+
+-- Package script difference in header, acl and comment
+CREATE OR REPLACE PACKAGE source.pkg_header_diff
+IS
+    FUNCTION get_dept_name(p_deptno numeric) RETURN character varying;
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric);
+END pkg_header_diff;
+
+CREATE OR REPLACE PACKAGE BODY source.pkg_header_diff
+IS
+    FUNCTION get_dept_name(p_deptno numeric) RETURN character varying IS
+        v_dname         VARCHAR2(14);
+    BEGIN
+        SELECT dname INTO v_dname FROM dept WHERE deptno = p_deptno;
+        RETURN v_dname;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Invalid department number ' || p_deptno);
+            RETURN '';
+    END;
+
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric) IS
+    BEGIN
+        INSERT INTO emp(empno, ename, job, sal, hiredate, comm, mgr, deptno)
+            VALUES(p_empno, p_ename, p_job, p_sal,
+                   p_hiredate, p_comm, p_mgr, p_deptno);
+    END;
+END pkg_header_diff;
+
+COMMENT ON PACKAGE source.pkg_header_diff
+    IS 'Header Diff';
+
+GRANT EXECUTE ON PACKAGE source.pkg_header_diff TO PUBLIC;
+GRANT EXECUTE ON PACKAGE source.pkg_header_diff TO enterprisedb WITH GRANT OPTION;
+
+-- Package script difference in body, acl and comment
+CREATE OR REPLACE PACKAGE source.pkg_body_diff
+IS
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric);
+END pkg_body_diff;
+
+CREATE OR REPLACE PACKAGE BODY source.pkg_body_diff
+IS
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('Before Insert ');
+        INSERT INTO emp(empno, ename, job, sal, hiredate, comm, mgr, deptno)
+            VALUES(p_empno, p_ename, p_job, p_sal,
+                   p_hiredate, p_comm, p_mgr, p_deptno);
+        DBMS_OUTPUT.PUT_LINE('After Insert ');
+    END;
+END pkg_body_diff;
+
+-- Synonyms Scripts
+-- Prerequisite for synonyms
+CREATE OR REPLACE FUNCTION source.fun_for_syn()
+RETURNS void
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+
+AS $BODY$BEGIN
+SELECT 1;
+END;$BODY$;
+ALTER FUNCTION source.fun_for_syn()
+    OWNER TO enterprisedb;
+
+CREATE OR REPLACE PROCEDURE source.proc_for_syn()
+AS $BODY$BEGIN
+SELECT 1;
+END;$BODY$;
+
+CREATE OR REPLACE PACKAGE source.pkg_for_syn
+IS
+FUNCTION get_dept_name(p_deptno numeric) RETURN character varying;
+END pkg_for_syn;
+CREATE OR REPLACE PACKAGE BODY source.pkg_for_syn
+IS
+FUNCTION get_dept_name(p_deptno numeric) RETURN character varying IS
+BEGIN
+    RETURN '';
+END;
+END pkg_for_syn;
+
+CREATE TABLE source.table_for_syn
+(
+    id bigint,
+    name text COLLATE pg_catalog."default"
+)
+TABLESPACE pg_default;
+ALTER TABLE source.table_for_syn
+    OWNER to enterprisedb;
+
+CREATE SEQUENCE source.seq_for_syn
+    INCREMENT 5
+    START 1
+    MINVALUE 1
+    MAXVALUE 100
+    CACHE 1;
+ALTER SEQUENCE source.seq_for_syn
+    OWNER TO enterprisedb;
+
+CREATE OR REPLACE SYNONYM source.syn_fun_src
+    FOR source.fun_for_syn;
+
+CREATE OR REPLACE SYNONYM source.syn_pkg_src
+    FOR source.pkg_for_syn;
+
+CREATE OR REPLACE SYNONYM source.syn_proc_src
+    FOR source.proc_for_syn;
+
+CREATE OR REPLACE SYNONYM source.syn_seq_src
+    FOR source.seq_for_syn;
+
+CREATE OR REPLACE SYNONYM source.syn_table_src
+    FOR source.table_for_syn;
+
+CREATE TABLE public.table_for_syn
+(
+    id bigint,
+    name text COLLATE pg_catalog."default"
+)
+TABLESPACE pg_default;
+ALTER TABLE public.table_for_syn
+    OWNER to enterprisedb;
+
+CREATE OR REPLACE SYNONYM source.syn_diff
+    FOR public.table_for_syn;
+
+-- Sequences Script
+CREATE SEQUENCE source.seq_src
+    CYCLE
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 3
+    CACHE 6;
+ALTER SEQUENCE source.seq_src
+    OWNER TO enterprisedb;
+COMMENT ON SEQUENCE source.seq_src
+    IS 'Test Comment';
+GRANT ALL ON SEQUENCE source.seq_src TO PUBLIC;
+GRANT ALL ON SEQUENCE source.seq_src TO enterprisedb;
+
+CREATE SEQUENCE source.seq_diff_comment_acl
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+ALTER SEQUENCE source.seq_diff_comment_acl
+    OWNER TO enterprisedb;
+COMMENT ON SEQUENCE source.seq_diff_comment_acl
+    IS 'Test Comment';
+GRANT ALL ON SEQUENCE source.seq_diff_comment_acl TO PUBLIC;
+GRANT ALL ON SEQUENCE source.seq_diff_comment_acl TO enterprisedb;
+
+CREATE SEQUENCE source.seq_diff_comment_acl_remove
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+ALTER SEQUENCE source.seq_diff_comment_acl_remove
+    OWNER TO enterprisedb;
+
+CREATE SEQUENCE source.seq_diff
+    CYCLE
+    INCREMENT 3
+    START 3
+    MINVALUE 3
+    MAXVALUE 100
+    CACHE 2;
+ALTER SEQUENCE source.seq_diff
     OWNER TO enterprisedb;

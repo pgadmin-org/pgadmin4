@@ -155,6 +155,8 @@ define('pgadmin.node.synonym', [
             var trgSchema = control.model.get('synobjschema');
             var res = [];
 
+            control.model.set('synobjname', undefined);
+
             var node = control.field.get('schema_node'),
               _url = node.generate_url.apply(
                 node, [
