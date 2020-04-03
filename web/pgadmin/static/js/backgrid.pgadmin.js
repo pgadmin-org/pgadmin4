@@ -1957,6 +1957,10 @@ define([
    */
   Backgrid.Extension.ClientSideFilter = Backgrid.Extension.ClientSideFilter.extend({
     $customSearchBox: null,
+    template: function (data) {
+      return '<span class="search">&nbsp;</span><input type="search" ' + (data.placeholder ? 'aria-label= "' + data.placeholder + '"' : '')+' '+ (data.placeholder ? 'placeholder="' +
+      data.placeholder + '"' : '') + ' name="' + data.name + '" ' + (data.value ? 'value="' + data.value + '"' : '') + '/><a class="clear" data-backgrid-action="clear" href="#">&times;</a>';
+    },
 
     searchBox: function() {
       if(this.$customSearchBox) {
