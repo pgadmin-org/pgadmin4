@@ -64,6 +64,8 @@ display.  To open the *Preferences* dialog, select *Preferences* from the *File*
 for the dialog.  You can access additional Postgres help by navigating through
 the *Help* menu, and selecting the name of the resource that you wish to open.
 
+You can search for objects in the database using the :ref:`Search objects <search_objects>`
+
 .. toctree::
    :maxdepth: 2
 
@@ -74,6 +76,7 @@ the *Help* menu, and selecting the name of the resource that you wish to open.
    tree_control
    preferences
    keyboard_shortcuts
+   search_objects
 
 Before using pgAdmin to manage objects that reside on a server, you must define a
 connection to the server; for more information please see *Connecting to a Server*

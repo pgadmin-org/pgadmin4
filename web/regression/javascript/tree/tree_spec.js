@@ -246,39 +246,70 @@ describe('tree tests', () => {
 
         tree.aciTreeApi = jasmine.createSpyObj(
           'ACITreeApi', ['setInode', 'unload', 'deselect', 'select']);
+        tree.aciTreeApi.unload.and.callFake((domNode, config) => {
+          config.success();
+        });
       });
 
-      it('reloads the node and its children', () => {
-        level2.reload(tree);
-        expect(tree.findNodeByDomElement([{id: 'level2'}])).toEqual(level2);
+      it('reloads the node and its children', (done) => {
+        level2.reload(tree)
+          .then(()=>{
+            expect(tree.findNodeByDomElement([{id: 'level2'}])).toEqual(level2);
+            done();
+          })
+          .catch((error)=>{
+            fail(error);
+          });
       });
 
-      it('does not reload the children of node', () => {
-        level2.reload(tree);
-        expect(tree.findNodeByDomElement([{id: 'level3'}])).toBeNull();
+      it('does not reload the children of node', (done) => {
+        level2.reload(tree)
+          .then(()=>{
+            expect(tree.findNodeByDomElement([{id: 'level3'}])).toBeNull();
+            done();
+          })
+          .catch((error)=>{
+            fail(error);
+          });
       });
 
       it('select the node', (done) => {
-        level2.reload(tree);
-        setTimeout(() => {
-          expect(tree.selected()).toEqual([{id: 'level2'}]);
-          done();
-        }, 20);
+        level2.reload(tree)
+          .then(()=>{
+            setTimeout(() => {
+              expect(tree.selected()).toEqual([{id: 'level2'}]);
+              done();
+            }, 20);
+          })
+          .catch((error)=>{
+            fail(error);
+          });
       });
 
       describe('ACITree specific', () => {
-        it('sets the current node as a Inode, changing the Icon back to +', () => {
-          level2.reload(tree);
-          expect(tree.aciTreeApi.setInode).toHaveBeenCalledWith([{id: 'level2'}]);
+        it('sets the current node as a Inode, changing the Icon back to +', (done) => {
+          level2.reload(tree)
+            .then(()=>{
+              expect(tree.aciTreeApi.setInode).toHaveBeenCalledWith([{id: 'level2'}]);
+              done();
+            })
+            .catch((error)=>{
+              fail(error);
+            });
         });
 
         it('deselect the node and selects it again to trigger ACI tree' +
           ' events', (done) => {
-          level2.reload(tree);
-          setTimeout(() => {
-            expect(tree.aciTreeApi.deselect).toHaveBeenCalledWith([{id: 'level2'}]);
-            done();
-          }, 20);
+          level2.reload(tree)
+            .then(()=>{
+              setTimeout(() => {
+                expect(tree.aciTreeApi.deselect).toHaveBeenCalledWith([{id: 'level2'}]);
+                done();
+              }, 20);
+            })
+            .catch((error)=>{
+              fail(error);
+            });
         });
       });
     });
@@ -292,17 +323,32 @@ describe('tree tests', () => {
         level2 = tree.addNewNode('level2', {data: 'data'}, ['<li>level2</li>'], ['level1']);
         tree.addNewNode('level3', {data: 'more data'}, ['<li>level3</li>'], ['level1', 'level2']);
         tree.aciTreeApi = jasmine.createSpyObj('ACITreeApi', ['unload']);
+        tree.aciTreeApi.unload.and.callFake((domNode, config) => {
+          config.success();
+        });
       });
 
-      it('unloads the children of the current node', () => {
-        level2.unload(tree);
-        expect(tree.findNodeByDomElement([{id: 'level2'}])).toEqual(level2);
-        expect(tree.findNodeByDomElement([{id: 'level3'}])).toBeNull();
+      it('unloads the children of the current node', (done) => {
+        level2.unload(tree)
+          .then(()=>{
+            expect(tree.findNodeByDomElement([{id: 'level2'}])).toEqual(level2);
+            expect(tree.findNodeByDomElement([{id: 'level3'}])).toBeNull();
+            done();
+          })
+          .catch((error)=>{
+            fail(error);
+          });
       });
 
-      it('calls unload on the ACI Tree', () => {
-        level2.unload(tree);
-        expect(tree.aciTreeApi.unload).toHaveBeenCalledWith(['<li>level2</li>']);
+      it('calls unload on the ACI Tree', (done) => {
+        level2.unload(tree)
+          .then(()=>{
+            expect(tree.aciTreeApi.unload).toHaveBeenCalledWith(['<li>level2</li>'], jasmine.any(Object));
+            done();
+          })
+          .catch((error)=>{
+            fail(error);
+          });
       });
     });
   });

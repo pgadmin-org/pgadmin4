@@ -105,6 +105,7 @@ module.exports = {
       'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
       'pgadmin.browser.activity': path.join(__dirname, './pgadmin/browser/static/js/activity'),
       'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
+      'tools': path.join(__dirname, './pgadmin/tools/'),
     },
   },
 };

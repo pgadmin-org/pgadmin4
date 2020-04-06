@@ -29,8 +29,11 @@ from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 
 def backend_supported(module, manager, **kwargs):
-    if 'tid' in kwargs and CollectionNodeModule.BackendSupported(
-            module, manager, **kwargs):
+
+    if CollectionNodeModule.BackendSupported(module, manager, **kwargs):
+        if 'tid' not in kwargs:
+            return True
+
         conn = manager.connection(did=kwargs['did'])
 
         template_path = 'partitions/sql/{0}/#{0}#{1}#'.format(

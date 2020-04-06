@@ -51,13 +51,22 @@ define([
         }]);
 
         // show query tool only in context menu of supported nodes.
-        if (pgAdmin.DataGrid && pgAdmin.unsupported_nodes) {
-          if (_.indexOf(pgAdmin.unsupported_nodes, this.type) == -1) {
+
+        if (pgAdmin.unsupported_nodes && _.indexOf(pgAdmin.unsupported_nodes, this.type) == -1) {
+          if ((this.type == 'database' && this.allowConn) || this.type != 'database') {
             pgAdmin.Browser.add_menus([{
-              name: 'show_query_tool', node: this.type, module: this,
+              name: 'show_query_tool', node: this.type, module: pgAdmin.DataGrid,
               applies: ['context'], callback: 'show_query_tool',
               priority: 998, label: gettext('Query Tool...'),
               icon: 'pg-font-icon icon-query-tool',
+            }]);
+
+            // show search objects same as query tool
+            pgAdmin.Browser.add_menus([{
+              name: 'search_objects', node: this.type, module: pgAdmin.SearchObjects,
+              applies: ['context'], callback: 'show_search_objects',
+              priority: 997, label: gettext('Search Objects...'),
+              icon: 'fa fa-search',
             }]);
           }
         }

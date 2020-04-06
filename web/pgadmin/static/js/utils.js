@@ -32,11 +32,12 @@ export function findAndSetFocus(container) {
      * browser. For eg, in safari focus() works only when element has
      * tabindex="0", whereas in Chrome it works in any case
      */
+
     if (first_el.length == 0) {
       first_el = container
         .find(`
-          .pgadmin-controls:first input:enabled,
           .pgadmin-controls:first .btn:not(.toggle),
+          .pgadmin-controls:first,
           .ajs-commands:first,
           .CodeMirror-scroll`)
         .find('*[tabindex]:not([tabindex="-1"])');

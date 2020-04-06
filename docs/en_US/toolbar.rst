@@ -19,3 +19,5 @@ the selected browser node.
   selected table.
 * Use the :ref:`Filtered Rows <viewdata_filter>` button to access the Data Filter popup
   to apply a filter to a set of data for viewing/editing.
+* Use the :ref:`Search objects <search_objects>` button to access the search objects
+  dialog. It helps you search any database object.

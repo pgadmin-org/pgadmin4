@@ -58,7 +58,11 @@ export class DialogWrapper {
     let backform_tab = $(alertifyDialog.elements.body).find('.backform-tab');
     backform_tab.attr('tabindex', -1);
     this.pgBrowser.keyboardNavigation.getDialogTabNavigator($(alertifyDialog.elements.dialog));
-    const container = backform_tab.find('.tab-content:first > .tab-pane.active:first');
+    let container = backform_tab.find('.tab-content:first > .tab-pane.active:first');
+
+    if(container.length === 0 && alertifyDialog.elements.content.innerHTML) {
+      container = $(alertifyDialog.elements.content);
+    }
     commonUtils.findAndSetFocus(container);
   }
 

@@ -21,19 +21,19 @@ else:
 
 class TestBackendSupport(BaseTestGenerator):
     scenarios = [
-        ('when tid is not present in arguments, should return None and no '
-         'query should be done',
+        ('when tid is not present in arguments, but server version'
+         'is supported then return True',
          dict(
              manager=dict(
-                 server_type="",
-                 version=""
+                 server_type="pg",
+                 version="100000"
              ),
              input_arguments=dict(did=432),
 
              collection_node_active=True,
              connection_execution_return_value=[],
 
-             expected_return_value=None,
+             expected_return_value=True,
              expect_error_response=False,
              expected_number_calls_on_render_template=0
          )),

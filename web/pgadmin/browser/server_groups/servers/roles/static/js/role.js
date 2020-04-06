@@ -18,6 +18,7 @@ define('pgadmin.node.role', [
     pgAdmin.Browser.Nodes['coll-role'] =
       pgAdmin.Browser.Collection.extend({
         node: 'role',
+        label: gettext('Login/Group Roles'),
         type: 'coll-role',
         columns: [
           'rolname', 'rolvaliduntil', 'rolconnlimit', 'rolcanlogin',

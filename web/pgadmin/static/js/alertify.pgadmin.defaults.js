@@ -271,7 +271,8 @@ define([
           let container = $(self.elements.footer);
           commonUtils.findAndSetFocus(container.find('button:not([disabled]):last'));
         }
-      });    });
+      });
+    });
     this.set('onresize', alertifyDialogStartResizing.bind(this, true));
     this.set('onresized', alertifyDialogResized.bind(this, true));
     this.set('onmaximized', alertifyDialogResized);

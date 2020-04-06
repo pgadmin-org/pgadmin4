@@ -112,7 +112,7 @@ li {
   font-size: 9pt;
 }
 
-.slick-header-column.ui-state-default {
+#datagrid .slick-header-column.ui-state-default {
     height: 32px !important;
 }
 

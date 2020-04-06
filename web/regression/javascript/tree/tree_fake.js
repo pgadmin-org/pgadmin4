@@ -41,6 +41,9 @@ export class TreeFake extends Tree {
     this.aciTreeToOurTreeTranslator = {};
     this.aciTreeApi = jasmine.createSpyObj(
       'ACITreeApi', ['setInode', 'unload', 'deselect', 'select']);
+    this.aciTreeApi.unload.and.callFake(function(domNode, config) {
+      config.success();
+    });
   }
 
   addNewNode(id, data, domNode, path) {

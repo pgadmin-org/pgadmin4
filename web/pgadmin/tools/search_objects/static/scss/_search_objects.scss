@@ -1,0 +1,122 @@
+.search_objects_dialog {
+    height: 100%;
+
+    .object-other-info {
+        &:hover {
+            font-weight: bold;
+        }
+    }
+
+    .pref-dialog-link {
+        color: $color-fg !important;
+        text-decoration: underline !important;
+        cursor: pointer;
+    }
+
+    .search-result-container {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+    }
+
+    .node-types ~ .select2-container {
+        min-width: 100%;
+    }
+
+    .search-result-count {
+      border-top: $panel-border;
+    }
+
+    .ui-widget {
+        font-family: $font-family-primary;
+        font-size: $font-size-base;
+
+        .slick-header.ui-state-default {
+            border: $table-border-width solid $table-border-color;
+            .slick-header-columns {
+                background: $table-bg;
+                color: $color-fg;
+                border-bottom: $panel-border;
+
+                .slick-header-column-sorted {
+                    font-style: unset;
+                }
+
+                .ui-state-default {
+                    background: $table-bg !important;
+                    color: $color-fg !important;
+                    padding: $table-header-cell-padding $table-cell-padding;
+                    border-right: $table-border-width solid $table-border-color;
+
+                    .slick-column-name {
+                        font-weight: bold;
+                    }
+
+                    .slick-sort-indicator {
+                        float: unset;
+                    }
+                }
+
+                .slick-header-sortable {
+                    cursor: pointer !important;
+
+                    .slick-sort-indicator-asc {
+                        background: none;
+                        border-top: none;
+                        border-right: 0.25rem solid transparent;
+                        border-bottom: 0.25rem solid $color-fg;
+                        border-left: 0.25rem solid transparent;
+                    }
+
+                    .slick-sort-indicator-desc {
+                        background: none;
+                        border-top: 0.25rem solid $color-fg;
+                        border-right: 0.25rem solid transparent;
+                        border-bottom: none;
+                        border-left: 0.25rem solid transparent;
+                    }
+                }
+            }
+        }
+        .ui-widget-content {
+            color: $color-fg;
+            &.slick-row {
+                &.object-muted {
+                    &.active, &.active:hover, &:hover, & {
+                        .slick-cell {
+                            color: $text-muted !important;
+                            cursor: default !important;
+                        }
+                    }
+                }
+
+                &.active, &.active:hover {
+                    .slick-cell {
+                        border-top: $table-border-width solid transparent !important;
+                        background-color: $tree-bg-selected !important;
+                        color: $tree-fg-selected !important;
+                    }
+                }
+
+                &:hover {
+                    cursor: pointer;
+                    .slick-cell {
+                        border-top: $table-border-width solid transparent !important;
+                        border-bottom: $table-border-width solid transparent !important;
+                        background-color: $tree-bg-hover !important;
+                        color: $tree-fg-hover !important;
+                        cursor: pointer !important;
+                    }
+                }
+            }
+        }
+    }
+
+
+    .pg-prop-status-bar {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+}

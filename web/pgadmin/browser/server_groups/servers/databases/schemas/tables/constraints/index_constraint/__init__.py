@@ -54,8 +54,8 @@ class IndexConstraintModule(ConstraintTypeModule):
         initialized.
     """
 
-    NODE_TYPE = 'Index constraint'
-    COLLECTION_LABEL = _('index_constraint')
+    NODE_TYPE = 'index_constraint'
+    COLLECTION_LABEL = _('Index constraint')
 
     def __init__(self, *args, **kwargs):
         """

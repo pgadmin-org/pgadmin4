@@ -177,6 +177,14 @@ define('pgadmin.browser.node', [
 
       // Show query tool only in context menu of supported nodes.
       if (_.indexOf(pgAdmin.unsupported_nodes, self.type) == -1) {
+        let enable = function(itemData) {
+          if (itemData._type == 'database' && itemData.allowConn)
+            return true;
+          else if (itemData._type != 'database')
+            return true;
+          else
+            return false;
+        };
         pgAdmin.Browser.add_menus([{
           name: 'show_query_tool',
           node: self.type,
@@ -186,14 +194,15 @@ define('pgadmin.browser.node', [
           priority: 998,
           label: gettext('Query Tool...'),
           icon: 'pg-font-icon icon-query-tool',
-          enable: function(itemData) {
-            if (itemData._type == 'database' && itemData.allowConn)
-              return true;
-            else if (itemData._type != 'database')
-              return true;
-            else
-              return false;
-          },
+          enable: enable,
+        }]);
+
+        // show search objects same as query tool
+        pgAdmin.Browser.add_menus([{
+          name: 'search_objects', node: self.type, module: pgAdmin.SearchObjects,
+          applies: ['context'], callback: 'show_search_objects',
+          priority: 997, label: gettext('Search Objects...'),
+          icon: 'fa fa-search', enable: enable,
         }]);
       }
 

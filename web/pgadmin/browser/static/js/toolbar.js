@@ -46,6 +46,16 @@ let _defaultToolBarButtons = [
     parentClass: 'pg-toolbar-btn btn-secondary',
     enabled: false,
   },
+  {
+    label: gettext('Search objects'),
+    ariaLabel: gettext('Search objects'),
+    btnClass: 'fa fa-search',
+    text: '',
+    toggled: false,
+    toggleClass: '',
+    parentClass: 'pg-toolbar-btn btn-secondary',
+    enabled: false,
+  },
 ];
 
 // Place holder for non default tool bar buttons.
@@ -92,6 +102,8 @@ export function initializeToolbar(panel, wcDocker) {
       pgAdmin.DataGrid.show_data_grid({mnuid: 3}, pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('Filtered Rows'))
       pgAdmin.DataGrid.show_filtered_row({mnuid: 4}, pgAdmin.Browser.tree.selected());
+    else if ('name' in data && data.name === gettext('Search objects'))
+      pgAdmin.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
   });
 }
 

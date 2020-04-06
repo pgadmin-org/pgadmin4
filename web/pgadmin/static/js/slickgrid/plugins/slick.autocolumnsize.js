@@ -98,7 +98,7 @@
     function getTemplateWidth(rowEl, template) {
       var cell = $(rowEl.find('.slick-cell'));
       cell.append(template);
-      $(cell).find('*').css('position', 'relative');
+      cell.find('*').css('position', 'relative');
       return cell.outerWidth() + 1;
     }
 
@@ -128,7 +128,7 @@
         'text-overflow': 'initial',
         'white-space': 'nowrap',
       });
-      var gridCanvas = $container.find('.grid-canvas');
+      var gridCanvas = $container.find('.grid-canvas').first();
       $(gridCanvas).append(rowEl);
       return rowEl;
     }

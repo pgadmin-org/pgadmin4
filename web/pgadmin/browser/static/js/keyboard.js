@@ -34,6 +34,7 @@ _.extend(pgBrowser.keyboardNavigation, {
         'tabbed_panel_forward': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'tabbed_panel_forward').value),
         'sub_menu_query_tool': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_query_tool').value),
         'sub_menu_view_data': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_view_data').value),
+        'sub_menu_search_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_search_objects').value),
         'sub_menu_properties': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_properties').value),
         'sub_menu_create': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_create').value),
         'sub_menu_delete': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_delete').value),
@@ -55,6 +56,7 @@ _.extend(pgBrowser.keyboardNavigation, {
         'bindLeftTree': {'shortcuts': this.keyboardShortcut.left_tree_shortcut}, // Main menu,
         'bindSubMenuQueryTool': {'shortcuts': this.keyboardShortcut.sub_menu_query_tool}, // Sub menu - Open Query Tool,
         'bindSubMenuViewData': {'shortcuts': this.keyboardShortcut.sub_menu_view_data}, // Sub menu - Open View Data,
+        'bindSubMenuSearchObjects': {'shortcuts': this.keyboardShortcut.sub_menu_search_objects}, // Sub menu - Open search objects,
         'bindSubMenuProperties': {'shortcuts': this.keyboardShortcut.sub_menu_properties}, // Sub menu - Edit Properties,
         'bindSubMenuCreate': {'shortcuts': this.keyboardShortcut.sub_menu_create}, // Sub menu - Create Object,
         'bindSubMenuDelete': {'shortcuts': this.keyboardShortcut.sub_menu_delete}, // Sub menu - Delete object,
@@ -260,6 +262,15 @@ _.extend(pgBrowser.keyboardNavigation, {
 
     // Call data grid method to render view data
     pgAdmin.DataGrid.show_data_grid({'mnuid': 1}, tree.i);
+  },
+  bindSubMenuSearchObjects: function() {
+    const tree = this.getTreeDetails();
+
+    if (!tree.d)
+      return;
+
+    // Call data grid method to render view data
+    pgAdmin.SearchObjects.show_search_objects('', tree.i);
   },
   bindSubMenuProperties: function() {
     const tree = this.getTreeDetails();

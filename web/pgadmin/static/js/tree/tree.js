@@ -50,17 +50,50 @@ export class TreeNode {
   }
 
   reload(tree) {
-    this.unload(tree);
-    tree.aciTreeApi.setInode(this.domNode);
-    tree.aciTreeApi.deselect(this.domNode);
-    setTimeout(() => {
-      tree.selectNode(this.domNode);
-    }, 0);
+    return new Promise((resolve)=>{
+      this.unload(tree)
+        .then(()=>{
+          tree.aciTreeApi.setInode(this.domNode);
+          tree.aciTreeApi.deselect(this.domNode);
+          setTimeout(() => {
+            tree.selectNode(this.domNode);
+          }, 0);
+          resolve();
+        });
+    });
   }
 
   unload(tree) {
-    this.children = [];
-    tree.aciTreeApi.unload(this.domNode);
+    return new Promise((resolve, reject)=>{
+      this.children = [];
+      tree.aciTreeApi.unload(this.domNode, {
+        success: ()=>{
+          resolve(true);
+        },
+        fail: ()=>{
+          reject();
+        },
+      });
+    });
+  }
+
+  open(tree, suppressNoDom) {
+    return new Promise((resolve, reject)=>{
+      if(suppressNoDom && (this.domNode == null || typeof(this.domNode) === 'undefined')) {
+        resolve(true);
+      } else if(tree.aciTreeApi.isOpen(this.domNode)) {
+        resolve(true);
+      } else {
+        tree.aciTreeApi.open(this.domNode, {
+          success: ()=>{
+            resolve(true);
+          },
+          fail: ()=>{
+            reject(true);
+          },
+        });
+      }
+    });
   }
 
   /*
@@ -202,6 +235,47 @@ export class Tree {
     return findInTree(this.rootNode, path.join('.'));
   }
 
+  findNodeWithToggle(path) {
+    let tree = this;
+    path = path.join('.');
+
+    let onCorrectPath = function(matchPath) {
+      return (matchPath !== undefined && path !== undefined
+        && (path.startsWith(matchPath + '.') || path === matchPath));
+    };
+
+    return (function findInNode(currentNode) {
+      return new Promise((resolve, reject)=>{
+        if (path === null || path === undefined || path.length === 0) {
+          resolve(null);
+        }
+        /* No point in checking the children if
+         * the path for currentNode itself is not matching
+         */
+        if (currentNode.path !== undefined && !onCorrectPath(currentNode.path)) {
+          reject(null);
+        } else if (currentNode.path === path) {
+          resolve(currentNode);
+        } else {
+          currentNode.open(tree, true)
+            .then(()=>{
+              for (let i = 0, length = currentNode.children.length; i < length; i++) {
+                let childNode = currentNode.children[i];
+                if(onCorrectPath(childNode.path)) {
+                  resolve(findInNode(childNode));
+                  return;
+                }
+              }
+              reject(null);
+            })
+            .catch(()=>{
+              reject(null);
+            });
+        }
+      });
+    })(this.rootNode);
+  }
+
   findNodeByDomElement(domElement) {
     const path = this.translateTreeNodeIdFromACITree(domElement);
     if(!path || !path[0]) {
@@ -215,8 +289,19 @@ export class Tree {
     return this.aciTreeApi.selected();
   }
 
-  selectNode(aciTreeIdentifier) {
+  /* scrollIntoView will scroll only to top and bottom
+   * Logic can be added for scroll to middle
+   */
+  scrollTo(domElement) {
+    domElement.scrollIntoView();
+  }
+
+  selectNode(aciTreeIdentifier, scrollOnSelect) {
     this.aciTreeApi.select(aciTreeIdentifier);
+
+    if(scrollOnSelect) {
+      this.scrollTo(aciTreeIdentifier[0]);
+    }
   }
 
   createOrUpdateNode(id, data, parent, domNode) {
@@ -227,6 +312,7 @@ export class Tree {
     const oldNode = this.findNode(oldNodePath);
     if (oldNode !== null) {
       oldNode.data = data;
+      oldNode.domNode = domNode;
       return oldNode;
     }
 
@@ -236,6 +322,18 @@ export class Tree {
     }
     parent.children.push(node);
     return node;
+  }
+
+  unloadNode(id, data, domNode, parentPath) {
+    let oldNodePath = [id];
+    const parent = this.findNode(parentPath);
+    if(parent !== null && parent !== undefined) {
+      oldNodePath = [parent.path, id];
+    }
+    const oldNode = this.findNode(oldNodePath);
+    if(oldNode) {
+      oldNode.children = [];
+    }
   }
 
   /**
@@ -252,16 +350,20 @@ export class Tree {
     $treeJQuery.on('acitree', function (event, api, item, eventName) {
       if (api.isItem(item)) {
         /* If the id of node is changed, the path should also be changed */
-        if (eventName === 'added' || eventName === 'idset') {
+        if (['added', 'idset', 'beforeunload'].indexOf(eventName) != -1) {
           const id = api.getId(item);
           const data = api.itemData(item);
-
-          if(eventName === 'added') {
-            this.prepareDraggable(data, item);
-          }
-
           const parentId = this.translateTreeNodeIdFromACITree(api.parent(item));
-          this.addNewNode(id, data, item, parentId);
+
+          if(eventName === 'beforeunload') {
+            this.unloadNode(id, data, item, parentId);
+          } else {
+            if(eventName === 'added') {
+              this.prepareDraggable(data, item);
+            }
+
+            this.addNewNode(id, data, item, parentId);
+          }
           if(data.errmsg) {
             Alertify.error(data.errmsg);
           }

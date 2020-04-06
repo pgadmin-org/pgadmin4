@@ -24,7 +24,7 @@ define('pgadmin.node.extension', [
     pgAdmin.Browser.Nodes['coll-extension'] =
       pgAdmin.Browser.Collection.extend({
         node: 'extension',
-        label: gettext('Extension'),
+        label: gettext('Extensions'),
         type: 'coll-extension',
         columns: ['name', 'owner', 'comment'],
       });

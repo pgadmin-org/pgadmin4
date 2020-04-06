@@ -277,6 +277,8 @@ var webpackShimConfig = {
     'pgadmin.tools.restore': path.join(__dirname, './pgadmin/tools/restore/static/js/restore'),
     'pgadmin.tools.schema_diff': path.join(__dirname, './pgadmin/tools/schema_diff/static/js/schema_diff'),
     'pgadmin.tools.schema_diff_ui': path.join(__dirname, './pgadmin/tools/schema_diff/static/js/schema_diff_ui'),
+    'pgadmin.tools.search_objects': path.join(__dirname, './pgadmin/tools/search_objects/static/js/search_objects'),
+    'pgadmin.search_objects': path.join(__dirname, './pgadmin/tools/search_objects/static/js'),
     'pgadmin.tools.user_management': path.join(__dirname, './pgadmin/tools/user_management/static/js/user_management'),
     'pgadmin.user_management.current_user': '/user_management/current_user',
     'slick.pgadmin.editors': path.join(__dirname, './pgadmin/tools/../static/js/slickgrid/editors'),

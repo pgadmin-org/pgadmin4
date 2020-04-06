@@ -119,21 +119,18 @@
   }
 
   .success-in-footer {
-    border-radius: 5px;
-    border: 1px solid transparent;
-
-    .alert-text {
-      border-color: $color-success-light;
-    }
+    border-radius: $border-radius;
+    border: 1px solid $color-success-light;
+    background: $color-success-light;
   }
 
   .info-in-footer {
+    border-radius: $border-radius;
     border: 1px solid $color-primary;
-    border-radius: 4px;
-    height: 35px;
+    background: $color-primary-light;
 
-    .alert-text {
-      border: none;
+    .fa {
+        font-size: 1rem;
     }
   }
 }

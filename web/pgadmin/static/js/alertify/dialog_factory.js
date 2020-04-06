@@ -9,6 +9,7 @@
 
 import * as BackupDialog from '../../../tools/backup/static/js/backup_dialog_wrapper';
 import {RestoreDialogWrapper} from '../../../tools/restore/static/js/restore_dialog_wrapper';
+import SearchObjectsDialogWrapper from '../../../tools/search_objects/static/js/search_objects_dialog_wrapper';
 
 export class DialogFactory {
   constructor(pgBrowser, $,
@@ -25,6 +26,8 @@ export class DialogFactory {
   create(dialogTitle, typeOfDialog) {
     if (typeOfDialog === 'restore') {
       return this.createRestoreDialog(dialogTitle, typeOfDialog);
+    } else if (typeOfDialog === 'search_objects') {
+      return this.createSearchObjectsDialog(dialogTitle, typeOfDialog);
     } else {
       return this.createBackupDialog(dialogTitle, typeOfDialog);
     }
@@ -42,6 +45,16 @@ export class DialogFactory {
 
   createBackupDialog(dialogTitle, typeOfDialog) {
     return new BackupDialog.BackupDialogWrapper(
+      this.dialogContainerSelector, dialogTitle, typeOfDialog,
+      this.jquery,
+      this.pgBrowser,
+      this.alertify,
+      this.dialogModel,
+      this.backform);
+  }
+
+  createSearchObjectsDialog(dialogTitle, typeOfDialog) {
+    return new SearchObjectsDialogWrapper(
       this.dialogContainerSelector, dialogTitle, typeOfDialog,
       this.jquery,
       this.pgBrowser,
