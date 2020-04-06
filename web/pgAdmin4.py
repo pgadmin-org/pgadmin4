@@ -160,6 +160,18 @@ if 'PGADMIN_INT_KEY' in globals():
 else:
     app.PGADMIN_INT_KEY = ''
 
+# Authentication sources
+app.PGADMIN_DEFAULT_AUTH_SOURCE = 'internal'
+app.PGADMIN_SUPPORTED_AUTH_SOURCE = ['internal', 'ldap']
+
+if len(config.AUTHENTICATION_SOURCES) > 0:
+    app.PGADMIN_EXTERNAL_AUTH_SOURCE = config.AUTHENTICATION_SOURCES[0]
+else:
+    app.PGADMIN_EXTERNAL_AUTH_SOURCE = app.PGADMIN_DEFAULT_AUTH_SOURCE
+
+app.logger.debug(
+    "Authentication Source: %s" % app.PGADMIN_DEFAULT_AUTH_SOURCE)
+
 # Output a startup message if we're not under the runtime and startup.
 # If we're under WSGI, we don't need to worry about this
 if __name__ == '__main__':

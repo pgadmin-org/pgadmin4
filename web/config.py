@@ -489,6 +489,65 @@ MASTER_PASSWORD_REQUIRED = True
 ENHANCED_COOKIE_PROTECTION = True
 
 ##########################################################################
+# External Authentication Sources
+##########################################################################
+
+# Default setting is internal
+# External Supported Sources: ldap
+# Multiple authentication can be achieved by setting this parameter to
+# ['ldap', 'internal']. pgAdmin will authenticate the user with ldap first,
+# in case of failure internal authentication will be done.
+
+AUTHENTICATION_SOURCES = ['internal']
+
+##########################################################################
+# LDAP Configuration
+##########################################################################
+
+# After ldap authentication, user will be added into the SQLite database
+# automatically, if set to True.
+# Set it to False, if user should not be added automatically,
+# in this case Admin has to add the user manually in the SQLite database.
+
+LDAP_AUTO_CREATE_USER = True
+
+# Connection timeout
+LDAP_CONNECTION_TIMEOUT = 10
+
+# Server connection details (REQUIRED)
+# example: ldap://<ip-address>:<port> or ldap://<hostname>:<port>
+LDAP_SERVER_URI = 'ldap://<ip-address>:<port>'
+
+# BaseDN (REQUIRED)
+# AD example:
+# (&(objectClass=user)(memberof=CN=MYGROUP,CN=Users,dc=example,dc=com))
+# OpenLDAP example: CN=Users,dc=example,dc=com
+LDAP_BASE_DN = '<Base-DN>'
+
+# The LDAP attribute containing user names. In OpenLDAP, this may be 'uid'
+# whilst in AD, 'sAMAccountName' might be appropriate. (REQUIRED)
+LDAP_USERNAME_ATTRIBUTE = '<User-id>'
+
+# Search ldap for further authentication
+LDAP_SEARCH_BASE_DN = '<Search-Base-DN>'
+
+# Filter string for the user search.
+# For OpenLDAP, '(cn=*)' may well be enough.
+# For AD, you might use '(objectClass=user)' (REQUIRED)
+LDAP_SEARCH_FILTER = '(objectclass=*)'
+
+# Search scope for users (one of BASE, LEVEL or SUBTREE)
+LDAP_SEARCH_SCOPE = 'SUBTREE'
+
+# Use TLS? If the URI scheme is ldaps://, this is ignored.
+LDAP_USE_STARTTLS = False
+
+# TLS/SSL certificates. Specify if required, otherwise leave empty
+LDAP_CA_CERT_FILE = ''
+LDAP_CERT_FILE = ''
+LDAP_KEY_FILE = ''
+
+##########################################################################
 # Local config settings
 ##########################################################################
 

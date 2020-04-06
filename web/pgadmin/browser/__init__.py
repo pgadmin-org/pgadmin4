@@ -45,6 +45,7 @@ from pgadmin.browser.register_browser_preferences import \
 from pgadmin.utils.master_password import validate_master_password, \
     set_masterpass_check_text, cleanup_master_password, get_crypt_key, \
     set_crypt_key, process_masterpass_disabled
+from pgadmin.model import User
 
 try:
     import urllib.request as urlreq
@@ -580,12 +581,24 @@ def index():
 
                 flash(msg, 'warning')
 
+    auth_only_internal = False
+    auth_source = []
+
+    if config.SERVER_MODE:
+        if len(config.AUTHENTICATION_SOURCES) == 1\
+                and 'internal' in config.AUTHENTICATION_SOURCES:
+            auth_only_internal = True
+        auth_source = session['_auth_source_manager_obj'][
+            'source_friendly_name']
+
     response = Response(render_template(
         MODULE_NAME + "/index.html",
-        username=current_user.email,
+        username=current_user.username,
+        auth_source=auth_source,
         is_admin=current_user.has_role("Administrator"),
         logout_url=_get_logout_url(),
-        _=gettext
+        _=gettext,
+        auth_only_internal=auth_only_internal
     ))
 
     # Set the language cookie after login, so next time the user will have that
@@ -994,43 +1007,60 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
             form = form_class()
 
         if form.validate_on_submit():
-            try:
-                send_reset_password_instructions(form.user)
-            except SOCKETErrorException as e:
-                # Handle socket errors which are not covered by SMTPExceptions.
-                logging.exception(str(e), exc_info=True)
-                flash(gettext(u'SMTP Socket error: {}\n'
-                              u'Your password has not been changed.'
-                              ).format(e),
-                      'danger')
-                has_error = True
-            except (SMTPConnectError, SMTPResponseException,
-                    SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
-                    SMTPException, SMTPAuthenticationError, SMTPSenderRefused,
-                    SMTPRecipientsRefused) as e:
+            # Check the Authentication source of the User
+            user = User.query.filter_by(
+                email=form.data['email'],
+                auth_source=current_app.PGADMIN_DEFAULT_AUTH_SOURCE
+            ).first()
 
-                # Handle smtp specific exceptions.
-                logging.exception(str(e), exc_info=True)
-                flash(gettext(u'SMTP error: {}\n'
-                              u'Your password has not been changed.'
-                              ).format(e),
+            if user is None:
+                # If the user is not an internal user, raise the exception
+                flash(gettext('Your account is authenticated using an '
+                              'external {} source. '
+                              'Please contact the administrators of this '
+                              'service if you need to reset your password.'
+                              ).format(form.user.auth_source),
                       'danger')
                 has_error = True
-            except Exception as e:
-                # Handle other exceptions.
-                logging.exception(str(e), exc_info=True)
-                flash(gettext(u'Error: {}\n'
-                              u'Your password has not been changed.'
-                              ).format(e),
-                      'danger')
-                has_error = True
+            if not has_error:
+                try:
+                    send_reset_password_instructions(form.user)
+                except SOCKETErrorException as e:
+                    # Handle socket errors which are not
+                    # covered by SMTPExceptions.
+                    logging.exception(str(e), exc_info=True)
+                    flash(gettext(u'SMTP Socket error: {}\n'
+                                  u'Your password has not been changed.'
+                                  ).format(e),
+                          'danger')
+                    has_error = True
+                except (SMTPConnectError, SMTPResponseException,
+                        SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
+                        SMTPException, SMTPAuthenticationError,
+                        SMTPSenderRefused, SMTPRecipientsRefused) as e:
+
+                    # Handle smtp specific exceptions.
+                    logging.exception(str(e), exc_info=True)
+                    flash(gettext(u'SMTP error: {}\n'
+                                  u'Your password has not been changed.'
+                                  ).format(e),
+                          'danger')
+                    has_error = True
+                except Exception as e:
+                    # Handle other exceptions.
+                    logging.exception(str(e), exc_info=True)
+                    flash(gettext(u'Error: {}\n'
+                                  u'Your password has not been changed.'
+                                  ).format(e),
+                          'danger')
+                    has_error = True
 
             if request.json is None and not has_error:
                 do_flash(*get_message('PASSWORD_RESET_REQUEST',
                                       email=form.user.email))
 
         if request.json and not has_error:
-            return _render_json(form, include_user=False)
+            return default_render_json(form, include_user=False)
 
         return _security.render_template(
             config_value('FORGOT_PASSWORD_TEMPLATE'),

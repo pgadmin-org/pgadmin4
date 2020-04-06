@@ -1,0 +1,84 @@
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2020, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+
+import sys
+import config as app_config
+from pgadmin.utils.route import BaseTestGenerator
+from regression.python_test_utils import test_utils as utils
+from regression.test_setup import config_data
+from pgadmin.authenticate.registry import AuthSourceRegistry
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
+
+
+class LDAPLoginMockTestCase(BaseTestGenerator):
+    """
+    This class checks ldap login functionality by mocking
+    ldap connection and ldap search functionality.
+    """
+
+    scenarios = [
+        ('LDAP Authentication with Auto Create User', dict(
+            auth_source=['ldap'],
+            auto_create_user=True,
+            username='ldap_user',
+            password='ldap_pass')),
+        ('LDAP Authentication without Auto Create User', dict(
+            auth_source=['ldap'],
+            auto_create_user=False,
+            username='ldap_user',
+            password='ldap_pass')),
+        ('LDAP + Internal Authentication', dict(
+            auth_source=['ldap', 'internal'],
+            auto_create_user=False,
+            username=config_data[
+                'pgAdmin4_login_credentials']['login_username'],
+            password=config_data[
+                'pgAdmin4_login_credentials']['login_password']
+        ))
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        We need to logout the test client as we are testing
+        ldap login scenarios.
+        """
+        cls.tester.logout()
+
+    def setUp(self):
+        app_config.AUTHENTICATION_SOURCES = self.auth_source
+        app_config.LDAP_AUTO_CREATE_USER = self.auto_create_user
+
+    @patch.object(AuthSourceRegistry.registry['ldap'], 'connect',
+                  return_value=[True, "Done"])
+    @patch.object(AuthSourceRegistry.registry['ldap'], 'search_ldap_user',
+                  return_value=[True, ''])
+    def runTest(self, conn_mock_obj, search_mock_obj):
+        """This function checks ldap login functionality."""
+
+        res = self.tester.login(self.username, self.password, True)
+        respdata = 'Gravatar image for %s' % self.username
+        self.assertTrue(respdata in res.data.decode('utf8'))
+
+    def tearDown(self):
+        self.tester.logout()
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        We need to again login the test client as soon as test scenarios
+        finishes.
+        """
+        cls.tester.logout()
+        app_config.AUTHENTICATION_SOURCES = ['internal']
+        utils.login_tester_account(cls.tester)

@@ -38,7 +38,7 @@ from datetime import timedelta
 from pgadmin.setup import get_version, set_version
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.csrf import pgCSRFProtect
-
+from pgadmin import authenticate
 
 # If script is running under python3, it will not have the xrange function
 # defined
@@ -398,6 +398,7 @@ def create_app(app_name=None):
     # Load all available server drivers
     ##########################################################################
     driver.init_app(app)
+    authenticate.init_app(app)
 
     ##########################################################################
     # Register language to the preferences after login

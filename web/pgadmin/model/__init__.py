@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 24
+SCHEMA_VERSION = 25
 
 ##########################################################################
 #
@@ -66,13 +66,15 @@ class User(db.Model, UserMixin):
     """Define a user object"""
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(256), unique=True, nullable=False)
+    email = db.Column(db.String(256), nullable=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
     password = db.Column(db.String(256))
     active = db.Column(db.Boolean(), nullable=False)
     confirmed_at = db.Column(db.DateTime())
     masterpass_check = db.Column(db.String(256))
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+    auth_source = db.Column(db.String(16), unique=True, nullable=False)
 
 
 class Setting(db.Model):

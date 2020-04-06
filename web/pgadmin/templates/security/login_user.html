@@ -7,10 +7,10 @@
 {% block panel_title %}{{ _('Login') }}{% endblock %}
 {% block panel_body %}
 {% if config.SERVER_MODE %}
-<form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+<form action="{{ url_for('authenticate.login') }}" method="POST" name="login_user_form">
     {{ login_user_form.hidden_tag() }}
     {% set user_language = request.cookies.get('PGADMIN_LANGUAGE') or 'en' %}
-    {{ render_field_with_errors(login_user_form.email, "text") }}
+    {{ render_username_with_errors(login_user_form.email, "text") }}
     {{ render_field_with_errors(login_user_form.password, "password") }}
     <button class="btn btn-primary btn-block btn-login" type="submit" value="{{ _('Login') }}">{{ _('Login') }}</button>
     <div class="form-group row mb-3 c user-language">

@@ -74,7 +74,8 @@ class UserManagementModule(PgAdminModule):
             'user_management.roles', 'user_management.role',
             'user_management.update_user', 'user_management.delete_user',
             'user_management.create_user', 'user_management.users',
-            'user_management.user', current_app.login_manager.login_view
+            'user_management.user', current_app.login_manager.login_view,
+            'user_management.auth_sources', 'user_management.auth_sources'
         ]
 
 
@@ -100,7 +101,7 @@ def validate_user(data):
         else:
             raise Exception(_("Passwords do not match."))
 
-    if 'email' in data and data['email'] != "":
+    if 'email' in data and data['email'] and data['email'] != "":
         if email_filter.match(data['email']):
             new_data['email'] = data['email']
         else:
@@ -111,6 +112,12 @@ def validate_user(data):
 
     if 'active' in data and data['active'] != "":
         new_data['active'] = data['active']
+
+    if 'username' in data and data['username'] != "":
+        new_data['username'] = data['username']
+
+    if 'auth_source' in data and data['auth_source'] != "":
+        new_data['auth_source'] = data['auth_source']
 
     return new_data
 
@@ -140,6 +147,7 @@ def script():
 @pgCSRFProtect.exempt
 @login_required
 def current_user_info():
+
     return Response(
         response=render_template(
             "user_management/js/current_user.js",
@@ -148,13 +156,15 @@ def current_user_info():
             user_id=current_user.id,
             email=current_user.email,
             name=(
-                current_user.email.split('@')[0] if config.SERVER_MODE is True
+                current_user.username.split('@')[0] if
+                config.SERVER_MODE is True
                 else 'postgres'
             ),
             allow_save_password='true' if config.ALLOW_SAVE_PASSWORD
             else 'false',
             allow_save_tunnel_password='true'
             if config.ALLOW_SAVE_TUNNEL_PASSWORD else 'false',
+            auth_sources=config.AUTHENTICATION_SOURCES,
         ),
         status=200,
         mimetype="application/javascript"
@@ -180,9 +190,11 @@ def user(uid):
         u = User.query.get(uid)
 
         res = {'id': u.id,
+               'username': u.username,
                'email': u.email,
                'active': u.active,
-               'role': u.roles[0].id
+               'role': u.roles[0].id,
+               'auth_source': u.auth_source
                }
     else:
         users = User.query.all()
@@ -190,9 +202,11 @@ def user(uid):
         users_data = []
         for u in users:
             users_data.append({'id': u.id,
+                               'username': u.username,
                                'email': u.email,
                                'active': u.active,
-                               'role': u.roles[0].id
+                               'role': u.roles[0].id,
+                               'auth_source': u.auth_source
                                })
 
         res = users_data
@@ -215,11 +229,29 @@ def create():
         request.data, encoding='utf-8'
     )
 
-    for f in ('email', 'role', 'active', 'newPassword', 'confirmPassword'):
+    status, res = create_user(data)
+
+    if not status:
+        return internal_server_error(errormsg=res)
+
+    return ajax_response(
+        response=res,
+        status=200
+    )
+
+
+def create_user(data):
+    if 'auth_source' in data and data['auth_source'] != 'internal':
+        req_params = ('username', 'role', 'active', 'auth_source')
+    else:
+        req_params = ('email', 'role', 'active', 'newPassword',
+                      'confirmPassword')
+
+    for f in req_params:
         if f in data and data[f] != '':
             continue
         else:
-            return bad_request(errormsg=_("Missing field: '{0}'".format(f)))
+            return False, _("Missing field: '{0}'".format(f))
 
     try:
         new_data = validate_user(data)
@@ -228,13 +260,23 @@ def create():
             new_data['roles'] = [Role.query.get(new_data['roles'])]
 
     except Exception as e:
-        return bad_request(errormsg=_(str(e)))
+        return False, str(e)
 
     try:
-        usr = User(email=new_data['email'],
+
+        username = new_data['username'] if 'username' in new_data \
+            else new_data['email']
+        email = new_data['email'] if 'email' in new_data else None
+        password = new_data['password'] if 'password' in new_data else None
+        auth_source = new_data['auth_source'] if 'auth_source' in new_data \
+            else current_app.PGADMIN_DEFAULT_AUTH_SOURCE
+
+        usr = User(username=username,
+                   email=email,
                    roles=new_data['roles'],
                    active=new_data['active'],
-                   password=new_data['password'])
+                   password=password,
+                   auth_source=auth_source)
         db.session.add(usr)
         db.session.commit()
         # Add default server group for new user.
@@ -242,18 +284,15 @@ def create():
         db.session.add(server_group)
         db.session.commit()
     except Exception as e:
-        return internal_server_error(errormsg=str(e))
+        return False, str(e)
 
-    res = {'id': usr.id,
-           'email': usr.email,
-           'active': usr.active,
-           'role': usr.roles[0].id
-           }
-
-    return ajax_response(
-        response=res,
-        status=200
-    )
+    return True, {
+        'id': usr.id,
+        'username': usr.username,
+        'email': usr.email,
+        'active': usr.active,
+        'role': usr.roles[0].id
+    }
 
 
 @blueprint.route(
@@ -337,9 +376,11 @@ def update(uid):
         db.session.commit()
 
         res = {'id': usr.id,
+               'username': usr.username,
                'email': usr.email,
                'active': usr.active,
-               'role': usr.roles[0].id
+               'role': usr.roles[0].id,
+               'auth_source': usr.auth_source
                }
 
         return ajax_response(
@@ -382,5 +423,19 @@ def role(rid):
 
     return ajax_response(
         response=res,
+        status=200
+    )
+
+
+@blueprint.route(
+    '/auth_sources/', methods=['GET'], endpoint='auth_sources'
+)
+def auth_sources():
+    sources = []
+    for source in current_app.PGADMIN_SUPPORTED_AUTH_SOURCE:
+        sources.append({'label': source, 'value': source})
+
+    return ajax_response(
+        response=sources,
         status=200
     )

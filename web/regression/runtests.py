@@ -118,6 +118,11 @@ app.PGADMIN_RUNTIME = True
 if config.SERVER_MODE is True:
     app.PGADMIN_RUNTIME = False
 app.config['WTF_CSRF_ENABLED'] = True
+
+# Authentication sources
+app.PGADMIN_DEFAULT_AUTH_SOURCE = 'internal'
+app.PGADMIN_EXTERNAL_AUTH_SOURCE = 'ldap'
+
 app.test_client_class = TestClient
 test_client = app.test_client()
 test_client.setApp(app)
@@ -195,6 +200,8 @@ def get_test_modules(arguments):
             "browser.tests.test_login",
             "browser.tests.test_logout",
             "browser.tests.test_reset_password",
+            "browser.tests.test_ldap_login",
+            "browser.tests.test_ldap_with_mocking",
         ])
     if arguments['exclude'] is not None:
         exclude_pkgs += arguments['exclude'].split(',')

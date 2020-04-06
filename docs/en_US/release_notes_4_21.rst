@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #2186 <https://redmine.postgresql.org/issues/2186>`_ -  Added LDAP authentication support.
 | `Issue #5184 <https://redmine.postgresql.org/issues/5184>`_ -  Added support for parameter toast_tuple_target and parallel_workers of the table.
 | `Issue #5264 <https://redmine.postgresql.org/issues/5264>`_ -  Added support of Packages, Sequences and Synonyms to the Schema Diff.
 | `Issue #5353 <https://redmine.postgresql.org/issues/5353>`_ -  Added an option to prevent a browser tab being opened at startup.

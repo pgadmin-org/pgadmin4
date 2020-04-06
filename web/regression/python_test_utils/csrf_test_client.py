@@ -109,7 +109,7 @@ class TestClient(testing.FlaskClient):
             csrf_token = self.generate_csrf_token()
 
         res = self.post(
-            '/login', data=dict(
+            '/authenticate/login', data=dict(
                 email=email, password=password,
                 csrf_token=csrf_token,
             ),
@@ -120,5 +120,5 @@ class TestClient(testing.FlaskClient):
         return res
 
     def logout(self):
-        res = self.get('/logout', follow_redirects=False)
+        res = self.get('/logout?next=/browser/', follow_redirects=False)
         self.csrf_token = None
