@@ -1770,6 +1770,10 @@ define([
             showToday: true,
           },
           toolbarPlacement: 'top',
+          widgetPositioning: {
+            horizontal: 'auto',
+            vertical: 'bottom',
+          },
           keepOpen: false,
         }, evalF(this.column.get('options')), {
           keyBinds: {

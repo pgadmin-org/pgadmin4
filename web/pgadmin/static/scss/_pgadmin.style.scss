@@ -884,8 +884,8 @@ body {
 table.table-noouter-border {
   border: none !important;
 
-  tbody tr:last-of-type{
-    & td {
+  & > tbody > tr:last-of-type{
+    &  > td {
       border-bottom: $table-border-width solid transparent;
     }
   }
