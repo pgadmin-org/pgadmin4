@@ -1537,6 +1537,17 @@ define('pgadmin.browser.node', [
                 view.$el.closest('.wcFloating').find('[tabindex]:not([tabindex="-1"]').first().focus();
                 return false;
               }
+              let btnGroup = $(panel.$container.find('.pg-prop-btn-group'));
+              let el = $(btnGroup).find('button:first');
+              if (panel.$container.find('td.editable:last').is(':visible')){
+                if (event.keyCode === 9 && event.shiftKey) {
+                  if ($(el).is($(event.target))){
+                    $(panel.$container.find('td.editable:last').trigger('click'));
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }
+                }
+              }
             });
 
             setTimeout(function() {

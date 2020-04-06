@@ -55,6 +55,23 @@ define('pgadmin.node.schema', [
           }
         }
       },
+      events : {
+        'keydown': 'keyDownHandler',
+      },
+
+      keyDownHandler : function(event){
+        // move the focus to editable input
+        let lastButton = $(this.$el).find('button:last');
+        let firstEditableCell = $(this.$el).find('td.editable:first');
+        if (event.keyCode== 9 && !event.shiftKey){
+          if ($(firstEditableCell).is(':visible')
+            && ($(event.target)).is($(lastButton))){
+            $(firstEditableCell).trigger('click');
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }
+      },
 
       render: function() {
         var self = this,
@@ -179,7 +196,6 @@ define('pgadmin.node.schema', [
     control: Backform.SwitchControl.extend({
       onChange: function() {
         Backform.SwitchControl.prototype.onChange.apply(this, arguments);
-
         let m = this.model;
         // If value of autovacuum_enabled is false and reloptions is null
         // then we should set the value of autovacuum_custom to false, as
