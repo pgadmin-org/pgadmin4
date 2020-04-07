@@ -428,11 +428,6 @@ define([
               });
 
             },
-            hooks: {
-              onshow: function() {
-                commonUtils.findAndSetFocus($(this.elements.body));
-              },
-            },
 
             prepare: function() {
               var that = this;

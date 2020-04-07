@@ -95,10 +95,6 @@
     onKeydown: function (e) {
       var command = new Backgrid.Command(e);
       if (command.passThru()) return true; // skip ahead to `change`
-      if (command.cancel()) {
-        e.stopPropagation();
-        this.checkbox().blur();
-      }
       else if (command.save() || command.moveLeft() || command.moveRight() ||
                command.moveUp() || command.moveDown()) {
 

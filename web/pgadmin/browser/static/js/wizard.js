@@ -184,11 +184,10 @@ define([
 
       /* OnLoad Callback */
       this.onLoad();
-
       setTimeout(function() {
         var container = $(self.el);
         commonUtils.findAndSetFocus(container);
-      }, 100);
+      }, 500);
 
       return this;
     },
@@ -292,6 +291,9 @@ define([
         } else if(event.target.tagName == 'TEXTAREA'){
           $(firstWizardFooterBtn).focus();
         }
+      } else if (event.keyCode === 27){
+        //close the wizard when esc key is pressed
+        $(wizardHeader).find('button.ajs-close').click();
       }
     },
     enableDisableNext: function(disable) {

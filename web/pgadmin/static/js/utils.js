@@ -39,10 +39,10 @@ export function findAndSetFocus(container) {
           .pgadmin-controls:first .btn:not(.toggle),
           .pgadmin-controls:first,
           .ajs-commands:first,
-          .CodeMirror-scroll`)
-        .find('*[tabindex]:not([tabindex="-1"])');
+          .CodeMirror-scroll,
+          .pgadmin-wizard`)
+        .find('*[tabindex]:not([tabindex="-1"]),input:enabled');
     }
-
     if(first_el.length > 0) {
       first_el[0].focus();
     } else {
