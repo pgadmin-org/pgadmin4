@@ -63,8 +63,10 @@
   & .cm-hr {color: $color-editor-fg;}
   & .cm-link {color: $color-editor-fg;}
 
-  & .CodeMirror-cursor {
-    border-color: $color-editor-fg;
+  & :not(.cm-fat-cursor) .CodeMirror-cursor {
+    border-left: thin solid $color-editor-fg;;
+    border-right: none;
+    width: 0;
   }
 }
 
