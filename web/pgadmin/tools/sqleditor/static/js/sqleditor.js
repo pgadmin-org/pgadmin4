@@ -2279,6 +2279,7 @@ define('tools.querytool', [
           }
         });
 
+        self.init_events();
         if (self.is_query_tool) {
           // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
           // Call AJAX only if script type url is present
@@ -2292,11 +2293,9 @@ define('tools.querytool', [
                 if (res && res !== '') {
                   self.gridView.query_tool_obj.setValue(res);
                 }
-                self.init_events();
               })
               .fail(function(jqx) {
                 let msg = '';
-                self.init_events();
 
                 msg = httpErrorHandler.handleQueryToolAjaxError(
                   pgAdmin, self, jqx, null, [], false
@@ -2306,13 +2305,10 @@ define('tools.querytool', [
                   gettext('Error fetching SQL for script: %s.', msg)
                 );
               });
-          } else {
-            self.init_events();
           }
         }
         else {
           // Disable codemirror by setting readOnly option to true, background to dark, and cursor, hidden.
-          self.init_events();
           self.gridView.query_tool_obj.setOption('readOnly', true);
           var cm = self.gridView.query_tool_obj.getWrapperElement();
           if (cm) {
