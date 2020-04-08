@@ -8,7 +8,6 @@
 ##########################################################################
 
 import simplejson as json
-import re
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for
@@ -20,6 +19,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
     make_response as ajax_response, internal_server_error, unauthorized, gone
 from pgadmin.utils.crypto import encrypt, decrypt, pqencryptpassword
 from pgadmin.utils.menu import MenuItem
+from pgadmin.utils.ip import is_valid_ipaddress
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 import config
@@ -272,31 +272,6 @@ class ServerNode(PGChildNodeView):
         'clear_saved_password': [{'put': 'clear_saved_password'}],
         'clear_sshtunnel_password': [{'put': 'clear_sshtunnel_password'}]
     })
-    EXP_IP4 = "^\s*((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
-              "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
-              "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\." \
-              "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\s*$"
-    EXP_IP6 = '^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|' \
-              '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|' \
-              '2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d))' \
-              '{3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|' \
-              ':((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d' \
-              '|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]' \
-              '{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|' \
-              '[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|' \
-              '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-' \
-              'Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25' \
-              '[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:)' \
-              '{2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:(' \
-              '(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|' \
-              '[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]' \
-              '{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|'\
-              '1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))' \
-              '|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((' \
-              '25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|' \
-              '[1-9]?\d)){3}))|:)))(%.+)?\s*$'
-    pat4 = re.compile(EXP_IP4)
-    pat6 = re.compile(EXP_IP6)
     SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full']
 
     def check_ssl_fields(self, data):
@@ -570,7 +545,7 @@ class ServerNode(PGChildNodeView):
             ):
                 if arg in data:
                     return forbidden(
-                        errormsg=gettext(
+                        errmsg=gettext(
                             "'{0}' is not allowed to modify, "
                             "when server is connected."
                         ).format(disp_lbl[arg])
@@ -771,13 +746,12 @@ class ServerNode(PGChildNodeView):
                 )
 
         if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '':
-            if not self.pat4.match(data['hostaddr']):
-                if not self.pat6.match(data['hostaddr']):
-                    return make_json_response(
-                        success=0,
-                        status=400,
-                        errormsg=gettext('Host address not valid')
-                    )
+            if not is_valid_ipaddress(data['hostaddr']):
+                return make_json_response(
+                    success=0,
+                    status=400,
+                    errormsg=gettext('Not a valid Host address')
+                )
 
         # To check ssl configuration
         is_ssl, data = self.check_ssl_fields(data)
