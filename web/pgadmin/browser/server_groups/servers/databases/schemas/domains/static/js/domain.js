@@ -35,7 +35,7 @@ define('pgadmin.node.domain', [
   var ConstraintModel = pgBrowser.Node.Model.extend({
     idAttribute: 'conoid',
     initialize: function(attrs) {
-      if (!_.size(attrs) === 0) {
+      if (_.size(attrs) !== 0) {
         this.convalidated_default = this.get('convalidated');
       }
       pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
