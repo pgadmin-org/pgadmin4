@@ -1296,10 +1296,7 @@ def save_file():
             else:
                 output_file.write(file_content)
     except IOError as e:
-        if e.strerror == 'Permission denied':
-            err_msg = "Error: {0}".format(e.strerror)
-        else:
-            err_msg = "Error: {0}".format(e.strerror)
+        err_msg = "Error: {0}".format(e.strerror)
         return internal_server_error(errormsg=err_msg)
     except Exception as e:
         err_msg = "Error: {0}".format(e.strerror)

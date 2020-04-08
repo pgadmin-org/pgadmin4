@@ -11,7 +11,7 @@
     <div class="row h-100 align-items-center justify-content-center">
         <div class="col-md-6">{% block panel_image %}{% endblock %}</div>
         <div class="col-md-3">
-            <div class="panel-header text-color h4"><i class="app-icon pg-icon"></i> {{ _('%(appname)s', appname=config.APP_NAME) }}</div>
+            <div class="panel-header text-color h4"><i class="app-icon pg-icon" aria-hidden="true"></i> {{ _('%(appname)s', appname=config.APP_NAME) }}</div>
             <div class="panel-body">
                 <div class="d-block text-color pb-3 h5">{% block panel_title %}{% endblock %}</div>
                 {% block panel_body %}

@@ -365,7 +365,6 @@ class Filemanager(object):
             if 'supported_types' in params else []
         if fm_type == 'select_file':
             capabilities = ['select_file', 'rename', 'upload', 'create']
-            supp_types = supp_types
             files_only = True
             folders_only = False
             title = "Select File"
@@ -376,14 +375,12 @@ class Filemanager(object):
             title = "Select Folder"
         elif fm_type == 'create_file':
             capabilities = ['select_file', 'rename', 'create']
-            supp_types = supp_types
             files_only = True
             folders_only = False
             title = "Create File"
         elif fm_type == 'storage_dialog':
             capabilities = ['select_folder', 'select_file', 'download',
                             'rename', 'delete', 'upload', 'create']
-            supp_types = supp_types
             files_only = True
             folders_only = False
             title = "Storage Manager"

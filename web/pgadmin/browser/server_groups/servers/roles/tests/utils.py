@@ -60,13 +60,12 @@ def test_getrole(tester):
 
     server_ids = all_id["sid"]
     role_ids_dict = all_id["lrid"][0]
-    server_group = config_data['server_group']
 
     role_response_data = []
     for server_id in server_ids:
         role_id = role_ids_dict[int(server_id)]
         role_response_data.append(
-            verify_role(tester, server_group, server_id, role_id))
+            verify_role(server_id, role_id))
     return role_response_data
 
 
@@ -120,34 +119,6 @@ def create_role(server, role_name):
         exception = "Error while deleting role: %s: line:%s %s" % (
             file_name, sys.exc_traceback.tb_lineno, exception)
         print(exception, file=sys.stderr)
-
-
-def write_role_id(response_data):
-    """
-
-    :param response_data:
-    :return:
-    """
-
-    lr_id = response_data['node']['_id']
-    server_id = response_data['node']['_pid']
-    pickle_id_dict = utils.get_pickle_id_dict()
-    # TODO: modify logic to write in file / file exists or create new check
-    # old file
-    if os.path.isfile(pickle_path):
-        existing_server_id = open(pickle_path, 'rb')
-        tol_server_id = pickle.load(existing_server_id)
-        pickle_id_dict = tol_server_id
-    if 'lrid' in pickle_id_dict:
-        if pickle_id_dict['lrid']:
-            # Add the db_id as value in dict
-            pickle_id_dict["lrid"][0].update({server_id: lr_id})
-        else:
-            # Create new dict with server_id and db_id
-            pickle_id_dict["lrid"].append({server_id: lr_id})
-    db_output = open(pickle_path, 'wb')
-    pickle.dump(pickle_id_dict, db_output)
-    db_output.close()
 
 
 def delete_role(connection, role_names):

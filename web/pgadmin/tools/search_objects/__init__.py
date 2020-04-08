@@ -56,7 +56,7 @@ blueprint = SearchObjectsModule(
 @blueprint.route("/", endpoint='index')
 @login_required
 def index():
-    return bad_request(errormsg=_("This URL cannot be called directly."))
+    return bad_request(errormsg=gettext("This URL cannot be called directly."))
 
 
 @blueprint.route("types/<int:sid>/<int:did>", endpoint='types')

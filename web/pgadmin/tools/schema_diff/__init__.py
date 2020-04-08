@@ -8,9 +8,6 @@
 ##########################################################################
 
 """A blueprint module implementing the schema_diff frame."""
-
-MODULE_NAME = 'schema_diff'
-
 import simplejson as json
 import pickle
 import random
@@ -27,6 +24,8 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.driver import get_driver
+
+MODULE_NAME = 'schema_diff'
 
 
 class SchemaDiffModule(PgAdminModule):
@@ -567,14 +566,15 @@ def check_version_compatibility(sid, tid):
 
     tar_server = Server.query.filter_by(id=tid).first()
     tar_manager = driver.connection_manager(tar_server.id)
+    target_conn = src_manager.connection()
+
+    if not (src_conn.connected() and target.connected()):
+        return False, gettext('Server(s) disconnected.')
 
     if src_manager.server_type != tar_manager.server_type:
         return False, gettext('Schema diff does not support the comparison '
                               'between Postgres Server and EDB Postgres '
                               'Advanced Server.')
-
-    if not (src_conn.connected() or src_conn.connected()):
-        return False, gettext('Server(s) disconnected.')
 
     def get_round_val(x):
         if x < 10000:

@@ -1506,7 +1506,7 @@ class ServerNode(PGChildNodeView):
             conn = manager.connection()
             if not conn.connected():
                 return gone(
-                    errormsg=_('Please connect the server.')
+                    errormsg=gettext('Please connect the server.')
                 )
 
             if not server.password or not manager.password:

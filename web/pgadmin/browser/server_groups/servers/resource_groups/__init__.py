@@ -588,7 +588,7 @@ class ResourceGroupView(NodeView):
 
             if len(res['rows']) == 0:
                 return gone(
-                    _("The specified resource group could not be found.")
+                    gettext("The specified resource group could not be found.")
                 )
             old_data = res['rows'][0]
             for arg in required_args:
@@ -655,7 +655,7 @@ class ResourceGroupView(NodeView):
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
             return gone(
-                _("The specified resource group could not be found.")
+                gettext("The specified resource group could not be found.")
             )
 
         # Making copy of output for future use

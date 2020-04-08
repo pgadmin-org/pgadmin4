@@ -485,7 +485,7 @@ class TablespaceView(PGChildNodeView):
 
             if len(res['rows']) == 0:
                 return gone(
-                    _("Could not find the tablespace on the server.")
+                    gettext("Could not find the tablespace on the server.")
                 )
 
             # Making copy of output for further processing
@@ -550,7 +550,7 @@ class TablespaceView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the tablespace on the server.")
+                gettext("Could not find the tablespace on the server.")
             )
         # Making copy of output for future use
         old_data = dict(res['rows'][0])
