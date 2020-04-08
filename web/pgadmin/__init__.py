@@ -472,7 +472,7 @@ def create_app(app_name=None):
 
             try:
                 proc_arch64 = os.environ['PROCESSOR_ARCHITEW6432'].lower()
-            except Exception as e:
+            except Exception:
                 proc_arch64 = None
 
             if proc_arch == 'x86' and not proc_arch64:
@@ -486,7 +486,7 @@ def create_app(app_name=None):
                     try:
                         root_key = winreg.OpenKey(
                             winreg.HKEY_LOCAL_MACHINE,
-                            "SOFTWARE\\" + server_type + "\Services", 0,
+                            "SOFTWARE\\" + server_type + "\\Services", 0,
                             winreg.KEY_READ | arch_key
                         )
                         for i in xrange(0, winreg.QueryInfoKey(root_key)[0]):
@@ -518,7 +518,7 @@ def create_app(app_name=None):
                             )
 
                             inst_key.Close()
-                    except Exception as e:
+                    except Exception:
                         pass
         else:
             # We use the postgres-winreg.ini file on non-Windows
@@ -566,7 +566,7 @@ def create_app(app_name=None):
                                svr_superuser, svr_port, svr_discovery_id,
                                svr_comment)
 
-        except Exception as e:
+        except Exception:
             pass
 
     @user_logged_in.connect_via(app)
@@ -618,12 +618,13 @@ def create_app(app_name=None):
 
         # Check the auth key is valid, if it's set, and we're not in server
         # mode, and it's not a help file request.
-        if not config.SERVER_MODE and app.PGADMIN_INT_KEY != '':
-            if (('key' not in request.args or
-                 request.args['key'] != app.PGADMIN_INT_KEY) and
-                request.cookies.get('PGADMIN_INT_KEY') !=
-                    app.PGADMIN_INT_KEY and request.endpoint != 'help.static'):
-                abort(401)
+        if not config.SERVER_MODE and app.PGADMIN_INT_KEY != '' and ((
+            'key' not in request.args or
+            request.args['key'] != app.PGADMIN_INT_KEY) and
+            request.cookies.get('PGADMIN_INT_KEY') != app.PGADMIN_INT_KEY and
+            request.endpoint != 'help.static'
+        ):
+            abort(401)
 
         if not config.SERVER_MODE and not current_user.is_authenticated:
             user = user_datastore.get_user(config.DESKTOP_USER)
@@ -642,11 +643,10 @@ def create_app(app_name=None):
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
         # to get the key again when login
-        if config.SERVER_MODE and current_user.is_authenticated:
-            if current_app.keyManager.get() is None and \
-                    request.endpoint not in ('security.login',
-                                             'security.logout'):
-                logout_user()
+        if config.SERVER_MODE and current_user.is_authenticated and \
+                current_app.keyManager.get() is None and \
+                request.endpoint not in ('security.login', 'security.logout'):
+            logout_user()
 
     @app.after_request
     def after_request(response):

@@ -117,13 +117,12 @@ else:
     app.debug = False
 
 # respond to JS
-if config.DEBUG:
-    if javascriptBundler.report() == JsState.NONE:
-        app.logger.error("Unable to generate javascript")
-        app.logger.error(
-            "To run the app ensure that yarn install command runs successfully"
-        )
-        raise Exception("No generated javascript, aborting")
+if config.DEBUG and javascriptBundler.report() == JsState.NONE:
+    app.logger.error(
+        "Unable to generate javascript.\n"
+        "To run the app ensure that yarn install command runs successfully"
+    )
+    raise Exception("No generated javascript, aborting")
 
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the
