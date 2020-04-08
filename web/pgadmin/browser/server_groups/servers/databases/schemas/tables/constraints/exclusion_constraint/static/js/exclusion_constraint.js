@@ -473,7 +473,7 @@ define('pgadmin.node.exclusion_constraint', [
 
         if (self.grid) {
           self.grid.remove();
-          self.grid.null;
+          self.grid = null;
         }
         // Initialize a new Grid instance
         var grid = self.grid = new Backgrid.Grid({
