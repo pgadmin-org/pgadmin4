@@ -568,7 +568,7 @@ def check_version_compatibility(sid, tid):
     tar_manager = driver.connection_manager(tar_server.id)
     target_conn = src_manager.connection()
 
-    if not (src_conn.connected() and target.connected()):
+    if not (src_conn.connected() and target_conn.connected()):
         return False, gettext('Server(s) disconnected.')
 
     if src_manager.server_type != tar_manager.server_type:
