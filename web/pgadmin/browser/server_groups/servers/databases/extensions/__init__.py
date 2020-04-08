@@ -475,7 +475,7 @@ class ExtensionView(PGChildNodeView):
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the extension on the server.")
+                gettext("Could not find the extension on the server.")
             )
 
         result = res['rows'][0]

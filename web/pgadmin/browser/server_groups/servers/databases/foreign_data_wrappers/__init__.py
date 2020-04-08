@@ -705,7 +705,9 @@ class ForeignDataWrapperView(PGChildNodeView):
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the foreign data wrapper on the server.")
+                gettext(
+                    "Could not find the foreign data wrapper on the server."
+                )
             )
 
         is_valid_options = False

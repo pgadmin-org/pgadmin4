@@ -560,7 +560,7 @@ class CastView(PGChildNodeView):
 
             if len(res['rows']) == 0:
                 return gone(
-                    _("Could not find the specified cast on the server.")
+                    gettext("Could not find the specified cast on the server.")
                 )
 
             old_data = res['rows'][0]
@@ -663,13 +663,13 @@ class CastView(PGChildNodeView):
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(
-                    _("Could not generate reversed engineered SQL for the "
+                    gettext("Could not generate reversed engineered SQL for the "
                       "cast.\n\n{0}").format(res)
                 )
 
             if res is None:
                 return gone(
-                    _("Could not generate reversed engineered SQL for the "
+                    gettext("Could not generate reversed engineered SQL for the "
                       "cast node.\n")
                 )
 
