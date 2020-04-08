@@ -19,7 +19,6 @@ from flask_babelex import gettext
 
 from .internal import BaseAuthentication
 from pgadmin.model import User, ServerGroup, db, Role
-from flask_security import login_user
 from flask import current_app
 from pgadmin.tools.user_management import create_user
 
@@ -27,6 +26,11 @@ try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
+
+
+ERROR_SEARCHING_LDAP_DIRECTORY = gettext(
+    "Error searching the LDAP directory: %s"
+)
 
 
 class LDAPAuthentication(BaseAuthentication):
@@ -161,21 +165,20 @@ class LDAPAuthentication(BaseAuthentication):
 
         except LDAPInvalidScopeError as e:
             current_app.logger.exception(
-                "Error searching the LDAP directory: %s\n" % e)
-            return False, "Error searching the LDAP directory:" \
-                          " %s\n" % e.args[0]
+                gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e
+            )
+            return False, gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e.args[0]
         except LDAPAttributeError as e:
-            current_app.logger.exception("Error searching the LDAP directory:"
-                                         " %s\n" % e)
-            return False, "Error searching the LDAP directory:" \
-                          " %s\n" % e.args[0]
+            current_app.logger.exception(
+                gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e
+            )
+            return False, gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e.args[0]
         except LDAPInvalidFilterError as e:
             current_app.logger.exception(
-                "Error searching the LDAP directory: %s\n" % e)
-            return False, "Error searching the LDAP directory:" \
-                          " %s\n" % e.args[0]
+                gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e
+            )
+            return False, gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e.args[0]
 
-        users = []
         for entry in self.conn.entries:
             user_email = None
             if config.LDAP_USERNAME_ATTRIBUTE in entry and self.username == \

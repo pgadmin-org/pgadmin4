@@ -30,11 +30,11 @@ class BaseAuthentication(object):
     }
 
     @abstractproperty
-    def get_friendly_name(cls):
+    def get_friendly_name(self):
         pass
 
     @abstractmethod
-    def authenticate(cls):
+    def authenticate(self):
         pass
 
     def validate(self, form):
@@ -80,7 +80,7 @@ class BaseAuthentication(object):
 
 class InternalAuthentication(BaseAuthentication):
 
-    def get_friendly_name(cls):
+    def get_friendly_name(self):
         return gettext("internal")
 
     def validate(self, form):
