@@ -70,16 +70,15 @@ class RuleModule(CollectionNodeModule):
             SQL = render_template("/".join(
                 [self.template_path, 'backend_support.sql']
             ), vid=kwargs['vid'])
+
             status, res = conn.execute_scalar(SQL)
             # check if any errors
             if not status:
                 return internal_server_error(errormsg=res)
+
             # Check tid is view not material view
             # then true, othewise false
-            if res is True:
-                return res
-            else:
-                return res
+            return res
 
     def get_nodes(self, gid, sid, did, scid, **kwargs):
         """
