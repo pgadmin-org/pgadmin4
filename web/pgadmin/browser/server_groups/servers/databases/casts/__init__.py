@@ -662,16 +662,15 @@ class CastView(PGChildNodeView):
             )
             status, res = self.conn.execute_scalar(sql)
             if not status:
-                return internal_server_error(
-                    gettext("Could not generate reversed engineered SQL for the "
-                      "cast.\n\n{0}").format(res)
-                )
+                return internal_server_error(gettext(
+                    "Could not generate reversed engineered SQL for the cast."
+                ) + "\n\n{0}".format(res))
 
             if res is None:
-                return gone(
-                    gettext("Could not generate reversed engineered SQL for the "
-                      "cast node.\n")
-                )
+                return gone(gettext(
+                    "Could not generate reversed engineered SQL for the cast \
+                    node."
+                ))
 
             return ajax_response(response=res)
 
