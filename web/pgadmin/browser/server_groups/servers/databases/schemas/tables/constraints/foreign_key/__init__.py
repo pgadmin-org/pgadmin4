@@ -118,12 +118,10 @@ class ForeignKeyConstraintModule(ConstraintTypeModule):
             render_template(
                 "browser/css/collection.css",
                 node_type=self.node_type,
-                _=_
             ),
             render_template(
                 "foreign_key/css/foreign_key.css",
                 node_type=self.node_type,
-                _=_
             )
         ]
 
