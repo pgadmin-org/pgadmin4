@@ -266,7 +266,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         status, rset = self.conn.execute_dict(SQL)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
             return gone(
