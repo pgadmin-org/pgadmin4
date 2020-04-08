@@ -288,7 +288,7 @@ define('pgadmin.node.fts_configuration', [
 
         if (self.grid) {
           self.grid.remove();
-          self.grid.null;
+          self.grid = null;
         }
         // Initialize a new Grid instance
         var grid = self.grid = new Backgrid.Grid({
