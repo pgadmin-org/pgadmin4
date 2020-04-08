@@ -1448,7 +1448,7 @@ class ServerNode(PGChildNodeView):
                     info=gettext('WAL replay paused'),
                     data={'in_recovery': True, 'wal_pause': pause}
                 )
-            return gone(errormsg=_('Please connect the server.'))
+            return gone(errormsg=gettext('Please connect the server.'))
         except Exception as e:
             current_app.logger.error(
                 'WAL replay pause/resume failed'
