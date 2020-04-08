@@ -621,7 +621,7 @@
        "mocking_required": false,
       "mock_data": {},
       "expected_data": {
-        "status_code": 500,
+        "status_code": 410,
         "error_msg": " ",
          "test_result_data": {}
       }
