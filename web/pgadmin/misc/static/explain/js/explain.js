@@ -490,44 +490,44 @@ define('pgadmin.misc.explain', [
 
     if ('Join Filter' in _planData) {
       node_extra_info.push(
-        '<b>Join Filter</b>: ' + _.escape(_planData['Join Filter'])
+        '<strong>Join Filter</strong>: ' + _.escape(_planData['Join Filter'])
       );
     }
 
     if ('Filter' in _planData) {
-      node_extra_info.push('<b>Filter</b>: ' + _.escape(_planData['Filter']));
+      node_extra_info.push('<strong>Filter</strong>: ' + _.escape(_planData['Filter']));
     }
 
     if ('Index Cond' in _planData) {
-      node_extra_info.push('<b>Index Cond</b>: ' + _.escape(_planData['Index Cond']));
+      node_extra_info.push('<strong>Index Cond</strong>: ' + _.escape(_planData['Index Cond']));
     }
 
     if ('Hash Cond' in _planData) {
-      node_extra_info.push('<b>Hash Cond</b>: ' + _.escape(_planData['Hash Cond']));
+      node_extra_info.push('<strong>Hash Cond</strong>: ' + _.escape(_planData['Hash Cond']));
     }
 
     if ('Rows Removed by Filter' in _planData) {
       node_extra_info.push(
-        '<b>Rows Removed by Filter</b>: ' +
+        '<strong>Rows Removed by Filter</strong>: ' +
           _.escape(_planData['Rows Removed by Filter'])
       );
     }
 
     if ('Peak Memory Usage' in _planData) {
       var buffer = [
-        '<b>Buckets</b>:', _.escape(_planData['Hash Buckets']),
-        '<b>Batches</b>:', _.escape(_planData['Hash Batches']),
-        '<b>Memory Usage</b>:', _.escape(_planData['Peak Memory Usage']), 'kB',
+        '<strong>Buckets</strong>:', _.escape(_planData['Hash Buckets']),
+        '<strong>Batches</strong>:', _.escape(_planData['Hash Batches']),
+        '<strong>Memory Usage</strong>:', _.escape(_planData['Peak Memory Usage']), 'kB',
       ].join(' ');
       node_extra_info.push(buffer);
     }
 
     if ('Recheck Cond' in _planData) {
-      node_extra_info.push('<b>Recheck Cond</b>: ' + _planData['Recheck Cond']);
+      node_extra_info.push('<strong>Recheck Cond</strong>: ' + _planData['Recheck Cond']);
     }
 
     if ('Exact Heap Blocks' in _planData) {
-      node_extra_info.push('<b>Heap Blocks</b>: exact=' + _planData['Exact Heap Blocks']);
+      node_extra_info.push('<strong>Heap Blocks</strong>: exact=' + _planData['Exact Heap Blocks']);
     }
 
     info.rows.push(_explainRowTemplate({

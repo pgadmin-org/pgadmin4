@@ -171,7 +171,7 @@ define('pgadmin.node.pga_jobstep', [
           options: {
             'onText': gettext('Local'), 'offText': gettext('Remote'),
             'onColor': 'primary', 'offColor': 'primary', width: '65',
-          }, helpMessage: gettext('Select <b>Local</b> if the job step will execute on the local database server, or <b>Remote</b> to specify a remote database server.'),
+          }, helpMessage: gettext('Select <strong>Local</strong> if the job step will execute on the local database server, or <strong>Remote</strong> to specify a remote database server.'),
         },{
           id: 'jstdbname', label: gettext('Database'), type: 'text',
           mode: ['properties'], disabled: function() { return false; },
