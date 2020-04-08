@@ -14,7 +14,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
-from flask_babelex import gettext as _
+from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -25,9 +25,12 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils import IS_PY2
+
 # If we are in Python3
 if not IS_PY2:
     unicode = str
+
+FOREIGN_KEY_NOT_FOUND = gettext("Could not find the foreign key.")
 
 
 class ForeignKeyConstraintModule(ConstraintTypeModule):
@@ -55,7 +58,7 @@ class ForeignKeyConstraintModule(ConstraintTypeModule):
     """
 
     NODE_TYPE = 'foreign_key'
-    COLLECTION_LABEL = _("Foreign Keys")
+    COLLECTION_LABEL = gettext("Foreign Keys")
 
     def __init__(self, *args, **kwargs):
         """
@@ -271,9 +274,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
             return res
 
         if len(res) == 0:
-            return gone(_(
-                """Could not find the foreign key constraint in the table."""
-            ))
+            return gone(gettext(FOREIGN_KEY_NOT_FOUND))
 
         result = res
         if fkid:
@@ -302,11 +303,20 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
         """
         try:
-            res = self.get_node_list(gid, sid, did, scid, tid, fkid)
-            return ajax_response(
-                response=res,
-                status=200
-            )
+            res = self.get_node_list(gid, sid, did, scid, tid)
+            if fkid is not None:
+                for foreign_key in res:
+                    if foreign_key['oid'] == fkid:
+                        return ajax_response(
+                            response=foreign_key,
+                            status=200
+                        )
+            else:
+                return ajax_response(
+                    response=foreign_key,
+                    status=200
+                )
+            return gone(gettext(FOREIGN_KEY_NOT_FOUND))
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -360,13 +370,13 @@ class ForeignKeyConstraintView(PGChildNodeView):
         Returns:
 
         """
-        SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
-                              tid=tid)
+        SQL = render_template(
+            "/".join([self.template_path, 'nodes.sql']), tid=tid
+        )
         status, rset = self.conn.execute_2darray(SQL)
 
         if len(rset['rows']) == 0:
-            return gone(_("""Could not find the foreign key."""))
+            return gone(gettext(FOREIGN_KEY_NOT_FOUND))
 
         if rset['rows'][0]["convalidated"]:
             icon = "icon-foreign_key_no_validate"
@@ -707,10 +717,10 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 if not res['rows']:
                     return make_json_response(
                         success=0,
-                        errormsg=_(
+                        errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=_(
+                        info=gettext(
                             'The specified foreign key could not be found.\n'
                         )
                     )
@@ -728,7 +738,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info=_("Foreign key dropped.")
+                info=gettext("Foreign key dropped.")
             )
 
         except Exception as e:
@@ -805,7 +815,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(_("""Could not find the foreign key."""))
+            return gone(gettext(FOREIGN_KEY_NOT_FOUND))
 
         data = res['rows'][0]
         data['schema'] = self.schema
@@ -920,7 +930,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info=_("Foreign key updated."),
+                info=gettext("Foreign key updated."),
                 data={
                     'id': fkid,
                     'tid': tid,
