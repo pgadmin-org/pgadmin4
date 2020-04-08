@@ -149,7 +149,7 @@ var webpackShimConfig = {
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
     'json-bignumber': path.join(__dirname, './node_modules/json-bignumber/dist/JSONBigNumber.min'),
     'snap.svg': path.join(__dirname, './node_modules/snapsvg/dist/snap.svg-min'),
-    'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.min'),
+    'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.es5.min'),
     'mousetrap': path.join(__dirname, './node_modules/mousetrap'),
     'tablesorter-metric': path.join(__dirname, './node_modules/tablesorter/dist/js/parsers/parser-metric.min'),
 
