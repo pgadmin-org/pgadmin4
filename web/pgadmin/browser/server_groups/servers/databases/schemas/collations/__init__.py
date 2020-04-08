@@ -448,6 +448,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
         required_args = [
+            'schema',
             'name'
         ]
 
@@ -470,31 +471,35 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
             )
 
-        SQL = render_template("/".join([self.template_path,
-                                        'create.sql']),
-                              data=data, conn=self.conn)
+        SQL = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=data, conn=self.conn
+        )
         status, res = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
         # We need oid to to add object in tree at browser
-        SQL = render_template("/".join([self.template_path,
-                                        'get_oid.sql']), data=data)
+        SQL = render_template(
+            "/".join([self.template_path, 'get_oid.sql']), data=data
+        )
         status, coid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=coid)
 
         # Get updated schema oid
-        SQL = render_template("/".join([self.template_path,
-                                        'get_oid.sql']), coid=coid)
-        status, scid = self.conn.execute_scalar(SQL)
+        SQL = render_template(
+            "/".join([self.template_path, 'get_oid.sql']), coid=coid
+        )
+
+        status, new_scid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=coid)
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 coid,
-                scid,
+                new_scid,
                 data['name'],
                 icon="icon-collation"
             )
