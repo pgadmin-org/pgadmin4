@@ -969,14 +969,14 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 tname=data['name']
             )
 
-            status, scid = self.conn.execute_scalar(SQL)
+            status, new_scid = self.conn.execute_scalar(SQL)
             if not status:
-                return internal_server_error(errormsg=scid)
+                return internal_server_error(errormsg=new_scid)
 
             # we need oid to to add object in tree at browser
             SQL = render_template(
                 "/".join([self.table_template_path, 'get_oid.sql']),
-                scid=scid, data=data
+                scid=new_scid, data=data
             )
 
             status, tid = self.conn.execute_scalar(SQL)
@@ -986,7 +986,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     tid,
-                    scid,
+                    new_scid,
                     data['name'],
                     icon=self.get_icon_css_class(data),
                     is_partitioned=self.is_table_partitioned(data)
