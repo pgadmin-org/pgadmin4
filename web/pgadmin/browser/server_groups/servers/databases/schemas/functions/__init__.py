@@ -398,8 +398,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if fnid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                    _("Could not find the specified %s.").format(
-                        self.node_type)
+                    gettext("Could not find the specified %s.").format(
+                        self.node_type
+                    )
                 )
 
             row = rset['rows'][0]
@@ -624,7 +625,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         arg = ''
 
-        if argmode and argmode:
+        if argmode:
             arg += argmode + " "
         if argname:
             arg += argname + " "
