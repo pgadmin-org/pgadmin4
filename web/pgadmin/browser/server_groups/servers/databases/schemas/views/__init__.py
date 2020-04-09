@@ -1540,7 +1540,7 @@ class MViewNode(ViewNode, VacuumSettings):
             '9.3_plus'
         )
 
-    def getSQL(self, gid, sid, did, data, vid=None):
+    def getSQL(self, gid, sid, did, scid, data, vid=None):
         """
         This function will generate sql from model data
         """
