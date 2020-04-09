@@ -121,6 +121,16 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     ADD CONSTRAINT {{ conn|qtIdent(c.conname) }} CHECK ({{ c.consrc }}){% if not c.convalidated %} NOT VALID{% endif %}{% if c.connoinherit %} NO INHERIT{% endif %};
 
 {% endfor %}
+{% if data.is_schema_diff is defined and data.is_schema_diff %}
+{% for c in data.constraints.changed %}
+ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
+    DROP CONSTRAINT {{conn|qtIdent(c.conname)}};
+
+ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
+    ADD CONSTRAINT {{ conn|qtIdent(c.conname) }} CHECK ({{ c.consrc }}){% if not c.convalidated %} NOT VALID{% endif %}{% if c.connoinherit %} NO INHERIT{% endif %};
+
+{% endfor %}
+{% else %}
 {% for c in data.constraints.changed %}
 {% if c.convalidated %}
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
@@ -128,6 +138,7 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 
 {% endif %}
 {% endfor %}
+{% endif %}
 {% endif %}
 {% if data.ftoptions %}
 {% for o in data.ftoptions.deleted %}

@@ -674,3 +674,109 @@ CREATE SEQUENCE target.seq_diff
 
 ALTER SEQUENCE target.seq_diff
     OWNER TO postgres;
+
+-- Foreign Data Wrapper to test foreign table
+CREATE FOREIGN DATA WRAPPER test_fdw_for_foreign_table;
+ALTER FOREIGN DATA WRAPPER test_fdw_for_foreign_table
+    OWNER TO postgres;
+
+-- Foreign Server to test foreign table
+CREATE SERVER test_fs_for_foreign_table
+    FOREIGN DATA WRAPPER test_fdw_for_foreign_table;
+ALTER SERVER test_fs_for_foreign_table
+    OWNER TO postgres;
+CREATE SERVER test_fs2_for_foreign_table
+    FOREIGN DATA WRAPPER test_fdw_for_foreign_table;
+ALTER SERVER test_fs2_for_foreign_table
+    OWNER TO postgres;
+
+-- Table to test inheritance in foreign table
+CREATE TABLE public.test_table_for_foreign_table
+(
+    tid bigint NOT NULL,
+    tname text COLLATE pg_catalog."default",
+    CONSTRAINT test_table_for_foreign_table_pkey PRIMARY KEY (tid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+ALTER TABLE public.test_table_for_foreign_table
+    OWNER to postgres;
+
+CREATE FOREIGN TABLE target.ft_tar(
+    fid bigint NULL,
+    fname text NULL COLLATE pg_catalog."default"
+)
+    SERVER test_fs_for_foreign_table;
+ALTER FOREIGN TABLE target.ft_tar
+    OWNER TO postgres;
+ALTER FOREIGN TABLE target.ft_tar
+    ADD CONSTRAINT fcheck CHECK ((fid > 1000)) NO INHERIT;
+COMMENT ON FOREIGN TABLE target.ft_tar
+    IS 'Test Comment';
+GRANT INSERT ON TABLE target.ft_tar TO pg_monitor;
+GRANT ALL ON TABLE target.ft_tar TO postgres;
+
+CREATE FOREIGN TABLE target.ft_diff_col(
+    fid bigint NULL,
+    fname text NOT NULL COLLATE pg_catalog."default"
+)
+    SERVER test_fs_for_foreign_table;
+ALTER FOREIGN TABLE target.ft_diff_col
+    OWNER TO postgres;
+ALTER FOREIGN TABLE target.ft_diff_col
+    ADD CONSTRAINT fcheck CHECK ((fid > 1000)) NO INHERIT;
+COMMENT ON FOREIGN TABLE target.ft_diff_col
+    IS 'Comment';
+GRANT INSERT ON TABLE target.ft_diff_col TO pg_monitor;
+GRANT ALL ON TABLE target.ft_diff_col TO postgres;
+
+CREATE FOREIGN TABLE target.ft_diff_const(
+    fid bigint NULL,
+    fname text NULL COLLATE pg_catalog."default"
+)
+    SERVER test_fs_for_foreign_table;
+ALTER FOREIGN TABLE target.ft_diff_const
+    OWNER TO postgres;
+
+ALTER FOREIGN TABLE target.ft_diff_const
+    ADD CONSTRAINT fcheck CHECK ((fid > 1000)) NO INHERIT;
+ALTER FOREIGN TABLE target.ft_diff_const
+    ADD CONSTRAINT fcheck1 CHECK ((fid > 50)) NO INHERIT NOT VALID;
+ALTER FOREIGN TABLE target.ft_diff_const
+    ADD CONSTRAINT fcheck2 CHECK ((fid > 20)) NO INHERIT;
+ALTER FOREIGN TABLE target.ft_diff_const
+    ADD CONSTRAINT fcheck_tar CHECK ((fid > 50));
+
+GRANT INSERT ON TABLE target.ft_diff_const TO pg_monitor;
+GRANT ALL ON TABLE target.ft_diff_const TO postgres;
+
+CREATE FOREIGN TABLE target.ft_diff_opt(
+    fid bigint NULL,
+    fname text NULL COLLATE pg_catalog."default"
+)
+    SERVER test_fs_for_foreign_table
+    OPTIONS (opt1 'val1', opt2 'val30', opt_tar 'val_tar');
+
+ALTER FOREIGN TABLE target.ft_diff_opt
+    OWNER TO postgres;
+
+CREATE FOREIGN TABLE target.ft_diff_foreign_server(
+    fid bigint NULL,
+    fname text NULL COLLATE pg_catalog."default"
+)
+    SERVER test_fs2_for_foreign_table;
+ALTER FOREIGN TABLE target.ft_diff_foreign_server
+    OWNER TO postgres;
+
+CREATE FOREIGN TABLE target.ft_diff_foreign_server_1(
+    fid bigint NULL,
+    fcity text NULL COLLATE pg_catalog."default"
+)
+    SERVER test_fs2_for_foreign_table
+    OPTIONS (opt1 'val1', opt2 'val2');
+ALTER FOREIGN TABLE target.ft_diff_foreign_server_1
+    OWNER TO postgres;
+ALTER FOREIGN TABLE target.ft_diff_foreign_server_1
+    ADD CONSTRAINT cs2 CHECK ((fid > 200)) NO INHERIT;

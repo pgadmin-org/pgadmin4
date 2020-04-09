@@ -171,7 +171,7 @@ def compare_dictionaries(view_object, source_params, target_params,
                     ignore_keys=temp_ignore_keys,
                     difference={}
                 )
-                diff_dict.update(parce_acl(dict1[key], dict2[key]))
+                parse_acl(dict1[key], dict2[key], diff_dict)
 
                 temp_src_params['tid'] = source_object_id
                 temp_tgt_params['tid'] = target_object_id
@@ -192,7 +192,7 @@ def compare_dictionaries(view_object, source_params, target_params,
                     dict1[key], dict2[key],
                     ignore_keys=view_object.keys_to_ignore, difference={}
                 )
-                diff_dict.update(parce_acl(dict1[key], dict2[key]))
+                parse_acl(dict1[key], dict2[key], diff_dict)
 
                 temp_src_params['oid'] = source_object_id
                 temp_tgt_params['oid'] = target_object_id
@@ -351,7 +351,7 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                     elif type(source) is dict:
                         tmp_key_array = ['name', 'colname', 'argid', 'token',
                                          'option', 'conname', 'member_name',
-                                         'label']
+                                         'label', 'attname']
                         # Check the above keys are exist in the dictionary
                         tmp_key = is_key_exists(tmp_key_array, source)
                         if tmp_key is not None:
@@ -400,6 +400,9 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
             elif tmp_target and type(tmp_target) is list:
                 difference[key]['deleted'] = tmp_target
 
+            # No point adding empty list into difference.
+            if key in difference and len(difference[key]) == 0:
+                difference.pop(key)
         else:
             if source_dict[key] != target_dict[key]:
                 if (key == 'comment' or key == 'description') and \
@@ -426,13 +429,13 @@ def is_key_exists(key_list, target_dict):
     return None
 
 
-def parce_acl(source, target):
+def parse_acl(source, target, diff_dict):
     """
     This function is used to parse acl.
 
-    :param source:
-    :param target:
-    :return:
+    :param source: Source Dict
+    :param target: Target Dict
+    :param diff_dict: Difference Dict
     """
     acl_keys = ['datacl', 'relacl', 'typacl', 'pkgacl']
     key = is_key_exists(acl_keys, source)
@@ -443,6 +446,8 @@ def parce_acl(source, target):
         key = is_key_exists(acl_keys, target)
         if key is None:
             key = 'acl'
+    elif key is not None and type(source[key]) != list:
+        key = 'acl'
 
     tmp_source = source[key] if\
         key in source and source[key] is not None else []
@@ -457,4 +462,9 @@ def parce_acl(source, target):
             diff['added'].append(acl)
     diff['deleted'] = tmp_target
 
-    return {key: diff}
+    # Update the key if there are some element in added or deleted
+    # else remove that key from diff dict
+    if len(diff['added']) > 0 or len(diff['deleted']) > 0:
+        diff_dict.update({key: diff})
+    elif key in diff_dict:
+        diff_dict.pop(key)

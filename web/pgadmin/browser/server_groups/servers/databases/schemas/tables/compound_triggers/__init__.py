@@ -30,7 +30,7 @@ from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 from pgadmin.tools.schema_diff.directory_compare import directory_diff,\
-    parce_acl
+    parse_acl
 
 
 # If we are in Python3
@@ -1012,7 +1012,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 source, target,
                 ignore_keys=self.keys_to_ignore, difference={}
             )
-            diff_dict.update(parce_acl(source, target))
+            parse_acl(source, target, diff_dict)
 
             diff = self.get_sql_from_diff(gid=tgt_params['gid'],
                                           sid=tgt_params['sid'],

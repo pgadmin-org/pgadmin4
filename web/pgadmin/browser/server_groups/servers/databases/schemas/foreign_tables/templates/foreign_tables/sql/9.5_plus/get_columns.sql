@@ -34,7 +34,7 @@ LEFT OUTER JOIN
 LEFT OUTER JOIN
     pg_type b ON t.typelem=b.oid
 LEFT OUTER JOIN
-    pg_collation cl ON t.typcollation=cl.oid
+    pg_collation cl ON att.attcollation=cl.oid
 LEFT OUTER JOIN
     pg_namespace cn ON cl.collnamespace=cn.oid
 WHERE
