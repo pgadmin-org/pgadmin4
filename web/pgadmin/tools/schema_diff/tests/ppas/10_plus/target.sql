@@ -531,7 +531,7 @@ ALTER TYPE target.typ_shell_tar
 
 CREATE TYPE target.typ_shell_diff;
 ALTER TYPE target.typ_shell_diff
-    OWNER TO PUBLIC;
+    OWNER TO enterprisedb;
 
 -- Type script to test when Type is different
 CREATE TYPE target.typ_comp_range_diff AS RANGE

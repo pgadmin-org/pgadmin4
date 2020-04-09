@@ -519,11 +519,11 @@ CREATE TYPE source.typ_range_col_diff AS RANGE
     SUBTYPE_OPCLASS = text_ops
 );
 ALTER TYPE source.typ_range_col_diff
-    OWNER TO PUBLIC;
+    OWNER TO enterprisedb;
 COMMENT ON TYPE source.typ_range_col_diff
     IS 'Test Comment';
 GRANT USAGE ON TYPE source.typ_range_col_diff TO PUBLIC;
-GRANT USAGE ON TYPE source.typ_range_col_diff TO PUBLIC WITH GRANT OPTION;
+GRANT USAGE ON TYPE source.typ_range_col_diff TO enterprisedb WITH GRANT OPTION;
 
 CREATE TYPE source.typ_range_subtype_diff AS RANGE
 (
