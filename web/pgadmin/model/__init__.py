@@ -119,6 +119,11 @@ class Server(db.Model):
     maintenance_db = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
     password = db.Column(db.String(64), nullable=True)
+    save_password = db.Column(
+        db.Integer(),
+        db.CheckConstraint('save_password >= 0 AND save_password <= 1'),
+        nullable=False
+    )
     role = db.Column(db.String(64), nullable=True)
     ssl_mode = db.Column(
         db.String(16),

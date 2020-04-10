@@ -152,8 +152,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 user=manager.user_info if connected else None,
                 in_recovery=in_recovery,
                 wal_pause=wal_paused,
-                is_password_saved=True if server.password is not None
-                else False,
+                is_password_saved=bool(server.save_password),
                 is_tunnel_password_saved=True
                 if server.tunnel_password is not None else False,
                 was_connected=was_connected,
@@ -359,8 +358,7 @@ class ServerNode(PGChildNodeView):
                     user=manager.user_info if connected else None,
                     in_recovery=in_recovery,
                     wal_pause=wal_paused,
-                    is_password_saved=True if server.password is not None
-                    else False,
+                    is_password_saved=bool(server.save_password),
                     is_tunnel_password_saved=True
                     if server.tunnel_password is not None else False,
                     errmsg=errmsg
@@ -421,8 +419,7 @@ class ServerNode(PGChildNodeView):
                 user=manager.user_info if connected else None,
                 in_recovery=in_recovery,
                 wal_pause=wal_paused,
-                is_password_saved=True if server.password is not None
-                else False,
+                is_password_saved=bool(server.save_password),
                 is_tunnel_password_saved=True
                 if server.tunnel_password is not None else False,
                 errmsg=errmsg
@@ -767,6 +764,8 @@ class ServerNode(PGChildNodeView):
                 port=data.get('port'),
                 maintenance_db=data.get('db', None),
                 username=data.get('username'),
+                save_password=1 if data.get('save_password', False) and
+                config.ALLOW_SAVE_PASSWORD else 0,
                 ssl_mode=data.get('sslmode'),
                 comment=data.get('comment', None),
                 role=data.get('role', None),
@@ -1045,7 +1044,7 @@ class ServerNode(PGChildNodeView):
 
         if 'password' not in data:
             conn_passwd = getattr(conn, 'password', None)
-            if conn_passwd is None and server.password is None and \
+            if conn_passwd is None and not server.save_password and \
                     server.passfile is None and server.service is None:
                 prompt_password = True
             elif server.passfile and server.passfile != '':
@@ -1055,7 +1054,7 @@ class ServerNode(PGChildNodeView):
         else:
             password = data['password'] if 'password' in data else None
             save_password = data['save_password']\
-                if password and 'save_password' in data else False
+                if 'save_password' in data else False
 
             # Encrypt the password before saving with user's login
             # password key.
@@ -1101,9 +1100,15 @@ class ServerNode(PGChildNodeView):
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
+                    # If DB server is running in trust mode then password may
+                    # not be available but we don't need to ask password
+                    # every time user try to connect
+                    # 1 is True in SQLite as no boolean type
+                    setattr(server, 'save_password', 1)
                     # Save the encrypted password using the user's login
-                    # password key.
-                    setattr(server, 'password', password)
+                    # password key, if there is any password to save
+                    if password:
+                        setattr(server, 'password', password)
                     db.session.commit()
                 except Exception as e:
                     # Release Connection
@@ -1146,8 +1151,7 @@ class ServerNode(PGChildNodeView):
                     'user': manager.user_info,
                     'in_recovery': in_recovery,
                     'wal_pause': wal_paused,
-                    'is_password_saved': True if server.password is not None
-                    else False,
+                    'is_password_saved': bool(server.save_password),
                     'is_tunnel_password_saved': True
                     if server.tunnel_password is not None else False,
                 }
@@ -1551,6 +1555,10 @@ class ServerNode(PGChildNodeView):
                 )
 
             setattr(server, 'password', None)
+            # If password was saved then clear the flag also
+            # 0 is False in SQLite db
+            if server.save_password:
+                setattr(server, 'save_password', 0)
             db.session.commit()
         except Exception as e:
             current_app.logger.error(
