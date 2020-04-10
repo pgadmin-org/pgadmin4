@@ -2117,9 +2117,8 @@ define('pgadmin.browser', [
       'Ctrl-D': 'deleteLine',
       'Cmd-D': 'deleteLine',
 
-      // Go to start/end of Line
-      'Alt-Left': 'goLineStart',
-      'Alt-Right': 'goLineEnd',
+      'Alt-Up': 'goLineUp',
+      'Alt-Down': 'goLineDown',
 
       // Move word by word left/right
       'Ctrl-Alt-Left': 'goGroupLeft',
