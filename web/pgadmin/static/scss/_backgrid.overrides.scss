@@ -1,7 +1,10 @@
 .backgrid th, .backgrid td {
-  font-weight: normal!important;
   text-align: left;
   line-height: $line-height-base;
+}
+
+.backgrid td {
+  font-weight: normal!important;
 }
 
 .backgrid.table th.sortable > button {
@@ -110,6 +113,10 @@
 .sql-editor-grid-container .backgrid > thead > th.renderable,
 .sql-editor-grid-container .backgrid > tbody > td.renderable {
     white-space: pre-wrap;
+}
+
+.backgrid > thead > th.renderable {
+  font-weight: bold;
 }
 
 table.backgrid {

@@ -31,6 +31,7 @@ Bug fixes
 | `Issue #4856 <https://redmine.postgresql.org/issues/4856>`_ -  Enable the save button by default when a query tool is opened with CREATE or other scripts.
 | `Issue #5053 <https://redmine.postgresql.org/issues/5053>`_ -  Fixed an issue where changing the columns in the existing view throws an error.
 | `Issue #5180 <https://redmine.postgresql.org/issues/5180>`_ -  Fixed an issue where the autovacuum_enabled parameter is added automatically in the RE-SQL when the table has been created using the WITH clause.
+| `Issue #5227 <https://redmine.postgresql.org/issues/5227>`_ -  Fixed an issue where user cannot be added if many users are already exists.
 | `Issue #5268 <https://redmine.postgresql.org/issues/5268>`_ -  Fixed generated SQL when any token in FTS Configuration or any option in FTS Dictionary is changed.
 | `Issue #5270 <https://redmine.postgresql.org/issues/5270>`_ -  Ensure that OID should be shown in properties for Synonyms.
 | `Issue #5275 <https://redmine.postgresql.org/issues/5275>`_ -  Fixed tab key navigation issue for parameters in table dialog.

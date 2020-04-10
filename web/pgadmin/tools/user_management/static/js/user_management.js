@@ -10,11 +10,11 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertifyjs',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node', 'pgadmin.backform',
-  'pgadmin.user_management.current_user',
+  'pgadmin.user_management.current_user', 'sources/utils',
   'backgrid.select.all', 'backgrid.filter',
 ], function(
   gettext, url_for, $, _, alertify, pgBrowser, Backbone, Backgrid, Backform,
-  pgNode, pgBackform, userInfo
+  pgNode, pgBackform, userInfo, commonUtils,
 ) {
 
   // if module is already initialized, refer to that.
@@ -283,7 +283,7 @@ define([
             username: undefined,
             email: undefined,
             active: true,
-            role: undefined,
+            role: '2',
             newPassword: undefined,
             confirmPassword: undefined,
             auth_source: 'internal',
@@ -361,6 +361,7 @@ define([
             select2: {
               allowClear: false,
               openOnEnter: false,
+              first_empty: false,
             },
             options: function(controlOrCell) {
               var options = [];
@@ -398,6 +399,7 @@ define([
             type: 'switch',
             cell: 'switch',
             cellHeaderClasses: 'width_percent_10',
+            sortable: false,
             editable: function(m) {
               if (m instanceof Backbone.Collection) {
                 return true;
@@ -417,6 +419,7 @@ define([
             cell: PasswordDepCell,
             cellHeaderClasses: 'width_percent_20',
             deps: ['auth_source'],
+            sortable: false,
             editable: function(m) {
               if (m.get('auth_source') == 'internal') {
                 return true;
@@ -433,6 +436,7 @@ define([
             cell: PasswordDepCell,
             cellHeaderClasses: 'width_percent_20',
             deps: ['auth_source'],
+            sortable: false,
             editable: function(m) {
               if (m.get('auth_source') == 'internal') {
                 return true;
@@ -459,7 +463,7 @@ define([
               );
               this.errorModel.set('email', errmsg);
               return errmsg;
-            } else if (!!this.get('email') && this.collection.where({
+            } else if (!!this.get('email') && this.collection.nonFilter.where({
               'email': this.get('email'), 'auth_source': 'internal',
             }).length > 1) {
               errmsg = gettext('The email address %s already exists.',
@@ -739,7 +743,7 @@ define([
                   '        <div class="pr-2"> ',
                   '          <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ',
                   '        </div> ',
-                  '        <div class="alert-text" role="status></div> ',
+                  '        <div class="alert-text" role="status"></div> ',
                   '        <div class="ml-auto close-error-bar"> ',
                   '          <a class="close-error fa fa-times text-danger"></a> ',
                   '        </div> ',
@@ -773,6 +777,7 @@ define([
                     var self = this;
                     self.changedUser = null;
                     self.invalidUsers = {};
+                    self.nonFilter = this;
 
                     self.on('add', self.onModelAdd);
                     self.on('remove', self.onModelRemove);
@@ -864,14 +869,14 @@ define([
                 }),
                 userCollection = this.userCollection = new UserCollection(),
                 header =
-                  `<div class="navtab-inline-controls">
+                  `<div class="navtab-inline-controls pgadmin-controls">
                     <div class="input-group">
                       <div class="input-group-prepend">
                         <span class="input-group-text fa fa-search" id="labelSearch"></span>
                         </div>
                           <input type="search" class="form-control" id="txtGridSearch" placeholder="` + gettext('Search') + '" aria-label="' + gettext('Search') + `" aria-describedby="labelSearch" />
                         </div>
-                        <button id="btn_refresh" type="button" class="btn btn-secondary btn-navtab-inline add" title="` + gettext('Add') + `">
+                        <button id="btn_add" type="button" class="btn btn-secondary btn-navtab-inline add" title="` + gettext('Add') + `">
                           <span class="fa fa-plus "></span>
                         </button>
                       </div>
@@ -935,7 +940,7 @@ define([
               this.elements.content.appendChild(this.$content[0]);
 
               // Render Search Filter
-              userFilter(userCollection).setCustomSearchBox($('#txtGridSearch'));
+              userCollection.nonFilter = userFilter(userCollection).setCustomSearchBox($('#txtGridSearch')).shadowCollection;
               userCollection.fetch();
 
               this.$content.find('a.close-error').on('click',() => {
@@ -945,47 +950,33 @@ define([
 
               this.$content.find('button.add').first().on('click',(e) => {
                 e.preventDefault();
-                var canAddRow = true;
-
-                if (canAddRow) {
-                  // There should be only one empty row.
-
-                  var isEmpty = false,
-                    unsavedModel = null;
-
-                  userCollection.each(function(model) {
-                    if (!isEmpty) {
-                      isEmpty = model.isNew();
-                      unsavedModel = model;
-                    }
-                  });
-                  var idx;
-
-                  if (isEmpty) {
-                    idx = userCollection.indexOf(unsavedModel);
-                    var row = view.body.rows[idx].$el;
-
+                // There should be only one empty row.
+                for(const [idx, model] of userCollection.models.entries()) {
+                  if(model.isNew()) {
+                    let row = view.body.rows[idx].$el;
                     row.addClass('new');
-                    $(row).pgMakeVisible('backform-tab');
+                    $(row).pgMakeVisible('backgrid');
+                    $(row).find('.email').trigger('click');
                     return false;
                   }
-
-                  $(view.body.$el.find($('tr.new'))).removeClass('new');
-                  var m = new(UserModel)(null, {
-                    handler: userCollection,
-                    top: userCollection,
-                    collection: userCollection,
-                  });
-                  userCollection.add(m);
-
-                  idx = userCollection.indexOf(m);
-                  var newRow = view.body.rows[idx].$el;
-
-                  newRow.addClass('new');
-                  $(newRow).pgMakeVisible('backform-tab');
-                  return false;
                 }
+
+                $(view.body.$el.find($('tr.new'))).removeClass('new');
+                var m = new(UserModel)(null, {
+                  handler: userCollection,
+                  top: userCollection,
+                  collection: userCollection,
+                });
+                userCollection.add(m);
+
+                var newRow = view.body.rows[userCollection.indexOf(m)].$el;
+                newRow.addClass('new');
+                $(newRow).pgMakeVisible('backgrid');
+                $(newRow).find('.email').trigger('click');
+                return false;
               });
+
+              commonUtils.findAndSetFocus(this.$content);
             },
             callback: function(e) {
               if (e.button.element.name == 'dialog_help') {

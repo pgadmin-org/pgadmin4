@@ -909,12 +909,6 @@ define([
       if (!_.isArray(optionValues))
         throw new TypeError('optionValues must be an array');
 
-      /*
-       * Add empty option as Select2 requires any empty '<option><option>' for
-       * some of its functionality to work.
-       */
-      optionValues.unshift(this.defaults.opt);
-
       var optionText = null,
         optionValue = null,
         self = this,
@@ -923,6 +917,7 @@ define([
           openOnEnter: false,
           multiple: false,
           showOnScroll: true,
+          first_empty: true,
         }, self.defaults.select2,
         (col.select2 || {})
         ),
@@ -932,6 +927,13 @@ define([
         multiple: select2_opts.multiple,
       })).appendTo(self.$el);
 
+      /*
+       * Add empty option as Select2 requires any empty '<option><option>' for
+       * some of its functionality to work.
+       */
+      if(select2_opts.first_empty) {
+        optionValues.unshift(this.defaults.opt);
+      }
       for (var i = 0; i < optionValues.length; i++) {
         var opt = optionValues[i];
 
@@ -1978,11 +1980,13 @@ define([
       this.$customSearchBox = $el;
       this.$customSearchBox.attr('type','search');
       this.$customSearchBox.on('keydown', this.search.bind(this));
+      return this;
     },
 
     unsetCustomSearchBox: function() {
       this.$customSearchBox.off('keydown', this.search.bind(this));
       this.$customSearchBox = null;
+      return this;
     },
   });
 
