@@ -190,7 +190,7 @@ define('pgadmin.node.database', [
 
           Alertify.confirm(
             gettext('Disconnect the database'),
-            pgadminUtils.sprintf(gettext('Are you sure you want to disconnect the database - %s?'), d.label),
+            gettext('Are you sure you want to disconnect the database - %s?', d.label),
             function() {
               var data = d;
               $.ajax({
@@ -228,7 +228,11 @@ define('pgadmin.node.database', [
                   t.unload(i);
                 });
             },
-            function() { return true; });
+            function() { return true; }
+          ).set('labels', {
+            ok: gettext('Yes'),
+            cancel: gettext('No'),
+          });
 
           return false;
         },

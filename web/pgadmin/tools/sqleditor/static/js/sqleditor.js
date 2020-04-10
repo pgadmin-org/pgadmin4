@@ -3331,8 +3331,8 @@ define('tools.querytool', [
               return true;
             }
           ).set('labels', {
-            ok: 'Yes',
-            cancel: 'No',
+            ok: gettext('Yes'),
+            cancel: gettext('No'),
           });
         } else {
           self._open_select_file_manager();
@@ -4275,7 +4275,7 @@ define('tools.querytool', [
           };
         });
 
-        let msg = gettext('The current transaction is not commited to the database.'
+        let msg = gettext('The current transaction is not commited to the database. '
                            + 'Do you want to commit or rollback the transaction?');
 
         alertify.confirmCommit(gettext('Commit transaction?'), msg, is_commit_disabled);

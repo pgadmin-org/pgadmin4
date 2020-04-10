@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from '../gettext';
-import {sprintf} from 'sources/utils';
 import {DialogFactory} from './dialog_factory';
 import Backform from '../backform.pgadmin';
 import {getTreeNodeHierarchyFromIdentifier} from '../tree/pgadmin_tree_node';
@@ -133,7 +132,7 @@ export class Dialog {
     } else {
       this.alertify.alert(
         gettext(this.errorAlertTitle),
-        sprintf(gettext('Failed to load preference %s of module %s'), preference_name, module)
+        gettext('Failed to load preference %s of module %s', preference_name, module)
       );
       return false;
     }

@@ -22,7 +22,7 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
       // Set title and button name
       var self = this;
       if (_.isUndefined(params['dialog_title'])) {
-        params['dialog_title'] = 'Select file';
+        params['dialog_title'] = gettext('Select file');
       }
       self.dialog_type = params['dialog_type'];
 

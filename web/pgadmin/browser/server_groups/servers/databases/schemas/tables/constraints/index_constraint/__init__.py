@@ -287,9 +287,10 @@ class IndexConstraintView(PGChildNodeView):
             return res
 
         if len(res) == 0:
-            return gone(_("""Could not find the {} in the table.""".format(
-                "primary key" if self.constraint_type == "p" else "unique key"
-            )))
+            return gone(_("""Could not find the {} in the table.""").format(
+                _("primary key") if self.constraint_type == "p"
+                else _("unique key")
+            ))
 
         result = res
         if cid:
@@ -386,9 +387,10 @@ class IndexConstraintView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(_("""Could not find the {} in the table.""".format(
-                "primary key" if self.constraint_type == "p" else "unique key"
-            )))
+            return gone(_("""Could not find the {} in the table.""").format(
+                _("primary key") if self.constraint_type == "p"
+                else _("unique key")
+            ))
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
@@ -533,8 +535,7 @@ class IndexConstraintView(PGChildNodeView):
                         success=0,
                         errormsg=_(
                             "Could not find at least one required "
-                            "parameter (%s)." % str(param)
-                        )
+                            "parameter (%s).") % str(param)
                     )
 
             elif arg not in data:
@@ -542,8 +543,7 @@ class IndexConstraintView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                        "Could not find the required parameter (%s).") % arg
                 )
 
         data['schema'] = self.schema
@@ -824,9 +824,10 @@ class IndexConstraintView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(_("""Could not find the {} in the table.""".format(
-                "primary key" if self.constraint_type == "p" else "unique key"
-            )))
+            return gone(_("""Could not find the {} in the table.""").format(
+                _("primary key") if self.constraint_type == "p"
+                else _("unique key")
+            ))
 
         data = res['rows'][0]
         data['schema'] = self.schema
@@ -916,10 +917,10 @@ class IndexConstraintView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
                 return gone(
-                    _("""Could not find the {} in the table.""".format(
-                        "primary key" if self.constraint_type == "p"
-                        else "unique key"
-                    ))
+                    _("""Could not find the {} in the table.""").format(
+                        _("primary key") if self.constraint_type == "p"
+                        else _("unique key")
+                    )
                 )
 
             result = res['rows'][0]

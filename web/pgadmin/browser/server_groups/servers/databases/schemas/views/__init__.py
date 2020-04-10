@@ -493,8 +493,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                        "Could not find the required parameter (%s).") % arg
                 )
         try:
             SQL, nameOrError = self.getSQL(gid, sid, did, scid, data)

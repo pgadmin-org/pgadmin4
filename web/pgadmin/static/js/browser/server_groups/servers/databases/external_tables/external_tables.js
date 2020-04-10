@@ -59,7 +59,7 @@ export function initialize(pgBrowser, gettext) {
             mode: ['properties'],
           }, {
             id: 'format_option',
-            label: gettext('Format Optionos'),
+            label: gettext('Format Options'),
             type: 'text',
             mode: ['properties'],
           }, {

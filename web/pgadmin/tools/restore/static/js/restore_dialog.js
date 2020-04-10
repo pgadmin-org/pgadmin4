@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from '../../../../static/js/gettext';
-import {sprintf} from 'sources/utils';
 import Backform from '../../../../static/js/backform.pgadmin';
 import {Dialog} from '../../../../static/js/alertify/dialog';
 import url_for from 'sources/url_for';
@@ -16,7 +15,7 @@ import axios from 'axios/index';
 
 export class RestoreDialog extends Dialog {
   constructor(pgBrowser, $, alertify, RestoreModel, backform = Backform) {
-    super('Restore Error',
+    super(gettext('Restore Error'),
       '<div class=\'restore_dialog\'></div>',
       pgBrowser, $, alertify, RestoreModel, backform);
   }
@@ -66,7 +65,7 @@ export class RestoreDialog extends Dialog {
       if (!node)
         return;
 
-      let title = sprintf(gettext('Restore (%s: %s)'), node.label, data.label);
+      let title = gettext('Restore (%s: %s)', node.label, data.label);
       that.createOrGetDialog(title, 'restore');
       that.alertify.pg_restore(title, aciTreeItem1, data, node)
         .resizeTo(width, height);

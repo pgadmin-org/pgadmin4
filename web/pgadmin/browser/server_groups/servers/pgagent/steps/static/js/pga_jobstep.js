@@ -305,7 +305,7 @@ define('pgadmin.node.pga_jobstep', [
             !_.isUndefined(val) && !_.isNull(val) &&
               String(val).replace(/^\s+|\s+$/g, '') == ''
           ) {
-            msg = gettext('Please select valid on error option .');
+            msg = gettext('Please select valid on error option.');
             this.errorModel.set('jstonerror', msg);
           } else {
             this.errorModel.unset('jstonerror');

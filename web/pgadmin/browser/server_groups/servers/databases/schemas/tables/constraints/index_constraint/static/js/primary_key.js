@@ -649,7 +649,7 @@ define('pgadmin.node.primary_key', [
 
           if ((_.isUndefined(index) || String(index).replace(/^\s+|\s+$/g, '') == '') &&
             (_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
-            var msg = gettext('Please specify columns for %s', gettext('Primary key'));
+            var msg = gettext('Please specify columns for %s.', gettext('Primary key'));
             this.errorModel.set('columns', msg);
             return msg;
           }

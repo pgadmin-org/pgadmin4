@@ -741,8 +741,7 @@ class ServerNode(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                        "Could not find the required parameter (%s).") % arg
                 )
 
         if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '':
@@ -838,7 +837,7 @@ class ServerNode(PGChildNodeView):
                         status=401,
                         success=0,
                         errormsg=gettext(
-                            u"Unable to connect to server:\n\n%s" % errmsg)
+                            u"Unable to connect to server:\n\n%s") % errmsg
                     )
                 else:
                     if 'save_password' in data and data['save_password'] and \

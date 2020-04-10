@@ -1909,33 +1909,33 @@ define([
 
       /* Update the shortcuts of the buttons */
       self.toolbarView.$el.find('#btn-step-into')
-        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Step into',self.preferences.btn_step_into))
-        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title('Step into',self.preferences.btn_step_into))
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title(gettext('Step into'),self.preferences.btn_step_into))
+        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title(gettext('Step into'),self.preferences.btn_step_into))
         .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_step_into));
 
       self.toolbarView.$el.find('#btn-step-over')
-        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Step over',self.preferences.btn_step_over))
-        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title('Step over',self.preferences.btn_step_over))
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title(gettext('Step over'),self.preferences.btn_step_over))
+        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title(gettext('Step over'),self.preferences.btn_step_over))
         .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_step_over));
 
       self.toolbarView.$el.find('#btn-continue')
-        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Continue/Start',self.preferences.btn_start))
-        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title('Continue/Start',self.preferences.btn_start))
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title(gettext('Continue/Start'),self.preferences.btn_start))
+        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title(gettext('Continue/Start'),self.preferences.btn_start))
         .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_start));
 
       self.toolbarView.$el.find('#btn-toggle-breakpoint')
-        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Toggle breakpoint',self.preferences.btn_toggle_breakpoint))
-        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title('Toggle breakpoint',self.preferences.btn_toggle_breakpoint))
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title(gettext('Toggle breakpoint'),self.preferences.btn_toggle_breakpoint))
+        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title(gettext('Toggle breakpoint'),self.preferences.btn_toggle_breakpoint))
         .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_toggle_breakpoint));
 
       self.toolbarView.$el.find('#btn-clear-breakpoint')
-        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Clear all breakpoints',self.preferences.btn_clear_breakpoints))
-        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title('Clear all breakpoints',self.preferences.btn_clear_breakpoints))
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title(gettext('Clear all breakpoints'),self.preferences.btn_clear_breakpoints))
+        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title(gettext('Clear all breakpoints'),self.preferences.btn_clear_breakpoints))
         .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_clear_breakpoints));
 
       self.toolbarView.$el.find('#btn-stop')
-        .attr('title', keyboardShortcuts.shortcut_accesskey_title('Stop',self.preferences.btn_stop))
-        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title('Stop',self.preferences.btn_stop))
+        .attr('title', keyboardShortcuts.shortcut_accesskey_title(gettext('Stop'),self.preferences.btn_stop))
+        .attr('aria-label', keyboardShortcuts.shortcut_accesskey_title(gettext('Stop'),self.preferences.btn_stop))
         .attr('accesskey', keyboardShortcuts.shortcut_key(self.preferences.btn_stop));
     },
     // Register the panel with new debugger docker instance.

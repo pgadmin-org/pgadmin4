@@ -891,8 +891,8 @@ def start_debugger_listener(trans_id):
             data={
                 'status': False,
                 'result': gettext(
-                    'Not connected to server or connection with the server has'
-                    'been closed.'
+                    'Not connected to server or connection with the server '
+                    'has been closed.'
                 )
             }
         )

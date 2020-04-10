@@ -368,8 +368,7 @@ class CastView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                        "Could not find the required parameter (%s).") % arg
                 )
         try:
             sql = render_template("/".join([self.template_path, 'create.sql']),
@@ -668,8 +667,8 @@ class CastView(PGChildNodeView):
 
             if res is None:
                 return gone(gettext(
-                    "Could not generate reversed engineered SQL for the cast \
-                    node."
+                    "Could not generate reversed engineered SQL for the "
+                    "cast node."
                 ))
 
             return ajax_response(response=res)

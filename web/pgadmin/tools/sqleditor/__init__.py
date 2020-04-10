@@ -1296,10 +1296,10 @@ def save_file():
             else:
                 output_file.write(file_content)
     except IOError as e:
-        err_msg = "Error: {0}".format(e.strerror)
+        err_msg = gettext("Error: {0}").format(e.strerror)
         return internal_server_error(errormsg=err_msg)
     except Exception as e:
-        err_msg = "Error: {0}".format(e.strerror)
+        err_msg = gettext("Error: {0}").format(e.strerror)
         return internal_server_error(errormsg=err_msg)
 
     return make_json_response(
@@ -1371,7 +1371,7 @@ def start_query_download_tool(trans_id):
 
                 return r
         except Exception as e:
-            err_msg = "Error: {0}".format(e.strerror)
+            err_msg = gettext("Error: {0}").format(e.strerror)
             return internal_server_error(errormsg=err_msg)
     else:
         return internal_server_error(

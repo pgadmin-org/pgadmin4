@@ -638,7 +638,7 @@ define('pgadmin.node.unique_constraint', [
 
           if ((_.isUndefined(index) || String(index).replace(/^\s+|\s+$/g, '') == '') &&
             (_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
-            var msg = gettext('Please specify columns for %s', gettext('Unique constraint'));
+            var msg = gettext('Please specify columns for %s.', gettext('Unique constraint'));
             this.errorModel.set('columns', msg);
             return msg;
           }

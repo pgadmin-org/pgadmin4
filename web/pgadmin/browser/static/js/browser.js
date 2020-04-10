@@ -623,7 +623,7 @@ define('pgadmin.browser', [
 
                 Alertify.confirm(gettext('Reset Master Password'),
                   gettext('This will remove all the saved passwords. This will also remove established connections to '
-                    + 'the server and you may need to reconnect again. Do you wish to continue ?'),
+                    + 'the server and you may need to reconnect again. Do you wish to continue?'),
                   function() {
                     /* If user clicks Yes */
                     self.reset_master_password();

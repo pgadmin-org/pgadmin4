@@ -381,8 +381,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                        "Could not find the required parameter (%s).") % arg
                 )
 
         try:
@@ -590,9 +589,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                         status=400,
                         success=0,
                         errormsg=_(
-                            "Could not find the required parameter (%s)." % arg
-                        )
-                    )
+                            "Could not find the required parameter (%s).")
+                        % arg)
         SQL, name = self.getSQL(gid, sid, did, data, scid, seid)
         # Most probably this is due to error
         if not isinstance(SQL, (str, unicode)):

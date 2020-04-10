@@ -201,7 +201,7 @@ define([
         multiple: true,
         allowClear: true,
         first_empty: false,
-        placeholder: gettext('Colums for exporting...'),
+        placeholder: gettext('Columns for exporting...'),
         preserveSelectionOrder: true,
       },
       visible: 'exporting',

@@ -179,7 +179,7 @@ define([
                   <div class="custom-control custom-checkbox custom-checkbox-no-label">
                     <input tabindex="-1" type="checkbox" class="custom-control-input" id="${id}" ${disabled?'disabled':''}/>
                     <label class="custom-control-label" for="${id}">
-                      <span class="sr-only">Select<span>
+                      <span class="sr-only">` + gettext('Select') + `<span>
                     </label>
                   </div>
                 `);

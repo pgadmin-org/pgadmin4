@@ -203,7 +203,7 @@ function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode)
       } else if (_.isUndefined(this.get('value')) ||
               _.isNull(this.get('value')) ||
                 String(this.get('value')).replace(/^\s+|\s+$/g, '') == '') {
-        msg = ('Please enter a value for the parameter.');
+        msg = gettext('Please enter a value for the parameter.');
         this.errorModel.set('value', msg);
         this.errorModel.unset('name');
       } else {

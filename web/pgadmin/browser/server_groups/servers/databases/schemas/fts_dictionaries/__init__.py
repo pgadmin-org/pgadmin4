@@ -431,7 +431,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                     status=410,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s)." % arg)
+                        "Could not find the required parameter (%s).") % arg
                 )
         # Fetch schema name from schema oid
         sql = render_template(

@@ -39,7 +39,7 @@ define('pgadmin.node.user_mapping', [
       if (_.isUndefined(this.get('umoption')) ||
             _.isNull(this.get('umoption')) ||
             String(this.get('umoption')).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = 'Please enter an option name';
+        var msg = gettext('Please enter an option name.');
         this.errorModel.set('umoption', msg);
         return msg;
       } else {

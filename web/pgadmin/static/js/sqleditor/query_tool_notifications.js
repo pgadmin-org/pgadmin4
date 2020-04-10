@@ -115,18 +115,10 @@ let queryToolNotifications = {
       for (let i in notify_messages) {
         let notify_msg = '';
         if (notify_messages[i].payload != '') {
-          notify_msg = gettext('Asynchronous notification "')
-            + notify_messages[i].channel
-            + gettext('" with payload "')
-            + notify_messages[i].payload
-            + gettext('" received from server process with PID ')
-            + notify_messages[i].pid;
+          notify_msg = gettext('Asynchronous notification "%s" with payload "%s" received from server process with PID %s', notify_messages[i].channel, notify_messages[i].payload, notify_messages[i].pid);
         }
         else {
-          notify_msg = gettext('Asynchronous notification "')
-            + notify_messages[i].channel
-            + gettext('" received from server process with PID ')
-            + notify_messages[i].pid;
+          notify_msg = gettext('Asynchronous notification "%s" received from server process with PID %s', notify_messages[i].channel, notify_messages[i].pid);
         }
 
         Alertify.info(notify_msg);

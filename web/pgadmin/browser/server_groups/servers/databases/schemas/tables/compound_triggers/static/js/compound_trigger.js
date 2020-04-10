@@ -194,10 +194,10 @@ define('pgadmin.node.compound_trigger', [
             return false;
           },
           options: [
-            {label: 'Enable', value: 'O'},
-            {label: 'Enable Replica', value: 'R'},
-            {label: 'Enable Always', value: 'A'},
-            {label: 'Disable', value: 'D'},
+            {label: gettext('Enable'), value: 'O'},
+            {label: gettext('Enable Replica'), value: 'R'},
+            {label: gettext('Enable Always'), value: 'A'},
+            {label: gettext('Disable'), value: 'D'},
           ],
           control: 'select2', select2: { allowClear: false, width: '100%' },
         },{

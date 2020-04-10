@@ -576,11 +576,12 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         for arg in required_args:
             err_msg = None
             if arg == 'columns' and len(data['columns']) < 1:
-                err_msg = "You must provide one or more column to create index"
+                err_msg = gettext("You must provide one or more column to "
+                                  "create index.")
 
             if arg not in data:
-                err_msg = "Could not find the required parameter (%s)." % \
-                          required_args[arg]
+                err_msg = gettext("Could not find the required parameter (%s)"
+                                  ".") % required_args[arg]
                 # Check if we have at least one column
             if err_msg is not None:
                 return make_json_response(

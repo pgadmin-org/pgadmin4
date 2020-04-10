@@ -3,7 +3,7 @@
 <div style="position: fixed; top: 70px; right: 20px; width: 400px; z-index: 9999">
     {% for category, message in messages %}
     <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+        <button type="button" class="close" data-dismiss="alert" aria-label="{{ _('Close') }}"><span
                 aria-hidden="true">&times;</span></button>
         {{ message|safe }}
     </div>

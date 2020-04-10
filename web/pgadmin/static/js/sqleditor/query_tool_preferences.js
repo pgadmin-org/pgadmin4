@@ -90,7 +90,7 @@ function updateUIPreferences(sqlEditor) {
     .attr('accesskey', shortcut_key(preferences.btn_conn_status))
     .find('i')
     .attr('title',
-      shortcut_accesskey_title('Connection status (click for details)',
+      shortcut_accesskey_title(gettext('Connection status (click for details)'),
         preferences.btn_conn_status));
 
   /* Accessed using ctrl,atl,shift and key */

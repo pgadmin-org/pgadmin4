@@ -159,17 +159,17 @@ class ServerManager(object):
     def MajorVersion(self):
         if self.sversion is not None:
             return int(self.sversion / 10000)
-        raise Exception("Information is not available.")
+        raise Exception(gettext("Information is not available."))
 
     def MinorVersion(self):
         if self.sversion:
             return int(int(self.sversion / 100) % 100)
-        raise Exception("Information is not available.")
+        raise Exception(gettext("Information is not available."))
 
     def PatchVersion(self):
         if self.sversion:
             return int(int(self.sversion / 100) / 100)
-        raise Exception("Information is not available.")
+        raise Exception(gettext("Information is not available."))
 
     def connection(
             self, database=None, conn_id=None, auto_reconnect=True, did=None,
@@ -492,8 +492,8 @@ WHERE db.oid = {0}""".format(did))
 
             except Exception as e:
                 current_app.logger.exception(e)
-                return False, "Failed to decrypt the SSH tunnel " \
-                              "password.\nError: {0}".format(str(e))
+                return False, gettext("Failed to decrypt the SSH tunnel "
+                                      "password.\nError: {0}").format(str(e))
 
         try:
             # If authentication method is 1 then it uses identity file
@@ -518,8 +518,8 @@ WHERE db.oid = {0}""".format(did))
             self.tunnel_created = True
         except BaseSSHTunnelForwarderError as e:
             current_app.logger.exception(e)
-            return False, "Failed to create the SSH tunnel." \
-                          "\nError: {0}".format(str(e))
+            return False, gettext("Failed to create the SSH tunnel.\n"
+                                  "Error: {0}").format(str(e))
 
         # Update the port to communicate locally
         self.local_bind_port = self.tunnel_object.local_bind_port

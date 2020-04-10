@@ -303,8 +303,8 @@ class NodeView(with_metaclass(MethodViewType, View)):
                 status=406,
                 success=0,
                 errormsg=gettext(
-                    'Unimplemented method ({0}) for this url ({1})'.format(
-                        meth, flask.request.path)
+                    'Unimplemented method ({0}) for this url ({1})').format(
+                        meth, flask.request.path
                 )
             )
 

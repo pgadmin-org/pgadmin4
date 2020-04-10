@@ -511,9 +511,8 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s)." %
-                        required_args[arg]
-                    )
+                        "Could not find the required parameter (%s).") %
+                    required_args[arg]
                 )
 
         # Adding parent into data dict, will be using it while creating sql
@@ -904,8 +903,8 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 if not status:
                     return internal_server_error(errormsg=res)
                 if len(res['rows']) == 0:
-                    return gone(gettext("""Could not find the compound
-                     trigger in the table."""))
+                    return gone(gettext("Could not find the compound "
+                                        "trigger in the table."))
 
                 data = dict(res['rows'][0])
                 # Adding parent into data dict,

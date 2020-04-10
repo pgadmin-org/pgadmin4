@@ -56,7 +56,7 @@ export function showDataGrid(
 
     $.get(url_for('datagrid.filter'),
       function(data) {
-        alertify.filterDialog(`Data Filter - ${queryToolTitle}`, data, validateUrl, preferences, okCallback)
+        alertify.filterDialog(gettext('Data Filter - %s', queryToolTitle), data, validateUrl, preferences, okCallback)
           .resizeTo(pgBrowser.stdW.sm,pgBrowser.stdH.sm);
       }
     );

@@ -9,7 +9,6 @@
 
 import {calculateQueryRunTime} from './calculate_query_run_time';
 import gettext from '../gettext';
-import {sprintf} from 'sources/utils';
 
 function hasResultsToDisplay(res) {
   return res.colinfo != null;
@@ -34,8 +33,7 @@ export function callRenderAfterPoll(sqlEditor, alertify, res) {
     sqlEditor.total_time = calculateQueryRunTime(
       sqlEditor.query_start_time,
       sqlEditor.query_end_time);
-    const msg = sprintf(
-      gettext('Query returned successfully in %s.'), sqlEditor.total_time);
+    const msg = gettext('Query returned successfully in %s.', sqlEditor.total_time);
     if (res.result)
       res.result += '\n\n' + msg;
     else

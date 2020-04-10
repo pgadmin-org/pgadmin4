@@ -251,7 +251,7 @@ def create_user(data):
         if f in data and data[f] != '':
             continue
         else:
-            return False, _("Missing field: '{0}'".format(f))
+            return False, _("Missing field: '{0}'").format(f)
 
     try:
         new_data = validate_user(data)

@@ -379,8 +379,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                        "Could not find the required parameter (%s).") % arg
                 )
         data['schema'] = self.schema
 
@@ -557,9 +556,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                         status=400,
                         success=0,
                         errormsg=_(
-                            "Could not find the required parameter (%s)." % arg
-                        )
-                    )
+                            "Could not find the required parameter (%s).")
+                        % arg)
 
         SQL, name = self.getSQL(gid, sid, did, data, scid, pkgid)
         # Most probably this is due to error

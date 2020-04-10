@@ -261,7 +261,7 @@ define('pgadmin.node.tablespace', [
                       self.__internal.buttons[2].element.disabled = false;
                     } else {
                       self.__internal.buttons[2].element.disabled = true;
-                      this.errorModel.set('tblspc', gettext('Please select tablespace'));
+                      this.errorModel.set('tblspc', gettext('Please select tablespace.'));
                     }
                   });
                 },

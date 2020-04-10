@@ -761,9 +761,7 @@ define('pgadmin.browser.node', [
         obj = pgBrowser.Nodes[d._type];
         var objName = d.label;
 
-        var msg, title, drop_label;
-
-        if (obj.dropAsRemove) drop_label = 'Remove'; else drop_label = 'Drop';
+        var msg, title;
 
         if (input.url == 'delete') {
 
@@ -780,8 +778,13 @@ define('pgadmin.browser.node', [
             return;
           }
         } else {
-          msg = gettext('Are you sure you want to %s %s "%s"?', drop_label.toLowerCase(), obj.label.toLowerCase(), d.label);
-          title = gettext('%s %s?', drop_label, obj.label);
+          if (obj.dropAsRemove) {
+            msg = gettext('Are you sure you want to remove %s "%s"?', obj.label.toLowerCase(), d.label);
+            title = gettext('Remove %s?', obj.label);
+          } else {
+            msg = gettext('Are you sure you want to drop %s "%s"?', obj.label.toLowerCase(), d.label);
+            title = gettext('Drop %s?', obj.label);
+          }
 
           if (!(_.isFunction(obj.canDrop) ?
             obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
@@ -822,7 +825,11 @@ define('pgadmin.browser.node', [
 
               });
           },
-          null).show();
+          null
+        ).set('labels', {
+          ok: gettext('Yes'),
+          cancel: gettext('No'),
+        }).show();
       },
       // Callback for creating script(s) & opening them in Query editor
       show_script: function(args, item) {

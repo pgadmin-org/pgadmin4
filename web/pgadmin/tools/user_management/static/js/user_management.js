@@ -869,9 +869,9 @@ define([
                       <div class="input-group-prepend">
                         <span class="input-group-text fa fa-search" id="labelSearch"></span>
                         </div>
-                          <input type="search" class="form-control" id="txtGridSearch" placeholder="` + gettext('Search') + `" aria-label="Search" aria-describedby="labelSearch" />
+                          <input type="search" class="form-control" id="txtGridSearch" placeholder="` + gettext('Search') + '" aria-label="' + gettext('Search') + `" aria-describedby="labelSearch" />
                         </div>
-                        <button id="btn_refresh" type="button" class="btn btn-secondary btn-navtab-inline add" title="Add">
+                        <button id="btn_refresh" type="button" class="btn btn-secondary btn-navtab-inline add" title="` + gettext('Add') + `">
                           <span class="fa fa-plus "></span>
                         </button>
                       </div>

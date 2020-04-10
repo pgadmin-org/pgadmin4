@@ -136,7 +136,7 @@ def check_precondition(f):
             kwargs['sid']
         )
         if not self.manager:
-            return gone(errormsg="Could not find the server.")
+            return gone(errormsg=gettext("Could not find the server."))
 
         self.conn = self.manager.connection(did=kwargs['did'])
         # Set the template path for the SQL scripts
@@ -570,9 +570,8 @@ It may have been removed by another user.
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s)." %
-                        required_args[arg]
-                    )
+                        "Could not find the required parameter (%s).") %
+                    required_args[arg]
                 )
         try:
             self.format_request_acls(data)

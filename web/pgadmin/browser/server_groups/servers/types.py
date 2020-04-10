@@ -74,7 +74,7 @@ class ServerType(object):
         return self.spriority
 
     def __str__(self):
-        return "Type: {0}, Description:{1}, Priority: {2}".format(
+        return _("Type: {0}, Description: {1}, Priority: {2}").format(
             self.stype, self.desc, self.spriority
         )
 
@@ -115,9 +115,9 @@ class ServerType(object):
             res = 'psql'
         else:
             raise Exception(
-                _("Could not find the utility for the operation '%s'".format(
+                _("Could not find the utility for the operation '%s'").format(
                     operation
-                ))
+                )
             )
         bin_path = self.utility_path.get()
         if "$DIR" in bin_path:

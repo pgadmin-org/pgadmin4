@@ -392,9 +392,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s)." %
-                        required_args[arg]
-                    )
+                        "Could not find the required parameter (%s).") %
+                    required_args[arg]
                 )
 
         # Parse privilege data coming from client according to database format

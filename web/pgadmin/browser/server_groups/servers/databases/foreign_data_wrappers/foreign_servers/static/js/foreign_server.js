@@ -36,7 +36,7 @@ define('pgadmin.node.foreign_server', [
       if (_.isUndefined(this.get('fsrvoption')) ||
             _.isNull(this.get('fsrvoption')) ||
             String(this.get('fsrvoption')).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = 'Please enter an option name';
+        var msg = gettext('Please enter an option name.');
         this.errorModel.set('fsrvoption', msg);
         return msg;
       } else {

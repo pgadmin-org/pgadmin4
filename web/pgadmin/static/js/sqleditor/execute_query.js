@@ -198,7 +198,7 @@ class ExecuteQuery {
   }
 
   initializeExecutionOnSqlEditor(sqlStatement) {
-    this.loadingScreen.show('Running query...');
+    this.loadingScreen.show(gettext('Running query...'));
 
     $('#btn-flash').prop('disabled', true);
     $('#btn-download').prop('disabled', true);

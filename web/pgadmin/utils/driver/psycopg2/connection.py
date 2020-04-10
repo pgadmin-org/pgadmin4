@@ -1745,7 +1745,7 @@ Failed to reset the connection to the server due to following error:
         # Do not append if error starts with `ERROR:` as most pg related
         # error starts with `ERROR:`
         if not errmsg.startswith(u'ERROR:'):
-            errmsg = u'ERROR:  ' + errmsg + u'\n\n'
+            errmsg = gettext(u'ERROR: ') + errmsg + u'\n\n'
 
         if exception_obj.diag.severity is not None \
                 and exception_obj.diag.message_primary is not None:

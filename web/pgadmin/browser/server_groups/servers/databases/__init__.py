@@ -175,7 +175,7 @@ class DatabaseView(PGChildNodeView):
                     kwargs['sid']
                 )
                 if self.manager is None:
-                    return gone(errormsg="Could not find the server.")
+                    return gone(errormsg=_("Could not find the server."))
 
                 if action and action in ["drop"]:
                     self.conn = self.manager.connection()
@@ -567,8 +567,7 @@ class DatabaseView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                        "Could not find the required parameter (%s).") % arg
                 )
         # The below SQL will execute CREATE DDL only
         SQL = render_template(

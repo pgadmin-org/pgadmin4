@@ -15,7 +15,7 @@ import axios from 'axios/index';
 
 export class BackupDialog extends Dialog {
   constructor(pgBrowser, $, alertify, BackupModel, backform = Backform) {
-    super('Backup Error',
+    super(gettext('Backup Error'),
       '<div class=\'backup_dialog\'></div>',
       pgBrowser, $, alertify, BackupModel, backform
     );

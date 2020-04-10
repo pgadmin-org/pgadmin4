@@ -37,7 +37,7 @@ define('pgadmin.node.foreign_data_wrapper', [
       if (_.isUndefined(this.get('fdwoption')) ||
             _.isNull(this.get('fdwoption')) ||
             String(this.get('fdwoption')).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = 'Please enter an option name';
+        var msg = gettext('Please enter an option name.');
         this.errorModel.set('fdwoption', msg);
         return msg;
       } else {

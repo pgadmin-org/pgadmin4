@@ -60,12 +60,12 @@ function(
         pgBrowser.add_menus([{
           name: 'truncate_table', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'truncate_table',
-          category: 'Truncate', priority: 3, label: gettext('Truncate'),
+          category: gettext('Truncate'), priority: 3, label: gettext('Truncate'),
           icon: 'fa fa-eraser', enable : 'canCreate',
         },{
           name: 'truncate_table_cascade', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'truncate_table_cascade',
-          category: 'Truncate', priority: 3, label: gettext('Truncate Cascade'),
+          category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
           icon: 'fa fa-eraser', enable : 'canCreate',
         },{
           // To enable/disable all triggers for the table

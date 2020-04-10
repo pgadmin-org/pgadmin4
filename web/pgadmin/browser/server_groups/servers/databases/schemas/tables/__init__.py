@@ -908,8 +908,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s)." % arg
-                    )
+                        "Could not find the required parameter (%s).") % arg
                 )
 
         # Parse privilege data coming from client according to database format
@@ -1578,7 +1577,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         return make_json_response(
             status=200,
-            info=gettext("Table rows counted: %s" % count),
+            info=gettext("Table rows counted: %s") % count,
             data={'total_rows': count}
         )
 

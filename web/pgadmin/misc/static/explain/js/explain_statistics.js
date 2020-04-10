@@ -9,6 +9,7 @@
 
 import $ from 'jquery';
 import Backbone from 'backbone';
+import gettext from 'sources/gettext';
 
 // Backbone model for other statistics
 let StatisticsModel = Backbone.Model.extend({
@@ -34,7 +35,7 @@ let StatisticsModel = Backbone.Model.extend({
     });
 
     if (Object.keys(jit_stats).length > 0){
-      tooltip.append('<tr><td class="label explain-tooltip">JIT:</td></tr>');
+      tooltip.append('<tr><td class="label explain-tooltip">' + gettext('JIT:') + '</td></tr>');
       _.each(jit_stats, function(value, key) {
         key = _.escape(key);
         value = _.escape(value);
@@ -48,7 +49,7 @@ let StatisticsModel = Backbone.Model.extend({
     }
 
     if (Object.keys(triggers_stats).length > 0){
-      tooltip.append('<tr><td class="label explain-tooltip">Triggers:</td></tr>');
+      tooltip.append('<tr><td class="label explain-tooltip">' + gettext('Triggers:') + '</td></tr>');
       _.each(triggers_stats, function(triggers, key_id) {
         if (triggers instanceof Object) {
           _.each(triggers, function(value, key) {
@@ -87,7 +88,7 @@ let StatisticsModel = Backbone.Model.extend({
     }
 
     if (Object.keys(summary).length > 0){
-      tooltip.append('<tr><td class="label explain-tooltip">Summary:</td></tr>');
+      tooltip.append('<tr><td class="label explain-tooltip">' + gettext('Summary:') + '</td></tr>');
       _.each(summary, function(value, key) {
         key = _.escape(key);
         value = _.escape(value);
