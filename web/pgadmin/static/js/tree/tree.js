@@ -371,6 +371,27 @@ export class Tree {
       }
     }.bind(this));
     this.aciTreeApi = $treeJQuery.aciTree('api');
+
+    /* Ctrl + Click will trigger context menu. Select the node when Ctrl+Clicked.
+     * When the context menu is visible, the tree should lose focus
+     * to use context menu with keyboard. Otherwise, the tree functions
+     * overrides the keyboard events.
+     */
+    let contextHandler = (ev)=>{
+      let treeItem = this.aciTreeApi.itemFrom(ev.target);
+      if(treeItem.length) {
+        if(ev.ctrlKey) {
+          this.aciTreeApi.select(treeItem);
+        }
+        $(treeItem).on('contextmenu:visible', ()=>{
+          $(treeItem).trigger('blur');
+          $(treeItem).off('contextmenu:visible');
+        });
+      }
+    };
+    $treeJQuery
+      .off('mousedown', contextHandler)
+      .on('mousedown', contextHandler);
   }
 
   /**
