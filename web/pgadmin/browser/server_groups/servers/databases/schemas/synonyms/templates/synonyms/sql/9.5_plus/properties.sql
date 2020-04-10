@@ -1,4 +1,4 @@
-SELECT synname AS name, pg_get_userbyid(synowner) AS owner,
+SELECT s.oid, synname AS name, pg_get_userbyid(synowner) AS owner,
   synobjschema, synobjname,  ns.nspname as schema,
   COALESCE(
   (SELECT relkind
@@ -26,6 +26,6 @@ SELECT synname AS name, pg_get_userbyid(synowner) AS owner,
 FROM pg_synonym s  JOIN pg_namespace ns ON s.synnamespace = ns.oid
  WHERE s.synnamespace={{scid}}::oid
  {% if syid %}
-   AND s.synname={{ syid|qtLiteral }}
+   AND s.oid={{syid}}::oid
  {% endif %}
 ORDER BY synname;

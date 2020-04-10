@@ -270,7 +270,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         for row in rset['rows']:
             res.append(
                 self.blueprint.generate_browser_node(
-                    row['name'],
+                    row['oid'],
                     scid,
                     row['name'],
                     icon="icon-synonym"
@@ -467,13 +467,16 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.template_path,
                                             'get_parent_oid.sql']),
                                   data=data, conn=self.conn)
-            status, parent_id = self.conn.execute_scalar(SQL)
+            status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
+            parent_id = res['rows'][0]['scid']
+            syid = res['rows'][0]['syid']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
-                    data['name'],
+                    syid,
                     int(parent_id),
                     data['name'],
                     icon="icon-synonym"
@@ -556,7 +559,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        SQL = self.get_sql(gid, sid, data, scid, syid)
+        SQL, name = self.get_sql(gid, sid, data, scid, syid)
         # Most probably this is due to error
         if not isinstance(SQL, (str, unicode)):
             return SQL
@@ -570,7 +573,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 node=self.blueprint.generate_browser_node(
                     syid,
                     scid,
-                    syid,
+                    name,
                     icon="icon-synonym"
                 )
             )
@@ -598,7 +601,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 data[k] = v
 
         try:
-            SQL = self.get_sql(gid, sid, data, scid, syid)
+            SQL, name = self.get_sql(gid, sid, data, scid, syid)
             # Most probably this is due to error
             if not isinstance(SQL, (str, unicode)):
                 return SQL
@@ -614,6 +617,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         This function will genrate sql from model data
         """
+        name = None
         if syid is not None:
             SQL = render_template("/".join([self.template_path,
                                             'properties.sql']),
@@ -626,6 +630,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                     gettext("Could not find the synonym on the server.")
                 )
             old_data = res['rows'][0]
+            name = old_data['name']
             # If target schema/object is not present then take it from
             # old data, it means it does not changed
             if 'synobjschema' not in data:
@@ -646,10 +651,11 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 if arg not in data:
                     return "-- missing definition"
 
+            name = data['name']
             SQL = render_template("/".join([self.template_path,
                                             'create.sql']), comment=False,
                                   data=data, conn=self.conn)
-        return SQL.strip('\n')
+        return SQL.strip('\n'), name
 
     @check_precondition
     def sql(self, gid, sid, did, scid, syid, diff_schema=None,
@@ -757,7 +763,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=res)
 
         for row in rset['rows']:
-            status, data = self._fetch_properties(scid, row['name'])
+            status, data = self._fetch_properties(scid, row['oid'])
             if status:
                 res[row['name']] = data
 
@@ -781,7 +787,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         if data:
             if diff_schema:
                 data['schema'] = diff_schema
-            sql = self.get_sql(gid, sid, data, scid, oid)
+            sql, name = self.get_sql(gid, sid, data, scid, oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

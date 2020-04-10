@@ -60,17 +60,18 @@ class SynonymDeleteMultipleTestCase(BaseTestGenerator):
         self.sequence_id = sequence_utils.create_sequences(
             self.server, self.db_name, self.schema_name, self.sequence_name)
         self.synonym_name = "test_synonym_delete_%s" % str(uuid.uuid4())[1:8]
-        synonym_utils.create_synonym(self.server,
-                                     self.db_name,
-                                     self.schema_name,
-                                     self.synonym_name,
-                                     self.sequence_name)
+        self.syn_oid = synonym_utils.create_synonym(self.server,
+                                                    self.db_name,
+                                                    self.schema_name,
+                                                    self.synonym_name,
+                                                    self.sequence_name)
+
         self.synonym_name_1 = "test_synonym_delete_%s" % str(uuid.uuid4())[1:8]
-        synonym_utils.create_synonym(self.server,
-                                     self.db_name,
-                                     self.schema_name,
-                                     self.synonym_name_1,
-                                     self.sequence_name)
+        self.syn_oid_1 = synonym_utils.create_synonym(self.server,
+                                                      self.db_name,
+                                                      self.schema_name,
+                                                      self.synonym_name_1,
+                                                      self.sequence_name)
 
     def runTest(self):
         """This function will delete synonym under schema node."""
@@ -87,7 +88,7 @@ class SynonymDeleteMultipleTestCase(BaseTestGenerator):
         if not synonym_response:
             raise Exception("No synonym node to delete.")
 
-        data = {'ids': [self.synonym_name, self.synonym_name_1]}
+        data = {'ids': [self.syn_oid, self.syn_oid_1]}
         response = self.tester.delete(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' + str(self.db_id) + '/' +

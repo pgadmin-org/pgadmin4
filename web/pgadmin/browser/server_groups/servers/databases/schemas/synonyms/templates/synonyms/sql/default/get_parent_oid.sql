@@ -1,4 +1,4 @@
-SELECT synnamespace as scid
+SELECT s.oid as syid, synnamespace as scid
     FROM pg_synonym s
 WHERE synname = {{ data.name|qtLiteral }}
 AND synnamespace IN

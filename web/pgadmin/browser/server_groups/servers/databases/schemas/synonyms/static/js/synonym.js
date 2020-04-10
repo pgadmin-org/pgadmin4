@@ -69,7 +69,7 @@ define('pgadmin.node.synonym', [
         isNew: function() {
           return !this.fetchFromServer;
         },
-        idAttribute: 'name',
+        idAttribute: 'oid',
         // Default values!
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
@@ -93,6 +93,9 @@ define('pgadmin.node.synonym', [
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema', readonly: function(m) { return !m.isNew(); },
+        },{
+          id: 'oid', label: gettext('OID'), cell: 'string',
+          type: 'text', mode: ['properties'],
         },{
           id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'],

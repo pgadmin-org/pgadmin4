@@ -53,9 +53,6 @@ def compare_dictionaries(view_object, source_params, target_params,
         source_object_id = None
         if 'oid' in source_dict[item]:
             source_object_id = source_dict[item]['oid']
-        elif 'name' in source_dict[item]:
-            # For synonyms use name as OID
-            source_object_id = source_dict[item]['name']
 
         if node == 'table':
             temp_src_params = copy.deepcopy(source_params)
@@ -96,9 +93,6 @@ def compare_dictionaries(view_object, source_params, target_params,
         target_object_id = None
         if 'oid' in target_dict[item]:
             target_object_id = target_dict[item]['oid']
-        elif 'name' in target_dict[item]:
-            # For synonyms use name as OID
-            target_object_id = target_dict[item]['name']
 
         if node == 'table':
             temp_tgt_params = copy.deepcopy(target_params)
@@ -140,10 +134,6 @@ def compare_dictionaries(view_object, source_params, target_params,
         if 'oid' in source_dict[key]:
             source_object_id = source_dict[key]['oid']
             target_object_id = target_dict[key]['oid']
-        elif 'name' in target_dict[key]:
-            # For synonyms use name as OID
-            source_object_id = source_dict[key]['name']
-            target_object_id = target_dict[key]['name']
 
         # Recursively Compare the two dictionary
         if are_dictionaries_identical(dict1[key], dict2[key], ignore_keys):

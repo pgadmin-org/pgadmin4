@@ -66,11 +66,11 @@ class SynonymPutTestCase(BaseTestGenerator):
         self.sequence_id = sequence_utils.create_sequences(
             self.server, self.db_name, self.schema_name, self.sequence_name)
         self.synonym_name = "test_synonym_put_%s" % str(uuid.uuid4())[1:8]
-        synonym_utils.create_synonym(self.server,
-                                     self.db_name,
-                                     self.schema_name,
-                                     self.synonym_name,
-                                     self.sequence_name)
+        self.syn_oid = synonym_utils.create_synonym(self.server,
+                                                    self.db_name,
+                                                    self.schema_name,
+                                                    self.synonym_name,
+                                                    self.sequence_name)
 
     def runTest(self):
         """This function will update synonym under schema node."""
@@ -96,7 +96,7 @@ class SynonymPutTestCase(BaseTestGenerator):
             str(self.server_id) + '/' +
             str(self.db_id) + '/' +
             str(self.schema_id) + '/' +
-            str(self.synonym_name),
+            str(self.syn_oid),
             data=json.dumps(data),
             follow_redirects=True)
         self.assertEquals(response.status_code, 200)

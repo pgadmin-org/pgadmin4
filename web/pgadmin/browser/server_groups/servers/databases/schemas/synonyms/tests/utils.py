@@ -40,6 +40,14 @@ def create_synonym(server, db_name, schema_name, synonym_name, sequence_name):
             schema_name, synonym_name, schema_name, sequence_name)
         pg_cursor.execute(query)
         connection.commit()
+
+        # Get 'oid' from newly created synonym
+        pg_cursor.execute("SELECT s.oid as name FROM"
+                          " pg_synonym s WHERE s.synname='%s'" %
+                          synonym_name)
+        synonym = pg_cursor.fetchone()
+        connection.close()
+        return synonym[0]
     except Exception:
         traceback.print_exc(file=sys.stderr)
 
