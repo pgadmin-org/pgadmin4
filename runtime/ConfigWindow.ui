@@ -74,7 +74,7 @@
            <item>
             <widget class="QLabel" name="pythonPathLabel_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -87,7 +87,7 @@
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
+               <width>16777215</width>
                <height>16777215</height>
               </size>
              </property>
@@ -95,6 +95,22 @@
               <string>Browser Command</string>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item>
             <widget class="QLineEdit" name="browserCommandLineEdit">
@@ -149,7 +165,7 @@
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
+               <width>16777215</width>
                <height>16777215</height>
               </size>
              </property>

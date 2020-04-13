@@ -38,6 +38,10 @@
 #include "FloatingWindow.h"
 #include "Logger.h"
 
+#ifdef Q_OS_MAC
+#include "macos.h"
+#endif
+
 #include <QTime>
 
 QString logFileName;
@@ -57,6 +61,42 @@ int main(int argc, char * argv[])
     // Create the QT application
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
+
+    // Setup the styling
+#ifndef Q_OS_LINUX
+    QFile stylesheet;
+
+#ifdef Q_OS_WIN32
+    QSettings registry("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", QSettings::Registry64Format);
+    if (registry.value("AppsUseLightTheme", true).toBool())
+    {
+        qDebug( "Windows Light Mode...");
+        stylesheet.setFileName(":/light.qss");
+    }
+    else
+    {
+        qDebug( "Windows Dark Mode..." );
+        stylesheet.setFileName(":/dark.qss");
+    }
+#endif
+
+#ifdef Q_OS_MAC
+    if (IsDarkMode())
+    {
+        qDebug( "macOS Dark Mode...");
+        stylesheet.setFileName(":/dark.qss");
+    }
+    else
+    {
+        qDebug( "macOS Light Mode..." );
+        stylesheet.setFileName(":/light.qss");
+    }
+#endif
+
+    stylesheet.open(QFile::ReadOnly | QFile::Text);
+    QTextStream stream(&stylesheet);
+    app.setStyleSheet(stream.readAll());
+#endif
 
     // Setup the settings management
     QCoreApplication::setOrganizationName("pgadmin");

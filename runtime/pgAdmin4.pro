@@ -102,11 +102,18 @@ SOURCES     =   pgAdmin4.cpp \
                 MenuActions.cpp \
                 FloatingWindow.cpp \
                 Logger.cpp
+
 FORMS       =   ConfigWindow.ui \
                 LogWindow.ui \
                 FloatingWindow.ui
 ICON        =   pgAdmin4.icns
 QMAKE_INFO_PLIST = Info.plist
 
-RESOURCES +=    pgadmin4.qrc
+RESOURCES +=    pgadmin4.qrc \
+                breeze.qrc
+
+macx {
+    HEADERS += macos.h
+    OBJECTIVE_SOURCES = macos.mm
+}
 
