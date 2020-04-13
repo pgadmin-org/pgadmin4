@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>731</width>
+    <width>975</width>
     <height>398</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>625</width>
+    <width>975</width>
     <height>300</height>
    </size>
   </property>
@@ -51,7 +51,7 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>589</width>
+             <width>16777215</width>
              <height>16777215</height>
             </size>
            </property>
@@ -60,6 +60,9 @@
            </property>
            <property name="wordWrap">
             <bool>true</bool>
+           </property>
+           <property name="margin">
+            <number>4</number>
            </property>
           </widget>
          </item>
@@ -106,6 +109,9 @@
           <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -233,6 +239,9 @@
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
@@ -288,6 +297,19 @@
            </item>
           </layout>
          </item>
+         <item>
+          <spacer name="verticalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
       </layout>
@@ -296,18 +318,50 @@
       <attribute name="title">
        <string>Python</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_7">
          <item>
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>The options below are intended for expert users only, and may not behave as expected as they modify fixed search paths and are not alternate values. Modify with care!</string>
+          <spacer name="verticalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-           <property name="wordWrap">
-            <bool>true</bool>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
            </property>
-          </widget>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>13</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>450</width>
+               <height>28</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>The options below are intended for expert users only, and may not behave as expected as they modify fixed search paths and are not alternate values. Modify with care!</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <spacer name="verticalSpacer_3">
@@ -319,89 +373,198 @@
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>20</width>
-             <height>5</height>
+             <width>17</width>
+             <height>13</height>
             </size>
            </property>
           </spacer>
          </item>
          <item>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="3" column="1">
-            <spacer name="verticalSpacer_5">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>60</height>
-              </size>
-             </property>
-            </spacer>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QLabel" name="pythonPathLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="layoutDirection">
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="text">
+                <string>Python Path</string>
+               </property>
+               <property name="scaledContents">
+                <bool>true</bool>
+               </property>
+               <property name="margin">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_9">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="pythonPathLabel">
-             <property name="text">
-              <string>Python Path</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Enter the path to the directory containing pgAdmin.py if desired.</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="pythonPathLineEdit">
-             <property name="placeholderText">
-              <string>/usr/pgadmin4/lib/python2.7;/usr/pgadmin4/lib/python2.7/site-packages</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLineEdit" name="applicationPathLineEdit">
-             <property name="placeholderText">
-              <string>/usr/pgadmin4/web</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="applicationPathLabel">
-             <property name="text">
-              <string>Application Path</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Enter a PYTHONPATH if desired. Path elements should be semi-colon delimited.</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="1">
-            <spacer name="verticalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QLineEdit" name="pythonPathLineEdit">
+               <property name="placeholderText">
+                <string>/usr/pgadmin4/lib/python2.7;/usr/pgadmin4/lib/python2.7/site-packages</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Enter a PYTHONPATH if desired. Path elements should be semi-colon delimited.</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::AutoText</enum>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>13</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <widget class="QLabel" name="applicationPathLabel">
+               <property name="text">
+                <string>Application Path</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::PlainText</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QLineEdit" name="applicationPathLineEdit">
+               <property name="placeholderText">
+                <string>/usr/pgadmin4/web</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Enter the path to the directory containing pgAdmin.py if desired.</string>
+               </property>
+               <property name="scaledContents">
+                <bool>false</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_8">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>60</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
