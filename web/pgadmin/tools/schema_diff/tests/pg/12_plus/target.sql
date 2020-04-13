@@ -539,6 +539,14 @@ CREATE TYPE target.typ_comp_diff AS
 ALTER TYPE target.typ_comp_diff
     OWNER TO postgres;
 
+CREATE TYPE target.typ_comp_diff_no_column AS
+(
+	a "char",
+	b "char"
+);
+ALTER TYPE target.typ_comp_diff_no_column
+    OWNER TO postgres;
+
 -- Type Script ENUM type
 CREATE TYPE target.typ_enum_tar AS ENUM
     ('test_enum');

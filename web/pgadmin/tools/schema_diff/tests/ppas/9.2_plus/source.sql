@@ -436,6 +436,46 @@ ALTER DOMAIN source.dom_type_diff
 COMMENT ON DOMAIN source.dom_type_diff
     IS 'Test comment';
 
+-- Type Script composite type
+CREATE TYPE source.typ_comp_src AS
+(
+	m1 bit(5),
+	m2 text COLLATE pg_catalog."POSIX"
+);
+ALTER TYPE source.typ_comp_src
+    OWNER TO enterprisedb;
+
+CREATE TYPE source.typ_comp_diff AS
+(
+	m1 numeric(5,2),
+	m3 character varying(30) COLLATE pg_catalog."C"
+);
+ALTER TYPE source.typ_comp_diff
+    OWNER TO enterprisedb;
+COMMENT ON TYPE source.typ_comp_diff
+    IS 'Test Comment';
+GRANT USAGE ON TYPE source.typ_comp_diff TO PUBLIC;
+GRANT USAGE ON TYPE source.typ_comp_diff TO enterprisedb;
+
+CREATE TYPE source.typ_comp_diff_no_column AS
+(
+);
+ALTER TYPE source.typ_comp_diff_no_column
+    OWNER TO enterprisedb;
+
+-- Type Script ENUM type
+CREATE TYPE source.typ_enum_src AS ENUM
+    ('test_enum');
+ALTER TYPE source.typ_enum_src
+    OWNER TO enterprisedb;
+
+CREATE TYPE source.typ_enum_diff AS ENUM
+    ('test_enum', 'test_enum_1');
+ALTER TYPE source.typ_enum_diff
+    OWNER TO enterprisedb;
+COMMENT ON TYPE source.typ_enum_diff
+    IS 'Test Comment';
+
 -- Type Script RANGE type
 CREATE TYPE source.typ_range_src AS RANGE
 (

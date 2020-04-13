@@ -588,6 +588,12 @@ GRANT USAGE ON TYPE source.typ_comp_diff TO PUBLIC;
 GRANT USAGE ON TYPE source.typ_comp_diff TO pg_monitor WITH GRANT OPTION;
 GRANT USAGE ON TYPE source.typ_comp_diff TO postgres;
 
+CREATE TYPE source.typ_comp_diff_no_column AS
+(
+);
+ALTER TYPE source.typ_comp_diff_no_column
+    OWNER TO postgres;
+
 -- Type Script ENUM type
 CREATE TYPE source.typ_enum_src AS ENUM
     ('test_enum');

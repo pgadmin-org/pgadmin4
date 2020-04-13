@@ -378,6 +378,16 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                         difference[key] = source
             elif len(source_dict[key]) > 0:
                 difference[key] = source_dict[key]
+            elif key in target_dict and type(target_dict[key]) is list:
+                # If no element in source dict then check for the element
+                # is available in target and the type is of list.
+                # Added such elements as a deleted.
+                tmp_tar_list = list(filter(
+                    lambda x: type(x) == list or type(x) == dict,
+                    target_dict[key]
+                ))
+                if len(tmp_tar_list):
+                    difference[key] = {'deleted': target_dict[key]}
 
             if type(source) is dict and tmp_target and key in tmp_target and \
                     tmp_target[key] and len(tmp_target[key]) > 0:

@@ -486,6 +486,14 @@ CREATE TYPE target.typ_comp_diff AS
 ALTER TYPE target.typ_comp_diff
     OWNER TO enterprisedb;
 
+CREATE TYPE target.typ_comp_diff_no_column AS
+(
+	a "char",
+	b "char"
+);
+ALTER TYPE target.typ_comp_diff_no_column
+    OWNER TO enterprisedb;
+
 -- Type Script ENUM type
 CREATE TYPE target.typ_enum_tar AS ENUM
     ('test_enum');
