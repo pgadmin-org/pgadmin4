@@ -110,7 +110,7 @@ import gettext from 'sources/gettext';
         grid.copied_rows[row][cell] = 1;
       }
     } else {
-      if(column_type === 'jsonb') {
+      if(column_type === 'jsonb' && state != null) {
         item[args.column.field] = JSONBigNumber.stringify(JSONBigNumber.parse(state));
       } else {
         item[args.column.field] = state;
@@ -361,7 +361,7 @@ import gettext from 'sources/gettext';
     this.loadValue = function(item) {
       var data = defaultValue = item[args.column.field];
       /* If jsonb or array */
-      if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data)) {
+      if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data) && data != null) {
         data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 4);
       } else if (Array.isArray(data)) {
         var temp = [];
@@ -406,7 +406,9 @@ import gettext from 'sources/gettext';
       if(args.column.column_type_internal === 'jsonb' ||
           args.column.column_type_internal === 'json') {
         try {
-          JSON.parse($input.val());
+          if($input.val() != ''){
+            JSON.parse($input.val());
+          }
         } catch(e) {
           $input.addClass('pg-text-invalid');
           return {
