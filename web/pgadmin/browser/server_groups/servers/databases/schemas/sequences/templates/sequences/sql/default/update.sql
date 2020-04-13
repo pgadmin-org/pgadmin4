@@ -20,6 +20,9 @@ SELECT setval({{ seqname|qtLiteral }}, {{ data.current_value }}, true);
 {% if data.increment is defined %}
 {% set defquery = defquery+'\n    INCREMENT '+data.increment|string %}
 {% endif %}
+{% if data.start is defined %}
+{% set defquery = defquery+'\n    START '+data.start|string %}
+{% endif %}
 {% if data.minimum is defined %}
 {% set defquery = defquery+'\n    MINVALUE '+data.minimum|string %}
 {% endif %}

@@ -686,6 +686,14 @@ CREATE SEQUENCE target.seq_diff
 ALTER SEQUENCE target.seq_diff
     OWNER TO postgres;
 
+CREATE SEQUENCE target.seq_start_diff
+    INCREMENT 5
+    START 1
+    MINVALUE 1
+    MAXVALUE 20;
+ALTER SEQUENCE target.seq_start_diff
+    OWNER TO postgres;
+
 -- Foreign Data Wrapper to test foreign table
 CREATE FOREIGN DATA WRAPPER test_fdw_for_foreign_table;
 ALTER FOREIGN DATA WRAPPER test_fdw_for_foreign_table

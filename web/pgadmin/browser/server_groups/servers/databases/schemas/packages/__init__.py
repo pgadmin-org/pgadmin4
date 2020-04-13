@@ -113,7 +113,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         'dependent': [{'get': 'dependents'}]
     })
 
-    keys_to_ignore = ['oid', 'schema', 'xmin', 'oid-2']
+    keys_to_ignore = ['oid', 'schema', 'xmin', 'oid-2', 'acl']
 
     def check_precondition(action=None):
         """

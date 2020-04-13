@@ -5,7 +5,7 @@
 CREATE SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     CYCLE
     INCREMENT 12
-    START 7
+    START 5
     MINVALUE 2
     MAXVALUE 9992
     CACHE 2;
