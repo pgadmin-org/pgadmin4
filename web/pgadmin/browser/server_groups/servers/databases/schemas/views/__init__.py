@@ -496,7 +496,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                         "Could not find the required parameter (%s).") % arg
                 )
         try:
-            SQL, nameOrError = self.getSQL(gid, sid, did, scid, data)
+            SQL, nameOrError = self.getSQL(gid, sid, did, data)
             if SQL is None:
                 return nameOrError
             SQL = SQL.strip('\n').strip(' ')
@@ -541,7 +541,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             request.data, encoding='utf-8'
         )
         try:
-            SQL, name = self.getSQL(gid, sid, did, scid, data, vid)
+            SQL, name = self.getSQL(gid, sid, did, data, vid)
             if SQL is None:
                 return name
             SQL = SQL.strip('\n').strip(' ')
@@ -678,7 +678,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             except ValueError:
                 data[k] = v
 
-        sql, nameOrError = self.getSQL(gid, sid, did, scid, data, vid)
+        sql, nameOrError = self.getSQL(gid, sid, did, data, vid)
         if sql is None:
             return nameOrError
 
@@ -692,7 +692,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             status=200
         )
 
-    def getSQL(self, gid, sid, did, scid, data, vid=None):
+    def getSQL(self, gid, sid, did, data, vid=None):
         """
         This function will generate sql from model data
         """
@@ -716,22 +716,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if 'schema' not in data:
                 data['schema'] = res['rows'][0]['schema']
 
-            DEL_SQL = None
-            if 'definition' in data:
-                new_def = re.sub(r"\W", "", data['definition']).split('FROM')
-                old_def = re.sub(r"\W", "", res['rows'][0]['definition']
-                                 ).split('FROM')
-                if 'definition' in data and (
-                        len(old_def) > 1 or len(new_def) > 1
-                ) and(
-                        old_def[0] != new_def[0] and
-                        old_def[0] not in new_def[0]
-                ):
-                    DEL_SQL = self.delete(gid=gid, sid=sid, did=did,
-                                          scid=scid,
-                                          vid=vid, only_sql=True
-                                          )
-
             try:
                 acls = render_template(
                     "/".join([self.template_path, 'sql/allowed_privs.json'])
@@ -750,14 +734,53 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                             data[aclcol][key] = parse_priv_to_db(
                                 data[aclcol][key], allowedacl['acl']
                             )
+            data['del_sql'] = False
+            old_data['acl_sql'] = ''
+
+            if 'definition' in data and self.manager.server_type == 'pg':
+                new_def = re.sub(r"\W", "", data['definition']).split('FROM')
+                old_def = re.sub(r"\W", "", res['rows'][0]['definition']
+                                 ).split('FROM')
+                if 'definition' in data and (
+                        len(old_def) > 1 or len(new_def) > 1
+                ) and(
+                        old_def[0] != new_def[0] and
+                        old_def[0] not in new_def[0]
+                ):
+                    data['del_sql'] = True
+
+                    # If we drop and recreate the view, the
+                    # privileges must be restored
+
+                    # Fetch all privileges for view
+                    sql_acl = render_template("/".join(
+                        [self.template_path, 'sql/acl.sql']), vid=vid)
+                    status, dataclres = self.conn.execute_dict(sql_acl)
+                    if not status:
+                        return internal_server_error(errormsg=res)
+
+                    for row in dataclres['rows']:
+                        priv = parse_priv_from_db(row)
+                        res['rows'][0].setdefault(row['deftype'], []
+                                                  ).append(priv)
+
+                    old_data.update(res['rows'][0])
+
+                    # Privileges
+                    for aclcol in acls:
+                        if aclcol in old_data:
+                            allowedacl = acls[aclcol]
+                            old_data[aclcol] = parse_priv_to_db(
+                                old_data[aclcol], allowedacl['acl'])
+
+                    old_data['acl_sql'] = render_template("/".join(
+                        [self.template_path, 'sql/grant.sql']), data=old_data)
 
             try:
                 SQL = render_template("/".join(
                     [self.template_path, 'sql/update.sql']), data=data,
                     o_data=old_data, conn=self.conn)
 
-                if DEL_SQL:
-                    SQL = DEL_SQL + SQL
             except Exception as e:
                 current_app.logger.exception(e)
                 return None, internal_server_error(errormsg=str(e))
@@ -1457,7 +1480,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         if data:
             if diff_schema:
                 data['schema'] = diff_schema
-            sql, nameOrError = self.getSQL(gid, sid, did, scid, data, oid)
+            sql, nameOrError = self.getSQL(gid, sid, did, data, oid)
             if sql.find('DROP VIEW') != -1:
                 sql = gettext("""
 -- Changing the columns in a view requires dropping and re-creating the view.
@@ -1539,7 +1562,7 @@ class MViewNode(ViewNode, VacuumSettings):
             '9.3_plus'
         )
 
-    def getSQL(self, gid, sid, did, scid, data, vid=None):
+    def getSQL(self, gid, sid, did, data, vid=None):
         """
         This function will generate sql from model data
         """

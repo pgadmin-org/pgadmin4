@@ -158,7 +158,7 @@ define('pgadmin.node.view', [
           control: Backform.SqlCodeControl.extend({
             onChange: function() {
               Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
-              if(this.model && this.model.changed) {
+              if(this.model && this.model.changed && this.model.node_info.server.server_type == 'pg') {
                 if(this.model.origSessAttrs && (this.model.changed.definition != this.model.origSessAttrs.definition)) {
                   let old_def = this.model.origSessAttrs.definition.replace(/\s/gi, '').split('FROM'),
                     new_def = [];

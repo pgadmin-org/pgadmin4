@@ -59,11 +59,29 @@
     },
     {
       "type": "alter",
+      "name": "Alter View (changing code)",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "definition": "SELECT * FROM test_view_table;"
+      },
+      "expected_sql_file": "alter_view_definition.sql",
+      "expected_msql_file": "alter_view_definition_msql.sql"
+    },
+    {
+      "type": "alter",
       "name": "Alter View (adding privileges)",
       "endpoint": "NODE-view.obj_id",
       "sql_endpoint": "NODE-view.sql_id",
       "msql_endpoint": "NODE-view.msql_id",
       "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "postgres",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
         "datacl":{
             "added":[
                 {

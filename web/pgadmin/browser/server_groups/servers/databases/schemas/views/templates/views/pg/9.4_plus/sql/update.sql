@@ -13,11 +13,10 @@ ALTER VIEW {{ conn|qtIdent(o_data.schema, o_data.name) }}
 ALTER VIEW {{ conn|qtIdent(o_data.schema, view_name ) }}
     SET SCHEMA {{ conn|qtIdent(data.schema) }};
 {% endif %}
-{% if data.owner and data.owner != o_data.owner %}
-ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
-    OWNER TO {{ conn|qtIdent(data.owner) }};
-{% endif %}
 {% if def and def != o_data.definition.rstrip(';') %}
+{% if data.del_sql %}
+DROP VIEW {{ conn|qtIdent(view_schema, view_name) }};
+{% endif %}
 CREATE OR REPLACE VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% if ((data.check_option and data.check_option.lower() != 'no') or data.security_barrier) %}
     WITH ({% if (data.check_option or o_data.check_option) %}check_option={{ data.check_option if data.check_option else o_data.check_option }}{{', ' }}{% endif %}security_barrier={{ data.security_barrier|lower if data.security_barrier is defined else o_data.security_barrier|default('false', 'true')|lower }})
@@ -36,13 +35,23 @@ ALTER VIEW {{ conn|qtIdent(view_schema, view_name) }}
 ALTER VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET (check_option);
 {% endif %}
 {% endif %}
+{% if data.owner and data.owner != o_data.owner %}
+ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
+    OWNER TO {{ conn|qtIdent(data.owner) }};
+{% endif %}
 {% set old_comment = o_data.comment|default('', true) %}
 {% if (data.comment is defined and (data.comment != old_comment)) %}
 
 COMMENT ON VIEW {{ conn|qtIdent(view_schema, view_name) }}
     IS {{ data.comment|qtLiteral }};
+{% elif  data.del_sql == True %}
+COMMENT ON VIEW {{ conn|qtIdent(view_schema, view_name) }}
+    IS {{ old_comment|qtLiteral }};
 {% endif %}
 {# The SQL generated below will change privileges #}
+{% if o_data.acl_sql and o_data.acl_sql != '' %}
+{{o_data['acl_sql']}}
+{% endif %}
 {% if data.datacl %}
 {% if 'deleted' in data.datacl %}
 {% for priv in data.datacl.deleted %}
