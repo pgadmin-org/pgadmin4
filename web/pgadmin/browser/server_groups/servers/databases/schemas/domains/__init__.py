@@ -216,8 +216,10 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Could not find the required parameter (%s).")
-                            % arg)
+                                "Could not find the required parameter (%s)." %
+                                arg
+                            )
+                        )
 
             try:
                 list_params = []
@@ -741,10 +743,10 @@ AND relkind != 'c'))"""
         SQL = render_template("/".join([self.template_path,
                                         'create.sql']), data=data)
 
-        sql_header = u"""-- DOMAIN: {0}
+        sql_header = u"""-- DOMAIN: {0}.{1}\n\n""".format(
+            data['basensp'], data['name'])
 
--- DROP DOMAIN {0};
-
+        sql_header += """-- DROP DOMAIN {0};\n
 """.format(self.qtIdent(self.conn, data['basensp'], data['name']))
         SQL = sql_header + SQL
 

@@ -1,4 +1,4 @@
--- FUNCTION: public."Trig1_$%{}[]()&*^!@""'`\/#"()
+-- FUNCTION: public.Trig1_$%{}[]()&*^!@"'`\/#()
 
 -- DROP FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"();
 

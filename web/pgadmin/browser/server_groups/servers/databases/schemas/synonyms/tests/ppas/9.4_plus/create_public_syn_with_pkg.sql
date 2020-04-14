@@ -1,4 +1,4 @@
--- Public synonym: "syn_$%{}[]()&*^!@""'`\/#";
+-- Public synonym: syn_$%{}[]()&*^!@"'`\/#;
 
 -- DROP PUBLIC SYNONYM "syn_$%{}[]()&*^!@""'`\/#";
 

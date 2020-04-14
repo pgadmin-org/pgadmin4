@@ -1,4 +1,4 @@
--- Text Search Parser: public."test_fts_parser_updated_$%{}[]()&*^!@""'`\/#"
+-- Text Search Parser: public.test_fts_parser_updated_$%{}[]()&*^!@"'`\/#
 
 -- DROP TEXT SEARCH PARSER public."test_fts_parser_updated_$%{}[]()&*^!@""'`\/#"
 

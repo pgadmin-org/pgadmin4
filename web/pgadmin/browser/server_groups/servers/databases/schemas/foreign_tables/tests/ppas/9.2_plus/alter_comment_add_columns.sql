@@ -1,4 +1,4 @@
--- FOREIGN TABLE: public."FT1_$%{}[]()&*^!@""'`\/#"
+-- FOREIGN TABLE: public.FT1_$%{}[]()&*^!@"'`\/#
 
 -- DROP FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#";
 

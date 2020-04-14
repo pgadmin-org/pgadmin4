@@ -453,8 +453,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         column_utils.type_formatter(c['cltype'])
 
         if json_resp:
-            sql_header = u"-- Table: {0}\n\n-- ".format(
-                self.qtIdent(self.conn, data['schema'], data['name']))
+            sql_header = u"-- Table: {0}.{1}\n\n-- ".format(
+                data['schema'], data['name'])
 
             sql_header += render_template("/".join([self.table_template_path,
                                                     'delete.sql']),

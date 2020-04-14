@@ -1,4 +1,4 @@
--- Text Search Template: test_fts_template."FTSTemp1_$%{}[]()&*^!@""'`\/#"
+-- Text Search Template: test_fts_template.FTSTemp1_$%{}[]()&*^!@"'`\/#
 
 -- DROP TEXT SEARCH TEMPLATE test_fts_template."FTSTemp1_$%{}[]()&*^!@""'`\/#"
 

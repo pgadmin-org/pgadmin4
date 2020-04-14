@@ -1,4 +1,4 @@
--- Private synonym: enterprisedb."syn_$%{}[]()&*^!@""'`\/#";
+-- Private synonym: enterprisedb.syn_$%{}[]()&*^!@"'`\/#;
 
 -- DROP SYNONYM enterprisedb."syn_$%{}[]()&*^!@""'`\/#";
 

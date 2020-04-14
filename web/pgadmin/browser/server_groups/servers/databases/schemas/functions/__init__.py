@@ -277,8 +277,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Could not find the required parameter (%s).")
-                            % arg)
+                                "Could not find the required parameter (%s)." %
+                                arg
+                            )
+                        )
 
             list_params = []
             if request.method == 'GET':
@@ -1078,16 +1080,14 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                        func_def=name_with_default_args,
                                        query_for="sql_panel")
 
-        sql_header = u"""-- {0}: {1}({2})
-
--- DROP {0} {1}({2});
-
-""".format(object_type.upper(),
-           self.qtIdent(
-               self.conn,
-               resp_data['pronamespace'],
-               resp_data['proname']),
-           resp_data['proargtypenames'].lstrip('(').rstrip(')'))
+        sql_header = u"""-- {0}: {1}.{2}({3})\n\n""".format(
+            object_type.upper(), resp_data['pronamespace'],
+            resp_data['proname'],
+            resp_data['proargtypenames'].lstrip('(').rstrip(')'))
+        sql_header += """-- DROP {0} {1}({2});\n\n""".format(
+            object_type.upper(), self.qtIdent(
+                self.conn, resp_data['pronamespace'], resp_data['proname']),
+            resp_data['proargtypenames'].lstrip('(').rstrip(')'))
 
         if not json_resp:
             return re.sub('\n{2,}', '\n\n', func_def)

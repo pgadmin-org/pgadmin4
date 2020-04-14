@@ -431,7 +431,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                     status=410,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s).") % arg
+                        "Could not find the required parameter (%s)." % arg)
                 )
         # Fetch schema name from schema oid
         sql = render_template(
@@ -834,10 +834,9 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                               data=res['rows'][0],
                               conn=self.conn, is_displaying=True)
 
-        sql_header = u"""-- Text Search Dictionary: {0}
-
--- DROP TEXT SEARCH DICTIONARY {0};
-
+        sql_header = u"""-- Text Search Dictionary: {0}.{1}\n\n""".format(
+            res['rows'][0]['schema'], res['rows'][0]['name'])
+        sql_header += """-- DROP TEXT SEARCH DICTIONARY {0};\n
 """.format(self.qtIdent(self.conn, res['rows'][0]['schema'],
                         res['rows'][0]['name']))
 

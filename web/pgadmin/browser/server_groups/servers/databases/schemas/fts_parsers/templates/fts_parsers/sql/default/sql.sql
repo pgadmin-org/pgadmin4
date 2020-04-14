@@ -5,7 +5,7 @@ SELECT
 FROM
     (
     SELECT
-        E'-- Text Search Parser: ' || quote_ident(nspname) || E'.' || quote_ident(prs.prsname) ||
+        E'-- Text Search Parser: ' || quote_ident(nspname) || E'.' || prs.prsname ||
         E'\n\n-- DROP TEXT SEARCH PARSER ' || quote_ident(nspname) || E'.' || quote_ident(prs.prsname) ||
         E'\n\nCREATE TEXT SEARCH PARSER ' || quote_ident(nspname) || E'.' || quote_ident(prs.prsname) || E' (\n' ||
         E'    START = ' || prs.prsstart || E',\n' ||

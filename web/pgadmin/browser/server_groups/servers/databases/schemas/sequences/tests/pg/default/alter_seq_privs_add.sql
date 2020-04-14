@@ -1,4 +1,4 @@
--- SEQUENCE: public."Seq1_$%{}[]()&*^!@""'`\/#"
+-- SEQUENCE: public.Seq1_$%{}[]()&*^!@"'`\/#
 
 -- DROP SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#";
 

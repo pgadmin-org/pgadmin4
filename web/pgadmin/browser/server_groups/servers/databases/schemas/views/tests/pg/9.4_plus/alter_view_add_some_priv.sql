@@ -1,4 +1,4 @@
--- View: public."testview_$%{}[]()&*^!@""'`\/#"
+-- View: public.testview_$%{}[]()&*^!@"'`\/#
 
 -- DROP VIEW public."testview_$%{}[]()&*^!@""'`\/#";
 

@@ -1,4 +1,4 @@
--- View: public."testmview_$%{}[]()&*^!/@`#"
+-- View: public.testmview_$%{}[]()&*^!/@`#
 
 -- DROP MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#";
 

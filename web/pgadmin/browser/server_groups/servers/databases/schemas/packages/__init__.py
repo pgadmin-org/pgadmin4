@@ -717,9 +717,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             if not json_resp:
                 return sql
 
-            sql_header = u"-- Package: {}\n\n-- ".format(
-                self.qtIdent(self.conn, self.schema, result['name'])
-            )
+            sql_header = u"-- Package: {0}.{1}\n\n-- ".format(
+                self.schema, result['name'])
 
             sql_header += render_template(
                 "/".join([self.template_path, 'delete.sql']),

@@ -1,4 +1,4 @@
--- Package: public."pkg_emp_$%{}[]()&*^!@""'`\/#"
+-- Package: public.pkg_emp_$%{}[]()&*^!@"'`\/#
 
 -- DROP PACKAGE "pkg_emp_$%{}[]()&*^!@""'`\/#";
 

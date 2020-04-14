@@ -1,4 +1,4 @@
--- Text Search Dictionary: public."Dictionary1_$%{}[]()&*^!@""'`\/#"
+-- Text Search Dictionary: public.Dictionary1_$%{}[]()&*^!@"'`\/#
 
 -- DROP TEXT SEARCH DICTIONARY public."Dictionary1_$%{}[]()&*^!@""'`\/#";
 

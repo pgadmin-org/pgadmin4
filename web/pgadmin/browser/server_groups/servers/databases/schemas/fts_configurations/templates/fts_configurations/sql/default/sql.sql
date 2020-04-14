@@ -6,7 +6,7 @@ FROM
     (
     SELECT
         E'-- Text Search CONFIGURATION: ' || quote_ident(nspname) || E'.'
-        || quote_ident(cfg.cfgname) ||
+        || (cfg.cfgname) ||
         E'\n\n-- DROP TEXT SEARCH CONFIGURATION ' || quote_ident(nspname) ||
         E'.' || quote_ident(cfg.cfgname) ||
         E'\n\nCREATE TEXT SEARCH CONFIGURATION ' || quote_ident(nspname) ||

@@ -4,7 +4,7 @@ SELECT
 FROM
     (
     SELECT
-        E'-- Text Search Template: ' || quote_ident(nspname) || E'.' || quote_ident(tmpl.tmplname) ||
+        E'-- Text Search Template: ' || quote_ident(nspname) || E'.' || tmpl.tmplname ||
         E'\n\n-- DROP TEXT SEARCH TEMPLATE ' || quote_ident(nspname) || E'.' || quote_ident(tmpl.tmplname) ||
         E'\n\nCREATE TEXT SEARCH TEMPLATE ' || quote_ident(nspname) || E'.' || quote_ident(tmpl.tmplname) || E' (\n' ||
         CASE

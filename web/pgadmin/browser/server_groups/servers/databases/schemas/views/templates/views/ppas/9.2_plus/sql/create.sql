@@ -1,6 +1,6 @@
 {#============================Create new view=========================#}
 {% if display_comments %}
--- View: {{ conn|qtIdent(data.schema, data.name) }}
+-- View: {{ data.schema }}.{{ data.name }}
 
 -- DROP VIEW {{ conn|qtIdent(data.schema, data.name) }};
 

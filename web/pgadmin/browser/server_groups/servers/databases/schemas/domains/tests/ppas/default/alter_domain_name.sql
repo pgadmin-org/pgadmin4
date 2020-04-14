@@ -1,4 +1,4 @@
--- DOMAIN: public."Dom2_$%{}[]()&*^!@""'`\/#"
+-- DOMAIN: public.Dom2_$%{}[]()&*^!@"'`\/#
 
 -- DROP DOMAIN public."Dom2_$%{}[]()&*^!@""'`\/#";
 

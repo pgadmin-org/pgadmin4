@@ -260,8 +260,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                             status=410,
                             success=0,
                             errormsg=gettext(
-                                "Could not find the required parameter (%s).")
-                            % arg)
+                                "Could not find the required parameter (%s)." %
+                                arg
+                            )
+                        )
 
             try:
                 list_params = []
@@ -855,9 +857,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not json_resp:
             return SQL.strip('\n')
 
-        sql_header = u"""-- FOREIGN TABLE: {0}
+        sql_header = u"""-- FOREIGN TABLE: {0}.{1}\n\n""".format(
+            data['basensp'], data['name'])
 
--- DROP FOREIGN TABLE {0};
+        sql_header += """-- DROP FOREIGN TABLE {0};
 
 """.format(self.qtIdent(self.conn, data['basensp'], data['name']))
 
