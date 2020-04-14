@@ -1,5 +1,5 @@
 <RCC>
-  <qresource>
+  <qresource prefix="/">
     <file>light/hmovetoolbar.svg</file>
     <file>light/vmovetoolbar.svg</file>
     <file>light/hsepartoolbar.svg</file>
