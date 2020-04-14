@@ -523,13 +523,12 @@ class ServerNode(PGChildNodeView):
             data['db_res'] = ','.join(data['db_res'])
 
         if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '':
-            if not self.pat4.match(data['hostaddr']):
-                if not self.pat6.match(data['hostaddr']):
-                    return make_json_response(
-                        success=0,
-                        status=400,
-                        errormsg=gettext('Host address not valid')
-                    )
+            if not is_valid_ipaddress(data['hostaddr']):
+                return make_json_response(
+                    success=0,
+                    status=400,
+                    errormsg=gettext('Host address not valid')
+                )
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
