@@ -58,4 +58,4 @@ def is_valid_ip6address(addr):
 
 
 def is_valid_ipaddress(addr):
-    return ip4re.match(addr) and is_valid_ip6address(addr)
+    return ip4re.match(addr) or is_valid_ip6address(addr)
