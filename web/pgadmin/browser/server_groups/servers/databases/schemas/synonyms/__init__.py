@@ -311,7 +311,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         for row in rset['rows']:
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
-                    row['name'],
+                    row['oid'],
                     scid,
                     row['name'],
                     icon="icon-%s" % self.node_type
