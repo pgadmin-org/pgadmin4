@@ -368,6 +368,14 @@ define('pgadmin.node.primary_key', [
                 Backform.MultiSelectAjaxControl.prototype.remove.apply(this, arguments);
               }
             },
+            render: function() {
+              var index = this.model.get('index');
+              if(!_.isUndefined(index) && index != '') {
+                var col = this.model.get('columns');
+                col.reset([], {silent: true});
+              }
+              return Backform.Select2Control.prototype.render.apply(this, arguments);
+            },
           }),
           deps: ['index'], node: 'column',
           model: pgBrowser.Node.Model.extend({
@@ -408,8 +416,6 @@ define('pgadmin.node.primary_key', [
             if(_.isUndefined(index) || index == '') {
               return false;
             } else {
-              var col = m.get('columns');
-              col.reset();
               return true;
             }
           },
@@ -507,8 +513,9 @@ define('pgadmin.node.primary_key', [
             if(_.isUndefined(index) || index == '') {
               return false;
             } else {
-              var col = m.get('columns');
-              col.reset();
+              setTimeout(function(){
+                m.set('include', []);
+              },10);
               return true;
             }
           },
