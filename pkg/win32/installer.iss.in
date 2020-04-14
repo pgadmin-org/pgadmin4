@@ -294,6 +294,8 @@ begin
       begin
         DelWebfolder(ExpandConstant('{app}\web'));
         DelFolder(ExpandConstant('{app}\venv'));
+        DelFolder(ExpandConstant('{app}\runtime\dark'));
+        DelFolder(ExpandConstant('{app}\runtime\light'));
       end;
 	end;
   end;

@@ -78,6 +78,7 @@ _get_version() {
 _cleanup() {
     echo "Cleaning up the old environment and app bundle"
     rm -rf ${SOURCEDIR}/runtime/pgAdmin4.app
+    rm -rf ${SOURCEDIR}/runtime/dark ${SOURCEDIR}/runtime/light ${SOURCEDIR}/runtime/light.qss ${SOURCEDIR}/runtime/dark.qss
     rm -rf ${BUILDROOT}
     rm -f ${DISTROOT}/pgadmin4*.dmg
 }
@@ -153,6 +154,7 @@ _build_runtime() {
     ${QMAKE} || { echo qmake failed; exit 1; }
     make || { echo make failed; exit 1; }
     cp -r pgAdmin4.app "${BUILDROOT}/${APP_BUNDLE_NAME}"
+    cp -r dark light dark.qss light.qss "${BUILDROOT}/"
 }
 
 _build_doc() {

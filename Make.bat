@@ -265,6 +265,12 @@ REM Main build sequence Ends
     ECHO Staging pgAdmin4.exe...
     COPY "%WD%\runtime\release\pgAdmin4.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
 
+    ECHO Staging dark and light theme components...
+    COPY "%WD%\runtime\dark.qss" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%WD%\runtime\light.qss" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%WD%\runtime\dark" "%PGBUILDPATH%\runtime\dark" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%WD%\runtime\light" "%PGBUILDPATH%\runtime\light" > nul || EXIT /B 1
+
     ECHO Staging Qt components...
     COPY "%QTDIR%\bin\Qt5Core.dll"   "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     COPY "%QTDIR%\bin\Qt5Gui.dll"    "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
