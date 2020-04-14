@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
-  'backgrid', 'alertify', 'pgadmin.browser.node', 'pgadmin.browser.node.ui',
-], function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode) {
+  'backgrid', 'alertify', 'pgadmin.browser.node', 'sources/utils', 'pgadmin.browser.node.ui',
+], function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode, commonUtils) {
   /**
    * Each Privilege, supporeted by an database object, will be represented
    * using this Model.
@@ -622,11 +622,16 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
           command = new Backgrid.Command(ev),
           coll = this.model.get(this.column.get('name'));
 
+        if (ev.key == 'Tab'){
+          commonUtils.handleKeyNavigation(event);
+        }
+
         if (command.moveUp() || command.moveDown() || command.save()) {
           // backgrid vertical navigation (Up/Down arrow key)
           ev.preventDefault();
           ev.stopPropagation();
-          model.trigger('backgrid:edited', model, column, command);
+          this.model.trigger('backgrid:edited', this.model, this.column, command);
+          // model.trigger('backgrid:edited', model, column, command);
           return;
         }
         // esc

@@ -1822,6 +1822,7 @@ define([
 
       /* Check for sql editor preference changes */
       let self = this;
+      this.$el.find('textarea').attr('tabindex', -1);
       pgBrowser.onPreferencesChange('sqleditor', function() {
         self.reflectPreferences();
       });

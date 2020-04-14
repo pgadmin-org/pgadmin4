@@ -987,6 +987,9 @@ var StringCell = Backgrid.StringCell = Cell.extend({
 
   /** @property */
   className: "string-cell",
+  attributes: {
+    tabIndex: "0"
+  },
 
   formatter: StringFormatter
 

@@ -833,6 +833,12 @@ define([
         // go to Next Cell & if Shift is also pressed go to Previous Cell
         if (e.keyCode == 9 || e.keyCode == 16) {
           gotoCell = e.shiftKey ? self.$el.prev() : self.$el.next();
+          if (self.$el.next().length == 0){
+            setTimeout(function() {
+              self.$el.find('.select2-selection').blur();
+            }, 100);
+
+          }
         }
 
         if (gotoCell) {

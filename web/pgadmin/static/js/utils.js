@@ -9,6 +9,8 @@
 
 import _ from 'underscore';
 import { getTreeNodeHierarchyFromIdentifier } from 'sources/tree/pgadmin_tree_node';
+import $ from 'jquery';
+
 
 export function parseShortcutValue(obj) {
   var shortcut = '';
@@ -17,6 +19,64 @@ export function parseShortcutValue(obj) {
   if (obj.control) { shortcut += 'ctrl+'; }
   shortcut += obj.key.char.toLowerCase();
   return shortcut;
+}
+
+export function handleKeyNavigation(event) {
+  let wizardHeader = $(event.currentTarget).find('.wizard-header');
+  let wizardFooter = $(event.currentTarget).find('.wizard-footer');
+  let gridElement = $(event.currentTarget).find('.select-row-cell:first');
+  let gridElementLast = $(event.currentTarget).find('.select-row-cell:last');
+
+  let firstWizardHeaderButton = $(wizardHeader).find('button:enabled:first');
+  let lastWizardHeaderButton = $(wizardHeader).find('button:enabled:last');
+  let lastWizardFooterBtn = $(wizardFooter).find('button:enabled:last');
+  let firstWizardFooterBtn = $(wizardFooter).find('button:enabled:first');
+
+
+  if (event.shiftKey && event.keyCode === 9) {
+    // Move backwards
+    if(firstWizardHeaderButton && $(firstWizardHeaderButton).is($(event.target))) {
+      if (lastWizardFooterBtn) {
+        $(lastWizardFooterBtn).focus();
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
+    else if ($(firstWizardFooterBtn).is($(event.target))){
+      if ($(gridElement).find('.custom-control-input').is(':visible')){
+        $(gridElementLast).find('.custom-control-input').focus();
+        event.preventDefault();
+        event.stopPropagation();
+      }else if ($(event.currentTarget).find('.wizard-content').find('.CodeMirror-scroll').is(':visible')){
+        $(lastWizardHeaderButton).focus();
+      }
+    }
+  } else if (event.keyCode === 9) {
+    // Move forwards
+    // If taget is last button then goto first element
+    if(lastWizardFooterBtn && $(lastWizardFooterBtn).is($(event.target))) {
+      $(firstWizardHeaderButton).focus();
+      event.preventDefault();
+      event.stopPropagation();
+    }else if (event.target.innerText == 'Name'){
+      if ($(gridElement).find('.custom-control-input').is(':visible')){
+        $(gridElement).find('.custom-control-input').focus();
+      }else {
+        $(firstWizardFooterBtn).focus();
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    } else if(event.target.tagName == 'DIV') {
+      $(event.currentTarget).find('.custom-control-input:first').trigger('focus');
+      event.preventDefault();
+      event.stopPropagation();
+    } else if(event.target.tagName == 'TEXTAREA'){
+      $(firstWizardFooterBtn).focus();
+    }
+  } else if (event.keyCode === 27){
+    //close the wizard when esc key is pressed
+    $(wizardHeader).find('button.ajs-close').click();
+  }
 }
 
 export function findAndSetFocus(container) {
