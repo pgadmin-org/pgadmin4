@@ -543,6 +543,41 @@ def index():
             base_url=None
         )
 
+    # Check the browser is a support version
+    # NOTE: If the checks here are updated, make sure the supported versions
+    # at https://www.pgadmin.org/faq/#11 are updated to match!
+    if config.CHECK_SUPPORTED_BROWSER:
+        browser = request.user_agent.browser
+        version = request.user_agent.version and int(
+            request.user_agent.version.split('.')[0])
+
+        browser_name = None
+        browser_known = True
+        if browser == 'chrome' and version < 72:
+            browser_name = 'Chrome'
+        elif browser == 'firefox' and version < 65:
+            browser_name = 'Firefox'
+        elif browser == 'edge' and version < 44:
+            browser_name = 'Edge'
+        elif browser == 'safari' and version < 12:
+            browser_name = 'Safari'
+        elif browser == 'msie':
+            browser_name = 'Internet Explorer'
+        elif browser != 'chrome' and browser != 'firefox' and \
+                browser != 'edge' and browser != 'safari':
+            browser_name = browser
+            browser_known = False
+
+        if browser_name is not None:
+            msg = render_template(
+                MODULE_NAME + "/browser.html",
+                version=version,
+                browser=browser_name,
+                known=browser_known
+            )
+
+            flash(msg, 'warning')
+
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.
     if config.UPGRADE_CHECK_ENABLED:

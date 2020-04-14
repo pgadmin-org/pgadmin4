@@ -359,6 +359,9 @@ UPGRADE_CHECK_KEY = 'pgadmin4'
 CA_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                        "cacert.pem")
 
+# Check if the detected browser is supported
+CHECK_SUPPORTED_BROWSER = True
+
 ##########################################################################
 # Storage Manager storage url config settings
 # If user sets STORAGE_DIR to empty it will show all volumes if platform
