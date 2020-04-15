@@ -330,6 +330,16 @@ define('tools.querytool', [
       self.messages_panel = self.docker.findPanels('messages')[0];
       self.notifications_panel = self.docker.findPanels('notifications')[0];
 
+      if (_.isUndefined(self.sql_panel_obj) || _.isUndefined(self.history_panel) ||
+       _.isUndefined(self.data_output_panel) || _.isUndefined(self.explain_panel) ||
+       _.isUndefined(self.messages_panel) || _.isUndefined(self.notifications_panel)) {
+        alertify.alert(
+          gettext('Panel Loading Error'),
+          gettext('Something went wrong while loading the panels.'
+          + ' Please make sure to reset the layout (File > Reset Layout) for the better user experience.')
+        );
+      }
+
       // Refresh Code mirror on SQL panel resize to
       // display its value properly
       self.sql_panel_obj.on(wcDocker.EVENT.RESIZE_ENDED, function() {

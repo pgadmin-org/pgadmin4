@@ -104,7 +104,7 @@ let queryToolNotifications = {
     });
 
     // Render the grid
-    if (notifications_grid)
+    if (notifications_grid && notifications_panel)
       notifications_panel.$container.find('.sql-editor-notifications').append(notifications_grid.render().el);
   },
 
