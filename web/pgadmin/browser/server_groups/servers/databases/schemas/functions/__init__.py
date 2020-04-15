@@ -481,7 +481,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         proargtypes = [ptype for ptype in data['proargtypenames'].split(",")] \
             if data['proargtypenames'] else []
-        proargmodes = data['proargmodes'] if data['proargmodes'] else []
+        proargmodes = data['proargmodes'] if data['proargmodes'] else \
+            ['i'] * len(proargtypes)
         proargnames = data['proargnames'] if data['proargnames'] else []
         proargdefaultvals = [ptype for ptype in
                              data['proargdefaultvals'].split(",")] \
