@@ -63,6 +63,8 @@ export function handleQueryToolAjaxError(
 
     if(exception.status === 503 && exception.responseJSON.info !== undefined &&
         exception.responseJSON.info == 'CONNECTION_LOST') {
+      // We will display re-connect dialog, no need to display error message again
+      msg = null;
       setTimeout(function() {
         if (stateToSave) {
           handler.saveState(stateToSave, stateParameters);

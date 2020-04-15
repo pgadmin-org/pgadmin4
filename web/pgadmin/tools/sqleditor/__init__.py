@@ -1370,8 +1370,12 @@ def start_query_download_tool(trans_id):
                 ] = "attachment;filename={0}".format(filename)
 
                 return r
+        except (ConnectionLost, SSHTunnelConnectionLost):
+            raise
         except Exception as e:
-            err_msg = gettext("Error: {0}").format(e.strerror)
+            current_app.logger.error(e)
+            err_msg = "Error: {0}".format(
+                e.strerror if hasattr(e, 'strerror') else str(e))
             return internal_server_error(errormsg=err_msg)
     else:
         return internal_server_error(

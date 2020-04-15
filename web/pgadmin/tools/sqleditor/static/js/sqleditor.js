@@ -1315,7 +1315,8 @@ define('tools.querytool', [
           let msg = httpErrorHandler.handleQueryToolAjaxError(
             pgAdmin, self, e, null, [], false
           );
-          self.update_msg_history(false, msg);
+          if (msg)
+            self.update_msg_history(false, msg);
         });
     },
 
@@ -2169,8 +2170,12 @@ define('tools.querytool', [
               if (args.indexOf('connect') == -1) {
                 args.push('connect');
               }
+              if (fn in self) {
+                self[fn].apply(self, args);
+              } else {
+                console.warn('The callback is not valid for this context');
+              }
 
-              self[fn].apply(self, args);
             }
           }, function() {
             self.saveState();
@@ -2205,9 +2210,10 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, xhr, null, [], false
             );
-            alertify.dlgGetServerPass(
-              gettext('Connect to Server'), msg
-            );
+            if (msg)
+              alertify.dlgGetServerPass(
+                gettext('Connect to Server'), msg
+              );
           });
       },
       /* This function is used to create instance of SQLEditorView,
@@ -2310,10 +2316,10 @@ define('tools.querytool', [
                 msg = httpErrorHandler.handleQueryToolAjaxError(
                   pgAdmin, self, jqx, null, [], false
                 );
-
-                pgBrowser.report_error(
-                  gettext('Error fetching SQL for script: %s.', msg)
-                );
+                if (msg)
+                  pgBrowser.report_error(
+                    gettext('Error fetching SQL for script: %s.', msg)
+                  );
               });
           }
         }
@@ -2494,7 +2500,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_execute_view_data_query', [], true
             );
-            self.update_msg_history(false, msg);
+            if (msg)
+              self.update_msg_history(false, msg);
           });
       },
 
@@ -3247,7 +3254,8 @@ define('tools.querytool', [
             // Enable query tool buttons and cancel button only if query tool
             if(self.is_query_tool)
               self.disable_tool_buttons(false);
-            self.update_msg_history(false, msg);
+            if (msg)
+              self.update_msg_history(false, msg);
           });
       },
 
@@ -3405,7 +3413,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_select_file_handler', stateParams, false
             );
-            alertify.error(msg);
+            if (msg)
+              alertify.error(msg);
             // hide cursor
             $busy_icon_div.removeClass('show_progress');
           });
@@ -3456,7 +3465,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_save_file_handler', stateParams, false
             );
-            alertify.error(msg);
+            if (msg)
+              alertify.error(msg);
           });
       },
 
@@ -3585,7 +3595,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_include_filter', [], true
             );
-            alertify.alert(gettext('Filter By Selection Error'), msg);
+            if (msg)
+              alertify.alert(gettext('Filter By Selection Error'), msg);
           });
       },
 
@@ -3644,7 +3655,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_exclude_filter', [], true
             );
-            alertify.alert(gettext('Filter Exclude Selection Error'), msg);
+            if (msg)
+              alertify.alert(gettext('Filter Exclude Selection Error'), msg);
           });
       },
 
@@ -3682,7 +3694,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_remove_filter', [], true
             );
-            alertify.alert(gettext('Remove Filter Error'), msg);
+            if (msg)
+              alertify.alert(gettext('Remove Filter Error'), msg);
           });
       },
 
@@ -3813,7 +3826,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_set_limit', [], true
             );
-            alertify.alert(gettext('Change limit Error'), msg);
+            if (msg)
+              alertify.alert(gettext('Change limit Error'), msg);
           });
       },
 
@@ -3958,7 +3972,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_cancel_query', [], false
             );
-            alertify.alert(gettext('Cancel Query Error'), msg);
+            if (msg)
+              alertify.alert(gettext('Cancel Query Error'), msg);
           });
       },
 
@@ -4022,7 +4037,6 @@ define('tools.querytool', [
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
         }).fail(function(err) {
           let msg = '';
-
           // Enable the execute button
           $('#btn-flash').prop('disabled', false);
           $('#btn-download').prop('disabled', false);
@@ -4034,10 +4048,12 @@ define('tools.querytool', [
             msg = gettext('CSV Download cancelled.');
           } else {
             msg = httpErrorHandler.handleQueryToolAjaxError(
-              pgAdmin, self, err, gettext('Download CSV'), [], true
+              pgAdmin, self, err, 'trigger_csv_download', [], true
             );
           }
-          alertify.alert(gettext('Download CSV error'), msg);
+          // Check if error message is present
+          if (msg)
+            alertify.alert(gettext('Download CSV error'), msg);
         });
       },
 
@@ -4078,7 +4094,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_auto_rollback', [], true
             );
-            alertify.alert(gettext('Auto Rollback Error'), msg);
+            if (msg)
+              alertify.alert(gettext('Auto Rollback Error'), msg);
           });
       },
 
@@ -4110,7 +4127,8 @@ define('tools.querytool', [
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_auto_commit', [], true
             );
-            alertify.alert(gettext('Auto Commit Error'), msg);
+            if (msg)
+              alertify.alert(gettext('Auto Commit Error'), msg);
           });
 
       },

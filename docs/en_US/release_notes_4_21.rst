@@ -35,6 +35,7 @@ Bug fixes
 | `Issue #4445 <https://redmine.postgresql.org/issues/4445>`_ -  Ensure all object names in the title line of the reverse-engineered SQL are not quoted.
 | `Issue #4512 <https://redmine.postgresql.org/issues/4512>`_ -  Fixed calendar opening issue on the exception tab inside the schedules tab of pgAgent.
 | `Issue #4856 <https://redmine.postgresql.org/issues/4856>`_ -  Enable the save button by default when a query tool is opened with CREATE or other scripts.
+| `Issue #4858 <https://redmine.postgresql.org/issues/4858>`_ -  Fixed python exception error when user tries to download the CSV and there is a connection issue.
 | `Issue #4864 <https://redmine.postgresql.org/issues/4864>`_ -  Make the configuration window in runtime to auto-resize.
 | `Issue #4873 <https://redmine.postgresql.org/issues/4873>`_ -  Fixed an issue when changing the comments of the procedure with arguments gives error in case of overloading.
 | `Issue #4969 <https://redmine.postgresql.org/issues/4969>`_ -  Fixed an issue where changing the values of columns with JSONB or JSON types to NULL.
