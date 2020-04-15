@@ -16,7 +16,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if d
 {% endfor %}
 )
 {% endif %}
-    {% if ('proleakproof' in data and data.proleakproof) or ('proleakproof' not in data and o_data.proleakproof) %}LEAKPROOF{% else %}NOT LEAKPROOF{% endif %}
+    {{ data.provolatile }} {% if ('proleakproof' in data and data.proleakproof) or ('proleakproof' not in data and o_data.proleakproof) %}LEAKPROOF{% else %}NOT LEAKPROOF{% endif %}
 {% if ('proisstrict' in data and data.proisstrict) or ('proisstrict' not in data and o_data.proisstrict) %} STRICT{% endif %}
 {% if ('prosecdef' in data and data.prosecdef) or ('prosecdef' not in data and o_data.prosecdef) %} SECURITY DEFINER{% endif %}
 
@@ -27,8 +27,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if d
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
 {% endif %}
 
-AS
-{% if data.prosrc %}{{ data.prosrc }}{% else %}{{ o_data.prosrc }}{% endif -%};
+AS {% if data.prosrc %}{{ data.prosrc }}{% else %}{{ o_data.prosrc }}{% endif -%};
 {% endif -%}
 {% if data.funcowner %}
 

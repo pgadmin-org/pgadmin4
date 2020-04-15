@@ -20,6 +20,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #4620 <https://redmine.postgresql.org/issues/4620>`_ -  Add Reverse Engineered and Modified SQL tests for procedures.
 
 Bug fixes
 *********
@@ -35,6 +36,7 @@ Bug fixes
 | `Issue #4512 <https://redmine.postgresql.org/issues/4512>`_ -  Fixed calendar opening issue on the exception tab inside the schedules tab of pgAgent.
 | `Issue #4856 <https://redmine.postgresql.org/issues/4856>`_ -  Enable the save button by default when a query tool is opened with CREATE or other scripts.
 | `Issue #4864 <https://redmine.postgresql.org/issues/4864>`_ -  Make the configuration window in runtime to auto-resize.
+| `Issue #4873 <https://redmine.postgresql.org/issues/4873>`_ -  Fixed an issue when changing the comments of the procedure with arguments gives error in case of overloading.
 | `Issue #4969 <https://redmine.postgresql.org/issues/4969>`_ -  Fixed an issue where changing the values of columns with JSONB or JSON types to NULL.
 | `Issue #5007 <https://redmine.postgresql.org/issues/5007>`_ -  Ensure index dropdown should have existing indexes while creating unique constraints.
 | `Issue #5053 <https://redmine.postgresql.org/issues/5053>`_ -  Fixed an issue where changing the columns in the existing view throws an error.

@@ -124,10 +124,10 @@ define('pgadmin.node.procedure', [
               m.get('lanname') != 'edbspl') {
 
               setTimeout(function() {
-                m.set('provolatile', undefined);
-                m.set('proisstrict', undefined);
-                m.set('procost', undefined);
-                m.set('proleakproof', undefined);
+                m.set('provolatile', null);
+                m.set('proisstrict', false);
+                m.set('procost', null);
+                m.set('proleakproof', false);
               }, 10);
               return true;
             }
@@ -145,7 +145,7 @@ define('pgadmin.node.procedure', [
               this.node_info.server.server_type != 'ppas' ||
               m.get('lanname') != 'edbspl') {
               setTimeout(function() {
-                m.set('proparallel', undefined);
+                m.set('proparallel', null);
               }, 10);
               return true;
             }

@@ -14,8 +14,9 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% i
 {% endif %}
 )
 {% endif %}
-LANGUAGE {{ data.lanname|qtLiteral }}
-    {% if data.prosecdef %}SECURITY DEFINER {% endif %}
+LANGUAGE {{ data.lanname|qtLiteral }}{% if data.prosecdef %}
+
+    SECURITY DEFINER {% endif %}
 {% if data.lanname == 'edbspl' %}
 {{ data.provolatile }} {% if data.proleakproof %}LEAKPROOF {% endif %}
 {% if data.proisstrict %}STRICT {% endif %}
@@ -24,10 +25,9 @@ LANGUAGE {{ data.lanname|qtLiteral }}
 
     COST {{data.procost}}{% endif %}{% if data.prorows and (data.prorows | int) > 0 %}
 
-    ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
+    ROWS {{data.prorows}}{% endif -%}{% endif %}{% if data.variables %}{% for v in data.variables %}
 
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
-{% endif %}
 {% endif %}
 
 AS {% if data.lanname == 'c' %}
@@ -45,7 +45,7 @@ $BODY${{ data.prosrc }}$BODY${% endif -%};
 {% endif %}
 {% if data.description %}
 
-COMMENT ON PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}
+COMMENT ON PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
     IS {{ data.description|qtLiteral  }};
 {% endif -%}
 {% if data.seclabels %}

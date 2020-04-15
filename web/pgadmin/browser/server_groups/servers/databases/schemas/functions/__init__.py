@@ -1006,14 +1006,14 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
             if diff_schema:
                 res['rows'][0]['nspname'] = diff_schema
+
+            # Add newline and tab before each argument to format
             name_with_default_args = self.qtIdent(
                 self.conn,
                 res['rows'][0]['nspname'],
                 res['rows'][0]['proname']
-            ) + '(' + res['rows'][0]['func_args'] + ')'
-            # Add newline and tab before each argument to format
-            name_with_default_args = name_with_default_args.replace(
-                ', ', ',\r\t').replace('(', '(\r\t')
+            ) + '(\n\t' + res['rows'][0]['func_args'].\
+                replace(', ', ',\n\t') + ')'
 
             # Parse privilege data
             if 'acl' in resp_data:
@@ -1061,16 +1061,13 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 res['rows'][0]['nspname'] = diff_schema
                 resp_data['pronamespace'] = diff_schema
 
+            # Add newline and tab before each argument to format
             name_with_default_args = self.qtIdent(
                 self.conn,
                 res['rows'][0]['nspname'],
                 res['rows'][0]['proname']
-            ) + '(' + res['rows'][0]['func_args'] + ')'
-            # Add newline and tab before each argument to format
-            name_with_default_args = name_with_default_args.replace(
-                ', ',
-                ',\r\t'
-            ).replace('(', '(\r\t')
+            ) + '(\n\t' + res['rows'][0]['func_args']. \
+                replace(', ', ',\n\t') + ')'
 
             # Generate sql for "SQL panel"
             # func_def is function signature with default arguments
@@ -1148,8 +1145,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             data['pronamespace'] = self._get_schema(
                 data['pronamespace']
             )
-        if 'provolatile' in data and data['provolatile']:
-            data['provolatile'] = vol_dict[data['provolatile']]
+        if 'provolatile' in data:
+            data['provolatile'] = vol_dict[data['provolatile']]\
+                if data['provolatile'] else ''
 
         if fnid is not None:
             # Edit Mode

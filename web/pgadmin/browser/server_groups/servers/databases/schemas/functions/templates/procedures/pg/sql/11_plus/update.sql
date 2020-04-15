@@ -96,7 +96,7 @@ ALTER PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if o_data.proarg
 {% endif -%}
 {% if data.description is defined and data.description != o_data.description%}
 
-COMMENT ON PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}
+COMMENT ON PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}({{o_data.proargtypenames }})
     IS {{ data.description|qtLiteral }};
 {% endif -%}
 {% if data.pronamespace %}
