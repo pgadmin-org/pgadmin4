@@ -496,14 +496,16 @@ class ExclusionConstraintView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Could not find required parameter (%s).") % str(arg)
+                        "Could not find required parameter ({})."
+                    ).format(arg)
                 )
             elif isinstance(data[arg], list) and len(data[arg]) < 1:
                 return make_json_response(
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Could not find required parameter (%s).") % str(arg)
+                        "Could not find required parameter ({})."
+                    ).format(arg)
                 )
 
         data['schema'] = self.schema

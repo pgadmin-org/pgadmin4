@@ -946,8 +946,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s).") %
-                    required_args[arg]
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
             # Additional checks goes here
             # If type is range then check if subtype is defined or not

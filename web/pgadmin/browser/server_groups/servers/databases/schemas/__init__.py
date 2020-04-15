@@ -570,8 +570,8 @@ It may have been removed by another user.
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s).") %
-                    required_args[arg]
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
         try:
             self.format_request_acls(data)

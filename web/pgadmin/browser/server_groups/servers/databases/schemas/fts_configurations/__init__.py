@@ -422,7 +422,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                     status=410,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s).") % arg
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
 
         # Either copy config or parser must be present in data

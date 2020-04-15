@@ -295,8 +295,8 @@ class TablespaceView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s).") %
-                    required_args[arg]
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
 
         # To format privileges coming from client

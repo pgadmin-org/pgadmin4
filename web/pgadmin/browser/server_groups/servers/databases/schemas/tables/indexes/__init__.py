@@ -580,8 +580,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                                   "create index.")
 
             if arg not in data:
-                err_msg = gettext("Could not find the required parameter (%s)"
-                                  ".") % required_args[arg]
+                err_msg = gettext("Could not find the required parameter ({})"
+                                  ".").format(required_args[arg])
                 # Check if we have at least one column
             if err_msg is not None:
                 return make_json_response(

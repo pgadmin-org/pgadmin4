@@ -535,7 +535,7 @@ class IndexConstraintView(PGChildNodeView):
                         success=0,
                         errormsg=_(
                             "Could not find at least one required "
-                            "parameter (%s).") % str(param)
+                            "parameter ({}).".format(str(param)))
                     )
 
             elif arg not in data:
@@ -543,7 +543,8 @@ class IndexConstraintView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s).") % arg
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
 
         data['schema'] = self.schema

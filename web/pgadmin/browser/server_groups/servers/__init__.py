@@ -737,7 +737,8 @@ class ServerNode(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s).") % arg
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
 
         if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '':
@@ -835,7 +836,8 @@ class ServerNode(PGChildNodeView):
                         status=401,
                         success=0,
                         errormsg=gettext(
-                            u"Unable to connect to server:\n\n%s") % errmsg
+                            u"Unable to connect to server:\n\n{}"
+                        ).format(errmsg)
                     )
                 else:
                     if 'save_password' in data and data['save_password'] and \
@@ -1027,7 +1029,7 @@ class ServerNode(PGChildNodeView):
                     tunnel_password = server.tunnel_password
             else:
                 tunnel_password = data['tunnel_password'] \
-                    if 'tunnel_password'in data else ''
+                    if 'tunnel_password' in data else ''
                 save_tunnel_password = data['save_tunnel_password'] \
                     if tunnel_password and 'save_tunnel_password' in data \
                     else False

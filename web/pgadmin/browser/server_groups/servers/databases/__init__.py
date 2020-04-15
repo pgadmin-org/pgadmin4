@@ -567,7 +567,8 @@ class DatabaseView(PGChildNodeView):
                     status=410,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s).") % arg
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
         # The below SQL will execute CREATE DDL only
         SQL = render_template(

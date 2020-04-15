@@ -493,7 +493,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s).") % arg
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
         try:
             SQL, nameOrError = self.getSQL(gid, sid, did, data)
@@ -743,7 +744,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                                  ).split('FROM')
                 if 'definition' in data and (
                         len(old_def) > 1 or len(new_def) > 1
-                ) and(
+                ) and (
                         old_def[0] != new_def[0] and
                         old_def[0] not in new_def[0]
                 ):

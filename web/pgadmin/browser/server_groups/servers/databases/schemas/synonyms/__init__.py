@@ -450,7 +450,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                     status=410,
                     success=0,
                     errormsg=gettext(
-                        "Could not find the required parameter (%s).") % arg
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
 
         try:

@@ -65,7 +65,7 @@ class Properties:
     @staticmethod
     def translate_execute_on_text(execute_on):
         if execute_on['type'] == 'host':
-            return gettext('host %s') % execute_on['value']
+            return gettext('host {}').format(execute_on['value'])
         elif execute_on['type'] == 'per_host':
             return gettext('per host')
         elif execute_on['type'] == 'master_only':
@@ -73,6 +73,6 @@ class Properties:
         elif execute_on['type'] == 'all_segments':
             return gettext('all segments')
         elif execute_on['type'] == 'segment':
-            return gettext('%s segment') % execute_on['value']
+            return gettext('{} segment').format(execute_on['value'])
         elif execute_on['type'] == 'segments':
-            return gettext('%d segments') % execute_on['value']
+            return gettext('{} segments').format(execute_on['value'])

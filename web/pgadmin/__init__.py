@@ -503,7 +503,7 @@ def create_app(app_name=None):
                             svr_discovery_id = inst_id
                             svr_comment = gettext(
                                 "Auto-detected %s installation with the data "
-                                "directory at %s") % (
+                                "directory at {}").format(
                                     winreg.QueryValueEx(
                                         inst_key, 'Display Name'
                                     )[0],
@@ -557,11 +557,9 @@ def create_app(app_name=None):
                     if hasattr(str, 'decode'):
                         description = description.decode('utf-8')
                         data_directory = data_directory.decode('utf-8')
-                    svr_comment = gettext(u"Auto-detected %s installation "
-                                          u"with the data directory at %s") % (
-                                              description,
-                                              data_directory
-                    )
+                    svr_comment = gettext(u"Auto-detected {0} installation "
+                                          u"with the data directory at {1}"
+                                          ).format(description, data_directory)
                     add_server(user_id, servergroup_id, svr_name,
                                svr_superuser, svr_port, svr_discovery_id,
                                svr_comment)

@@ -476,7 +476,8 @@ class CheckConstraintView(PGChildNodeView):
                     status=400,
                     success=0,
                     errormsg=_(
-                        "Could not find the required parameter (%s).") % arg
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
                 )
 
         data['schema'] = self.schema
