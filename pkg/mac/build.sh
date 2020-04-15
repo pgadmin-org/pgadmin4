@@ -78,7 +78,6 @@ _get_version() {
 _cleanup() {
     echo "Cleaning up the old environment and app bundle"
     rm -rf ${SOURCEDIR}/runtime/pgAdmin4.app
-    rm -rf ${SOURCEDIR}/runtime/dark ${SOURCEDIR}/runtime/light ${SOURCEDIR}/runtime/light.qss ${SOURCEDIR}/runtime/dark.qss
     rm -rf ${BUILDROOT}
     rm -f ${DISTROOT}/pgadmin4*.dmg
 }
