@@ -1,6 +1,6 @@
 -- Foreign Data Wrapper: Fdw1_$%{}[]()&*^!@"'`\/#
 
--- DROP FOREIGN DATA WRAPPER Fdw1_$%{}[]()&*^!@"'`\/#
+-- DROP FOREIGN DATA WRAPPER "Fdw1_$%{}[]()&*^!@""'`\/#"
 
 CREATE FOREIGN DATA WRAPPER "Fdw1_$%{}[]()&*^!@""'`\/#"
     OPTIONS (opt1 'val1', opt2 'valopt2');

@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #3988 <https://redmine.postgresql.org/issues/3988>`_ -  Fixed cursor disappeared issue in the query editor for some of the characters when zoomed out.
 | `Issue #4206 <https://redmine.postgresql.org/issues/4206>`_ -  Ensure that the grant wizard should be closed on pressing the ESC key.
 | `Issue #4292 <https://redmine.postgresql.org/issues/4292>`_ -  Added dark mode support for the configuration dialog on Windows/macOS runtime.
+| `Issue #4440 <https://redmine.postgresql.org/issues/4440>`_ -  Ensure the DROP statements in reverse engineered SQL are properly quoted for all objects.
 | `Issue #4445 <https://redmine.postgresql.org/issues/4445>`_ -  Ensure all object names in the title line of the reverse-engineered SQL are not quoted.
 | `Issue #4512 <https://redmine.postgresql.org/issues/4512>`_ -  Fixed calendar opening issue on the exception tab inside the schedules tab of pgAgent.
 | `Issue #4709 <https://redmine.postgresql.org/issues/4709>`_ -  Added schema-qualified dictionary names in FTS configuration to avoid confusion of duplicate names.

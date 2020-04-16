@@ -211,10 +211,12 @@ class ForeignDataWrapperView(PGChildNodeView):
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
-            self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            self.manager = driver.connection_manager(
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.qtIdent = driver.qtIdent
 
             # Set the template path for the SQL scripts
             self.template_path = 'foreign_data_wrappers/sql/#{0}#'.format(
@@ -746,11 +748,12 @@ class ForeignDataWrapperView(PGChildNodeView):
                               )
         sql += "\n"
 
-        sql_header = u"""-- Foreign Data Wrapper: {0}
+        sql_header = u"""-- Foreign Data Wrapper: {0}\n\n""".format(
+            res['rows'][0]['name'])
 
--- DROP FOREIGN DATA WRAPPER {0}
+        sql_header += """-- DROP FOREIGN DATA WRAPPER {0}
 
-""".format(res['rows'][0]['name'])
+""".format(self.qtIdent(self.conn, res['rows'][0]['name']))
 
         sql = sql_header + sql
 

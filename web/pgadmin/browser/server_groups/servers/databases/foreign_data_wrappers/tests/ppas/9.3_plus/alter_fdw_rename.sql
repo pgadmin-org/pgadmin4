@@ -1,6 +1,6 @@
 -- Foreign Data Wrapper: Fdw2_$%{}[]()&*^!@"'`\/#
 
--- DROP FOREIGN DATA WRAPPER Fdw2_$%{}[]()&*^!@"'`\/#
+-- DROP FOREIGN DATA WRAPPER "Fdw2_$%{}[]()&*^!@""'`\/#"
 
 CREATE FOREIGN DATA WRAPPER "Fdw2_$%{}[]()&*^!@""'`\/#"
     VALIDATOR pg_catalog.postgresql_fdw_validator
