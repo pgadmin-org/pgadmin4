@@ -37,7 +37,7 @@ Use the fields in the *Definition* tab to define the procedure:
 * Use the drop-down listbox next to *Language* to select a language. The default
   is *edbspl*.
 * Use the fields in the *Arguments* section to define an argument. Click *Add* to set
-parameters and values for the argument:
+  parameters and values for the argument:
 * Use the drop-down listbox next to *Data type* to select a data type.
 * Use the drop-down listbox next to *Mode* to select a mode. Select *IN* for an
   input parameter; select *OUT* for an output parameter; select *INOUT* for both
