@@ -437,9 +437,9 @@ FROM (
 {% if all_obj or obj_type in ['user_mapping'] %}
     select 'user_mapping' AS obj_type, ro.rolname AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname || '/:user_mapping.'||ro.oid||':/' || ro.rolname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['user_mapping'] }} AS show_node, NULL AS other_info
-    from pg_user_mapping um
+    from pg_user_mappings um
     inner join pg_roles ro on um.umuser = ro.oid
-    inner join pg_foreign_server sr on um.umserver = sr.oid
+    inner join pg_foreign_server sr on um.srvid = sr.oid
     inner join pg_foreign_data_wrapper fdw on sr.srvfdw = fdw.oid
 {% endif %}
 {% if all_obj %}

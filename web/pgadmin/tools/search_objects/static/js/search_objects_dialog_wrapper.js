@@ -277,7 +277,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
         })
         .catch((args)=>{
           this.showMessage(gettext('Unable to locate this object in the browser.'), true);
-          console.warn(args);
+          console.warn(args, rowData.id_path);
         });
     });
 
@@ -601,7 +601,11 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
         let errmsg = '';
 
         if (error.response) {
-          errmsg = error.response.statusText;
+          if(error.response.data && error.response.data.errormsg) {
+            errmsg = error.response.data.errormsg;
+          } else {
+            errmsg = error.response.statusText;
+          }
         } else if (error.request) {
           errmsg = gettext('No response received');
         } else {

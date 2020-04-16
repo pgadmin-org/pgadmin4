@@ -60,3 +60,4 @@ Bug fixes
 | `Issue #5375 <https://redmine.postgresql.org/issues/5375>`_ -  Fixed an issue where the Mode cell of argument grid does not appear completely in the Functions dialog.
 | `Issue #5383 <https://redmine.postgresql.org/issues/5383>`_ -  Fixed syntax error while refreshing the existing synonyms.
 | `Issue #5387 <https://redmine.postgresql.org/issues/5387>`_ -  Fixed an issue where the mode is not shown in the properties dialog of functions/procedures if all the arguments are "IN" arguments.
+| `Issue #5400 <https://redmine.postgresql.org/issues/5400>`_ -  Fixed internal server error when the database server is logged in with non-super user.
