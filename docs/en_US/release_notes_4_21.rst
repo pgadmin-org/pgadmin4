@@ -56,5 +56,6 @@ Bug fixes
 | `Issue #5362 <https://redmine.postgresql.org/issues/5362>`_ -  Fixed an issue where the identical packages and sequences visible as different in the schema diff tool.
 | `Issue #5366 <https://redmine.postgresql.org/issues/5366>`_ -  Added alert message to Reset Layout if any of the panels from Query Tool failed to load.
 | `Issue #5371 <https://redmine.postgresql.org/issues/5371>`_ -  Fixed tab key navigation for some dialogs.
+| `Issue #5375 <https://redmine.postgresql.org/issues/5375>`_ -  Fixed an issue where the Mode cell of argument grid does not appear completely in the Functions dialog.
 | `Issue #5383 <https://redmine.postgresql.org/issues/5383>`_ -  Fixed syntax error while refreshing the existing synonyms.
 | `Issue #5387 <https://redmine.postgresql.org/issues/5387>`_ -  Fixed an issue where the mode is not shown in the properties dialog of functions/procedures if all the arguments are "IN" arguments.

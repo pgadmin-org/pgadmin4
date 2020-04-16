@@ -58,6 +58,9 @@ define('pgadmin.node.function', [
     },{
       id: 'argmode', label: gettext('Mode'), type: 'options',
       control: 'node-ajax-options', cellHeaderClasses:'width_percent_20',
+      cell: 'node-ajax-options', select2: {
+        allowClear: false,
+      },
       options:[
         {'label': 'IN', 'value': 'IN'},
         {'label': 'OUT', 'value': 'OUT'},
