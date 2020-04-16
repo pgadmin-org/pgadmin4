@@ -2379,6 +2379,8 @@ define('tools.querytool', [
         // Indentation related
         self.on('pgadmin-sqleditor:indent_selected_code', self._indent_selected_code, self);
         self.on('pgadmin-sqleditor:unindent_selected_code', self._unindent_selected_code, self);
+
+        window.parent.$(window.parent.document).on('pgadmin-sqleditor:rows-copied', self._copied_in_other_session);
       },
 
       // Checks if there is any dirty data in the grid before executing a query
@@ -3706,33 +3708,36 @@ define('tools.querytool', [
         $('.copy-with-header').toggleClass('visibility-hidden');
       },
 
+      // This function will enable Paste button if data is copied in some other active session
+      _copied_in_other_session: function(e, copiedWithHeaders) {
+        pgAdmin.SqlEditor.copiedInOtherSessionWithHeaders = copiedWithHeaders;
+        $('#btn-paste-row').prop('disabled', false);
+      },
+
       // This function will paste the selected row.
       _paste_row: function() {
-        var self = this,
-          grid = self.slickgrid,
-          dataView = grid.getData(),
-          data = dataView.getItems(),
-          count = dataView.getLength(),
-          rows = grid.getSelectedRows().sort(
-            function(a, b) {
-              return a - b;
-            }
-          ),
-          copied_rows = rows.map(function(rowIndex) {
-            return data[rowIndex];
-          }),
-          array_types = [];
 
-        // for quick look up create list of array data types
-        for (var k in self.columns) {
-          if (self.columns[k].is_array) {
-            array_types.push(self.columns[k].name);
-          }
+        var self = this;
+        let rowsText = clipboard.getTextFromClipboard();
+        let copied_rows = rowsText.split('\n');
+        // Do not parse row if rows are copied with headers
+        if(pgAdmin.SqlEditor.copiedInOtherSessionWithHeaders) {
+          copied_rows = copied_rows.slice(1);
         }
-
-        rows = rows.length == 0 ? self.last_copied_rows : rows;
-
-        self.last_copied_rows = rows;
+        copied_rows = copied_rows.reduce((partial, item) => {
+          // split each row with field separator character
+          const values = item.split(self.preferences.results_grid_field_separator);
+          let row = {};
+          for (let k in self.columns) {
+            let v = null;
+            if (values.length > k) {
+              v = values[k].replace(new RegExp(`^\\${self.preferences.results_grid_quote_char}`), '').replace(new RegExp(`\\${self.preferences.results_grid_quote_char}$`), '');
+            }
+            row[self.columns[k].name] = v;
+          }
+          partial.push(row);
+          return partial;
+        }, []);
 
         // If there are rows to paste?
         if (copied_rows.length > 0) {
@@ -3740,10 +3745,21 @@ define('tools.querytool', [
           // save newly pasted rows on server
           $('#btn-save-data').prop('disabled', false);
 
-          var arr_to_object = function(arr) {
+          var grid = self.slickgrid,
+            dataView = grid.getData(),
+            count = dataView.getLength(),
+            array_types = [];
+          // for quick look up create list of array data types
+          for (var k in self.columns) {
+            if (self.columns[k].is_array) {
+              array_types.push(self.columns[k].name);
+            }
+          }
+
+          var arr_to_object = function (arr) {
             var obj = {};
 
-            _.each(arr, function(val, i) {
+            _.each(arr, function (val, i) {
               if (arr[i] !== undefined) {
                 // Do not stringify array types.
                 if (_.isObject(arr[i]) && array_types.indexOf(i) == -1) {
@@ -3765,13 +3781,13 @@ define('tools.querytool', [
           // Reset selection
 
           dataView.beginUpdate();
-          _.each(copied_rows, function(row) {
+          _.each(copied_rows, function (row) {
             var new_row = arr_to_object(row),
               _key = (self.gridView.client_primary_key_counter++).toString();
             new_row.is_row_copied = true;
             self.temp_new_rows.push(count);
             new_row[self.client_primary_key] = _key;
-            if(self.has_oids && new_row.oid) {
+            if (self.has_oids && new_row.oid) {
               new_row.oid = null;
             }
 
@@ -3784,7 +3800,9 @@ define('tools.querytool', [
             count++;
           });
           dataView.endUpdate();
+          grid.invalidateRow(grid.getSelectedRows());
           grid.updateRowCount();
+          grid.render();
           // Pasted row/s always append so bring last row in view port.
           grid.scrollRowIntoView(dataView.getLength());
           grid.setSelectedRows([]);

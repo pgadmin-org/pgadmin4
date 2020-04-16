@@ -48,6 +48,10 @@ function ($, _, clipboard, RangeSelectionHelper, rangeBoundaryNavigator) {
   var setPasteRowButtonEnablement = function (canEditFlag, isEnabled) {
     if (canEditFlag) {
       $('#btn-paste-row').prop('disabled', !isEnabled);
+      if(isEnabled && window.parent.$) {
+        // trigger copied event to all sessions
+        window.parent.$(window.parent.document).trigger('pgadmin-sqleditor:rows-copied', copyWithHeader());
+      }
     }
   };
   return copyData;

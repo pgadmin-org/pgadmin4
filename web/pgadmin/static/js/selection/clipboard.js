@@ -64,6 +64,9 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
 
         if (clipboardData) {
           clipboardData.setData('text', text);
+          // As there no uniform way to read data from clipboard
+          // storing copied data into main window object, so it is accessible from anywhere in the application
+          window.parent.window.clipboardData = text;
           // We want our data, not data from any selection, to be written to the clipboard
           e.preventDefault();
         }
@@ -82,6 +85,9 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
       }
 
       document.body.removeChild(textArea);
+    },
+    getTextFromClipboard: function() {
+      return window.parent.window.clipboardData || '';
     },
   };
   return clipboard;
