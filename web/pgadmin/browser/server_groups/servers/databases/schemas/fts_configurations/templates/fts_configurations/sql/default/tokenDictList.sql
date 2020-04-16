@@ -9,11 +9,16 @@ SELECT
     WHERE
         t.tokid = maptokentype
     ) AS token,
-    array_agg(dictname) AS dictname
+    array_agg(
+        CASE WHEN (pg_ns.nspname != 'pg_catalog') THEN
+            CONCAT(pg_ns.nspname, '.', pg_ts_dict.dictname)
+        ELSE
+            pg_ts_dict.dictname END) AS dictname
 FROM
     pg_ts_config_map
     LEFT OUTER JOIN pg_ts_config ON mapcfg = pg_ts_config.oid
     LEFT OUTER JOIN pg_ts_dict ON mapdict = pg_ts_dict.oid
+    LEFT OUTER JOIN pg_namespace pg_ns ON pg_ns.oid = pg_ts_dict.dictnamespace
 WHERE
     mapcfg={{cfgid}}::OID
 GROUP BY

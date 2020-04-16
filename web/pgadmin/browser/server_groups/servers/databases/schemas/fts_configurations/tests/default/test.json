@@ -1,5 +1,22 @@
 {
-  "scenarios": [{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create FTS Dictionary",
+      "endpoint": "NODE-fts_dictionary.obj",
+      "sql_endpoint": "NODE-fts_dictionary.sql_id",
+      "msql_endpoint": "NODE-fts_dictionary.msql",
+      "data": {
+        "name": "test_dic",
+        "template": "simple",
+        "options": [],
+        "schema": "test",
+        "schema_id": "<SCHEMA_ID>",
+        "owner": "postgres"
+      },
+      "expected_sql_file": "create_fts_dictionary.sql",
+      "expected_msql_file": "msql_create_fts_dictionary.sql"
+    }, {
       "type": "create",
       "name": "Create FTS Configuration",
       "endpoint": "NODE-fts_configuration.obj",
@@ -14,6 +31,17 @@
       },
       "expected_sql_file": "create_fts_conf.sql",
       "expected_msql_file": "msql_create_fts_conf.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter FTS Configuration add token to verify schema qualified names",
+      "endpoint": "NODE-fts_configuration.obj_id",
+      "sql_endpoint": "NODE-fts_configuration.sql_id",
+      "msql_endpoint": "NODE-fts_configuration.msql_id",
+      "data": {
+        "tokens": {"added": [{"token": "asciiword", "dictname": ["test.test_dic"]}]}
+      },
+      "expected_sql_file": "alter_fts_conf_add_token_verify_schema.sql",
+      "expected_msql_file": "msql_alter_fts_conf_add_token_verify_schema.sql"
     }, {
       "type": "delete",
       "name": "Drop FTS Configuration",

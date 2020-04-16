@@ -24,10 +24,14 @@ FROM
         array_to_string(
          array(
 	        SELECT
-	            'ALTER TEXT SEARCH CONFIGURATION ' || quote_ident(nspname) ||
+	            'ALTER TEXT SEARCH CONFIGURATION ' || quote_ident(b.nspname) ||
 	            E'.' || quote_ident(cfg.cfgname) || ' ADD MAPPING FOR ' ||
 	            t.alias  || ' WITH ' ||
-	            array_to_string(array_agg(dict.dictname), ', ') || ';'
+                array_to_string(array_agg(
+                    CASE WHEN (pg_ns.nspname != 'pg_catalog') THEN
+                        CONCAT(pg_ns.nspname, '.', dict.dictname)
+                    ELSE
+                        dict.dictname END), ', ') || ';'
             FROM
                 pg_ts_config_map map
                 LEFT JOIN (
@@ -38,6 +42,7 @@ FROM
                               pg_catalog.ts_token_type(cfg.cfgparser)
                           ) t ON (t.tokid = map.maptokentype)
                 LEFT OUTER JOIN pg_ts_dict dict ON (map.mapdict = dict.oid)
+                LEFT OUTER JOIN pg_namespace pg_ns ON (pg_ns.oid = dict.dictnamespace)
             WHERE
                 map.mapcfg = cfg.oid
             GROUP BY t.alias

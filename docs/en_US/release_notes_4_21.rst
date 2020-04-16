@@ -34,6 +34,7 @@ Bug fixes
 | `Issue #4292 <https://redmine.postgresql.org/issues/4292>`_ -  Added dark mode support for the configuration dialog on Windows/macOS runtime.
 | `Issue #4445 <https://redmine.postgresql.org/issues/4445>`_ -  Ensure all object names in the title line of the reverse-engineered SQL are not quoted.
 | `Issue #4512 <https://redmine.postgresql.org/issues/4512>`_ -  Fixed calendar opening issue on the exception tab inside the schedules tab of pgAgent.
+| `Issue #4709 <https://redmine.postgresql.org/issues/4709>`_ -  Added schema-qualified dictionary names in FTS configuration to avoid confusion of duplicate names.
 | `Issue #4856 <https://redmine.postgresql.org/issues/4856>`_ -  Enable the save button by default when a query tool is opened with CREATE or other scripts.
 | `Issue #4858 <https://redmine.postgresql.org/issues/4858>`_ -  Fixed python exception error when user tries to download the CSV and there is a connection issue.
 | `Issue #4864 <https://redmine.postgresql.org/issues/4864>`_ -  Make the configuration window in runtime to auto-resize.
