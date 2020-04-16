@@ -45,6 +45,7 @@ Bug fixes
 | `Issue #5007 <https://redmine.postgresql.org/issues/5007>`_ -  Ensure index dropdown should have existing indexes while creating unique constraints.
 | `Issue #5053 <https://redmine.postgresql.org/issues/5053>`_ -  Fixed an issue where changing the columns in the existing view throws an error.
 | `Issue #5180 <https://redmine.postgresql.org/issues/5180>`_ -  Fixed an issue where the autovacuum_enabled parameter is added automatically in the RE-SQL when the table has been created using the WITH clause.
+| `Issue #5210 <https://redmine.postgresql.org/issues/5210>`_ -  Ensure that text larger than underlying field size should not be truncated automatically.
 | `Issue #5227 <https://redmine.postgresql.org/issues/5227>`_ -  Fixed an issue where user cannot be added if many users are already exists.
 | `Issue #5268 <https://redmine.postgresql.org/issues/5268>`_ -  Fixed generated SQL when any token in FTS Configuration or any option in FTS Dictionary is changed.
 | `Issue #5270 <https://redmine.postgresql.org/issues/5270>`_ -  Ensure that OID should be shown in properties for Synonyms.

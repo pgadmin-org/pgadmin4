@@ -452,9 +452,6 @@ def poll(trans_id):
                         for col_type in types:
                             if col_type['oid'] == col_info['type_code']:
                                 typname = col_type['typname']
-
-                                typname = compose_type_name(col_info, typname)
-
                                 col_info['type_name'] = typname
 
                         # Using characters %, (, ) in the argument names is not
@@ -527,22 +524,6 @@ def poll(trans_id):
         },
         encoding=conn.python_encoding
     )
-
-
-def compose_type_name(col_info, typname):
-    # If column is of type character, character[],
-    # character varying and character varying[]
-    # then add internal size to it's name for the
-    # correct sql query.
-    if col_info['internal_size'] >= 0:
-        if typname == 'character' or typname == 'character varying':
-            typname = typname + '(' + str(col_info['internal_size']) + ')'
-        elif typname == 'character[]' or typname == 'character varying[]':
-            typname = '{}({})[]'.format(
-                typname[:-2],
-                str(col_info['internal_size'])
-            )
-    return typname
 
 
 @blueprint.route(

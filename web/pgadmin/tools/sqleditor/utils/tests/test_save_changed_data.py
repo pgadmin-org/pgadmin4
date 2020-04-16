@@ -71,6 +71,55 @@ class TestSaveChangedData(BaseTestGenerator):
             check_sql='SELECT * FROM %s WHERE pk_col = 3',
             check_result=[[3, "three"]]
         )),
+        ('When inserting row with long data', dict(
+            save_payload={
+                "updated": {},
+                "added": {
+                    "2": {
+                        "err": False,
+                        "data": {
+                            "pk_col": "3",
+                            "__temp_PK": "2",
+                            "normal_col": "invalid-log-string"
+                        }
+                    }
+                },
+                "staged_rows": {},
+                "deleted": {},
+                "updated_index": {},
+                "added_index": {"2": "2"},
+                "columns": [
+                    {
+                        "name": "pk_col",
+                        "display_name": "pk_col",
+                        "column_type": "[PK] integer",
+                        "column_type_internal": "integer",
+                        "pos": 0,
+                        "label": "pk_col<br>[PK] integer",
+                        "cell": "number",
+                        "can_edit": True,
+                        "type": "integer",
+                        "not_null": True,
+                        "has_default_val": False,
+                        "is_array": False},
+                    {"name": "normal_col",
+                     "display_name": "normal_col",
+                     "column_type": "character varying",
+                     "column_type_internal": "character varying",
+                     "pos": 1,
+                     "label": "normal_col<br>character varying",
+                     "cell": "string",
+                     "can_edit": True,
+                     "type": "character varying",
+                     "not_null": False,
+                     "has_default_val": False,
+                     "is_array": False}
+                ]
+            },
+            save_status=False,
+            check_sql='SELECT * FROM %s WHERE pk_col = 3',
+            check_result='SELECT 0'
+        )),
         ('When inserting new invalid row', dict(
             save_payload={
                 "updated": {},
@@ -167,6 +216,53 @@ class TestSaveChangedData(BaseTestGenerator):
             save_status=True,
             check_sql='SELECT * FROM %s WHERE pk_col = 1',
             check_result=[[1, "ONE"]]
+        )),
+        ('When updating a row in a invalid way', dict(
+            save_payload={
+                "updated": {
+                    "1":
+                        {"err": False,
+                         "data": {"normal_col": "INVALID-COL-LENGTH"},
+                         "primary_keys":
+                             {"pk_col": 1}
+                         }
+                },
+                "added": {},
+                "staged_rows": {},
+                "deleted": {},
+                "updated_index": {"1": "1"},
+                "added_index": {},
+                "columns": [
+                    {
+                        "name": "pk_col",
+                        "display_name": "pk_col",
+                        "column_type": "[PK] integer",
+                        "column_type_internal": "integer",
+                        "pos": 0,
+                        "label": "pk_col<br>[PK] integer",
+                        "cell": "number",
+                        "can_edit": True,
+                        "type": "integer",
+                        "not_null": True,
+                        "has_default_val": False,
+                        "is_array": False},
+                    {"name": "normal_col",
+                     "display_name": "normal_col",
+                     "column_type": "character varying",
+                     "column_type_internal": "character varying",
+                     "pos": 1,
+                     "label": "normal_col<br>character varying",
+                     "cell": "string",
+                     "can_edit": True,
+                     "type": "character varying",
+                     "not_null": False,
+                     "has_default_val": False,
+                     "is_array": False}
+                ]
+            },
+            save_status=False,
+            check_sql='SELECT * FROM %s WHERE pk_col = 1',
+            check_result=[[1, "one"]]
         )),
         ('When updating a row in an invalid way', dict(
             save_payload={
@@ -343,7 +439,7 @@ class TestSaveChangedData(BaseTestGenerator):
 
                             CREATE TABLE "%s"(
                             pk_col	INT PRIMARY KEY,
-                            normal_col VARCHAR);
+                            normal_col VARCHAR(5));
 
                             INSERT INTO "%s" VALUES
                             (1, 'one'),
