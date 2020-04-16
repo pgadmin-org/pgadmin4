@@ -248,12 +248,17 @@ define('pgadmin.node.trigger', [
           type: 'switch',
           mode: ['create','edit', 'properties'],
           group: gettext('Definition'),
+          deps: ['tfunction'],
           disabled: function(m) {
             // Disabled if table is a partitioned table.
+            var tfunction = m.get('tfunction');
             if ((_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
               _.has(m.node_info.table, 'is_partitioned') &&
                 m.node_info.table.is_partitioned) ||
-                _.indexOf(Object.keys(m.node_info), 'view') != -1) {
+                _.indexOf(Object.keys(m.node_info), 'view') != -1 ||
+                (m.node_info.server.server_type === 'ppas' &&
+                !_.isUndefined(tfunction) &&
+                 tfunction === 'Inline EDB-SPL')) {
               setTimeout(function(){
                 m.set('is_constraint_trigger', false);
               },10);
