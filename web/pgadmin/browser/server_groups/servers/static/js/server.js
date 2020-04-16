@@ -425,7 +425,7 @@ define('pgadmin.node.server', [
             Alertify.dialog('changeServerPassword' ,function factory() {
               return {
                 main: function(params) {
-                  var title = gettext('Change Password ');
+                  var title = gettext('Change Password');
                   this.set('title', title);
                   this.user_name = params.user.name;
                 },

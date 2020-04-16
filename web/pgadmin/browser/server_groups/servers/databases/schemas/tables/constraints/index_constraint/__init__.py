@@ -737,7 +737,7 @@ class IndexConstraintView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info=_("{0} dropped.".format(self.node_label)),
+                info=_("{0} dropped.").format(self.node_label),
                 data={
                     'id': cid,
                     'sid': sid,

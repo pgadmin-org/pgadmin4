@@ -910,7 +910,7 @@ class Filemanager(object):
             Filemanager.check_access_permission(dir, path)
         except Exception as e:
             res = {
-                'Error': gettext(u"Error: {0}".format(e)),
+                'Error': gettext(u"Error: {0}").format(e),
                 'Code': 0
             }
             return res
@@ -1131,7 +1131,7 @@ class Filemanager(object):
                 path, name))
         except Exception as e:
             res = {
-                'Error': gettext(u"Error: {0}".format(e)),
+                'Error': gettext(u"Error: {0}").format(e),
                 'Code': 0
             }
             return res
