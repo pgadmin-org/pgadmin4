@@ -724,7 +724,8 @@ def save(trans_id):
             'query_results': query_results,
             '_rowid': _rowid,
             'transaction_status': transaction_status
-        }
+        },
+        encoding=conn.python_encoding
     )
 
 
