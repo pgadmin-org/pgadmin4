@@ -649,7 +649,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 data['schema'] = diff_schema
 
             SQL = render_template("/".join([self.template_path, 'update.sql']),
-                                  data=data, o_data=old_data, conn=self.conn)
+                                  data=data, o_data=old_data, conn=self.conn,
+                                  is_schema_diff=diff_schema)
             return SQL, data['name'] if 'name' in data else old_data['name']
         else:
             # To format privileges coming from client

@@ -63,3 +63,4 @@ Bug fixes
 | `Issue #5383 <https://redmine.postgresql.org/issues/5383>`_ -  Fixed syntax error while refreshing the existing synonyms.
 | `Issue #5387 <https://redmine.postgresql.org/issues/5387>`_ -  Fixed an issue where the mode is not shown in the properties dialog of functions/procedures if all the arguments are "IN" arguments.
 | `Issue #5400 <https://redmine.postgresql.org/issues/5400>`_ -  Fixed internal server error when the database server is logged in with non-super user.
+| `Issue #5410 <https://redmine.postgresql.org/issues/5410>`_ -  Fixed an issue while removing the package body showing wrong modified SQL.
