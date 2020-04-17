@@ -83,11 +83,11 @@ let queryToolActions = {
     }
 
     if (!sqlQuery) return;
-
-    let filename = 'data-' + new Date().getTime() + '.csv';
+    let extension = sqlEditorController.preferences.csv_field_separator === ',' ? '.csv': '.txt';
+    let filename = 'data-' + new Date().getTime() + extension;
 
     if (!sqlEditorController.is_query_tool) {
-      filename = sqlEditorController.table_name + '.csv';
+      filename = sqlEditorController.table_name + extension;
     }
 
     sqlEditorController.trigger_csv_download(sqlQuery, filename);

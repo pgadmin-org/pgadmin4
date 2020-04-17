@@ -298,8 +298,17 @@ describe('queryToolActions', () => {
           }));
         });
 
-        it('calls trigger_csv_download with the query and the filename', () => {
+        it('calls trigger_csv_download with the query and the filename with .csv extension', () => {
           let filename = 'data-' + time + '.csv';
+
+          queryToolActions.download(sqlEditorController);
+
+          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(selectedQueryString, filename);
+        });
+
+        it('calls trigger_csv_download with the query and the filename with .txt extension', () => {
+          sqlEditorController.preferences.csv_field_separator = ';';
+          let filename = 'data-' + time + '.txt';
 
           queryToolActions.download(sqlEditorController);
 
@@ -622,6 +631,9 @@ describe('queryToolActions', () => {
       table_name: 'iAmATable',
       is_query_tool: true,
       check_data_changes_to_execute_query: jasmine.createSpy('check_data_changes_to_execute_query'),
+      preferences: {
+        csv_field_separator: ',',
+      },
     };
   }
 });

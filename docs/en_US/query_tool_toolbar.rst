@@ -177,7 +177,8 @@ Query Execution
    |                      |                                                                                                   |                |
    |                      |  * Select *Clear History* to erase the content of the *History* tab.                              |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Download as CSV*    | Click the *Download as CSV* icon to download the result set of the current query to a             | F8             |
-   |                      | comma-separated list. You can specify the CSV settings through                                    |                |
-   |                      | *Preferences -> SQL Editor -> CSV output* dialogue.                                               |                |
+   | *Download as CSV/TXT*| Click the *Download as CSV/TXT* icon to download the result set of the current query as a *.csv*  | F8             |
+   |                      | or as a *.txt* file. if *CSV field seperator* set to comma(,) else as a *.txt* file.              |                |
+   |                      | You can specify the CSV/TXT settings through *Preferences -> SQL Editor -> CSV/TXT output*        |                |
+   |                      | dialogue.                                                                                         |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+

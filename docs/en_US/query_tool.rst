@@ -122,7 +122,7 @@ You can:
 * Select and copy from the displayed result set.
 * Use the *Execute/Refresh* options to retrieve query execution information and
   set query execution options.
-* Use the *Download as CSV* icon to download the content of the *Data Output*
+* Use the *Download as CSV/TXT* icon to download the content of the *Data Output*
   tab as a comma-delimited file.
 * Edit the data in the result set of a SELECT query if it is updatable.
 

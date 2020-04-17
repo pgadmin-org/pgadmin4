@@ -211,7 +211,7 @@ def RegisterQueryToolPreferences(self):
     self.csv_quoting = self.preference.register(
         'CSV_output', 'csv_quoting',
         gettext("CSV quoting"), 'options', 'strings',
-        category_label=gettext('CSV Output'),
+        category_label=gettext('CSV/TXT Output'),
         options=[{'label': gettext('None'), 'value': 'none'},
                  {'label': gettext('All'), 'value': 'all'},
                  {'label': gettext('Strings'), 'value': 'strings'}],
@@ -224,7 +224,7 @@ def RegisterQueryToolPreferences(self):
     self.csv_quote_char = self.preference.register(
         'CSV_output', 'csv_quote_char',
         gettext("CSV quote character"), 'options', '"',
-        category_label=gettext('CSV Output'),
+        category_label=gettext('CSV/TXT Output'),
         options=[{'label': '"', 'value': '"'},
                  {'label': '\'', 'value': '\''}],
         select2={
@@ -236,7 +236,7 @@ def RegisterQueryToolPreferences(self):
     self.csv_field_separator = self.preference.register(
         'CSV_output', 'csv_field_separator',
         gettext("CSV field separator"), 'options', ',',
-        category_label=gettext('CSV output'),
+        category_label=gettext('CSV/TXT output'),
         options=[{'label': ';', 'value': ';'},
                  {'label': ',', 'value': ','},
                  {'label': '|', 'value': '|'},
@@ -250,7 +250,7 @@ def RegisterQueryToolPreferences(self):
     self.replace_nulls_with = self.preference.register(
         'CSV_output', 'csv_replace_nulls_with',
         gettext("Replace null values with"), 'text', 'NULL',
-        category_label=gettext('CSV output'),
+        category_label=gettext('CSV/TXT output'),
         help_str=gettext('Specifies the string that represents a null value '
                          'while downloading query results as CSV. You can '
                          'specify any arbitrary string to represent a '

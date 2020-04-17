@@ -7,6 +7,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+from unittest.mock import patch
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
@@ -32,7 +33,9 @@ class TestDownloadCSV(BaseTestGenerator):
                 output_columns='"A","B","C"',
                 output_values='1,2,3',
                 is_valid_tx=True,
-                is_valid=True
+                is_valid=True,
+                download_as_txt=False,
+                filename='test.csv'
             )
         ),
         (
@@ -44,7 +47,9 @@ class TestDownloadCSV(BaseTestGenerator):
                 output_columns=None,
                 output_values=None,
                 is_valid_tx=False,
-                is_valid=False
+                is_valid=False,
+                download_as_txt=False,
+                filename='test.csv'
             )
         ),
         (
@@ -56,7 +61,37 @@ class TestDownloadCSV(BaseTestGenerator):
                 output_columns=None,
                 output_values=None,
                 is_valid_tx=True,
-                is_valid=False
+                is_valid=False,
+                download_as_txt=False,
+                filename='test.csv'
+            )
+        ),
+        (
+            'Download as txt without filename parameter',
+            dict(
+                sql='SELECT 1 as "A",2 as "B",3 as "C"',
+                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                donwload_url="/sqleditor/query_tool/download/{0}",
+                output_columns='"A";"B";"C"',
+                output_values='1;2;3',
+                is_valid_tx=True,
+                is_valid=True,
+                download_as_txt=True,
+                filename=None
+            )
+        ),
+        (
+            'Download as csv without filename parameter',
+            dict(
+                sql='SELECT 1 as "A",2 as "B",3 as "C"',
+                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                donwload_url="/sqleditor/query_tool/download/{0}",
+                output_columns='"A","B","C"',
+                output_values='1,2,3',
+                is_valid_tx=True,
+                is_valid=True,
+                download_as_txt=False,
+                filename=None
             )
         ),
     ]
@@ -95,30 +130,62 @@ class TestDownloadCSV(BaseTestGenerator):
         url = self.donwload_url.format(self.trans_id)
         # Disable the console logging from Flask logger
         self.app.logger.disabled = True
-        response = self.tester.post(
-            url,
-            data={"query": self.sql, "filename": 'test.csv'}
-        )
-        # Enable the console logging from Flask logger
-        self.app.logger.disabled = False
-        if self.is_valid:
-            # when valid query
-            self.assertEquals(response.status_code, 200)
-            csv_data = response.data.decode()
-            self.assertTrue(self.output_columns in csv_data)
-            self.assertTrue(self.output_values in csv_data)
-        elif not self.is_valid and self.is_valid_tx:
-            # When user enters wrong query
-            self.assertEquals(response.status_code, 200)
-            response_data = json.loads(response.data.decode('utf-8'))
-            self.assertFalse(response_data['data']['status'])
-            self.assertTrue(
-                'relation "this_table_does_not_exist" does not exist' in
-                response_data['data']['result']
-            )
+        if self.filename is None:
+            if self.download_as_txt:
+                with patch('pgadmin.tools.sqleditor.blueprint.'
+                           'csv_field_separator.get', return_value=';'), patch(
+                        'time.time', return_value=1587031962.3808076):
+                    response = self.tester.post(url, data={"query": self.sql})
+                    headers = dict(response.headers)
+                    # when valid query
+                    self.assertEquals(response.status_code, 200)
+                    csv_data = response.data.decode()
+                    self.assertTrue(self.output_columns in csv_data)
+                    self.assertTrue(self.output_values in csv_data)
+                    self.assertIn('text/plain', headers['Content-Type'])
+                    self.assertIn('1587031962.txt',
+                                  headers['Content-Disposition'])
+            else:
+                with patch('time.time', return_value=1587031962.3808076):
+                    response = self.tester.post(url, data={"query": self.sql})
+                    headers = dict(response.headers)
+                    # when valid query
+                    self.assertEquals(response.status_code, 200)
+                    csv_data = response.data.decode()
+                    self.assertTrue(self.output_columns in csv_data)
+                    self.assertTrue(self.output_values in csv_data)
+                    self.assertIn('text/csv', headers['Content-Type'])
+                    self.assertIn('1587031962.csv',
+                                  headers['Content-Disposition'])
+
         else:
-            # when TX id is invalid
-            self.assertEquals(response.status_code, 500)
+            response = self.tester.post(
+                url,
+                data={"query": self.sql, "filename": self.filename}
+            )
+            headers = dict(response.headers)
+            # Enable the console logging from Flask logger
+            self.app.logger.disabled = False
+            if self.is_valid:
+                # when valid query
+                self.assertEquals(response.status_code, 200)
+                csv_data = response.data.decode()
+                self.assertTrue(self.output_columns in csv_data)
+                self.assertTrue(self.output_values in csv_data)
+                self.assertIn('text/csv', headers['Content-Type'])
+                self.assertIn(self.filename, headers['Content-Disposition'])
+            elif not self.is_valid and self.is_valid_tx:
+                # When user enters wrong query
+                self.assertEquals(response.status_code, 200)
+                response_data = json.loads(response.data.decode('utf-8'))
+                self.assertFalse(response_data['data']['status'])
+                self.assertTrue(
+                    'relation "this_table_does_not_exist" does not exist' in
+                    response_data['data']['result']
+                )
+            else:
+                # when TX id is invalid
+                self.assertEquals(response.status_code, 500)
 
         database_utils.disconnect_database(self, self._sid, self._did)
 

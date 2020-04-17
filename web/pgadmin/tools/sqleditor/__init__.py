@@ -1329,14 +1329,18 @@ def start_query_download_tool(trans_id):
                         field_separator=blueprint.csv_field_separator.get(),
                         replace_nulls_with=blueprint.replace_nulls_with.get()
                     ),
-                    mimetype='text/csv'
+                    mimetype='text/csv' if
+                    blueprint.csv_field_separator.get() == ','
+                    else 'text/plain'
                 )
 
                 if 'filename' in data and data['filename'] != "":
                     filename = data['filename']
                 else:
                     import time
-                    filename = str(int(time.time())) + ".csv"
+                    filename = '{0}.{1}'. \
+                        format(int(time.time()), 'csv' if blueprint.
+                               csv_field_separator.get() == ',' else 'txt')
 
                 # We will try to encode report file name with latin-1
                 # If it fails then we will fallback to default ascii file name

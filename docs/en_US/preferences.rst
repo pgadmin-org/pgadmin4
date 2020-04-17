@@ -247,14 +247,14 @@ Use the fields on the *Auto Completion* panel to set the auto completion options
     :alt: Preferences dialog sqleditor csv output option
     :align: center
 
-Use the fields on the *CSV Output* panel to control the CSV output.
+Use the fields on the *CSV/TXT Output* panel to control the CSV/TXT output.
 
 * Use the *CSV field separator* drop-down listbox to specify the separator
-  character that will be used in CSV output.
+  character that will be used in CSV/TXT output.
 * Use the *CSV quote character* drop-down listbox to specify the quote character
-  that will be used in CSV output.
+  that will be used in CSV/TXT output.
 * Use the *CSV quoting* drop-down listbox to select the fields that will be
-  quoted in the CSV output; select *Strings*, *All*, or *None*.
+  quoted in the CSV/TXT output; select *Strings*, *All*, or *None*.
 * Use the *Replace null values with* option to replace null values with
   specified string in the output file. Default is set to 'NULL'.
 
