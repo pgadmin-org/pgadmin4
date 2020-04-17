@@ -1089,8 +1089,11 @@ class Filemanager(object):
                     is_startswith_bom = True
                     enc = encoding
 
-            # Check if string is binary
-            is_binary = is_binary_string(file_data)
+            # No need to check for binary file, a BOM marker already
+            # indicates that text stream afterwards
+            if not is_startswith_bom:
+                # Check if string is binary
+                is_binary = is_binary_string(file_data)
 
         except IOError as ex:
             status = False
