@@ -150,16 +150,13 @@ define('pgadmin.node.synonym', [
           },
         },{
           id: 'synobjname', label: gettext('Target object'), cell: 'string',
-          type: 'text', disabled: 'inSchema', group: gettext('Definition'),
+          type: 'text', group: gettext('Definition'),
           deps: ['targettype', 'synobjschema'],
           control: 'node-ajax-options',
           options: function(control) {
             var trgTyp = control.model.get('targettype');
             var trgSchema = control.model.get('synobjschema');
             var res = [];
-
-            control.model.set('synobjname', undefined);
-
             var node = control.field.get('schema_node'),
               _url = node.generate_url.apply(
                 node, [
@@ -183,6 +180,19 @@ define('pgadmin.node.synonym', [
                 alertify.pgRespErrorNotify(xhr, error);
               });
             return res;
+          },
+          disabled: function(m) {
+            if (this.node_info &&  'catalog' in this.node_info) {
+              return true;
+            }
+            // Check the changed attributes if targettype or synobjschema
+            // is changed then reset the target object
+            if ('changed' in m && !('name' in m.changed) &&
+               ('targettype' in m.changed || 'synobjschema' in m.changed)) {
+              m.set('synobjname', undefined);
+            }
+
+            return false;
           },
         },{
           id: 'is_public_synonym', label: gettext('Public synonym?'),
