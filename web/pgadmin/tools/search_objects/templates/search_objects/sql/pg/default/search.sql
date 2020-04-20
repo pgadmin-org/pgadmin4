@@ -44,13 +44,12 @@ FROM (
     WHERE c.relkind  = 'r'
     {% elif obj_type == 'sequence' %}
     WHERE c.relkind  = 'S'
-    AND {{ CATALOGS.DB_SUPPORT('n') }}
     {% elif obj_type == 'view' %}
     WHERE c.relkind  = 'v'
     {% elif obj_type == 'mview' %}
     WHERE c.relkind  = 'm'
-    AND {{ CATALOGS.DB_SUPPORT('n') }}
     {% endif %}
+    AND CASE WHEN c.relkind in ('S', 'm') THEN {{ CATALOGS.DB_SUPPORT('n') }} ELSE true END
 {% endif %}
 {% if all_obj %}
     UNION
@@ -68,6 +67,7 @@ FROM (
     LEFT OUTER JOIN pg_description des ON des.objoid=cls.oid
     LEFT OUTER JOIN pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0)
     WHERE contype IS NULL
+    AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
@@ -134,7 +134,7 @@ FROM (
     ':schema.'||n.oid||':/' || n.nspname||'/:table.'|| t.oid || ':/'||t.relname||
     CASE
         WHEN c.contype = 'c' THEN  '/:check_constraint.' ||c.oid
-        WHEN c.contype = 'f' THEN  '/:foreign_key.' ||c.conindid
+        WHEN c.contype = 'f' THEN  '/:foreign_key.' ||c.oid
         WHEN c.contype = 'p' THEN  '/:primary_key.' ||c.conindid
         WHEN c.contype = 'u' THEN  '/:unique_constraint.' ||c.conindid
         WHEN c.contype = 'x' THEN  '/:exclusion_constraint.' ||c.conindid
@@ -158,6 +158,7 @@ FROM (
     {% else %}
     AND c.contype IN  ('c', 'f', 'p', 'u', 'x')
     {% endif %}
+    AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
@@ -167,14 +168,14 @@ FROM (
             case
                 WHEN t.relkind = 'r' THEN '/:table.'
                 when t.relkind = 'v' then '/:view.'
-                when t.relkind = 'm' then '/:mview.'
                 else 'should not happen'
             end || t.oid || ':/' || t.relname ||'/:rule.'||r.oid||':/'|| r.rulename AS obj_path,
             n.nspname AS schema_name,
             {{ show_node_prefs['rule'] }} AS show_node, NULL AS other_info
             from pg_rewrite r
-    left join pg_class t on r.ev_class = t.oid
+    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r','v')
     left join pg_namespace n on t.relnamespace = n.oid
+    where {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
@@ -184,12 +185,11 @@ FROM (
             case
                 WHEN t.relkind = 'r' THEN '/:table.'
                 when t.relkind = 'v' then '/:view.'
-                when t.relkind = 'm' then '/:mview.'
                 else 'should not happen'
             end || t.oid || ':/' || t.relname || '/:trigger.'|| tr.oid || ':/' || tr.tgname AS obj_path, n.nspname AS schema_name,
             {{ show_node_prefs['trigger'] }} AS show_node, NULL AS other_info
             from pg_trigger tr
-    left join pg_class t on tr.tgrelid = t.oid
+    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 'v')
     left join pg_namespace n on t.relnamespace = n.oid
     where tr.tgisinternal = false
     and {{ CATALOGS.DB_SUPPORT('n') }}
@@ -320,10 +320,9 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['user_mapping'] %}
-    select 'user_mapping'::text AS obj_type, ro.rolname AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname || '/:user_mapping.'||ro.oid||':/' || ro.rolname AS obj_path, ''::text AS schema_name,
+    select 'user_mapping'::text AS obj_type, um.usename AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname || '/:user_mapping.'||um.umid||':/' || um.usename AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['user_mapping'] }} AS show_node, NULL AS other_info
     from pg_user_mappings um
-    inner join pg_roles ro on um.umuser = ro.oid
     inner join pg_foreign_server sr on um.srvid = sr.oid
     inner join pg_foreign_data_wrapper fdw on sr.srvfdw = fdw.oid
 {% endif %}
@@ -336,6 +335,7 @@ FROM (
     from pg_foreign_table ft
     inner join pg_class c on ft.ftrelid = c.oid
     inner join pg_namespace ns on c.relnamespace = ns.oid
+    AND {{ CATALOGS.DB_SUPPORT('ns') }}
 {% endif %}
 {% if all_obj %}
     UNION

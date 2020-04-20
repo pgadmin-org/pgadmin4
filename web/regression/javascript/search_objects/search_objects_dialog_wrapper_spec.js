@@ -421,7 +421,7 @@ describe('SearchObjectsDialogWrapper', () => {
     });
 
     it('finaliseData', ()=>{
-      spyOn(soDialogWrapper, 'translateSearchObjectsPath').and.returnValue(['disp/path', 'id/path']);
+      spyOn(soDialogWrapper, 'translateSearchObjectsPath').and.returnValue(['disp/path', ['obj1/123', 'obj2/432']]);
       let data = soDialogWrapper.finaliseData({
         name: 'objname',
         type: 'sometype',
@@ -430,13 +430,13 @@ describe('SearchObjectsDialogWrapper', () => {
         show_node: true,
       });
       expect(data).toEqual({
-        id: 'id/path',
+        id: 'obj1/123.obj2/432',
         icon: 'icon-sometype',
         name: 'objname',
         type: 'sometype',
         type_label: 'Some types coll',
         path: 'disp/path',
-        id_path: 'id/path',
+        id_path: ['obj1/123', 'obj2/432'],
         show_node: true,
       });
     });

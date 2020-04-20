@@ -353,7 +353,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
     /* finalise path */
     [datum.path, datum.id_path] = this.translateSearchObjectsPath(datum.path, datum.catalog_level);
     /* id is required by slickgrid dataview */
-    datum.id = datum.id_path;
+    datum.id = datum.id_path.join('.');
     return datum;
   }
 
@@ -367,7 +367,9 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
    * Sample path required by tree locator
    * Normal object  - server_group/1.server/3.coll-database/3.database/13258.coll-schema/13258.schema/2200.coll-table/2200.table/41773
    * pg_catalog schema - server_group/1.server/3.coll-database/3.database/13258.coll-catalog/13258.catalog/11.coll-table/11.table/2600
-   * Information Schema, dbo, sys    - server_group/1.server/3.coll-database/3.database/13258.coll-catalog/13258.catalog/12967.coll-catalog_object/12967.catalog_object/13204
+   * Information Schema, dbo, sys:
+   *  server_group/1.server/3.coll-database/3.database/13258.coll-catalog/13258.catalog/12967.coll-catalog_object/12967.catalog_object/13204
+   *  server_group/1.server/11.coll-database/11.database/13258.coll-catalog/13258.catalog/12967.coll-catalog_object/12967.catalog_object/12997.coll-catalog_object_column/12997.catalog_object_column/13
    *
    * Column catalog_level has values as
    * N - Not a catalog schema
@@ -394,7 +396,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
 
     /* add the slash to match regex, remove it from display path later */
     path = '/' + path;
-    /* the below regex will match all /:server_group.1:/ */
+    /* the below regex will match all /:schema.2200:/ */
     let new_path = path.replace(/\/:[a-zA-Z_]+\.[0-9]+:\//g, (token)=>{
       let orig_token = token;
       /* remove the slash and colon */
@@ -409,6 +411,9 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
 
       /* catalog like info schema will only have views and tables AKA catalog_object except for pg_catalog */
       node_type = (catalog_level === 'O' && ['view', 'table'].indexOf(node_type) != -1) ? 'catalog_object' : node_type;
+
+      /* catalog_object will have column node as catalog_object_column */
+      node_type = (catalog_level === 'O' && node_type == 'column') ? 'catalog_object_column' : node_type;
 
       /* If collection node present then add it */
       let coll_node = this.getCollNode(node_type);

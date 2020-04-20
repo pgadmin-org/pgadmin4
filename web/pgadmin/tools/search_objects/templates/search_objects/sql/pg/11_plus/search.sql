@@ -44,7 +44,7 @@ FROM (
     {% elif obj_type == 'mview' %}
     WHERE c.relkind  = 'm'
     {% endif %}
-    AND {{ CATALOGS.DB_SUPPORT('n') }}
+    AND CASE WHEN c.relkind in ('S', 'm') THEN {{ CATALOGS.DB_SUPPORT('n') }} ELSE true END
 {% endif %}
 {% if all_obj %}
     UNION
@@ -76,14 +76,32 @@ FROM (
     {% elif obj_type == 'partition' %}
     AND c.relispartition
     {% endif %}
-    AND {{ CATALOGS.DB_SUPPORT('n') }}
+    AND CASE WHEN c.relispartition THEN {{ CATALOGS.DB_SUPPORT('n') }} ELSE true END
 {% endif %}
 {% if all_obj %}
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['index'] %}
-    SELECT 'index'::text AS obj_type, cls.relname AS obj_name,
-    ':schema.'|| n.oid || ':/' || n.nspname || '/:table.'|| tab.oid ||':/' || tab.relname || '/:index.'|| cls.oid ||':/' || cls.relname AS obj_path, n.nspname AS schema_name,
+    SELECT 'index'::text AS obj_type, cls.relname AS obj_name, ':schema.'|| n.oid || ':/' || n.nspname || '/' ||
+        case
+            when tab.relkind = 'm' then ':mview.' || tab.oid || ':' || '/' || tab.relname
+            WHEN tab.relkind in ('r', 'p') THEN
+                (
+                    WITH RECURSIVE table_path_data as (
+                        select tab.oid as oid, 0 as height,
+                            CASE tab.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || tab.oid || ':/' || tab.relname as path
+                        union
+                        select rel.oid, pt.height+1 as height,
+                            CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
+                            || rel.oid || ':/' || rel.relname || '/' || pt.path as path
+                        from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
+                        join pg_inherits inh ON inh.inhparent = rel.oid
+                        join table_path_data pt ON inh.inhrelid = pt.oid
+                    )
+                    select path from table_path_data order by height desc limit 1
+                )
+        end
+        || '/:index.'|| cls.oid ||':/' || cls.relname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['index'] }} AS show_node, NULL AS other_info
     FROM pg_index idx
     JOIN pg_class cls ON cls.oid=indexrelid
@@ -94,6 +112,7 @@ FROM (
     LEFT OUTER JOIN pg_description des ON des.objoid=cls.oid
     LEFT OUTER JOIN pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0)
     WHERE contype IS NULL
+    AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
@@ -192,7 +211,7 @@ FROM (
 	) ||
     CASE
         WHEN c.contype = 'c' THEN  '/:check_constraint.' ||c.oid
-        WHEN c.contype = 'f' THEN  '/:foreign_key.' ||c.conindid
+        WHEN c.contype = 'f' THEN  '/:foreign_key.' ||c.oid
         WHEN c.contype = 'p' THEN  '/:primary_key.' ||c.conindid
         WHEN c.contype = 'u' THEN  '/:unique_constraint.' ||c.conindid
         WHEN c.contype = 'x' THEN  '/:exclusion_constraint.' ||c.conindid
@@ -216,6 +235,7 @@ FROM (
     {% else %}
     AND c.contype IN  ('c', 'f', 'p', 'u', 'x')
     {% endif %}
+    AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
@@ -223,8 +243,7 @@ FROM (
 {% if all_obj or obj_type in ['rule'] %}
     select 'rule'::text AS obj_type, r.rulename AS obj_name, ':schema.'||n.oid||':/' || n.nspname|| '/' ||
             case
-                when t.relkind = 'v' then ':view.'
-                when t.relkind = 'm' then ':mview.'
+                when t.relkind = 'v' then ':view.' || t.oid || ':' || '/' || t.relname
                 WHEN t.relkind in ('r', 'p') THEN
                     (
                         WITH RECURSIVE table_path_data as (
@@ -245,8 +264,9 @@ FROM (
             n.nspname AS schema_name,
             {{ show_node_prefs['rule'] }} AS show_node, NULL AS other_info
             from pg_rewrite r
-    left join pg_class t on r.ev_class = t.oid
+    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r','p','v')
     left join pg_namespace n on t.relnamespace = n.oid
+    where {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
@@ -254,8 +274,7 @@ FROM (
 {% if all_obj or obj_type in ['trigger'] %}
     select 'trigger'::text AS obj_type, tr.tgname AS obj_name, ':schema.'||n.oid||':/' || n.nspname|| '/' ||
         case
-            when t.relkind = 'v' then ':view.'
-            when t.relkind = 'm' then ':mview.'
+            when t.relkind = 'v' then ':view.' || t.oid || ':' || '/' || t.relname
             WHEN t.relkind in ('r', 'p') THEN
             (
                 WITH RECURSIVE table_path_data as (
@@ -274,7 +293,7 @@ FROM (
         end || '/:trigger.'|| tr.oid || ':/' || tr.tgname AS obj_path, n.nspname AS schema_name,
         {{ show_node_prefs['trigger'] }} AS show_node, NULL AS other_info
         from pg_trigger tr
-    left join pg_class t on tr.tgrelid = t.oid
+    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 'p', 'v')
     left join pg_namespace n on t.relnamespace = n.oid
     where tr.tgisinternal = false
     and {{ CATALOGS.DB_SUPPORT('n') }}
@@ -405,10 +424,9 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['user_mapping'] %}
-    select 'user_mapping' AS obj_type, ro.rolname AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname || '/:user_mapping.'||ro.oid||':/' || ro.rolname AS obj_path, ''::text AS schema_name,
+    select 'user_mapping' AS obj_type, um.usename AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname || '/:user_mapping.'||um.umid||':/' || um.usename AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['user_mapping'] }} AS show_node, NULL AS other_info
     from pg_user_mappings um
-    inner join pg_roles ro on um.umuser = ro.oid
     inner join pg_foreign_server sr on um.srvid = sr.oid
     inner join pg_foreign_data_wrapper fdw on sr.srvfdw = fdw.oid
 {% endif %}
@@ -421,6 +439,7 @@ FROM (
     from pg_foreign_table ft
     inner join pg_class c on ft.ftrelid = c.oid
     inner join pg_namespace ns on c.relnamespace = ns.oid
+    AND {{ CATALOGS.DB_SUPPORT('ns') }}
 {% endif %}
 {% if all_obj %}
     UNION
