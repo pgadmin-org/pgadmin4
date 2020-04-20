@@ -1552,7 +1552,7 @@ define([
             '<div id="multiple-uploads" class="dropzone flex-grow-1 d-flex p-1">'+
             '<div class="dz-default dz-message d-none"></div>'+
             '</div>' +
-            '<div class="prompt-info">Drop files here to upload. ' + lg.file_size_limit +
+            '<div class="prompt-info">' + gettext('Drop files here to upload.') + ' ' + lg.file_size_limit +
             config.upload.fileSizeLimit + ' ' + lg.mb + '.</div>',
             path = $('.currentpath').val(),
             filesizelimit = config.upload.fileSizeLimit,

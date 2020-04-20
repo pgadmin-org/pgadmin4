@@ -1081,7 +1081,7 @@ define([
     },
     render: function() {
       this.$el.empty();
-      this.$el.html('<label><a><span style=\'font-weight:normal;\'>Array Values</a></span></label> <button class=\'btn-sm btn-secondary add\'>Add</button>');
+      this.$el.html('<label><a><span style=\'font-weight:normal;\'>' + gettext('Array Values') + '</a></span></label> <button class=\'btn-sm btn-secondary add\'>' + gettext('Add') + '</button>');
       this.delegateEvents();
       return this;
     },
@@ -2055,7 +2055,7 @@ define([
         $(`<div class="custom-control custom-checkbox custom-checkbox-no-label ${align_center?'text-center':''}">
           <input tabindex="0" type="checkbox" class="custom-control-input" id="${id}" ${!editable?'disabled':''} ${checked?'checked':''}/>
           <label class="custom-control-label" for="${id}">
-            <span class="sr-only">Select<span>
+            <span class="sr-only">` + gettext('Select') + `<span>
           </label>
         </div>`)
       );

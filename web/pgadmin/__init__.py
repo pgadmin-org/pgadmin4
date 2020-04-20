@@ -502,8 +502,8 @@ def create_app(app_name=None):
                             svr_port = winreg.QueryValueEx(inst_key, 'Port')[0]
                             svr_discovery_id = inst_id
                             svr_comment = gettext(
-                                "Auto-detected %s installation with the data "
-                                "directory at {}").format(
+                                "Auto-detected {0} installation with the data "
+                                "directory at {1}").format(
                                     winreg.QueryValueEx(
                                         inst_key, 'Display Name'
                                     )[0],

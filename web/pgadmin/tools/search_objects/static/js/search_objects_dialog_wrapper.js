@@ -150,8 +150,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
     if(count != 0 && !count) {
       count = gettext('Unknown');
     }
-    this.searchResultCount.innerHTML = count + ' ' +
-      (count===1 ? gettext('match found.'): gettext('matches found.'));
+    this.searchResultCount.innerHTML = (count===1 ? gettext('%s match found.', count): gettext('%s matches found.', count));
   }
 
   showOtherInfo(rowno) {
@@ -256,8 +255,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
 
       if(!rowData.show_node) {
         this.showMessage(
-          gettext('%s objects are disabled in the browser.', rowData.type_label) + ' ' +
-          gettext('You can enable them in the') + ' <a class="pref-dialog-link">' + gettext('preferences dialog') + '</a>.',
+          gettext('%s objects are disabled in the browser. You can enable them in the <a class="pref-dialog-link">preferences dialog</a>.', rowData.type_label),
           true,
           (statusBar)=>{
             statusBar.querySelector('.pref-dialog-link').addEventListener('click', ()=>{
@@ -465,7 +463,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
     ).then((res)=>{
       let types = [{
         id: 'all',
-        text: 'All types',
+        text: gettext('All types'),
       }];
 
       for (const key of Object.keys(res.data.data).sort()) {

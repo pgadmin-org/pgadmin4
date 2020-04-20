@@ -126,7 +126,7 @@
         '<div class="custom-control custom-checkbox custom-checkbox-no-label">',
         '  <input tabindex="0" type="checkbox" class="custom-control-input" id="'+ id +'" />',
         '  <label class="custom-control-label" for="'+ id +'">',
-        '    <span class="sr-only">Select All<span>',
+        '    <span class="sr-only">' + gettext('Select All') + '<span>',
         '  </label>',
         '</div>'
       ].join('\n'));

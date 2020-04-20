@@ -128,7 +128,7 @@ export default class QueryHistoryDetails {
       this.$errMsgBlock.removeClass('d-none');
       this.$errMsgBlock.empty().append(
         `<div class='history-error-text'>
-            <span>Error Message</span> ${_.escape(this.parseErrorMessage(this.entry.message))}
+            <span>` + gettext('Error Message') + `</span> ${_.escape(this.parseErrorMessage(this.entry.message))}
         </div>`
       );
     } else {
