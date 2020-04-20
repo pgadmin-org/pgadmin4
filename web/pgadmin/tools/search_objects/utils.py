@@ -102,6 +102,9 @@ class SearchObjectsHelper:
 
         show_node_prefs = self.get_show_node_prefs()
         node_labels = self.get_supported_types(skip_check=True)
+        # escape the single quote from search text
+        text = text.replace("'", "''")
+
         # Column catalog_level has values as
         # N - Not a catalog schema
         # D - Catalog schema with DB support - pg_catalog

@@ -428,6 +428,7 @@ describe('SearchObjectsDialogWrapper', () => {
         type_label: 'Some types coll',
         path: ':some.123:/path',
         show_node: true,
+        other_info: null,
       });
       expect(data).toEqual({
         id: 'obj1/123.obj2/432',
@@ -438,6 +439,7 @@ describe('SearchObjectsDialogWrapper', () => {
         path: 'disp/path',
         id_path: ['obj1/123', 'obj2/432'],
         show_node: true,
+        other_info: null,
       });
     });
 

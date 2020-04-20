@@ -6,6 +6,7 @@ import 'select2';
 import {DialogWrapper} from 'sources/alertify/dialog_wrapper';
 import Slick from 'sources/../bundle/slickgrid';
 import pgAdmin from 'sources/pgadmin';
+import _ from 'underscore';
 
 
 export default class SearchObjectsDialogWrapper extends DialogWrapper {
@@ -202,7 +203,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
       this.searchResult,
       this.dataview,
       [
-        { id: 'name', name: gettext('Object name'), field: 'name', sortable: true,
+        { id: 'name', name: gettext('Object name'), field: 'name', sortable: true, width: 50,
           formatter: (row, cell, value, columnDef, dataContext) => {
             let ret_el = `<i class='wcTabIcon ${dataContext.icon}'></i>${value}`;
 
@@ -212,10 +213,9 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
 
             return ret_el;
           },
-          width: 50,
         },
         { id: 'type', name: gettext('Type'), field: 'type_label', sortable: true, width: 35 },
-        { id: 'path', name: gettext('Browser path'), field: 'path', sortable: false },
+        { id: 'path', name: gettext('Browser path'), field: 'path', sortable: false, formatter: (row, cell, value) => value },
       ],
       {
         enableCellNavigation: true,
@@ -354,6 +354,12 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
     [datum.path, datum.id_path] = this.translateSearchObjectsPath(datum.path, datum.catalog_level);
     /* id is required by slickgrid dataview */
     datum.id = datum.id_path.join('.');
+
+    /* Esacpe XSS */
+    datum.name = _.escape(datum.name);
+    datum.path = _.escape(datum.path);
+    datum.other_info = datum.other_info ? _.escape(datum.other_info) : datum.other_info;
+
     return datum;
   }
 
