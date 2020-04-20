@@ -70,6 +70,7 @@ Bug fixes
 | `Issue #5396 <https://redmine.postgresql.org/issues/5396>`_ -  Fixed an issue where the search object module unable to locate the object in the browser tree.
 | `Issue #5400 <https://redmine.postgresql.org/issues/5400>`_ -  Fixed internal server error when the database server is logged in with non-super user.
 | `Issue #5401 <https://redmine.postgresql.org/issues/5401>`_ -  Fixed search object issue when the object name contains special characters.
+| `Issue #5402 <https://redmine.postgresql.org/issues/5402>`_ -  Fixed an issue where the checkbox is not visible on Configuration dialog in runtime for the dark theme.
 | `Issue #5409 <https://redmine.postgresql.org/issues/5409>`_ -  Fixed validation issue in Synonyms node.
 | `Issue #5410 <https://redmine.postgresql.org/issues/5410>`_ -  Fixed an issue while removing the package body showing wrong modified SQL.
 | `Issue #5415 <https://redmine.postgresql.org/issues/5415>`_ -  Ensure that the query tool context menu should work on the collection nodes.
