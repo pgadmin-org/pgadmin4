@@ -852,3 +852,20 @@ ALTER FOREIGN TABLE source.ft_diff_foreign_server_1
     OWNER TO postgres;
 ALTER FOREIGN TABLE source.ft_diff_foreign_server_1
     ADD CONSTRAINT cs1 CHECK ((fid > 200)) NO INHERIT;
+
+-- Test for RM #5350
+CREATE TABLE source.events_transactions
+(
+    event_code integer,
+    numerator integer,
+    account_token text COLLATE pg_catalog."default",
+    transaction_dt timestamp without time zone,
+    payment_method integer,
+    payment_pin integer,
+    approval text COLLATE pg_catalog."default",
+    amount integer,
+    file_dt timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    file_name character varying(256) COLLATE pg_catalog."default",
+    transfer_dt timestamp without time zone,
+    transaction_type integer
+);

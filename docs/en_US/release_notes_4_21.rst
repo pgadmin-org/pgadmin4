@@ -56,6 +56,8 @@ Bug fixes
 | `Issue #5275 <https://redmine.postgresql.org/issues/5275>`_ -  Fixed tab key navigation issue for parameters in table dialog.
 | `Issue #5302 <https://redmine.postgresql.org/issues/5302>`_ -  Fixed an issue where difference SQL is not seen in the schema diff tool for Types.
 | `Issue #5314 <https://redmine.postgresql.org/issues/5314>`_ -  Ensure that switch cell is in sync with switch control for accessibility.
+| `Issue #5315 <https://redmine.postgresql.org/issues/5315>`_ -  Fixed an issue where schema diff showing changes in the identical domain constraints.
+| `Issue #5350 <https://redmine.postgresql.org/issues/5350>`_ -  Fixed an issue where schema diff marks an identical table as different.
 | `Issue #5351 <https://redmine.postgresql.org/issues/5351>`_ -  Fixed compilation warnings while building pgAdmin.
 | `Issue #5361 <https://redmine.postgresql.org/issues/5361>`_ -  Fixes an issue where pgAdmin4 GUI does not display properly in IE 11.
 | `Issue #5362 <https://redmine.postgresql.org/issues/5362>`_ -  Fixed an issue where the identical packages and sequences visible as different in the schema diff tool.

@@ -8,7 +8,7 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(["backbone", "backgrid", "underscore"], factory);
+    define(["backbone", "backgrid", "underscore", "sources/gettext"], factory);
   } else if (typeof exports == "object") {
     // CommonJS
     module.exports = factory(require("backbone"), require("backgrid"), require("underscore"));
@@ -16,7 +16,7 @@
   // Browser
   else factory(root.Backbone, root.Backgrid, root._);
 
-}(this, function (Backbone, Backgrid, _) {
+}(this, function (Backbone, Backgrid, _, gettext) {
 
   "use strict";
 

@@ -14,6 +14,9 @@ from pgadmin.tools.schema_diff.model import SchemaDiffModel
 
 count = 1
 
+list_keys_array = ['name', 'colname', 'argid', 'token', 'option', 'conname',
+                   'member_name', 'label', 'attname']
+
 
 def compare_dictionaries(view_object, source_params, target_params,
                          target_schema, source_dict, target_dict, node,
@@ -275,6 +278,11 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
                                               target_dict[key], ignore_keys):
                 return False
         elif type(source_dict[key]) is list:
+            # Sort the source and target list on the basis of
+            # list key array.
+            source_dict[key], target_dict[key] = sort_list(source_dict[key],
+                                                           target_dict[key])
+            # Compare the source and target lists
             if not are_lists_identical(source_dict[key], target_dict[key],
                                        ignore_keys):
                 return False
@@ -339,29 +347,13 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
                         # TODO
                         pass
                     elif type(source) is dict:
-                        tmp_key_array = ['name', 'colname', 'argid', 'token',
-                                         'option', 'conname', 'member_name',
-                                         'label', 'attname']
                         # Check the above keys are exist in the dictionary
-                        tmp_key = is_key_exists(tmp_key_array, source)
+                        tmp_key = is_key_exists(list_keys_array, source)
                         if tmp_key is not None:
-                            if type(target_dict[key]) is list and \
-                                    len(target_dict[key]) > 0:
-                                tmp = None
-                                for item in tmp_target:
-                                    if tmp_key in item and \
-                                            item[tmp_key] == \
-                                            source[tmp_key]:
-                                        tmp = copy.deepcopy(item)
-                                if tmp and source != tmp:
-                                    updated.append(copy.deepcopy(source))
-                                    tmp_target.remove(tmp)
-                                elif tmp and source == tmp:
-                                    tmp_target.remove(tmp)
-                                elif tmp is None:
-                                    added.append(source)
-                            else:
-                                added.append(source)
+                            # Compare the two list by ignoring the keys.
+                            compare_list_by_ignoring_keys(source, tmp_target,
+                                                          added, updated,
+                                                          tmp_key, ignore_keys)
 
                         difference[key] = {}
                         if len(added) > 0:
@@ -468,3 +460,67 @@ def parse_acl(source, target, diff_dict):
         diff_dict.update({key: diff})
     elif key in diff_dict:
         diff_dict.pop(key)
+
+
+def sort_list(source, target):
+    """
+    This function is used to sort the source and target list on the
+    basis of key found in the source and target list.
+    :param source:
+    :param target:
+    :return:
+    """
+    # Check the above keys are exist in the dictionary
+    if len(source) > 0:
+        tmp_key = is_key_exists(list_keys_array, source[0])
+        if tmp_key is not None:
+            source = sorted(source, key=lambda k: k[tmp_key])
+
+    # Check the above keys are exist in the dictionary
+    if len(target) > 0:
+        tmp_key = is_key_exists(list_keys_array, target[0])
+        if tmp_key is not None:
+            target = sorted(target, key=lambda k: k[tmp_key])
+
+    return source, target
+
+
+def compare_list_by_ignoring_keys(source_list, target_list, added, updated,
+                                  key, ignore_keys):
+    """
+    This function is used to compare the two list by ignoring the keys
+    specified in ignore_keys.
+    :param source_list:
+    :param target_list:
+    :param added:
+    :param updated:
+    :param key:
+    :param ignore_keys:
+    :return:
+    """
+    if type(target_list) is list and len(target_list) > 0:
+        tmp_target = None
+        for item in target_list:
+            if key in item and item[key] == source_list[key]:
+                tmp_target = copy.deepcopy(item)
+
+        if tmp_target is None:
+            added.append(source_list)
+        else:
+            source_with_ignored_keys = copy.deepcopy(source_list)
+            target_with_ignored_keys = copy.deepcopy(tmp_target)
+
+            # Remove ignore keys from source and target before comparison
+            for ig_key in ignore_keys:
+                if ig_key in source_with_ignored_keys:
+                    del source_with_ignored_keys[ig_key]
+                if ig_key in target_with_ignored_keys:
+                    del target_with_ignored_keys[ig_key]
+
+            if source_with_ignored_keys != target_with_ignored_keys:
+                updated.append(source_list)
+                target_list.remove(tmp_target)
+            elif source_with_ignored_keys == target_with_ignored_keys:
+                target_list.remove(tmp_target)
+    else:
+        added.append(source_list)

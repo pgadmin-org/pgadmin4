@@ -1477,7 +1477,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             if 'deleted' in data['columns']:
                 for item in data['columns']['deleted']:
                     tmp_columns.remove(item)
-            data['columns'] = tmp_columns
+        data['columns'] = tmp_columns
 
         tmp_constraints = []
         if 'constraints' in data:
@@ -1502,7 +1502,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             if 'deleted' in data['ftoptions']:
                 for item in data['ftoptions']['deleted']:
                     tmp_ftoptions.remove(item)
-            data['ftoptions'] = tmp_ftoptions
+        data['ftoptions'] = tmp_ftoptions
 
 
 SchemaDiffRegistry(blueprint.node_type, ForeignTableView)
