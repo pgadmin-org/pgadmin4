@@ -17,6 +17,7 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from pgadmin.tools.sqleditor.tests.execute_query_test_utils \
     import execute_query
+from datetime import date
 
 
 class TestQueryUpdatableResultset(BaseTestGenerator):
@@ -24,7 +25,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         result-set is updatable. """
     scenarios = [
         ('When selecting all columns of the table', dict(
-            sql='SELECT * FROM %s;',
+            sql='SELECT * FROM {0};',
             expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
@@ -34,7 +35,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             expected_cols_is_editable=[True, True, True, True]
         )),
         ('When selecting all primary keys of the table', dict(
-            sql='SELECT pk_col1, pk_col2 FROM %s;',
+            sql='SELECT pk_col1, pk_col2 FROM {0};',
             expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
@@ -44,28 +45,28 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             expected_cols_is_editable=[True, True]
         )),
         ('When selecting some of the primary keys of the table', dict(
-            sql='SELECT pk_col2 FROM %s;',
+            sql='SELECT pk_col2 FROM {0};',
             expected_primary_keys=None,
             expected_has_oids=False,
             table_has_oids=False,
             expected_cols_is_editable=[False]
         )),
         ('When selecting none of the primary keys of the table', dict(
-            sql='SELECT normal_col1 FROM %s;',
+            sql='SELECT normal_col1 FROM {0};',
             expected_primary_keys=None,
             expected_has_oids=False,
             table_has_oids=False,
             expected_cols_is_editable=[False]
         )),
         ('When renaming a primary key', dict(
-            sql='SELECT pk_col1 as some_col, pk_col2 FROM "%s";',
+            sql='SELECT pk_col1 as some_col, pk_col2 FROM "{0}";',
             expected_primary_keys=None,
             expected_has_oids=False,
             table_has_oids=False,
             expected_cols_is_editable=[False, False]
         )),
         ('When renaming a normal column', dict(
-            sql='SELECT pk_col1, pk_col2, normal_col1 as some_col FROM "%s";',
+            sql='SELECT pk_col1, pk_col2, normal_col1 as some_col FROM "{0}";',
             expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
@@ -75,7 +76,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             expected_cols_is_editable=[True, True, False]
         )),
         ('When renaming a normal column to a primary key name', dict(
-            sql='SELECT normal_col1 as pk_col1, pk_col1, pk_col2 FROM %s;',
+            sql='SELECT normal_col1 as pk_col1, pk_col1, pk_col2 FROM {0};',
             expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
@@ -85,7 +86,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             expected_cols_is_editable=[False, True, True]
         )),
         ('When selecting a normal column twice', dict(
-            sql='SELECT pk_col1, pk_col2, normal_col1, normal_col1 FROM %s;',
+            sql='SELECT pk_col1, pk_col2, normal_col1, normal_col1 FROM {0};',
             expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
@@ -95,17 +96,16 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             expected_cols_is_editable=[True, True, True, False]
         )),
         ('When selecting a non-table column', dict(
-            sql='SELECT pk_col1, pk_col2, normal_col1 || normal_col2 FROM %s;',
-            expected_primary_keys={
-                'pk_col1': 'int4',
-                'pk_col2': 'int4'
-            },
-            expected_has_oids=False,
-            table_has_oids=False,
-            expected_cols_is_editable=[True, True, False]
-        )),
+         sql='SELECT pk_col1, pk_col2, normal_col1 || normal_col2 FROM {0};',
+         expected_primary_keys={'pk_col1': 'int4',
+                                'pk_col2': 'int4'
+                                },
+         expected_has_oids=False,
+         table_has_oids=False,
+         expected_cols_is_editable=[True, True, False]
+         )),
         ('When selecting primary keys and oids (table with oids)', dict(
-            sql='SELECT *, oid FROM %s;',
+            sql='SELECT *, oid FROM {0};',
             expected_primary_keys={
                 'pk_col1': 'int4',
                 'pk_col2': 'int4'
@@ -115,7 +115,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             expected_cols_is_editable=[True, True, True, True, False]
         )),
         ('When selecting oids without primary keys (table with oids)', dict(
-            sql='SELECT oid, normal_col1, normal_col2 FROM %s;',
+            sql='SELECT oid, normal_col1, normal_col2 FROM {0};',
             expected_primary_keys=None,
             expected_has_oids=True,
             table_has_oids=True,
@@ -123,7 +123,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         )),
         ('When selecting none of the primary keys or oids (table with oids)',
          dict(
-             sql='SELECT normal_col1, normal_col2 FROM %s;',
+             sql='SELECT normal_col1, normal_col2 FROM {0};',
              expected_primary_keys=None,
              expected_has_oids=False,
              table_has_oids=True,
@@ -132,6 +132,8 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
     ]
 
     def setUp(self):
+        self.test_table_name = "test_for_updatable_resultset" + \
+                               str(random.randint(1000, 9999))
         self._initialize_database_connection()
         self._initialize_query_tool()
         self._initialize_urls()
@@ -148,7 +150,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         database_utils.disconnect_database(self, self.server_id, self.db_id)
 
     def _execute_select_sql(self):
-        sql = self.sql % self.test_table_name
+        sql = self.sql.format(self.test_table_name)
         is_success, response_data = \
             execute_query(tester=self.tester,
                           query=sql,
@@ -211,19 +213,17 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         self.poll_url = '/sqleditor/poll/{0}'.format(self.trans_id)
 
     def _create_test_table(self, table_has_oids=False):
-        self.test_table_name = "test_for_updatable_resultset" + \
-                               str(random.randint(1000, 9999))
         create_sql = """
-                            DROP TABLE IF EXISTS "%s";
+                            DROP TABLE IF EXISTS {0};
 
-                            CREATE TABLE "%s"(
+                            CREATE TABLE {0}(
                                 pk_col1	SERIAL,
                                 pk_col2 SERIAL,
                                 normal_col1 VARCHAR,
                                 normal_col2 VARCHAR,
                                 PRIMARY KEY(pk_col1, pk_col2)
                             )
-                      """ % (self.test_table_name, self.test_table_name)
+                      """.format(self.test_table_name)
 
         if table_has_oids:
             create_sql += ' WITH OIDS;'
@@ -231,3 +231,38 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             create_sql += ';'
 
         utils.create_table_with_query(self.server, self.db_name, create_sql)
+
+
+class TestTemporaryTable(TestQueryUpdatableResultset):
+    """ This class will test the query result-set for temporary tables """
+    scenarios = [
+        ('When selecting all columns of the Temporary table, on commit drop',
+         dict(sql='''
+                DROP TABLE IF EXISTS {0};
+                CREATE TEMPORARY TABLE {0} ON COMMIT DROP AS
+                            SELECT
+                                CURRENT_DATE AS today;
+                SELECT * FROM {0};''',
+              expected_primary_keys=None,
+              expected_results_column_data=[[date.today().strftime(
+                                            "%Y-%m-%d")]],
+              expected_has_oids=False,
+              expected_results_column_is_editable=False,
+              table_has_oids=False,
+              expected_cols_is_editable=[False]
+              ))
+    ]
+
+    def runTest(self):
+        response_data = self._execute_select_sql()
+        self._check_primary_keys(response_data)
+        self._check_oids(response_data)
+        # Verifying Temporary table result data on Commit Drop
+        self._check_results_column_data(response_data)
+        self._check_editable_columns(response_data)
+
+    def _check_results_column_data(self, response_data):
+        results_column_data = response_data['data']['result']
+        for result_data, expected_is_editable in \
+                zip(results_column_data, self.expected_results_column_data):
+            self.assertEquals(result_data, expected_is_editable)

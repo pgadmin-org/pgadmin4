@@ -71,7 +71,8 @@ def is_query_resultset_updatable(conn, sql_path):
                                table_oid=table_oid,
                                sql_path=sql_path)
 
-        is_resultset_updatable = has_oids or primary_keys is not None
+        is_resultset_updatable = has_oids or (primary_keys is not None and
+                                              len(primary_keys) != 0)
 
         if is_resultset_updatable:
             column_types = get_columns_types(columns_info=columns_info,
@@ -113,6 +114,8 @@ def _check_editable_columns(table_columns, results_columns):
         if table_column_number is None:  # Not a table column
             results_column['is_editable'] = False
         elif table_column_number in table_columns_numbers:  # Duplicate
+            results_column['is_editable'] = False
+        elif table_column_number not in table_columns:
             results_column['is_editable'] = False
         elif results_column['display_name'] \
                 != table_columns[table_column_number]:

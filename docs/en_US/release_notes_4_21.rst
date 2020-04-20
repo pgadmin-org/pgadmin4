@@ -44,6 +44,7 @@ Bug fixes
 | `Issue #4858 <https://redmine.postgresql.org/issues/4858>`_ -  Fixed python exception error when user tries to download the CSV and there is a connection issue.
 | `Issue #4864 <https://redmine.postgresql.org/issues/4864>`_ -  Make the configuration window in runtime to auto-resize.
 | `Issue #4873 <https://redmine.postgresql.org/issues/4873>`_ -  Fixed an issue when changing the comments of the procedure with arguments gives error in case of overloading.
+| `Issue #4946 <https://redmine.postgresql.org/issues/4946>`_ -  Fixed an issue when the user creates a temporary table with 'on commit drop as' clause.
 | `Issue #4957 <https://redmine.postgresql.org/issues/4957>`_ -  Ensure that Constraint Trigger, Deferrable, Deferred option should be disabled when the user selects EDB-SPL function for the trigger.
 | `Issue #4969 <https://redmine.postgresql.org/issues/4969>`_ -  Fixed an issue where changing the values of columns with JSONB or JSON types to NULL.
 | `Issue #5007 <https://redmine.postgresql.org/issues/5007>`_ -  Ensure index dropdown should have existing indexes while creating unique constraints.
