@@ -148,6 +148,9 @@ DEFAULT_SERVER = '127.0.0.1'
 # environment by the runtime
 DEFAULT_SERVER_PORT = 5050
 
+#The default prefix path on which the app would be routed
+BASE_SERVER_PATH = "/pgadmin"
+
 # Enable X-Frame-Option protection.
 # Set to one of "SAMEORIGIN", "ALLOW-FROM origin" or "" to disable.
 # Note that "DENY" is NOT supported (and will be silently ignored).
