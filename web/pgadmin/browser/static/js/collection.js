@@ -51,11 +51,10 @@ define([
         }]);
 
         // show query tool only in context menu of supported nodes.
-
         if (pgAdmin.unsupported_nodes && _.indexOf(pgAdmin.unsupported_nodes, this.type) == -1) {
           if ((this.type == 'database' && this.allowConn) || this.type != 'database') {
             pgAdmin.Browser.add_menus([{
-              name: 'show_query_tool', node: this.type, module: pgAdmin.DataGrid,
+              name: 'show_query_tool', node: this.type, module: this,
               applies: ['context'], callback: 'show_query_tool',
               priority: 998, label: gettext('Query Tool...'),
               icon: 'pg-font-icon icon-query-tool',
@@ -63,7 +62,7 @@ define([
 
             // show search objects same as query tool
             pgAdmin.Browser.add_menus([{
-              name: 'search_objects', node: this.type, module: pgAdmin.SearchObjects,
+              name: 'search_objects', node: this.type, module: this,
               applies: ['context'], callback: 'show_search_objects',
               priority: 997, label: gettext('Search Objects...'),
               icon: 'fa fa-search',
@@ -451,6 +450,16 @@ define([
           pgAdmin.Browser.URL, treeInfo, actionType, self.node,
           collectionPickFunction
         );
+      },
+      show_query_tool: function() {
+        if(pgAdmin.DataGrid) {
+          pgAdmin.DataGrid.show_query_tool('', pgAdmin.Browser.tree.selected());
+        }
+      },
+      show_search_objects: function() {
+        if(pgAdmin.SearchObjects) {
+          pgAdmin.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
+        }
       },
     });
 

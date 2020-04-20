@@ -72,3 +72,4 @@ Bug fixes
 | `Issue #5401 <https://redmine.postgresql.org/issues/5401>`_ -  Fixed search object issue when the object name contains special characters.
 | `Issue #5409 <https://redmine.postgresql.org/issues/5409>`_ -  Fixed validation issue in Synonyms node.
 | `Issue #5410 <https://redmine.postgresql.org/issues/5410>`_ -  Fixed an issue while removing the package body showing wrong modified SQL.
+| `Issue #5415 <https://redmine.postgresql.org/issues/5415>`_ -  Ensure that the query tool context menu should work on the collection nodes.
