@@ -1894,11 +1894,15 @@ define([
       this.$el.datetimepicker('destroy');
       this.is_closing = false;
 
+      /* set the model default value in case of empty or undefined */
+      if (_.isUndefined(newValue) ||
+        String(val).replace(/^\s+|\s+$/g, '') == '') {
+        newValue = null;
+      }
+
       model.set(column.get('name'), newValue);
       let command = new Backgrid.Command(ev);
-      setTimeout(() => {
-        model.trigger('backgrid:edited', model, column, command);
-      }, 20);
+      model.trigger('backgrid:edited', model, column, command);
     },
   });
 

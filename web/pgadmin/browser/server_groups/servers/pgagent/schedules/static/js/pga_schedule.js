@@ -366,13 +366,6 @@ define('pgadmin.node.pga_schedule', [
               var res = Backform.FieldsetControl.prototype.render.apply(
                 this, arguments
               );
-
-              // $(
-              //   '<div>' +
-              //     gettext('Schedules are specified using a <strong>cron-style</strong> format.<br/><ul><li>For each selected time or date element, the schedule will execute.<br/>e.g. To execute at 5 minutes past every hour, simply select ‘05’ in the Minutes list box.<br/></li><li>Values from more than one field may be specified in order to further control the schedule.<br/>e.g. To execute at 12:05 and 14:05 every Monday and Thursday, you would click minute 05, hours 12 and 14, and weekdays Monday and Thursday.</li><li>For additional flexibility, the Month Days check list includes an extra Last Day option. This matches the last day of the month, whether it happens to be the 28th, 29th, 30th or 31st.</li></ul>') +
-              //   '</div>'
-              // ).insertBefore(this.$el);
-
               return res;
             },
           }),
@@ -498,7 +491,8 @@ define('pgadmin.node.pga_schedule', [
             if (_.isUndefined(val) || _.isNull(val) ||
               String(val).replace(/^\s+|\s+$/g, '') == '') {
               if (val == '') {
-                this.set('jscend', undefined);
+                /* Set the default value used in model initialization */
+                this.set('jscend', null);
               }
               return;
             }

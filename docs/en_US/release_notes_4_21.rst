@@ -11,6 +11,7 @@ New features
 
 | `Issue #2172 <https://redmine.postgresql.org/issues/2172>`_ -  Added search object functionality.
 | `Issue #2186 <https://redmine.postgresql.org/issues/2186>`_ -  Added LDAP authentication support.
+| `Issue #4636 <https://redmine.postgresql.org/issues/4636>`_ -  Added job step and job schedule disable icons to identify it quickly within the browser tree.
 | `Issue #5181 <https://redmine.postgresql.org/issues/5181>`_ -  Added support for parameter toast_tuple_target and parallel_workers of the table.
 | `Issue #5263 <https://redmine.postgresql.org/issues/5263>`_ -  Added support of Foreign Tables to the Schema Diff.
 | `Issue #5264 <https://redmine.postgresql.org/issues/5264>`_ -  Added support of Packages, Sequences and Synonyms to the Schema Diff.
@@ -21,6 +22,7 @@ Housekeeping
 ************
 
 | `Issue #4620 <https://redmine.postgresql.org/issues/4620>`_ -  Add Reverse Engineered and Modified SQL tests for procedures.
+| `Issue #4623 <https://redmine.postgresql.org/issues/4623>`_ -  Add Reverse Engineered and Modified SQL tests for pgAgent jobs.
 
 Bug fixes
 *********
@@ -63,6 +65,7 @@ Bug fixes
 | `Issue #5350 <https://redmine.postgresql.org/issues/5350>`_ -  Fixed an issue where schema diff marks an identical table as different.
 | `Issue #5351 <https://redmine.postgresql.org/issues/5351>`_ -  Fixed compilation warnings while building pgAdmin.
 | `Issue #5352 <https://redmine.postgresql.org/issues/5352>`_ -  Fixed the rightmost and bottom tooltip crop issues in the explain query plan.
+| `Issue #5356 <https://redmine.postgresql.org/issues/5356>`_ -  Fixed modified SQL issue while adding an exception in pgAgent job schedule.
 | `Issue #5361 <https://redmine.postgresql.org/issues/5361>`_ -  Fixes an issue where pgAdmin4 GUI does not display properly in IE 11.
 | `Issue #5362 <https://redmine.postgresql.org/issues/5362>`_ -  Fixed an issue where the identical packages and sequences visible as different in the schema diff tool.
 | `Issue #5366 <https://redmine.postgresql.org/issues/5366>`_ -  Added alert message to Reset Layout if any of the panels from Query Tool failed to load.

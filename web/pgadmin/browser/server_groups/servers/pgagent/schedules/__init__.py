@@ -74,6 +74,23 @@ class JobScheduleModule(CollectionNodeModule):
         return 'pga_job'
 
     @property
+    def csssnippets(self):
+        """
+        Returns a snippet of css to include in the page
+        """
+        snippets = [
+            render_template(
+                "pga_schedule/css/pga_schedule.css",
+                node_type=self.node_type
+            )
+        ]
+
+        for submodule in self.submodules:
+            snippets.extend(submodule.csssnippets)
+
+        return snippets
+
+    @property
     def module_use_template_javascript(self):
         """
         Returns whether Jinja2 template is used for generating the javascript
@@ -245,7 +262,8 @@ class JobScheduleView(PGChildNodeView):
                     row['jscid'],
                     row['jscjobid'],
                     row['jscname'],
-                    icon="icon-pga_schedule",
+                    icon="icon-pga_schedule" if row['jscenabled'] else
+                    "icon-pga_schedule-disabled",
                     enabled=row['jscenabled']
                 )
             )
@@ -256,7 +274,8 @@ class JobScheduleView(PGChildNodeView):
                     row['jscid'],
                     row['jscjobid'],
                     row['jscname'],
-                    icon="icon-pga_schedule",
+                    icon="icon-pga_schedule" if row['jscenabled'] else
+                    "icon-pga_schedule-disabled",
                     enabled=row['jscenabled']
                 )
             )
@@ -359,7 +378,8 @@ class JobScheduleView(PGChildNodeView):
                 row['jscid'],
                 row['jscjobid'],
                 row['jscname'],
-                icon="icon-pga_schedule",
+                icon="icon-pga_schedule" if row['jscenabled'] else
+                "icon-pga_schedule-disabled",
                 enabled=row['jscenabled']
             )
         )
@@ -422,7 +442,8 @@ class JobScheduleView(PGChildNodeView):
                 jscid,
                 jid,
                 row['jscname'],
-                icon="icon-pga_schedule",
+                icon="icon-pga_schedule" if row['jscenabled'] else
+                "icon-pga_schedule-disabled",
                 enabled=row['jscenabled']
             )
         )

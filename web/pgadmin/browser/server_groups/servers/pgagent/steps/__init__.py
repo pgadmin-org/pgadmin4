@@ -274,7 +274,8 @@ SELECT EXISTS(
                     row['jstid'],
                     row['jstjobid'],
                     row['jstname'],
-                    icon="icon-pga_jobstep",
+                    icon="icon-pga_jobstep" if row['jstenabled'] else
+                    "icon-pga_jobstep-disabled",
                     enabled=row['jstenabled'],
                     kind=row['jstkind']
                 )
@@ -286,7 +287,8 @@ SELECT EXISTS(
                     row['jstid'],
                     row['jstjobid'],
                     row['jstname'],
-                    icon="icon-pga_jobstep",
+                    icon="icon-pga_jobstep" if row['jstenabled'] else
+                    "icon-pga_jobstep-disabled",
                     enabled=row['jstenabled'],
                     kind=row['jstkind']
                 )
@@ -383,7 +385,8 @@ SELECT EXISTS(
                 row['jstid'],
                 row['jstjobid'],
                 row['jstname'],
-                icon="icon-pga_jobstep"
+                icon="icon-pga_jobstep" if row['jstenabled']
+                else "icon-pga_jobstep-disabled"
             )
         )
 
@@ -469,7 +472,8 @@ SELECT EXISTS(
                 jstid,
                 jid,
                 row['jstname'],
-                icon="icon-pga_jobstep"
+                icon="icon-pga_jobstep" if row['jstenabled']
+                else "icon-pga_jobstep-disabled"
             )
         )
 

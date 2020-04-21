@@ -10,6 +10,7 @@
 """Implements the pgAgent Jobs Node"""
 from functools import wraps
 import json
+from datetime import datetime, time
 
 from flask import render_template, request, jsonify
 from flask_babelex import gettext as _
@@ -323,7 +324,8 @@ SELECT EXISTS(
                 row['jobid'],
                 sid,
                 row['jobname'],
-                icon="icon-pga_job"
+                icon="icon-pga_job" if row['jobenabled']
+                else "icon-pga_job-disabled"
             )
         )
 
@@ -500,6 +502,10 @@ SELECT EXISTS(
             if schedule['jexid']:
                 idx = 0
                 for exc in schedule['jexid']:
+                    # Convert datetime.time object to string
+                    if isinstance(schedule['jextime'][idx], time):
+                        schedule['jextime'][idx] = \
+                            schedule['jextime'][idx].strftime("%H:%M:%S")
                     schedule['jscexceptions'].append({
                         'jexid': exc,
                         'jexdate': schedule['jexdate'][idx],
