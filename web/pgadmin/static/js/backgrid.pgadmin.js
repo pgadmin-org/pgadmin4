@@ -1986,6 +1986,7 @@ define([
       this.$customSearchBox = $el;
       this.$customSearchBox.attr('type','search');
       this.$customSearchBox.on('keydown', this.search.bind(this));
+      this.$customSearchBox.on('mousedown', this.search.bind(this));
       return this;
     },
 

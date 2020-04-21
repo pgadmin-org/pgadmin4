@@ -37,6 +37,7 @@ Bug fixes
 | `Issue #4440 <https://redmine.postgresql.org/issues/4440>`_ -  Ensure the DROP statements in reverse engineered SQL are properly quoted for all objects.
 | `Issue #4445 <https://redmine.postgresql.org/issues/4445>`_ -  Ensure all object names in the title line of the reverse-engineered SQL are not quoted.
 | `Issue #4512 <https://redmine.postgresql.org/issues/4512>`_ -  Fixed calendar opening issue on the exception tab inside the schedules tab of pgAgent.
+| `Issue #4545 <https://redmine.postgresql.org/issues/4545>`_ -  Fixed an issue wherein grant wizard the last object is not selectable.
 | `Issue #4573 <https://redmine.postgresql.org/issues/4573>`_ -  Ensure that if the delimiter is set other than comma then download the file as '.txt' file.
 | `Issue #4684 <https://redmine.postgresql.org/issues/4684>`_ -  Fixed encoding issue while saving data in encoded charset other than 'utf-8'.
 | `Issue #4709 <https://redmine.postgresql.org/issues/4709>`_ -  Added schema-qualified dictionary names in FTS configuration to avoid confusion of duplicate names.

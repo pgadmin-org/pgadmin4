@@ -500,6 +500,7 @@ define([
 
               coll.sort();
               this.dbObjectFilter = this.DbObjectFilter(coll);
+              coll.fullCollection = this.dbObjectFilter.shadowCollection;
 
               /**
                 privArray holds objects selected which further helps
@@ -513,7 +514,6 @@ define([
               */
               coll.on('backgrid:selected', function(model, selected) {
                 model.set('selected', selected);
-
                 var object_type = model.get('object_type');
                 switch (object_type) {
                 case 'Function':
