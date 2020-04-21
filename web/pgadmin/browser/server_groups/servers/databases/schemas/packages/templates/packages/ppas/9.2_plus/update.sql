@@ -2,7 +2,7 @@
 
 {% if data %}
 {% set recreate_pkg_body = false %}
-{% if data.pkgheadsrc is defined and data.pkgheadsrc != o_data.pkgheadsrc and o_data.pkgbodysrc != None or (data.pkgbodysrc is defined and data.pkgbodysrc == '')  %}
+{% if data.pkgbodysrc is defined and data.pkgbodysrc == ''  %}
 {% if is_schema_diff is defined and is_schema_diff != None %}{% set recreate_pkg_body = true %}{% endif %}
 DROP PACKAGE BODY {{ conn|qtIdent(data.schema,data.name) }};
 {% endif %}

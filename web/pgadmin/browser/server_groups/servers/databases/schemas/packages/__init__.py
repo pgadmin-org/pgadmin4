@@ -348,6 +348,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             priv = parse_priv_from_db(row)
             res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
+        res['rows'][0]['schema'] = self.schema
+
         return True, res['rows'][0]
 
     @check_precondition(action="create")
@@ -593,8 +595,12 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             u'name'
         ]
 
-        if pkgid is not None and not sqltab:
+        if diff_schema:
+            data['schema'] = diff_schema
+        else:
             data['schema'] = self.schema
+
+        if pkgid is not None and not sqltab:
             SQL = render_template(
                 "/".join([self.template_path, 'properties.sql']), scid=scid,
                 pkgid=pkgid)
@@ -645,9 +651,6 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             for arg in required_args:
                 if arg not in data:
                     data[arg] = old_data[arg]
-
-            if diff_schema:
-                data['schema'] = diff_schema
 
             SQL = render_template("/".join([self.template_path, 'update.sql']),
                                   data=data, o_data=old_data, conn=self.conn,
