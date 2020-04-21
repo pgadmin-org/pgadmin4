@@ -737,6 +737,12 @@ define('tools.querytool', [
 
     // This function is responsible to create and render the SlickGrid.
     render_grid: function(collection, columns, is_editable, client_primary_key, rows_affected) {
+      if (rows_affected) {
+        let dummyCollection = new Array(rows_affected - collection.length);
+        // Adding dummy rows to adjust height, rows data will be update as and when user scrolls down in DataView panel
+        dummyCollection.fill([gettext('Loading...')]);
+        collection = [...collection, ...dummyCollection];
+      }
       var self = this;
 
       self.handler.numberOfModifiedCells = 0;
@@ -1206,13 +1212,13 @@ define('tools.querytool', [
         $('#btn-save-data').prop('disabled', false);
       }.bind(editor_data));
 
-      // Listen grid viewportChanged event to load next chunk of data.
-      grid.onViewportChanged.subscribe(function(e, args) {
-        var rendered_range = args.grid.getRenderedRange(),
-          data_len = args.grid.getDataLength();
-        // start fetching next batch of records before reaching to bottom.
-        if (self.handler.has_more_rows && !self.handler.fetching_rows && rendered_range.bottom > data_len - 100) {
-          // fetch asynchronous
+      grid.onScroll.subscribe((e, args) => {
+        if (self.handler.has_more_rows && !self.handler.fetching_rows && args.grid.getViewport().bottom > self.handler.rows_fetched_to + self.handler.rows_fetch_batch_count) {
+          // fast scrolling
+          let fetch_till = ((args.grid.getViewport().bottom % self.handler.rows_fetch_batch_count) + 1) * self.handler.rows_fetch_batch_count;
+          self.fetch_next(null, null, fetch_till);
+        } else if (self.handler.has_more_rows && !self.handler.fetching_rows && args.grid.getViewport().bottom + 100 > self.handler.rows_fetched_to) {
+          // gentle scroll
           setTimeout(self.fetch_next.bind(self));
         }
       });
@@ -1261,7 +1267,7 @@ define('tools.querytool', [
       this.fetch_next(true, cb);
     },
 
-    fetch_next: function(fetch_all, cb) {
+    fetch_next: function(fetch_all, cb, fetch_till) {
       var self = this,
         url = '';
 
@@ -1282,11 +1288,18 @@ define('tools.querytool', [
           'fetch_all': 1,
         });
       } else {
-        url = url_for('sqleditor.fetch', {
-          'trans_id': self.transId,
-        });
+        if (fetch_till) {
+          url = url_for('sqleditor.fetch_till', {
+            'trans_id': self.transId,
+            fetch_till: fetch_till,
+          });
+        } else {
+          url = url_for('sqleditor.fetch', {
+            'trans_id': self.transId,
+          });
+        }
       }
-
+      self.handler.last_rows_fetched_to = self.handler.rows_fetched_to;
       $.ajax({
         url: url,
         method: 'GET',
@@ -1296,6 +1309,7 @@ define('tools.querytool', [
           $('#btn-flash').prop('disabled', false);
           $('#btn-download').prop('disabled', false);
           self.handler.trigger('pgadmin-sqleditor:loading-icon:hide');
+          self.handler.rows_fetched_to = res.data.rows_fetched_to;
           self.update_grid_data(res.data.result);
           self.handler.fetching_rows = false;
           if (typeof cb == 'function') {
@@ -1322,16 +1336,15 @@ define('tools.querytool', [
 
     update_grid_data: function(data) {
       this.dataView.beginUpdate();
-
-      for (var i = 0; i < data.length; i++) {
+      for (var i = 0, k = this.handler.last_rows_fetched_to; k < this.handler.rows_fetched_to; i++ , k++) {
         // Convert 2darray to dict.
         var item = {};
         for (var j = 1; j < this.grid_columns.length; j++) {
           item[this.grid_columns[j]['field']] = data[i][this.grid_columns[j]['pos']];
         }
 
-        item[this.client_primary_key] = (this.client_primary_key_counter++).toString();
-        this.dataView.addItem(item);
+        item['__temp_PK'] = k;
+        this.dataView.updateItem(k, item);
       }
 
       this.dataView.endUpdate();
@@ -2228,6 +2241,7 @@ define('tools.querytool', [
         self.marked_line_no = 0;
         self.has_more_rows = false;
         self.fetching_rows = false;
+        self.rows_fetched_to = 0;
         self.close_on_save = false;
         self.close_on_idle_transaction = false;
         self.last_transaction_status = -1;
@@ -2674,6 +2688,8 @@ define('tools.querytool', [
               // Make sure - the 'Data Output' panel is visible, before - we
               // start rendering the grid.
               self.gridView.data_output_panel.focus();
+              self.gridView.handler.rows_fetched_to = data.rows_fetched_to;
+              self.gridView.handler.rows_fetch_batch_count = data.rows_fetched_to - (data.rows_fetched_from - 1);
               setTimeout(
                 function() {
                   self.gridView.render_grid(data.result, self.columns,

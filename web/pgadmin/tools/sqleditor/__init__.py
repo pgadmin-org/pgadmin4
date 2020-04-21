@@ -97,6 +97,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.query_tool_start',
             'sqleditor.poll',
             'sqleditor.fetch',
+            'sqleditor.fetch_till',
             'sqleditor.fetch_all',
             'sqleditor.save',
             'sqleditor.inclusive_filter',
@@ -533,17 +534,23 @@ def poll(trans_id):
     '/fetch/<int:trans_id>/<int:fetch_all>', methods=["GET"],
     endpoint='fetch_all'
 )
+@blueprint.route(
+    '/fetch/<int:trans_id>/<int:fetch_till>', methods=["GET"],
+    endpoint='fetch_till'
+)
 @login_required
-def fetch(trans_id, fetch_all=None):
+def fetch(trans_id, fetch_all=None, fetch_till=None):
     result = None
     has_more_rows = False
     rows_fetched_from = 0
     rows_fetched_to = 0
-    fetch_row_cnt = -1 if fetch_all == 1 else ON_DEMAND_RECORD_COUNT
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
+
+    fetch_row_cnt = -1 if fetch_all == 1 else ON_DEMAND_RECORD_COUNT \
+        if fetch_till is None else fetch_till - trans_obj.get_fetched_row_cnt()
 
     if error_msg == gettext('Transaction ID not found in the session.'):
         return make_json_response(success=0, errormsg=error_msg,
