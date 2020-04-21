@@ -61,6 +61,7 @@ Bug fixes
 | `Issue #5315 <https://redmine.postgresql.org/issues/5315>`_ -  Fixed an issue where schema diff showing changes in the identical domain constraints.
 | `Issue #5350 <https://redmine.postgresql.org/issues/5350>`_ -  Fixed an issue where schema diff marks an identical table as different.
 | `Issue #5351 <https://redmine.postgresql.org/issues/5351>`_ -  Fixed compilation warnings while building pgAdmin.
+| `Issue #5352 <https://redmine.postgresql.org/issues/5352>`_ -  Fixed the rightmost and bottom tooltip crop issues in the explain query plan.
 | `Issue #5361 <https://redmine.postgresql.org/issues/5361>`_ -  Fixes an issue where pgAdmin4 GUI does not display properly in IE 11.
 | `Issue #5362 <https://redmine.postgresql.org/issues/5362>`_ -  Fixed an issue where the identical packages and sequences visible as different in the schema diff tool.
 | `Issue #5366 <https://redmine.postgresql.org/issues/5366>`_ -  Added alert message to Reset Layout if any of the panels from Query Tool failed to load.
