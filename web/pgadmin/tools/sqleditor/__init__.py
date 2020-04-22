@@ -564,8 +564,6 @@ def fetch(trans_id, fetch_all=None, fetch_till=None):
         else:
             status = 'Success'
             res_len = len(result)
-            if fetch_row_cnt != -1 and res_len == ON_DEMAND_RECORD_COUNT:
-                has_more_rows = True
 
             if res_len:
                 rows_fetched_from = trans_obj.get_fetched_row_cnt()
@@ -574,6 +572,9 @@ def fetch(trans_id, fetch_all=None, fetch_till=None):
                 rows_fetched_to = trans_obj.get_fetched_row_cnt()
                 session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
                 update_session_grid_transaction(trans_id, session_obj)
+
+            if fetch_row_cnt != -1 and rows_fetched_to < conn.rows_affected():
+                has_more_rows = True
     else:
         status = 'NotConnected'
         result = error_msg

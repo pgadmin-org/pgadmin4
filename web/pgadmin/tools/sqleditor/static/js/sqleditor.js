@@ -1213,12 +1213,17 @@ define('tools.querytool', [
       }.bind(editor_data));
 
       grid.onScroll.subscribe((e, args) => {
-        if (self.handler.has_more_rows && !self.handler.fetching_rows && args.grid.getViewport().bottom > self.handler.rows_fetched_to + self.handler.rows_fetch_batch_count) {
-          // fast scrolling
-          let fetch_till = ((args.grid.getViewport().bottom % self.handler.rows_fetch_batch_count) + 1) * self.handler.rows_fetch_batch_count;
-          self.fetch_next(null, null, fetch_till);
-        } else if (self.handler.has_more_rows && !self.handler.fetching_rows && args.grid.getViewport().bottom + 100 > self.handler.rows_fetched_to) {
-          // gentle scroll
+        clearTimeout($.data(this, 'scrollTimer'));
+        $.data(this, 'scrollTimer', setTimeout(function () {
+          if (self.handler.has_more_rows && !self.handler.fetching_rows && args.grid.getViewport().bottom > self.handler.rows_fetched_to + self.handler.rows_fetch_batch_count) {
+            // fast scrolling using slider
+            let fetch_till = (parseInt(args.grid.getViewport().bottom / self.handler.rows_fetch_batch_count) + 1) * self.handler.rows_fetch_batch_count;
+            self.fetch_next(null, null, fetch_till);
+          }
+        }, 250));
+        // If its gentle scroll, when last 10% of rows are left to scroll then fetch next batch of rows
+        if (self.handler.has_more_rows && !self.handler.fetching_rows && args.grid.getViewport().bottom + (self.handler.rows_fetch_batch_count * 0.1) > self.handler.rows_fetched_to) {
+          // gentle scroll using mouse
           setTimeout(self.fetch_next.bind(self));
         }
       });
@@ -1310,7 +1315,7 @@ define('tools.querytool', [
           $('#btn-download').prop('disabled', false);
           self.handler.trigger('pgadmin-sqleditor:loading-icon:hide');
           self.handler.rows_fetched_to = res.data.rows_fetched_to;
-          self.update_grid_data(res.data.result);
+          setTimeout(() => self.update_grid_data(res.data.result), 100);
           self.handler.fetching_rows = false;
           if (typeof cb == 'function') {
             cb();
