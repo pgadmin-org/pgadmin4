@@ -265,12 +265,6 @@ REM Main build sequence Ends
     ECHO Staging pgAdmin4.exe...
     COPY "%WD%\runtime\release\pgAdmin4.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
 
-    ECHO Staging dark and light theme components...
-    COPY "%WD%\runtime\dark.qss" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%WD%\runtime\light.qss" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%WD%\runtime\dark" "%PGBUILDPATH%\runtime\dark" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%WD%\runtime\light" "%PGBUILDPATH%\runtime\light" > nul || EXIT /B 1
-
     ECHO Staging Qt components...
     COPY "%QTDIR%\bin\Qt5Core.dll"   "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     COPY "%QTDIR%\bin\Qt5Gui.dll"    "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
@@ -282,6 +276,8 @@ REM Main build sequence Ends
     IF EXIST "%QTDIR%\bin\libwinpthread-1.dll" COPY "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
     MKDIR "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B 1
     COPY "%QTDIR%\plugins\platforms\qwindows.dll" "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B 1
+    MKDIR "%PGBUILDPATH%\runtime\imageformats" > nul || EXIT /B 1
+    COPY "%QTDIR%\plugins\imageformats\qsvg.dll" "%PGBUILDPATH%\runtime\imageformats" > nul || EXIT /B 1
     ECHO [Paths] > "%PGBUILDPATH%\runtime\qt.conf"
     ECHO Plugins=plugins >> "%PGBUILDPATH%\runtime\qt.conf"
 

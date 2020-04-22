@@ -153,7 +153,6 @@ _build_runtime() {
     ${QMAKE} || { echo qmake failed; exit 1; }
     make || { echo make failed; exit 1; }
     cp -r pgAdmin4.app "${BUILDROOT}/${APP_BUNDLE_NAME}"
-    cp -r dark light dark.qss light.qss "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/"
 }
 
 _build_doc() {

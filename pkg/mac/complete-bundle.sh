@@ -23,7 +23,9 @@ EOF
 
 test -d "${bundle}/Contents/Frameworks" || mkdir -p "${bundle}/Contents/Frameworks" || exit 1
 test -d "${bundle}/Contents/PlugIns/platforms" || mkdir -p "${bundle}/Contents/PlugIns/platforms" || exit 1
+test -d "${bundle}/Contents/PlugIns/imageformats" || mkdir -p "${bundle}/Contents/PlugIns/imageformats" || exit 1
 cp -f ${QTDIR}/plugins/platforms/libqcocoa.dylib "${bundle}/Contents/PlugIns/platforms" || { echo libqcocoa.dylib not found in ${QTDIR}/plugins/platforms; exit 1; }
+cp -f ${QTDIR}/plugins/imageformats/libqsvg.dylib "${bundle}/Contents/PlugIns/imageformats" || { echo libqsvg.dylib not found in ${QTDIR}/plugins/imageformats; exit 1; }
 cp -f ${PGDIR}/lib/libpq.5.dylib "${bundle}/Contents/Frameworks" || { echo libpq.5.dylib not found in ${PGDIR}; exit 1; }
 
 function CompleteSingleApp() {
@@ -59,6 +61,8 @@ function CompleteSingleApp() {
 			); do
 				if echo ${lib} | grep "PlugIns\|libqcocoa"  > /dev/null; then
 					lib_loc="Contents/PlugIns/platforms"
+				elif echo ${lib} | grep "PlugIns\|libqsvg"  > /dev/null; then
+					lib_loc="Contents/PlugIns/imageformats"
 				elif echo ${lib} | grep "Qt" > /dev/null; then
 					qtfw_path="$(dirname ${lib} | sed 's|.*\(Qt.*framework\)|\1|')"
 					lib_loc="Contents/Frameworks/${qtfw_path}"
