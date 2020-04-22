@@ -177,7 +177,10 @@ define('pgadmin.node.mview', [
               Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
               if(this.model && this.model.changed) {
                 if(this.model.origSessAttrs && (this.model.changed.definition != this.model.origSessAttrs.definition)) {
-                  this.model.warn_text = gettext('Updating the definition will drop and re-create the materialized view. It may result in loss of information about its dependent objects. Do you want to continue?');
+                  this.model.warn_text = gettext(
+                    'Updating the definition will drop and re-create the materialized view. It may result in loss of information about its dependent objects.'
+                  ) + '<br><br><b>' + gettext('Do you want to continue?') +
+                    '</b>';
                 }
                 else {
                   this.model.warn_text = undefined;

@@ -158,25 +158,42 @@ define('pgadmin.node.view', [
           control: Backform.SqlCodeControl.extend({
             onChange: function() {
               Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
-              if(this.model && this.model.changed && this.model.node_info.server.server_type == 'pg') {
-                if(this.model.origSessAttrs && (this.model.changed.definition != this.model.origSessAttrs.definition)) {
-                  let old_def = this.model.origSessAttrs.definition.replace(/\s/gi, '').split('FROM'),
-                    new_def = [];
 
-                  if(this.model.changed.definition !== undefined) {
-                    new_def = this.model.changed.definition.replace(/\s/gi, '').split('FROM');
-                  }
-                  if ((old_def.length > 1 || new_def.length > 1) && old_def[0] != new_def[0] && !new_def[0].includes(old_def[0])) {
-                    this.model.warn_text = gettext('Changing the columns in a view requires dropping and re-creating the view. This may fail if other objects are dependent upon this view, or may cause procedural functions to fail if they are not modified to take account of the changes. Do you wish to continue?');
-                  } else {
-                    this.model.warn_text = undefined;
-                  }
-                }
-                else {
-                  this.model.warn_text = undefined;
-                }
+              if (!this.model || !(
+                this.model.changed &&
+                this.model.node_info.server.server_type == 'pg' &&
+                // No need to check this when creating a view
+                this.model.get('oid') !== undefined
+              ) || !(
+                this.model.origSessAttrs &&
+                this.model.changed.definition != this.model.origSessAttrs.definition
+              )) {
+                this.model.warn_text = undefined;
+                return;
               }
-              else {
+
+              let old_def = this.model.origSessAttrs.definition &&
+                this.model.origSessAttrs.definition.replace(
+                  /\s/gi, ''
+                ).split('FROM'),
+                new_def = [];
+
+              if (this.model.changed.definition !== undefined) {
+                new_def = this.model.changed.definition.replace(
+                  /\s/gi, ''
+                ).split('FROM');
+              }
+
+              if ((old_def.length != new_def.length) || (
+                old_def.length > 1 && (
+                  old_def[0] != new_def[0]
+                )
+              )) {
+                this.model.warn_text = gettext(
+                  'Changing the columns in a view requires dropping and re-creating the view. This may fail if other objects are dependent upon this view, or may cause procedural functions to fail if they are not modified to take account of the changes.'
+                ) + '<br><br><b>' + gettext('Do you wish to continue?') +
+                '</b>';
+              } else {
                 this.model.warn_text = undefined;
               }
             },
