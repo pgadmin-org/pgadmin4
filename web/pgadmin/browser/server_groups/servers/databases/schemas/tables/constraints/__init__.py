@@ -9,6 +9,8 @@
 
 """Implements Constraint Node"""
 
+import json
+from flask import request
 from functools import wraps
 from pgadmin.utils.driver import get_driver
 import pgadmin.browser.server_groups.servers.databases as database
@@ -131,4 +133,49 @@ def proplist(**kwargs):
     return ajax_response(
         response=res,
         status=200
+    )
+
+
+@blueprint.route('/obj/<int:gid>/<int:sid>/<int:did>/<int:scid>/<int:tid>/',
+                 methods=['DELETE'])
+@blueprint.route('/delete/<int:gid>/<int:sid>/<int:did>/<int:scid>/<int:tid>/',
+                 methods=['DELETE'])
+def delete(**kwargs):
+    """
+    Delete multiple constraints under the table.
+    Args:
+      **kwargs:
+
+    Returns:
+
+    """
+    data = request.form if request.form else json.loads(
+        request.data, encoding='utf-8')
+
+    if 'delete' in request.base_url:
+        cmd = {"cmd": "delete"}
+    else:
+        cmd = {"cmd": "obj"}
+    res = []
+    module_wise_data = {}
+
+    for d in data['ids']:
+        if d['_type'] in module_wise_data:
+            module_wise_data[d['_type']].append(d['id'])
+        else:
+            module_wise_data[d['_type']] = [d['id']]
+
+    for name in ConstraintRegistry.registry:
+        if name in module_wise_data:
+            module = (ConstraintRegistry.registry[name])['nodeview']
+            view = module(**cmd)
+            request.data = json.dumps({'ids': module_wise_data[name]})
+            response = view.delete(**kwargs)
+            res = json.loads(response.data.decode('utf-8'))
+            if not res['success']:
+                return response
+
+    return make_json_response(
+        success=1,
+        info=gettext("Constraints dropped.")
     )

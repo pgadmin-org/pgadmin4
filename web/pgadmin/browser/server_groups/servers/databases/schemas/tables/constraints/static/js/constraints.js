@@ -22,8 +22,8 @@ define('pgadmin.node.constraints', [
         label: gettext('Constraints'),
         type: 'coll-constraints',
         columns: ['name', 'comment'],
-        canDrop: false,
-        canDropCascade: false,
+        canDrop: true,
+        canDropCascade: true,
       });
   }
 

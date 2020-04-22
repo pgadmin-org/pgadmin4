@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #3495 <https://redmine.postgresql.org/issues/3495>`_ -  Fixed an issue where the query tool unable to load the file which contains the BOM marker.
 | `Issue #3523 <https://redmine.postgresql.org/issues/3523>`_ -  Fixed an issue where right-clicking a browser object does not apply to the object on which right-click was fired.
 | `Issue #3645 <https://redmine.postgresql.org/issues/3645>`_ -  Ensure that the start and end date should be deleted when clear the selection for pgAgent Job.
+| `Issue #3900 <https://redmine.postgresql.org/issues/3900>`_ -  Added multiple drop/delete functionality for the table constraints.
 | `Issue #3947 <https://redmine.postgresql.org/issues/3947>`_ -  Fixed copy-paste row issues in View/Edit Data.
 | `Issue #3972 <https://redmine.postgresql.org/issues/3972>`_ -  Modified keyboard shortcuts in Query Tool for OSX native support.
 | `Issue #3988 <https://redmine.postgresql.org/issues/3988>`_ -  Fixed cursor disappeared issue in the query editor for some of the characters when zoomed out.

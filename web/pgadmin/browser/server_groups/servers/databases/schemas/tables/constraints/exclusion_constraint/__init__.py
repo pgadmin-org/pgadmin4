@@ -339,6 +339,9 @@ class ExclusionConstraintView(PGChildNodeView):
                               tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
+        for row in res['rows']:
+            row['_type'] = self.node_type
+
         return res['rows']
 
     @check_precondition

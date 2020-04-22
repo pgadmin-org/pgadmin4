@@ -354,7 +354,13 @@ define([
             msg = undefined,
             title = undefined;
 
-          _.each(sel_row_models, function(r){ sel_rows.push(r.id); });
+          if (node.type && node.type == 'coll-constraints') {
+            // In order to identify the constraint type, the type should be passed to the server
+            sel_rows = sel_row_models.map(row => ({id: row.get('oid'), _type: row.get('_type')}));
+          }
+          else {
+            sel_rows = sel_row_models.map(row => row.id);
+          }
 
           if (sel_rows.length === 0) {
             Alertify.alert(gettext('Drop Multiple'),
