@@ -23,6 +23,7 @@ from pgadmin.tools.sqleditor.utils.is_query_resultset_updatable \
     import is_query_resultset_updatable
 from pgadmin.tools.sqleditor.utils.save_changed_data import save_changed_data
 from pgadmin.tools.sqleditor.utils.get_column_types import get_columns_types
+from pgadmin.utils.preferences import Preferences
 
 from config import PG_DEFAULT_DRIVER
 
@@ -463,6 +464,11 @@ class TableCommand(GridCommand):
         # call base class init to fetch the table name
         super(TableCommand, self).__init__(**kwargs)
 
+        # Set the default sorting on table data by primary key if user
+        # preference value is set
+        self.data_sorting_by_pk = Preferences.module('sqleditor').preference(
+            'table_view_data_by_pk').get()
+
     def get_sql(self, default_conn=None):
         """
         This method is used to create a proper SQL query
@@ -486,7 +492,7 @@ class TableCommand(GridCommand):
         if data_sorting is None and \
             not self.is_sorting_set_from_filter_dialog() \
             and (self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_LAST_100_ROWS) or
-                 (self.cmd_type == VIEW_ALL_ROWS and self.limit > 0)):
+                 (self.cmd_type == VIEW_ALL_ROWS and self.data_sorting_by_pk)):
             sorting = {'data_sorting': []}
             for pk in primary_keys:
                 sorting['data_sorting'].append(

@@ -355,6 +355,11 @@ Use the fields on the *Options* panel to manage editor preferences.
   *True*, the editor will prompt the user to commit or rollback changes when
   exiting the Query Tool while the current transaction is not committed.
 
+* When the *Sort View Data results by primary key columns?* If set to *True*,
+  data returned when using the View/Edit Data - All Rows option will be sorted
+  by the Primary Key columns by default. When using the First/Last 100 Rows options,
+  data is always sorted.
+
 .. image:: images/preferences_sql_results_grid.png
     :alt: Preferences dialog sql results grid section
     :align: center

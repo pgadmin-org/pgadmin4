@@ -100,6 +100,17 @@ def RegisterQueryToolPreferences(self):
         )
     )
 
+    self.table_view_data_by_pk = self.preference.register(
+        'Options', 'table_view_data_by_pk',
+        gettext("Sort View Data results by primary key columns?"),
+        'boolean', True,
+        category_label=gettext('Options'),
+        help_str=gettext("If set to True, data returned when using the "
+                         "View/Edit Data - All Rows option will be sorted by "
+                         "the Primary Key columns by default. When using the "
+                         "First/Last 100 Rows options, data is always sorted.")
+    )
+
     self.show_prompt_save_data_changes = self.preference.register(
         'Options', 'prompt_save_data_changes',
         gettext("Prompt to save unsaved data changes?"), 'boolean', True,

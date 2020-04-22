@@ -10,6 +10,7 @@
 import uuid
 import json
 import random
+import sys
 
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
@@ -17,6 +18,11 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils
 from pgadmin.utils import server_utils, IS_PY2
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 
 class TestViewData(BaseTestGenerator):
@@ -35,6 +41,34 @@ class TestViewData(BaseTestGenerator):
                 );""",
                 result_data='SELECT 0',
                 rows_fetched_to=0
+            )
+        ),
+        (
+            'Sort table data without primary key in the table',
+            dict(
+                table_sql="""Create Table <TABLE_NAME>(
+                        id integer Not Null,
+                        json_val json Not Null
+                        );""",
+                result_data='SELECT 0',
+                rows_fetched_to=0
+            )
+        ),
+        (
+            'Sort table data by default order with primary key in table',
+            dict(
+                table_sql="""Create Table <TABLE_NAME>(
+                                   id integer Not Null,
+                                   json_val json Not Null,
+                                   Constraint table_pk_sort Primary Key(id)
+                                   );""",
+                result_data='SELECT 0',
+                rows_fetched_to=0,
+                mock_data={
+                    'function_to_be_mocked': "pgadmin.utils.preferences."
+                                             "_Preference.get",
+                    'return_value': False
+                }
             )
         )
     ]
@@ -71,10 +105,18 @@ class TestViewData(BaseTestGenerator):
 
         # Initialize query tool
         self.trans_id = str(random.randint(1, 9999999))
-        url = '/datagrid/initialize/datagrid/{0}/3/table/{1}/{2}/{3}/{4}'\
+        url = '/datagrid/initialize/datagrid/{0}/3/table/{1}/{2}/{3}/{4}' \
             .format(self.trans_id, test_utils.SERVER_GROUP, self.server_id,
                     self.db_id, table_id)
-        response = self.tester.post(url)
+
+        if hasattr(self, 'mock_data'):
+            with patch(
+                self.mock_data['function_to_be_mocked'],
+                return_value=self.mock_data['return_value']
+            ):
+                response = self.tester.post(url)
+        else:
+            response = self.tester.post(url)
 
         self.assertEquals(response.status_code, 200)
 
