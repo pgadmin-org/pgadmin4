@@ -66,8 +66,10 @@ class TestsGeneratorRegistry(ABCMeta):
         all_modules = []
 
         all_modules += find_modules(pkg_root, False, True)
-        # Append reverse engineered test case module
-        all_modules.append('regression.re_sql.tests.test_resql')
+
+        if 'resql' not in exclude_pkgs:
+            # Append reverse engineered test case module
+            all_modules.append('regression.re_sql.tests.test_resql')
 
         # If specific modules are to be tested, exclude others
         # for modules are handled differently for resql

@@ -95,7 +95,7 @@ FROM
             jexscid, array_agg(jexid) AS jexid, array_agg(to_char(jexdate, 'YYYY-MM-DD')) AS jexdate,
             array_agg(jextime) AS jextime
         FROM
-            pgagent.pga_exception ex
+            (SELECT * FROM pgagent.pga_exception ORDER BY jexid) ex
         GROUP BY
             jexscid
     ) e ON s.jscid = e.jexscid

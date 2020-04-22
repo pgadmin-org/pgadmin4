@@ -271,7 +271,7 @@ class PgadminPage:
         self.click_element(object_menu_item)
         delete_menu_item = self.find_by_partial_link_text("Remove Server")
         self.click_element(delete_menu_item)
-        self.click_modal('OK')
+        self.click_modal('Yes')
 
     def select_tree_item(self, tree_item_text):
         item = self.find_by_xpath(

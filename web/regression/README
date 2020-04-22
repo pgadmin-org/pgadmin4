@@ -190,6 +190,9 @@ Python Tests:
      Example 2)  Execute only reverse engineered SQL test framework for some modules
          run 'python runtests.py --pkg resql --modules sequences,functions'
 
+     Example 3) Exclude reverse engineered SQL test framework for all modules
+         run 'python runtests.py --exclude resql'
+
 Code Coverage:
 ---------------
 
