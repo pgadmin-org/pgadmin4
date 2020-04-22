@@ -14,7 +14,7 @@ import config
 from ldap3 import Connection, Server, Tls, ALL, ALL_ATTRIBUTES
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError,\
     LDAPInvalidScopeError, LDAPAttributeError, LDAPInvalidFilterError,\
-    LDAPStartTLSError
+    LDAPStartTLSError, LDAPSSLConfigurationError
 from flask_babelex import gettext
 
 from .internal import BaseAuthentication
@@ -81,12 +81,17 @@ class LDAPAuthentication(BaseAuthentication):
             if ca_cert_file and cert_file and key_file:
                 cert_validate = ssl.CERT_REQUIRED
 
-            tls = Tls(
-                local_private_key_file=key_file,
-                local_certificate_file=cert_file,
-                validate=cert_validate,
-                version=ssl.PROTOCOL_TLSv1_2,
-                ca_certs_file=ca_cert_file)
+            try:
+                tls = Tls(
+                    local_private_key_file=key_file,
+                    local_certificate_file=cert_file,
+                    validate=cert_validate,
+                    version=ssl.PROTOCOL_TLSv1_2,
+                    ca_certs_file=ca_cert_file)
+            except LDAPSSLConfigurationError as e:
+                current_app.logger.exception(
+                    "LDAP configuration error: %s\n" % e)
+                return False, "LDAP configuration error: %s\n" % e.args[0]
 
         try:
             # Create the server object

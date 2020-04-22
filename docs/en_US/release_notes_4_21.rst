@@ -81,3 +81,6 @@ Bug fixes
 | `Issue #5409 <https://redmine.postgresql.org/issues/5409>`_ -  Fixed validation issue in Synonyms node.
 | `Issue #5410 <https://redmine.postgresql.org/issues/5410>`_ -  Fixed an issue while removing the package body showing wrong modified SQL.
 | `Issue #5415 <https://redmine.postgresql.org/issues/5415>`_ -  Ensure that the query tool context menu should work on the collection nodes.
+| `Issue #5419 <https://redmine.postgresql.org/issues/5419>`_ -  Ensure that the user should not be able to change the authentication source.
+| `Issue #5420 <https://redmine.postgresql.org/issues/5420>`_ -  Ensure error should be handled properly when LDAP user is created with the same name.
+| `Issue #5432 <https://redmine.postgresql.org/issues/5432>`_ -  Fixed an issue where an internal user is not created if the authentication source is set to internal and ldap.

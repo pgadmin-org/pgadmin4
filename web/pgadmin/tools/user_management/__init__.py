@@ -241,7 +241,8 @@ def create():
 
 
 def create_user(data):
-    if 'auth_source' in data and data['auth_source'] != 'internal':
+    if 'auth_source' in data and data['auth_source'] != \
+            current_app.PGADMIN_DEFAULT_AUTH_SOURCE:
         req_params = ('username', 'role', 'active', 'auth_source')
     else:
         req_params = ('email', 'role', 'active', 'newPassword',
@@ -264,12 +265,13 @@ def create_user(data):
 
     try:
 
-        username = new_data['username'] if 'username' in new_data \
-            else new_data['email']
-        email = new_data['email'] if 'email' in new_data else None
-        password = new_data['password'] if 'password' in new_data else None
         auth_source = new_data['auth_source'] if 'auth_source' in new_data \
             else current_app.PGADMIN_DEFAULT_AUTH_SOURCE
+        username = new_data['username'] if \
+            'username' in new_data and auth_source !=\
+            current_app.PGADMIN_DEFAULT_AUTH_SOURCE else new_data['email']
+        email = new_data['email'] if 'email' in new_data else None
+        password = new_data['password'] if 'password' in new_data else None
 
         usr = User(username=username,
                    email=email,

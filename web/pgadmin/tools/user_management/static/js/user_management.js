@@ -25,7 +25,8 @@ define([
   var USERURL = url_for('user_management.users'),
     ROLEURL = url_for('user_management.roles'),
     SOURCEURL = url_for('user_management.auth_sources'),
-    AUTH_ONLY_INTERNAL = (userInfo['auth_sources'].length  == 1 && userInfo['auth_sources'].includes('internal')) ? true : false,
+    DEFAULT_AUTH_SOURCE = 'internal',
+    AUTH_ONLY_INTERNAL = (userInfo['auth_sources'].length  == 1 && userInfo['auth_sources'].includes(DEFAULT_AUTH_SOURCE)) ? true : false,
     userFilter = function(collection) {
       return (new Backgrid.Extension.ClientSideFilter({
         collection: collection,
@@ -286,12 +287,12 @@ define([
             role: '2',
             newPassword: undefined,
             confirmPassword: undefined,
-            auth_source: 'internal',
+            auth_source: DEFAULT_AUTH_SOURCE,
             authOnlyInternal: AUTH_ONLY_INTERNAL,
           },
           schema: [{
             id: 'auth_source',
-            label: gettext('Authentication Source'),
+            label: gettext('Authentication source'),
             type: 'text',
             control: 'Select2',
             url: url_for('user_management.auth_sources'),
@@ -328,7 +329,14 @@ define([
             cellHeaderClasses: 'width_percent_30',
             deps: ['auth_source'],
             editable: function(m) {
-              if (m.get('authOnlyInternal') || m.get('auth_source') == 'internal') return false;
+              if (m.get('authOnlyInternal') || m.get('auth_source') == DEFAULT_AUTH_SOURCE) {
+                if (m.isNew() && m.get('username') != undefined && m.get('username') != '') {
+                  setTimeout( function() {
+                    m.set('username', undefined);
+                  }, 10);
+                }
+                return false;
+              }
               return true;
             },
             disabled: false,
@@ -421,7 +429,7 @@ define([
             deps: ['auth_source'],
             sortable: false,
             editable: function(m) {
-              if (m.get('auth_source') == 'internal') {
+              if (m.get('auth_source') == DEFAULT_AUTH_SOURCE) {
                 return true;
               } else {
                 return false;
@@ -438,7 +446,7 @@ define([
             deps: ['auth_source'],
             sortable: false,
             editable: function(m) {
-              if (m.get('auth_source') == 'internal') {
+              if (m.get('auth_source') == DEFAULT_AUTH_SOURCE) {
                 return true;
               } else {
                 return false;
@@ -450,7 +458,7 @@ define([
               changedAttrs = this.changed || {},
               email_filter = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-            if (this.get('auth_source') == 'internal' && ('email' in changedAttrs || !this.isNew()) && (_.isUndefined(this.get('email')) ||
+            if (this.get('auth_source') == DEFAULT_AUTH_SOURCE && ('email' in changedAttrs || !this.isNew()) && (_.isUndefined(this.get('email')) ||
                 _.isNull(this.get('email')) ||
                 String(this.get('email')).replace(/^\s+|\s+$/g, '') == '')) {
               errmsg = gettext('Email address cannot be empty.');
@@ -464,7 +472,7 @@ define([
               this.errorModel.set('email', errmsg);
               return errmsg;
             } else if (!!this.get('email') && this.collection.nonFilter.where({
-              'email': this.get('email'), 'auth_source': 'internal',
+              'email': this.get('email'), 'auth_source': DEFAULT_AUTH_SOURCE,
             }).length > 1) {
               errmsg = gettext('The email address %s already exists.',
                 this.get('email')
@@ -490,7 +498,7 @@ define([
               this.errorModel.unset('role');
             }
 
-            if (this.get('auth_source') == 'internal') {
+            if (this.get('auth_source') == DEFAULT_AUTH_SOURCE) {
               if (this.isNew()) {
                 // Password is compulsory for new user.
                 if ('newPassword' in changedAttrs && (_.isUndefined(this.get('newPassword')) ||
@@ -597,6 +605,17 @@ define([
                   this.errorModel.unset('newPassword');
                   this.errorModel.unset('confirmPassword');
                 }
+              }
+            } else {
+              if (!!this.get('username') && this.collection.nonFilter.where({
+                'username': this.get('username'), 'auth_source': 'ldap',
+              }).length > 1) {
+                errmsg = gettext('The username %s already exists.',
+                  this.get('username')
+                );
+
+                this.errorModel.set('username', errmsg);
+                return errmsg;
               }
             }
             return null;
@@ -824,10 +843,10 @@ define([
                   saveUser: function(m) {
                     var d = m.toJSON(true);
 
-                    if(m.isNew() && m.get('authOnlyInternal') === false &&
+                    if(m.isNew() && m.get('auth_source') == 'ldap' &&
                      (!m.get('username') || !m.get('auth_source') || !m.get('role')) ) {
                       return false;
-                    } else if (m.isNew() && m.get('authOnlyInternal') === true &&  (!m.get('email') || !m.get('role') ||
+                    } else if (m.isNew() && m.get('auth_source') == DEFAULT_AUTH_SOURCE &&  (!m.get('email') || !m.get('role') ||
                         !m.get('newPassword') || !m.get('confirmPassword') ||
                         m.get('newPassword') != m.get('confirmPassword'))) {
                       // New user model is valid but partially filled so return without saving.
@@ -845,9 +864,16 @@ define([
                         wait: true,
                         success: function() {
                           // User created/updated on server now start new session for this user.
+                          let temp_auth_sources = m.get('auth_source');
                           m.set({
                             'newPassword': undefined,
                             'confirmPassword': undefined,
+                            'auth_source': undefined,
+                          });
+
+                          // It's a heck to re-render the Auth Source control.
+                          m.set({
+                            'auth_source': temp_auth_sources,
                           });
 
                           m.startNewSession();
