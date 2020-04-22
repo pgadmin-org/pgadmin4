@@ -3749,6 +3749,15 @@ define('tools.querytool', [
             if (values.length > k) {
               v = values[k].replace(new RegExp(`^\\${self.preferences.results_grid_quote_char}`), '').replace(new RegExp(`\\${self.preferences.results_grid_quote_char}$`), '');
             }
+
+            // set value to default or null depending on column metadata
+            if(v === '') {
+              if(self.columns[k].has_default_val) {
+                v = undefined;
+              } else {
+                v = null;
+              }
+            }
             row[self.columns[k].name] = v;
           }
           partial.push(row);
