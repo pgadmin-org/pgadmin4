@@ -994,8 +994,8 @@ define('pgadmin.misc.explain', [
         toolTipX = toolTipX < 0 ? 0 : (toolTipX);
         toolTipY = toolTipY < 0 ? 0 : (toolTipY);
 
-        toolTipX = toolTipX > graphContainer.width()-toolTipContainer[0].clientWidth ? graphContainer.width()-(toolTipContainer[0].clientWidth*zoomFactor) : toolTipX;
-        toolTipY = toolTipY > graphContainer.height()-toolTipContainer[0].clientHeight ? graphContainer.height()-(toolTipContainer[0].clientWidth*zoomFactor) : toolTipY;
+        toolTipX = toolTipX > graphContainer.width() - toolTipContainer[0].clientWidth ? toolTipX - (toolTipContainer[0].clientWidth+(pWIDTH* zoomFactor)) : toolTipX;
+        toolTipY = toolTipY > graphContainer.height() - toolTipContainer[0].clientHeight ? graphContainer.height() - toolTipContainer[0].clientHeight : toolTipY;
 
         // Show toolTip at respective x,y coordinates
         toolTipContainer.css({
