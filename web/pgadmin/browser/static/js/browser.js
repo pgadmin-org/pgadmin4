@@ -1001,12 +1001,13 @@ define('pgadmin.browser', [
                   while (e >= s) {
                     i = items.eq(s);
                     var d = ctx.t.itemData(i);
-                    if (
-                      pgAdmin.natural_sort(
-                        d._label, _data._label
-                      ) == 1
-                    )
-                      return true;
+                    if (d._type === 'column') {
+                      if (pgAdmin.numeric_comparator(d._id, _data._id) == 1)
+                        return true;
+                    } else {
+                      if (pgAdmin.natural_sort(d._label, _data._label) == 1)
+                        return true;
+                    }
                     s++;
                   }
                   if (e != items.length - 1) {
@@ -1026,24 +1027,31 @@ define('pgadmin.browser', [
                   while (e - s > 22) {
                     i = items.eq(s);
                     d = ctx.t.itemData(i);
-                    if (
-                      pgAdmin.natural_sort(
-                        d._label, _data._label
-                      ) != -1
-                    )
-                      return true;
+                    if (d._type === 'column') {
+                      if (pgAdmin.numeric_comparator(d._id, _data._id) != -1)
+                        return true;
+                    } else {
+                      if (pgAdmin.natural_sort(d._label, _data._label) != -1)
+                        return true;
+                    }
                     i = items.eq(e);
                     d = ctx.t.itemData(i);
-                    if (
-                      pgAdmin.natural_sort(
-                        d._label, _data._label
-                      ) != 1
-                    )
-                      return true;
+                    if (d._type === 'column') {
+                      if (pgAdmin.numeric_comparator(d._id, _data._id) != -1)
+                        return true;
+                    } else {
+                      if (pgAdmin.natural_sort(d._label, _data._label) != 1)
+                        return true;
+                    }
                     m = s + Math.round((e - s) / 2);
                     i = items.eq(m);
                     d = ctx.t.itemData(i);
-                    res = pgAdmin.natural_sort(d._label, _data._label);
+                    if(d._type === 'column'){
+                      res = pgAdmin.numeric_comparator(d._id, _data._id);
+                    } else {
+                      res = pgAdmin.natural_sort(d._label, _data._label);
+                    }
+
                     if (res == 0)
                       return true;
 

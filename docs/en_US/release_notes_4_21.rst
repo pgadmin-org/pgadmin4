@@ -53,6 +53,7 @@ Bug fixes
 | `Issue #4957 <https://redmine.postgresql.org/issues/4957>`_ -  Ensure that Constraint Trigger, Deferrable, Deferred option should be disabled when the user selects EDB-SPL function for the trigger.
 | `Issue #4969 <https://redmine.postgresql.org/issues/4969>`_ -  Fixed an issue where changing the values of columns with JSONB or JSON types to NULL.
 | `Issue #5007 <https://redmine.postgresql.org/issues/5007>`_ -  Ensure index dropdown should have existing indexes while creating unique constraints.
+| `Issue #5043 <https://redmine.postgresql.org/issues/5043>`_ -  Fixed an issue where columns names should be visible in the order of their creation in the browser tree.
 | `Issue #5053 <https://redmine.postgresql.org/issues/5053>`_ -  Fixed an issue where changing the columns in the existing view throws an error.
 | `Issue #5157 <https://redmine.postgresql.org/issues/5157>`_ -  Ensure that default sort order should be using the primary key in View/Edit data.
 | `Issue #5180 <https://redmine.postgresql.org/issues/5180>`_ -  Fixed an issue where the autovacuum_enabled parameter is added automatically in the RE-SQL when the table has been created using the WITH clause.

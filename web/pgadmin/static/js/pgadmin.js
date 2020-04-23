@@ -115,6 +115,15 @@ define([], function() {
     return 0;
   };
 
+  pgAdmin.numeric_comparator = function(a, b) {
+    a = parseInt(a);
+    b = parseInt(b);
+    if (a < b)
+      return -1 ;
+    else
+      return 1 ;
+  };
+
   /**
    * Decimal adjustment of a number.
    *
