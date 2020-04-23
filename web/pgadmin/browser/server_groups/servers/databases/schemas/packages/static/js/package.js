@@ -97,6 +97,7 @@ define('pgadmin.node.package', [
           pkgbodysrc: undefined,
           acl: undefined,
           pkgacl: [],
+          warn_text: undefined,
         },
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
@@ -146,12 +147,46 @@ define('pgadmin.node.package', [
           id: 'pkgheadsrc', label: gettext('Header'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Header'),
           tabPanelCodeClass: 'sql-code-control',
-          control: Backform.SqlCodeControl,
+          control: Backform.SqlCodeControl.extend({
+            onChange: function() {
+              Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
+              if(this.model && this.model.changed) {
+                if(this.model.origSessAttrs && (this.model.changed.pkgheadsrc != this.model.origSessAttrs.pkgheadsrc)) {
+                  this.model.warn_text = gettext(
+                    'Updating the package header definition may remove its existing body.'
+                  ) + '<br><br><b>' + gettext('Do you want to continue?') +
+                    '</b>';
+                }
+                else {
+                  this.model.warn_text = undefined;
+                }
+              }
+              else {
+                this.model.warn_text = undefined;
+              }
+            },
+          }),
         },{
           id: 'pkgbodysrc', label: gettext('Body'), cell: 'string',
           type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Body'),
           tabPanelCodeClass: 'sql-code-control',
-          control: Backform.SqlCodeControl,
+          control:  Backform.SqlCodeControl.extend({
+            onChange: function() {
+              Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
+              if(this.model && this.model.changed) {
+                if (this.model.origSessAttrs && (this.model.changed.pkgbodysrc != this.model.origSessAttrs.pkgbodysrc)) {
+                  this.model.warn_text = undefined;
+                } else if(this.model.origSessAttrs && !_.isUndefined(this.model.origSessAttrs.pkgheadsrc) &&
+                  this.model.sessAttrs && !_.isUndefined(this.model.sessAttrs.pkgheadsrc) &&
+                  (this.model.origSessAttrs.pkgheadsrc != this.model.sessAttrs.pkgheadsrc)){
+                  this.model.warn_text = gettext(
+                    'Updating the package header definition may remove its existing body.'
+                  ) + '<br><br><b>' + gettext('Do you want to continue?') +
+                    '</b>';
+                }
+              }
+            },
+          }),
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
           group: gettext('Security'), mode: ['properties'],
