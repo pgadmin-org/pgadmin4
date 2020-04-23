@@ -1660,14 +1660,14 @@ define('pgadmin.browser', [
       }
 
       // If server icon/background changes then also we need to re-create it
-      if(_old._type == 'server' && _new._type == 'server' &&
-        ( _old._pid != _new._pid ||
+      if ((
+        _old._type == 'server' && _new._type == 'server' && (
+          _old._pid != _new._pid ||
           _old._label != _new._label ||
-            _old.icon != _new.icon )
+          _old.icon != _new.icon
+        )) || _old._pid != _new._pid || _old._label != _new._label ||
+        _old._id != _new._id
       ) {
-        ctx.op = 'RECREATE';
-        traversePath();
-      } else if (_old._pid != _new._pid || _old._label != _new._label) {
         ctx.op = 'RECREATE';
         traversePath();
       } else {
