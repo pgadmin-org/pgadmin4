@@ -279,6 +279,7 @@ define('pgadmin.node.database', [
         defaults: {
           name: undefined,
           owner: undefined,
+          is_sys_obj: undefined,
           comment: undefined,
           encoding: 'UTF8',
           template: undefined,
@@ -334,6 +335,9 @@ define('pgadmin.node.database', [
         },{
           id: 'typeacl', label: gettext('Default TYPE privileges'), type: 'text',
           group: gettext('Security'), mode: ['properties'], min_version: 90200,
+        },{
+          id: 'is_sys_obj', label: gettext('System database?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'comments', label: gettext('Comment'),
           editable: false, type: 'multiline',

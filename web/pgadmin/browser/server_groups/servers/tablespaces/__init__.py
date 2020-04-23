@@ -111,6 +111,10 @@ class TablespaceView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection()
+            self.datlastsysoid = \
+                self.manager.db_info[self.manager.did]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                self.manager.did in self.manager.db_info else 0
 
             # If DB not connected then return error to browser
             if not self.conn.connected():
@@ -267,6 +271,8 @@ class TablespaceView(PGChildNodeView):
 
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
+        copy_data['is_sys_obj'] = (
+            copy_data['oid'] <= self.datlastsysoid)
         copy_data = self._formatter(copy_data, tsid)
 
         return ajax_response(

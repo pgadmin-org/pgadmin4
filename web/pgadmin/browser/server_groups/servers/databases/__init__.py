@@ -177,6 +177,7 @@ class DatabaseView(PGChildNodeView):
                 if self.manager is None:
                     return gone(errormsg=_("Could not find the server."))
 
+                self.datlastsysoid = 0
                 if action and action in ["drop"]:
                     self.conn = self.manager.connection()
                 elif 'did' in kwargs:
@@ -186,6 +187,7 @@ class DatabaseView(PGChildNodeView):
                     # provide generic connection
                     if kwargs['did'] in self.manager.db_info:
                         self._db = self.manager.db_info[kwargs['did']]
+                        self.datlastsysoid = self._db['datlastsysoid']
                         if self._db['datallowconn'] is False:
                             self.conn = self.manager.connection()
                             self.db_allow_connection = False
@@ -414,6 +416,8 @@ class DatabaseView(PGChildNodeView):
         res = self.formatdbacl(res, defaclres['rows'])
 
         result = res['rows'][0]
+        result['is_sys_obj'] = (
+            result['oid'] <= self.datlastsysoid)
         # Fetching variable for database
         SQL = render_template(
             "/".join([self.template_path, 'get_variables.sql']),

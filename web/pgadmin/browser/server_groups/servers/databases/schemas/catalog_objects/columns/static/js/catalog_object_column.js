@@ -50,6 +50,7 @@ define('pgadmin.node.catalog_object_column', [
             cltype: undefined,
             collspcname: undefined,
             attacl: undefined,
+            is_sys_obj: undefined,
             description: undefined,
           },
           schema: [{
@@ -70,6 +71,9 @@ define('pgadmin.node.catalog_object_column', [
           },{
             id: 'attacl', label: gettext('Privileges'), cell: 'string',
             group: gettext('Security'), type: 'text', readonly: true,
+          },{
+            id: 'is_sys_obj', label: gettext('System column?'),
+            cell:'boolean', type: 'switch', mode: ['properties'],
           },{
             id: 'description', label: gettext('Comment'), cell: 'string',
             type: 'multiline', readonly: true,

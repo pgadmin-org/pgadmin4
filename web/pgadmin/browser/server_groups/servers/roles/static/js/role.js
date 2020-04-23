@@ -449,6 +449,9 @@ define('pgadmin.node.role', [
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
           readonly: 'readonly',
         },{
+          id: 'is_sys_obj', label: gettext('System role?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
+        },{
           id: 'description', label: gettext('Comments'), type: 'multiline',
           group: null, mode: ['properties', 'edit', 'create'],
           readonly: 'readonly',

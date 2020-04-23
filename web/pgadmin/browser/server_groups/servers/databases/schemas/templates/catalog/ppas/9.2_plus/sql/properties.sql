@@ -6,9 +6,6 @@ SELECT
     array_to_string(nsp.nspacl::text[], ', ') as acl,
     r.rolname AS namespaceowner, description,
     has_schema_privilege(nsp.oid, 'CREATE') AS can_create,
-    CASE
-    WHEN nspname LIKE E'pg\\_%' THEN true
-    ELSE false END AS is_sys_object,
     (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'r' AND defaclnamespace = nsp.oid) AS tblacl,
     (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'S' AND defaclnamespace = nsp.oid) AS seqacl,
     (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid) AS funcacl,

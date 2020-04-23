@@ -71,6 +71,7 @@ define('pgadmin.node.event_trigger', [
           oid: undefined,
           name: undefined,
           eventowner: undefined,
+          is_sys_obj: undefined,
           comment: undefined,
           enabled: 'O',
           eventfuncoid: undefined,
@@ -105,6 +106,10 @@ define('pgadmin.node.event_trigger', [
           id: 'eventowner', label: gettext('Owner'), cell: 'string',
           type: 'text', mode: ['properties', 'edit','create'], node: 'role',
           control: Backform.NodeListByNameControl,
+        },{
+          id: 'is_sys_obj', label: gettext('System event trigger?'),
+          cell:'boolean', type: 'switch',
+          mode: ['properties'],
         },{
           id: 'comment', label: gettext('Comment'), type: 'multiline',
         },{

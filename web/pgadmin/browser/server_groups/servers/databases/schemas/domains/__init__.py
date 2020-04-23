@@ -265,6 +265,10 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Get database connection
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
 
             # we will set template path for sql scripts
             self.template_path = compile_template_path(

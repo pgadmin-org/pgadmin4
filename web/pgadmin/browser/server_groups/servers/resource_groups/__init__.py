@@ -219,7 +219,11 @@ class ResourceGroupView(NodeView):
             self.manager = self.driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection()
 
-            # If DB not connected then return error to browser
+            self.datlastsysoid = \
+                self.manager.db_info[self.manager.did]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                self.manager.did in self.manager.db_info else 0
+
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
@@ -335,6 +339,9 @@ class ResourceGroupView(NodeView):
 
         if len(res['rows']) == 0:
             return gone(gettext("""Could not find the resource group."""))
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['oid'] <= self.datlastsysoid)
 
         return ajax_response(
             response=res['rows'][0],

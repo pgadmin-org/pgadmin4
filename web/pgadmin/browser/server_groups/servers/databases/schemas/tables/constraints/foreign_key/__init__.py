@@ -233,6 +233,10 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
             self.template_path = 'foreign_key/sql/#{0}#'.format(
                 self.manager.version)
 
@@ -277,6 +281,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
         result = res
         if fkid:
             result = res[0]
+        result['is_sys_obj'] = (
+            result['oid'] <= self.datlastsysoid)
 
         return ajax_response(
             response=result,

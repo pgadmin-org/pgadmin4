@@ -72,6 +72,7 @@ define('pgadmin.node.fts_parser', [
         idAttribute: 'oid',
         defaults: {
           name: undefined,          // Fts parser name
+          is_sys_obj: undefined,  // Is system object
           description: undefined,   // Comment on parser
           schema: undefined,        // Schema name to which parser belongs
           prsstart: undefined,      // Start function for fts parser
@@ -101,6 +102,9 @@ define('pgadmin.node.fts_parser', [
           type: 'text', mode: ['create','edit'], node: 'schema',
           control: 'node-list-by-id', cache_node: 'database',
           cache_level: 'database',
+        },{
+          id: 'is_sys_obj', label: gettext('System FTS parser?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50',

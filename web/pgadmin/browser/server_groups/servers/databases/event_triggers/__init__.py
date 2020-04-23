@@ -195,6 +195,11 @@ class EventTriggerView(PGChildNodeView):
             self.conn = self.manager.connection(did=kwargs['did'])
             self.template_path = 'event_triggers/sql/9.3_plus'
 
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
+
             return f(*args, **kwargs)
 
         return wrap
@@ -219,6 +224,7 @@ class EventTriggerView(PGChildNodeView):
 
         if not status:
             return internal_server_error(errormsg=res)
+
         return ajax_response(
             response=res['rows'],
             status=200
@@ -337,6 +343,7 @@ class EventTriggerView(PGChildNodeView):
             )
 
         result = res['rows'][0]
+        result['is_sys_obj'] = (result['oid'] <= self.datlastsysoid)
         result = self._formatter(result)
 
         return ajax_response(

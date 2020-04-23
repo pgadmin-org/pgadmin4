@@ -72,6 +72,7 @@ define('pgadmin.node.fts_template', [
         idAttribute: 'oid',
         defaults: {
           name: undefined,      // Fts template name
+          is_sys_obj: undefined,  // Is system object
           description: undefined,   // Comment on template
           schema: undefined,        // Schema name to which template belongs
           tmplinit: undefined,      // Init function for fts template
@@ -96,6 +97,9 @@ define('pgadmin.node.fts_template', [
           type: 'text', mode: ['create','edit'], node: 'schema',
           control: 'node-list-by-id', cache_node: 'database',
           cache_level: 'database',
+        },{
+          id: 'is_sys_obj', label: gettext('System FTS parser?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50',

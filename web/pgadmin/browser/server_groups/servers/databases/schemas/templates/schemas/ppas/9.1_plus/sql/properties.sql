@@ -9,9 +9,6 @@ SELECT
     array_to_string(nsp.nspacl::text[], ', ') as acl,
     r.rolname AS namespaceowner, description,
     has_schema_privilege(nsp.oid, 'CREATE') AS can_create,
-    CASE
-    WHEN nspname LIKE E'pg\\_%' THEN true
-    ELSE false END AS is_sys_object,
     {### Default ACL for Tables ###}
     (SELECT array_to_string(ARRAY(
         SELECT array_to_string(defaclacl::text[], ', ')

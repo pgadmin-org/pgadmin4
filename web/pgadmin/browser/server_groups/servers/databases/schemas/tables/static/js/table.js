@@ -378,6 +378,10 @@ define('pgadmin.node.table', [
             return false;
           },
         },{
+          id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
+          type: 'switch', mode: ['properties'],
+          disabled: 'inSchema',
+        },{
           id: 'description', label: gettext('Comment'), type: 'multiline',
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
         },{
@@ -850,10 +854,6 @@ define('pgadmin.node.table', [
         },{
           id: 'relhassubclass', label: gettext('Inherits tables?'), cell: 'switch',
           type: 'switch', mode: ['properties'], group: gettext('advanced'),
-          disabled: 'inSchema',
-        },{
-          id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
-          type: 'switch', mode: ['properties'],
           disabled: 'inSchema',
         },{
           type: 'nested', control: 'fieldset', label: gettext('Like'),

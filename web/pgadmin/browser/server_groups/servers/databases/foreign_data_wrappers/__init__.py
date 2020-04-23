@@ -217,6 +217,10 @@ class ForeignDataWrapperView(PGChildNodeView):
             )
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
 
             # Set the template path for the SQL scripts
             self.template_path = 'foreign_data_wrappers/sql/#{0}#'.format(
@@ -346,6 +350,9 @@ class ForeignDataWrapperView(PGChildNodeView):
                 gettext("Could not find the foreign data"
                         " wrapper information.")
             )
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['fdwoid'] <= self.datlastsysoid)
 
         if res['rows'][0]['fdwoptions'] is not None:
             res['rows'][0]['fdwoptions'] = tokenize_options(

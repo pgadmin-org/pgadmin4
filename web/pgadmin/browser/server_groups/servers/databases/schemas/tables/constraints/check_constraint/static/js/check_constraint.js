@@ -110,6 +110,9 @@ define('pgadmin.node.check_constraint', [
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
         },{
+          id: 'is_sys_obj', label: gettext('System check constraint?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
+        },{
           id: 'comment', label: gettext('Comment'), type: 'multiline', cell:
           'string', mode: ['properties', 'create', 'edit'],
           deps:['name'], disabled:function(m) {

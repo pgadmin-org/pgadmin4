@@ -245,6 +245,10 @@ class IndexConstraintView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
             self.template_path = 'index_constraint/sql/#{0}#'\
                 .format(self.manager.version)
 
@@ -295,6 +299,8 @@ class IndexConstraintView(PGChildNodeView):
         result = res
         if cid:
             result = res[0]
+        result['is_sys_obj'] = (
+            result['oid'] <= self.datlastsysoid)
 
         return ajax_response(
             response=result,

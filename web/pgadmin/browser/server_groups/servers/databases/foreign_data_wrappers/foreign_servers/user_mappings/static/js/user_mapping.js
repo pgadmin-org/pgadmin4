@@ -108,6 +108,7 @@ define('pgadmin.node.user_mapping', [
         idAttribute: 'um_oid',
         defaults: {
           name: undefined,
+          is_sys_obj: undefined,
           um_options: [],
         },
 
@@ -147,6 +148,9 @@ define('pgadmin.node.user_mapping', [
         },{
           id: 'um_oid', label: gettext('OID'), cell: 'string',
           type: 'text', mode: ['properties'],
+        }, {
+          id: 'is_sys_obj', label: gettext('System user mapping?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'umoptions', label: gettext('Options'), type: 'collection', group: gettext('Options'),
           model: OptionsModel, control: 'unique-col-collection', mode: ['create', 'edit'],

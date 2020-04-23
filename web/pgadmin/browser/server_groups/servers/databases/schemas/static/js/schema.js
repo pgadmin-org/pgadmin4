@@ -413,7 +413,7 @@ define('pgadmin.node.schema', [
           type: 'text', control: 'node-list-by-name', node: 'role',
           select2: { allowClear: false },
         },{
-          id: 'is_sys_object', label: gettext('System schema?'),
+          id: 'is_sys_obj', label: gettext('System schema?'),
           cell: 'switch', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',

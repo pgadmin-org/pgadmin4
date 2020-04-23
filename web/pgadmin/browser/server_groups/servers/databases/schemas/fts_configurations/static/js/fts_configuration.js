@@ -469,6 +469,7 @@ define('pgadmin.node.fts_configuration', [
         defaults: {
           name: undefined,        // FTS Configuration name
           owner: undefined,       // FTS Configuration owner
+          is_sys_obj: undefined,  // Is system object
           description: undefined, // Comment on FTS Configuration
           schema: undefined,      // Schema name FTS Configuration belongs to
           prsname: undefined,    // FTS parser list for FTS Configuration node
@@ -503,6 +504,9 @@ define('pgadmin.node.fts_configuration', [
           type: 'text', mode: ['create','edit'], node: 'schema',
           control: 'node-list-by-id', cache_node: 'database',
           cache_level: 'database',
+        },{
+          id: 'is_sys_obj', label: gettext('System FTS configuration?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50',

@@ -340,6 +340,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             # Get database connection
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
 
             # Set template path for sql scripts depending
             # on the server version.
@@ -1094,6 +1098,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             return False, False
 
         data = res['rows'][0]
+        data['is_sys_obj'] = (
+            data['oid'] <= self.datlastsysoid)
 
         if self.manager.version >= 90200:
             # Fetch privileges

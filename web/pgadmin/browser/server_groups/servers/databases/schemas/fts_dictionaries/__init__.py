@@ -219,6 +219,11 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn = self.manager.connection(did=kwargs['did'])
             driver = get_driver(PG_DEFAULT_DRIVER)
             self.qtIdent = driver.qtIdent
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
+
             # Set the template path for the SQL scripts
             self.template_path = 'fts_dictionaries/sql/#{0}#'.format(
                 self.manager.version)
@@ -389,6 +394,9 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, gone(_(
                 "Could not find the FTS Dictionary node in the database node."
             ))
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['oid'] <= self.datlastsysoid)
 
         # Handle templates and its schema name properly
         if res['rows'][0]['template_schema'] is not None:

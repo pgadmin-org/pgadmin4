@@ -223,6 +223,10 @@ class UserMappingView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
 
             # Set the template path for the SQL scripts
             self.template_path = 'user_mappings/sql/#{0}#'.format(
@@ -359,6 +363,9 @@ class UserMappingView(PGChildNodeView):
             return gone(
                 gettext("Could not find the user mapping information.")
             )
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['um_oid'] <= self.datlastsysoid)
 
         if res['rows'][0]['umoptions'] is not None:
             res['rows'][0]['umoptions'] = tokenize_options(

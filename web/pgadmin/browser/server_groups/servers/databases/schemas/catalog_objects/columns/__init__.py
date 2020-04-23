@@ -173,6 +173,10 @@ class CatalogObjectColumnsView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
             self.template_path = 'catalog_object_column/sql/#{0}#'.format(
                 self.manager.version)
 
@@ -272,6 +276,9 @@ class CatalogObjectColumnsView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(gettext("""Could not find the specified column."""))
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['attrelid'] <= self.datlastsysoid)
 
         return ajax_response(
             response=res['rows'][0],

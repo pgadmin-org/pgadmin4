@@ -542,6 +542,7 @@ define('pgadmin.node.foreign_table', [
           oid: undefined,
           owner: undefined,
           basensp: undefined,
+          is_sys_obj: undefined,
           description: undefined,
           ftsrvname: undefined,
           strftoptions: undefined,
@@ -567,6 +568,9 @@ define('pgadmin.node.foreign_table', [
           id: 'basensp', label: gettext('Schema'), cell: 'node-list-by-name',
           control: 'node-list-by-name', cache_level: 'database', type: 'text',
           node: 'schema', mode:['create', 'edit'],
+        },{
+          id: 'is_sys_obj', label: gettext('System foreign table?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',

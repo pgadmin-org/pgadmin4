@@ -90,6 +90,7 @@ define('pgadmin.node.unique_constraint', [
         defaults: {
           name: undefined,
           oid: undefined,
+          is_sys_obj: undefined,
           comment: undefined,
           spcname: undefined,
           index: undefined,
@@ -109,6 +110,9 @@ define('pgadmin.node.unique_constraint', [
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'], editable: false,
           cellHeaderClasses:'width_percent_20',
+        },{
+          id: 'is_sys_obj', label: gettext('System unique constraint?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],

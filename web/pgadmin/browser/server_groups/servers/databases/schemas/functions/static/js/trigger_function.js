@@ -134,7 +134,7 @@ define('pgadmin.node.trigger_function', [
           node: 'schema', disabled: 'isDisabled',  readonly: 'isReadonly',
           mode: ['create', 'edit'],
         },{
-          id: 'sysfunc', label: gettext('System function?'),
+          id: 'sysfunc', label: gettext('System trigger function?'),
           cell:'boolean', type: 'switch',
           mode: ['properties'], visible: 'isVisible',
         },{

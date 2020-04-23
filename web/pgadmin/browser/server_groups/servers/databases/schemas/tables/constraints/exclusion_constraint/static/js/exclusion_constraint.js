@@ -655,6 +655,7 @@ define('pgadmin.node.exclusion_constraint', [
         defaults: {
           name: undefined,
           oid: undefined,
+          is_sys_obj: undefined,
           comment: undefined,
           spcname: undefined,
           amname: 'gist',
@@ -672,6 +673,9 @@ define('pgadmin.node.exclusion_constraint', [
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
+        },{
+          id: 'is_sys_obj', label: gettext('System exclusion constraint?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],

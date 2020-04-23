@@ -212,6 +212,10 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
             self.template_path = 'fts_templates/sql/#{0}#'.format(
                 self.manager.version)
 
@@ -325,7 +329,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, gone(
                 gettext("Could not find the requested FTS template.")
             )
-
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['oid'] <= self.datlastsysoid)
         return True, res['rows'][0]
 
     @check_precondition

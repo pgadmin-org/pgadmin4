@@ -138,6 +138,9 @@ define('pgadmin.node.collation', [
           disabled: 'inSchemaWithModelCheck', readonly: function(m) {return !m.isNew;},
           deps: ['locale', 'copy_collation'],
         },{
+          id: 'is_sys_obj', label: gettext('System collation?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
+        },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema',

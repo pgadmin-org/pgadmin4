@@ -130,6 +130,9 @@ define('pgadmin.node.language', [
           id: 'acl', label: gettext('Privileges'), type: 'text',
           group: gettext('Security'), mode: ['properties'],
         },{
+          id: 'is_sys_obj', label: gettext('System language?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
+        },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
         },{

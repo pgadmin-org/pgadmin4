@@ -206,6 +206,11 @@ class ForeignServerView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
+
             # Set the template path for the SQL scripts
             self.template_path = "foreign_servers/sql/#{0}#".format(
                 self.manager.version
@@ -337,6 +342,9 @@ class ForeignServerView(PGChildNodeView):
             return gone(
                 gettext("Could not find the foreign server information.")
             )
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['fsrvid'] <= self.datlastsysoid)
 
         if res['rows'][0]['fsrvoptions'] is not None:
             res['rows'][0]['fsrvoptions'] = tokenize_options(

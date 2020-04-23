@@ -230,6 +230,10 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
             # Set the template path for the SQL scripts
             self.template_path = 'fts_configurations/sql/#{0}#'.format(
                 self.manager.version)
@@ -381,6 +385,9 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                     "Could not find the FTS Configuration node in the "
                     "database node.")
             )
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['oid'] <= self.datlastsysoid)
 
         # In edit mode fetch token/dictionary list also
         sql = render_template(

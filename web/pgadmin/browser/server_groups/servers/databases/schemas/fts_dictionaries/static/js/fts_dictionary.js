@@ -115,6 +115,7 @@ define('pgadmin.node.fts_dictionary', [
         defaults: {
           name: undefined,        // FTS Dictionary name
           owner: undefined,       // FTS Dictionary owner
+          is_sys_obj: undefined,  // Is system object
           description: undefined, // Comment on FTS Dictionary
           schema: undefined,      // Schema name FTS dictionary belongs to
           template: undefined,    // Template list for FTS dictionary node
@@ -147,6 +148,9 @@ define('pgadmin.node.fts_dictionary', [
           id: 'schema', label: gettext('Schema'), cell: 'string',
           type: 'text', mode: ['create','edit'], node: 'schema',
           cache_node: 'database', control: 'node-list-by-id',
+        },{
+          id: 'is_sys_obj', label: gettext('System FTS dictionary?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50',

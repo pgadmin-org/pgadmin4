@@ -230,6 +230,11 @@ class LanguageView(PGChildNodeView):
             self.driver = get_driver(PG_DEFAULT_DRIVER)
             self.manager = self.driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
+
             # Set the template path for the SQL scripts
             self.template_path = (
                 "languages/sql/#gpdb#{0}#".format(self.manager.version) if
@@ -347,6 +352,9 @@ class LanguageView(PGChildNodeView):
             return gone(
                 gettext("Could not find the language information.")
             )
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['oid'] <= self.datlastsysoid)
 
         sql = render_template(
             "/".join([self.template_path, 'acl.sql']),

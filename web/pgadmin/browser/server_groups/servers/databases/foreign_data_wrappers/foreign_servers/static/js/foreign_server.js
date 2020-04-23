@@ -109,6 +109,7 @@ define('pgadmin.node.foreign_server', [
           fsrvvalue: undefined,
           fsrvoptions: [],
           fsrvowner: undefined,
+          is_sys_obj: undefined,
           description: undefined,
           fsrvacl: [],
         },
@@ -148,6 +149,9 @@ define('pgadmin.node.foreign_server', [
         },{
           id: 'fsrvversion', label: gettext('Version'), cell: 'string',
           group: gettext('Definition'), type: 'text',
+        },{
+          id: 'is_sys_obj', label: gettext('System foreign server?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',

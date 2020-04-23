@@ -45,6 +45,7 @@ define('pgadmin.node.catalog', [
           name: undefined,
           namespaceowner: undefined,
           nspacl: undefined,
+          is_sys_obj: undefined,
           description: undefined,
           securitylabel: [],
         },
@@ -70,6 +71,9 @@ define('pgadmin.node.catalog', [
         },{
           id: 'acl', label: gettext('Privileges'), type: 'text',
           group: gettext('Security'), mode: ['properties'],
+        },{
+          id: 'is_sys_obj', label: gettext('System catalog?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',

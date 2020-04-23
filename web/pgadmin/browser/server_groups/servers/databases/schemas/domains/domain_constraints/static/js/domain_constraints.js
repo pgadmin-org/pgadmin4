@@ -86,6 +86,9 @@ define('pgadmin.node.domain_constraints', [
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
         },{
+          id: 'is_sys_obj', label: gettext('System domain constraint?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
+        },{
           id: 'description', label: gettext('Comment'), type: 'multiline', cell:
           'string', mode: ['properties', 'create', 'edit'], min_version: 90500,
         },{

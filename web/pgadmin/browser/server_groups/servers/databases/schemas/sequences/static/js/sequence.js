@@ -80,6 +80,7 @@ define('pgadmin.node.sequence', [
           oid: undefined,
           seqowner: undefined,
           schema: undefined,
+          is_sys_obj: undefined,
           comment: undefined,
           increment: undefined,
           start: undefined,
@@ -128,6 +129,9 @@ define('pgadmin.node.sequence', [
             }
             return true;
           }, cache_node: 'database', cache_level: 'database',
+        },{
+          id: 'is_sys_obj', label: gettext('System sequence?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'comment', label: gettext('Comment'), type: 'multiline',
           mode: ['properties', 'create', 'edit'],

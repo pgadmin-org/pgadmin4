@@ -104,6 +104,7 @@ define('pgadmin.node.primary_key', [
         defaults: {
           name: undefined,
           oid: undefined,
+          is_sys_obj: undefined,
           comment: undefined,
           spcname: undefined,
           index: undefined,
@@ -123,6 +124,9 @@ define('pgadmin.node.primary_key', [
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'], editable: false,
           cellHeaderClasses:'width_percent_20',
+        },{
+          id: 'is_sys_obj', label: gettext('System primary key?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],

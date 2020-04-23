@@ -154,6 +154,11 @@ class ExtensionView(PGChildNodeView):
             self.conn = self.manager.connection(did=kwargs['did'])
             self.template_path = 'extensions/sql'
 
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
+
             return f(*args, **kwargs)
 
         return wrap
@@ -238,6 +243,8 @@ class ExtensionView(PGChildNodeView):
                 gettext("Could not find the extension information.")
             )
 
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['eid'] <= self.datlastsysoid)
         return ajax_response(
             response=res['rows'][0],
             status=200

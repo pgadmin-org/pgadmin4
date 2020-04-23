@@ -139,6 +139,10 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     self.conn = self.manager.connection(did=kwargs['did'])
                 else:
                     self.conn = self.manager.connection()
+                self.datlastsysoid = \
+                    self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                    if self.manager.db_info is not None and \
+                    kwargs['did'] in self.manager.db_info else 0
 
                 self.template_path = 'sequences/sql/#{0}#'.format(
                     self.manager.version
@@ -305,6 +309,9 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         if len(res['rows']) == 0:
             return False, gone(
                 _("Could not find the sequence in the database."))
+
+        res['rows'][0]['is_sys_obj'] = (
+            res['rows'][0]['oid'] <= self.datlastsysoid)
 
         for row in res['rows']:
             SQL = render_template(
