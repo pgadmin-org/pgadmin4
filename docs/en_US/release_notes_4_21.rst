@@ -29,7 +29,6 @@ Bug fixes
 
 | `Issue #1257 <https://redmine.postgresql.org/issues/1257>`_ -  Ensure all object types have a "System XXX?" property.
 | `Issue #2813 <https://redmine.postgresql.org/issues/2813>`_ -  Ensure that the password prompt should not be visible if the database server is in trust authentication mode.
-| `Issue #3269 <https://redmine.postgresql.org/issues/3269>`_ -  Fixed an issue where slider jumps up when new rows get loaded while scrolling down in the DataView panel in the query tool.
 | `Issue #3495 <https://redmine.postgresql.org/issues/3495>`_ -  Fixed an issue where the query tool unable to load the file which contains the BOM marker.
 | `Issue #3523 <https://redmine.postgresql.org/issues/3523>`_ -  Fixed an issue where right-clicking a browser object does not apply to the object on which right-click was fired.
 | `Issue #3645 <https://redmine.postgresql.org/issues/3645>`_ -  Ensure that the start and end date should be deleted when clear the selection for pgAgent Job.
