@@ -169,7 +169,7 @@ fs.readdirSync(all_themes_dir).map(function(curr_dir) {
     let cssfile = 'pgadmin.theme.'+curr_dir;
     pgadminThemes[curr_dir] = {
       /* For now lets keep it as beta release */
-      disp_name: curr_dir + '_(Beta)',
+      disp_name: curr_dir,
       cssfile: cssfile,
       preview_img: curr_dir + '_preview.png',
     };
