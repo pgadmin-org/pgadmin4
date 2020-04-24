@@ -160,7 +160,7 @@ define('pgadmin.node.mview', [
           node: 'schema', mode: ['create', 'edit'], cache_node: 'database',
           disabled: 'inSchema', select2: { allowClear: false },
         },{
-          id: 'system_view', label: gettext('System view?'), cell: 'string',
+          id: 'system_view', label: gettext('System materialized view?'), cell: 'string',
           type: 'switch', mode: ['properties'],
         }, pgBrowser.SecurityGroupSchema, {
           id: 'acl', label: gettext('Privileges'),

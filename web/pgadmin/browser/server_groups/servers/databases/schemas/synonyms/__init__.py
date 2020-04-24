@@ -208,6 +208,11 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                     )
                 )
 
+            self.datlastsysoid = \
+                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else 0
+
             # we will set template path for sql scripts
             self.template_path = 'synonyms/sql/#{0}#'.format(
                 self.manager.version)
@@ -420,6 +425,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                     gettext('The specified synonym could not be found.')
                 )
 
+            res['rows'][0]['is_sys_obj'] = (
+                res['rows'][0]['oid'] <= self.datlastsysoid)
             return True, res['rows'][0]
         except Exception as e:
             return internal_server_error(errormsg=str(e))

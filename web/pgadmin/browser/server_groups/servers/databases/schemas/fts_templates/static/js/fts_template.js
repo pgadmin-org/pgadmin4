@@ -98,7 +98,7 @@ define('pgadmin.node.fts_template', [
           control: 'node-list-by-id', cache_node: 'database',
           cache_level: 'database',
         },{
-          id: 'is_sys_obj', label: gettext('System FTS parser?'),
+          id: 'is_sys_obj', label: gettext('System FTS template?'),
           cell:'boolean', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',

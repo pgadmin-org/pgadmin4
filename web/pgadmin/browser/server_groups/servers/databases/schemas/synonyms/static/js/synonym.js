@@ -195,10 +195,8 @@ define('pgadmin.node.synonym', [
             return false;
           },
         },{
-          id: 'is_public_synonym', label: gettext('Public synonym?'),
-          type: 'switch', mode: ['properties'], cell: 'switch',
-          options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success',
-            offColor: 'ternary', size: 'mini'},
+          id: 'is_sys_obj', label: gettext('System synonym?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
         },
         ],
         validate: function() {

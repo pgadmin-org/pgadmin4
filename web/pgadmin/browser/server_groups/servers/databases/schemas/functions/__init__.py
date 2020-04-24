@@ -1365,6 +1365,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if fnid <= self.manager.db_info[did]['datlastsysoid']:
             resp_data['sysfunc'] = True
 
+        # Set System Functions Status
+        resp_data['sysproc'] = False
+        if fnid <= self.manager.db_info[did]['datlastsysoid']:
+            resp_data['sysproc'] = True
+
         # Get formatted Security Labels
         if 'seclabels' in resp_data:
             resp_data.update(parse_sec_labels_from_db(resp_data['seclabels']))

@@ -21,8 +21,7 @@ SELECT synname AS name, pg_get_userbyid(synowner) AS owner,
       AND nspname = synobjname
       AND nspobjecttype = 0),
   -- Default s = Synonym
-  's') AS targettype,
-  CASE WHEN ns.nspname = 'public' THEN true ELSE false END AS is_public_synonym
+  's') AS targettype
 FROM pg_synonym s  JOIN pg_namespace ns ON s.synnamespace = ns.oid
  WHERE s.synnamespace={{scid}}::oid
  {% if syid %}
