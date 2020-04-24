@@ -41,6 +41,7 @@ Bug fixes
 | `Issue #4292 <https://redmine.postgresql.org/issues/4292>`_ -  Added dark mode support for the configuration dialog on Windows/macOS runtime.
 | `Issue #4440 <https://redmine.postgresql.org/issues/4440>`_ -  Ensure the DROP statements in reverse engineered SQL are properly quoted for all objects.
 | `Issue #4445 <https://redmine.postgresql.org/issues/4445>`_ -  Ensure all object names in the title line of the reverse-engineered SQL are not quoted.
+| `Issue #4504 <https://redmine.postgresql.org/issues/4504>`_ -  Fixed an issue where like options should be disabled if the relation is not selected while creating a table.
 | `Issue #4512 <https://redmine.postgresql.org/issues/4512>`_ -  Fixed calendar opening issue on the exception tab inside the schedules tab of pgAgent.
 | `Issue #4545 <https://redmine.postgresql.org/issues/4545>`_ -  Fixed an issue wherein grant wizard the last object is not selectable.
 | `Issue #4573 <https://redmine.postgresql.org/issues/4573>`_ -  Ensure that if the delimiter is set other than comma then download the file as '.txt' file.

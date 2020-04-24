@@ -860,29 +860,29 @@ define('pgadmin.node.table', [
           group: gettext('advanced'),
           schema:[{
             id: 'like_relation', label: gettext('Relation'),
-            type: 'text', mode: ['create', 'edit'], deps: ['typname'],
+            type: 'text', mode: ['create', 'edit'], deps: ['typname', 'like_relation'],
             control: 'node-ajax-options', url: 'get_relations',
             disabled: 'isLikeDisable', group: gettext('Like'),
           },{
             id: 'like_default_value', label: gettext('With default values?'),
-            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: gettext('Like'),
+            type: 'switch', mode: ['create', 'edit'], deps: ['like_relation'],
+            disabled: 'isRelationDisable', group: gettext('Like'),
           },{
             id: 'like_constraints', label: gettext('With constraints?'),
-            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: gettext('Like'),
+            type: 'switch', mode: ['create', 'edit'], deps: ['like_relation'],
+            disabled: 'isRelationDisable', group: gettext('Like'),
           },{
             id: 'like_indexes', label: gettext('With indexes?'),
-            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: gettext('Like'),
+            type: 'switch', mode: ['create', 'edit'], deps: ['like_relation'],
+            disabled: 'isRelationDisable', group: gettext('Like'),
           },{
             id: 'like_storage', label: gettext('With storage?'),
-            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: gettext('Like'),
+            type: 'switch', mode: ['create', 'edit'], deps: ['like_relation'],
+            disabled: 'isRelationDisable', group: gettext('Like'),
           },{
             id: 'like_comments', label: gettext('With comments?'),
-            type: 'switch', mode: ['create', 'edit'], deps: ['typname'],
-            disabled: 'isLikeDisable', group: gettext('Like'),
+            type: 'switch', mode: ['create', 'edit'], deps: ['like_relation'],
+            disabled: 'isRelationDisable', group: gettext('Like'),
           }],
         },{
           id: 'partition_type', label:gettext('Partition Type'),
@@ -1246,6 +1246,24 @@ define('pgadmin.node.table', [
             return false;
           }
           return true;
+        },
+
+        // We will disable other Like option if Relation is not defined
+        isRelationDisable: function(m) {
+          if ( _.isUndefined(m.get('like_relation')) ||
+          _.isNull(m.get('like_relation')) ||
+          String(m.get('like_relation')).replace(/^\s+|\s+$/g, '') == ''){
+            setTimeout(function() {
+              m.set('like_default_value', false);
+              m.set('like_constraints', false);
+              m.set('like_indexes', false);
+              m.set('like_storage', false);
+              m.set('like_comments', false);
+            }, 10);
+
+            return true;
+          }
+          return false;
         },
         // Check for column grid when to Add
         check_grid_add_condition: function(m) {
