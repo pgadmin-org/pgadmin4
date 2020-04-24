@@ -137,8 +137,8 @@ _create_python_virtualenv() {
 
     # Remove tests
     cd site-packages
-    find . -name "test" -type d -exec rm -rf "{}" \;
-    find . -name "tests" -type d -exec rm -rf "{}" \;
+    find . -name "test" -type d -print0 | xargs -0 rm -rf
+    find . -name "tests" -type d -print0 | xargs -0 rm -rf
 
     # Link the python<version> directory to python so that the private environment path is found by the application.
     if test -d ${DIR_PYMODULES_PATH}; then
@@ -185,7 +185,7 @@ _complete_bundle() {
     fi
 
     # Remove any TCL-related files that may cause us problems
-    find "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/${VIRTUALENV}/" -name "_tkinter*" -exec rm -f "{}" \;
+    find "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/${VIRTUALENV}/" -name "_tkinter*" -print0 | xargs -0 rm -f
 
     # run complete-bundle to copy the dependent libraries and frameworks and fix the rpaths
     ./complete-bundle.sh "${BUILDROOT}/${APP_BUNDLE_NAME}" || { echo complete-bundle.sh failed; exit 1; }
@@ -202,9 +202,9 @@ _complete_bundle() {
     cd "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/web"
     rm -f pgadmin4.db config_local.*
     rm -rf karma.conf.js package.json node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
-    find . -name "tests" -type d -exec rm -rf "{}" \;
-    find . -name "feature_tests" -type d -exec rm -rf "{}" \;
-    find . -name ".DS_Store" -exec rm -f "{}" \;
+    find . -name "tests" -type d -print0 | xargs -0 rm -rf
+    find . -name "feature_tests" -type d -print0 | xargs -0 rm -rf
+    find . -name ".DS_Store" -print0 | xargs -0 rm -f
 
     echo "SERVER_MODE = False" > config_distro.py
     echo "HELP_PATH = '../../../docs/en_US/html/'" >> config_distro.py
@@ -215,7 +215,7 @@ _complete_bundle() {
 
     # Remove the .pyc files if any
     cd "${BUILDROOT}/${APP_BUNDLE_NAME}"
-    find . -name *.pyc | xargs rm -f
+    find . -name *.pyc -print0 | xargs -0 rm -f
 }
 
 _framework_config() {
