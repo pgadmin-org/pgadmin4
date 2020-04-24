@@ -177,7 +177,8 @@ CREATE TABLE public.nonintpkey
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         # Run test to insert a new row in table with default values
         self._add_row()
-        self._verify_row_data(True, config_data['add'])
+        self._verify_row_data(row_height=0,
+                              config_check_data=config_data['add'])
 
         # Run test to copy/paste a row
         self._copy_paste_row()
@@ -190,7 +191,8 @@ CREATE TABLE public.nonintpkey
             i: config_data['update'][i] if i in config_data['update'] else val
             for i, val in config_data['add'].items()
         }
-        self._verify_row_data(False, updated_row_data)
+        self._verify_row_data(row_height=0,
+                              config_check_data=updated_row_data)
 
         self.page.close_data_grid()
 
@@ -305,7 +307,8 @@ CREATE TABLE public.nonintpkey
             i: config_data['copy'][i] if i in config_data['copy'] else val
             for i, val in config_data['add'].items()
         }
-        self._verify_row_data(False, updated_row_data)
+        self._verify_row_data(row_height=25,
+                              config_check_data=updated_row_data)
 
     def _add_update_save_row(self, data, row=1):
         items = list(data.keys())
@@ -337,10 +340,8 @@ CREATE TABLE public.nonintpkey
             QueryToolLocators.query_messages_panel)
         self.assertEquals(text, messages_ele.text)
 
-    def _verify_row_data(self, is_new_row, config_check_data):
+    def _verify_row_data(self, row_height, config_check_data):
         self.page.click_execute_query_button()
-        # First row if row height = 0, second row if its 25
-        row_height = 0 if is_new_row else 25
 
         xpath = "//*[contains(@class, 'ui-widget-content') and " \
                 "contains(@style, 'top:" + str(row_height) + "px')]"
