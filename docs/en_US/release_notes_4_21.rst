@@ -36,6 +36,7 @@ Bug fixes
 | `Issue #3947 <https://redmine.postgresql.org/issues/3947>`_ -  Fixed copy-paste row issues in View/Edit Data.
 | `Issue #3972 <https://redmine.postgresql.org/issues/3972>`_ -  Modified keyboard shortcuts in Query Tool for OSX native support.
 | `Issue #3988 <https://redmine.postgresql.org/issues/3988>`_ -  Fixed cursor disappeared issue in the query editor for some of the characters when zoomed out.
+| `Issue #4108 <https://redmine.postgresql.org/issues/4108>`_ -  Fixed mouse click issue where it does not select an object in Browser unless the pointer is over the object.
 | `Issue #4206 <https://redmine.postgresql.org/issues/4206>`_ -  Ensure that the grant wizard should be closed on pressing the ESC key.
 | `Issue #4292 <https://redmine.postgresql.org/issues/4292>`_ -  Added dark mode support for the configuration dialog on Windows/macOS runtime.
 | `Issue #4440 <https://redmine.postgresql.org/issues/4440>`_ -  Ensure the DROP statements in reverse engineered SQL are properly quoted for all objects.

@@ -98,6 +98,7 @@ define('pgadmin.browser', [
         },
         animateRoot: true,
         unanimated: false,
+        fullRow: true,
       });
 
       b.tree = $('#tree').aciTree('api');

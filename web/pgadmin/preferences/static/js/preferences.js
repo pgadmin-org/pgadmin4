@@ -400,6 +400,7 @@ define('pgadmin.preferences', [
             jTree.aciTree({
               selectable: true,
               expand: true,
+              fullRow: true,
               ajax: {
                 url: url_for('preferences.index'),
               },

@@ -8,129 +8,145 @@
   border-style: none;
 }
 
-.aciTree {
+.aciTree, .aciTree.aciTreeFullRow {
     & .aciTreeButton, & .aciTreePush, & .aciTreeItem, & .aciTreeIcon, & .aciTreeText, & .aciTreeColumn {
         color: $color-fg;
     }
-}
 
-.aciTree .aciTreeLi {
-  display: grid !important;
-  cursor: pointer;
-}
-.aciTree .aciTreeText {
-	font-family: $font-family-primary;
-	font-size: $tree-font-size;
-}
+    .aciTreeLi {
+      display: grid !important;
+      cursor: pointer;
+    }
 
-.aciTree .aciTreeSelected > .aciTreeLine {
-  background-color: $tree-bg-selected !important;
-	border-color: $color-primary-light;
-	border-right: $active-border !important;
-	border-left: none !important;
-	border-top: none !important;
-	border-bottom: none !important;
-  -webkit-border-radius: none !important;
-  -moz-border-radius: none !important;
-  border-radius: none !important;
+    .aciTreeText {
+      font-family: $font-family-primary !important;
+      font-size: $tree-font-size !important;
+    }
 
-  & .aciTreeItem {
-      background-color: $tree-bg-selected;
-      border: 1px solid transparent;
-      -webkit-border-radius: none !important;
-      -moz-border-radius: none !important;
-      border-radius: none !important;
-      color: $tree-fg-selected;
-  }
-}
-.aciTree .aciTreeItem {
-	white-space: nowrap !important;
-}
-.aciTree.aciTreeLoad {
-	background: none;
-}
-.aciTree .aciTreeLine.aciTreeHover {
-  background-color: $tree-bg-hover;
-  -webkit-border-radius: none !important;
-  -moz-border-radius: none !important;
-  border-radius: none !important;
-    & .aciTreeItem {
-        background-color: inherit;
-        border: 1px solid transparent;
+    .aciTreeUl {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .aciTreeLine {
+      margin: unset !important;
+      border: unset !important;
+    }
+
+    .aciTreeSelected > .aciTreeLine {
+        background: unset !important;
+        background-color: $tree-bg-selected !important;
+        border-color: $color-primary-light;
+        border-right: $active-border !important;
+        border-left: none !important;
+        border-top: none !important;
+        border-bottom: none !important;
         -webkit-border-radius: none !important;
         -moz-border-radius: none !important;
         border-radius: none !important;
-        color: $tree-fg-hover;
-    }
-}
 
-.aciTree.aciTreeFocus {
-
-    & .aciTreeFocus > .aciTreeLine  {
-      background-color: $tree-bg-selected !important;
-        border-right: $active-border !important;
-    }
-
-    & .aciTreeSelected >.aciTreeLine .aciTreeItem {
-      background-color: $tree-bg-selected;
+        & .aciTreeItem {
+            background-color: $tree-bg-selected;
+            border: 1px solid transparent;
+            -webkit-border-radius: none !important;
+            -moz-border-radius: none !important;
+            border-radius: none !important;
+            color: $tree-fg-selected;
+        }
     }
 
-    & .aciTreeFocus >.aciTreeLine .aciTreeItem,
-    & .aciTreeSelected.aciTreeFocus >.aciTreeLine .aciTreeItem {
-      border: 1px solid transparent;
-      color: $tree-fg-selected;
+    .aciTreeItem {
+      white-space: nowrap !important;
     }
-}
 
-.aciTree .aciTreeButton {
-  background: none;
-}
-.aciTree .aciTreePush {
-  background: none;
-  text-align: center;
-  font-size: 0.85em;
-}
-.aciTree .aciTreeEntry,
-.aciTree .aciTreeBranch,
-.aciTree[dir=rtl] .aciTreeBranch {
-    overflow:hidden;
-    background: none !important;
-}
-
-
-.aciTree .aciTreeInode>.aciTreeLine .aciTreePush {
-    &:before,
-    &.aciTreeHover:before {
-      background-position: 6px center !important;
-      font-family: $font-family-icon;
-      content: "\f054" !important;
-      border-style: none;
-      margin-left: 5px;
+    &.aciTreeLoad {
+      background: none;
     }
-}
 
-.aciTree .aciTreeLoad>.aciTreeLine .aciTreePush {
-    &:before,
-    &.aciTreeHover:before {
-      content: " " !important;
+    .aciTreeLine.aciTreeHover {
+        background: unset !important;
+        background-color: $tree-bg-hover !important;
+        -webkit-border-radius: none !important;
+        -moz-border-radius: none !important;
+        border-radius: none !important;
+        & .aciTreeItem {
+            background-color: inherit;
+            border: 1px solid transparent;
+            -webkit-border-radius: none !important;
+            -moz-border-radius: none !important;
+            border-radius: none !important;
+            color: $tree-fg-hover;
+        }
     }
-}
 
-.aciTree .aciTreeOpen >.aciTreeLine .aciTreePush {
-    &:before,
-    &.aciTreeHover:before {
-      background-position: -14px center !important;
-      font-family: $font-family-icon;
-      content: "\f078" !important;
-      border-style: none;
-      margin-left: 5px;
+    &.aciTreeFocus {
+
+        & .aciTreeFocus > .aciTreeLine  {
+          background-color: $tree-bg-selected !important;
+          border-right: $active-border !important;
+        }
+
+        & .aciTreeSelected >.aciTreeLine .aciTreeItem {
+          background-color: $tree-bg-selected;
+        }
+
+        & .aciTreeFocus >.aciTreeLine .aciTreeItem,
+        & .aciTreeSelected.aciTreeFocus >.aciTreeLine .aciTreeItem {
+          border: 1px solid transparent;
+          color: $tree-fg-selected;
+        }
     }
-}
 
-.aciTree .aciTreePush>span {
-    width: 15px;
-    height: 15px;
-    left: 2px;
-    background: $loader-icon-small 0 0 no-repeat;
-    background-color: inherit!important;
+    .aciTreeButton {
+      background: none;
+    }
+
+    .aciTreePush {
+      background: none;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.85em;
+    }
+
+    .aciTreeEntry, .aciTreeBranch, &[dir=rtl] .aciTreeBranch {
+        overflow:hidden;
+        background: none !important;
+    }
+
+    .aciTreeInode>.aciTreeLine .aciTreePush {
+        &:before,
+        &.aciTreeHover:before {
+          background-position: 6px center !important;
+          font-family: $font-family-icon;
+          content: "\f054" !important;
+          border-style: none;
+          margin-left: 5px;
+        }
+    }
+
+    .aciTreeLoad>.aciTreeLine .aciTreePush {
+        &:before,
+        &.aciTreeHover:before {
+          content: " " !important;
+        }
+    }
+
+    .aciTreeOpen >.aciTreeLine .aciTreePush {
+        &:before,
+        &.aciTreeHover:before {
+          background-position: -14px center !important;
+          font-family: $font-family-icon;
+          content: "\f078" !important;
+          border-style: none;
+          margin-left: 5px;
+        }
+    }
+
+    .aciTreePush>span {
+        width: 15px;
+        height: 15px;
+        left: 2px;
+        background: $loader-icon-small 0 0 no-repeat;
+        background-color: inherit!important;
+    }
 }
