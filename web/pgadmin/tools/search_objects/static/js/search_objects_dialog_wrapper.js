@@ -353,7 +353,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
     /* finalise path */
     [datum.path, datum.id_path] = this.translateSearchObjectsPath(datum.path, datum.catalog_level);
     /* id is required by slickgrid dataview */
-    datum.id = datum.id_path.join('.');
+    datum.id = datum.id_path ? datum.id_path.join('.') : _.uniqueId(datum.name);
 
     /* Esacpe XSS */
     datum.name = _.escape(datum.name);
@@ -384,7 +384,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
    */
   translateSearchObjectsPath(path, catalog_level) {
     if (path === null) {
-      return path;
+      return [null, null];
     }
 
     catalog_level = catalog_level || 'N';

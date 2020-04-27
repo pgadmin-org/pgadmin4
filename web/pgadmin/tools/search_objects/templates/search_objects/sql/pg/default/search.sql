@@ -15,7 +15,7 @@ FROM (
 {% if all_obj or obj_type in ['table', 'sequence', 'view', 'mview'] %}
     SELECT
     CASE
-        WHEN c.relkind = 'r' THEN 'table'
+        WHEN c.relkind in ('r', 't') THEN 'table'
         WHEN c.relkind = 'S' THEN 'sequence'
         WHEN c.relkind = 'v' THEN 'view'
         WHEN c.relkind = 'm' THEN 'mview'
@@ -23,14 +23,14 @@ FROM (
     END::text AS obj_type, c.relname AS obj_name,
     ':schema.'|| n.oid || ':/' || n.nspname || '/' ||
     CASE
-        WHEN c.relkind = 'r' THEN ':table.'
+        WHEN c.relkind in ('r', 't') THEN ':table.'
         WHEN c.relkind = 'S' THEN ':sequence.'
         WHEN c.relkind = 'v' THEN ':view.'
         WHEN c.relkind = 'm' THEN ':mview.'
         ELSE 'should not happen'
     END || c.oid ||':/' || c.relname AS obj_path, n.nspname AS schema_name,
     CASE
-        WHEN c.relkind = 'r' THEN {{ show_node_prefs['table'] }}
+        WHEN c.relkind in ('r', 't') THEN {{ show_node_prefs['table'] }}
         WHEN c.relkind = 'S' THEN {{ show_node_prefs['sequence'] }}
         WHEN c.relkind = 'v' THEN {{ show_node_prefs['view'] }}
         WHEN c.relkind = 'm' THEN {{ show_node_prefs['mview'] }}
@@ -39,9 +39,9 @@ FROM (
     FROM pg_class c
     LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
     {% if all_obj %}
-    WHERE c.relkind in ('r','S','v','m')
+    WHERE c.relkind in ('r','t','S','v','m')
     {% elif obj_type == 'table' %}
-    WHERE c.relkind  = 'r'
+    WHERE c.relkind  in ('r', 't')
     {% elif obj_type == 'sequence' %}
     WHERE c.relkind  = 'S'
     {% elif obj_type == 'view' %}
@@ -108,14 +108,14 @@ FROM (
     select 'column'::text AS obj_type, a.attname AS obj_name,
     ':schema.'||n.oid||':/' || n.nspname || '/' ||
     case
-        WHEN t.relkind = 'r' THEN ':table.'
+        WHEN t.relkind in ('r', 't') THEN ':table.'
         WHEN t.relkind = 'v' THEN ':view.'
         WHEN t.relkind = 'm' THEN ':mview.'
         else 'should not happen'
     end || t.oid || ':/' || t.relname || '/:column.'|| a.attnum ||':/' || a.attname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['column'] }} AS show_node, NULL AS other_info
     from pg_attribute a
-    inner join pg_class t on a.attrelid = t.oid and t.relkind in ('r','v','m')
+    inner join pg_class t on a.attrelid = t.oid and t.relkind in ('r', 't','v','m')
     left join pg_namespace n on t.relnamespace = n.oid where a.attnum > 0
 {% endif %}
 {% if all_obj %}
@@ -166,14 +166,14 @@ FROM (
 {% if all_obj or obj_type in ['rule'] %}
     select 'rule'::text AS obj_type, r.rulename AS obj_name, ':schema.'||n.oid||':/' || n.nspname||
             case
-                WHEN t.relkind = 'r' THEN '/:table.'
+                WHEN t.relkind in ('r', 't') THEN '/:table.'
                 when t.relkind = 'v' then '/:view.'
                 else 'should not happen'
             end || t.oid || ':/' || t.relname ||'/:rule.'||r.oid||':/'|| r.rulename AS obj_path,
             n.nspname AS schema_name,
             {{ show_node_prefs['rule'] }} AS show_node, NULL AS other_info
             from pg_rewrite r
-    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r','v')
+    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r', 't','v')
     left join pg_namespace n on t.relnamespace = n.oid
     where {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
@@ -183,13 +183,13 @@ FROM (
 {% if all_obj or obj_type in ['trigger'] %}
     select 'trigger'::text AS obj_type, tr.tgname AS obj_name, ':schema.'||n.oid||':/' || n.nspname||
             case
-                WHEN t.relkind = 'r' THEN '/:table.'
+                WHEN t.relkind in ('r', 't') THEN '/:table.'
                 when t.relkind = 'v' then '/:view.'
                 else 'should not happen'
             end || t.oid || ':/' || t.relname || '/:trigger.'|| tr.oid || ':/' || tr.tgname AS obj_path, n.nspname AS schema_name,
             {{ show_node_prefs['trigger'] }} AS show_node, NULL AS other_info
             from pg_trigger tr
-    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 'v')
+    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 't', 'v')
     left join pg_namespace n on t.relnamespace = n.oid
     where tr.tgisinternal = false
     and {{ CATALOGS.DB_SUPPORT('n') }}

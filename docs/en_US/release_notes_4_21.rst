@@ -91,3 +91,4 @@ Bug fixes
 | `Issue #5430 <https://redmine.postgresql.org/issues/5430>`_ -  Added title to the login page.
 | `Issue #5432 <https://redmine.postgresql.org/issues/5432>`_ -  Fixed an issue where an internal user is not created if the authentication source is set to internal and ldap.
 | `Issue #5439 <https://redmine.postgresql.org/issues/5439>`_ -  Fixed an issue where the user is not able to create a server if login with an LDAP account.
+| `Issue #5441 <https://redmine.postgresql.org/issues/5441>`_ -  Fixed an issue where the search object not able to locate pg_toast_* tables in the pg_toast schema.

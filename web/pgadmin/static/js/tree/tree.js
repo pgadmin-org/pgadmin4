@@ -237,6 +237,10 @@ export class Tree {
 
   findNodeWithToggle(path) {
     let tree = this;
+
+    if(path == null || !Array.isArray(path)) {
+      return Promise.reject();
+    }
     path = path.join('.');
 
     let onCorrectPath = function(matchPath) {

@@ -70,7 +70,7 @@ FROM (
     NULL AS other_info
     FROM pg_class c
     LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
-    WHERE c.relkind in ('p','r')
+    WHERE c.relkind in ('p','r','t')
     {% if obj_type == 'table' %}
     AND NOT c.relispartition
     {% elif obj_type == 'partition' %}
@@ -85,7 +85,7 @@ FROM (
     SELECT 'index'::text AS obj_type, cls.relname AS obj_name, ':schema.'|| n.oid || ':/' || n.nspname || '/' ||
         case
             when tab.relkind = 'm' then ':mview.' || tab.oid || ':' || '/' || tab.relname
-            WHEN tab.relkind in ('r', 'p') THEN
+            WHEN tab.relkind in ('r', 't', 'p') THEN
                 (
                     WITH RECURSIVE table_path_data as (
                         select tab.oid as oid, 0 as height,
@@ -153,14 +153,14 @@ FROM (
     select 'column'::text AS obj_type, a.attname AS obj_name,
     ':schema.'||n.oid||':/' || n.nspname || '/' ||
     case
-        WHEN t.relkind in ('r', 'p') THEN ':table.'
+        WHEN t.relkind in ('r', 't', 'p') THEN ':table.'
         WHEN t.relkind = 'v' THEN ':view.'
         WHEN t.relkind = 'm' THEN ':mview.'
         else 'should not happen'
     end || t.oid || ':/' || t.relname || '/:column.'|| a.attnum ||':/' || a.attname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['column'] }} AS show_node, NULL AS other_info
     from pg_attribute a
-    inner join pg_class t on a.attrelid = t.oid and t.relkind in ('r','p','v','m')
+    inner join pg_class t on a.attrelid = t.oid and t.relkind in ('r','t','p','v','m')
     left join pg_namespace n on t.relnamespace = n.oid where a.attnum > 0
     and not t.relispartition
 {% endif %}
@@ -227,7 +227,7 @@ FROM (
     select 'rule'::text AS obj_type, r.rulename AS obj_name, ':schema.'||n.oid||':/' || n.nspname|| '/' ||
             case
                 when t.relkind = 'v' then ':view.' || t.oid || ':' || '/' || t.relname
-                WHEN t.relkind in ('r', 'p') THEN
+                WHEN t.relkind in ('r', 't', 'p') THEN
                     (
                         WITH RECURSIVE table_path_data as (
                             select t.oid as oid, 0 as height,
@@ -247,7 +247,7 @@ FROM (
             n.nspname AS schema_name,
             {{ show_node_prefs['rule'] }} AS show_node, NULL AS other_info
             from pg_rewrite r
-    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r','p','v')
+    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r','t','p','v')
     left join pg_namespace n on t.relnamespace = n.oid
     where {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
@@ -258,7 +258,7 @@ FROM (
     select 'trigger'::text AS obj_type, tr.tgname AS obj_name, ':schema.'||n.oid||':/' || n.nspname|| '/' ||
         case
             when t.relkind = 'v' then ':view.' || t.oid || ':' || '/' || t.relname
-            WHEN t.relkind in ('r', 'p') THEN
+            WHEN t.relkind in ('r', 't', 'p') THEN
             (
                 WITH RECURSIVE table_path_data as (
                     select t.oid as oid, 0 as height,
@@ -276,7 +276,7 @@ FROM (
         end || '/:trigger.'|| tr.oid || ':/' || tr.tgname AS obj_path, n.nspname AS schema_name,
         {{ show_node_prefs['trigger'] }} AS show_node, NULL AS other_info
         from pg_trigger tr
-    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 'p', 'v')
+    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 't', 'p', 'v')
     left join pg_namespace n on t.relnamespace = n.oid
     where tr.tgisinternal = false
     and {{ CATALOGS.DB_SUPPORT('n') }}
