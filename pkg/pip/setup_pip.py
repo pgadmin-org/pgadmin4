@@ -7,68 +7,51 @@
 #
 ##########################################################################
 
+import builtins
 import os
 import sys
+from codecs import open
+from importlib.machinery import SourceFileLoader
 
 from setuptools import setup
-from codecs import open
 
-if sys.version_info[0] >= 3:
-    import builtins
-else:
-    import __builtin__ as builtins
+
+# Load a source file
+def load_source(name, path):
+    if not os.path.exists(path):
+        print("ERROR: Could not find %s" % path)
+        sys.exit(1)
+
+    return SourceFileLoader(name, path).load_module()
+
 
 # Ensure the global server mode is set.
 builtins.SERVER_MODE = None
 
-"""This script helps to generate PIP packages"""
-
 # Get the requirements list for the current version of Python
 req_file = '../requirements.txt'
 
-with open(req_file, 'r') as reqf:
-    if sys.version_info[0] >= 3:
-        required = reqf.read().splitlines()
-    else:
-        required = reqf.read().decode("utf-8").splitlines()
+with open(req_file, 'r') as req_lines:
+    requires = req_lines.read().splitlines()
 
 # Remove any requirements with environment specifiers. These
 # must be explicitly listed in extras_require below.
-for index, req in enumerate(required):
+for index, req in enumerate(requires):
     if ";" in req or req.startswith("#") or req == "":
-        required.remove(req)
+        requires.remove(req)
         continue
 
     # Ensure the Wheel will use psycopg2-binary, not the source distro
     if 'psycopg2' in req:
-        required[index] = req.replace('psycopg2', 'psycopg2-binary')
+        requires[index] = req.replace('psycopg2', 'psycopg2-binary')
 
-# Get the app version
-if sys.version_info[:2] >= (3, 3):
-    from importlib.machinery import SourceFileLoader
-
-    def load_source(name, path):
-        if not os.path.exists(path):
-            print("ERROR: Could not find %s" % path)
-            sys.exit(1)
-
-        return SourceFileLoader(name, path).load_module()
-else:
-    import imp
-
-    def load_source(name, path):
-        if not os.path.exists(path):
-            print("ERROR: Could not find %s" % path)
-            sys.exit(1)
-
-        return imp.load_source(name, path)
-
-modl = load_source('APP_VERSION', '../web/config.py')
+# Get the version
+config = load_source('APP_VERSION', '../web/config.py')
 
 setup(
     name='pgadmin4',
 
-    version=modl.APP_VERSION,
+    version=config.APP_VERSION,
 
     description='PostgreSQL Tools',
     long_description='Administration and management tools for '
@@ -86,7 +69,6 @@ setup(
         'Development Status :: 5 - Production/Stable',
 
         # Supported programming languages
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
@@ -100,7 +82,7 @@ setup(
 
     include_package_data=True,
 
-    install_requires=required,
+    install_requires=requires,
 
     entry_points={
         'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4.__init__:main'],
