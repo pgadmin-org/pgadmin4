@@ -275,34 +275,98 @@ define('pgadmin.node.mview', [
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          d = i && i.length == 1 ? t.itemData(i) : undefined,
+          server_data = null;
 
         if (!d)
           return false;
 
-        // Make ajax call to refresh mview data
-        $.ajax({
-          url: obj.generate_url(i, 'refresh_data' , d, true),
-          type: 'PUT',
-          data: {'concurrent': args.concurrent, 'with_data': args.with_data},
-          dataType: 'json',
-        })
-          .done(function(res) {
-            if (res.success == 1) {
-              Alertify.success(gettext('View refreshed successfully'));
-            }
-            else {
-              Alertify.alert(
-                gettext('Error refreshing view'),
-                res.data.result
-              );
-            }
-          })
-          .fail(function(xhr, status, error) {
-            Alertify.pgRespErrorNotify(xhr, error, gettext('Error refreshing view'));
-          });
+        while (i) {
+          var node_data = pgBrowser.tree.itemData(i);
+          if (node_data._type == 'server') {
+            server_data = node_data;
+            break;
+          }
 
+          if (pgBrowser.tree.hasParent(i)) {
+            i = $(pgBrowser.tree.parent(i));
+          } else {
+            Alertify.alert(gettext('Please select server or child node from tree.'));
+            break;
+          }
+        }
+
+        if (!server_data) {
+          return;
+        }
+
+        var module = 'paths',
+          preference_name = 'pg_bin_dir',
+          msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
+
+        if ((server_data.type && server_data.type == 'ppas') ||
+          server_data.server_type == 'ppas') {
+          preference_name = 'ppas_bin_dir';
+          msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
+        }
+
+        var preference = pgBrowser.get_preference(module, preference_name);
+
+        if (preference) {
+          if (!preference.value) {
+            Alertify.alert(gettext('Configuration required'), msg);
+            return;
+          }
+        } else {
+          Alertify.alert(gettext('Failed to load preference %s of module %s', preference_name, module));
+          return;
+        }
+
+        $.ajax({
+          url: obj.generate_url(i, 'check_utility_exists' , d, true),
+          type: 'GET',
+          dataType: 'json',
+        }).done(function(res) {
+          if (!res.success) {
+            Alertify.alert(
+              gettext('Utility not found'),
+              res.errormsg
+            );
+            return;
+          }
+          // Make ajax call to refresh mview data
+          $.ajax({
+            url: obj.generate_url(i, 'refresh_data' , d, true),
+            type: 'PUT',
+            data: {'concurrent': args.concurrent, 'with_data': args.with_data},
+            dataType: 'json',
+          })
+            .done(function(res) {
+              if (res.data && res.data.status) {
+              //Do nothing as we are creating the job and exiting from the main dialog
+                Alertify.success(res.data.info);
+                pgBrowser.Events.trigger('pgadmin-bgprocess:created', obj);
+              } else {
+                Alertify.alert(
+                  gettext('Failed to create materialized view refresh job.'),
+                  res.errormsg
+                );
+              }
+            })
+            .fail(function(xhr, status, error) {
+              Alertify.pgRespErrorNotify(
+                xhr, error, gettext('Failed to create materialized view refresh job.')
+              );
+            });
+        }).fail(function() {
+          Alertify.alert(
+            gettext('Utility not found'),
+            gettext('Failed to fetch Utility information')
+          );
+          return;
+        });
       },
+
       is_version_supported: function(data, item) {
         var t = pgAdmin.Browser.tree,
           i = item || t.selected(),

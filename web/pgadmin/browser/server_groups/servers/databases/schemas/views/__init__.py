@@ -16,7 +16,7 @@ from functools import wraps
 import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask_babelex import gettext
-
+from flask_security import current_user
 import pgadmin.browser.server_groups.servers.databases as databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
@@ -29,6 +29,9 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.utils import html, does_utility_exist
+from pgadmin.model import Server
+from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 
 
 """
@@ -126,6 +129,53 @@ class ViewModule(SchemaChildModule):
             snippets.extend(submodule.csssnippets)
 
         return snippets
+
+
+class Message(IProcessDesc):
+    def __init__(self, _sid, _data, _query):
+        self.sid = _sid
+        self.data = _data
+        self.query = _query
+
+    @property
+    def message(self):
+        res = gettext("Refresh Materialized View")
+        opts = []
+        if not self.data['is_with_data']:
+            opts.append(gettext("With no data"))
+        else:
+            opts.append(gettext("With data"))
+        if self.data['is_concurrent']:
+            opts.append(gettext("Concurrently"))
+
+        return res + " ({0})".format(', '.join(str(x) for x in opts))
+
+    @property
+    def type_desc(self):
+        return gettext("Refresh Materialized View")
+
+    def details(self, cmd, args):
+        res = gettext("Refresh Materialized View ({0})")
+        opts = []
+        if not self.data['is_with_data']:
+            opts.append(gettext("WITH NO DATA"))
+        else:
+            opts.append(gettext("WITH DATA"))
+
+        if self.data['is_concurrent']:
+            opts.append(gettext("CONCURRENTLY"))
+
+        res = res.format(', '.join(str(x) for x in opts))
+
+        res = '<div>' + html.safe_str(res)
+
+        res += '</div><div class="py-1">'
+        res += gettext("Running Query:")
+        res += '<div class="pg-bg-cmd enable-selection p-1">'
+        res += html.safe_str(self.query)
+        res += '</div></div>'
+
+        return res
 
 
 class MViewModule(ViewModule):
@@ -1504,7 +1554,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
 # Override the operations for materialized view
 mview_operations = {
-    'refresh_data': [{'put': 'refresh_data'}, {}]
+    'refresh_data': [{'put': 'refresh_data'}, {}],
+    'check_utility_exists': [{'get': 'check_utility_exists'}, {}]
 }
 mview_operations.update(ViewNode.operations)
 
@@ -2010,7 +2061,9 @@ class MViewNode(ViewNode, VacuumSettings):
 
         is_concurrent = json.loads(data['concurrent'])
         with_data = json.loads(data['with_data'])
-
+        data = dict()
+        data['is_concurrent'] = is_concurrent
+        data['is_with_data'] = with_data
         try:
 
             # Fetch view name by view id
@@ -2019,6 +2072,10 @@ class MViewNode(ViewNode, VacuumSettings):
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+            if len(res['rows']) == 0:
+                return gone(
+                    gettext("""Could not find the materialized view.""")
+                )
 
             # Refresh view
             SQL = render_template(
@@ -2028,21 +2085,91 @@ class MViewNode(ViewNode, VacuumSettings):
                 is_concurrent=is_concurrent,
                 with_data=with_data
             )
-            status, res_data = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res_data)
 
+            # Fetch the server details like hostname, port, roles etc
+            server = Server.query.filter_by(
+                id=sid).first()
+
+            if server is None:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext("Could not find the given server")
+                )
+
+            # To fetch MetaData for the server
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            manager = driver.connection_manager(server.id)
+            conn = manager.connection()
+            connected = conn.connected()
+
+            if not connected:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext("Please connect to the server first.")
+                )
+            # Fetch the database name from connection manager
+            db_info = manager.db_info.get(did, None)
+            if db_info:
+                data['database'] = db_info['datname']
+            else:
+                return make_json_response(
+                    success=0,
+                    errormsg=gettext(
+                        "Could not find the database on the server.")
+                )
+            utility = manager.utility('sql')
+            ret_val = does_utility_exist(utility)
+            if ret_val:
+                return make_json_response(
+                    success=0,
+                    errormsg=ret_val
+                )
+
+            args = [
+                '--host',
+                manager.local_bind_host if manager.use_ssh_tunnel
+                else server.host,
+                '--port',
+                str(manager.local_bind_port) if manager.use_ssh_tunnel
+                else str(server.port),
+                '--username', server.username, '--dbname',
+                data['database'],
+                '--command', SQL
+            ]
+
+            try:
+                p = BatchProcess(
+                    desc=Message(sid, data, SQL),
+                    cmd=utility, args=args
+                )
+                manager.export_password_env(p.id)
+                # Check for connection timeout and if it is greater than 0
+                # then set the environment variable PGCONNECT_TIMEOUT.
+                if manager.connect_timeout > 0:
+                    env = dict()
+                    env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
+                    p.set_env_variables(server, env=env)
+                else:
+                    p.set_env_variables(server)
+
+                p.start()
+                jid = p.id
+            except Exception as e:
+                current_app.logger.exception(e)
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=str(e)
+                )
+            # Return response
             return make_json_response(
-                success=1,
-                info=gettext("View refreshed"),
                 data={
-                    'id': vid,
-                    'sid': sid,
-                    'gid': gid,
-                    'did': did
+                    'job_id': jid,
+                    'status': True,
+                    'info': gettext(
+                        'Materialized view refresh job created.')
                 }
             )
-
         except Exception as e:
             current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
@@ -2072,6 +2199,39 @@ class MViewNode(ViewNode, VacuumSettings):
                 res[row['name']] = data
 
         return res
+
+    @check_precondition
+    def check_utility_exists(self, gid, sid, did, scid, vid):
+        """
+        This function checks the utility file exist on the given path.
+
+        Args:
+            sid: Server ID
+        Returns:
+            None
+        """
+        server = Server.query.filter_by(
+            id=sid, user_id=current_user.id
+        ).first()
+
+        if server is None:
+            return make_json_response(
+                success=0,
+                errormsg=gettext("Could not find the specified server.")
+            )
+
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(server.id)
+
+        utility = manager.utility('sql')
+        ret_val = does_utility_exist(utility)
+        if ret_val:
+            return make_json_response(
+                success=0,
+                errormsg=ret_val
+            )
+
+        return make_json_response(success=1)
 
 
 SchemaDiffRegistry(view_blueprint.node_type, ViewNode)
