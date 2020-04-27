@@ -1038,8 +1038,8 @@ define('pgadmin.browser', [
                     i = items.eq(e);
                     d = ctx.t.itemData(i);
                     if (d._type === 'column') {
-                      if (pgAdmin.numeric_comparator(d._id, _data._id) != -1)
-                        return true;
+                      if (pgAdmin.numeric_comparator(d._id, _data._id) == -1)
+                        return false;
                     } else {
                       if (pgAdmin.natural_sort(d._label, _data._label) != 1)
                         return true;
