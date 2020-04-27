@@ -87,4 +87,5 @@ Bug fixes
 | `Issue #5415 <https://redmine.postgresql.org/issues/5415>`_ -  Ensure that the query tool context menu should work on the collection nodes.
 | `Issue #5419 <https://redmine.postgresql.org/issues/5419>`_ -  Ensure that the user should not be able to change the authentication source.
 | `Issue #5420 <https://redmine.postgresql.org/issues/5420>`_ -  Ensure error should be handled properly when LDAP user is created with the same name.
+| `Issue #5430 <https://redmine.postgresql.org/issues/5430>`_ -  Added title to the login page.
 | `Issue #5432 <https://redmine.postgresql.org/issues/5432>`_ -  Fixed an issue where an internal user is not created if the authentication source is set to internal and ldap.

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "security/fields.html" import render_field_with_errors, render_username_with_errors %}
+{% block title %}{{ config.APP_NAME }}{% endblock %}
 {% block body %}
 <div class="container-fluid h-100 login_page">
     {% if config.LOGIN_BANNER is defined and config.LOGIN_BANNER != "" %}
