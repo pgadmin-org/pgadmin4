@@ -26,6 +26,7 @@ def create_backup_job(tester, url, params, assert_equal):
 def run_backup_job(tester, job_id, expected_params, assert_in, assert_not_in,
                    assert_equal):
     cnt = 0
+    the_process = None
     while 1:
         if cnt >= 5:
             break
@@ -35,30 +36,36 @@ def run_backup_job(tester, job_id, expected_params, assert_in, assert_not_in,
         assert_equal(response1.status_code, 200)
         process_list = json.loads(response1.data.decode('utf-8'))
 
-        if len(process_list) > 0 and 'execution_time' in process_list[0]:
+        try:
+            the_process = next(
+                p for p in process_list if p['id'] == job_id)
+        except Exception as _:
+            the_process = None
+
+        if the_process and 'execution_time' in the_process:
             break
         time.sleep(0.5)
         cnt += 1
 
-    assert_equal('execution_time' in process_list[0], True)
-    assert_equal('stime' in process_list[0], True)
-    assert_equal('exit_code' in process_list[0], True)
-    assert_equal(process_list[0]['exit_code'] in expected_params[
+    assert_equal('execution_time' in the_process, True)
+    assert_equal('stime' in the_process, True)
+    assert_equal('exit_code' in the_process, True)
+    assert_equal(the_process['exit_code'] in expected_params[
         'expected_exit_code'
     ], True)
 
     backup_file = None
-    if 'details' in process_list[0]:
-        backup_det = process_list[0]['details']
+    if 'details' in the_process:
+        backup_det = the_process['details']
         backup_file = backup_det[int(backup_det.find('--file')) +
                                  8:int(backup_det.find('--host')) - 2]
 
     if expected_params['expected_cmd_opts']:
         for opt in expected_params['expected_cmd_opts']:
-            assert_in(opt, process_list[0]['details'])
+            assert_in(opt, the_process['details'])
     if expected_params['not_expected_cmd_opts']:
         for opt in expected_params['not_expected_cmd_opts']:
-            assert_not_in(opt, process_list[0]['details'])
+            assert_not_in(opt, the_process['details'])
 
     # Check the process details
     p_details = tester.get('/misc/bgprocess/{0}?_='.format(

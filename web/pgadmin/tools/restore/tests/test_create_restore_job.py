@@ -115,6 +115,7 @@ class RestoreJobTest(BaseTestGenerator):
         job_id = response_data['data']['job_id']
 
         cnt = 0
+        the_process = None
         while 1:
             if cnt >= 5:
                 break
@@ -124,23 +125,29 @@ class RestoreJobTest(BaseTestGenerator):
             self.assertEqual(response1.status_code, 200)
             process_list = json.loads(response1.data.decode('utf-8'))
 
-            if len(process_list) > 0 and 'execution_time' in process_list[0]:
+            try:
+                the_process = next(
+                    p for p in process_list if p['id'] == job_id)
+            except Exception as _:
+                the_process = None
+
+            if the_process and 'execution_time' in the_process:
                 break
             time.sleep(0.5)
             cnt += 1
 
-        self.assertTrue('execution_time' in process_list[0])
-        self.assertTrue('stime' in process_list[0])
-        self.assertTrue('exit_code' in process_list[0])
-        self.assertTrue(process_list[0]['exit_code'] in
+        self.assertTrue('execution_time' in the_process)
+        self.assertTrue('stime' in the_process)
+        self.assertTrue('exit_code' in the_process)
+        self.assertTrue(the_process['exit_code'] in
                         self.expected_exit_code)
 
         if self.expected_cmd_opts:
             for opt in self.expected_cmd_opts:
-                self.assertIn(opt, process_list[0]['details'])
+                self.assertIn(opt, the_process['details'])
         if self.not_expected_cmd_opts:
             for opt in self.not_expected_cmd_opts:
-                self.assertNotIn(opt, process_list[0]['details'])
+                self.assertNotIn(opt, the_process['details'])
 
         # Check the process details
         p_details = self.tester.get('/misc/bgprocess/{0}?_='.format(
