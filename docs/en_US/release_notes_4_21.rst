@@ -15,6 +15,7 @@ New features
 | `Issue #5181 <https://redmine.postgresql.org/issues/5181>`_ -  Added support for parameter toast_tuple_target and parallel_workers of the table.
 | `Issue #5263 <https://redmine.postgresql.org/issues/5263>`_ -  Added support of Foreign Tables to the Schema Diff.
 | `Issue #5264 <https://redmine.postgresql.org/issues/5264>`_ -  Added support of Packages, Sequences and Synonyms to the Schema Diff.
+| `Issue #5348 <https://redmine.postgresql.org/issues/5348>`_ -  Documentation of LDAP authentication support.
 | `Issue #5353 <https://redmine.postgresql.org/issues/5353>`_ -  Added an option to prevent a browser tab being opened at startup.
 | `Issue #5399 <https://redmine.postgresql.org/issues/5399>`_ -  Warn the user if an unsupported, deprecated or unknown browser is detected.
 
