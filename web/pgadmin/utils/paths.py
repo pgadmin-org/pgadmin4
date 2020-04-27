@@ -33,7 +33,7 @@ def get_storage_directory():
     if storage_dir is None:
         return None
 
-    username = current_user.email.split('@')[0]
+    username = current_user.username.split('@')[0]
     if len(username) == 0 or username[0].isdigit():
         username = 'pga_user_' + username
 
@@ -48,7 +48,7 @@ def get_storage_directory():
     storage_dir = os.path.join(
         storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode')
         else storage_dir,
-        current_user.email.replace('@', '_')
+        current_user.username.replace('@', '_')
     )
 
     # Rename an old-style storage directory, if the new style doesn't exist

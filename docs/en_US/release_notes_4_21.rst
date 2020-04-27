@@ -36,7 +36,7 @@ Bug fixes
 | `Issue #3947 <https://redmine.postgresql.org/issues/3947>`_ -  Fixed copy-paste row issues in View/Edit Data.
 | `Issue #3972 <https://redmine.postgresql.org/issues/3972>`_ -  Modified keyboard shortcuts in Query Tool for OSX native support.
 | `Issue #3988 <https://redmine.postgresql.org/issues/3988>`_ -  Fixed cursor disappeared issue in the query editor for some of the characters when zoomed out.
-| `Issue #4108 <https://redmine.postgresql.org/issues/4108>`_ -  Fixed mouse click issue where it does not select an object in Browser unless the pointer is over the object.
+| `Issue #4180 <https://redmine.postgresql.org/issues/4180>`_ -  Fixed mouse click issue where it does not select an object in Browser unless the pointer is over the object.
 | `Issue #4206 <https://redmine.postgresql.org/issues/4206>`_ -  Ensure that the grant wizard should be closed on pressing the ESC key.
 | `Issue #4292 <https://redmine.postgresql.org/issues/4292>`_ -  Added dark mode support for the configuration dialog on Windows/macOS runtime.
 | `Issue #4440 <https://redmine.postgresql.org/issues/4440>`_ -  Ensure the DROP statements in reverse engineered SQL are properly quoted for all objects.
@@ -89,3 +89,4 @@ Bug fixes
 | `Issue #5420 <https://redmine.postgresql.org/issues/5420>`_ -  Ensure error should be handled properly when LDAP user is created with the same name.
 | `Issue #5430 <https://redmine.postgresql.org/issues/5430>`_ -  Added title to the login page.
 | `Issue #5432 <https://redmine.postgresql.org/issues/5432>`_ -  Fixed an issue where an internal user is not created if the authentication source is set to internal and ldap.
+| `Issue #5439 <https://redmine.postgresql.org/issues/5439>`_ -  Fixed an issue where the user is not able to create a server if login with an LDAP account.

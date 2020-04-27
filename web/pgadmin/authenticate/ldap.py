@@ -28,9 +28,7 @@ except ImportError:
     from urlparse import urlparse
 
 
-ERROR_SEARCHING_LDAP_DIRECTORY = gettext(
-    "Error searching the LDAP directory: %s"
-)
+ERROR_SEARCHING_LDAP_DIRECTORY = "Error searching the LDAP directory: {}"
 
 
 class LDAPAuthentication(BaseAuthentication):
@@ -90,8 +88,9 @@ class LDAPAuthentication(BaseAuthentication):
                     ca_certs_file=ca_cert_file)
             except LDAPSSLConfigurationError as e:
                 current_app.logger.exception(
-                    "LDAP configuration error: %s\n" % e)
-                return False, "LDAP configuration error: %s\n" % e.args[0]
+                    "LDAP configuration error: {}\n".format(e))
+                return False, "LDAP configuration error: {}\n".format(
+                    e.args[0])
 
         try:
             # Create the server object
@@ -102,7 +101,7 @@ class LDAPAuthentication(BaseAuthentication):
                             tls=tls,
                             connect_timeout=config.LDAP_CONNECTION_TIMEOUT)
         except ValueError as e:
-            return False, "LDAP configuration error: %s." % e
+            return False, "LDAP configuration error: {}.".format(e)
 
         # Create the connection
         try:
@@ -118,18 +117,18 @@ class LDAPAuthentication(BaseAuthentication):
 
         except LDAPSocketOpenError as e:
             current_app.logger.exception(
-                "Error connecting to the LDAP server: %s\n" % e)
+                "Error connecting to the LDAP server: {}\n".format(e))
             return False, "Error connecting to the LDAP server:" \
-                          " %s\n" % e.args[0]
+                          " {}\n".format(e.args[0])
         except LDAPBindError as e:
             current_app.logger.exception(
                 "Error binding to the LDAP server.")
             return False, "Error binding to the LDAP server."
         except Exception as e:
             current_app.logger.exception(
-                "Error connecting to the LDAP server: %s\n" % e)
+                "Error connecting to the LDAP server: {}\n".format(e))
             return False, "Error connecting to the LDAP server:" \
-                          " %s\n" % e.args[0]
+                          " {}\n".format(e.args[0])
 
         # Enable TLS if STARTTLS is configured
         if not uri.scheme == 'ldaps' and config.LDAP_USE_STARTTLS:
@@ -137,8 +136,8 @@ class LDAPAuthentication(BaseAuthentication):
                 self.conn.start_tls()
             except LDAPStartTLSError as e:
                 current_app.logger.exception(
-                    "Error starting TLS: %s\n" % e)
-                return False, "Error starting TLS: %s\n" % e.args[0]
+                    "Error starting TLS: {}\n".format(e))
+                return False, "Error starting TLS: {}\n".format(e.args[0])
 
         return True, None
 
@@ -162,7 +161,10 @@ class LDAPAuthentication(BaseAuthentication):
         """Get a list of users from the LDAP server based on config
          search criteria."""
         try:
-            self.conn.search(search_base=config.LDAP_SEARCH_BASE_DN,
+            search_base_dn = config.LDAP_SEARCH_BASE_DN
+            if search_base_dn is None or search_base_dn == '':
+                search_base_dn = config.LDAP_BASE_DN
+            self.conn.search(search_base=search_base_dn,
                              search_filter=config.LDAP_SEARCH_FILTER,
                              search_scope=config.LDAP_SEARCH_SCOPE,
                              attributes=ALL_ATTRIBUTES
@@ -170,19 +172,19 @@ class LDAPAuthentication(BaseAuthentication):
 
         except LDAPInvalidScopeError as e:
             current_app.logger.exception(
-                gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e
+                ERROR_SEARCHING_LDAP_DIRECTORY.format(e.args[0])
             )
-            return False, gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e.args[0]
+            return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(e.args[0])
         except LDAPAttributeError as e:
             current_app.logger.exception(
-                gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e
+                ERROR_SEARCHING_LDAP_DIRECTORY.format(e)
             )
-            return False, gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e.args[0]
+            return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(e.args[0])
         except LDAPInvalidFilterError as e:
             current_app.logger.exception(
-                gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e
+                ERROR_SEARCHING_LDAP_DIRECTORY.format(e)
             )
-            return False, gettext(ERROR_SEARCHING_LDAP_DIRECTORY) % e.args[0]
+            return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(e.args[0])
 
         for entry in self.conn.entries:
             user_email = None
@@ -191,4 +193,5 @@ class LDAPAuthentication(BaseAuthentication):
                 if 'mail' in entry:
                     user_email = entry['mail'].value
                 return True, user_email
-        return False, None
+        return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(
+            "Could not find the specified user.")
