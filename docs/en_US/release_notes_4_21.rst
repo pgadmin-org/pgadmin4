@@ -93,3 +93,4 @@ Bug fixes
 | `Issue #5432 <https://redmine.postgresql.org/issues/5432>`_ -  Fixed an issue where an internal user is not created if the authentication source is set to internal and ldap.
 | `Issue #5439 <https://redmine.postgresql.org/issues/5439>`_ -  Fixed an issue where the user is not able to create a server if login with an LDAP account.
 | `Issue #5441 <https://redmine.postgresql.org/issues/5441>`_ -  Fixed an issue where the search object not able to locate pg_toast_* tables in the pg_toast schema.
+| `Issue #5447 <https://redmine.postgresql.org/issues/5447>`_ -  Fixed failed to fetch utility error when click on refresh(any option) materialized view.

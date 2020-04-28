@@ -281,15 +281,16 @@ define('pgadmin.node.mview', [
         if (!d)
           return false;
 
-        while (i) {
-          var node_data = pgBrowser.tree.itemData(i);
+        let j = i;
+        while (j) {
+          var node_data = pgBrowser.tree.itemData(j);
           if (node_data._type == 'server') {
             server_data = node_data;
             break;
           }
 
-          if (pgBrowser.tree.hasParent(i)) {
-            i = $(pgBrowser.tree.parent(i));
+          if (pgBrowser.tree.hasParent(j)) {
+            j = $(pgBrowser.tree.parent(j));
           } else {
             Alertify.alert(gettext('Please select server or child node from tree.'));
             break;
