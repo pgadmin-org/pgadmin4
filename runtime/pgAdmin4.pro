@@ -73,15 +73,11 @@ else {
 
     message(Using $$PYTHON_CONFIG)
 
-    PYTHON_VERSION = $$system($$PYTHON_CONFIG --libs | grep -o -i "[0-9]\.[0-9]" | sed "s/\.//g")
+    PYTHON_EMBED = $$system($$PYTHON_CONFIG --help 2>&1 | grep -o \'\\-\\-embed\')
 
     QMAKE_CXXFLAGS += $$system($$PYTHON_CONFIG --includes)
     QMAKE_LFLAGS += $$system($$PYTHON_CONFIG --ldflags)
-    greaterThan(PYTHON_VERSION, 37) {
-       LIBS += $$system($$PYTHON_CONFIG --libs --embed)
-    } else {
-       LIBS += $$system($$PYTHON_CONFIG --libs)
-    }
+    LIBS += $$system($$PYTHON_CONFIG --libs $$PYTHON_EMBED)
 
     contains( LIBS, -lpython2.* ) {
        DEFINES += PYTHON2
