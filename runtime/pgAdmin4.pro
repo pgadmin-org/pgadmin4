@@ -75,7 +75,7 @@ else {
 
     QMAKE_CXXFLAGS += $$system($$PYTHON_CONFIG --includes)
     QMAKE_LFLAGS += $$system($$PYTHON_CONFIG --ldflags)
-    LIBS += $$system($$PYTHON_CONFIG --libs --embed || $$PYTHON_CONFIG --libs)
+    LIBS += $$system($$PYTHON_CONFIG --libs --embed 2> /dev/null || $$PYTHON_CONFIG --libs)
 
     contains( LIBS, -lpython2.* ) {
        DEFINES += PYTHON2
