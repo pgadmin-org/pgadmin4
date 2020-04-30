@@ -24,10 +24,10 @@ import coverage
 
 import unittest
 
-if sys.version_info[0] >= 3:
-    import builtins
-else:
-    import __builtin__ as builtins
+if sys.version_info < (3, 4):
+    raise Exception('The test suite must be run under Python 3.4 or later.')
+
+import builtins
 
 # Ensure the global server mode is set.
 builtins.SERVER_MODE = None

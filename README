@@ -27,7 +27,7 @@ Building the Runtime
 To build the runtime, the following packages must be installed:
 
 - QT 4.6 or above (Use the VC++ build on Windows, not MinGW).
-- Python 2.7 or 3.4+
+- Python 3.4+
 
 Assuming both qmake and python-config are in the path:
 
@@ -36,7 +36,7 @@ Assuming both qmake and python-config are in the path:
     Project MESSAGE: Building for QT5+...
     Project MESSAGE: Building for Linux/Mac...
     Project MESSAGE: Using /usr/bin/python-config
-    Project MESSAGE: Python2 detected.
+    Project MESSAGE: Python3 detected.
     $ make
     ...
 
@@ -58,10 +58,10 @@ and minor number. Do not specify micro level version.
 For example, given a Python version of A.B.C; A - Major number, B - Minor
 number, C - Micro level (Bug fix releases).
 
-If Python version is 2.7.12 than specify PYTHON_VERSION=27
+If Python version is 3.8.2 than specify PYTHON_VERSION=38
 
- e.g. PYTHON_HOME=C:\Python27\
-      PYTHON_VERSION=27
+ e.g. PYTHON_HOME=C:\Python38\
+      PYTHON_VERSION=38
 
 You can also use Qt Creator to build, develop and debug the runtime. Simply
 open the $PGADMIN4_SRC/runtime/pgAdmin4.pro project file in Qt Creator and
@@ -88,10 +88,10 @@ Configuring the Python Environment
 ----------------------------------
 
 In order to run the Python code, a suitable runtime environment is required.
-Python versions - Python 2.7 or 3.4+ are currently supported. It is
-recommended that a Python Virtual Environment is setup for this purpose,
-rather than using the system Python environment. On Linux and Mac systems, the
-process is fairly simple - adapt as required for your distribution:
+Python version 3.4 and later are currently supported. It is recommended that a
+Python Virtual Environment is setup for this purpose, rather than using the
+system Python environment. On Linux and Mac systems, the process is fairly
+simple - adapt as required for your distribution:
 
 1) Install the virtualenv packages into the system Python environment
 
@@ -181,11 +181,10 @@ server or desktop mode, and access it from a web browser using the URL shown in
 the terminal once pgAdmin has started up.
 
 Setup of an environment on Windows is somewhat more complicated unfortunately,
-largely due to the lack of a native compiler toolset. Thankfully, Microsoft
-supply a free compiler specifically for Python 2.7 users. Download and install
-it from:
+largely due to the lack of a native compiler toolset. See the following wiki
+page for more information on the compiler you may need:
 
-https://www.microsoft.com/en-gb/download/details.aspx?id=44266
+https://wiki.python.org/moin/WindowsCompilers
 
 A blog detailing the setup of Virtual Environments on Windows can be found
 here:
@@ -324,10 +323,10 @@ Qt 5.5.1, Python 2.7 and Visual Studio 2013. The examples below are for a
 similar 32 bit system:
 
 INNOTOOL=C:\Program Files\Inno Setup 5
-PGDIR=C:\Program Files\PostgreSQL\10
-PYTHON_DLL=C:\Windows\System32\Python27.dll
-PYTHON_HOME=C:\Python27
-PYTHON_VERSION=27
+PGDIR=C:\Program Files\PostgreSQL\12
+PYTHON_DLL=C:\Python38\Python38.dll
+PYTHON_HOME=C:\Python38
+PYTHON_VERSION=38
 QTDIR=C:\Qt\5.9\msvc2013
 VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC
 

@@ -11,13 +11,14 @@
 a webserver, this will provide the WSGI interface, otherwise, we're going
 to start a web server."""
 
-import os
+
 import sys
 
-if sys.version_info[0] >= 3:
-    import builtins
-else:
-    import __builtin__ as builtins
+if sys.version_info < (3, 4):
+    raise Exception('This application must be run under Python 3.4 or later.')
+
+import builtins
+import os
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.

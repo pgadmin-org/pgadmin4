@@ -11,15 +11,11 @@
 #
 ##########################################################################
 
+import builtins
 import logging
 import os
 import sys
-import json
 
-if sys.version_info[0] >= 3:
-    import builtins
-else:
-    import __builtin__ as builtins
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
@@ -27,7 +23,7 @@ root = os.path.dirname(os.path.realpath(__file__))
 if sys.path[0] != root:
     sys.path.insert(0, root)
 
-from pgadmin.utils import env, IS_PY2, IS_WIN, fs_short_path
+from pgadmin.utils import env, IS_WIN, fs_short_path
 
 ##########################################################################
 # Application settings
@@ -565,15 +561,6 @@ try:
     from config_local import *
 except ImportError:
     pass
-
-
-# SUPPORT_SSH_TUNNEL can be override in local config file and if that
-# setting is False in local config then we should not check the Python version.
-if (SUPPORT_SSH_TUNNEL is True and
-    ((sys.version_info[0] == 2 and sys.version_info[1] < 7) or
-     (sys.version_info[0] == 3 and sys.version_info[1] < 4))):
-    SUPPORT_SSH_TUNNEL = False
-    ALLOW_SAVE_TUNNEL_PASSWORD = False
 
 # Disable USER_INACTIVITY_TIMEOUT when SERVER_MODE=False
 if not SERVER_MODE:
