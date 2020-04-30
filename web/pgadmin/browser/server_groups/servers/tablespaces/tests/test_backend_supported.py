@@ -6,13 +6,8 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import sys
 
-if sys.version_info < (3, 3):
-    from mock import MagicMock
-else:
-    from unittest.mock import MagicMock
-
+from unittest.mock import MagicMock
 from pgadmin.browser.server_groups.servers.tablespaces import TablespaceModule
 from pgadmin.utils.route import BaseTestGenerator
 

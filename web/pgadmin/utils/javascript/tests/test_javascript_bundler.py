@@ -7,16 +7,10 @@
 #
 ##########################################################################
 
-
-import sys
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.utils.javascript.javascript_bundler import JavascriptBundler
 from pgadmin.utils.javascript.javascript_bundler import JsState
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 
 class JavascriptBundlerTestCase(BaseTestGenerator):

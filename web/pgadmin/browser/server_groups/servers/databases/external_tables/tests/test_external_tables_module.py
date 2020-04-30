@@ -7,18 +7,12 @@
 #
 ##########################################################################
 
-import sys
-
 import six
 
 from pgadmin.browser.server_groups.servers\
     .databases.external_tables import ExternalTablesModule
 from pgadmin.utils.route import BaseTestGenerator
-
-if sys.version_info < (3, 3):
-    from mock import MagicMock, Mock
-else:
-    from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock
 
 
 class TestExternalTablesModule(BaseTestGenerator):

@@ -7,17 +7,11 @@
 #
 ##########################################################################
 
-import sys
-
 from pgadmin.browser.server_groups.servers.databases \
     .external_tables.reverse_engineer_ddl import \
     ReverseEngineerDDL, ReverseEngineerDDLException
 from pgadmin.utils.route import BaseTestGenerator
-
-if sys.version_info < (3, 3):
-    from mock import MagicMock
-else:
-    from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 
 class TestReverseEngineerDDL(BaseTestGenerator):

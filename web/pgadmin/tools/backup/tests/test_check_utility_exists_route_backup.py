@@ -7,16 +7,12 @@
 #
 ##########################################################################
 
-import sys
+
 import json
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils.test_utils import\
     check_binary_path_or_skip_test
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 
 class TestUtilityCheckRouteCase(BaseTestGenerator):

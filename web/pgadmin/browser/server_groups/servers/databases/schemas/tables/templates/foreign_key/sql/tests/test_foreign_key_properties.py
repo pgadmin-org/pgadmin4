@@ -8,17 +8,12 @@
 ##########################################################################
 
 import os
-import sys
-
 from pgadmin.utils.driver import DriverRegistry
 from regression.python_test_utils.template_helper import file_as_template
 
 DriverRegistry.load_drivers()
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils
-
-if sys.version_info[0] >= 3:
-    long = int
 
 
 class TestColumnForeignKeyGetConstraintCols(BaseTestGenerator):

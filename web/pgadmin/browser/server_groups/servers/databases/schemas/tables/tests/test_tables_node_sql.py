@@ -8,14 +8,9 @@
 ##########################################################################
 
 import os
-import sys
-
 from regression.python_test_utils.sql_template_test_base import \
     SQLTemplateTestBase
 from regression.python_test_utils.template_helper import file_as_template
-
-if sys.version_info[0] >= 3:
-    long = int
 
 
 class TestTablesNodeSql(SQLTemplateTestBase):
@@ -48,8 +43,8 @@ class TestTablesNodeSql(SQLTemplateTestBase):
         triggercount = first_row['triggercount']
         has_enable_triggers = first_row['has_enable_triggers']
 
-        self.assertIsNotNone(long(oid))
+        self.assertIsNotNone(int(oid))
         self.assertEqual('test_table', name)
         # triggercount is sometimes returned as a string for some reason
-        self.assertEqual(0, long(triggercount))
-        self.assertIsNotNone(long(has_enable_triggers))
+        self.assertEqual(0, int(triggercount))
+        self.assertIsNotNone(int(has_enable_triggers))

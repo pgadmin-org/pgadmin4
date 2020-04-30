@@ -11,7 +11,6 @@ from __future__ import print_function
 
 import json
 import uuid
-import sys
 
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
@@ -19,11 +18,7 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as language_utils
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 
 class LanguagesAddTestCase(BaseTestGenerator):

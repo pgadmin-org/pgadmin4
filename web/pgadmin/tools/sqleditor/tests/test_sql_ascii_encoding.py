@@ -104,11 +104,7 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
         pg_cursor.execute(query)
         resp = pg_cursor.fetchone()
 
-        if sys.version_info < (3,):
-            self.assertEqual(resp[0].encode("raw_unicode_escape"),
-                             self.test_str)
-        else:
-            self.assertEqual(resp[0], self.test_str)
+        self.assertEqual(resp[0], self.test_str)
 
     def tearDown(self):
         main_conn = test_utils.get_db_connection(

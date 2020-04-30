@@ -7,16 +7,10 @@
 #
 ##########################################################################
 
-import sys
-
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     DataTypeReader
 from pgadmin.utils.route import BaseTestGenerator
-
-if sys.version_info < (3, 3):
-    from mock import patch, Mock
-else:
-    from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock
 
 _default_database_response = [
     {

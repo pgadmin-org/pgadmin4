@@ -7,15 +7,9 @@
 #
 ##########################################################################
 
-import sys
-
 from pgadmin.tools.backup import BackupMessage, BACKUP
 from pgadmin.utils.route import BaseTestGenerator
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 
 class BackupMessageTest(BaseTestGenerator):

@@ -1,3 +1,12 @@
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2020, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+
 from __future__ import print_function
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
@@ -5,13 +14,7 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as cast_utils
-
-import sys
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 
 class CastsGetNodeTestCase(BaseTestGenerator):

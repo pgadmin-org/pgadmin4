@@ -7,18 +7,12 @@
 #
 ##########################################################################
 
-import sys
-
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc, \
     current_app
 from pgadmin.tools.restore import RestoreMessage
 from pgadmin.utils.route import BaseTestGenerator
 from pickle import dumps, loads
-
-if sys.version_info < (3, 3):
-    from mock import patch, MagicMock
-else:
-    from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 
 class BatchProcessTest(BaseTestGenerator):

@@ -7,17 +7,12 @@
 #
 ##########################################################################
 
-import sys
 import config as app_config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression.test_setup import config_data
 from pgadmin.authenticate.registry import AuthSourceRegistry
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 
 class LDAPLoginMockTestCase(BaseTestGenerator):

@@ -12,10 +12,9 @@ from unittest.mock import patch
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
-from regression import parent_node_dict
 from regression.python_test_utils import test_utils
 import json
-from pgadmin.utils import server_utils, IS_PY2
+from pgadmin.utils import server_utils
 import random
 
 

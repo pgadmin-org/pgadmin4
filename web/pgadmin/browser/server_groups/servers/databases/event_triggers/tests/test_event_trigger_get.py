@@ -8,7 +8,6 @@
 ##########################################################################
 
 import uuid
-import sys
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
@@ -19,11 +18,7 @@ from regression import parent_node_dict
 from regression import trigger_funcs_utils
 from regression.python_test_utils import test_utils as utils
 from . import utils as event_trigger_utils
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 
 class EventTriggerGetTestCase(BaseTestGenerator):

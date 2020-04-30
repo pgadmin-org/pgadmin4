@@ -13,7 +13,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from regression.python_test_utils import test_utils
 import json
-from pgadmin.utils import server_utils, IS_PY2
+from pgadmin.utils import server_utils
 import random
 
 
@@ -273,10 +273,7 @@ class TestEncodingCharset(BaseTestGenerator):
         self.assertEquals(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         self.assertEquals(response_data['data']['rows_fetched_to'], 1)
-        if IS_PY2 and type(response_data['data']['result'][0][0]) == unicode:
-            result = response_data['data']['result'][0][0].encode('utf-8')
-        else:
-            result = response_data['data']['result'][0][0]
+        result = response_data['data']['result'][0][0]
         self.assertEquals(result, self.test_str)
 
         database_utils.disconnect_database(self, self.encode_sid,

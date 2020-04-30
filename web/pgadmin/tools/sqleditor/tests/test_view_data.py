@@ -10,19 +10,12 @@
 import uuid
 import json
 import random
-import sys
-
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils
-from pgadmin.utils import server_utils, IS_PY2
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 
 class TestViewData(BaseTestGenerator):

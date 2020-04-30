@@ -8,15 +8,9 @@
 ##########################################################################
 
 import os
-import sys
-
 from regression.python_test_utils.template_helper import file_as_template
 from regression.python_test_utils.sql_template_test_base import \
     SQLTemplateTestBase
-
-
-if sys.version_info[0] >= 3:
-    long = int
 
 
 class TestTablesPropertiesSql(SQLTemplateTestBase):
@@ -39,7 +33,7 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
 
         self.assertEqual('test_table', first_row['name'])
         # triggercount is sometimes returned as a string for some reason
-        self.assertEqual(0, long(first_row['triggercount']))
+        self.assertEqual(0, int(first_row['triggercount']))
         self.assertEqual(None, first_row['typname'])
         self.assertEqual([], first_row['coll_inherits'])
 

@@ -6,15 +6,11 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import sys
+
 from pgadmin.browser.server_groups.servers.databases.schemas.tables import \
     BaseTableView
 from pgadmin.utils.route import BaseTestGenerator
-
-if sys.version_info < (3, 3):
-    from mock import patch, MagicMock
-else:
-    from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 
 class TestBaseView(BaseTableView):

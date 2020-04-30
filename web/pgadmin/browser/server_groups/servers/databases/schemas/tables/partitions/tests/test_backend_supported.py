@@ -7,16 +7,10 @@
 #
 ##########################################################################
 
-import sys
-
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     partitions import PartitionsModule
 from pgadmin.utils.route import BaseTestGenerator
-
-if sys.version_info < (3, 3):
-    from mock import patch, Mock, call
-else:
-    from unittest.mock import patch, Mock, call
+from unittest.mock import patch, Mock, call
 
 
 class TestBackendSupport(BaseTestGenerator):

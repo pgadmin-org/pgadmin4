@@ -1,12 +1,15 @@
-import sys
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2020, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
 
 from pgadmin.tools.search_objects.utils import SearchObjectsHelper, current_app
 from pgadmin.utils.route import BaseTestGenerator
-
-if sys.version_info < (3, 3):
-    from mock import patch, MagicMock
-else:
-    from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 
 class SearchObjectsHelperTest(BaseTestGenerator):
