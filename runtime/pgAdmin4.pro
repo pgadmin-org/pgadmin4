@@ -29,6 +29,10 @@ win32 {
     PY_HOME = $$(PYTHON_HOME)
     PY_VERSION = $$(PYTHON_VERSION)
 
+    lessThan(PY_VERSION, 34) {
+        error(Python 3.4 or later is required.)
+    }
+
     isEmpty(PY_HOME) {
         error(Please define the PYTHON_HOME variable in the system environment.)
     }
@@ -39,13 +43,6 @@ win32 {
         else {
             INCLUDEPATH = $$PY_HOME\include
             LIBS += -L"$$PY_HOME\libs" -lpython$$PY_VERSION
-
-            # Set the PYTHON2 macro if appropriate
-            PY2_VERSION = $$find(PY_VERSION, "^2")
-            count( PY2_VERSION, 1) {
-                message(Python version 2.x detected.)
-                DEFINES += PYTHON2
-            }
         }
     }
 }
@@ -56,11 +53,6 @@ else {
     # Environment setting
     PYTHON_CONFIG = $$(PYTHON_CONFIG)
 
-    # Python 2?
-    isEmpty(PYTHON_CONFIG) {
-        PYTHON_CONFIG = $$system(which python-config)
-    }
-
     # Maybe Python 3?
     isEmpty(PYTHON_CONFIG) {
         PYTHON_CONFIG = $$system(which python3-config)
@@ -68,7 +60,7 @@ else {
 
     # Argh!
     isEmpty(PYTHON_CONFIG) {
-        error(The python-config executable could not be found. Ensure Python is installed and in the system path.)
+        error(The python3-config executable could not be found. Ensure Python is installed and in the system path.)
     }
 
     message(Using $$PYTHON_CONFIG)
@@ -80,10 +72,9 @@ else {
     LIBS += $$system($$PYTHON_CONFIG --libs $$PYTHON_EMBED)
 
     contains( LIBS, -lpython2.* ) {
-       DEFINES += PYTHON2
-       message(Python2 detected.)
+       error(Building with Python 2 is not supported.)
     } else {
-       message(Python3 detected.)
+       message(Building with Python 3.)
     }
 }
 

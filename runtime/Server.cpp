@@ -72,15 +72,11 @@ Server::Server(quint16 port, QString key, QString logFileName)
     PGA_APP_NAME_UTF8 = PGA_APP_NAME.toUtf8();
 
     // Python3 requires conversion of char  * to wchar_t *, so...
-#ifdef PYTHON2
-    Py_SetProgramName(PGA_APP_NAME_UTF8.data());
-#else
     char *appName = PGA_APP_NAME_UTF8.data();
     const size_t cSize = strlen(appName)+1;
     m_wcAppName = new wchar_t[cSize];
     mbstowcs (m_wcAppName, appName, cSize);
     Py_SetProgramName(m_wcAppName);
-#endif
 
     // Setup the search path
     QSettings settings;
@@ -183,16 +179,12 @@ Server::Server(quint16 port, QString key, QString logFileName)
     if (!pythonHome.isEmpty())
     {
         pythonHome_utf8 = pythonHome.toUtf8();
-#ifdef PYTHON2
-        Py_SetPythonHome(pythonHome_utf8.data());
-#else
         char *python_home = pythonHome_utf8.data();
         const size_t cSize = strlen(python_home) + 1;
         m_wcPythonHome = new wchar_t[cSize];
         mbstowcs (m_wcPythonHome, python_home, cSize);
 
         Py_SetPythonHome(m_wcPythonHome);
-#endif
     }
 
     Logger::GetLogger()->Log("Initializing Python...");
@@ -207,15 +199,7 @@ Server::Server(quint16 port, QString key, QString logFileName)
         Logger::GetLogger()->Log("Adding new additional path elements");
         for (i = path_list.size() - 1; i >= 0 ; --i)
         {
-#ifdef PYTHON2
-            PyList_Append(sysPath, PyString_FromString(path_list.at(i).toUtf8().data()));
-#else
-#if PY_MINOR_VERSION > 2
             PyList_Append(sysPath, PyUnicode_DecodeFSDefault(path_list.at(i).toUtf8().data()));
-#else
-            PyList_Append(sysPath, PyBytes_FromString(path_list.at(i).toUtf8().data()));
-#endif
-#endif
         }
     }
     else
@@ -227,9 +211,6 @@ Server::Server(quint16 port, QString key, QString logFileName)
     if (sys != Q_NULLPTR)
     {
         PyObject *err = Q_NULLPTR;
-#ifdef PYTHON2
-        err = PyFile_FromString(m_logFileName.toUtf8().data(), (char *)"w");
-#else
         FILE *log = Q_NULLPTR;
 
 #if defined(Q_OS_WIN)
@@ -256,7 +237,6 @@ Server::Server(quint16 port, QString key, QString logFileName)
             delete wcLogFileName;
             wcLogFileName = NULL;
         }
-#endif
 #endif
         QFile(m_logFileName).setPermissions(QFile::ReadOwner|QFile::WriteOwner);
         if (err != Q_NULLPTR)
@@ -347,25 +327,7 @@ void Server::run()
 
     // Run the app!
     QByteArray m_appfile_utf8 = m_appfile.toUtf8();
-#ifdef PYTHON2
-    /*
-     * Untrusted search path vulnerability in the PySys_SetArgv API function in Python 2.6 and earlier, and possibly later
-     * versions, prepends an empty string to sys.path when the argv[0] argument does not contain a path separator,
-     * which might allow local users to execute arbitrary code via a Trojan horse Python file in the current working directory.
-     * Here we have to set arguments explicitly to python interpreter. Check more details in 'PySys_SetArgv' documentation.
-     */
-    char* n_argv[] = { m_appfile_utf8.data() };
-    PySys_SetArgv(1, n_argv);
 
-    Logger::GetLogger()->Log("PyRun_SimpleFile launching application server...");
-    PyObject* PyFileObject = PyFile_FromString(m_appfile_utf8.data(), (char *)"r");
-    int ret = PyRun_SimpleFile(PyFile_AsFile(PyFileObject), m_appfile_utf8.data());
-    if (ret != 0)
-    {
-        Logger::GetLogger()->Log("Failed to launch the application server, server thread exiting.");
-        setError(tr("Failed to launch the application server, server thread exiting."));
-    }
-#else
     /*
      * Untrusted search path vulnerability in the PySys_SetArgv API function in Python 2.6 and earlier, and possibly later
      * versions, prepends an empty string to sys.path when the argv[0] argument does not contain a path separator,
@@ -385,7 +347,6 @@ void Server::run()
         Logger::GetLogger()->Log("Failed to launch the application server, server thread exiting.");
         setError(tr("Failed to launch the application server, server thread exiting."));
     }
-#endif
 
     fclose(cp);
 }
