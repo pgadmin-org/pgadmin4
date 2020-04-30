@@ -52,10 +52,7 @@ def get_python_deps():
                                 "/../requirements.txt")
 
     with open(req_file, 'r') as req_file_p:
-        if sys.version_info[0] >= 3:
-            required = req_file_p.read().splitlines()
-        else:
-            required = req_file_p.read().decode("utf-8").splitlines()
+        required = req_file_p.read().splitlines()
 
     # Get the package info from the requirements file
     requirements = pkg_resources.parse_requirements(required)

@@ -24,10 +24,6 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.exclusion_constraint import utils as exclusion_utils
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class ExclusionConstraintModule(ConstraintTypeModule):
@@ -608,7 +604,7 @@ class ExclusionConstraintView(PGChildNodeView):
             data['table'] = self.table
             sql, name = \
                 exclusion_utils.get_sql(self.conn, data, did, tid, exid)
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(sql)
@@ -740,7 +736,7 @@ class ExclusionConstraintView(PGChildNodeView):
         try:
             sql, name = \
                 exclusion_utils.get_sql(self.conn, data, did, tid, exid)
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
             if sql == '':

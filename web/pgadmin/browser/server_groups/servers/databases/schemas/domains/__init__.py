@@ -22,17 +22,12 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
 from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class DomainModule(SchemaChildModule):
@@ -554,7 +549,7 @@ AND relkind != 'c'))"""
         data = self.request
         SQL, name = self.get_sql(gid, sid, data, scid)
         # Most probably this is due to error
-        if not isinstance(SQL, (str, unicode)):
+        if not isinstance(SQL, str):
             return SQL
 
         status, res = self.conn.execute_scalar(SQL)
@@ -670,7 +665,7 @@ AND relkind != 'c'))"""
 
         SQL, name = self.get_sql(gid, sid, self.request, scid, doid)
         # Most probably this is due to error
-        if not isinstance(SQL, (str, unicode)):
+        if not isinstance(SQL, str):
             return SQL
 
         status, res = self.conn.execute_scalar(SQL)
@@ -784,7 +779,7 @@ AND relkind != 'c'))"""
         try:
             SQL, name = self.get_sql(gid, sid, self.request, scid, doid)
             # Most probably this is due to error
-            if not isinstance(SQL, (str, unicode)):
+            if not isinstance(SQL, str):
                 return SQL
             if SQL == '':
                 SQL = "--modified SQL"

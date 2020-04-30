@@ -14,10 +14,6 @@ from flask_babelex import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone
 from functools import wraps
-from pgadmin.utils import IS_PY2
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 def get_template_path(f):
@@ -218,7 +214,7 @@ def get_sql(conn, data, did, tid, ctype, cid=None, template_path=None):
         ]
 
         def is_key_str(key, data):
-            return isinstance(data[key], (str, unicode)) and data[key] != ""
+            return isinstance(data[key], str) and data[key] != ""
 
         def is_key_list(key, data):
             return isinstance(data[key], list) and len(data[param]) > 0

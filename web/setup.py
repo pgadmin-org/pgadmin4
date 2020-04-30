@@ -14,13 +14,9 @@ import argparse
 import json
 import os
 import sys
+import builtins
 from pgadmin.model import db, User, Version, ServerGroup, Server, \
     SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-
-if sys.version_info[0] >= 3:
-    import builtins
-else:
-    import __builtin__ as builtins
 
 # Grab the SERVER_MODE if it's been set by the runtime
 if 'SERVER_MODE' in globals():

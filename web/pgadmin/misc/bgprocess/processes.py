@@ -21,7 +21,7 @@ from pickle import dumps, loads
 from subprocess import Popen, PIPE
 import logging
 
-from pgadmin.utils import IS_PY2, u, file_quote, fs_encoding, \
+from pgadmin.utils import u, file_quote, fs_encoding, \
     get_complete_file_path
 
 import pytz
@@ -32,10 +32,7 @@ from flask_security import current_user
 
 import config
 from pgadmin.model import Process, db
-if IS_PY2:
-    from StringIO import StringIO
-else:
-    from io import StringIO
+from io import StringIO
 
 PROCESS_NOT_STARTED = 0
 PROCESS_STARTED = 1
@@ -87,15 +84,7 @@ class BatchProcess(object):
                 _("Could not find a process with the specified ID.")
             )
 
-        try:
-            tmp_desc = loads(p.desc.encode('latin-1')) if \
-                IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
-        except UnicodeDecodeError:
-            tmp_desc = loads(p.desc.encode('utf-8')) if \
-                IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
-        except Exception as e:
-            tmp_desc = loads(p.desc.encode('utf-8', 'ignore')) if \
-                IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
+        tmp_desc = loads(p.desc)
 
         # ID
         self.id = _id
@@ -183,33 +172,15 @@ class BatchProcess(object):
         csv_writer = csv.writer(
             args_csv_io, delimiter=str(','), quoting=csv.QUOTE_MINIMAL
         )
-        if sys.version_info[0] == 2:
-            csv_writer.writerow(
-                [
-                    a.encode('utf-8')
-                    if isinstance(a, unicode) else a for a in _args
-                ]
-            )
-        else:
-            csv_writer.writerow(_args)
+        csv_writer.writerow(_args)
 
         args_val = args_csv_io.getvalue().strip(str('\r\n'))
         tmp_desc = dumps(self.desc)
-        try:
-            tmp_desc = tmp_desc.decode('utf-8') if \
-                IS_PY2 and hasattr(tmp_desc, 'decode') else tmp_desc
-        except UnicodeDecodeError:
-            tmp_desc = tmp_desc.decode('latin-1') if \
-                IS_PY2 and hasattr(tmp_desc, 'decode') else tmp_desc
-        except Exception:
-            tmp_desc = tmp_desc.decode('utf-8', 'ignore') if \
-                IS_PY2 and hasattr(tmp_desc, 'decode') else tmp_desc
 
         j = Process(
             pid=int(id),
             command=_cmd,
-            arguments=args_val.decode('utf-8', 'replace')
-            if IS_PY2 and hasattr(args_val, 'decode') else args_val,
+            arguments=args_val,
             logdir=log_dir,
             desc=tmp_desc,
             user_id=current_user.id
@@ -318,24 +289,10 @@ class BatchProcess(object):
         ]
         cmd.extend(self.args)
 
-        if os.name == 'nt' and IS_PY2:
-            command = []
-            for c in cmd:
-                command.append(
-                    c.encode('utf-8') if isinstance(c, unicode) else str(c)
-                )
-
-            current_app.logger.info(
-                u"Executing the process executor with the arguments: %s",
-                ''.join(command)
-            )
-
-            cmd = command
-        else:
-            current_app.logger.info(
-                u"Executing the process executor with the arguments: %s",
-                str(cmd)
-            )
+        current_app.logger.info(
+            u"Executing the process executor with the arguments: %s",
+            str(cmd)
+        )
 
         # Make a copy of environment, and add new variables to support
         env = os.environ.copy()
@@ -348,10 +305,6 @@ class BatchProcess(object):
 
         if cb is not None:
             cb(env)
-
-        if IS_PY2:
-            # We need environment variables & values in string
-            env = convert_environment_variables(env)
 
         if os.name == 'nt':
             DETACHED_PROCESS = 0x00000008
@@ -602,17 +555,7 @@ class BatchProcess(object):
             etime = parser.parse(p.end_time or get_current_time())
 
             execution_time = BatchProcess.total_seconds(etime - stime)
-            desc = ""
-            try:
-                desc = loads(p.desc.encode('latin-1')) if \
-                    IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
-            except UnicodeDecodeError:
-                desc = loads(p.desc.encode('utf-8')) if \
-                    IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
-            except Exception:
-                desc = loads(p.desc.encode('utf-8', 'ignore')) if \
-                    IS_PY2 and hasattr(p.desc, 'encode') else loads(p.desc)
-
+            desc = loads(p.desc)
             details = desc
 
             if isinstance(desc, IProcessDesc):

@@ -158,7 +158,6 @@ class PgAdminModule(Blueprint):
         return res
 
 
-IS_PY2 = (sys.version_info[0] == 2)
 IS_WIN = (os.name == 'nt')
 
 sys_encoding = sys.getdefaultencoding()
@@ -175,16 +174,10 @@ if not fs_encoding or fs_encoding == 'ascii':
 
 
 def u(_s, _encoding=sys_encoding):
-    if IS_PY2:
-        if isinstance(_s, str):
-            return unicode(_s, _encoding)
     return _s
 
 
 def file_quote(_p):
-    if IS_PY2:
-        if isinstance(_p, unicode):
-            return _p.encode(fs_encoding)
     return _p
 
 
@@ -192,25 +185,10 @@ if IS_WIN:
     import ctypes
     from ctypes import wintypes
 
-    if IS_PY2:
-        def env(name):
-            if IS_PY2:
-                # Make sure string argument is unicode
-                name = unicode(name)
-            n = ctypes.windll.kernel32.GetEnvironmentVariableW(name, None, 0)
-
-            if n == 0:
-                return None
-
-            buf = ctypes.create_unicode_buffer(u'\0' * n)
-            ctypes.windll.kernel32.GetEnvironmentVariableW(name, buf, n)
-
-            return buf.value
-    else:
-        def env(name):
-            if name in os.environ:
-                return os.environ[name]
-            return None
+    def env(name):
+        if name in os.environ:
+            return os.environ[name]
+        return None
 
     _GetShortPathNameW = ctypes.windll.kernel32.GetShortPathNameW
     _GetShortPathNameW.argtypes = [

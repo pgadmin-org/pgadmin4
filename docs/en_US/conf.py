@@ -14,11 +14,7 @@
 
 import os
 import sys
-
-if sys.version_info[0] >= 3:
-    import builtins
-else:
-    import __builtin__ as builtins
+import builtins
 
 # Ensure the global server mode is set.
 builtins.SERVER_MODE = None

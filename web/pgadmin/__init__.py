@@ -43,12 +43,9 @@ from pgadmin import authenticate
 # If script is running under python3, it will not have the xrange function
 # defined
 winreg = None
-if sys.version_info[0] >= 3:
-    xrange = range
-    if os.name == 'nt':
-        import winreg
-elif os.name == 'nt':
-    import _winreg as winreg
+xrange = range
+if os.name == 'nt':
+    import winreg
 
 
 class PgAdmin(Flask):

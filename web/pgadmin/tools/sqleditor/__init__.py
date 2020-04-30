@@ -52,11 +52,6 @@ try:
 except ImportError:
     from urllib.parse import unquote
 
-if sys.version_info[0:2] <= (2, 7):
-    IS_PY2 = True
-else:
-    IS_PY2 = False
-
 
 class SqlEditorModule(PgAdminModule):
     """
@@ -321,8 +316,7 @@ def extract_sql_from_network_parameters(request_data, request_arguments,
     if request_data:
         sql_parameters = json.loads(request_data, encoding='utf-8')
 
-        if (IS_PY2 and type(sql_parameters) is unicode) \
-                or type(sql_parameters) is str:
+        if type(sql_parameters) is str:
             return dict(sql=str(sql_parameters), explain_plan=None)
         return sql_parameters
     else:

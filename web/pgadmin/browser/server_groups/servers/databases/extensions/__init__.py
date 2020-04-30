@@ -22,27 +22,6 @@ from pgadmin.utils.ajax import make_json_response, \
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 
-# As unicode type is not available in python3
-# If we check a variable is "isinstance(variable, str)
-# it breaks in python 3 as variable type is not string its unicode.
-# We assign basestring as str type if it is python3, unicode
-# if it is python2.
-
-try:
-    unicode = unicode
-except NameError:
-    # 'unicode' is undefined, must be Python 3
-    str = str
-    unicode = str
-    bytes = bytes
-    basestring = (str, bytes)
-else:
-    # 'unicode' exists, must be Python 2
-    str = str
-    unicode = unicode
-    bytes = str
-    basestring = basestring
-
 
 class ExtensionModule(CollectionNodeModule):
     """
@@ -315,7 +294,7 @@ class ExtensionView(PGChildNodeView):
         try:
             SQL, name = self.getSQL(gid, sid, data, did, eid)
             # Most probably this is due to error
-            if not isinstance(SQL, (str, unicode)):
+            if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_dict(SQL)
@@ -393,7 +372,7 @@ class ExtensionView(PGChildNodeView):
         try:
             SQL, name = self.getSQL(gid, sid, data, did, eid)
             # Most probably this is due to error
-            if not isinstance(SQL, (str, unicode)):
+            if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
             if SQL == '':

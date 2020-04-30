@@ -23,13 +23,8 @@ from pgadmin.utils.ajax import make_json_response, \
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class SynonymModule(SchemaChildModule):
@@ -568,7 +563,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         )
         SQL, name = self.get_sql(gid, sid, data, scid, syid)
         # Most probably this is due to error
-        if not isinstance(SQL, (str, unicode)):
+        if not isinstance(SQL, str):
             return SQL
         try:
             if SQL and SQL.strip('\n') and SQL.strip(' '):
@@ -610,7 +605,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             SQL, name = self.get_sql(gid, sid, data, scid, syid)
             # Most probably this is due to error
-            if not isinstance(SQL, (str, unicode)):
+            if not isinstance(SQL, str):
                 return SQL
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(

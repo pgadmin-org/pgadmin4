@@ -25,7 +25,6 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils import IS_PY2
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
@@ -753,14 +752,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         Returns:
             Updated data dict
         """
-        # For Python2, it can be int, long, float
-        if IS_PY2 and hasattr(str, 'decode'):
-            if isinstance(data['name'], (int, long, float)):
-                data['name'] = str(data['name'])
-        else:
-            # For Python3, it can be int, float
-            if isinstance(data['name'], (int, float)):
-                data['name'] = str(data['name'])
+        if isinstance(data['name'], (int, float)):
+            data['name'] = str(data['name'])
+
         return data
 
     def get_sql(self, did, scid, tid, data, res):

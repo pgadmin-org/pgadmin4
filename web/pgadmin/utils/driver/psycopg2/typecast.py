@@ -12,8 +12,6 @@ Typecast various data types so that they can be compatible with Javascript
 data types.
 """
 
-import sys
-
 from psycopg2 import STRING as _STRING
 import psycopg2
 from psycopg2.extensions import encodings
@@ -124,10 +122,6 @@ PSYCOPG_SUPPORTED_RANGE_ARRAY_TYPES = (3905, 3927, 3907, 3913, 3909, 3911)
 
 
 def register_global_typecasters():
-    if sys.version_info < (3,):
-        psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-        psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
-
     unicode_type_for_record = psycopg2.extensions.new_type(
         (2249,),
         "RECORD",
@@ -186,19 +180,12 @@ def register_string_typecasters(connection):
     postgres_encoding, python_encoding, typecast_encoding = \
         getEncoding(connection.encoding)
     if postgres_encoding != 'UNICODE':
-        if sys.version_info >= (3,):
-            def non_ascii_escape(value, cursor):
-                if value is None:
-                    return None
-                return bytes(
-                    value, encodings[cursor.connection.encoding]
-                ).decode(typecast_encoding, errors='replace')
-        else:
-            def non_ascii_escape(value, cursor):
-                if value is None:
-                    return None
-                return value.decode(typecast_encoding, errors='replace')
-                # return value
+        def non_ascii_escape(value, cursor):
+            if value is None:
+                return None
+            return bytes(
+                value, encodings[cursor.connection.encoding]
+            ).decode(typecast_encoding, errors='replace')
 
         unicode_type = psycopg2.extensions.new_type(
             # "char", name, text, character, character varying

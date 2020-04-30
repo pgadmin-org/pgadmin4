@@ -98,9 +98,7 @@ def splitext(path):
 def is_folder_hidden(filepath):
     if _platform == "win32":
         try:
-            attrs = ctypes.windll.kernel32.GetFileAttributesW(
-                unicode(filepath) if sys.version_info[0] < 3 else filepath
-            )
+            attrs = ctypes.windll.kernel32.GetFileAttributesW(filepath)
             assert attrs != -1
             result = bool(attrs & 2)
         except (AttributeError, AssertionError):

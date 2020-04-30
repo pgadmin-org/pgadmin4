@@ -40,7 +40,6 @@ from threading import Thread
 import signal
 
 _IS_WIN = (os.name == 'nt')
-_IS_PY2 = (sys.version_info[0] == 2)
 _ZERO = timedelta(0)
 _sys_encoding = None
 _fs_encoding = None
@@ -48,16 +47,12 @@ _u = None
 _out_dir = None
 _log_file = None
 
-if _IS_PY2:
-    def _log(msg):
-        with open(_log_file, 'a') as fp:
-            fp.write(('INFO:: %s\n' % str(msg)))
-else:
-    def _log(msg):
-        with open(_log_file, 'a') as fp:
-            fp.write(
-                ('INFO:: %s\n' % msg.encode('ascii', 'xmlcharrefreplace'))
-            )
+
+def _log(msg):
+    with open(_log_file, 'a') as fp:
+        fp.write(
+            ('INFO:: %s\n' % msg.encode('ascii', 'xmlcharrefreplace'))
+        )
 
 
 def unescape_dquotes_process_arg(arg):
@@ -193,61 +188,32 @@ class ProcessLogger(Thread):
         self.process = process
         self.stream = stream
 
-    if not _IS_PY2:
-        def log(self, msg):
-            """
-            This function will update log file
+    def log(self, msg):
+        """
+        This function will update log file
 
-            Args:
-                msg: message
+        Args:
+            msg: message
 
-            Returns:
-                None
-            """
-            # Write into log file
-            if self.logger:
-                if msg:
-                    self.logger.write(
-                        get_current_time(
-                            format='%y%m%d%H%M%S%f'
-                        ).encode('utf-8')
-                    )
-                    self.logger.write(b',')
-                    self.logger.write(
-                        msg.lstrip(b'\r\n' if _IS_WIN else b'\n')
-                    )
-                    self.logger.write(os.linesep.encode('utf-8'))
+        Returns:
+            None
+        """
+        # Write into log file
+        if self.logger:
+            if msg:
+                self.logger.write(
+                    get_current_time(
+                        format='%y%m%d%H%M%S%f'
+                    ).encode('utf-8')
+                )
+                self.logger.write(b',')
+                self.logger.write(
+                    msg.lstrip(b'\r\n' if _IS_WIN else b'\n')
+                )
+                self.logger.write(os.linesep.encode('utf-8'))
 
-                return True
-            return False
-    else:
-        def log(self, msg):
-            """
-            This function will update log file
-
-            Args:
-                msg: message
-
-            Returns:
-                None
-            """
-            # Write into log file
-            if self.logger:
-                if msg:
-                    self.logger.write(
-                        b'{0},{1}{2}'.format(
-                            get_current_time(
-                                format='%y%m%d%H%M%S%f'
-                            ),
-                            msg.lstrip(
-                                b'\r\n' if _IS_WIN else b'\n'
-                            ),
-                            os.linesep
-                        )
-                    )
-
-                return True
-            return False
+            return True
+        return False
 
     def run(self):
         if self.process and self.stream:
@@ -327,11 +293,7 @@ def execute(argv):
         kwargs['shell'] = True if _IS_WIN else False
 
         # We need environment variables & values in string
-        if _IS_PY2:
-            _log('Converting the environment variable in the bytes format...')
-            kwargs['env'] = convert_environment_variables(os.environ.copy())
-        else:
-            kwargs['env'] = os.environ.copy()
+        kwargs['env'] = os.environ.copy()
 
         _log('Starting the command execution...')
         process = Popen(
@@ -454,9 +416,6 @@ if __name__ == '__main__':
         _fs_encoding = 'utf-8'
 
     def u(_s, _encoding=_sys_encoding):
-        if _IS_PY2:
-            if isinstance(_s, str):
-                return unicode(_s, _encoding)
         return _s
     _u = u
 

@@ -25,15 +25,10 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.compile_template_name import compile_template_path
-from pgadmin.utils import IS_PY2
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 from pgadmin.tools.schema_diff.directory_compare import directory_diff,\
     parse_acl
-
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class RuleModule(CollectionNodeModule):
@@ -379,7 +374,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         )
         try:
             SQL, name = self.getSQL(gid, sid, data, tid, rid)
-            if not isinstance(SQL, (str, unicode)):
+            if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
@@ -461,7 +456,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         data = request.args
         sql, name = self.getSQL(gid, sid, data, tid, rid)
-        if not isinstance(sql, (str, unicode)):
+        if not isinstance(sql, str):
             return sql
         sql = sql.strip('\n').strip(' ')
 

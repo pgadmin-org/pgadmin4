@@ -75,17 +75,10 @@ from csv import (
 )
 
 # Stuff needed from six
-import sys
-PY3 = sys.version_info[0] == 3
-if PY3:
-    string_types = str
-    text_type = str
-    binary_type = bytes
-    unichr = chr
-else:
-    string_types = basestring
-    text_type = unicode
-    binary_type = str
+string_types = str
+text_type = str
+binary_type = bytes
+unichr = chr
 
 
 class QuoteStrategy(object):

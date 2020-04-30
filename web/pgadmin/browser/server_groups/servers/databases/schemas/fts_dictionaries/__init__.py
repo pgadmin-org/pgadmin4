@@ -20,16 +20,11 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class FtsDictionaryModule(SchemaChildModule):
@@ -503,7 +498,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         # Fetch sql query to update fts dictionary
         sql, name = self.get_sql(gid, sid, did, scid, data, dcid)
         # Most probably this is due to error
-        if not isinstance(sql, (str, unicode)):
+        if not isinstance(sql, str):
             return sql
 
         sql = sql.strip('\n').strip(' ')
@@ -634,7 +629,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         # Fetch sql query for modified data
         SQL, name = self.get_sql(gid, sid, did, scid, data, dcid)
         # Most probably this is due to error
-        if not isinstance(SQL, (str, unicode)):
+        if not isinstance(SQL, str):
             return SQL
 
         if SQL == '':

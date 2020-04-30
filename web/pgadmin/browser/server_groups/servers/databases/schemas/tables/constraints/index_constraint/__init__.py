@@ -24,10 +24,6 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.index_constraint import utils as idxcons_utils
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class IndexConstraintModule(ConstraintTypeModule):
@@ -651,7 +647,7 @@ class IndexConstraintView(PGChildNodeView):
             data['table'] = self.table
             sql, name = idxcons_utils.get_sql(self.conn, data, did, tid,
                                               self.constraint_type, cid)
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
 
@@ -792,7 +788,7 @@ class IndexConstraintView(PGChildNodeView):
         try:
             sql, name = idxcons_utils.get_sql(self.conn, data, did, tid,
                                               self.constraint_type, cid)
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
             if sql == '':

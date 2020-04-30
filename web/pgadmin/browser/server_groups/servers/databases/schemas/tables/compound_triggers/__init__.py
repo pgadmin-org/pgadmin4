@@ -25,17 +25,11 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import trigger_definition
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 from pgadmin.tools.schema_diff.directory_compare import directory_diff,\
     parse_acl
-
-
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class CompoundTriggerModule(CollectionNodeModule):
@@ -645,7 +639,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
             SQL, name = compound_trigger_utils.get_sql(
                 self.conn, data, tid, trid, self.datlastsysoid)
-            if not isinstance(SQL, (str, unicode)):
+            if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
@@ -725,7 +719,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             sql, name = compound_trigger_utils.get_sql(
                 self.conn, data, tid, trid, self.datlastsysoid)
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
 
@@ -885,7 +879,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                                                        data,
                                                        tid, oid,
                                                        self.datlastsysoid)
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
         else:

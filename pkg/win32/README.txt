@@ -4,7 +4,7 @@
 To generate a pgAdmin 4 installer for Windows bit, the following packages must be installed:
 
 1. Python installation
-  - Python 2.7 or 3.4+ or above from https://www.python.org/
+  - Python 3.4+ or above from https://www.python.org/
 
 2. QT installation
   - Qt 4.6 through 5.5 from http://www.qt.io/
@@ -21,8 +21,8 @@ Building: Depending upon the archicture of the OS(x86|amd64) set then environmen
 
 1. Set the PYTHON environment variable to the Python root installation directory, e.g. for x86
 
-   SET "PYTHON_HOME=C:\Python27"
-   SET "PYTHON_DLL=C:\Windows\System32\python27.dll"
+   SET "PYTHON_HOME=C:\Python38"
+   SET "PYTHON_DLL=C:\Windows\System32\python38.dll"
 
 2. Set the QTDIR environment variable to the QT root installation directory, e.g. for x86
 

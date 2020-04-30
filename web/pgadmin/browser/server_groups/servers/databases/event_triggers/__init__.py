@@ -20,10 +20,6 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class EventTriggerModule(CollectionNodeModule):
@@ -446,7 +442,7 @@ class EventTriggerView(PGChildNodeView):
         try:
             sql = self.get_sql(data, etid)
             # Most probably this is due to error
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
             if sql != "":
@@ -573,7 +569,7 @@ class EventTriggerView(PGChildNodeView):
         try:
             sql = self.get_sql(data, etid)
             # Most probably this is due to error
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
             sql = re.sub('\n{2,}', '\n\n', sql)

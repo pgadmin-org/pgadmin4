@@ -22,17 +22,12 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
-from pgadmin.utils import IS_PY2
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, \
     precondition_required, gone
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 
 class PackageModule(SchemaChildModule):
@@ -510,7 +505,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         SQL, name = self.getSQL(gid, sid, did, data, scid, pkgid)
         # Most probably this is due to error
-        if not isinstance(SQL, (str, unicode)):
+        if not isinstance(SQL, str):
             return SQL
 
         SQL = SQL.strip('\n').strip(' ')
@@ -565,7 +560,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         SQL, name = self.getSQL(gid, sid, did, data, scid, pkgid)
         # Most probably this is due to error
-        if not isinstance(SQL, (str, unicode)):
+        if not isinstance(SQL, str):
             return SQL
 
         SQL = SQL.strip('\n').strip(' ')
@@ -714,7 +709,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             sql, name = self.getSQL(gid, sid, did, result, scid, pkgid, True,
                                     diff_schema)
             # Most probably this is due to error
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
 
             sql = sql.strip('\n').strip(' ')

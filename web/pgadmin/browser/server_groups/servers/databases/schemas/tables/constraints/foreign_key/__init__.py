@@ -24,11 +24,6 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.foreign_key import utils as fkey_utils
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils import IS_PY2
-
-# If we are in Python3
-if not IS_PY2:
-    unicode = str
 
 FOREIGN_KEY_NOT_FOUND = gettext("Could not find the foreign key.")
 
@@ -650,7 +645,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
             sql, name = fkey_utils.get_sql(self.conn, data, tid, fkid)
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
 
@@ -786,7 +781,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         data['table'] = self.table
         try:
             sql, name = fkey_utils.get_sql(self.conn, data, tid, fkid)
-            if not isinstance(sql, (str, unicode)):
+            if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
             if sql == '':
