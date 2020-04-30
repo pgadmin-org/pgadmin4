@@ -102,7 +102,7 @@ echo recursive-include pgadmin4 \* > pip-build/MANIFEST.in
 # Run the build
 echo Building wheel...
 cd pip-build
-python ../pkg/pip/setup_pip.py bdist_wheel --universal
+python ../pkg/pip/setup_pip.py bdist_wheel
 cd ../
 
 # Get the build
