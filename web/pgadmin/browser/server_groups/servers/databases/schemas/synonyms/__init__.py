@@ -712,9 +712,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             scid: Schema ID
             syid: Synonym ID
         """
-        dependents_result = self.get_dependents(
-            self.conn, syid, where="WHERE dep.objid=0::oid"
-        )
+        dependents_result = self.get_dependents(self.conn, syid)
 
         return ajax_response(
             response=dependents_result,
@@ -734,9 +732,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             scid: Schema ID
             syid: Synonym ID
         """
-        dependencies_result = self.get_dependencies(
-            self.conn, syid, where="WHERE dep.objid=0::oid"
-        )
+        dependencies_result = self.get_dependencies(self.conn, syid)
 
         return ajax_response(
             response=dependencies_result,
