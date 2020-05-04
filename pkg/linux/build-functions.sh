@@ -107,9 +107,9 @@ _build_runtime() {
         make clean
     fi
     if hash qmake-qt5 2>/dev/null; then
-        qmake-qt5
+        PGADMIN_PYTHON_DIR=/usr qmake-qt5
     else
-        qmake
+        PGADMIN_PYTHON_DIR=/usr qmake
     fi
     make
     mkdir -p "${DESKTOPROOT}/usr/${APP_NAME}/bin"

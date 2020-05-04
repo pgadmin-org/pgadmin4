@@ -82,7 +82,7 @@ _cleanup() {
     rm -f ${DISTROOT}/pgadmin4*.dmg
 }
 
-_create_python_virtualenv() {
+_create_venv() {
     export PATH=${PGDIR}/bin:${PATH}
     export LD_LIBRARY_PATH=${PGDIR}/lib:${LD_LIBRARY_PATH}
     test -d ${BUILDROOT} || mkdir ${BUILDROOT} || exit 1
@@ -147,10 +147,9 @@ _create_python_virtualenv() {
 }
 
 _build_runtime() {
-    _create_python_virtualenv || exit 1
     cd ${SOURCEDIR}/runtime
     make clean
-    ${QMAKE} || { echo qmake failed; exit 1; }
+    PGADMIN_PYTHON_DIR=${PYTHON_HOME} ${QMAKE} || { echo qmake failed; exit 1; }
     make || { echo make failed; exit 1; }
     cp -r pgAdmin4.app "${BUILDROOT}/${APP_BUNDLE_NAME}"
 }
@@ -280,6 +279,7 @@ _codesign_dmg() {
 
 _get_version || { echo Could not get versioning; exit 1; }
 _cleanup
+_create_venv || { echo venv creation failed; exit 1; }
 _build_runtime || { echo Runtime build failed; exit 1; }
 _build_doc
 _complete_bundle

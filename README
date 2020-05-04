@@ -26,42 +26,46 @@ Building the Runtime
 
 To build the runtime, the following packages must be installed:
 
-- QT 4.6 or above (Use the VC++ build on Windows, not MinGW).
+- QT 5 (Use the VC++ build on Windows, not MinGW).
 - Python 3.4+
 
-Assuming both qmake and python-config are in the path:
+An environment variable named PGADMIN_PYTHON_DIR must be set to the directory
+in which Python has been installed, for example:
 
-   $ cd $PGADMIN4_SRC/runtime
-    $ qmake
-    Project MESSAGE: Building for QT5+...
-    Project MESSAGE: Building for Linux/Mac...
-    Project MESSAGE: Using /usr/bin/python-config
-    Project MESSAGE: Python3 detected.
-    $ make
-    ...
+- /usr
+- /usr/local/python-3.8
+- C:\Python38
 
-To build the runtime in debug mode, use the option below with qmake
+Assuming both qmake is in the path:
+
+  dpage@hal:~/git/pgadmin4$ cd runtime
+  dpage@hal:~/git/pgadmin4/runtime$ export PGADMIN_PYTHON_DIR=/opt/local
+  dpage@hal:~/git/pgadmin4/runtime$ qmake
+  Project MESSAGE: ==================================
+  Project MESSAGE: Configuring the pgAdmin 4 runtime.
+  Project MESSAGE: ==================================
+  Project MESSAGE: Qt version: 5
+  Project MESSAGE: Platform: macOS
+  Project MESSAGE: Python executable: /opt/local/bin/python3
+  Project MESSAGE: Python version: 3.8 (38)
+  Project MESSAGE: Python config: /opt/local/bin/python3-config
+  Project MESSAGE: CXXFLAGS: -pipe -stdlib=libc++ -I/opt/local/Library/Frameworks/Python.framework/Versions/3.8/include/python3.8 -I/opt/local/Library/Frameworks/Python.framework/Versions/3.8/include/python3.8
+  Project MESSAGE: LDFLAGS: -stdlib=libc++ -L/opt/local/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/config-3.8-darwin -ldl -framework CoreFoundation
+  Project MESSAGE: LIBS: -lpython3.8 -ldl -framework CoreFoundation
+  dpage@hal:~/git/pgadmin4/runtime$ make
+  ...
+
+To build the runtime in debug mode, use the option below with qmake:
 $ qmake CONFIG+=debug
 
-To build the runtime in release mode, use the option below with qmake
+To build the runtime in release mode, use the option below with qmake:
 $ qmake CONFIG+=release
 
 By default, the runtime application will be built in release mode.
 
-On Linux, an executable called 'pgAdmin4' will be built, and on Mac OS X, an
-app bundle called pgAdmin4.app will be created.
-
-To build the runtime on a Windows system, export PYTHON_HOME and PYTHON_VERSION 
-variables in the System environment. Specify the PYTHON_VERSION with the major 
-and minor number. Do not specify micro level version.
-
-For example, given a Python version of A.B.C; A - Major number, B - Minor
-number, C - Micro level (Bug fix releases).
-
-If Python version is 3.8.2 than specify PYTHON_VERSION=38
-
- e.g. PYTHON_HOME=C:\Python38\
-      PYTHON_VERSION=38
+On Linux, an executable called 'pgAdmin4' will be built, on Windows,
+'pgAdmin4.exe', and on Mac OS X, an app bundle called pgAdmin4.app will be
+created.
 
 You can also use Qt Creator to build, develop and debug the runtime. Simply
 open the $PGADMIN4_SRC/runtime/pgAdmin4.pro project file in Qt Creator and
@@ -319,7 +323,7 @@ http://www.jrsoftware.org/isdl.php
 
 A number of environment variables may need to be set to enable the build script
 to function. The defaults will usually work on a typical 64 bit system with
-Qt 5.5.1, Python 2.7 and Visual Studio 2013. The examples below are for a
+Qt 5.14.2, Python 3.8 and Visual Studio 2013. The examples below are for a
 similar 32 bit system:
 
 INNOTOOL=C:\Program Files\Inno Setup 5
@@ -327,8 +331,8 @@ PGDIR=C:\Program Files\PostgreSQL\12
 PYTHON_DLL=C:\Python38\Python38.dll
 PYTHON_HOME=C:\Python38
 PYTHON_VERSION=38
-QTDIR=C:\Qt\5.9\msvc2013
-VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC
+QTDIR=C:\Qt\5.14.2\msvc2015
+VCDIR=C:\Program Files\Microsoft Visual Studio 14.0\VC
 
 To build the installer:
 

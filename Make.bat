@@ -254,7 +254,7 @@ REM Main build sequence Ends
     CD "%WD%\runtime"
 
     ECHO Running qmake...
-    CALL "%QMAKE%" || EXIT /B 1
+    CALL set "PGADMIN_PYTHON_DIR=%PYTHON_HOME%" && "%QMAKE%" || EXIT /B 1
 
     ECHO Cleaning the build directory...
     CALL %MAKE% clean || EXIT /B 1
