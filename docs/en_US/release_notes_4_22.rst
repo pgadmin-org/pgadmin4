@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5443 <https://redmine.postgresql.org/issues/5443>`_ -  Remove support for Python 2.
 | `Issue #5444 <https://redmine.postgresql.org/issues/5444>`_ -  Cleanup Python detection in the runtime project file.
 
 Bug fixes

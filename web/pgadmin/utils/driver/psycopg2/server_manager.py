@@ -120,22 +120,13 @@ class ServerManager(object):
         res['ver'] = self.ver
         res['sversion'] = self.sversion
         if hasattr(self, 'password') and self.password:
-            # If running under PY2
-            if hasattr(self.password, 'decode'):
-                res['password'] = self.password.decode('utf-8')
-            else:
-                res['password'] = str(self.password)
+            res['password'] = str(self.password)
         else:
             res['password'] = self.password
 
         if self.use_ssh_tunnel:
             if hasattr(self, 'tunnel_password') and self.tunnel_password:
-                # If running under PY2
-                if hasattr(self.tunnel_password, 'decode'):
-                    res['tunnel_password'] = \
-                        self.tunnel_password.decode('utf-8')
-                else:
-                    res['tunnel_password'] = str(self.tunnel_password)
+                res['tunnel_password'] = str(self.tunnel_password)
             else:
                 res['tunnel_password'] = self.tunnel_password
 
