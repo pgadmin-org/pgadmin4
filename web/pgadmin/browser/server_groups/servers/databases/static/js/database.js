@@ -520,7 +520,6 @@ define('pgadmin.node.database', [
               tree.deselect(item);
               tree.setInode(item);
             }
-
             if (res && res.data) {
               if(typeof res.data.connected == 'boolean') {
                 data.connected = res.data.connected;
@@ -530,11 +529,17 @@ define('pgadmin.node.database', [
                 data.icon = res.data.icon;
                 tree.addIcon(item, {icon: data.icon});
               }
+              if(res.data.already_connected) {
+                res.info = gettext('Database already connected.');
+              }
               if(res.data.info_prefix) {
                 res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
               }
-
-              Alertify.success(res.info);
+              if(res.data.already_connected) {
+                Alertify.info(res.info);
+              } else {
+                Alertify.success(res.info);
+              }
               obj.trigger('connected', obj, item, data);
               pgBrowser.Events.trigger(
                 'pgadmin:database:connected', item, data

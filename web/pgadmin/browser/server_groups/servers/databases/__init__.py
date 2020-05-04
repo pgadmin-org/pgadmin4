@@ -456,30 +456,33 @@ class DatabaseView(PGChildNodeView):
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection(did=did, auto_reconnect=True)
-        status, errmsg = conn.connect()
-
-        if not status:
-            current_app.logger.error(
-                "Could not connected to database(#{0}).\nError: {1}".format(
-                    did, errmsg
+        already_connected = conn.connected()
+        if not already_connected:
+            status, errmsg = conn.connect()
+            if not status:
+                current_app.logger.error(
+                    "Could not connected to database(#{0}).\nError: {1}"
+                    .format(
+                        did, errmsg
+                    )
                 )
-            )
-
-            return internal_server_error(errmsg)
-        else:
-            current_app.logger.info('Connection Established for Database Id: \
-                %s' % (did))
-
-            return make_json_response(
-                success=1,
-                info=_("Database connected."),
-                data={
-                    'icon': 'pg-icon-database',
-                    'connected': True,
-                    'info_prefix': '{0}/{1}'.
-                    format(Server.query.filter_by(id=sid)[0].name, conn.db)
-                }
-            )
+                return internal_server_error(errmsg)
+            else:
+                current_app.logger.info(
+                    'Connection Established for Database Id: \
+                    %s' % (did)
+                )
+        return make_json_response(
+            success=1,
+            info=_("Database connected."),
+            data={
+                'icon': 'pg-icon-database',
+                'already_connected': already_connected,
+                'connected': True,
+                'info_prefix': '{0}/{1}'.
+                format(Server.query.filter_by(id=sid)[0].name, conn.db)
+            }
+        )
 
     def disconnect(self, gid, sid, did):
         """Disconnect the database."""
