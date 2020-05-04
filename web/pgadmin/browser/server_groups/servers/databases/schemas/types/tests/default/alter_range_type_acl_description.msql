@@ -1,0 +1,4 @@
+COMMENT ON TYPE public."range_type_$%{}[]()&*^!@""'`\/#"
+    IS 'this is test';
+
+GRANT USAGE ON TYPE public."range_type_$%{}[]()&*^!@""'`\/#" TO PUBLIC;

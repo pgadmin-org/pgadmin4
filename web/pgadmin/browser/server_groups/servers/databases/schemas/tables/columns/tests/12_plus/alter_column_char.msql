@@ -1,0 +1,15 @@
+ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    RENAME "col_2_$%{}[]()&*^!@""'`\/#" TO "new_col_2_$%{}[]()&*^!@""'`\/#";
+
+ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "new_col_2_$%{}[]()&*^!@""'`\/#" TYPE character(None) COLLATE pg_catalog."C";
+ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "new_col_2_$%{}[]()&*^!@""'`\/#" SET STATISTICS 5;
+
+ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "new_col_2_$%{}[]()&*^!@""'`\/#" SET STORAGE PLAIN;
+
+COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#"."new_col_2_$%{}[]()&*^!@""'`\/#"
+    IS 'Comment for alter';
+
+GRANT INSERT("new_col_2_$%{}[]()&*^!@""'`\/#"), SELECT("new_col_2_$%{}[]()&*^!@""'`\/#"), REFERENCES("new_col_2_$%{}[]()&*^!@""'`\/#") ON testschema."table_3_$%{}[]()&*^!@""'`\/#" TO PUBLIC;

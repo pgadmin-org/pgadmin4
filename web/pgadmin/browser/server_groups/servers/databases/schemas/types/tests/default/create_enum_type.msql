@@ -1,0 +1,2 @@
+CREATE TYPE public."enum_type_$%{}[]()&*^!@""'`\/#" AS ENUM
+    ('a', 'b', 'c');

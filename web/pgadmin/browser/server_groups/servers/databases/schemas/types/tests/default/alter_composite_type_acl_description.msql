@@ -1,0 +1,4 @@
+COMMENT ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#"
+    IS 'this is test';
+
+GRANT USAGE ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#" TO PUBLIC;

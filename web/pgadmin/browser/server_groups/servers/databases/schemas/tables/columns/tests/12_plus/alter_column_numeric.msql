@@ -1,0 +1,9 @@
+ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    RENAME "col_5_$%{}[]()&*^!@""'`\/#" TO "new_col_5_$%{}[]()&*^!@""'`\/#";
+
+ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "new_col_5_$%{}[]()&*^!@""'`\/#" TYPE numeric(15, 6);
+COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#"."new_col_5_$%{}[]()&*^!@""'`\/#"
+    IS 'Comment for alter';
+
+GRANT ALL("new_col_5_$%{}[]()&*^!@""'`\/#") ON testschema."table_3_$%{}[]()&*^!@""'`\/#" TO PUBLIC;

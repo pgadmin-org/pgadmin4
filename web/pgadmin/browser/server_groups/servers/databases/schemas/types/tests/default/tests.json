@@ -5,6 +5,7 @@
       "name": "Create ENUM type",
       "endpoint": "NODE-type.obj",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
       "data": {
         "name": "enum_type_$%{}[]()&*^!@\"'`\\/#",
         "is_sys_type":false,
@@ -16,28 +17,33 @@
         "seclabels":[],
         "description":""
       },
-      "expected_sql_file": "create_enum_type.sql"
+      "expected_sql_file": "create_enum_type.sql",
+      "expected_msql_file": "create_enum_type.msql"
     },
     {
       "type": "alter",
       "name": "alter ENUM type and add new label",
       "endpoint": "NODE-type.obj_id",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "enum": {"added": [{"label": "d"}]}
       },
-      "expected_sql_file": "alter_enum_type_label.sql"
+      "expected_sql_file": "alter_enum_type_label.sql",
+      "expected_msql_file": "alter_enum_type_label.msql"
     },
     {
       "type": "alter",
       "name": "alter ENUM type and add ACL, description",
       "endpoint": "NODE-type.obj_id",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "description":"this is test",
         "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
       },
-      "expected_sql_file": "alter_enum_type_acl_description.sql"
+      "expected_sql_file": "alter_enum_type_acl_description.sql",
+      "expected_msql_file": "alter_enum_type_acl_description.msql"
     },
     {
       "type": "delete",
@@ -53,6 +59,7 @@
       "name": "Create Composite type",
       "endpoint": "NODE-type.obj",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
       "data": {
         "name": "composite_type_$%{}[]()&*^!@\"'`\\/#",
         "is_sys_type":false,
@@ -67,38 +74,45 @@
         "seclabels":[],
         "description":""
       },
-      "expected_sql_file": "create_composite_type.sql"
+      "expected_sql_file": "create_composite_type.sql",
+      "expected_msql_file": "create_composite_type.msql"
     },
     {
       "type": "alter",
       "name": "alter Composite type and add new label",
       "endpoint": "NODE-type.obj_id",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "composite": {"added": [{"member_name":"mname4","type":"bigint","is_tlength":false,"is_precision":false}]}
       },
-      "expected_sql_file": "alter_composite_type_add_member.sql"
+      "expected_sql_file": "alter_composite_type_add_member.sql",
+      "expected_msql_file": "alter_composite_type_add_member.msql"
     },
     {
       "type": "alter",
       "name": "alter Composite type and delete label",
       "endpoint": "NODE-type.obj_id",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "composite": {"deleted":[{"attnum":1,"member_name":"mname1","type":"bigint","tlength":null,"is_tlength":false,"precision":null,"is_precision":false,"collation":"","cltype":"bigint","hasSqrBracket":false,"fulltype":"bigint"}]}
       },
-      "expected_sql_file": "alter_composite_type_remove_member.sql"
+      "expected_sql_file": "alter_composite_type_remove_member.sql",
+      "expected_msql_file": "alter_composite_type_remove_member.msql"
     },
     {
       "type": "alter",
       "name": "alter Composite type and add ACL, description",
       "endpoint": "NODE-type.obj_id",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "description":"this is test",
         "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
       },
-      "expected_sql_file": "alter_composite_type_acl_description.sql"
+      "expected_sql_file": "alter_composite_type_acl_description.sql",
+      "expected_msql_file": "alter_composite_type_acl_description.msql"
     },
     {
       "type": "delete",
@@ -140,6 +154,7 @@
       "name": "Create SHELL type",
       "endpoint": "NODE-type.obj",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
       "data": {
         "name": "shell_type_$%{}[]()&*^!@\"'`\\/#",
         "is_sys_type":false,
@@ -150,17 +165,20 @@
         "typacl":[],
         "seclabels":[]
       },
-      "expected_sql_file": "create_shell_type.sql"
+      "expected_sql_file": "create_shell_type.sql",
+      "expected_msql_file": "create_shell_type.msql"
     },
     {
       "type": "alter",
       "name": "alter SHELL type and add description",
       "endpoint": "NODE-type.obj_id",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "description":"this is test"
       },
-      "expected_sql_file": "alter_shell_type_acl_description.sql"
+      "expected_sql_file": "alter_shell_type_acl_description.sql",
+      "expected_msql_file": "alter_shell_type_acl_description.msql"
     },
     {
       "type": "delete",
@@ -176,6 +194,7 @@
       "name": "Create RANGE type",
       "endpoint": "NODE-type.obj",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
       "data": {
         "name": "range_type_$%{}[]()&*^!@\"'`\\/#",
         "is_sys_type":false,
@@ -187,18 +206,21 @@
         "seclabels":[],
         "typname":"bool"
       },
-      "expected_sql_file": "create_range_type.sql"
+      "expected_sql_file": "create_range_type.sql",
+      "expected_msql_file": "create_range_type.msql"
     },
     {
       "type": "alter",
       "name": "alter RANGE type and add ACL, description",
       "endpoint": "NODE-type.obj_id",
       "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "description":"this is test",
         "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
       },
-      "expected_sql_file": "alter_range_type_acl_description.sql"
+      "expected_sql_file": "alter_range_type_acl_description.sql",
+      "expected_msql_file": "alter_range_type_acl_description.msql"
     },
     {
       "type": "delete",
