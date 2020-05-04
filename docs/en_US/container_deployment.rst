@@ -60,7 +60,7 @@ expected paths are /certs/server.crt and /certs/server.key
 
 Specify the local address that the servers listens on. The default should work
 for most users - in IPv4-only environments, this may need to be set to
-127.0.0.1.
+0.0.0.0.
 
 **PGADMIN_LISTEN_PORT**
 
