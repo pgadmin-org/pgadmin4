@@ -16,39 +16,29 @@ if [ ! -f ${SOURCEDIR}/pkg/mac/framework.conf ]; then
     exit 1
 fi
 
-export SYSTEM_PYTHON=0
 if [ "x${PYTHON_HOME}" == "x" ]; then
-    echo "PYTHON_HOME not set. Setting it to default"
-    export PYTHON_HOME=/System/Library/Frameworks/Python.framework/Versions/2.7
-    export PYTHON_VERSION=27
-    export SYSTEM_PYTHON=1
+    echo "PYTHON_HOME not set. It must be set, and pointing to a Python 3 installation."
+    exit 1
 fi
 
 # Check if Python is working and calculate PYTHON_VERSION
-if ${PYTHON_HOME}/bin/python2 -V > /dev/null 2>&1; then
-    export PYTHON_VERSION=`${PYTHON_HOME}/bin/python2 -V 2>&1 | awk '{print $2}' | cut -d"." -f1-2 | sed 's/\.//'`
-elif ${PYTHON_HOME}/bin/python3 -V > /dev/null 2>&1; then
+if ${PYTHON_HOME}/bin/python3 -V > /dev/null 2>&1; then
     export PYTHON_VERSION=`${PYTHON_HOME}/bin/python3 -V 2>&1 | awk '{print $2}' | cut -d"." -f1-2 | sed 's/\.//'`
 else
     echo "Error: Python installation missing!"
     exit 1
 fi
 
-if [ "${PYTHON_VERSION}" -gt "37" -a "${PYTHON_VERSION}" -lt "27" ]; then
-    echo "Python version not supported"
+if [ "${PYTHON_VERSION}" -gt "38" -a "${PYTHON_VERSION}" -lt "34" ]; then
+    echo "Python version not supported."
     exit 1
 fi
 
-if [ "${PYTHON_VERSION}" -ge "30" ]; then
-    export PYTHON=${PYTHON_HOME}/bin/python3
-    export PIP=pip3
-else
-    export PYTHON=${PYTHON_HOME}/bin/python2
-    export PIP=pip
-fi
+export PYTHON=${PYTHON_HOME}/bin/python3
+export PIP=pip3
 
 if [ "x${QTDIR}" == "x" ]; then
-    echo "QTDIR not set. Setting it to default"
+    echo "QTDIR not set. Setting it to default."
     export QTDIR=~/Qt/5.8/clang_64
 fi
 export QMAKE=${QTDIR}/bin/qmake
@@ -58,7 +48,7 @@ if ! ${QMAKE} --version > /dev/null 2>&1; then
 fi
 
 if [ "x${PGDIR}" == "x" ]; then
-    echo "PGDIR not set. Setting it to default"
+    echo "PGDIR not set. Setting it to default."
     export PGDIR=/usr/local/pgsql
 fi
 
@@ -88,11 +78,7 @@ _create_venv() {
     test -d ${BUILDROOT} || mkdir ${BUILDROOT} || exit 1
     cd ${BUILDROOT}
 
-    if [ ${SYSTEM_PYTHON} -eq 1 ]; then
-        test -d ${VIRTUALENV} || virtualenv -p ${PYTHON} ${VIRTUALENV} || exit 1
-    else
-        test -d ${VIRTUALENV} || virtualenv -p ${PYTHON} --always-copy ${VIRTUALENV} || exit 1
-    fi
+    test -d ${VIRTUALENV} || virtualenv -p ${PYTHON} --always-copy ${VIRTUALENV} || exit 1
 
     source ${VIRTUALENV}/bin/activate
     ${PIP} install --no-cache-dir --no-binary psycopg2 -r ${SOURCEDIR}/requirements.txt || { echo PIP install failed. Please resolve the issue and rerun the script; exit 1; }
@@ -114,11 +100,7 @@ _create_venv() {
     for FULLPATH in ${PYSYSLIB_PATH}/*.py; do
         FILE=${FULLPATH##*/}
         if [ ! -e ${FILE} ]; then
-           if [ ${SYSTEM_PYTHON} -eq 1 ]; then
-               ln -s ${FULLPATH} ${FILE}
-           else
-               cp ${FULLPATH} ${FILE}
-           fi
+           cp ${FULLPATH} ${FILE}
         fi
     done
 
@@ -127,11 +109,7 @@ _create_venv() {
         FULLPATH=${FULLPATH%*/}
         FILE=${FULLPATH##*/}
         if [ ! -e ${FILE} ]; then
-            if [ ${SYSTEM_PYTHON} -eq 1 ]; then
-                ln -s ${FULLPATH} ${FILE}
-            else
-                cp -R ${FULLPATH} ${FILE}
-            fi
+            cp -R ${FULLPATH} ${FILE}
         fi
     done
 
@@ -176,12 +154,6 @@ _complete_bundle() {
 
     # copy Python private environment to app bundle
     cp -PR ${BUILDROOT}/${VIRTUALENV} "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/" || exit 1
-
-    if [ ${SYSTEM_PYTHON} -eq 1 ]; then
-        # remove the python bin and include from app bundle as it is not needed
-        rm -rf "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/${VIRTUALENV}/bin" "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/${VIRTUALENV}/include"
-        rm -rf "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/${VIRTUALENV}/.Python"
-    fi
 
     # Remove any TCL-related files that may cause us problems
     find "${BUILDROOT}/${APP_BUNDLE_NAME}/Contents/Resources/${VIRTUALENV}/" -name "_tkinter*" -print0 | xargs -0 rm -f
