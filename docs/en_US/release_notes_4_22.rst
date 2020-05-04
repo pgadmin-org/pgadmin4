@@ -15,6 +15,7 @@ Housekeeping
 
 | `Issue #5443 <https://redmine.postgresql.org/issues/5443>`_ -  Remove support for Python 2.
 | `Issue #5444 <https://redmine.postgresql.org/issues/5444>`_ -  Cleanup Python detection in the runtime project file.
+| `Issue #5455 <https://redmine.postgresql.org/issues/5455>`_ -  Refactor pgAdmin4.py so it can be imported and is a lot more readable.
 
 Bug fixes
 *********

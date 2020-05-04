@@ -85,7 +85,7 @@ setup(
     install_requires=requires,
 
     entry_points={
-        'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4.__init__:main'],
+        'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4:main'],
     },
 
 )

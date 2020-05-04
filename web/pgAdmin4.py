@@ -22,9 +22,8 @@ import os
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
-root = os.path.dirname(os.path.realpath(__file__))
-if sys.path[0] != root:
-    sys.path.insert(0, root)
+if sys.path[0] != os.path.dirname(os.path.realpath(__file__)):
+    sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 
 # Grab the SERVER_MODE if it's been set by the runtime
 if 'SERVER_MODE' in globals():
@@ -32,37 +31,12 @@ if 'SERVER_MODE' in globals():
 else:
     builtins.SERVER_MODE = None
 
-# Set null device file path to stdout, stdin, stderr if they are None
-for _name in ('stdin', 'stdout', 'stderr'):
-    if getattr(sys, _name) is None:
-        setattr(sys, _name, open(os.devnull,
-                                 'r' if _name == 'stdin' else 'w'))
-
 import config
 from pgadmin import create_app
 from pgadmin.utils import u, fs_encoding, file_quote
-
-if config.DEBUG:
-    from pgadmin.utils.javascript.javascript_bundler import \
-        JavascriptBundler, JsState
-
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
-
-config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
-
-##########################################################################
-# Sanity checks
-##########################################################################
-
-# Check if the database exists. If it does not, create it.
-if not os.path.isfile(config.SQLITE_PATH):
-    setupfile = os.path.join(
-        os.path.dirname(os.path.realpath(u(__file__, fs_encoding))),
-        u'setup.py'
-    )
-    exec(open(file_quote(setupfile), 'r').read())
 
 
 ##########################################################################
@@ -71,7 +45,7 @@ if not os.path.isfile(config.SQLITE_PATH):
 class ReverseProxied(object):
     def __init__(self, app):
         self.app = app
-        # https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix/#module-werkzeug.middleware.proxy_fix
+        # https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix
         try:
             from werkzeug.middleware.proxy_fix import ProxyFix
             self.app = ProxyFix(app,
@@ -98,72 +72,31 @@ class ReverseProxied(object):
 
 
 ##########################################################################
-# Server startup
+# Sanity checks
 ##########################################################################
+config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
-# Build Javascript files
-if config.DEBUG:
-    javascriptBundler = JavascriptBundler()
-    javascriptBundler.bundle()
+# Check if the database exists. If it does not, create it.
+if not os.path.isfile(config.SQLITE_PATH):
+    setup_py = os.path.join(
+        os.path.dirname(os.path.realpath(u(__file__, fs_encoding))),
+        u'setup.py'
+    )
+    exec(open(file_quote(setup_py), 'r').read())
 
-# Create the app!
+
+##########################################################################
+# Create the app and configure it. It is created outside main so that
+# it can be imported
+##########################################################################
 app = create_app()
-
+app.debug = False
 if config.SERVER_MODE:
     app.wsgi_app = ReverseProxied(app.wsgi_app)
-
-if config.DEBUG:
-    app.debug = True
-else:
-    app.debug = False
-
-# respond to JS
-if config.DEBUG and javascriptBundler.report() == JsState.NONE:
-    app.logger.error(
-        "Unable to generate javascript.\n"
-        "To run the app ensure that yarn install command runs successfully"
-    )
-    raise Exception("No generated javascript, aborting")
-
-# Start the web server. The port number should have already been set by the
-# runtime if we're running in desktop mode, otherwise we'll just use the
-# Flask default.
-PGADMIN_RUNTIME = False
-if 'PGADMIN_INT_PORT' in globals():
-    app.logger.debug(
-        'Running under the desktop runtime, port: %s',
-        globals()['PGADMIN_INT_PORT']
-    )
-    server_port = int(globals()['PGADMIN_INT_PORT'])
-    PGADMIN_RUNTIME = True
-elif 'PGADMIN_INT_PORT' in os.environ:
-    port = os.environ['PGADMIN_INT_PORT']
-    app.logger.debug(
-        'Not running under the desktop runtime, port: %s',
-        port
-    )
-    server_port = int(port)
-else:
-    app.logger.debug(
-        'Not running under the desktop runtime, port: %s',
-        config.DEFAULT_SERVER_PORT
-    )
-    server_port = config.DEFAULT_SERVER_PORT
-
-# Let the application save the status about the runtime for using it later.
-app.PGADMIN_RUNTIME = PGADMIN_RUNTIME
-
-# Set the key if appropriate
-if 'PGADMIN_INT_KEY' in globals():
-    app.PGADMIN_INT_KEY = globals()['PGADMIN_INT_KEY']
-    app.logger.debug("Desktop security key: %s" % app.PGADMIN_INT_KEY)
-else:
-    app.PGADMIN_INT_KEY = ''
 
 # Authentication sources
 app.PGADMIN_DEFAULT_AUTH_SOURCE = 'internal'
 app.PGADMIN_SUPPORTED_AUTH_SOURCE = ['internal', 'ldap']
-
 if len(config.AUTHENTICATION_SOURCES) > 0:
     app.PGADMIN_EXTERNAL_AUTH_SOURCE = config.AUTHENTICATION_SOURCES[0]
 else:
@@ -172,13 +105,73 @@ else:
 app.logger.debug(
     "Authentication Source: %s" % app.PGADMIN_DEFAULT_AUTH_SOURCE)
 
-# Output a startup message if we're not under the runtime and startup.
-# If we're under WSGI, we don't need to worry about this
-if __name__ == '__main__':
-    if not PGADMIN_RUNTIME:
+# Start the web server. The port number should have already been set by the
+# runtime if we're running in desktop mode, otherwise we'll just use the
+# Flask default.
+app.PGADMIN_RUNTIME = False
+config.EFFECTIVE_SERVER_PORT = None
+if 'PGADMIN_INT_PORT' in globals():
+    app.logger.debug(
+        'Running under the desktop runtime, port: %s',
+        globals()['PGADMIN_INT_PORT']
+    )
+    config.EFFECTIVE_SERVER_PORT = int(globals()['PGADMIN_INT_PORT'])
+    app.PGADMIN_RUNTIME = True
+elif 'PGADMIN_INT_PORT' in os.environ:
+    port = os.environ['PGADMIN_INT_PORT']
+    app.logger.debug(
+        'Not running under the desktop runtime, port: %s',
+        port
+    )
+    config.EFFECTIVE_SERVER_PORT = int(port)
+else:
+    app.logger.debug(
+        'Not running under the desktop runtime, port: %s',
+        config.DEFAULT_SERVER_PORT
+    )
+    config.EFFECTIVE_SERVER_PORT = config.DEFAULT_SERVER_PORT
+
+# Set the key if appropriate
+if 'PGADMIN_INT_KEY' in globals():
+    app.PGADMIN_INT_KEY = globals()['PGADMIN_INT_KEY']
+    app.logger.debug("Desktop security key: %s" % app.PGADMIN_INT_KEY)
+else:
+    app.PGADMIN_INT_KEY = ''
+
+
+##########################################################################
+# The entry point
+##########################################################################
+def main():
+    # Set null device file path to stdout, stdin, stderr if they are None
+    for _name in ('stdin', 'stdout', 'stderr'):
+        if getattr(sys, _name) is None:
+            setattr(sys, _name,
+                    open(os.devnull, 'r' if _name == 'stdin' else 'w'))
+
+    # Build Javascript files when DEBUG
+    if config.DEBUG:
+        from pgadmin.utils.javascript.javascript_bundler import \
+            JavascriptBundler, JsState
+        app.debug = True
+
+        javascriptBundler = JavascriptBundler()
+        javascriptBundler.bundle()
+        if javascriptBundler.report() == JsState.NONE:
+            app.logger.error(
+                "Unable to generate javascript.\n"
+                "To run the app ensure that yarn install command runs "
+                "successfully"
+            )
+            raise Exception("No generated javascript, aborting")
+
+    # Output a startup message if we're not under the runtime and startup.
+    # If we're under WSGI, we don't need to worry about this
+    if not app.PGADMIN_RUNTIME:
         print(
             "Starting %s. Please navigate to http://%s:%d in your browser." %
-            (config.APP_NAME, config.DEFAULT_SERVER, server_port)
+            (config.APP_NAME, config.DEFAULT_SERVER,
+             config.EFFECTIVE_SERVER_PORT)
         )
         sys.stdout.flush()
     else:
@@ -204,9 +197,9 @@ if __name__ == '__main__':
     try:
         app.run(
             host=config.DEFAULT_SERVER,
-            port=server_port,
+            port=config.EFFECTIVE_SERVER_PORT,
             use_reloader=(
-                (not PGADMIN_RUNTIME) and app.debug and
+                (not app.PGADMIN_RUNTIME) and app.debug and
                 os.environ.get("WERKZEUG_RUN_MAIN") is not None
             ),
             threaded=config.THREADED_MODE
@@ -214,3 +207,10 @@ if __name__ == '__main__':
 
     except IOError:
         app.logger.error("Error starting the app server: %s", sys.exc_info())
+
+
+##########################################################################
+# Server startup
+##########################################################################
+if __name__ == '__main__':
+    main()
