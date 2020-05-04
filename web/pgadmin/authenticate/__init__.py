@@ -15,7 +15,8 @@ from flask import current_app, flash
 from flask_babelex import gettext
 from flask_security import current_user
 from flask_security.views import _security, _ctx
-from flask_security.utils import config_value, get_post_logout_redirect
+from flask_security.utils import config_value, get_post_logout_redirect, \
+    get_post_login_redirect
 from flask import session
 
 import config
@@ -60,7 +61,7 @@ def login():
             return flask.redirect(get_post_logout_redirect())
 
         session['_auth_source_manager_obj'] = auth_obj.as_dict()
-        return flask.redirect('/')
+        return flask.redirect(get_post_login_redirect())
 
     flash(gettext(msg), 'danger')
     return flask.redirect(get_post_logout_redirect())

@@ -24,3 +24,4 @@ Bug fixes
 | `Issue #5422 <https://redmine.postgresql.org/issues/5422>`_ -  Ensure that the dependencies tab shows correct information for Synonyms.
 | `Issue #5466 <https://redmine.postgresql.org/issues/5466>`_ -  Correct ipv4 "all interfaces" address in the container docs, per Frank Limpert.
 | `Issue #5469 <https://redmine.postgresql.org/issues/5469>`_ -  Fixed an issue where select2 hover is inconsistent for the SSL field in create server dialog.
+| `Issue #5473 <https://redmine.postgresql.org/issues/5473>`_ -  Fixed post-login redirect location when running in server mode under a non-default root.
