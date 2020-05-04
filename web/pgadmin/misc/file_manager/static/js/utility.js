@@ -1133,7 +1133,7 @@ define([
         $('.storage_dialog #uploader .input-path').prop('disabled', false);
       });
   };
-
+  var homedir='/';
   // Enable/Disable level up button
   var enab_dis_level_up = function() {
     $('.file_manager #uploader .input-path').show();
@@ -1144,13 +1144,9 @@ define([
         $level_up = $('.file_manager').find('button.level-up'),
         $home_btn = $('.file_manager').find('button.home');
 
-      if (b === '/') {
-        $level_up.attr('disabled', 'disabled');
-        $home_btn.attr('disabled', 'disabled');
-      } else {
-        $home_btn.removeAttr('disabled');
-        $level_up.removeAttr('disabled');
-      }
+      (b === '/') ? $level_up.attr('disabled', 'disabled') : $level_up.removeAttr('disabled');
+      (b === homedir) ? $home_btn.attr('disabled', 'disabled') : $home_btn.removeAttr('disabled');
+
     }, 100);
   };
 
@@ -1202,6 +1198,7 @@ define([
       // load user configuration file
       if (cfg.readyState == 4) {
         this.config = config = JSON.parse(cfg.responseText);
+        homedir=config.options.homedir;
       }
 
       // set main url to filemanager and its capabilites
@@ -1343,8 +1340,7 @@ define([
         $('.delete_item, .fileinfo .fm_dimmer').hide();
       });
 
-      // Disable home button on load
-      $('.file_manager').find('button.home').attr('disabled', 'disabled');
+      // Disable button on load
       $('.file_manager').find('button.rename').attr('disabled', 'disabled');
 
       // stop click event on dimmer click
@@ -1382,7 +1378,7 @@ define([
       $('.file_manager .home').on('click', function() {
         var currentViewMode = $('.fileinfo').data('view');
         $('.fileinfo').data('view', currentViewMode);
-        getFolderInfo('/');
+        getFolderInfo(homedir);
         enab_dis_level_up();
       });
 

@@ -383,6 +383,10 @@ class Filemanager(object):
             folders_only = False
             title = gettext("Storage Manager")
 
+        # Using os.path.join to make sure we have trailing '/' or '\'
+        homedir = '/' if (config.SERVER_MODE) \
+            else os.path.join(os.path.expanduser('~'), '')
+
         # get last visited directory, if not present then traverse in reverse
         # order to find closest parent directory
         last_dir = blueprint.last_directory_visited.get()
@@ -397,6 +401,9 @@ class Filemanager(object):
                 check_dir_exists = True
             else:
                 last_dir = u"/"
+
+        if not config.SERVER_MODE and last_dir == u"/" or last_dir == "/":
+            last_dir = homedir
 
         if check_dir_exists:
             if len(last_dir) > 1 and \
@@ -426,6 +433,7 @@ class Filemanager(object):
         configs = {
             # for JS json compatibility
             "fileroot": last_dir.replace('\\', '\\\\'),
+            "homedir": homedir.replace('\\', '\\\\'),
             "dialog_type": fm_type,
             "title": title,
             "upload": {

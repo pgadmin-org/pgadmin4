@@ -17,4 +17,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4279 <https://redmine.postgresql.org/issues/4279>`_ -  Ensure that file browse "home" button should point to $HOME rather than /.
 | `Issue #5422 <https://redmine.postgresql.org/issues/5422>`_ -  Ensure that the dependencies tab shows correct information for Synonyms.

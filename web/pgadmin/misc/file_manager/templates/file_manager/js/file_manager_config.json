@@ -11,7 +11,8 @@
   "capabilities": [{% for i in data.capabilities %}{% if loop.index != 1 %}, {% endif %}"{{i}}"{% endfor %}],
   "allowed_file_types": [{% for i in data.supported_types %}{% if loop.index != 1 %}, {% endif %}"{{i}}"{% endfor %}],
   "platform_type": "{{ data.platform_type }}",
-  "show_volumes": {% if data.show_volumes %}true{% else %}false{% endif %}
+  "show_volumes": {% if data.show_volumes %}true{% else %}false{% endif %},
+  "homedir": "{{ data.homedir }}"
  },
  "security": {
   "uploadPolicy": "{{ data.security.uploadPolicy }}",
