@@ -3,7 +3,7 @@ SELECT *,
   {% if tid %}, (CASE WHEN is_partitioned THEN (SELECT substring(pg_get_partition_def({{ tid }}::oid, true) from 14)) ELSE '' END) AS partition_scheme {% endif %}
 FROM (
 	SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS relacl_str,
-		(CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE
+		(CASE WHEN length(spc.spcname::text) > 0 THEN spc.spcname ELSE
 			(SELECT sp.spcname FROM pg_database dtb
 			JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
 			WHERE dtb.oid = {{ did }}::oid)

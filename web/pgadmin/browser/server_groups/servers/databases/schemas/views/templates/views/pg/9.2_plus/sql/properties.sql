@@ -5,7 +5,7 @@ SELECT
     c.relname AS name,
     description AS comment,
     c.reltablespace AS spcoid,
-    (CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
+    (CASE WHEN length(spc.spcname::text) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
     pg_get_userbyid(c.relowner) AS owner,
     description As comment,
     pg_get_viewdef(c.oid, true) AS definition,

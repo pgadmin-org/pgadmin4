@@ -11,7 +11,7 @@ SELECT
     pg_get_indexdef(i.indexrelid, i.attnum, true) as attdef,
     CASE WHEN (o.opcdefault = FALSE) THEN o.opcname ELSE null END AS opcname,
     op.oprname AS oprname,
-	CASE WHEN length(nspc.nspname) > 0 AND length(coll.collname) > 0  THEN
+	CASE WHEN length(nspc.nspname::text) > 0 AND length(coll.collname::text) > 0  THEN
 	  concat(quote_ident(nspc.nspname), '.', quote_ident(coll.collname))
 	ELSE '' END AS collnspname
 FROM (

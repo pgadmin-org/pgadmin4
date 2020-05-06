@@ -1,6 +1,6 @@
 SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, indisclustered,
     indisvalid, indisunique, indisprimary, n.nspname,indnatts,cls.reltablespace AS spcoid,
-    CASE WHEN length(spcname) > 0 THEN spcname ELSE
+    CASE WHEN length(spcname::text) > 0 THEN spcname ELSE
         (SELECT sp.spcname FROM pg_database dtb
         JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
         WHERE dtb.oid = {{ did }}::oid)

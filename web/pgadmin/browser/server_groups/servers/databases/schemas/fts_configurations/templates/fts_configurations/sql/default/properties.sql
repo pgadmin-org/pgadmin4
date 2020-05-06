@@ -5,7 +5,7 @@ SELECT
     pg_get_userbyid(cfg.cfgowner) as owner,
     cfg.cfgparser as parser,
     cfg.cfgnamespace as schema,
-    CASE WHEN (np.nspname not in ('public', 'pg_catalog') AND length(parser.prsname) > 0
+    CASE WHEN (np.nspname not in ('public', 'pg_catalog') AND length(parser.prsname::text) > 0
     AND parser.prsname != 'default') THEN
         concat(quote_ident(np.nspname), '.', quote_ident(parser.prsname))
     ELSE parser.prsname END AS prsname,

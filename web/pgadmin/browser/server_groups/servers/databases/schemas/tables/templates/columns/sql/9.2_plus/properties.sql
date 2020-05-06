@@ -9,7 +9,7 @@ SELECT att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
         ty.typstorage AS defaultstorage,
 		description, pi.indkey,
 	(SELECT count(1) FROM pg_type t2 WHERE t2.typname=ty.typname) > 1 AS isdup,
-	CASE WHEN length(coll.collname) > 0 AND length(nspc.nspname) > 0  THEN
+	CASE WHEN length(coll.collname::text) > 0 AND length(nspc.nspname::text) > 0  THEN
 	  concat(quote_ident(nspc.nspname),'.',quote_ident(coll.collname))
 	ELSE '' END AS collspcname,
 	EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid=att.attrelid AND contype='f' AND att.attnum=ANY(conkey)) As is_fk,

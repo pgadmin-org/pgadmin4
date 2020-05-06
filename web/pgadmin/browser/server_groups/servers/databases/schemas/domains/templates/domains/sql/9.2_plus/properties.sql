@@ -1,7 +1,7 @@
 SELECT
     d.oid, d.typname as name, d.typbasetype, format_type(b.oid,NULL) as basetype, pg_get_userbyid(d.typowner) as owner,
     c.oid AS colloid, format_type(b.oid, d.typtypmod) AS fulltype,
-    CASE WHEN length(cn.nspname) > 0 AND length(c.collname) > 0 THEN
+    CASE WHEN length(cn.nspname::text) > 0 AND length(c.collname::text) > 0 THEN
     concat(cn.nspname, '."', c.collname,'"')
     ELSE '' END AS collname,
     d.typtypmod, d.typnotnull, d.typdefault, d.typndims, d.typdelim, bn.nspname as basensp,

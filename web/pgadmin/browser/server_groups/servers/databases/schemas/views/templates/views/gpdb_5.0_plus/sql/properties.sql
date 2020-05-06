@@ -2,7 +2,7 @@
 SELECT
     c.oid,
     c.xmin,
-    (CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
+    (CASE WHEN length(spc.spcname::text) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
     c.relname AS name,
     nsp.nspname AS schema,
     description AS comment,

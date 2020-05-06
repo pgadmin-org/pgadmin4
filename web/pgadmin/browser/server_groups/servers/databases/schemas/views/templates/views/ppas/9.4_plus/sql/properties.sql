@@ -5,7 +5,7 @@ SELECT
     c.xmin,
     c.relkind,
     description AS comment,
-    (CASE WHEN length(spc.spcname) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
+    (CASE WHEN length(spc.spcname::text) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
     c.relname AS name,
     c.reltablespace AS spcoid,
     nsp.nspname AS schema,

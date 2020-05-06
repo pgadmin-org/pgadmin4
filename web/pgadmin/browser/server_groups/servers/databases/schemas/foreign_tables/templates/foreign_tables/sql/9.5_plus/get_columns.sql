@@ -16,7 +16,7 @@ WITH INH_TABLES AS
 SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, attfdwoptions,
     att.attname, att.attndims, att.atttypmod, format_type(t.oid,NULL) AS datatype,
     att.attnotnull, att.attstattarget, att.attnum, format_type(t.oid, att.atttypmod) AS fulltype,
-    CASE WHEN length(cn.nspname) > 0 AND length(cl.collname) > 0 THEN
+    CASE WHEN length(cn.nspname::text) > 0 AND length(cl.collname::text) > 0 THEN
     concat(cn.nspname, '."', cl.collname,'"')
     ELSE '' END AS collname,
     pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS typdefault,

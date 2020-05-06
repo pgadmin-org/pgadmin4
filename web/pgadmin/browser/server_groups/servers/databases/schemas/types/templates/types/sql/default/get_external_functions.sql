@@ -1,9 +1,9 @@
 {### Input/Output/Send/Receive/Analyze function list also append into TypModeIN/TypModOUT ###}
 {% if extfunc %}
 SELECT proname, nspname,
-    CASE WHEN (length(nspname) > 0 AND nspname != 'public') and length(proname) > 0  THEN
+    CASE WHEN (length(nspname::text) > 0 AND nspname != 'public') and length(proname::text) > 0  THEN
         concat(quote_ident(nspname), '.', quote_ident(proname))
-    WHEN length(proname) > 0 THEN
+    WHEN length(proname::text) > 0 THEN
         quote_ident(proname)
     ELSE '' END AS func
 FROM (
@@ -17,7 +17,7 @@ WHERE arg0 <> 0 AND (arg1 IS NULL OR arg1 <> 0);
 {### TypmodIN list ###}
 {% if typemodin %}
 SELECT proname, nspname,
-    CASE WHEN length(nspname) > 0 AND length(proname) > 0  THEN
+    CASE WHEN length(nspname::text) > 0 AND length(proname::text) > 0  THEN
         concat(quote_ident(nspname), '.', quote_ident(proname))
     ELSE '' END AS func
 FROM pg_proc p
@@ -30,7 +30,7 @@ ORDER BY nspname, proname;
 {### TypmodOUT list ###}
 {% if typemodout %}
 SELECT proname, nspname,
-    CASE WHEN length(nspname) > 0 AND length(proname) > 0  THEN
+    CASE WHEN length(nspname::text) > 0 AND length(proname::text) > 0  THEN
         concat(quote_ident(nspname), '.', quote_ident(proname))
     ELSE '' END AS func
 FROM pg_proc p

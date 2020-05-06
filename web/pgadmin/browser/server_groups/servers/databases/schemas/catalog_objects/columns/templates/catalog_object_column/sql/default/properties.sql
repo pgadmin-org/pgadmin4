@@ -10,7 +10,7 @@ SELECT
 	(SELECT count(1) FROM pg_type t2 WHERE t2.typname=ty.typname) > 1 AS isdup,
 	indkey, coll.collname, nspc.nspname as collnspname , attoptions,
 	-- Start pgAdmin4, added to save time on client side parsing
-	CASE WHEN length(coll.collname) > 0 AND length(nspc.nspname) > 0  THEN
+	CASE WHEN length(coll.collname::text) > 0 AND length(nspc.nspname::text) > 0  THEN
 	  concat(quote_ident(nspc.nspname),'.',quote_ident(coll.collname))
 	ELSE '' END AS collspcname,
 	CASE WHEN strpos(format_type(ty.oid,att.atttypmod), '.') > 0 THEN

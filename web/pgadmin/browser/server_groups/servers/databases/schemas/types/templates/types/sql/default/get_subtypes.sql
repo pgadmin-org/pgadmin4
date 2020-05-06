@@ -29,7 +29,7 @@ ORDER BY opcname;
 {### To fill subtype diff function combobox ###}
 {% if opcintype %}
 SELECT proname, nspname,
-    CASE WHEN length(nspname) > 0 AND length(proname) > 0  THEN
+    CASE WHEN length(nspname::text) > 0 AND length(proname::text) > 0  THEN
         concat(quote_ident(nspname), '.', quote_ident(proname))
     ELSE '' END AS stypdiff
 FROM pg_proc
@@ -45,7 +45,7 @@ WHERE typname = {{ data.name|qtLiteral }}
 {% endif %}
 {% if canonical and oid %}
 SELECT proname, nspname,
-    CASE WHEN length(nspname) > 0 AND length(proname) > 0  THEN
+    CASE WHEN length(nspname::text) > 0 AND length(proname::text) > 0  THEN
         concat(quote_ident(nspname), '.', quote_ident(proname))
     ELSE '' END AS canonical
 FROM pg_proc
