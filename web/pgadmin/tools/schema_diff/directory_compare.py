@@ -471,13 +471,13 @@ def sort_list(source, target):
     :return:
     """
     # Check the above keys are exist in the dictionary
-    if len(source) > 0:
+    if len(source) > 0 and type(source[0]) == dict:
         tmp_key = is_key_exists(list_keys_array, source[0])
         if tmp_key is not None:
             source = sorted(source, key=lambda k: k[tmp_key])
 
     # Check the above keys are exist in the dictionary
-    if len(target) > 0:
+    if len(target) > 0 and type(target[0]) == dict:
         tmp_key = is_key_exists(list_keys_array, target[0])
         if tmp_key is not None:
             target = sorted(target, key=lambda k: k[tmp_key])
