@@ -41,6 +41,7 @@ web/config_local.py
 web/pgadmin/misc/themes/pgadmin.themes.json
 web/geckodriver.log
 web/regression/test_config.json
+web/regression/.coveragerc
 node_modules/
 web/pgAdmin/static/js/generated
 web/pgadmin/static/js/generated

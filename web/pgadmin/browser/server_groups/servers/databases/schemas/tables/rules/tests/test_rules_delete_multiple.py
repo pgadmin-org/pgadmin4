@@ -24,9 +24,9 @@ from . import utils as rules_utils
 
 class RulesDeleteTestCase(BaseTestGenerator):
     """This class will delete rule under table node."""
-    scenarios = [
-        ('Delete rule Node URL', dict(url='/browser/rule/obj/'))
-    ]
+
+    scenarios = utils.generate_scenarios('delete_multiple_rule',
+                                         rules_utils.test_cases)
 
     def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -60,6 +60,17 @@ class RulesDeleteTestCase(BaseTestGenerator):
                                                  self.rule_name_1),
                          ]
 
+    def delete_multiple_rule(self, data):
+        return self.tester.delete(
+            "{0}{1}/{2}/{3}/{4}/{5}/".format(self.url, utils.SERVER_GROUP,
+                                             self.server_id, self.db_id,
+                                             self.schema_id, self.table_id
+                                             ),
+            follow_redirects=True,
+            data=json.dumps(data),
+            content_type='html/json'
+        )
+
     def runTest(self):
         """This function will delete rule under table node."""
         rule_response = rules_utils.verify_rule(self.server, self.db_name,
@@ -73,16 +84,10 @@ class RulesDeleteTestCase(BaseTestGenerator):
             raise Exception("Could not find the rule to delete.")
 
         data = {'ids': self.rule_ids}
-        response = self.tester.delete(
-            "{0}{1}/{2}/{3}/{4}/{5}/".format(self.url, utils.SERVER_GROUP,
-                                             self.server_id, self.db_id,
-                                             self.schema_id, self.table_id
-                                             ),
-            follow_redirects=True,
-            data=json.dumps(data),
-            content_type='html/json'
-        )
-        self.assertEquals(response.status_code, 200)
+        if self.is_positive_test:
+            response = self.delete_multiple_rule(data)
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

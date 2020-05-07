@@ -20,13 +20,17 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as rules_utils
+import sys
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 
 class RulesUpdateTestCase(BaseTestGenerator):
     """This class will update the rule under table node."""
-    scenarios = [
-        ('Put rule Node URL', dict(url='/browser/rule/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('update_rule',
+                                         rules_utils.test_cases)
 
     def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -54,6 +58,15 @@ class RulesUpdateTestCase(BaseTestGenerator):
                                                self.table_name,
                                                self.rule_name)
 
+    def update_rule(self, data):
+        return self.tester.put(
+            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
+                                                self.server_id, self.db_id,
+                                                self.schema_id, self.table_id,
+                                                self.rule_id),
+            data=json.dumps(data),
+            follow_redirects=True)
+
     def runTest(self):
         """This function will update the rule under table node."""
         rule_response = rules_utils.verify_rule(self.server, self.db_name,
@@ -63,14 +76,20 @@ class RulesUpdateTestCase(BaseTestGenerator):
                 }
         if not rule_response:
             raise Exception("Could not find the rule to update.")
-        response = self.tester.put(
-            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
-                                                self.server_id, self.db_id,
-                                                self.schema_id, self.table_id,
-                                                self.rule_id),
-            data=json.dumps(data),
-            follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+
+        if self.is_positive_test:
+            if hasattr(self, "wrong_rule_id"):
+                self.rule_id = 9999
+            response = self.update_rule(data)
+        else:
+            with patch(self.mock_data["function_name"],
+                       return_value=eval(self.mock_data["return_value"])):
+                if hasattr(self, "wrong_rule_id"):
+                    self.rule_id = 9999
+                response = self.update_rule(data)
+
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

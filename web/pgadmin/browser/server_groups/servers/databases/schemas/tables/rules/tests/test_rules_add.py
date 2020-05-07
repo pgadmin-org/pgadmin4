@@ -9,7 +9,7 @@
 
 import json
 import uuid
-
+import sys
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -19,13 +19,18 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as rules_utils
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 
 class RulesAddTestCase(BaseTestGenerator):
     """This class will add new rule under table node."""
-    scenarios = [
-        ('Add rule Node URL', dict(url='/browser/rule/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('add_rules',
+                                         rules_utils.test_cases)
 
     def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -50,20 +55,40 @@ class RulesAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """This function will rule under table node."""
-        rule_name = "test_rule_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {"schema": self.schema_name,
-                "view": self.table_name,
-                "name": rule_name,
-                "event": "Update"
-                }
-        response = self.tester.post(
+        self.test_data['schema'] = self.schema_name
+        self.test_data['view'] = self.table_name
+        self.test_data['name'] = "test_rule_add_%s" % (str(uuid.uuid4())[1:8])
+
+        data = self.test_data
+        if self.is_positive_test:
+            response = self.create_rule(data)
+        else:
+            if hasattr(self, 'wrong_table_id'):
+                del data["name"]
+                response = self.create_rule(data)
+            elif hasattr(self, 'internal_server_error'):
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.create_rule(data)
+            elif hasattr(self, 'error_creating_rule'):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.create_rule(data)
+            else:
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.create_rule(data)
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
+
+    def create_rule(self, data):
+        return self.tester.post(
             "{0}{1}/{2}/{3}/{4}/{5}/".format(self.url, utils.SERVER_GROUP,
                                              self.server_id, self.db_id,
                                              self.schema_id, self.table_id),
             data=json.dumps(data),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
 
     def tearDown(self):
         # Disconnect the database

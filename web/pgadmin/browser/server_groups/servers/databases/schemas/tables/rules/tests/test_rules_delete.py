@@ -19,13 +19,18 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as rules_utils
+import sys
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 
 class RulesDeleteTestCase(BaseTestGenerator):
     """This class will delete rule under table node."""
-    scenarios = [
-        ('Delete rule Node URL', dict(url='/browser/rule/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('delete_rule',
+                                         rules_utils.test_cases)
 
     def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -53,20 +58,33 @@ class RulesDeleteTestCase(BaseTestGenerator):
                                                self.table_name,
                                                self.rule_name)
 
-    def runTest(self):
-        """This function will delete rule under table node."""
-        rule_response = rules_utils.verify_rule(self.server, self.db_name,
-                                                self.rule_name)
-        if not rule_response:
-            raise Exception("Could not find the rule to delete.")
-        response = self.tester.delete(
+    def delete_rules(self):
+        return self.tester.delete(
             "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
                                                 self.server_id, self.db_id,
                                                 self.schema_id, self.table_id,
                                                 self.rule_id),
             follow_redirects=True
         )
-        self.assertEquals(response.status_code, 200)
+
+    def runTest(self):
+        """This function will delete rule under table node."""
+        rule_response = rules_utils.verify_rule(self.server, self.db_name,
+                                                self.rule_name)
+        if not rule_response:
+            raise Exception("Could not find the rule to delete.")
+
+        if self.is_positive_test:
+            if hasattr(self, "invalid_rule_id"):
+                self.rule_id = 9999
+            response = self.delete_rules()
+        else:
+            with patch(self.mock_data["function_name"],
+                       return_value=eval(self.mock_data["return_value"])):
+                response = self.delete_rules()
+
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

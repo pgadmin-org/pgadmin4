@@ -10,9 +10,15 @@
 from __future__ import print_function
 
 import sys
+import os
+import json
 import traceback
 
 from regression.python_test_utils import test_utils as utils
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/rules_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
 
 def create_rule(server, db_name, schema_name, table_name, rule_name):

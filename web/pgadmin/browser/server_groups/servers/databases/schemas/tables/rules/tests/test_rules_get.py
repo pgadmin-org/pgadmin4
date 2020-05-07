@@ -20,12 +20,18 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as rules_utils
 
+import sys
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
+
 
 class RulesGetTestCase(BaseTestGenerator):
     """This class will fetch the rule under table node."""
-    scenarios = [
-        ('Fetch rule Node URL', dict(url='/browser/rule/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('get_rule',
+                                         rules_utils.test_cases)
 
     def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -53,16 +59,39 @@ class RulesGetTestCase(BaseTestGenerator):
                                                self.table_name,
                                                self.rule_name)
 
-    def runTest(self):
-        """This function will fetch the rule under table node."""
-        response = self.tester.get(
+    def get_rule(self):
+        return self.tester.get(
             "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
                                                 self.server_id, self.db_id,
                                                 self.schema_id, self.table_id,
                                                 self.rule_id),
             follow_redirects=True
         )
-        self.assertEquals(response.status_code, 200)
+
+    def runTest(self):
+        """This function will fetch the rule under table node."""
+
+        if self.is_positive_test:
+            if hasattr(self, "incorrect_rule_id"):
+                self.rule_id = 9999
+            if hasattr(self, "table_nodes"):
+                self.rule_id = ''
+                response = self.get_rule()
+            else:
+                response = self.get_rule()
+        else:
+            if hasattr(self, "table_nodes"):
+                self.rule_id = ''
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.get_rule()
+            else:
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.get_rule()
+
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database
