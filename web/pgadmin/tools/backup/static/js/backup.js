@@ -516,6 +516,14 @@ define([
         deps: ['use_column_inserts', 'use_insert_commands'],
         group: gettext('Miscellaneous'),
         disabled: function(m) {
+          var t = pgBrowser.tree,
+            i = t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined,
+            s = pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+
+          if (s.version >= 120000)
+            return true;
+
           if (m.get('use_column_inserts') || m.get('use_insert_commands')) {
             setTimeout(function() { m.set('with_oids', false); }, 10);
             return true;
