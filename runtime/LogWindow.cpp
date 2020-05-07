@@ -9,6 +9,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#include "pgAdmin4.h"
 #include "LogWindow.h"
 #include "ui_LogWindow.h"
 
@@ -16,10 +17,10 @@
 
 #include <stdio.h>
 
-LogWindow::LogWindow(QWidget *parent, QString logFile) :
+LogWindow::LogWindow(QWidget *parent, QString serverLogFile) :
     QDialog(parent),
     ui(new Ui::LogWindow),
-    m_logFile(logFile)
+    m_serverLogFile(serverLogFile)
 {
     ui->setupUi(this);
 }
@@ -31,14 +32,27 @@ LogWindow::~LogWindow()
 }
 
 
+void LogWindow::LoadLog()
+{
+    int startupLines, serverLines;
+
+    ui->lblStatus->setText(tr("Loading logfiles..."));
+
+    startupLines = this->readLog(QDir::homePath() + (QString("/.%1.startup.log").arg(PGA_APP_NAME)).remove(" "), ui->textStartupLog);
+    serverLines = this->readLog(m_serverLogFile, ui->textServerLog);
+
+    ui->lblStatus->setText(QString(tr("Loaded startup log (%1 lines) and server log (%2 lines).")).arg(startupLines).arg(serverLines));
+}
+
+
 void LogWindow::reload()
 {
-    this->ReadLog();
+    this->LoadLog();
 }
 
 
 // Read the logfile
-void LogWindow::ReadLog()
+int LogWindow::readLog(QString logFile, QPlainTextEdit *logWidget)
 {
     FILE *log;
     char *buffer;
@@ -47,20 +61,19 @@ void LogWindow::ReadLog()
 
     // Look busy!
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    ui->lblStatus->setText(tr("Loading logfile..."));
     this->setDisabled(true);
     QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
 
-    ui->textLog->clear();
+    logWidget->clear();
 
     // Attempt to open the file
-    log = fopen(m_logFile.toUtf8().data(), "r");
+    log = fopen(logFile.toUtf8().data(), "r");
     if (log == Q_NULLPTR)
     {
-            ui->textLog->setPlainText(QString(tr("The log file (%1) could not be opened.")).arg(m_logFile));
+            logWidget->setPlainText(QString(tr("The log file (%1) could not be opened.")).arg(m_serverLogFile));
             this->setDisabled(false);
             QApplication::restoreOverrideCursor();
-            return;
+            return 0;
     }
 
     // Get the file size, and read the data
@@ -80,10 +93,11 @@ void LogWindow::ReadLog()
     buffer[i] = 0;
 
     fclose(log);
-    ui->textLog->setPlainText(buffer);
+    logWidget->setPlainText(buffer);
 
     // And... relax
-    ui->lblStatus->setText(QString(tr("Loaded logfile (%1 lines).")).arg(lines));
     this->setDisabled(false);
     QApplication::restoreOverrideCursor();
+
+    return lines;
 }

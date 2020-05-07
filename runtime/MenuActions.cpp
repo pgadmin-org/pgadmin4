@@ -134,7 +134,7 @@ void MenuActions::onLog()
 
     QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
 
-    m_logWindow->ReadLog();
+    m_logWindow->LoadLog();
 }
 
 

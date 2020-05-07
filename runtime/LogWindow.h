@@ -13,6 +13,7 @@
 #define LOGWINDOW_H
 
 #include <QDialog>
+#include <QPlainTextEdit>
 
 namespace Ui {
 class LogWindow;
@@ -23,10 +24,10 @@ class LogWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit LogWindow(QWidget *parent = Q_NULLPTR, QString logFile = "");
+    explicit LogWindow(QWidget *parent = Q_NULLPTR, QString serverLogFile = "");
     ~LogWindow();
 
-    void ReadLog();
+    void LoadLog();
 
 private slots:
     void reload();
@@ -34,7 +35,10 @@ private slots:
 private:
     Ui::LogWindow *ui;
 
-    QString m_logFile;
+    QString m_startupLogFile;
+    QString m_serverLogFile;
+
+    int readLog(QString logFile, QPlainTextEdit *logWidget);
 };
 
 #endif // LOGWINDOW_H
