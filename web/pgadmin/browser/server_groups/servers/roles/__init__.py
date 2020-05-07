@@ -158,6 +158,10 @@ class RoleView(PGChildNodeView):
                     )
 
             if u'rolconnlimit' in data:
+                # If roleconnlimit is empty string then set it to -1
+                if data[u'rolconnlimit'] == '':
+                    data[u'rolconnlimit'] = -1
+
                 if data[u'rolconnlimit'] is not None:
                     data[u'rolconnlimit'] = int(data[u'rolconnlimit'])
                     if type(data[u'rolconnlimit']) != int or \
