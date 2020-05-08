@@ -18,13 +18,12 @@ import select
 import six
 import datetime
 from collections import deque
-import simplejson as json
 import psycopg2
 from flask import g, current_app
 from flask_babelex import gettext
 from flask_security import current_user
 from pgadmin.utils.crypto import decrypt
-from psycopg2.extensions import adapt, encodings
+from psycopg2.extensions import encodings
 
 import config
 from pgadmin.model import User
@@ -697,10 +696,10 @@ WHERE
             current_app.logger.error(
                 u"failed to execute query ((with server cursor) "
                 u"for the server #{server_id} - {conn_id} "
-                u"(query-id: {query_id}):\nerror message:{errmsg}".format(
+                u"(query-id: {query_id}):\n"
+                u"error message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
-                    query=query,
                     errmsg=errmsg,
                     query_id=query_id
                 )
@@ -769,7 +768,6 @@ WHERE
 
             header = []
             json_columns = []
-            conn_encoding = encodings[cur.connection.encoding]
 
             for c in cur.ordered_description():
                 # This is to handle the case in which column name is non-ascii
@@ -880,7 +878,6 @@ WHERE
                 u"Error Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
-                    query=query,
                     errmsg=errmsg,
                     query_id=query_id
                 )
@@ -946,7 +943,6 @@ WHERE
                 u"Error Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
-                    query=query.decode(encoding),
                     errmsg=errmsg,
                     query_id=query_id
                 )
@@ -1018,7 +1014,6 @@ WHERE
                 u"Error Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
-                    query=query,
                     errmsg=errmsg,
                     query_id=query_id
                 )
@@ -1048,7 +1043,7 @@ WHERE
 
             current_app.logger.warning(
                 "Failed to reconnect the database server "
-                "(#{server_id})".format(
+                "(Server #{server_id}, Connection #{conn_id})".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id
                 )
@@ -1097,7 +1092,6 @@ WHERE
                 u"Error Message:{errmsg}".format(
                     server_id=self.manager.sid,
                     conn_id=self.conn_id,
-                    query=query,
                     errmsg=errmsg,
                     query_id=query_id
                 )
@@ -1215,7 +1209,7 @@ WHERE
                     for col in self.column_info:
                         new_row.append(row[col['name']])
                     result.append(new_row)
-            except psycopg2.ProgrammingError as e:
+            except psycopg2.ProgrammingError:
                 result = None
         else:
             # User performed operation which dose not produce record/s as

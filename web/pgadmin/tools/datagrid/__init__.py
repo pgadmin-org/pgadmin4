@@ -8,7 +8,6 @@
 ##########################################################################
 
 """A blueprint module implementing the datagrid frame."""
-MODULE_NAME = 'datagrid'
 
 import simplejson as json
 import pickle
@@ -17,9 +16,10 @@ import random
 from threading import Lock
 from flask import Response, url_for, session, request, make_response
 from werkzeug.useragents import UserAgent
-from flask import current_app as app
+from flask import current_app as app, render_template
+from flask_babelex import gettext
 from flask_security import login_required
-from pgadmin.tools.sqleditor.command import *
+from pgadmin.tools.sqleditor.command import ObjectRegistry, SQLFilter
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
@@ -32,6 +32,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.settings import get_setting
 from pgadmin.browser.utils import underscore_unescape
 
+MODULE_NAME = 'datagrid'
 
 query_tool_close_session_lock = Lock()
 
@@ -153,7 +154,7 @@ def initialize_datagrid(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
                                   auto_reconnect=False,
                                   use_binary_placeholder=True,
                                   array_to_string=True)
-    except (ConnectionLost, SSHTunnelConnectionLost) as e:
+    except (ConnectionLost, SSHTunnelConnectionLost):
         raise
     except Exception as e:
         app.logger.error(e)

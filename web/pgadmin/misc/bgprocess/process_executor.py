@@ -72,7 +72,7 @@ def unescape_dquotes_process_arg(arg):
 
 
 def _log_exception():
-    type_, value_, traceback_ = info = sys.exc_info()
+    type_, value_, traceback_ = sys.exc_info()
 
     with open(_log_file, 'a') as fp:
         from traceback import format_exception
@@ -352,7 +352,7 @@ def execute(argv):
         args.update({'exit_code': e.errno})
 
     # Unknown errors
-    except Exception:
+    except Exception as e:
         info = _log_exception()
         args.update({'exit_code': 501})
         if process_stderr:

@@ -9,13 +9,11 @@
 
 """A blueprint module implementing the debugger"""
 
-MODULE_NAME = 'debugger'
-
 import simplejson as json
 import random
 import re
 
-from flask import url_for, Response, render_template, request, session, \
+from flask import url_for, Response, render_template, request, \
     current_app
 from flask_babelex import gettext
 from flask_security import login_required
@@ -33,6 +31,8 @@ from pgadmin.settings import get_setting
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, DebuggerFunctionArguments
 from pgadmin.tools.debugger.utils.debugger_instance import DebuggerInstance
+
+MODULE_NAME = 'debugger'
 
 # Constants
 ASYNC_OK = 1
@@ -344,7 +344,6 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
     # Get the server version, server type and user information
     server_type = manager.server_type
-    user = manager.user_info
 
     # Check server type is ppas or not
     ppas_server = False
@@ -2122,7 +2121,7 @@ def close_debugger_session(_trans_id, close_all=False):
                                 dbg_obj['exe_conn_id'],
                                 dbg_obj['database_id'])
                         manager.release(conn_id=dbg_obj['exe_conn_id'])
-        except Exception as _:
+        except Exception:
             raise
         finally:
             de_inst.clear()

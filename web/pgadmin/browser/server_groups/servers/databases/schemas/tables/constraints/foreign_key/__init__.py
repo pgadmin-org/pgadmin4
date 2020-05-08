@@ -13,7 +13,7 @@ import simplejson as json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, request, jsonify
 from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry, ConstraintTypeModule
@@ -517,7 +517,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 return make_json_response(
                     status=400,
                     success=0,
-                    errormsg=_(
+                    errormsg=gettext(
                         "Could not find required parameter ({})."
                     ).format(arg)
                 )
@@ -525,7 +525,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 return make_json_response(
                     status=400,
                     success=0,
-                    errormsg=_(
+                    errormsg=gettext(
                         "Could not find required parameter ({})."
                     ).format(arg)
                 )

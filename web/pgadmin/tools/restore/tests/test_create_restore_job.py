@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-import sys
 import time
 import random
 import os
@@ -120,7 +119,7 @@ class RestoreJobTest(BaseTestGenerator):
             if cnt >= 5:
                 break
             # Check the process list
-            response1 = self.tester.get('/misc/bgprocess/?_='.format(
+            response1 = self.tester.get('/misc/bgprocess/?_={0}'.format(
                 random.randint(1, 9999999)))
             self.assertEqual(response1.status_code, 200)
             process_list = json.loads(response1.data.decode('utf-8'))
@@ -128,7 +127,7 @@ class RestoreJobTest(BaseTestGenerator):
             try:
                 the_process = next(
                     p for p in process_list if p['id'] == job_id)
-            except Exception as _:
+            except Exception:
                 the_process = None
 
             if the_process and 'execution_time' in the_process:
@@ -150,14 +149,16 @@ class RestoreJobTest(BaseTestGenerator):
                 self.assertNotIn(opt, the_process['details'])
 
         # Check the process details
-        p_details = self.tester.get('/misc/bgprocess/{0}?_='.format(
+        p_details = self.tester.get('/misc/bgprocess/{0}?_={1}'.format(
             job_id, random.randint(1, 9999999))
         )
         self.assertEqual(p_details.status_code, 200)
         json.loads(p_details.data.decode('utf-8'))
 
-        p_details = self.tester.get('/misc/bgprocess/{0}/{1}/{2}/?_='.format(
-            job_id, 0, 0, random.randint(1, 9999999))
+        p_details = self.tester.get(
+            '/misc/bgprocess/{0}/{1}/{2}/?_={3}'.format(
+                job_id, 0, 0, random.randint(1, 9999999)
+            )
         )
         self.assertEqual(p_details.status_code, 200)
         p_details_data = json.loads(p_details.data.decode('utf-8'))

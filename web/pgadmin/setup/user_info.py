@@ -15,11 +15,6 @@ import re
 import getpass
 
 
-if 'raw_input' in __builtins__:
-    input = raw_input
-    range = xrange
-
-
 def user_info():
     if config.SERVER_MODE is False:
         print(u"NOTE: Configuring authentication for DESKTOP mode.")
@@ -48,9 +43,10 @@ def user_info():
             )
 
             email_filter = re.compile(
-                "^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9]"
-                "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
-                "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+                "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]"
+                "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9]"
+                "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+            )
 
             email = input("Email address: ")
             while email == '' or not email_filter.match(email):
