@@ -13,13 +13,9 @@ fetching results from it, and also takes care of the duplicate column name in
 result.
 """
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
 
+from collections import OrderedDict
 import psycopg2
-
 from psycopg2.extensions import cursor as _cursor, encodings
 from .encoding import configureDriverEncodings
 

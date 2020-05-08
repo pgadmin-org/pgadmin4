@@ -18,6 +18,7 @@ from flask import Response, url_for, render_template, session, request, \
     current_app
 from flask_babelex import gettext
 from flask_security import login_required, current_user
+from urllib.parse import unquote
 
 from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
 from pgadmin.misc.file_manager import Filemanager
@@ -45,12 +46,6 @@ from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 MODULE_NAME = 'sqleditor'
-
-# import unquote from urllib for python2.x and python3.x
-try:
-    from urllib import unquote
-except ImportError:
-    from urllib.parse import unquote
 
 
 class SqlEditorModule(PgAdminModule):

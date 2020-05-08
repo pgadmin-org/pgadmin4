@@ -519,10 +519,7 @@ def create_app(app_name=None):
                         pass
         else:
             # We use the postgres-winreg.ini file on non-Windows
-            try:
-                from configparser import ConfigParser
-            except ImportError:
-                from ConfigParser import ConfigParser  # Python 2
+            from configparser import ConfigParser
 
             registry = ConfigParser()
 

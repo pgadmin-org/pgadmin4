@@ -14,6 +14,8 @@ from flask import Response, url_for
 from flask import render_template, request, current_app
 from flask_babelex import gettext
 from flask_security import login_required
+from urllib.parse import unquote
+
 from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
@@ -21,11 +23,6 @@ from pgadmin.utils.ajax import make_response as ajax_response, \
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
-
-try:
-    from urllib import unquote
-except ImportError:
-    from urllib.parse import unquote
 from pgadmin.utils.ajax import precondition_required
 from functools import wraps
 from pgadmin.utils.preferences import Preferences

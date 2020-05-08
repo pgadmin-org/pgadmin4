@@ -16,16 +16,12 @@ from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError,\
     LDAPInvalidScopeError, LDAPAttributeError, LDAPInvalidFilterError,\
     LDAPStartTLSError, LDAPSSLConfigurationError
 from flask_babelex import gettext
+from urllib.parse import urlparse
 
 from .internal import BaseAuthentication
 from pgadmin.model import User, ServerGroup, db, Role
 from flask import current_app
 from pgadmin.tools.user_management import create_user
-
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
 
 
 ERROR_SEARCHING_LDAP_DIRECTORY = "Error searching the LDAP directory: {}"

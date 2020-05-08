@@ -8,11 +8,9 @@
 ##########################################################################
 
 from flask import render_template
+from collections import OrderedDict
+
 from pgadmin.tools.sqleditor.utils.constant_definition import TX_STATUS_IDLE
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
 
 
 def save_changed_data(changed_data, columns_info, conn, command_obj,

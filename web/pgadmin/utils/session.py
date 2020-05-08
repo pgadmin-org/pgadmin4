@@ -28,20 +28,14 @@ from uuid import uuid4
 from threading import Lock
 from flask import current_app, request, flash, redirect
 from flask_login import login_url
-from pgadmin.utils.ajax import make_json_response
 
-try:
-    from cPickle import dump, load
-except ImportError:
-    from pickle import dump, load
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from pickle import dump, load
+from collections import OrderedDict
 
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
+
+from pgadmin.utils.ajax import make_json_response
 
 
 def _calc_hmac(body, secret):

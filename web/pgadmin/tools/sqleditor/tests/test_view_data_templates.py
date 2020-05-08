@@ -12,15 +12,12 @@ import re
 
 from flask import Flask, render_template
 from jinja2 import FileSystemLoader
+from collections import OrderedDict
 
 from pgadmin import VersionedTemplateLoader
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
 
 
 class TestViewDataTemplates(BaseTestGenerator):

@@ -23,10 +23,8 @@
 """
 from flask import render_template
 from flask_babelex import gettext
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
+
 from pgadmin.tools.sqleditor.utils.get_column_types import get_columns_types
 
 
