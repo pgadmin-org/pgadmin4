@@ -1011,15 +1011,16 @@ define('pgadmin.browser', [
                     }
                     s++;
                   }
+                  //when the current element is greater than the end element
                   if (e != items.length - 1) {
-                    i = items.eq(e);
+                    i = items.eq(e+1);
                     return true;
                   }
                   i = null;
                   return false;
                 },
                 binarySearch = function() {
-                  var d, m, res;
+                  var d, m;
                   // Binary search only outperforms Linear search for n > 44.
                   // Reference:
                   // https://en.wikipedia.org/wiki/Binary_search_algorithm#cite_note-30
@@ -1037,26 +1038,34 @@ define('pgadmin.browser', [
                     }
                     i = items.eq(e);
                     d = ctx.t.itemData(i);
+                    let result;
                     if (d._type === 'column') {
-                      if (pgAdmin.numeric_comparator(d._id, _data._id) == -1)
-                        return false;
+                      result = pgAdmin.numeric_comparator(d._id, _data._id);
                     } else {
-                      if (pgAdmin.natural_sort(d._label, _data._label) != 1)
+                      result = pgAdmin.natural_sort(d._label, _data._label);
+                    }
+                    if (result !=1) {
+                      if (e != items.length - 1) {
+                        i = items.eq(e+1);
                         return true;
+                      }
+                      i = null;
+                      return false;
                     }
                     m = s + Math.round((e - s) / 2);
                     i = items.eq(m);
                     d = ctx.t.itemData(i);
                     if(d._type === 'column'){
-                      res = pgAdmin.numeric_comparator(d._id, _data._id);
+                      result = pgAdmin.numeric_comparator(d._id, _data._id);
                     } else {
-                      res = pgAdmin.natural_sort(d._label, _data._label);
+                      result = pgAdmin.natural_sort(d._label, _data._label);
                     }
-
-                    if (res == 0)
+                    //result will never become 0 because of remove operation
+                    //which happens with updateTreeNode
+                    if (result == 0)
                       return true;
 
-                    if (res == -1) {
+                    if (result == -1) {
                       s = m + 1;
                       e--;
                     } else {
@@ -1509,16 +1518,17 @@ define('pgadmin.browser', [
                   while (e >= s) {
                     i = items.eq(s);
                     var d = ctx.t.itemData(i);
-                    if (
-                      pgAdmin.natural_sort(
-                        d._label, _new._label
-                      ) == 1
-                    )
-                      return true;
+                    if (d._type === 'column') {
+                      if (pgAdmin.numeric_comparator(d._id, _new._id) == 1)
+                        return true;
+                    } else {
+                      if (pgAdmin.natural_sort(d._label, _new._label) == 1)
+                        return true;
+                    }
                     s++;
                   }
                   if (e != items.length - 1) {
-                    i = items.eq(e);
+                    i = items.eq(e+1);
                     return true;
                   }
                   i = null;
@@ -1528,28 +1538,43 @@ define('pgadmin.browser', [
                   while (e - s > 22) {
                     i = items.eq(s);
                     var d = ctx.t.itemData(i);
-                    if (
-                      pgAdmin.natural_sort(
-                        d._label, _new._label
-                      ) != -1
-                    )
-                      return true;
+                    if (d._type === 'column') {
+                      if (pgAdmin.numeric_comparator(d._id, _new._id) != -1)
+                        return true;
+                    } else {
+                      if (pgAdmin.natural_sort(d._label, _new._label) != -1)
+                        return true;
+                    }
                     i = items.eq(e);
                     d = ctx.t.itemData(i);
-                    if (
-                      pgAdmin.natural_sort(
-                        d._label, _new._label
-                      ) != 1
-                    )
-                      return true;
+                    let result;
+                    if (d._type === 'column') {
+                      result = pgAdmin.numeric_comparator(d._id, _new._id);
+                    } else {
+                      result = pgAdmin.natural_sort(d._label, _new._label);
+                    }
+                    if (result !=1) {
+                      if (e != items.length - 1) {
+                        i = items.eq(e+1);
+                        return true;
+                      }
+                      i = null;
+                      return false;
+                    }
                     var m = s + Math.round((e - s) / 2);
                     i = items.eq(m);
                     d = ctx.t.itemData(i);
-                    var res = pgAdmin.natural_sort(d._label, _new._label);
-                    if (res == 0)
+                    if(d._type === 'column'){
+                      result = pgAdmin.numeric_comparator(d._id, _new._id);
+                    } else {
+                      result = pgAdmin.natural_sort(d._label, _new._label);
+                    }
+                    //result will never become 0 because of remove operation
+                    //which happens with updateTreeNode
+                    if (result == 0)
                       return true;
 
-                    if (res == -1) {
+                    if (result == -1) {
                       s = m + 1;
                       e--;
                     } else {
