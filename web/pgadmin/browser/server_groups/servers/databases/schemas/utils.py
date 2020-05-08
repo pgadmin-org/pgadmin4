@@ -10,6 +10,7 @@
 """Schema collection node helper class"""
 
 import json
+import copy
 
 from flask import render_template
 
@@ -575,8 +576,8 @@ class VacuumSettings:
         * type - table/toast vacuum type
         """
 
-        vacuum_settings_tmp = self.fetch_default_vacuum_settings(
-            conn, self.manager.sid, type)
+        vacuum_settings_tmp = copy.deepcopy(self.fetch_default_vacuum_settings(
+            conn, self.manager.sid, type))
 
         for row in vacuum_settings_tmp:
             row_name = row['name']
@@ -585,6 +586,7 @@ class VacuumSettings:
             if row_name in result and result[row_name] is not None:
                 if row['column_type'] == 'number':
                     value = float(result[row_name])
+                    value = int(value) if value % 1 == 0 else value
                 else:
                     value = int(result[row_name])
                 row['value'] = value

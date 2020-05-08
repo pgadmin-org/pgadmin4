@@ -78,15 +78,15 @@ CACHE {{c.seqcache|int}} {% endif %}
 WITH (
     OIDS = {% if data.relhasoids %}TRUE{% else %}FALSE{% endif %}{% if data.fillfactor %},
     FILLFACTOR = {{ data.fillfactor }}{% endif %}{% if data.parallel_workers is defined and data.parallel_workers != '' and data.parallel_workers != None %},
-    parallel_workers = {{ data.parallel_workers }}{% endif %}{% if data.autovacuum_custom %},
-    autovacuum_enabled = {% if data.autovacuum_enabled %}TRUE{% else %}FALSE{% endif %}{% endif %}{% if data.toast_autovacuum %},
-    toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled %}TRUE{% else %}FALSE{% endif %}
-{% endif %}{% if data.autovacuum_enabled and data.vacuum_table|length > 0 %}
-{% for opt in data.vacuum_table %}{% if opt.name and opt.value %}
+    parallel_workers = {{ data.parallel_workers }}{% endif %}{% if data.autovacuum_enabled in ('t', 'f') %},
+    autovacuum_enabled = {% if data.autovacuum_enabled == 't' %}TRUE{% else %}FALSE{% endif %}{% endif %}{% if data.toast_autovacuum_enabled in ('t', 'f') %},
+    toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled == 't' %}TRUE{% else %}FALSE{% endif %}
+{% endif %}{% if data.autovacuum_custom and data.vacuum_table|length > 0 %}
+{% for opt in data.vacuum_table %}{% if opt.name and opt.value is defined %}
 ,
     {{opt.name}} = {{opt.value}}{% endif %}
-{% endfor %}{% endif %}{% if data.toast_autovacuum_enabled and data.vacuum_toast|length > 0 %}
-{% for opt in data.vacuum_toast %}{% if opt.name and opt.value %}
+{% endfor %}{% endif %}{% if data.toast_autovacuum and data.vacuum_toast|length > 0 %}
+{% for opt in data.vacuum_toast %}{% if opt.name and opt.value is defined %}
 ,
     toast.{{opt.name}} = {{opt.value}}{% endif %}
 {% endfor %}{% endif %}

@@ -24,8 +24,7 @@ SELECT
     (SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=c.oid AND sl1.objsubid=0) AS seclabels,
     substring(array_to_string(c.reloptions, ',')
       FROM 'fillfactor=([0-9]*)') AS fillfactor,
-    (CASE WHEN (substring(array_to_string(c.reloptions, ',')
-      FROM 'autovacuum_enabled=([a-z|0-9]*)') =  'true') THEN true ELSE false END) AS autovacuum_enabled,
+    (substring(array_to_string(c.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)'))::BOOL AS autovacuum_enabled,
     substring(array_to_string(c.reloptions, ',')
       FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS autovacuum_vacuum_threshold,
     substring(array_to_string(c.reloptions, ',')
@@ -44,8 +43,7 @@ SELECT
       FROM 'autovacuum_freeze_max_age=([0-9]*)') AS autovacuum_freeze_max_age,
     substring(array_to_string(c.reloptions, ',')
       FROM 'autovacuum_freeze_table_age=([0-9]*)') AS autovacuum_freeze_table_age,
-    (CASE WHEN (substring(array_to_string(tst.reloptions, ',')
-      FROM 'autovacuum_enabled=([a-z|0-9]*)') =  'true') THEN true ELSE false END) AS toast_autovacuum_enabled,
+    (substring(array_to_string(tst.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)'))::BOOL AS toast_autovacuum_enabled,
     substring(array_to_string(tst.reloptions, ',')
       FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS toast_autovacuum_vacuum_threshold,
     substring(array_to_string(tst.reloptions, ',')
@@ -65,9 +63,7 @@ SELECT
     substring(array_to_string(tst.reloptions, ',')
       FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
     c.reloptions AS reloptions, tst.reloptions AS toast_reloptions,
-    (CASE WHEN c.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
-    (CASE WHEN array_length(c.reloptions, 1) > 0 THEN true ELSE false END) AS autovacuum_custom,
-    (CASE WHEN array_length(tst.reloptions, 1) > 0 AND c.reltoastrelid != 0 THEN true ELSE false END) AS toast_autovacuum
+    (CASE WHEN c.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable
 FROM
     pg_class c
 LEFT OUTER JOIN pg_namespace nsp on nsp.oid = c.relnamespace

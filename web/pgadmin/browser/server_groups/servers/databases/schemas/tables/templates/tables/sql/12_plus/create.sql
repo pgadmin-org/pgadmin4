@@ -17,7 +17,7 @@
 {% set empty_bracket = "\n(\n)"%}
 {% endif %}
 {% set with_clause = false%}
-{% if data.fillfactor or data.parallel_workers or data.toast_tuple_target or data.autovacuum_custom or data.autovacuum_enabled or data.toast_autovacuum or data.toast_autovacuum_enabled or (data.autovacuum_enabled and data.vacuum_table|length > 0) or (data.toast_autovacuum_enabled and data.vacuum_toast|length > 0) %}
+{% if data.fillfactor or data.parallel_workers or data.toast_tuple_target or data.autovacuum_custom or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum or data.toast_autovacuum_enabled in ('t', 'f') %}
 {% set with_clause = true%}
 {% endif %}
 CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE {{conn|qtIdent(data.schema, data.name)}}{{empty_bracket}}
@@ -83,30 +83,31 @@ CACHE {{c.seqcache|int}} {% endif %}
 {% endif %}
 
 {% if with_clause %}
-{% set add_comma = false%}
+{% set ns = namespace(add_comma=false) %}
 WITH (
-{% if data.fillfactor %}{% set add_comma = true%}
+{% if data.fillfactor %}{% set ns.add_comma = true%}
     FILLFACTOR = {{ data.fillfactor }}{% endif %}{% if data.parallel_workers %}
-{% if add_comma %},
+{% if ns.add_comma %},
 {% endif %}
-    parallel_workers = {{ data.parallel_workers }}{% set add_comma = true%}{% endif %}{% if data.toast_tuple_target %}
-{% if add_comma %},
+    parallel_workers = {{ data.parallel_workers }}{% set ns.add_comma = true%}{% endif %}{% if data.toast_tuple_target %}
+{% if ns.add_comma %},
 {% endif %}
-    toast_tuple_target = {{ data.toast_tuple_target }}{% set add_comma = true%}{% endif %}{% if data.autovacuum_custom %}
-{% if add_comma %},
+    toast_tuple_target = {{ data.toast_tuple_target }}{% set ns.add_comma = true%}{% endif %}{% if data.autovacuum_enabled in ('t', 'f') %}
+{% if ns.add_comma %},
 {% endif %}
-    autovacuum_enabled = {% if data.autovacuum_enabled %}TRUE{% else %}FALSE{% endif %}{% set add_comma = true%}{% endif %}{% if data.toast_autovacuum %}
-{% if add_comma %},
+    autovacuum_enabled = {% if data.autovacuum_enabled == 't' %}TRUE{% else %}FALSE{% endif %}{% set ns.add_comma = true%}{% endif %}{% if data.toast_autovacuum_enabled in ('t', 'f')  %}
+{% if ns.add_comma %},
 {% endif %}
-    toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled %}TRUE{% else %}FALSE{% endif %}
-{% endif %}{% if data.autovacuum_enabled and data.vacuum_table|length > 0 %}
-{% for opt in data.vacuum_table %}{% if opt.name and opt.value %}
-,
-    {{opt.name}} = {{opt.value}}{% endif %}
-{% endfor %}{% endif %}{% if data.toast_autovacuum_enabled and data.vacuum_toast|length > 0 %}
-{% for opt in data.vacuum_toast %}{% if opt.name and opt.value %}
-,
-    toast.{{opt.name}} = {{opt.value}}{% endif %}
+    toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled == 't' %}TRUE{% else %}FALSE{% endif %}{% set ns.add_comma = true%}{% endif %}{% if data.autovacuum_custom %}
+{% for opt in data.vacuum_table %}{% if opt.name and opt.value is defined %}
+{% if ns.add_comma %},
+{% endif %}
+    {{opt.name}} = {{opt.value}}{% set ns.add_comma = true%}{% endif %}
+{% endfor %}{% endif %}{% if data.toast_autovacuum %}
+{% for opt in data.vacuum_toast %}{% if opt.name and opt.value is defined %}
+{% if ns.add_comma %},
+{% endif %}
+    toast.{{opt.name}} = {{opt.value}}{% set ns.add_comma = true%}{% endif %}
 {% endfor %}{% endif %}
 
 {% if data.spcname %}){% else %});{% endif %}

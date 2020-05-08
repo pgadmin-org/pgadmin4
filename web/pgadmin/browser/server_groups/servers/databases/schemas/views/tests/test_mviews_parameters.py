@@ -24,25 +24,105 @@ from . import utils as views_utils
 class MViewsUpdateParameterTestCase(BaseTestGenerator):
     """This class will update the view/mview under schema node."""
     scenarios = [
-        ('Enable custom auto vacuum and set the parameters for table',
-         dict(url='/browser/mview/obj/', type='set_vacuum_parameters')
+        # Fetching default URL for table node.
+        ('Enable custom auto vacuum and set the parameters for table '
+         'without autovacuum_enabled',
+         dict(url='/browser/mview/obj/',
+              api_data={
+                  'autovacuum_custom': True,
+                  'vacuum_table': {
+                      'changed': [
+                          {'name': 'autovacuum_vacuum_cost_delay',
+                           'value': 20},
+                          {'name': 'autovacuum_vacuum_threshold',
+                           'value': 20}
+                      ]
+                  }}
+              )
          ),
-        ('Disable auto vacuum and reset the parameters for table',
-         dict(url='/browser/mview/obj/', type='reset_vacuum_parameters')
+        ('Change a parameter to zero value '
+         'without autovacuum_enabled',
+         dict(url='/browser/mview/obj/',
+              api_data={
+                  'vacuum_table': {
+                      'changed': [
+                          {'name': 'autovacuum_vacuum_cost_delay',
+                           'value': 0}
+                      ]
+                  }}
+              )
          ),
-        ('Disable custom auto vacuum and reset all the parameters for table',
-         dict(url='/browser/mview/obj/', type='reset_all_vacuum_parameters')
+        ('Enable autovacuum_enabled',
+         dict(url='/browser/mview/obj/',
+              api_data={'autovacuum_enabled': 't'}
+              )
          ),
-        ('Enable custom auto vacuum and set the toast parameters for table',
-         dict(url='/browser/mview/obj/', type='set_toast_parameters')
+        ('Reset individual parameters for table',
+         dict(url='/browser/mview/obj/',
+              api_data={
+                  'autovacuum_enabled': 'x',
+                  'vacuum_table': {
+                      'changed': [
+                          {'name': 'autovacuum_vacuum_cost_delay',
+                           'value': None},
+                      ]
+                  }}
+              )
          ),
-        ('Disable auto vacuum and reset the toast parameters for table',
-         dict(url='/browser/mview/obj/', type='reset_toast_parameters')
+        ('Reset custom auto vacuum',
+         dict(url='/browser/mview/obj/',
+              api_data={'autovacuum_custom': False}
+              )
          ),
-        ('Disable custom auto vacuum and reset all the toast '
-         'parameters for table',
-         dict(url='/browser/mview/obj/', type='reset_all_toast_parameters')
-         )
+        ('Enable toast custom auto vacuum and set the parameters for table '
+         'without autovacuum_enabled',
+         dict(url='/browser/mview/obj/',
+              api_data={
+                  'toast_autovacuum': True,
+                  'vacuum_toast': {
+                      'changed': [
+                          {'name': 'autovacuum_vacuum_cost_delay',
+                           'value': 20},
+                          {'name': 'autovacuum_vacuum_threshold',
+                           'value': 20}
+                      ]
+                  }}
+              )
+         ),
+        ('Change a toast parameter to zero value '
+         'without autovacuum_enabled',
+         dict(url='/browser/mview/obj/',
+              api_data={
+                  'vacuum_toast': {
+                      'changed': [
+                          {'name': 'autovacuum_vacuum_cost_delay',
+                           'value': 0}
+                      ]
+                  }}
+              )
+         ),
+        ('Enable toast.autovacuum_enabled',
+         dict(url='/browser/mview/obj/',
+              api_data={'toast_autovacuum_enabled': 't'}
+              )
+         ),
+        ('Reset individual toast parameters for table',
+         dict(url='/browser/mview/obj/',
+              api_data={
+                  'toast_autovacuum_enabled': 'x',
+                  'vacuum_toast': {
+                      'changed': [
+                          {'name': 'autovacuum_vacuum_cost_delay',
+                           'value': None},
+                      ]
+                  }}
+              )
+         ),
+        ('Reset auto vacuum',
+         dict(url='/browser/mview/obj/',
+              api_data={'toast_autovacuum': False}
+              )
+         ),
     ]
 
     @classmethod
@@ -88,49 +168,8 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
         if not mview_response:
             raise Exception("Could not find the mview to update.")
 
-        data = None
-        if self.type == 'set_vacuum_parameters':
-            data = dict({'oid': self.m_view_id,
-                         'autovacuum_custom': True,
-                         'autovacuum_enabled': True,
-                         'vacuum_table': dict({'changed': [
-                             {'name': 'autovacuum_vacuum_cost_delay',
-                              'value': 20},
-                             {'name': 'autovacuum_vacuum_threshold',
-                              'value': 20}
-                         ]})})
-        elif self.type == 'reset_vacuum_parameters':
-            data = dict({'oid': self.m_view_id,
-                         'autovacuum_enabled': False,
-                         'vacuum_table': dict({'changed': [
-                             {'name': 'autovacuum_vacuum_cost_delay',
-                              'value': None},
-                             {'name': 'autovacuum_vacuum_threshold',
-                              'value': None}
-                         ]})})
-        elif self.type == 'reset_all_vacuum_parameters':
-            data = dict({'oid': self.m_view_id, 'autovacuum_custom': False})
-        elif self.type == 'set_toast_parameters':
-            data = dict({'oid': self.m_view_id,
-                         'autovacuum_custom': True,
-                         'autovacuum_enabled': True,
-                         'vacuum_toast': dict({'changed': [
-                             {'name': 'autovacuum_vacuum_cost_delay',
-                              'value': 20},
-                             {'name': 'autovacuum_vacuum_threshold',
-                              'value': 20}
-                         ]})})
-        elif self.type == 'reset_toast_parameters':
-            data = dict({'oid': self.m_view_id,
-                         'autovacuum_enabled': False,
-                         'vacuum_toast': dict({'changed': [
-                             {'name': 'autovacuum_vacuum_cost_delay',
-                              'value': None},
-                             {'name': 'autovacuum_vacuum_threshold',
-                              'value': None}
-                         ]})})
-        elif self.type == 'reset_all_toast_parameters':
-            data = dict({'oid': self.m_view_id, 'autovacuum_custom': False})
+        data = self.api_data
+        data['oid'] = self.m_view_id
 
         response = self.tester.put(self.url + str(utils.SERVER_GROUP) + '/' +
                                    str(self.server_id) + '/' +

@@ -485,10 +485,10 @@ thresholds; use the *Table* tab and the *Toast Table* tab to customize values
 for the table and the associated toast table:
 
 * Move the *Custom auto-vacuum?* switch to the *Yes* position to perform custom
-  maintenance on the table.
-* Move the *Enabled?* switch to the *Yes* position to select values in the
+  maintenance on the table and to select values in the
   *Vacuum table*. The *Vacuum Table* provides default values for maintenance
   operations.
+* Changing *Autovacuum enabled?* to *Not set* will reset autovacuum_enabled.
 
 Provide a custom value in the *Value* column for each metric listed in the
 *Label* column.

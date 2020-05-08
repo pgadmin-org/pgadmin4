@@ -619,6 +619,42 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return False, gone(
                 gettext("The specified table could not be found."))
 
+        # Set value based on
+        # x: No set, t: true, f: false
+        res['rows'][0]['autovacuum_enabled'] = 'x' \
+            if res['rows'][0]['autovacuum_enabled'] is None else \
+            {True: 't', False: 'f'}[res['rows'][0]['autovacuum_enabled']]
+
+        res['rows'][0]['toast_autovacuum_enabled'] = 'x' \
+            if res['rows'][0]['toast_autovacuum_enabled'] is None else \
+            {True: 't', False: 'f'}[res['rows'][0]['toast_autovacuum_enabled']]
+
+        # Enable custom autovaccum only if one of the options is set
+        # or autovacuum is set
+        res['rows'][0]['autovacuum_custom'] = any([
+            res['rows'][0]['autovacuum_vacuum_threshold'],
+            res['rows'][0]['autovacuum_vacuum_scale_factor'],
+            res['rows'][0]['autovacuum_analyze_threshold'],
+            res['rows'][0]['autovacuum_analyze_scale_factor'],
+            res['rows'][0]['autovacuum_vacuum_cost_delay'],
+            res['rows'][0]['autovacuum_vacuum_cost_limit'],
+            res['rows'][0]['autovacuum_freeze_min_age'],
+            res['rows'][0]['autovacuum_freeze_max_age'],
+            res['rows'][0]['autovacuum_freeze_table_age']]) \
+            or res['rows'][0]['autovacuum_enabled'] in ('t', 'f')
+
+        res['rows'][0]['toast_autovacuum'] = any([
+            res['rows'][0]['toast_autovacuum_vacuum_threshold'],
+            res['rows'][0]['toast_autovacuum_vacuum_scale_factor'],
+            res['rows'][0]['toast_autovacuum_analyze_threshold'],
+            res['rows'][0]['toast_autovacuum_analyze_scale_factor'],
+            res['rows'][0]['toast_autovacuum_vacuum_cost_delay'],
+            res['rows'][0]['toast_autovacuum_vacuum_cost_limit'],
+            res['rows'][0]['toast_autovacuum_freeze_min_age'],
+            res['rows'][0]['toast_autovacuum_freeze_max_age'],
+            res['rows'][0]['toast_autovacuum_freeze_table_age']]) \
+            or res['rows'][0]['toast_autovacuum_enabled'] in ('t', 'f')
+
         # We will check the threshold set by user before executing
         # the query because that can cause performance issues
         # with large result set
@@ -943,6 +979,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data['partition_scheme'] = self.get_partition_scheme(data)
                 partitions_sql = self.get_partitions_sql(data)
 
+            # Update the vacuum table settings.
+            BaseTableView.update_vacuum_settings(self, 'vacuum_table', data)
+            # Update the vacuum toast table settings.
+            BaseTableView.update_vacuum_settings(self, 'vacuum_toast', data)
+
             SQL = render_template(
                 "/".join([self.table_template_path, 'create.sql']),
                 data=data, conn=self.conn
@@ -1023,14 +1064,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data[k] = v
 
         try:
-            SQL = render_template(
-                "/".join([self.table_template_path, 'properties.sql']),
-                did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
-            )
-            status, res = self.conn.execute_dict(SQL)
+            status, res = self._fetch_properties(did, scid, tid)
             if not status:
-                return internal_server_error(errormsg=res)
+                return res
 
             return super(TableView, self).update(
                 gid, sid, did, scid, tid, data, res)
@@ -1266,14 +1302,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         res = None
 
         if tid is not None:
-            SQL = render_template(
-                "/".join([self.table_template_path, 'properties.sql']),
-                did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
-            )
-            status, res = self.conn.execute_dict(SQL)
+            status, res = self._fetch_properties(did, scid, tid)
             if not status:
-                return internal_server_error(errormsg=SQL)
+                return res
 
         SQL, name = self.get_sql(did, scid, tid, data, res)
         SQL = re.sub('\n{2,}', '\n\n', SQL)
@@ -1335,17 +1366,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         """
         main_sql = []
 
-        SQL = render_template(
-            "/".join([self.table_template_path, 'properties.sql']),
-            did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
-        )
-        status, res = self.conn.execute_dict(SQL)
+        status, res = self._fetch_properties(did, scid, tid)
         if not status:
-            return internal_server_error(errormsg=res)
-
-        if len(res['rows']) == 0:
-            return gone(gettext("The specified table could not be found."))
+            return res
 
         data = res['rows'][0]
 

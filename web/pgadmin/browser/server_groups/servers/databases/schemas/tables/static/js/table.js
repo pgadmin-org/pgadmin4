@@ -300,8 +300,8 @@ define('pgadmin.node.table', [
           is_sys_table: undefined,
           coll_inherits: [],
           hastoasttable: true,
-          toast_autovacuum_enabled: false,
-          autovacuum_enabled: false,
+          toast_autovacuum_enabled: 'x',
+          autovacuum_enabled: 'x',
           primary_key: [],
           partitions: [],
           partition_type: 'range',
@@ -1149,6 +1149,16 @@ define('pgadmin.node.table', [
           id: 'vacuum_settings_str', label: gettext('Storage settings'),
           type: 'multiline', group: 'advanced', mode: ['properties'],
         }],
+        sessChanged: function() {
+          /* If only custom autovacuum option is enabled the check if the options table is also changed. */
+          if(_.size(this.sessAttrs) == 2 && this.sessAttrs['autovacuum_custom'] && this.sessAttrs['toast_autovacuum']) {
+            return this.get('vacuum_table').sessChanged() || this.get('vacuum_toast').sessChanged();
+          }
+          if(_.size(this.sessAttrs) == 1 && (this.sessAttrs['autovacuum_custom'] || this.sessAttrs['toast_autovacuum'])) {
+            return this.get('vacuum_table').sessChanged() || this.get('vacuum_toast').sessChanged();
+          }
+          return pgBrowser.DataModel.prototype.sessChanged.apply(this);
+        },
         validate: function() {
           var msg,
             name = this.get('name'),

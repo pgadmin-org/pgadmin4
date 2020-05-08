@@ -58,6 +58,7 @@ define('pgadmin.node.mview', [
       hasDepends: true,
       hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-mview',
+      width: pgBrowser.stdW.md + 'px',
       Init: function() {
 
         // Avoid mulitple registration of menus
@@ -140,8 +141,8 @@ define('pgadmin.node.mview', [
         },
         defaults: {
           spcname: undefined,
-          toast_autovacuum_enabled: false,
-          autovacuum_enabled: false,
+          toast_autovacuum_enabled: 'x',
+          autovacuum_enabled: 'x',
           warn_text: undefined,
         },
         schema: [{
@@ -208,6 +209,9 @@ define('pgadmin.node.mview', [
           group: gettext('Storage'), mode: ['edit', 'create'],
           type: 'int', min: 10, max: 100,
         },{
+          id: 'vacuum_settings_str', label: gettext('Storage settings'),
+          type: 'multiline', group: gettext('Storage'), mode: ['properties'],
+        },{
           type: 'nested', control: 'tab', id: 'materialization',
           label: gettext('Parameter'), mode: ['edit', 'create'],
           group: gettext('Parameter'),
@@ -228,6 +232,16 @@ define('pgadmin.node.mview', [
           mode: ['edit', 'create'], canAdd: true,
           control: 'unique-col-collection', uniqueCol : ['provider'],
         }],
+        sessChanged: function() {
+          /* If only custom autovacuum option is enabled the check if the options table is also changed. */
+          if(_.size(this.sessAttrs) == 2 && this.sessAttrs['autovacuum_custom'] && this.sessAttrs['toast_autovacuum']) {
+            return this.get('vacuum_table').sessChanged() || this.get('vacuum_toast').sessChanged();
+          }
+          if(_.size(this.sessAttrs) == 1 && (this.sessAttrs['autovacuum_custom'] || this.sessAttrs['toast_autovacuum'])) {
+            return this.get('vacuum_table').sessChanged() || this.get('vacuum_toast').sessChanged();
+          }
+          return pgBrowser.DataModel.prototype.sessChanged.apply(this);
+        },
         validate: function(keys) {
 
           // Triggers specific error messages for fields
@@ -235,9 +249,11 @@ define('pgadmin.node.mview', [
             errmsg,
             field_name = this.get('name'),
             field_def = this.get('definition');
-          if (_.indexOf(keys, 'autovacuum_enabled') != -1 ||
+
+          if(_.indexOf(keys, 'autovacuum_custom'))
+            if (_.indexOf(keys, 'autovacuum_enabled') != -1 ||
               _.indexOf(keys, 'toast_autovacuum_enabled') != -1 )
-            return null;
+              return null;
 
           if (_.isUndefined(field_name) || _.isNull(field_name) ||
             String(field_name).replace(/^\s+|\s+$/g, '') == '') {

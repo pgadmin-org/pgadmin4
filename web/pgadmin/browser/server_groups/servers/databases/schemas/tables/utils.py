@@ -1029,6 +1029,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 data['partition_scheme'] = self.get_partition_scheme(data)
                 partitions_sql = self.get_partitions_sql(data)
 
+            # Update the vacuum table settings.
+            self.update_vacuum_settings('vacuum_table', data)
+            # Update the vacuum toast table settings.
+            self.update_vacuum_settings('vacuum_toast', data)
+
             SQL = render_template("/".join([self.table_template_path,
                                             'create.sql']),
                                   data=data, conn=self.conn)
@@ -1191,21 +1196,20 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         """
         data = res['rows'][0]
 
-        data['vacuum_settings_str'] = ""
+        data['vacuum_settings_str'] = ''
 
-        if data['table_vacuum_settings_str'] is not None:
-            data['vacuum_settings_str'] += data[
-                'table_vacuum_settings_str'].replace(',', '\n')
+        if data['reloptions'] is not None:
+            data['vacuum_settings_str'] += '\n'.join(data['reloptions'])
 
-        if data['toast_table_vacuum_settings_str'] is not None:
-            data['vacuum_settings_str'] += '\n' + '\n'.join(
-                ['toast_' + setting for setting in data[
-                    'toast_table_vacuum_settings_str'
-                ].split(',')]
-            )
+        if data['toast_reloptions'] is not None:
+            data['vacuum_settings_str'] += '\n' \
+                if data['vacuum_settings_str'] != '' else ''
+            data['vacuum_settings_str'] += '\n'.\
+                join(map(lambda o: 'toast.' + o, data['toast_reloptions']))
+
         data['vacuum_settings_str'] = data[
             'vacuum_settings_str'
-        ].replace("=", " = ")
+        ].replace('=', ' = ')
 
         data = self._formatter(did, scid, tid, data)
 
@@ -1496,7 +1500,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         return schema_name, table_name
 
-    def update_vacuum_settings(self, vacuum_key, old_data, data):
+    def update_vacuum_settings(self, vacuum_key, old_data, data=None):
         """
         This function iterate the vacuum and vacuum toast table and create
         two new dictionaries. One for set parameter and another for reset.
@@ -1507,8 +1511,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         :return:
         """
 
+        # When creating a table old_data is the actual data
+        if data is None:
+            if vacuum_key in old_data:
+                for opt in old_data[vacuum_key]:
+                    if 'value' in opt and opt['value'] is None:
+                        opt.pop('value')
         # Iterate vacuum table
-        if vacuum_key in data and 'changed' in data[vacuum_key] \
+        elif vacuum_key in data and 'changed' in data[vacuum_key] \
                 and vacuum_key in old_data:
             set_values = []
             reset_values = []

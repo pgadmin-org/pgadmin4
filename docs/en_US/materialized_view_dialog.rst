@@ -67,9 +67,10 @@ thresholds; use the *Table* tab and the *Toast Table* tab to customize values
 for the table and the associated toast table. To change the default values:
 
 * Move the *Custom auto-vacuum?* switch to the *Yes* position to perform custom
-  maintenance on the materialized view.
-* Move the *Enabled?* switch to the *Yes* position to select values in the
-  *Vacuum table*. Provide values for each row in the *Value* column.
+  maintenance on the materialized view and to select values in the
+  *Vacuum table*. The *Vacuum Table* provides default values for maintenance
+  operations.
+* Changing *Autovacuum enabled?* to *Not set* will reset autovacuum_enabled.
 
 Click the *Security* tab to continue.
 

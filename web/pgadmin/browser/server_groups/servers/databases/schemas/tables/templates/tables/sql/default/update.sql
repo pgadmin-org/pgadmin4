@@ -59,7 +59,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 
 {% endif %}
 {#####################################################}
-{## change fillfactore settings ##}
+{## change fillfactor settings ##}
 {#####################################################}
 {% if data.fillfactor and data.fillfactor != o_data.fillfactor %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
@@ -92,14 +92,14 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
     autovacuum_freeze_table_age
 );
 {% else %}
-{% if data.autovacuum_enabled is defined or has_vacuum_set %}
+{% if (data.autovacuum_enabled in ('t', 'f') and data.autovacuum_enabled != o_data.autovacuum_enabled) or has_vacuum_set %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} SET (
-{% if data.autovacuum_enabled is defined and data.autovacuum_enabled != o_data.autovacuum_enabled %}
-    autovacuum_enabled = {% if data.autovacuum_enabled %}true{% else %}false{% endif %}{% if has_vacuum_set %},
+{% if data.autovacuum_enabled in ('t', 'f') and data.autovacuum_enabled != o_data.autovacuum_enabled %}
+    autovacuum_enabled = {% if data.autovacuum_enabled == 't' %}true{% else %}false{% endif %}{% if has_vacuum_set %},
 {% endif %}
 {% endif %}
 {% if has_vacuum_set %}
-{% for opt in data.vacuum_table.set_values %}{% if opt.name and opt.value %}
+{% for opt in data.vacuum_table.set_values %}{% if opt.name and opt.value is defined %}
     {{opt.name}} = {{opt.value}}{% if not loop.last %},
 {% endif %}
 {% endif %}
@@ -108,13 +108,19 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} SET (
 
 );
 {% endif %}
-{% if has_vacuum_reset %}
+{% if (data.autovacuum_enabled == 'x' and data.autovacuum_enabled != o_data.autovacuum_enabled) or has_vacuum_reset %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
+{% if data.autovacuum_enabled =='x' and data.autovacuum_enabled != o_data.autovacuum_enabled %}
+    autovacuum_enabled{% if has_vacuum_reset %},
+{% endif %}
+{% endif %}
+{% if has_vacuum_reset %}
 {% for opt in data.vacuum_table.reset_values %}{% if opt.name %}
     {{opt.name}}{% if not loop.last %},
 {% endif %}
 {% endif %}
 {% endfor %}
+{% endif %}
 
 );
 {% endif %}
@@ -142,14 +148,14 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
     toast.autovacuum_analyze_scale_factor
 );
 {% else %}
-{% if data.toast_autovacuum_enabled is defined or has_vacuum_toast_set %}
+{% if (data.toast_autovacuum_enabled in ('t', 'f') and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled) or has_vacuum_toast_set %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} SET (
-{% if data.toast_autovacuum_enabled is defined and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled %}
-    toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled %}true{% else %}false{% endif %}{% if has_vacuum_toast_set %},
+{% if data.toast_autovacuum_enabled in ('t', 'f') and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled %}
+    toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled == 't' %}true{% else %}false{% endif %}{% if has_vacuum_toast_set %},
 {% endif %}
 {% endif %}
 {% if has_vacuum_toast_set %}
-{% for opt in data.vacuum_toast.set_values %}{% if opt.name and opt.value %}
+{% for opt in data.vacuum_toast.set_values %}{% if opt.name and opt.value is defined %}
     toast.{{opt.name}} = {{opt.value}}{% if not loop.last %},
 {% endif %}
 {% endif %}
@@ -158,13 +164,19 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} SET (
 
 );
 {% endif %}
-{% if has_vacuum_toast_reset %}
+{% if (data.toast_autovacuum_enabled == 'x' and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled) or has_vacuum_toast_reset %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
+{% if data.toast_autovacuum_enabled == 'x' and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled %}
+    toast.autovacuum_enabled{% if has_vacuum_toast_reset %},
+{% endif %}
+{% endif %}
+{% if has_vacuum_toast_reset %}
 {% for opt in data.vacuum_toast.reset_values %}{% if opt.name %}
     toast.{{opt.name}}{% if not loop.last %},
 {% endif %}
 {% endif %}
 {% endfor %}
+{% endif %}
 
 );
 {% endif %}

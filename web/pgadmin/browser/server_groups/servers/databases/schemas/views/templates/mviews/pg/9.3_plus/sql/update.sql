@@ -27,14 +27,17 @@ ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
 {% if def and def != o_data.definition.rstrip(';') %}
 DROP MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }};
 CREATE MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
-{% if data.fillfactor or (data['vacuum_data']['changed']|length > 0 ) %}
+{% if data.fillfactor or o_data.fillfactor %}
 WITH(
 {% if data.fillfactor %}
-  FILLFACTOR = {{ data.fillfactor }}{% if data['vacuum_data']['changed']|length > 0 %},{% endif %}{{ '\r' }}
+    FILLFACTOR = {{ data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
+{% elif o_data.fillfactor %}
+    FILLFACTOR = {{ o_data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
 {% endif %}
+
 {% if data['vacuum_data']['changed']|length > 0 %}
-{% for field in data['vacuum_data']['changed'] %}
-  {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{% endif %}{{ '\r' }}
+{% for field in data['vacuum_data']['changed'] %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},
+{% endif %}
 {% endfor %}
 {% endif %}
 )
@@ -43,10 +46,13 @@ WITH(
 {{ def }}
 {% if data.with_data is defined %}
  WITH {{ 'DATA' if data.with_data else 'NO DATA' }};
-
-{% elif o_data.with_data %}
+{% elif o_data.with_data is defined %}
  WITH {{ 'DATA' if o_data.with_data else 'NO DATA' }};
 
+{% endif %}
+{% if o_data.comment and not data.comment  %}
+COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+    IS {{ o_data.comment|qtLiteral }};
 {% endif %}
 {% else %}
 {# ======= Alter Tablespace ========= #}
@@ -74,11 +80,8 @@ RESET(
 REFRESH MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} WITH{{ ' NO' if data.with_data|lower == 'false' else '' }} DATA;
 
 {% endif %}
-{# ===== Check for Table tab properties ===== #}
-{% if ((data.autovacuum_custom is defined and data.autovacuum_custom|lower == 'false') or
-(data.toast_autovacuum is defined and data.toast_autovacuum|lower == 'false')
-) %}
-{% if data.autovacuum_custom|lower == 'false' %}
+{# ===== Check for Autovacuum options ===== #}
+{% if data.autovacuum_custom is defined and data.autovacuum_custom == False %}
 ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
   autovacuum_enabled,
   autovacuum_vacuum_threshold,
@@ -92,21 +95,9 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
   autovacuum_freeze_table_age
 );
 
-{% if data.toast_autovacuum is defined and data.toast_autovacuum|lower != 'false' %}
-{% if('vacuum_toast' in data and data['vacuum_toast']['changed']|length > 0) %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
-{% for field in data['vacuum_toast']['changed'] %}
-{% if field.value != None %}
-  {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{% endif %}{{ '\r' }}
-{% endif %}
-{% endfor %}
-);
-
-{% endif %}
 {% endif %}
 
-{% endif %}
-{% if data.toast_autovacuum|lower == 'false' %}
+{% if data.toast_autovacuum is defined and data.toast_autovacuum == False %}
 ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
   toast.autovacuum_enabled,
   toast.autovacuum_vacuum_threshold,
@@ -120,47 +111,42 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
   toast.autovacuum_freeze_table_age
 );
 
-{% if data.autovacuum_custom is defined and data.autovacuum_custom|lower != 'false' %}
-{% if('vacuum_table' in data and data['vacuum_table']['changed']|length > 0) %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
-{% for field in data['vacuum_table']['changed'] %}
-{% if field.value != None %}
-  {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{% endif %}{{ '\r' }}
-{% endif %}
-{% endfor %}
-);
-
-{% endif %}
-{% endif %}
 {% endif %}{#-- toast_endif ends --#}
-
-{% else %}
-{% if data['vacuum_data']['reset']|length == 0 and
-data['vacuum_data']['changed']|length == 0 and data['settings']|length > 0 %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} SET(
-{% for field in data['settings'] %}
-  {{ field }} = {{ data['settings'][field]|lower }}{% if not loop.last  %},{% endif %}{{ '\r' }}
-{% endfor %}
-);
-
-{% endif %}
-{% if(data['vacuum_data']['changed']|length > 0) %}
+{% if data['vacuum_data']['changed']|length > 0 or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum_enabled in ('t', 'f') %}
 ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
+{% if data.autovacuum_enabled in ('t', 'f') %}
+    autovacuum_enabled = {% if data.autovacuum_enabled == 't' %}true{% else %}false{% endif %}{% if data['vacuum_data']['changed']|length > 0 or data.toast_autovacuum_enabled in ('t', 'f') %},
+{% endif %}
+{% endif %}
+{% if data.toast_autovacuum_enabled in ('t', 'f') %}
+    toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled == 't' %}true{% else %}false{% endif %}{% if data['vacuum_data']['changed']|length > 0 %},
+{% endif %}
+{% endif %}
 {% for field in data['vacuum_data']['changed'] %}
-{% if field.value != None %}
-  {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},{% endif %}{{ '\r' }}
+{% if field.value != None %}    {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},
+{% endif %}
 {% endif %}
 {% endfor %}
+
 );
 {% endif %}
-{% if data['vacuum_data']['reset']|length > 0 %}
+{% if data['vacuum_data']['reset']|length > 0 or data.autovacuum_enabled == 'x' or data.toast_autovacuum_enabled == 'x' %}
 ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
-{% for field in data['vacuum_data']['reset'] %}
-  {{ field.name }}{% if not loop.last  %},{% endif %}{{ '\r' }}
+{% if data.autovacuum_enabled == 'x' %}
+    autovacuum_enabled{% if data['vacuum_data']['reset']|length > 0 or data.toast_autovacuum_enabled == 'x' %},
+{% endif %}
+{% endif %}
+{% if data.toast_autovacuum_enabled == 'x' %}
+    toast.autovacuum_enabled{% if data['vacuum_data']['reset']|length > 0 %},
+{% endif %}
+{% endif %}
+{% for field in data['vacuum_data']['reset'] %}    {{ field.name }}{% if not loop.last  %},
+{% endif %}
 {% endfor %}
+
 );
 {% endif %}
-{% endif %}{# ===== End check for custom autovacuum ===== #}
+{# ===== End check for custom autovacuum ===== #}
 {% endif %}{# ===== End block for check data definition ===== #}
 {% set old_comment = o_data.comment|default('', true) %}
 {% if (data.comment is defined and (data.comment != old_comment)) %}

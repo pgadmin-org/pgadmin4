@@ -5,8 +5,8 @@
 CREATE MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
 WITH (
     FILLFACTOR = 18,
-    autovacuum_analyze_scale_factor = 0.2,
-    autovacuum_enabled = true
+    autovacuum_enabled = TRUE,
+    autovacuum_analyze_scale_factor = 0.2
 )
 TABLESPACE pg_default
 AS

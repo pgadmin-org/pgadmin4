@@ -8,62 +8,8 @@
       "msql_endpoint": "NODE-mview.msql",
       "data": {
         "spcname": "pg_default",
-        "toast_autovacuum_enabled": false,
-        "autovacuum_enabled": false,
         "schema": "public",
         "owner": "postgres",
-        "vacuum_table": [
-          {
-            "name": "autovacuum_analyze_scale_factor"
-          },
-          {
-            "name": "autovacuum_analyze_threshold"
-          },
-          {
-            "name": "autovacuum_freeze_max_age"
-          },
-          {
-            "name": "autovacuum_vacuum_cost_delay"
-          },
-          {
-            "name": "autovacuum_vacuum_cost_limit"
-          },
-          {
-            "name": "autovacuum_vacuum_scale_factor"
-          },
-          {
-            "name": "autovacuum_vacuum_threshold"
-          },
-          {
-            "name": "autovacuum_freeze_min_age"
-          },
-          {
-            "name": "autovacuum_freeze_table_age"
-          }
-        ],
-        "vacuum_toast": [
-          {
-            "name": "autovacuum_freeze_max_age"
-          },
-          {
-            "name": "autovacuum_vacuum_cost_delay"
-          },
-          {
-            "name": "autovacuum_vacuum_cost_limit"
-          },
-          {
-            "name": "autovacuum_vacuum_scale_factor"
-          },
-          {
-            "name": "autovacuum_vacuum_threshold"
-          },
-          {
-            "name": "autovacuum_freeze_min_age"
-          },
-          {
-            "name": "autovacuum_freeze_table_age"
-          }
-        ],
         "datacl": [],
         "seclabels": [],
         "name": "testmview_$%{}[]()&*^!/@`#",
@@ -218,7 +164,7 @@
       "msql_endpoint": "NODE-mview.msql_id",
       "data": {
         "autovacuum_custom": true,
-        "autovacuum_enabled": true,
+        "autovacuum_enabled": "t",
         "vacuum_table": {
           "changed": [
             {
@@ -239,7 +185,7 @@
       "msql_endpoint": "NODE-mview.msql_id",
       "data": {
         "autovacuum_custom": true,
-        "autovacuum_enabled": false,
+        "autovacuum_enabled": "x",
         "vacuum_table": {
           "changed": [
             {
