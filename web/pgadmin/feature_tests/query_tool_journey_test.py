@@ -9,7 +9,6 @@
 
 from __future__ import print_function
 import sys
-import pyperclip
 import random
 
 from selenium.webdriver import ActionChains
@@ -90,7 +89,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
         print(" OK.", file=sys.stderr)
 
     def _test_copies_rows(self):
-        pyperclip.copy("old clipboard contents")
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to_frame(
             self.page.driver.find_element_by_tag_name("iframe"))
@@ -103,12 +101,21 @@ class QueryToolJourneyTest(BaseFeatureTest):
             QueryToolLocators.copy_button_css)
         copy_row.click()
 
+        self.page.driver.switch_to.default_content()
+        self.page.driver.switch_to_frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
+
+        scratch_pad_ele = self.page.find_by_css_selector(
+            QueryToolLocators.scratch_pad_css)
+        self.page.paste_values(scratch_pad_ele)
+        clipboard_text = scratch_pad_ele.get_attribute("value")
+
         self.assertEqual('"Some-Name"\t6\t"some info"',
-                         pyperclip.paste())
+                         clipboard_text)
+
+        scratch_pad_ele.clear()
 
     def _test_copies_columns(self):
-        pyperclip.copy("old clipboard contents")
-
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to_frame(
             self.page.driver.find_element_by_tag_name("iframe"))
@@ -121,9 +128,20 @@ class QueryToolJourneyTest(BaseFeatureTest):
             QueryToolLocators.copy_button_css)
         copy_btn.click()
 
-        self.assertTrue('"Some-Name"' in pyperclip.paste())
-        self.assertTrue('"Some-Other-Name"' in pyperclip.paste())
-        self.assertTrue('"Yet-Another-Name"' in pyperclip.paste())
+        self.page.driver.switch_to.default_content()
+        self.page.driver.switch_to_frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
+
+        scratch_pad_ele = self.page.find_by_css_selector(
+            QueryToolLocators.scratch_pad_css)
+        self.page.paste_values(scratch_pad_ele)
+
+        clipboard_text = scratch_pad_ele.get_attribute("value")
+
+        self.assertTrue('"Some-Name"' in clipboard_text)
+        self.assertTrue('"Some-Other-Name"' in clipboard_text)
+        self.assertTrue('"Yet-Another-Name"' in clipboard_text)
+        scratch_pad_ele.clear()
 
     def _test_history_tab(self):
         self.page.clear_query_tool()
@@ -370,10 +388,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
             self.page.find_by_css_selector(
                 QueryToolLocators.btn_clear_dropdown)
         )
-        ActionChains(self.driver)\
+        ActionChains(self.driver) \
             .move_to_element(
-                self.page.find_by_css_selector(
-                    QueryToolLocators.btn_clear_history)).perform()
+            self.page.find_by_css_selector(
+                QueryToolLocators.btn_clear_history)).perform()
         self.page.click_element(
             self.page.find_by_css_selector(QueryToolLocators.btn_clear_history)
         )

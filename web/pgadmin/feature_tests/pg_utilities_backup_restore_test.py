@@ -18,6 +18,7 @@ from regression.python_test_utils import test_utils
 from regression.python_test_utils import test_gui_helper
 from regression.feature_utils.locators import NavMenuLocators
 from regression.feature_utils.tree_area_locators import TreeAreaLocators
+from selenium.webdriver import ActionChains
 
 
 class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
@@ -56,6 +57,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self.server['sslmode']
         )
         test_utils.drop_database(connection, self.database_name)
+        self._update_preferences()
         db_id = test_utils.create_database(self.server, self.database_name)
         if not db_id:
             self.assertTrue(False, "Database {} is not "
@@ -130,7 +132,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self._check_detailed_window_for_xss('Backup')
         else:
             command = self.page.find_by_css_selector(
-                NavMenuLocators.process_watcher_detailed_command_canvas_css).\
+                NavMenuLocators.process_watcher_detailed_command_canvas_css). \
                 text
 
             self.assertIn(self.server['name'], str(command))
@@ -199,7 +201,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self._check_detailed_window_for_xss('Restore')
         else:
             command = self.page.find_by_css_selector(
-                NavMenuLocators.process_watcher_detailed_command_canvas_css).\
+                NavMenuLocators.process_watcher_detailed_command_canvas_css). \
                 text
 
             self.assertIn(self.server['name'], str(command))
@@ -242,3 +244,74 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         # For XSS we need to search against element's html code
         assert source_code.find(string_to_find) != - \
             1, "{0} might be vulnerable to XSS ".format(source)
+
+    def _update_preferences(self):
+        """
+        Function updates preferences for binary path.
+        """
+        file_menu = self.page.find_by_css_selector(
+            NavMenuLocators.file_menu_css)
+        file_menu.click()
+
+        pref_menu_item = self.page.find_by_css_selector(
+            NavMenuLocators.preference_menu_item_css)
+        pref_menu_item.click()
+
+        wait = WebDriverWait(self.page.driver, 10)
+
+        # Wait till the preference dialogue box is displayed by checking the
+        # visibility of Show System Object label
+        wait.until(EC.presence_of_element_located(
+            (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
+        )
+
+        maximize_button = self.page.find_by_css_selector(
+            NavMenuLocators.maximize_pref_dialogue_css)
+        maximize_button.click()
+
+        path = self.page.find_by_xpath(
+            NavMenuLocators.specified_preference_tree_node.format('Paths'))
+        if self.page.find_by_xpath(
+            NavMenuLocators.specified_pref_node_exp_status.format('Paths')). \
+                get_attribute('aria-expanded') == 'false':
+            ActionChains(self.driver).double_click(path).perform()
+
+        binary_path = self.page.find_by_xpath(
+            NavMenuLocators.specified_sub_node_of_pref_tree_node.format(
+                'Paths', 'Binary paths'))
+        binary_path.click()
+
+        default_binary_path = self.server['default_binary_paths']
+        if default_binary_path is not None:
+            server_types = default_binary_path.keys()
+            for serv in server_types:
+                if serv == 'pg':
+                    path_input = self.page.find_by_xpath(
+                        "//label[text()='PostgreSQL Binary "
+                        "Path']/following-sibling::div//input")
+                    path_input.clear()
+                    path_input.click()
+                    path_input.send_keys(default_binary_path['pg'])
+                elif serv == 'gpdb':
+                    path_input = self.page.find_by_xpath(
+                        "//label[text()='Greenplum Database Binary "
+                        "Path']/following-sibling::div//input")
+                    path_input.clear()
+                    path_input.click()
+                    path_input.send_keys(default_binary_path['gpdb'])
+                elif serv == 'ppas':
+                    path_input = self.page.find_by_xpath(
+                        "//label[text()='EDB Advanced Server Binary "
+                        "Path']/following-sibling::div//input")
+                    path_input.clear()
+                    path_input.click()
+                    path_input.send_keys(default_binary_path['ppas'])
+                else:
+                    print('Binary path Key is Incorrect')
+
+        # save and close the preference dialog.
+        self.page.click_modal('Save')
+
+        self.page.wait_for_element_to_disappear(
+            lambda driver: driver.find_element_by_css_selector(".ajs-modal")
+        )

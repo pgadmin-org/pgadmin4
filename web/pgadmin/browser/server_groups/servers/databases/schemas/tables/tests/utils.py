@@ -483,3 +483,26 @@ def get_hash_partitions_data(data):
           }]
     data['partition_keys'] = \
         [{'key_type': 'column', 'pt_column': 'empno'}]
+
+
+def get_table_id(server, db_name, table_name):
+    try:
+        connection = utils.get_db_connection(db_name,
+                                             server['username'],
+                                             server['db_password'],
+                                             server['host'],
+                                             server['port'],
+                                             server['sslmode'])
+        pg_cursor = connection.cursor()
+        pg_cursor.execute("select oid from pg_class where relname='%s'" %
+                          table_name)
+        table = pg_cursor.fetchone()
+        if table:
+            table_id = table[0]
+        else:
+            table_id = None
+        connection.close()
+        return table_id
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+        raise

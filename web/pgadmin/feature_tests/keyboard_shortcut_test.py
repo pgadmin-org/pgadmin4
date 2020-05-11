@@ -94,23 +94,32 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
             NavMenuLocators.preference_menu_item_css)
         pref_menu_item.click()
 
-        # Wait till the preference dialogue box is displayed by checking the
-        # visibility of Show System Object label
-        self.wait.until(EC.presence_of_element_located(
-            (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
-        )
-
-        maximize_button = self.page.find_by_css_selector(
-            NavMenuLocators.maximize_pref_dialogue_css)
-        maximize_button.click()
-
         browser_node = self.page.find_by_xpath(
             NavMenuLocators.specified_preference_tree_node.format('Browser'))
         if self.page.find_by_xpath(
             NavMenuLocators.specified_pref_node_exp_status.
                 format('Browser')).get_attribute('aria-expanded') == 'false':
-
             ActionChains(self.driver).double_click(browser_node).perform()
+
+        display_node = self.page.find_by_xpath(
+            NavMenuLocators.specified_sub_node_of_pref_tree_node.format(
+                'Browser', 'Display'))
+        attempt = 5
+        while attempt > 0:
+            display_node.click()
+            # After clicking the element gets loaded in to the dom but still
+            # not visible, hence sleeping for a sec.
+            time.sleep(1)
+            if self.page.wait_for_element_to_be_visible(
+                self.driver,
+                    NavMenuLocators.show_system_objects_pref_label_xpath, 3):
+                break
+            else:
+                attempt -= 1
+
+        maximize_button = self.page.find_by_css_selector(
+            NavMenuLocators.maximize_pref_dialogue_css)
+        maximize_button.click()
 
         keyboard_node = self.page.find_by_xpath(
             NavMenuLocators.specified_sub_node_of_pref_tree_node.format(

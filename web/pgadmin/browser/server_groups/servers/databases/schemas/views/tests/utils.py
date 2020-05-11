@@ -86,3 +86,28 @@ def verify_view(server, db_name, view_name):
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+
+
+def get_view_id(server, db_name, view_name):
+    try:
+        connection = utils.get_db_connection(db_name,
+                                             server['username'],
+                                             server['db_password'],
+                                             server['host'],
+                                             server['port'],
+                                             server['sslmode'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        # Get 'oid' from newly created view
+        pg_cursor.execute("select oid from pg_class where relname='%s'" %
+                          view_name)
+        view = pg_cursor.fetchone()
+        view_id = None
+        if view:
+            view_id = view[0]
+        connection.close()
+        return view_id
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+        raise

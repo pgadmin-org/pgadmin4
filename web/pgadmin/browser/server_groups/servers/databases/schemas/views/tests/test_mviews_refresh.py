@@ -48,8 +48,7 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
          ),
     ]
 
-    @classmethod
-    def setUpClass(self):
+    def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -143,7 +142,6 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
                 # On success we get job_id from server
                 self.assertTrue('job_id' in response.json['data'])
 
-    @classmethod
-    def tearDownClass(self):
+    def tearDown(self):
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

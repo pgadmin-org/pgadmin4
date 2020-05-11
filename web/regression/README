@@ -141,6 +141,61 @@ Python Tests:
   and registered automatically by its module name in
   'pgadmin4/web/pgadmin/utils/test.py' file.
 
+- To run Feature Tests in parallel using selenoid(grid + docker), selenoid
+  need to be installed. Steps to install selenoid -
+
+  - Install & Start docker
+    $yum -y install docker docker-registry
+    $vi /etc/sysconfig/docker   # in OPTIONS add ‘--selinux-enabled=false’
+    $systemctl enable docker.service
+    $systemctl start docker.service
+    $systemctl status docker.service
+
+  - Install & Start Selenoid
+    $curl -s https://aerokube.com/cm/bash | bash
+    $./cm selenoid start --vnc --args "-limit 3 -cpu 1.5 -mem 1.5g"
+    $./cm selenoid-ui start
+    Check selenoid status -
+    http://<IP address of Selenoid Installed machine>:4444/status
+            - Should show json with browsers details
+    http://<IP address of Selenoid Installed machine>:8080/#/
+            - Capabilities shows available browser
+    Note : In --args "-limit 3 -cpu 1.5 -mem 1.5g"
+                -limit 3 :limits maximum parallel sessions(dockers) in selenoid,
+                -cpu :limit memory and CPU usage,
+                -mem :limit memory per session.
+           Generally max parallel session is the number of cores * 1.5 – 2
+           You can list available flags by using ./cm selenoid args
+    Additional Information about tool
+            - https://aerokube.com/selenoid/latest/
+
+  - Update 'test_config.json' with selenoid config information
+    pgAdmin_default_server -
+        It is the IP address for the machine where pgadmin source code is
+        present.Value should NOT be '127.0.0.1' even though everything runs
+        on the same machine.
+        You can get it on linux running command  'ifconfig | grep inet'
+        e.g. - 192.168.143.121
+    max_parallel_sessions -
+        This is other way to control number of tests to be run in parallel.
+        This should be equal or less than limit specified while setting up
+        selenoid
+    selenoid_url -
+        Url should be formed as below -
+        http://<IP address of Selenoid Installed machine>:4444/wd/hub/
+        e.g. - selenoid_url": "http://192.168.143.121:4444/wd/hub"
+        If source code & selenoid servers are on same machine then
+        selenoid url value can be - "http://localhost:4444/wd/hub"
+    browsers_list -
+        List of browser name & version enclosed in {} on which tests to be
+        executed.
+        Make sure list contains those browsers & versions only which are shown
+        in capabilities tab while in selenoid status web-page.
+        If version is mention as null, then latest version available in
+        selenoid server will be used for execution.
+        e.g. - [ {"name": "Chrome","version": "80.0"},
+                 {"name": "Firefox","version": "74.0"}]
+
 - Change to the regression test directory:
      run 'cd web/regression'
 
@@ -192,6 +247,10 @@ Python Tests:
 
      Example 3) Exclude reverse engineered SQL test framework for all modules
          run 'python runtests.py --exclude resql'
+
+- Execute ui selenium tests in parallel using selenoid(selenium grid + docker)
+     Example : --pkg feature_tests --parallel
+
 
 Code Coverage:
 ---------------

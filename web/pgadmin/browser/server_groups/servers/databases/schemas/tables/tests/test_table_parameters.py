@@ -125,8 +125,9 @@ class TableUpdateParameterTestCase(BaseTestGenerator):
          ),
     ]
 
-    @classmethod
-    def setUpClass(self):
+    table_name = "test_table_parameters_%s" % (str(uuid.uuid4())[1:8])
+
+    def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -142,12 +143,14 @@ class TableUpdateParameterTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
-        self.table_name = "test_table_parameters_%s" % (str(uuid.uuid4())[1:8])
 
-        self.table_id = tables_utils.create_table(
-            self.server, self.db_name,
-            self.schema_name,
-            self.table_name)
+        self.table_id = tables_utils.get_table_id(self.server, self.db_name,
+                                                  self.table_name)
+        if self.table_id is None:
+            self.table_id = tables_utils.create_table(
+                self.server, self.db_name,
+                self.schema_name,
+                self.table_name)
 
     def runTest(self):
         """This function will fetch added table under schema node."""
@@ -167,7 +170,6 @@ class TableUpdateParameterTestCase(BaseTestGenerator):
                                    follow_redirects=True)
         self.assertEquals(response.status_code, 200)
 
-    @classmethod
-    def tearDownClass(self):
+    def tearDown(self):
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

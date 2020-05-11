@@ -21,7 +21,8 @@ import traceback
 import json
 import random
 import coverage
-
+import threading
+import time
 import unittest
 
 if sys.version_info < (3, 4):
@@ -136,7 +137,7 @@ scenarios.apply_scenario = test_utils.apply_scenario
 
 
 def get_suite(module_list, test_server, test_app_client, server_information,
-              test_db_name):
+              test_db_name, driver_passed):
     """
      This function add the tests to test suite and return modified test suite
       variable.
@@ -166,7 +167,7 @@ def get_suite(module_list, test_server, test_app_client, server_information,
         obj.setApp(app)
         obj.setTestClient(test_app_client)
         obj.setTestServer(test_server)
-        obj.setDriver(driver)
+        obj.setDriver(driver_passed)
         obj.setServerInformation(server_information)
         obj.setTestDatabaseName(test_db_name)
         scenario = scenarios.generate_scenarios(obj)
@@ -207,57 +208,62 @@ def get_test_modules(arguments):
         exclude_pkgs += arguments['exclude'].split(',')
 
     if 'feature_tests' not in exclude_pkgs and \
-            (arguments['pkg'] is None or arguments['pkg'] == "all" or
-             arguments['pkg'] == "feature_tests"):
+        (arguments['pkg'] is None or arguments['pkg'] == "all" or
+         arguments['pkg'] == "feature_tests"):
 
-        from selenium import webdriver
-        from selenium.webdriver.chrome.options import Options
-        from selenium.webdriver.common.desired_capabilities import \
-            DesiredCapabilities
+        if arguments['pkg'] == "feature_tests":
+            exclude_pkgs.extend(['resql'])
 
-        default_browser = 'chrome'
+        if not test_utils.is_parallel_ui_tests(args):
+            from selenium import webdriver
+            from selenium.webdriver.chrome.options import Options
+            from selenium.webdriver.common.desired_capabilities import \
+                DesiredCapabilities
 
-        # Check default browser provided through command line. If provided
-        # then use that browser as default browser else check for the setting
-        # provided in test_config.json file.
-        if (
-            'default_browser' in arguments and
-            arguments['default_browser'] is not None
-        ):
-            default_browser = arguments['default_browser'].lower()
-        elif (
-            test_setup.config_data and
-            "default_browser" in test_setup.config_data
-        ):
-            default_browser = test_setup.config_data['default_browser'].lower()
+            default_browser = 'chrome'
 
-        if default_browser == 'firefox':
-            cap = DesiredCapabilities.FIREFOX
-            cap['requireWindowFocus'] = True
-            cap['enablePersistentHover'] = False
-            profile = webdriver.FirefoxProfile()
-            profile.set_preference("dom.disable_beforeunload", True)
-            driver = webdriver.Firefox(capabilities=cap,
-                                       firefox_profile=profile)
-            driver.implicitly_wait(1)
-        else:
-            options = Options()
-            if test_setup.config_data:
-                if 'headless_chrome' in test_setup.config_data:
-                    if test_setup.config_data['headless_chrome']:
-                        options.add_argument("--headless")
-            options.add_argument("--no-sandbox")
-            options.add_argument("--disable-setuid-sandbox")
-            options.add_argument("--window-size=1280,1024")
-            options.add_argument("--disable-infobars")
-            options.add_experimental_option('w3c', False)
-            driver = webdriver.Chrome(chrome_options=options)
+            # Check default browser provided through command line. If provided
+            # then use that browser as default browser else check for the
+            # setting provided in test_config.json file.
+            if (
+                'default_browser' in arguments and
+                arguments['default_browser'] is not None
+            ):
+                default_browser = arguments['default_browser'].lower()
+            elif (
+                test_setup.config_data and
+                "default_browser" in test_setup.config_data
+            ):
+                default_browser = test_setup.config_data[
+                    'default_browser'].lower()
 
-        # maximize browser window
-        driver.maximize_window()
+            if default_browser == 'firefox':
+                cap = DesiredCapabilities.FIREFOX
+                cap['requireWindowFocus'] = True
+                cap['enablePersistentHover'] = False
+                profile = webdriver.FirefoxProfile()
+                profile.set_preference("dom.disable_beforeunload", True)
+                driver = webdriver.Firefox(capabilities=cap,
+                                           firefox_profile=profile)
+                driver.implicitly_wait(1)
+            else:
+                options = Options()
+                if test_setup.config_data:
+                    if 'headless_chrome' in test_setup.config_data:
+                        if test_setup.config_data['headless_chrome']:
+                            options.add_argument("--headless")
+                options.add_argument("--no-sandbox")
+                options.add_argument("--disable-setuid-sandbox")
+                options.add_argument("--window-size=1280,1024")
+                options.add_argument("--disable-infobars")
+                options.add_experimental_option('w3c', False)
+                driver = webdriver.Chrome(chrome_options=options)
 
-        app_starter = AppStarter(driver, config)
-        app_starter.start_app()
+            # maximize browser window
+            driver.maximize_window()
+
+            app_starter = AppStarter(driver, config)
+            app_starter.start_app()
 
     handle_cleanup = test_utils.get_cleanup_handler(test_client, app_starter)
     # Register cleanup function to cleanup on exit
@@ -319,6 +325,9 @@ def add_arguments():
         '--modules',
         help='Executes the feature test for specific modules in pkg'
     )
+    parser.add_argument('--parallel', nargs='?', const=True,
+                        type=bool, default=False,
+                        help='Enable parallel Feature Tests')
     arg = parser.parse_args()
 
     return arg
@@ -404,117 +413,213 @@ class StreamToLogger(object):
         pass
 
 
-if __name__ == '__main__':
-    # Failure detected?
-    failure = False
-    test_result = dict()
-    cov = None
-
-    # Set signal handler for cleanup
-    signal_list = dir(signal)
-    required_signal_list = ['SIGTERM', 'SIGABRT', 'SIGQUIT', 'SIGINT']
-    # Get the OS wise supported signals
-    supported_signal_list = [sig for sig in required_signal_list if
-                             sig in signal_list]
-    for sig in supported_signal_list:
-        signal.signal(getattr(signal, sig), sig_handler)
-
-    # Set basic logging configuration for log file
-    fh = logging.FileHandler(CURRENT_PATH + '/' +
-                             'regression.log', 'w', 'utf-8')
-    fh.setLevel(logging.DEBUG)
-    fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
-
-    logger = logging.getLogger()
-    logger.addHandler(fh)
-
-    # Create logger to write log in the logger file as well as on console
-    stderr_logger = logging.getLogger('STDERR')
-    sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
-    args = vars(add_arguments())
-    # Get test module list
+def execute_test(test_module_list_passed, server_passed, driver_passed):
+    """
+    Function executes actually test
+    :param test_module_list_passed:
+    :param server_passed:
+    :param driver_passed:
+    :return:
+    """
     try:
-        test_module_list = get_test_modules(args)
-    except Exception as e:
-        print(str(e))
-        sys.exit(1)
-    # Login the test client
-    test_utils.login_tester_account(test_client)
+        print("\n=============Running the test cases for '%s' ============="
+              % server_passed['name'], file=sys.stderr)
+        # Create test server
+        server_information = \
+            test_utils.create_parent_server_node(server_passed)
 
-    servers_info = test_utils.get_config_data()
-    node_name = "all"
-    if args['pkg'] is not None:
-        node_name = args['pkg'].split('.')[-1]
+        # Create test database with random number to avoid conflict in
+        # parallel execution on different platforms. This database will be
+        # used across all feature tests.
+        test_db_name = "acceptance_test_db" + \
+                       str(random.randint(10000, 65535))
+        connection = test_utils.get_db_connection(
+            server_passed['db'],
+            server_passed['username'],
+            server_passed['db_password'],
+            server_passed['host'],
+            server_passed['port'],
+            server_passed['sslmode']
+        )
 
-    # Start coverage
-    if test_utils.is_coverage_enabled(args):
-        cov = coverage.Coverage(config_file=COVERAGE_CONFIG_FILE)
-        cov.start()
+        # Add the server version in server information
+        server_information['server_version'] = connection.server_version
+        server_information['type'] = server_passed['type']
 
-    try:
-        for server in servers_info:
-            print("\n=============Running the test cases for '%s'============="
-                  % server['name'], file=sys.stderr)
-            # Create test server
-            server_information = test_utils.create_parent_server_node(server)
+        # Drop the database if already exists.
+        test_utils.drop_database(connection, test_db_name)
 
-            # Create test database with random number to avoid conflict in
-            # parallel execution on different platforms. This database will be
-            # used across all feature tests.
-            test_db_name = "acceptance_test_db" + \
-                           str(random.randint(10000, 65535))
-            connection = test_utils.get_db_connection(
-                server['db'],
-                server['username'],
-                server['db_password'],
-                server['host'],
-                server['port'],
-                server['sslmode']
-            )
+        # Create database
+        test_utils.create_database(server_passed, test_db_name)
 
-            # Add the server version in server information
-            server_information['server_version'] = connection.server_version
-            server_information['type'] = server['type']
+        # Configure preferences for the test cases
+        test_utils.configure_preferences(
+            default_binary_path=server_passed['default_binary_paths'])
 
-            # Drop the database if already exists.
+        # Get unit test suit
+        suite = get_suite(test_module_list_passed,
+                          server_passed,
+                          test_client,
+                          server_information, test_db_name, driver_passed)
+
+        # Run unit test suit created
+        tests = unittest.TextTestRunner(stream=sys.stderr,
+                                        descriptions=True,
+                                        verbosity=2).run(suite)
+
+        # processing results
+        ran_tests, failed_cases, skipped_cases, passed_cases = \
+            get_tests_result(tests)
+
+        # This is required when some tests are running parallel
+        # & some sequential in case of parallel ui tests
+        if threading.current_thread().getName() == "sequential_tests":
+            try:
+                if test_result[server_passed['name']][0] is not None:
+                    ran_tests = test_result[server_passed['name']][0] + \
+                        ran_tests
+                    failed_cases.update(test_result[server_passed['name']][1])
+                    skipped_cases.update(test_result[server_passed['name']][2])
+                    passed_cases.update(test_result[server_passed['name']][3])
+                test_result[server_passed['name']] = [ran_tests, failed_cases,
+                                                      skipped_cases,
+                                                      passed_cases]
+            except KeyError:
+                pass
+
+        # Add final results server wise in test_result dict
+        test_result[server_passed['name']] = [ran_tests, failed_cases,
+                                              skipped_cases, passed_cases]
+
+        # Set empty list for 'passed' parameter for each testRun.
+        # So that it will not append same test case name
+        # unittest.result.TestResult.passed = []
+
+        # Drop the testing database created initially
+        if connection:
             test_utils.drop_database(connection, test_db_name)
-            # Create database
-            test_utils.create_database(server, test_db_name)
-            # Configure preferences for the test cases
-            test_utils.configure_preferences(
-                default_binary_path=server['default_binary_paths'])
+            connection.close()
 
-            suite = get_suite(test_module_list,
-                              server,
-                              test_client,
-                              server_information, test_db_name)
-            tests = unittest.TextTestRunner(stream=sys.stderr,
-                                            descriptions=True,
-                                            verbosity=2).run(suite)
+        # Delete test server
+        test_utils.delete_test_server(test_client)
+    except Exception as exc:
+        traceback.print_exc(file=sys.stderr)
+        print(str(exc))
+        print("Exception in {0}".format(threading.current_thread().ident))
+    finally:
+        # Delete web-driver instance
+        thread_name = "parallel_tests" + server_passed['name']
+        if threading.currentThread().getName() == thread_name:
+            driver_passed.quit()
+            time.sleep(20)
 
-            ran_tests, failed_cases, skipped_cases, passed_cases = \
-                get_tests_result(tests)
-            test_result[server['name']] = [ran_tests, failed_cases,
-                                           skipped_cases, passed_cases]
+        # Print info about completed tests
+        print(
+            "\n=============Completed the test cases for '%s'============="
+            % server_passed['name'], file=sys.stderr)
 
-            # Set empty list for 'passed' parameter for each testRun.
-            # So that it will not append same test case name
-            unittest.result.TestResult.passed = []
 
-            if len(failed_cases) > 0:
-                failure = True
+def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
+                       name_of_browser, version_of_browser, max_thread_count):
+    """
+    Function used to run tests in parallel
+    :param url_client:
+    :param servers_details:
+    :param parallel_tests_lists:
+    :param name_of_browser:
+    :param version_of_browser:
+    :param max_thread_count:
+    """
+    driver_object = None
+    try:
+        # Thread list
+        threads_list = []
+        # Create thread for each server
+        for ser in servers_details:
+            # Logic to add new threads
+            while True:
+                # If active thread count <= max_thread_count, add new thread
+                if threading.activeCount() <= max_thread_count:
+                    # Get remote web-driver instance at server level
+                    driver_object = \
+                        test_utils.get_remote_webdriver(hub_url,
+                                                        name_of_browser,
+                                                        version_of_browser,
+                                                        ser['name'])
+                    # Launch client url in browser
+                    test_utils.launch_url_in_browser(driver_object, url_client)
 
-            # Drop the testing database created initially
-            if connection:
-                test_utils.drop_database(connection, test_db_name)
-                connection.close()
+                    # Add name for thread
+                    thread_name = "parallel_tests" + ser['name']
 
-            # Delete test server
-            test_utils.delete_test_server(test_client)
-    except SystemExit:
-        if handle_cleanup:
-            handle_cleanup()
+                    # Start thread
+                    t = threading.Thread(target=execute_test, name=thread_name,
+                                         args=(parallel_tests_lists, ser,
+                                               driver_object))
+                    threads_list.append(t)
+                    t.start()
+                    time.sleep(3)
+                    break
+                # else sleep for 10 seconds
+                else:
+                    time.sleep(10)
 
+        # Start threads in parallel
+        for t in threads_list:
+            t.join()
+    except Exception as exc:
+        # Print exception stack trace
+        traceback.print_exc(file=sys.stderr)
+        print(str(exc))
+        # Clean driver object created
+        if driver_object is not None:
+            driver_object.quit()
+
+
+def run_sequential_tests(url_client, servers_details, sequential_tests_lists,
+                         name_of_browser, version_of_browser):
+    """
+    Function is used to execute tests that needs to be run in sequential
+    manner.
+    :param url_client:
+    :param servers_details:
+    :param sequential_tests_lists:
+    :param name_of_browser:
+    :param version_of_browser:
+    :return:
+    """
+    driver_object = None
+    try:
+        # Get remote web-driver instance
+        driver_object = test_utils.get_remote_webdriver(hub_url,
+                                                        name_of_browser,
+                                                        version_of_browser,
+                                                        "Sequential_Tests")
+
+        # Launch client url in browser
+        test_utils.launch_url_in_browser(driver_object, url_client)
+
+        # Add name for thread
+        thread_name = "sequential_tests"
+
+        # Start thread
+        for ser in servers_details:
+            t = threading.Thread(target=execute_test,
+                                 name=thread_name,
+                                 args=(sequential_tests_lists, ser,
+                                       driver_object))
+            t.start()
+            t.join()
+    except Exception as exc:
+        # Print exception stack trace
+        traceback.print_exc(file=sys.stderr)
+        print(str(exc))
+    finally:
+        # Clean driver object created
+        driver_object.quit()
+
+
+def print_test_results():
     print(
         "\n==============================================================="
         "=======",
@@ -542,6 +647,10 @@ if __name__ == '__main__':
                                  skipped_cases.items()).values())
         total_passed_cases = int(
             test_result[server_res][0]) - total_failed - total_skipped
+
+        if len(failed_cases) > 0:
+            global failure
+            failure = True
 
         print(
             "%s:\n\n\t%s test%s passed\n\t%s test%s failed%s%s"
@@ -578,12 +687,162 @@ if __name__ == '__main__':
         file=sys.stderr
     )
 
+
+if __name__ == '__main__':
+    # Failure detected?
+    failure = False
+    test_result = dict()
+    cov = None
+
+    # Set signal handler for cleanup
+    signal_list = dir(signal)
+    required_signal_list = ['SIGTERM', 'SIGABRT', 'SIGQUIT', 'SIGINT']
+    # Get the OS wise supported signals
+    supported_signal_list = [sig for sig in required_signal_list if
+                             sig in signal_list]
+    for sig in supported_signal_list:
+        signal.signal(getattr(signal, sig), sig_handler)
+
+    # Set basic logging configuration for log file
+    fh = logging.FileHandler(CURRENT_PATH + '/' +
+                             'regression.log', 'w', 'utf-8')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(logging.Formatter('[%(thread)d] ' +
+                                      config.FILE_LOG_FORMAT))
+
+    logger = logging.getLogger()
+    logger.addHandler(fh)
+
+    # Create logger to write log in the logger file as well as on console
+    stderr_logger = logging.getLogger('STDERR')
+    sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
+    args = vars(add_arguments())
+    # Get test module list
+    try:
+        test_module_list = get_test_modules(args)
+    except Exception as e:
+        print(str(e))
+        sys.exit(1)
+    # Login the test client
+    test_utils.login_tester_account(test_client)
+
+    servers_info = test_utils.get_config_data()
+    node_name = "all"
+    if args['pkg'] is not None:
+        node_name = args['pkg'].split('.')[-1]
+
+    # Start coverage
+    if test_utils.is_coverage_enabled(args):
+        cov = coverage.Coverage(config_file=COVERAGE_CONFIG_FILE)
+        cov.start()
+
+    # Check if feature tests included & parallel tests switch passed
+    if test_utils.is_feature_test_included(args) and \
+            test_utils.is_parallel_ui_tests(args):
+
+        # Get selenium config dict
+        selenoid_config = test_setup.config_data['selenoid_config']
+
+        # Set DEFAULT_SERVER value
+        default_server = selenoid_config['pgAdmin_default_server']
+        os.environ["PGADMIN_CONFIG_DEFAULT_SERVER"] = str(default_server)
+        config.DEFAULT_SERVER = str(default_server)
+
+        # Get hub url
+        hub_url = selenoid_config['selenoid_url']
+
+        # Get selenium grid status & list of available browser out passed
+        selenium_grid_status, list_of_browsers \
+            = test_utils.get_selenium_grid_status_and_browser_list(hub_url)
+
+        # Execute tests if selenium-grid is up
+        if selenium_grid_status and len(list_of_browsers) > 0:
+            app_starter_local = None
+            # run across browsers
+            for browser_info in list_of_browsers:
+                try:
+                    # browser info
+                    browser_name, browser_version = \
+                        test_utils.get_browser_details(browser_info, hub_url)
+
+                    # tests lists can be executed in parallel & sequentially
+                    parallel_tests, sequential_tests = \
+                        test_utils.get_parallel_sequential_module_list(
+                            test_module_list)
+
+                    # Print test summary
+                    test_utils.print_test_summary(test_module_list,
+                                                  parallel_tests,
+                                                  sequential_tests,
+                                                  browser_name,
+                                                  browser_version)
+
+                    # Create app form source code
+                    app_starter_local = AppStarter(None, config)
+                    client_url = app_starter_local.start_app()
+
+                    # Running Parallel tests
+                    if len(parallel_tests) > 0:
+                        parallel_sessions = int(selenoid_config[
+                                                'max_parallel_sessions'])
+
+                        run_parallel_tests(client_url, servers_info,
+                                           parallel_tests, browser_name,
+                                           browser_version, parallel_sessions)
+
+                    # Wait till all threads started in parallel are finished
+                    while True:
+                        try:
+                            if threading.activeCount() <= 1:
+                                break
+                            else:
+                                time.sleep(10)
+                        except Exception as e:
+                            traceback.print_exc(file=sys.stderr)
+                            print(str(e))
+
+                    # Sequential Tests
+                    if len(sequential_tests) > 0:
+                        run_sequential_tests(client_url, servers_info,
+                                             sequential_tests, browser_name,
+                                             browser_version)
+
+                    # Clean up environment
+                    if app_starter_local:
+                        app_starter_local.stop_app()
+
+                except SystemExit:
+                    if app_starter_local:
+                        app_starter_local.stop_app()
+                    if handle_cleanup:
+                        handle_cleanup()
+                # Pause before printing result in order not to mix output
+                time.sleep(5)
+                # Print note for completion of execution in a browser.
+                print(
+                    "\n============= Test execution with {0} is "
+                    "completed.=============".format(browser_name),
+                    file=sys.stderr)
+                print_test_results()
+        del os.environ["PGADMIN_CONFIG_DEFAULT_SERVER"]
+    else:
+        try:
+            for server in servers_info:
+                thread = threading.Thread(target=execute_test, args=(
+                    test_module_list, server, driver))
+                thread.start()
+                thread.join()
+        except SystemExit:
+            if handle_cleanup:
+                handle_cleanup()
+        print_test_results()
+
     # Stop code coverage
     if test_utils.is_coverage_enabled(args):
         cov.stop()
         cov.save()
 
-    # # Print coverage only if coverage args given in command line
+    # Print coverage only if coverage args given in command line
     if test_utils.is_coverage_enabled(args):
         test_utils.print_and_store_coverage_report(cov)
 

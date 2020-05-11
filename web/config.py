@@ -562,6 +562,10 @@ try:
 except ImportError:
     pass
 
+# Override DEFAULT_SERVE value from environment variable.
+if 'PGADMIN_CONFIG_DEFAULT_SERVER' in os.environ:
+    DEFAULT_SERVER = os.environ['PGADMIN_CONFIG_DEFAULT_SERVER']
+
 # Disable USER_INACTIVITY_TIMEOUT when SERVER_MODE=False
 if not SERVER_MODE:
     USER_INACTIVITY_TIMEOUT = 0

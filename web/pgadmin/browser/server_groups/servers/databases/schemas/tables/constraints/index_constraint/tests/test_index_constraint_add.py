@@ -44,31 +44,30 @@ class IndexConstraintAddTestCase(BaseTestGenerator):
          dict(url='/browser/unique_constraint/obj/', data=unique_key_data))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        cls.db_name = parent_node_dict["database"][-1]["db_name"]
+    def setUp(self):
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
-        cls.server_id = schema_info["server_id"]
-        cls.db_id = schema_info["db_id"]
-        db_con = database_utils.connect_database(cls, utils.SERVER_GROUP,
-                                                 cls.server_id, cls.db_id)
+        self.server_id = schema_info["server_id"]
+        self.db_id = schema_info["db_id"]
+        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
+                                                 self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to add a "
                             "index constraint(primary key or unique key).")
-        cls.schema_id = schema_info["schema_id"]
-        cls.schema_name = schema_info["schema_name"]
-        schema_response = schema_utils.verify_schemas(cls.server,
-                                                      cls.db_name,
-                                                      cls.schema_name)
+        self.schema_id = schema_info["schema_id"]
+        self.schema_name = schema_info["schema_name"]
+        schema_response = schema_utils.verify_schemas(self.server,
+                                                      self.db_name,
+                                                      self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a index "
                             "constraint(primary key or unique key).")
-        cls.table_name = "table_indexconstraint_%s" % \
-                         (str(uuid.uuid4())[1:8])
-        cls.table_id = tables_utils.create_table(cls.server,
-                                                 cls.db_name,
-                                                 cls.schema_name,
-                                                 cls.table_name)
+        self.table_name = "table_indexconstraint_%s" % \
+                          (str(uuid.uuid4())[1:8])
+        self.table_id = tables_utils.create_table(self.server,
+                                                  self.db_name,
+                                                  self.schema_name,
+                                                  self.table_name)
 
     def runTest(self):
         """This function will add index constraint(primary key or unique key)
@@ -81,10 +80,9 @@ class IndexConstraintAddTestCase(BaseTestGenerator):
             content_type='html/json')
         self.assertEquals(response.status_code, 200)
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDown(self):
         # Disconnect the database
-        database_utils.disconnect_database(cls, cls.server_id, cls.db_id)
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
 
 
 class ConstraintsUsingIndexAddTestCase(BaseTestGenerator):
@@ -117,30 +115,28 @@ class ConstraintsUsingIndexAddTestCase(BaseTestGenerator):
          dict(url='/browser/unique_constraint/obj/', data=unique_key_data))
     ]
 
-    @classmethod
-    def setUpClass(cls):
-        cls.db_name = parent_node_dict["database"][-1]["db_name"]
+    def setUp(self):
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
-        cls.server_id = schema_info["server_id"]
-        cls.db_id = schema_info["db_id"]
-        db_con = database_utils.connect_database(cls, utils.SERVER_GROUP,
-                                                 cls.server_id, cls.db_id)
+        self.server_id = schema_info["server_id"]
+        self.db_id = schema_info["db_id"]
+        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
+                                                 self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to add a "
                             "constraint using index.")
-        cls.schema_id = schema_info["schema_id"]
-        cls.schema_name = schema_info["schema_name"]
-        schema_response = schema_utils.verify_schemas(cls.server,
-                                                      cls.db_name,
-                                                      cls.schema_name)
+        self.schema_id = schema_info["schema_id"]
+        self.schema_name = schema_info["schema_name"]
+        schema_response = schema_utils.verify_schemas(self.server,
+                                                      self.db_name,
+                                                      self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a index "
                             "constraint(primary key or unique key).")
-        cls.table_name = "table_constraint_%s" % (str(uuid.uuid4())[1:8])
-        cls.table_id = tables_utils.create_table(cls.server,
-                                                 cls.db_name,
-                                                 cls.schema_name,
-                                                 cls.table_name)
+        self.table_name = "table_constraint_%s" % (str(uuid.uuid4())[1:8])
+        self.table_id = tables_utils.create_table(self.server, self.db_name,
+                                                  self.schema_name,
+                                                  self.table_name)
 
     def runTest(self):
         """This function will add index constraint(primary key or unique key)
@@ -158,7 +154,6 @@ class ConstraintsUsingIndexAddTestCase(BaseTestGenerator):
             content_type='html/json')
         self.assertEquals(response.status_code, 200)
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDown(self):
         # Disconnect the database
-        database_utils.disconnect_database(cls, cls.server_id, cls.db_id)
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

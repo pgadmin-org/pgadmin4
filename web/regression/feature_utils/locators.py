@@ -172,6 +172,8 @@ class QueryToolLocators:
 
     new_row_xpath = "//div[contains(@class, 'new-row')]"
 
+    scratch_pad_css = ".sql-scratch > textarea"
+
     copy_button_css = "#btn-copy-row"
 
     paste_button_css = "#btn-paste-row"
@@ -217,9 +219,9 @@ class QueryToolLocators:
     btn_commit = "#btn-commit"
 
     show_query_internally_btn = \
-        "//div[label[normalize-space(" \
-        "text())='Show queries generated internally by pgAdmin?']]" \
-        "//div[contains(@class,'toggle btn')]"
+        "//div[label[contains(normalize-space(text())," \
+        "'Show queries generated internally by')]]//" \
+        "div[contains(@class,'toggle btn')]"
 
     editable_column_icon_xpath = "//div[contains(@class," \
                                  " 'editable-column-header-icon')]" \

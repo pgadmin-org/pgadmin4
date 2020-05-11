@@ -92,6 +92,18 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
         wait = WebDriverWait(self.page.driver, 10)
 
+        browser_node = self.page.find_by_xpath(
+            NavMenuLocators.specified_preference_tree_node.format('Browser'))
+        if self.page.find_by_xpath(
+            NavMenuLocators.specified_pref_node_exp_status.
+                format('Browser')).get_attribute('aria-expanded') == 'false':
+            ActionChains(self.driver).double_click(browser_node).perform()
+
+        self.page.retry_click(
+            (By.XPATH, NavMenuLocators.specified_sub_node_of_pref_tree_node.
+             format('Browser', 'Display')),
+            (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
+
         # Wait till the preference dialogue box is displayed by checking the
         # visibility of Show System Object label
         wait.until(EC.presence_of_element_located(

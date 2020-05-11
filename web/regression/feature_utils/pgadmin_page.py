@@ -88,11 +88,17 @@ class PgadminPage:
             (By.CSS_SELECTOR, "button[type='save'].btn.btn-primary")))
         self.find_by_css_selector("button[type='save'].btn.btn-primary").\
             click()
-
-        WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.XPATH,
-                 "//*[@id='tree']//*[.='" + server_config['name'] + "']")))
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(
+                    (By.XPATH,
+                     "//*[@id='tree']//*[.='" + server_config['name'] + "']")))
+        except TimeoutException:
+            self.toggle_open_servers_group()
+            WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(
+                    (By.XPATH,
+                     "//*[@id='tree']//*[.='" + server_config['name'] + "']")))
 
     def open_query_tool(self):
         self.driver.find_element_by_link_text("Tools").click()
@@ -910,7 +916,11 @@ class PgadminPage:
                     return element
             except (NoSuchElementException, WebDriverException):
                 return False
-
+        time.sleep(1)
+        self.driver.switch_to.default_content()
+        self.driver.switch_to_frame(
+            self.driver.find_element_by_tag_name("iframe"))
+        self.find_by_xpath("//a[text()='Query Editor']").click()
         codemirror_ele = WebDriverWait(
             self.driver, timeout=self.timeout, poll_frequency=0.01)\
             .until(find_codemirror,
@@ -1161,3 +1171,34 @@ class PgadminPage:
             except Exception:
                 attempt += 1
         return click_status
+
+    def paste_values(self, el=None):
+        """
+        Function paste values in scratch pad
+        :param el:
+        """
+        actions = ActionChains(self.driver)
+        if el:
+            # Must step
+            el.click()
+            if self.driver.capabilities["platformName"] == 'mac':
+                # FF step
+                el.send_keys(Keys.COMMAND + "v")
+                # Chrome Step
+                actions.key_down(Keys.SHIFT)
+                actions.send_keys(Keys.INSERT)
+                actions.key_up(Keys.SHIFT)
+                actions.perform()
+            else:
+                el.send_keys(Keys.CONTROL + "v")
+
+    def wait_for_element_to_be_visible(self, driver, xpath, time_value=20):
+        """This will wait until an element is visible on page"""
+        element_located_status = False
+        try:
+            if WebDriverWait(driver, time_value).until(
+                    EC.visibility_of_element_located((By.XPATH, xpath))):
+                element_located_status = True
+        except TimeoutException:
+            element_located_status = False
+        return element_located_status

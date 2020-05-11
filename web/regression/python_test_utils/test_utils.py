@@ -8,6 +8,8 @@
 ##########################################################################
 
 from __future__ import print_function
+
+import fileinput
 import traceback
 import os
 import sys
@@ -16,7 +18,17 @@ import psycopg2
 import sqlite3
 import shutil
 from functools import partial
+
+from selenium.webdriver.support.wait import WebDriverWait
 from testtools.testcase import clone_test_with_new_id
+import re
+import time
+from selenium.common.exceptions import WebDriverException
+import urllib.request as urllib
+import json
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as ec
 
 import config
 import regression
@@ -1216,3 +1228,242 @@ def create_expected_output(parameters, actual_data):
             actual_data.remove(value)
             break
     return expected_output
+
+
+def is_parallel_ui_tests(args):
+    """
+    This function checks for coverage args exists in command line args
+    :return: boolean
+    """
+    if "parallel" in args and args["parallel"]:
+        return True
+    return False
+
+
+def get_selenium_grid_status_and_browser_list(selenoid_url):
+    """
+    This function checks selenoid status for given url
+    :param selrnoid_url:
+    :return: status of selenoid & list of browsers available with selenoid if
+    status is up
+    """
+    selenoid_status = False
+    browser_list = []
+    try:
+        selenoid_status = get_selenium_grid_status_json(selenoid_url)
+        if selenoid_status:
+            available_browsers = selenoid_status["browsers"]
+            list_of_browsers = test_setup.config_data['selenoid_config'][
+                'browsers_list']
+
+            for browser in list_of_browsers:
+                if browser["name"].lower() in available_browsers.keys():
+                    versions = available_browsers[(browser["name"].lower())]
+                    if browser["version"] is None:
+                        print("Specified version of browser is None. Hence "
+                              "latest version of {0} available with selenoid "
+                              "server will be used.\n".format(browser["name"]))
+                        browser_list.append(browser)
+                    elif browser["version"] in versions.keys():
+                        browser_list.append(browser)
+                    else:
+                        print(
+                            "Available {0} versions {1}".format(
+                                browser["name"], versions.keys()))
+                        print("Specified Version = {0}".format(
+                            browser["version"]))
+                else:
+                    print("{0} is NOT available".format(browser["name"]))
+    except Exception as e:
+        (str(e))
+        print("Unable to find Selenoid Status")
+
+    return selenoid_status, browser_list
+
+
+def is_feature_test_included(arguments):
+    """
+    :param arguments: his is command line arguments for module name to
+    which test suite will run
+    :return: boolean value whether to execute feature tests or NOT &
+    browser name if feature_test_tobe_included = True
+    """
+    exclude_pkgs = []
+    if arguments['exclude'] is not None:
+        exclude_pkgs += arguments['exclude'].split(',')
+
+    feature_test_tobe_included = 'feature_tests' not in exclude_pkgs and \
+                                 (arguments['pkg'] is None or arguments[
+                                     'pkg'] == "all" or
+                                  arguments['pkg'] == "feature_tests")
+    return feature_test_tobe_included
+
+
+def launch_url_in_browser(driver_instance, url, title='pgAdmin 4', timeout=40):
+    """
+    Function launches urls in specified driver instance
+    :param driver_instance:browser instance
+    :param url:url to be launched
+    :param title:web-page tile on successful launch default is 'pgAdmin 4'
+    :param timeout:in seconds for getting specified title default is 20sec
+    :return:
+    """
+    count = timeout / 5
+    while count > 0:
+        try:
+            driver_instance.get(url)
+            wait = WebDriverWait(driver_instance, 10)
+            wait.until(ec.title_is(title))
+            break
+        except WebDriverException as e:
+            time.sleep(6)
+            count -= 1
+            if count == 0:
+                exception_msg = 'Web-page title did not match to {0}. ' \
+                                'Please check url {1} accessible on ' \
+                                'internet.'.format(title, url)
+                raise Exception(exception_msg)
+
+
+def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
+    """
+    This functions returns remote web-driver instance created in selenoid
+    machine.
+    :param hub_url
+    :param browser: browser name
+    :param browser_ver: version for browser
+    :param test_name: test name
+    :return: remote web-driver instance for specified browser
+    """
+    test_name = browser + browser_ver + "_" + test_name + "-" + time.strftime(
+        "%m_%d_%y_%H_%M_%S", time.localtime())
+    driver_local = None
+
+    desired_capabilities = {
+        "version": browser_ver,
+        "enableVNC": True,
+        "enableVideo": True,
+        "enableLog": True,
+        "videoName": test_name + ".mp4",
+        "logName": test_name + ".log",
+        "name": test_name,
+        "timeZone": "Asia/Kolkata"
+    }
+
+    if browser == 'firefox':
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("dom.disable_beforeunload", True)
+        desired_capabilities["browserName"] = "firefox"
+        desired_capabilities["requireWindowFocus"] = True
+        desired_capabilities["enablePersistentHover"] = False
+        driver_local = webdriver.Remote(
+            command_executor=hub_url,
+            desired_capabilities=desired_capabilities, browser_profile=profile)
+    elif browser == 'chrome':
+        options = Options()
+        options.add_argument("--window-size=1280,1024")
+        desired_capabilities["browserName"] = "chrome"
+        driver_local = webdriver.Remote(
+            command_executor=hub_url,
+            desired_capabilities=desired_capabilities, options=options)
+    else:
+        print("Specified browser does not exist.")
+
+    # maximize browser window
+    driver_local.maximize_window()
+
+    # driver_local.implicitly_wait(2)
+    return driver_local
+
+
+def get_parallel_sequential_module_list(module_list):
+    """
+    Functions segregate parallel & sequential modules
+    :param module_list: Complete list of modules
+    :return: parallel & sequential module lists
+    """
+    # list of files consisting tests that needs to be
+    # executed sequentially
+    sequential_tests_file = [
+        'pgadmin.feature_tests.pg_utilities_backup_restore_test',
+        'pgadmin.feature_tests.pg_utilities_maintenance_test',
+        'pgadmin.feature_tests.keyboard_shortcut_test']
+
+    #  list of tests can be executed in parallel
+    parallel_tests = list(module_list)
+    for module in module_list:
+        if str(module[0]) in sequential_tests_file:
+            parallel_tests.remove(module)
+
+    #  list of tests can be executed in sequentially
+    sequential_tests = list(
+        filter(lambda i: i not in parallel_tests,
+               module_list))
+
+    # return parallel & sequential lists
+    return parallel_tests, sequential_tests
+
+
+def get_browser_details(browser_info_dict, url):
+    """
+    Function extracts browser name & version from browser info dict
+    in test_config.json
+    :param browser_info_dict:
+    :return: browser name & version
+    """
+    browser_name = browser_info_dict["name"].lower()
+    browser_version = browser_info_dict["version"]
+    if browser_version is None:
+        selenoid_status = get_selenium_grid_status_json(url)
+        versions = selenoid_status["browsers"][browser_name]
+        browser_version = max(versions)
+    return browser_name, browser_version
+
+
+def print_test_summary(complete_module_list, parallel_testlist,
+                       sequential_tests_list, browser_name, browser_version):
+    """
+    Prints test summary about total, parallel, sequential, browser name,
+    browser version information
+    :param complete_module_list:
+    :param parallel_testlist:
+    :param sequential_tests_list:
+    :param browser_name:
+    :param browser_version:
+    """
+    print(
+        "=================================================================",
+        file=sys.stderr
+    )
+    print(
+        "Total Tests # {0}\nParallel Tests # {1}, "
+        "Sequential Tests # {2}".format(
+            len(complete_module_list), len(parallel_testlist),
+            len(sequential_tests_list)),
+        file=sys.stderr)
+    print("Browser: [Name:{0}, Version: {1}]".format(
+        browser_name.capitalize(), browser_version),
+        file=sys.stderr)
+    print(
+        "=================================================================\n",
+        file=sys.stderr
+    )
+
+
+def get_selenium_grid_status_json(selenoid_url):
+    """
+    Functions returns json response received from selenoid server
+    :param selenoid_url:
+    :return:
+    """
+    try:
+        selenoid_status = urllib.urlopen(
+            "http://" + re.split('/', (re.split('//', selenoid_url, 1)[1]))[
+                0] + "/status", timeout=10)
+        selenoid_status = json.load(selenoid_status)
+        if isinstance(selenoid_status, dict):
+            return selenoid_status
+    except Exception as e:
+        print("Unable to find Selenoid Status.Kindly check url passed -'{0}'".
+              format(selenoid_url))
+        return None

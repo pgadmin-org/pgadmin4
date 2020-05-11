@@ -38,7 +38,8 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
 
         self.page.add_server(self.server)
         self.wait = WebDriverWait(self.page.driver, 10)
-        self.XSS_FILE = '/tmp/<img src=x onmouseover=alert("1")>.sql'
+        self.XSS_FILE = '/tmp/<img src=x ' + self.server['name'][:13] \
+                        + '=alert("1")>.sql'
         # Remove any previous file
         if os.path.isfile(self.XSS_FILE):
             os.remove(self.XSS_FILE)
@@ -67,7 +68,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.open_query_tool()
 
     def _create_new_file(self):
-        self.page.find_by_css_selector(QueryToolLocators.btn_save_file)\
+        self.page.find_by_css_selector(QueryToolLocators.btn_save_file) \
             .click()
         # Set the XSS value in input
         self.page.find_by_css_selector('.change_file_types')
@@ -112,8 +113,8 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self._check_escaped_characters(
             contents,
-            '&lt;img src=x onmouseover=alert("1")&gt;.sql',
-            'File manager'
+            '&lt;img src=x ' + self.server['name'][:13] +
+            '=alert("1")&gt;.sql', 'File manager'
         )
 
     def _check_escaped_characters(self, source_code, string_to_find, source):

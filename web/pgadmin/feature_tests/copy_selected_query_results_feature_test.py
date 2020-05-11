@@ -8,7 +8,6 @@
 ##########################################################################
 
 from __future__ import print_function
-import pyperclip
 import random
 
 from selenium.webdriver import ActionChains
@@ -60,8 +59,18 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         self._mouseup_outside_grid_still_makes_a_selection()
         self._copies_rows_with_header()
 
+    def paste_values_to_scratch_pad(self):
+        self.page.driver.switch_to.default_content()
+        self.page.driver.switch_to_frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
+        scratch_pad_ele = self.page.find_by_css_selector(
+            QueryToolLocators.scratch_pad_css)
+        self.page.paste_values(scratch_pad_ele)
+        clipboard_text = scratch_pad_ele.get_attribute("value")
+        scratch_pad_ele.clear()
+        return clipboard_text
+
     def _copies_rows(self):
-        pyperclip.copy("old clipboard contents")
         first_row = self.page.find_by_xpath(
             QueryToolLocators.output_row_xpath.format(1))
         first_row.click()
@@ -70,14 +79,14 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             QueryToolLocators.copy_button_css)
         copy_button.click()
 
+        clipboard_text = self.paste_values_to_scratch_pad()
         self.assertEqual('"Some-Name"\t6\t"some info"',
-                         pyperclip.paste())
+                         clipboard_text)
 
     def _copies_rows_with_header(self):
         self.page.find_by_css_selector('#btn-copy-row-dropdown').click()
         self.page.find_by_css_selector('a#btn-copy-with-header').click()
 
-        pyperclip.copy("old clipboard contents")
         select_all = self.page.find_by_xpath(
             QueryToolLocators.select_all_column)
         select_all.click()
@@ -86,13 +95,14 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             QueryToolLocators.copy_button_css)
         copy_button.click()
 
+        clipboard_text = self.paste_values_to_scratch_pad()
+
         self.assertEqual("""\"some_column"\t"value"\t"details"
 \"Some-Name"\t6\t"some info"
 \"Some-Other-Name"\t22\t"some other info"
-\"Yet-Another-Name"\t14\t"cool info\"""", pyperclip.paste())
+\"Yet-Another-Name"\t14\t"cool info\"""", clipboard_text)
 
     def _copies_columns(self):
-        pyperclip.copy("old clipboard contents")
         column = self.page.find_by_css_selector(
             QueryToolLocators.output_column_header_css.format('some_column'))
         column.click()
@@ -101,14 +111,15 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             QueryToolLocators.copy_button_css)
         copy_button.click()
 
+        clipboard_text = self.paste_values_to_scratch_pad()
+
         self.assertEqual(
             """\"Some-Name"
 "Some-Other-Name"
 "Yet-Another-Name\"""",
-            pyperclip.paste())
+            clipboard_text)
 
     def _copies_row_using_keyboard_shortcut(self):
-        pyperclip.copy("old clipboard contents")
         first_row = self.page.find_by_xpath(
             QueryToolLocators.output_row_xpath.format(1))
         first_row.click()
@@ -116,11 +127,12 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         ActionChains(self.page.driver).key_down(
             Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
+        clipboard_text = self.paste_values_to_scratch_pad()
+
         self.assertEqual('"Some-Name"\t6\t"some info"',
-                         pyperclip.paste())
+                         clipboard_text)
 
     def _copies_column_using_keyboard_shortcut(self):
-        pyperclip.copy("old clipboard contents")
         column = self.page.find_by_css_selector(
             QueryToolLocators.output_column_header_css.format('some_column'))
         column.click()
@@ -128,15 +140,15 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         ActionChains(self.page.driver).key_down(
             Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
+        clipboard_text = self.paste_values_to_scratch_pad()
+
         self.assertEqual(
             """\"Some-Name"
 "Some-Other-Name"
 "Yet-Another-Name\"""",
-            pyperclip.paste())
+            clipboard_text)
 
     def _copies_rectangular_selection(self):
-        pyperclip.copy("old clipboard contents")
-
         top_left_cell = \
             self.page.find_by_xpath(
                 QueryToolLocators.output_column_data_xpath.
@@ -154,12 +166,12 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             self.page.driver
         ).key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
+        clipboard_text = self.paste_values_to_scratch_pad()
+
         self.assertEqual(
-            '"Some-Other-Name"\t22\n"Yet-Another-Name"\t14', pyperclip.paste())
+            '"Some-Other-Name"\t22\n"Yet-Another-Name"\t14', clipboard_text)
 
     def _shift_resizes_rectangular_selection(self):
-        pyperclip.copy("old clipboard contents")
-
         top_left_cell = self.page.find_by_xpath(
             QueryToolLocators.output_column_data_xpath.
             format('Some-Other-Name')
@@ -180,12 +192,12 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             Keys.CONTROL
         ).send_keys('c').key_up(Keys.CONTROL).perform()
 
+        clipboard_text = self.paste_values_to_scratch_pad()
+
         self.assertEqual("""\"Some-Other-Name"\t22\t"some other info"
-"Yet-Another-Name"\t14\t"cool info\"""", pyperclip.paste())
+"Yet-Another-Name"\t14\t"cool info\"""", clipboard_text)
 
     def _shift_resizes_column_selection(self):
-        pyperclip.copy("old clipboard contents")
-
         column = self.page.find_by_css_selector(
             QueryToolLocators.output_column_header_css.format('value')
         )
@@ -197,13 +209,13 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         ActionChains(self.page.driver).key_down(
             Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
+        clipboard_text = self.paste_values_to_scratch_pad()
+
         self.assertEqual(
             '"Some-Name"\t6\n"Some-Other-Name"\t22\n"Yet-Another-Name"\t14',
-            pyperclip.paste())
+            clipboard_text)
 
     def _mouseup_outside_grid_still_makes_a_selection(self):
-        pyperclip.copy("old clipboard contents")
-
         bottom_right_cell = self.page.find_by_xpath(
             QueryToolLocators.output_column_data_xpath.format('cool info')
         )
@@ -218,7 +230,9 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         ActionChains(self.page.driver).key_down(
             Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL).perform()
 
-        self.assertIn('"cool info"', pyperclip.paste())
+        clipboard_text = self.paste_values_to_scratch_pad()
+
+        self.assertIn('"cool info"', clipboard_text)
 
     def after(self):
         self.page.close_query_tool()

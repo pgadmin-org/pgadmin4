@@ -54,6 +54,15 @@
       "key_file": ""
     }
   }],
+  "selenoid_config": {
+    "pgAdmin_default_server":"IP address of machine where source code is going to be executed",
+    "max_parallel_sessions": "3",
+    "selenoid_url": "http://<IP address of Selenoid Installed machine>:4444/wd/hub",
+    "browsers_list":[
+        {"name": "Chrome", "version": null},
+        {"name": "Firefox", "version": null}
+    ]
+  },
   "server_group": 1,
   "server_credentials": [
     {

@@ -131,13 +131,15 @@ CREATE TABLE public.nonintpkey
                                           self.test_db, 'public')
 
         self._load_config_data('table_insert_update_cases')
+        data_local = config_data
         # iterate on both tables
         for cnt in (1, 2):
-            self._perform_test_for_table('defaults_{0}'.format(str(cnt)))
-
+            self._perform_test_for_table('defaults_{0}'.format(str(cnt)),
+                                         data_local)
         # test nonint pkey table
         self._load_config_data('table_insert_update_nonint')
-        self._perform_test_for_table('nonintpkey')
+        data_local = config_data
+        self._perform_test_for_table('nonintpkey', data_local)
 
     def after(self):
         self.page.remove_server(self.server)
@@ -167,7 +169,7 @@ CREATE TABLE public.nonintpkey
         global config_data
         config_data = config_data_json[config_key]
 
-    def _perform_test_for_table(self, table_name):
+    def _perform_test_for_table(self, table_name, config_data_local):
         self.page.click_a_tree_node(
             table_name,
             TreeAreaLocators.sub_nodes_of_tables_node)
@@ -176,20 +178,21 @@ CREATE TABLE public.nonintpkey
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         # Run test to insert a new row in table with default values
-        self._add_row()
+        self._add_row(config_data_local)
         self._verify_row_data(row_height=0,
-                              config_check_data=config_data['add'])
+                              config_check_data=config_data_local['add'])
 
         # Run test to copy/paste a row
-        self._copy_paste_row()
+        self._copy_paste_row(config_data_local)
 
-        self._update_row()
+        self._update_row(config_data_local)
         self.page.click_tab("Messages")
         self._verify_messsages("")
         self.page.click_tab("Data Output")
         updated_row_data = {
-            i: config_data['update'][i] if i in config_data['update'] else val
-            for i, val in config_data['add'].items()
+            i: config_data_local['update'][i] if i in config_data_local[
+                'update'] else val
+            for i, val in config_data_local['add'].items()
         }
         self._verify_row_data(row_height=0,
                               config_check_data=updated_row_data)
@@ -221,7 +224,6 @@ CREATE TABLE public.nonintpkey
         Returns: None
 
         """
-
         self.wait.until(EC.visibility_of_element_located(
             (By.XPATH, xpath)), CheckForViewDataTest.TIMEOUT_STRING
         )
@@ -238,7 +240,7 @@ CREATE TABLE public.nonintpkey
             if value == 'clear':
                 cell_el.find_element_by_css_selector('input').clear()
             else:
-                ActionChains(self.driver).send_keys(value).\
+                ActionChains(self.driver).send_keys(value). \
                     send_keys(Keys.ENTER).perform()
         elif cell_type in ['text', 'json', 'text[]', 'boolean[]']:
             text_area_ele = self.page.find_by_css_selector(
@@ -290,7 +292,7 @@ CREATE TABLE public.nonintpkey
             self.page.driver.find_element_by_tag_name('iframe')
         )
 
-    def _copy_paste_row(self):
+    def _copy_paste_row(self, config_data_l):
         row0_cell0_xpath = CheckForViewDataTest._get_cell_xpath("r0", 1)
 
         self.page.find_by_xpath(row0_cell0_xpath).click()
@@ -300,12 +302,12 @@ CREATE TABLE public.nonintpkey
             QueryToolLocators.paste_button_css).click()
 
         # Update primary key of copied cell
-        self._add_update_save_row(config_data['copy'], row=2)
+        self._add_update_save_row(config_data_l['copy'], row=2)
 
         # Verify row 1 and row 2 data
         updated_row_data = {
-            i: config_data['copy'][i] if i in config_data['copy'] else val
-            for i, val in config_data['add'].items()
+            i: config_data_l['copy'][i] if i in config_data_l['copy'] else val
+            for i, val in config_data_l['add'].items()
         }
         self._verify_row_data(row_height=25,
                               config_check_data=updated_row_data)
@@ -329,11 +331,11 @@ CREATE TABLE public.nonintpkey
         # save ajax is completed.
         time.sleep(2)
 
-    def _add_row(self):
-        self._add_update_save_row(config_data['add'], 1)
+    def _add_row(self, config_data_l):
+        self._add_update_save_row(config_data_l['add'], 1)
 
-    def _update_row(self):
-        self._add_update_save_row(config_data['update'], 1)
+    def _update_row(self, config_data_l):
+        self._add_update_save_row(config_data_l['update'], 1)
 
     def _verify_messsages(self, text):
         messages_ele = self.page.find_by_css_selector(

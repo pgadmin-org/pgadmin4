@@ -211,17 +211,23 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "Query tool (History Entry)"
         )
 
-        # Check for history details message
-        history_ele = self.driver\
-            .find_element_by_css_selector(".query-detail .content-value")
-
-        source_code = history_ele.get_attribute('innerHTML')
+        retry = 2
+        while retry > 0:
+            try:
+                history_ele = self.driver \
+                    .find_element_by_css_selector(
+                        ".query-detail .content-value")
+                source_code = history_ele.get_attribute('innerHTML')
+                break
+            except StaleElementReferenceException:
+                retry -= 1
 
         self._check_escaped_characters(
             source_code,
             '&lt;script&gt;alert(1)&lt;/script&gt;',
             "Query tool (History Details-Message)"
         )
+
         retry = 2
         while retry > 0:
             try:

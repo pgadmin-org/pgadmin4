@@ -125,8 +125,9 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
          ),
     ]
 
-    @classmethod
-    def setUpClass(self):
+    m_view_name = "test_mview_put_%s" % (str(uuid.uuid4())[1:8])
+
+    def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -150,16 +151,18 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to update a mview.")
 
-        self.m_view_name = "test_mview_put_%s" % (str(uuid.uuid4())[1:8])
-        m_view_sql = "CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default " \
-                     "AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE " \
-                     "%s.%s OWNER TO %s"
-
-        self.m_view_id = views_utils.create_view(self.server,
-                                                 self.db_name,
-                                                 self.schema_name,
-                                                 m_view_sql,
+        self.m_view_id = views_utils.get_view_id(self.server, self.db_name,
                                                  self.m_view_name)
+
+        if self.m_view_id is None:
+            m_view_sql = "CREATE MATERIALIZED VIEW %s.%s TABLESPACE " \
+                         "pg_default AS SELECT 'test_pgadmin' WITH NO " \
+                         "DATA;ALTER TABLE %s.%s OWNER TO %s"
+            self.m_view_id = views_utils.create_view(self.server,
+                                                     self.db_name,
+                                                     self.schema_name,
+                                                     m_view_sql,
+                                                     self.m_view_name)
 
     def runTest(self):
         """This function will update the view/mview under schema node."""
@@ -180,7 +183,6 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
                                    follow_redirects=True)
         self.assertEquals(response.status_code, 200)
 
-    @classmethod
-    def tearDownClass(self):
+    def tearDown(self):
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
