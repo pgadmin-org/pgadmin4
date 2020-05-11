@@ -220,8 +220,8 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {}],
         'detach': [{'put': 'detach'}],
-        'truncate': [{'put': 'truncate'}]
-
+        'truncate': [{'put': 'truncate'}],
+        'set_trigger': [{'put': 'enable_disable_triggers'}]
     })
 
     # Schema Diff: Keys to ignore while comparing
@@ -769,6 +769,59 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
                 info=gettext("Partition dropped")
             )
 
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+
+    @BaseTableView.check_precondition
+    def enable_disable_triggers(self, gid, sid, did, scid, tid, ptid):
+        """
+        This function will enable/disable trigger(s) on the partition object
+
+         Args:
+           gid: Server Group ID
+           sid: Server ID
+           did: Database ID
+           scid: Schema ID
+           tid: Table ID
+           ptid: Partition Table ID
+        """
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+        # Convert str 'true' to boolean type
+        is_enable_trigger = data['is_enable_trigger']
+
+        try:
+            SQL = render_template(
+                "/".join([self.partition_template_path, 'properties.sql']),
+                did=did, scid=scid, tid=tid, ptid=ptid,
+                datlastsysoid=self.datlastsysoid
+            )
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+            data = res['rows'][0]
+
+            SQL = render_template(
+                "/".join([
+                    self.table_template_path, 'enable_disable_trigger.sql'
+                ]),
+                data=data, is_enable_trigger=is_enable_trigger
+            )
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            return make_json_response(
+                success=1,
+                info=gettext("Trigger(s) have been disabled")
+                if is_enable_trigger == 'D'
+                else gettext("Trigger(s) have been enabled"),
+                data={
+                    'id': ptid,
+                    'scid': scid
+                }
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 

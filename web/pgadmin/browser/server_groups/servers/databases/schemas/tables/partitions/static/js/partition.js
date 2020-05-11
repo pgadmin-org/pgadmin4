@@ -119,12 +119,12 @@ function(
       callbacks: {
         /* Enable trigger(s) on table */
         enable_triggers_on_table: function(args) {
-          var params = {'enable': true };
+          var params = {'is_enable_trigger': 'O'};
           this.callbacks.set_triggers.apply(this, [args, params]);
         },
         /* Disable trigger(s) on table */
         disable_triggers_on_table: function(args) {
-          var params = {'enable': false };
+          var params = {'is_enable_trigger': 'D'};
           this.callbacks.set_triggers.apply(this, [args, params]);
         },
         set_triggers: function(args, params) {

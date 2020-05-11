@@ -26,6 +26,7 @@ Bug fixes
 | `Issue #4279 <https://redmine.postgresql.org/issues/4279>`_ -  Ensure that file browse "home" button should point to $HOME rather than /.
 | `Issue #4840 <https://redmine.postgresql.org/issues/4840>`_ -  Ensure that 'With OID' option should be disabled while taking backup of database server version 12 and above.
 | `Issue #5001 <https://redmine.postgresql.org/issues/5001>`_ -  Fixed invalid literal issue when removing the connection limit for the existing role.
+| `Issue #5052 <https://redmine.postgresql.org/issues/5052>`_ -  Fixed internal server error when clicking on Triggers -> 'Enable All' for partitions.
 | `Issue #5398 <https://redmine.postgresql.org/issues/5398>`_ -  Fixed generated SQL issue for auto vacuum options.
 | `Issue #5422 <https://redmine.postgresql.org/issues/5422>`_ -  Ensure that the dependencies tab shows correct information for Synonyms.
 | `Issue #5434 <https://redmine.postgresql.org/issues/5434>`_ -  Fixed an issue where the newly added table is not alphabetically added to the tree.
