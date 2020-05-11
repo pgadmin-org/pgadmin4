@@ -16,9 +16,9 @@ superuser privileges to use the debugger.
 
 Before using the debugger, you must modify the *postgresql.conf* file, adding
 the server-side debugger components to the the value of the
-*shared_preload_libraries* parameter:
+*shared_preload_libraries* parameter, for example:
 
-  shared_preload_libraries = '$libdir/*other_libraries*/plugin_debugger'
+  shared_preload_libraries = '$libdir/plugin_debugger'
 
 After modifying the *shared_preload_libraries* parameter, restart the server to
 apply the changes.
