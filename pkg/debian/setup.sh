@@ -25,5 +25,5 @@ apt update
 
 # Install pre-reqs
 echo "Installing build pre-requisites..."
-apt install -y build-essential python3-dev python3-venv python3-sphinx libpq-dev libffi-dev qt5-default nodejs yarn
+apt install -y build-essential python3-dev python3-venv python3-sphinx python3-wheel libpq-dev libffi-dev qt5-default nodejs yarn
 
