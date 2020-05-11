@@ -347,6 +347,8 @@ define([
                   table = treeInfo.partition._label;
                 } else if (treeInfo.table != undefined) {
                   table = treeInfo.table._label;
+                } else if (treeInfo.mview != undefined) {
+                  table = treeInfo.mview._label;
                 }
 
                 if (treeInfo.primary_key != undefined) {
