@@ -1178,10 +1178,14 @@ class PgadminPage:
         :param el:
         """
         actions = ActionChains(self.driver)
+        if "platform" in self.driver.capabilities:
+            platform = (self.driver.capabilities["platform"]).lower()
+        elif "platformName" in self.driver.capabilities:
+            platform = (self.driver.capabilities["platformName"]).lower()
         if el:
             # Must step
             el.click()
-            if self.driver.capabilities["platformName"] == 'mac':
+            if 'mac' in platform:
                 # FF step
                 el.send_keys(Keys.COMMAND + "v")
                 # Chrome Step
