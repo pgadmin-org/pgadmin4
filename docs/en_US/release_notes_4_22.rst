@@ -39,3 +39,4 @@ Bug fixes
 | `Issue #5473 <https://redmine.postgresql.org/issues/5473>`_ -  Fixed post-login redirect location when running in server mode under a non-default root.
 | `Issue #5480 <https://redmine.postgresql.org/issues/5480>`_ -  Fixed an issue where the background job creation fails if there is only a version-specific python binary available in PATH.
 | `Issue #5503 <https://redmine.postgresql.org/issues/5503>`_ -  Clarify and correct the docs on enabling the pl/debugger plugin on the server.
+| `Issue #5510 <https://redmine.postgresql.org/issues/5510>`_ -  Fixed Unicode decode error 'utf-8' codec can't decode byte.
