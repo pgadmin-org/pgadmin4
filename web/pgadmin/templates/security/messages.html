@@ -2,12 +2,17 @@
 {% if messages %}
 <div style="position: fixed; top: 20px; right: 20px; width: 400px; z-index: 9999">
     {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" id="alertbox">
         {{ message }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="{{ _('Close') }}"><span
+        <button onclick="hide()" type="button" class="close" data-dismiss="alert" aria-label="{{ _('Close') }}"><span
                 aria-hidden="true">&times;</span></button>
     </div>
     {% endfor %}
 </div>
+<script>
+function hide(){
+    document.getElementById("alertbox").classList.remove("show");
+}
+</script>
 {% endif %}
 {%- endwith %}

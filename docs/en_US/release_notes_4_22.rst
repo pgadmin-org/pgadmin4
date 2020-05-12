@@ -23,6 +23,7 @@ Bug fixes
 *********
 
 | `Issue #3694 <https://redmine.postgresql.org/issues/3694>`_ -  Gracefully informed the user that the database is already connected when they click on "Connect Database...".
+| `Issue #4033 <https://redmine.postgresql.org/issues/4033>`_ -  Fixed an issue where clicking on the cross button of the alert box on the login page is not working.
 | `Issue #4223 <https://redmine.postgresql.org/issues/4223>`_ -  Ensure that maintenance job should be worked properly for indexes under a materialized view.
 | `Issue #4279 <https://redmine.postgresql.org/issues/4279>`_ -  Ensure that file browse "home" button should point to $HOME rather than /.
 | `Issue #4840 <https://redmine.postgresql.org/issues/4840>`_ -  Ensure that 'With OID' option should be disabled while taking backup of database server version 12 and above.
