@@ -29,7 +29,7 @@ from flask_security.recoverable import reset_password_token_status, \
 from flask_security.signals import reset_password_instructions_sent
 from flask_security.utils import config_value, do_flash, get_url, \
     get_message, slash_url_suffix, login_user, send_mail
-from flask_security.views import _security, _commit, default_render_json, _ctx
+from flask_security.views import _security, _commit, _ctx
 from werkzeug.datastructures import MultiDict
 
 import config
@@ -51,6 +51,14 @@ try:
     import urllib.request as urlreq
 except ImportError as e:
     import urllib2 as urlreq
+
+try:
+    from flask_security.views import default_render_json
+except ImportError as e:
+    # Support Flask-Security-Too == 3.2
+    import sys
+    if sys.version_info < (3, 8):
+        from flask_security.views import _render_json as default_render_json
 
 MODULE_NAME = 'browser'
 
