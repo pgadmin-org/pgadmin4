@@ -918,10 +918,16 @@ WHERE
 
         query = query.encode(encoding)
 
+        dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
             25,
-            u"Execute (async) for server #{server_id} - {conn_id} (Query-id: "
+            u"Execute (async) by {pga_user} on {db_user}@{db_host}/{db_name} "
+            u"#{server_id} - {conn_id} (Query-id: "
             u"{query_id}):\n{query}".format(
+                pga_user=current_user.email,
+                db_user=dsn['user'],
+                db_host=dsn['host'],
+                db_name=dsn['dbname'],
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query.decode(encoding),

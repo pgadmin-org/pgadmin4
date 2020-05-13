@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5452 <https://redmine.postgresql.org/issues/5452>`_ -  Added connected pgAdmin user and connection name in the log file.
 | `Issue #5489 <https://redmine.postgresql.org/issues/5489>`_ -  Show the startup log as well as the server log in the runtime's log viewer.
 
 Housekeeping
