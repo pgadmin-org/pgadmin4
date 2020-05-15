@@ -21,14 +21,20 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as triggers_utils
+import sys
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 
 class TriggersAddTestCase(BaseTestGenerator):
     """This class will add new trigger under table node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        ('Add trigger Node URL', dict(url='/browser/trigger/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('add_trigger',
+                                         triggers_utils.test_cases)
 
     def setUp(self):
         super(TriggersAddTestCase, self).setUp()
@@ -56,25 +62,42 @@ class TriggersAddTestCase(BaseTestGenerator):
             trigger_funcs_utils.create_trigger_function_with_trigger(
                 self.server, self.db_name, self.schema_name, self.func_name)
 
-    def runTest(self):
-        """This function will trigger under table node."""
-        trigger_name = "test_trigger_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {"name": trigger_name,
-                "is_row_trigger": True,
-                "fires": "BEFORE",
-                "columns": [],
-                "tfunction": "{0}.{1}".format(self.schema_name,
-                                              self.func_name),
-                "evnt_insert": True
-                }
-        response = self.tester.post(
+    def create_trigger(self):
+        return self.tester.post(
             "{0}{1}/{2}/{3}/{4}/{5}/".format(self.url, utils.SERVER_GROUP,
                                              self.server_id, self.db_id,
                                              self.schema_id, self.table_id),
-            data=json.dumps(data),
+            data=json.dumps(self.test_data),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+
+    def runTest(self):
+        """This function will trigger under table node."""
+        trigger_name = "test_trigger_add_%s" % (str(uuid.uuid4())[1:8])
+        self.test_data['name'] = trigger_name
+        self.test_data['tfunction'] = "{0}.{1}".format(self.schema_name,
+                                                       self.func_name)
+
+        if self.is_positive_test:
+            response = self.create_trigger()
+        else:
+            if hasattr(self, 'wrong_table_id'):
+                del self.test_data["name"]
+                response = self.create_trigger()
+            elif hasattr(self, 'internal_server_error'):
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.create_trigger()
+            elif hasattr(self, 'error_creating_rule'):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.create_trigger()
+            else:
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.create_trigger()
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

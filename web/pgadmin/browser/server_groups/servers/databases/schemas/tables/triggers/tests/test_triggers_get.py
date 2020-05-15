@@ -21,14 +21,19 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as triggers_utils
+import sys
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 
 class TriggersGetTestCase(BaseTestGenerator):
     """This class will fetch trigger under table node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        ('Fetch trigger Node URL', dict(url='/browser/trigger/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('get_trigger',
+                                         triggers_utils.test_cases)
 
     def setUp(self):
         super(TriggersGetTestCase, self).setUp()
@@ -63,16 +68,63 @@ class TriggersGetTestCase(BaseTestGenerator):
                                                         self.trigger_name,
                                                         self.func_name)
 
-    def runTest(self):
-        """This function will fetch trigger under table node."""
-        response = self.tester.get(
+    def get_trigger(self):
+        return self.tester.get(
             "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
                                                 self.server_id, self.db_id,
                                                 self.schema_id, self.table_id,
                                                 self.trigger_id),
             follow_redirects=True
         )
-        self.assertEquals(response.status_code, 200)
+
+    def runTest(self):
+        """This function will fetch trigger under table node."""
+
+        if self.is_positive_test:
+            if hasattr(self, "incorrect_trigger_id"):
+                self.trigger_id = 9999
+            if hasattr(self, "pass_argument"):
+                url = "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url,
+                                                          utils.SERVER_GROUP,
+                                                          self.server_id,
+                                                          self.db_id,
+                                                          self.schema_id,
+                                                          self.table_id,
+                                                          self.trigger_id)
+                url = \
+                    url + \
+                    "?oid=17312&description=commaa&name=code&_=1589522392579"
+                response = self.tester.get(url, follow_redirects=True)
+
+                self.assertEquals(response.status_code,
+                                  self.expected_data["status_code"])
+            if hasattr(self, "table_nodes"):
+                self.trigger_id = ''
+                response = self.get_trigger()
+            else:
+                response = self.get_trigger()
+
+        else:
+            if hasattr(self, "dummy_dict"):
+                if hasattr(self, "table_nodes"):
+                    self.trigger_id = ''
+                self.mock_data['return_value'] = [(True, self.dummy_dict), (
+                    False, self.expected_data["message"])]
+                with patch(self.mock_data["function_name"],
+                           side_effect=self.mock_data["return_value"]):
+                    response = self.get_trigger()
+            elif hasattr(self, "table_nodes"):
+                self.trigger_id = ''
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.get_trigger()
+            else:
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.get_trigger()
+
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

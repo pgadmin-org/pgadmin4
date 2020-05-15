@@ -22,45 +22,19 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as compound_triggers_utils
 
+import sys
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
+
 
 class CompoundTriggersUpdateTestCase(BaseTestGenerator):
     """This class will update compound trigger under table node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        ('Update comment',
-         dict(url='/browser/compound_trigger/obj/',
-              data={"description": "This is test comment."}
-              )),
-        ('Update event and code',
-         dict(url='/browser/compound_trigger/obj/',
-              data={
-                  "evnt_update": True,
-                  "prosrc": "var varchar2(20) := 'Global_var';\n\n"
-                            "AFTER STATEMENT IS\nBEGIN\n    "
-                            "DBMS_OUTPUT.PUT_LINE('After Statement: ' || var)"
-                            ";\n    var := 'AFTER STATEMENT';\nEND;\n\nAFTER "
-                            "EACH ROW IS\nBEGIN\n    DBMS_OUTPUT.PUT_LINE('"
-                            "After each row: ' || var);\n    var := 'AFTER "
-                            "EACH ROW';\nEND;",
-              })),
-        ('Enable compound trigger',
-         dict(url='/browser/compound_trigger/obj/',
-              data={"is_enable_trigger": 'O'},
-              disable_trigger=True
-              )),
-        ('Enable always compound trigger',
-         dict(url='/browser/compound_trigger/obj/',
-              data={"is_enable_trigger": 'A'}
-              )),
-        ('Enable replica compound trigger',
-         dict(url='/browser/compound_trigger/obj/',
-              data={"is_enable_trigger": 'R'}
-              )),
-        ('Disable compound trigger',
-         dict(url='/browser/compound_trigger/obj/',
-              data={"is_enable_trigger": 'D'}
-              )),
-    ]
+    scenarios = utils.generate_scenarios('update_compound_trigger',
+                                         compound_triggers_utils.test_cases)
 
     def setUp(self):
         super(CompoundTriggersUpdateTestCase, self).setUp()
@@ -107,8 +81,18 @@ class CompoundTriggersUpdateTestCase(BaseTestGenerator):
                                                             self.table_name,
                                                             self.trigger_name)
 
+    def update_compound_trigger(self):
+        return self.tester.put(
+            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
+                                                self.server_id, self.db_id,
+                                                self.schema_id, self.table_id,
+                                                self.trigger_id),
+            data=json.dumps(self.test_data),
+            follow_redirects=True
+        )
+
     def runTest(self):
-        """This function will update trigger under table node."""
+        """This function will get trigger under table node."""
         trigger_response = \
             compound_triggers_utils.verify_compound_trigger(self.server,
                                                             self.db_name,
@@ -126,16 +110,37 @@ class CompoundTriggersUpdateTestCase(BaseTestGenerator):
                 False
             )
 
-        self.data.update({"id": self.trigger_id})
-        response = self.tester.put(
-            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
-                                                self.server_id, self.db_id,
-                                                self.schema_id, self.table_id,
-                                                self.trigger_id),
-            data=json.dumps(self.data),
-            follow_redirects=True
-        )
-        self.assertEquals(response.status_code, 200)
+        self.test_data.update({"id": self.trigger_id})
+        if self.is_positive_test:
+            if hasattr(self, "wrong_compound_trigger_id"):
+                self.trigger_id = 9999
+            response = self.update_compound_trigger()
+
+        elif hasattr(self, "new_compound_trigger_id"):
+            with patch(self.mock_data["function_name"],
+                       side_effect=eval(self.mock_data["return_value"])):
+                response = self.update_compound_trigger()
+
+        elif hasattr(self, "dummy_dict"):
+            self.mock_data['return_value'] = [(True, self.dummy_dict), (
+                False, self.dummy_data)]
+
+            with patch(self.mock_data["function_name"],
+                       side_effect=self.mock_data["return_value"]), patch(
+                'pgadmin.utils.driver.psycopg2.connection.Connection.'
+                'execute_scalar',
+                side_effect=[(True, True),
+                             (True, "Mocked response")]):
+                response = self.update_compound_trigger()
+        else:
+            with patch(self.mock_data["function_name"],
+                       return_value=eval(self.mock_data["return_value"])):
+                if hasattr(self, "wrong_compound_trigger_id"):
+                    self.trigger_id = 9999
+                response = self.update_compound_trigger()
+
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

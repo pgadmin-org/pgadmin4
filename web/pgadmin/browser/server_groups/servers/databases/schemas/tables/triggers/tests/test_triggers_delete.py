@@ -21,14 +21,19 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as triggers_utils
+import sys
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 
 class TriggersDeleteTestCase(BaseTestGenerator):
     """This class will delete trigger under table node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        ('Delete trigger Node URL', dict(url='/browser/trigger/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('delete_trigger',
+                                         triggers_utils.test_cases)
 
     def setUp(self):
         super(TriggersDeleteTestCase, self).setUp()
@@ -63,6 +68,15 @@ class TriggersDeleteTestCase(BaseTestGenerator):
                                                         self.trigger_name,
                                                         self.func_name)
 
+    def delete_trigger(self):
+        return self.tester.delete(
+            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
+                                                self.server_id, self.db_id,
+                                                self.schema_id, self.table_id,
+                                                self.trigger_id),
+            follow_redirects=True
+        )
+
     def runTest(self):
         """This function will delete trigger under table node."""
         trigger_response = triggers_utils.verify_trigger(self.server,
@@ -70,14 +84,18 @@ class TriggersDeleteTestCase(BaseTestGenerator):
                                                          self.trigger_name)
         if not trigger_response:
             raise Exception("Could not find the trigger to delete.")
-        response = self.tester.delete(
-            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
-                                                self.server_id, self.db_id,
-                                                self.schema_id, self.table_id,
-                                                self.trigger_id),
-            follow_redirects=True
-        )
-        self.assertEquals(response.status_code, 200)
+
+        if self.is_positive_test:
+            if hasattr(self, "invalid_trigger_id"):
+                self.trigger_id = 9999
+            response = self.delete_trigger()
+        else:
+            with patch(self.mock_data["function_name"],
+                       return_value=eval(self.mock_data["return_value"])):
+                response = self.delete_trigger()
+
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

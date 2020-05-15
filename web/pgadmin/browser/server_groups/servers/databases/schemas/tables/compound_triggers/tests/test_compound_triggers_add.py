@@ -22,114 +22,21 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from pgadmin.browser.server_groups.servers.databases.schemas.views.tests \
     import utils as view_utils
+from . import utils as compound_trigger_utils
+
+import sys
+
+if sys.version_info < (3, 3):
+    from mock import patch
+else:
+    from unittest.mock import patch
 
 
 class CompoundTriggersAddTestCase(BaseTestGenerator):
     """This class will add new compound trigger under table node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        ('Create compound trigger for all events',
-         dict(
-             url='/browser/compound_trigger/obj/',
-             data={
-                 "prosrc": "var varchar2(20) := 'Global_var';\n\n"
-                           "BEFORE STATEMENT IS\nBEGIN\n    "
-                           "DBMS_OUTPUT.PUT_LINE('Before Statement: ' || var)"
-                           ";\n var := 'BEFORE STATEMENT';\nEND;",
-                 "evnt_insert": True,
-                 "evnt_update": True,
-                 "evnt_delete": True,
-                 "evnt_truncate": True
-             }
-         )),
-        ('Create compound trigger for insert and delete',
-         dict(
-             url='/browser/compound_trigger/obj/',
-             data={
-                 "prosrc": "var varchar2(20) := 'Global_var';\n\n"
-                           "BEFORE STATEMENT IS\nBEGIN\n    "
-                           "DBMS_OUTPUT.PUT_LINE('Before Statement: ' || var)"
-                           ";\n    var := 'BEFORE STATEMENT';\nEND;\n\nBEFORE "
-                           "EACH ROW IS\nBEGIN\n    DBMS_OUTPUT.PUT_LINE('"
-                           "Before each row: ' || var);\n    var := 'BEFORE "
-                           "EACH ROW';\nEND;",
-                 "evnt_insert": True,
-                 "evnt_update": False,
-                 "evnt_delete": True
-             }
-         )),
-        ('Create compound trigger for insert with when condition',
-         dict(
-             url='/browser/compound_trigger/obj/',
-             data={
-                 "prosrc": "var varchar2(20) := 'Global_var';\n\n"
-                           "BEFORE EACH ROW IS\nBEGIN\n    "
-                           "DBMS_OUTPUT.PUT_LINE('Before each row: ' || var)"
-                           ";\n    var := 'EACH ROW';\nEND;",
-                 "evnt_insert": True,
-                 "evnt_update": False,
-                 "evnt_delete": False,
-                 "whenclause": "NEW.id < 100"
-             }
-         )),
-        ('Create compound trigger for insert or update on columns',
-         dict(
-             url='/browser/compound_trigger/obj/',
-             data={
-                 "prosrc": "var varchar2(20) := 'Global_var';\n\n"
-                           "BEFORE STATEMENT IS\nBEGIN\n    "
-                           "DBMS_OUTPUT.PUT_LINE('Before Statement: ' || var)"
-                           ";\n var := 'BEFORE STATEMENT';\nEND;\n\nBEFORE "
-                           "EACH ROW IS\nBEGIN\n DBMS_OUTPUT.PUT_LINE('"
-                           "Before each row: ' || var);\n var := 'BEFORE "
-                           "EACH ROW';\nEND;",
-                 "evnt_insert": True,
-                 "evnt_update": True,
-                 "columns": ["id", "name"]
-             }
-         )),
-        ('Create compound trigger for truncate',
-         dict(
-             url='/browser/compound_trigger/obj/',
-             data={
-                 "prosrc": "var varchar2(20) := 'Global_var';\n\n"
-                           "BEFORE STATEMENT IS\nBEGIN\n    "
-                           "DBMS_OUTPUT.PUT_LINE('Before Statement: ' || var)"
-                           ";\n var := 'BEFORE STATEMENT';\nEND;",
-                 "evnt_truncate": True
-             }
-         )),
-        ('Create compound trigger for insert delete and update on view',
-         dict(
-             url='/browser/compound_trigger/obj/',
-             data={
-                 "prosrc": "var varchar2(20) := 'Global_var';\n\n"
-                           "BEFORE STATEMENT IS\nBEGIN\n    "
-                           "DBMS_OUTPUT.PUT_LINE('Before Statement: ' || var)"
-                           ";\n var := 'BEFORE STATEMENT';\nEND;",
-                 "evnt_insert": True,
-                 "evnt_update": True,
-                 "evnt_delete": True,
-                 "evnt_truncate": False
-             },
-             on_view=True
-         )),
-        ('Create compound trigger for instead of each row',
-         dict(
-             url='/browser/compound_trigger/obj/',
-             data={
-                 "prosrc": "var varchar2(20) := 'Global_var';\n\n"
-                           "INSTEAD OF EACH ROW IS\nBEGIN\n    "
-                           "DBMS_OUTPUT.PUT_LINE('Instead of: ' || var)"
-                           ";\n var := 'INSTEAD OF EACH ROW';\nEND;",
-                 "evnt_insert": True,
-                 "evnt_update": True,
-                 "evnt_delete": True,
-                 "evnt_truncate": False
-             },
-             on_view=True
-         )),
-    ]
+    scenarios = utils.generate_scenarios('add_compound_trigger',
+                                         compound_trigger_utils.test_cases)
 
     def setUp(self):
         super(CompoundTriggersAddTestCase, self).setUp()
@@ -175,25 +82,46 @@ class CompoundTriggersAddTestCase(BaseTestGenerator):
                                               view_sql,
                                               self.view_name)
 
+    def create_compound_trigger(self, object_id):
+        return self.tester.post(
+            "{0}{1}/{2}/{3}/{4}/{5}/".format(self.url, utils.SERVER_GROUP,
+                                             self.server_id, self.db_id,
+                                             self.schema_id, object_id),
+            data=json.dumps(self.test_data),
+            content_type='html/json'
+        )
+
     def runTest(self):
         """This function will create compound trigger under table node."""
         trigger_name = \
             "test_compound_trigger_add_%s" % (str(uuid.uuid4())[1:8])
 
-        self.data.update({"name": trigger_name})
+        self.test_data.update({"name": trigger_name})
 
         object_id = self.table_id
         if hasattr(self, 'on_view'):
             object_id = self.view_id
 
-        response = self.tester.post(
-            "{0}{1}/{2}/{3}/{4}/{5}/".format(self.url, utils.SERVER_GROUP,
-                                             self.server_id, self.db_id,
-                                             self.schema_id, object_id),
-            data=json.dumps(self.data),
-            content_type='html/json'
-        )
-        self.assertEquals(response.status_code, 200)
+        if self.is_positive_test:
+            response = self.create_compound_trigger(object_id)
+        else:
+            if hasattr(self, 'wrong_table_id'):
+                del self.test_data["name"]
+                response = self.create_compound_trigger(object_id)
+            elif hasattr(self, 'internal_server_error'):
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.create_compound_trigger(object_id)
+            elif hasattr(self, 'error_creating_compound_trigger'):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.create_compound_trigger(object_id)
+            else:
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.create_compound_trigger(object_id)
+        self.assertEquals(response.status_code,
+                          self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

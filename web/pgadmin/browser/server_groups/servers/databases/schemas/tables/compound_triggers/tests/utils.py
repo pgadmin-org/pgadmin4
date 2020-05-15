@@ -11,8 +11,14 @@ from __future__ import print_function
 
 import sys
 import traceback
+import os
+import json
 
 from regression.python_test_utils import test_utils as utils
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/compound_trigger_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
 
 def create_compound_trigger(server, db_name, schema_name, table_name,
@@ -50,7 +56,7 @@ def create_compound_trigger(server, db_name, schema_name, table_name,
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        query = "CREATE OR REPLACE TRIGGER %s FOR INSERT ON %s.%s " \
+        query = "CREATE OR REPLACE TRIGGER %s FOR INSERT OR UPDATE ON %s.%s " \
                 "COMPOUND TRIGGER %s END;" % (trigger_name, schema_name,
                                               table_name, code)
         pg_cursor.execute(query)

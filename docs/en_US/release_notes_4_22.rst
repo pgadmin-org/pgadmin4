@@ -16,6 +16,7 @@ Housekeeping
 ************
 | `Issue #5255 <https://redmine.postgresql.org/issues/5255>`_ -  Implement Selenium Grid to run multiple tests across different browsers, operating systems, and machines in parallel.
 | `Issue #5334 <https://redmine.postgresql.org/issues/5334>`_ -  Improve code coverage and API test cases for the Rules module.
+| `Issue #5335 <https://redmine.postgresql.org/issues/5335>`_ -  Improve code coverage and API test cases for Triggers and Compound Triggers.
 | `Issue #5443 <https://redmine.postgresql.org/issues/5443>`_ -  Remove support for Python 2.
 | `Issue #5444 <https://redmine.postgresql.org/issues/5444>`_ -  Cleanup Python detection in the runtime project file.
 | `Issue #5455 <https://redmine.postgresql.org/issues/5455>`_ -  Refactor pgAdmin4.py so it can be imported and is a lot more readable.

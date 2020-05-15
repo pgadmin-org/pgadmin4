@@ -11,8 +11,14 @@ from __future__ import print_function
 
 import sys
 import traceback
+import os
+import json
 
 from regression.python_test_utils import test_utils as utils
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/triggers_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
 
 def create_trigger(server, db_name, schema_name, table_name, trigger_name,
