@@ -64,20 +64,17 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
       <div class="d-flex flex-column w-100 h-100">
         <div class="p-2">
           <div class="row">
-            <div class="col-8 d-flex">
+            <div class="col-6">
               <div class="input-group pgadmin-controls">
-                  <div class="input-group-prepend">
-                      <span class="input-group-text fa fa-search" id="labelSearch" aria-label="` + gettext('Search') + `"></span>
-                  </div>
                   <input type="search" class="form-control" id="txtGridSearch" placeholder="` + gettext('Type at least 3 characters') + `"
                     tabindex="0" aria-describedby="labelSearch" aria-labelledby="labelSearch" autocomplete="off">
               </div>
-              <div class="ml-2">
-                <button class="btn btn-primary btn-search" disabled>`+ gettext('Search') +`</button>
-              </div>
             </div>
-            <div class="col-4">
+            <div class="col-4 d-flex">
               <select aria-label="` + gettext('Object types') + `" class="node-types"></select>
+            </div>
+            <div class="col-2">
+              <button class="btn btn-primary btn-search w-100" disabled><span class="fa fa-search"></span>&nbsp;`+ gettext('Search') +`</button>
             </div>
           </div>
         </div>
