@@ -108,4 +108,5 @@ _create_repo_rpm fedora
 #
 # Get the results!
 #
+test -d "${DISTROOT}/" || mkdir -p "${DISTROOT}/"
 cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*-repo-${REPO_RPM_VERSION}-${REPO_RPM_BUILD}.noarch.rpm "${DISTROOT}/"
