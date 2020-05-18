@@ -22,6 +22,7 @@ Housekeeping
 | `Issue #5444 <https://redmine.postgresql.org/issues/5444>`_ -  Cleanup Python detection in the runtime project file.
 | `Issue #5455 <https://redmine.postgresql.org/issues/5455>`_ -  Refactor pgAdmin4.py so it can be imported and is a lot more readable.
 | `Issue #5493 <https://redmine.postgresql.org/issues/5493>`_ -  Search object UI improvements.
+| `Issue #5525 <https://redmine.postgresql.org/issues/5525>`_ -  Cleanup and refactor the macOS build scripts.
 
 Bug fixes
 *********

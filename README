@@ -255,7 +255,7 @@ icon and select the Configuration option to open the configuration dialogue.
 On a Linux/Mac system, the Python Path will typically consist of a single path
 to the virtual environment's site-packages directory, e.g.
 
-    /Users/<USERNAME>/.virtualenvs/pgadmin4/lib/python2.7/site-packages
+    /Users/<USERNAME>/.virtualenvs/pgadmin4/lib/python3.8/site-packages
 
 On Windows, multiple paths are likely to be required, e.g.
 
@@ -297,24 +297,7 @@ run:
 
     (pgadmin4) $ make pip
 
-On a Mac, build an application bundle in a disk image (DMG file) with:
-
-    (pgadmin4) $ make appbundle
-
-Configure the framework.conf to match the QT and Python versions the app is
-being built with:
-
-    $ cp $PGADMIN4_SRC/pkg/mac/framework.conf.in $PGADMIN4_SRC/pkg/mac/framework.conf
-    $ vi $PGADMIN4_SRC/pkg/mac/framework.conf
-
-If you have an Apple code signing certificate, both the app bundle and disk
-image can be automatically signed by configuring signing:
-
-    $ cp $PGADMIN4_SRC/pkg/mac/codesign.conf.in $PGADMIN4_SRC/pkg/mac/codesign.conf
-    $ vi $PGADMIN4_SRC/pkg/mac/codesign.conf
-
-Edit the file as appropriate, ensuring the various version numbers are correct
-and that the appropriate developer ID is specified.
+To build the macOS AppBundle, please see pkg/mac/README.
 
 On Windows, the InnoSetup tool is required to create an installer. Download the
 Unicode version from:

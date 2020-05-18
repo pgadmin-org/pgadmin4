@@ -15,20 +15,23 @@ similar):
 
 Building:
 
-1. Set the PYTHON_HOME environment variable to the Python root installation
+1. If a value different from the default of /usr/local/python is required, set
+   the PGADMIN_PYTHON_DIR environment variable to the Python root installation
    directory, e.g.
 
-   export PYTHON_HOME=/opt/local
+   export PGADMIN_PYTHON_DIR=/opt/local
 
-2. Set the QTDIR environment variable to the QT root installation directory,
-   e.g.
+2. If a value different from the default of ~/Qt/5.13.2/clang_64, is required,
+   set the PGADMIN_QT_DIR environment variable to the QT root installation
+   directory, e.g.
 
-   export QTDIR=~/Qt/5.14.2/clang_64
+   export PGADMIN_QT_DIR=~/Qt/5.14.2/clang_64
 
-3. Set the PGDIR environment variable to the PostgreSQL installation directory,
-   e.g.
+3. If a value different from the default of /usr/local/pgsql is required, set
+   the PGADMIN_POSTGRES_DIR environment variable to the PostgreSQL installation
+   directory, e.g.
 
-   export PGDIR=/usr/local/pgsql
+   export PGADMIN_POSTGRES_DIR=/opt/local/pgsql
 
 4. Copy framework.conf.in to framework.conf, and edit the values accordingly.
 
