@@ -50,7 +50,9 @@ _create_venv() {
 
 _build_runtime() {
     cd ${SOURCE_DIR}/runtime
-    make clean
+    if [ -f Makefile ]; then
+      make clean
+    fi
     ${QMAKE}
     make
     cp -r pgAdmin4.app "${BUNDLE_DIR}"
