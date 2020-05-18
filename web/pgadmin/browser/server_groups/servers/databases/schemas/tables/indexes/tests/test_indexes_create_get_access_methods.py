@@ -11,8 +11,6 @@ import json
 import uuid
 from unittest.mock import patch
 
-from pgadmin.browser.server_groups.servers.databases.schemas.tables.columns. \
-    tests import utils as columns_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -25,12 +23,15 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as indexes_utils
 
 
-class IndexesUpdateTestCase(BaseTestGenerator):
-    url = "/browser/index/obj/"
-    scenarios = utils.generate_scenarios("index_put",
+class IndexesAddTestCase(BaseTestGenerator):
+    """ This class will get list access_methods available."""
+    # Get list of test cases
+    url = "/browser/index/get_access_methods/"
+    scenarios = utils.generate_scenarios("index_create_get_access_methods",
                                          indexes_utils.test_cases)
 
     def setUp(self):
+        """ This function will set up pre-requisite """
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -46,43 +47,24 @@ class IndexesUpdateTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
-        self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:8])
+        self.table_name = "table_for_column_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
-        self.column_name = "test_column_delete_%s" % (str(uuid.uuid4())[1:8])
-        self.column_id = columns_utils.create_column(self.server,
-                                                     self.db_name,
-                                                     self.schema_name,
-                                                     self.table_name,
-                                                     self.column_name)
-        self.index_name = "test_index_delete_%s" % (str(uuid.uuid4())[1:8])
-        self.index_id = indexes_utils.create_index(self.server, self.db_name,
-                                                   self.schema_name,
-                                                   self.table_name,
-                                                   self.index_name,
-                                                   self.column_name)
 
     def runTest(self):
-        """This function will update the index of existing column."""
-        index_response = indexes_utils.verify_index(self.server, self.db_name,
-                                                    self.index_name)
-        if not index_response:
-            raise Exception("Could not find the index to update.")
-        self.data = self.test_data
-        self.data['oid'] = self.index_id
-
+        """ This function will call api providing list of access methods"""
         if self.is_positive_test:
-            response = indexes_utils.api_put_index(self)
-            indexes_utils.assert_status_code(self, response)
+            response = indexes_utils.api_create_index_get_access_methods(self)
 
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
-                           side_effect=[eval(self.mock_data["return_value"])]):
-                    response = indexes_utils.api_put_index(self)
-                    indexes_utils.assert_status_code(self, response)
-                    indexes_utils.assert_error_message(self, response)
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = indexes_utils.\
+                        api_create_index_get_access_methods(self)
+
+        indexes_utils.assert_status_code(self, response)
 
     def tearDown(self):
         # Disconnect the database

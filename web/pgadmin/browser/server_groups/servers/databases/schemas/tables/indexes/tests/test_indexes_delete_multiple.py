@@ -26,11 +26,14 @@ from . import utils as indexes_utils
 
 class IndexesDeleteMultipleTestCase(BaseTestGenerator):
     """This class will delete the existing index of column."""
-    scenarios = [
-        ('Delete index Node URL', dict(url='/browser/index/obj/'))
-    ]
+    # Get test cases
+    url = "/browser/index/obj/"
+    scenarios = utils.generate_scenarios("index_delete_multiple",
+                                         indexes_utils.test_cases)
 
     def setUp(self):
+        """ This function will set up pre-requisite
+               creating index to delete."""
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -82,16 +85,9 @@ class IndexesDeleteMultipleTestCase(BaseTestGenerator):
         if not index_response:
             raise Exception("Could not find the index to delete.")
 
-        data = {'ids': self.index_ids}
-        response = self.tester.delete(self.url + str(utils.SERVER_GROUP) +
-                                      '/' + str(self.server_id) + '/' +
-                                      str(self.db_id) + '/' +
-                                      str(self.schema_id) + '/' +
-                                      str(self.table_id) + '/',
-                                      data=json.dumps(data),
-                                      content_type='html/json',
-                                      follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        if self.is_positive_test:
+            response = indexes_utils.api_delete_indexes(self, self.index_ids)
+            indexes_utils.assert_status_code(self, response)
 
     def tearDown(self):
         # Disconnect the database

@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-import json
 import uuid
 from unittest.mock import patch
 
@@ -25,9 +24,11 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as indexes_utils
 
 
-class IndexesUpdateTestCase(BaseTestGenerator):
-    url = "/browser/index/obj/"
-    scenarios = utils.generate_scenarios("index_put",
+class IndexesGetTestCase(BaseTestGenerator):
+    """ This class will test statistics API call for index"""
+    # Get list of test cases
+    url = "/browser/index/stats/"
+    scenarios = utils.generate_scenarios("index_get_statistics",
                                          indexes_utils.test_cases)
 
     def setUp(self):
@@ -64,23 +65,21 @@ class IndexesUpdateTestCase(BaseTestGenerator):
                                                    self.column_name)
 
     def runTest(self):
-        """This function will update the index of existing column."""
-        index_response = indexes_utils.verify_index(self.server, self.db_name,
-                                                    self.index_name)
-        if not index_response:
-            raise Exception("Could not find the index to update.")
-        self.data = self.test_data
-        self.data['oid'] = self.index_id
-
+        """ Function calls API which provide statistics information
+        about existing index"""
         if self.is_positive_test:
-            response = indexes_utils.api_put_index(self)
+            if self.is_list:
+                response = indexes_utils.api_get_index(self, "")
+            else:
+                response = indexes_utils.api_get_index(self, self.index_id)
             indexes_utils.assert_status_code(self, response)
 
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
                            side_effect=[eval(self.mock_data["return_value"])]):
-                    response = indexes_utils.api_put_index(self)
+                    response = indexes_utils.\
+                        api_get_index_statistics(self, self.index_id)
                     indexes_utils.assert_status_code(self, response)
                     indexes_utils.assert_error_message(self, response)
 

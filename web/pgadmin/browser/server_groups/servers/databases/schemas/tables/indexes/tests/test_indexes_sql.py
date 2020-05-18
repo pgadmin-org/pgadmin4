@@ -7,9 +7,7 @@
 #
 ##########################################################################
 
-import json
 import uuid
-from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.columns. \
     tests import utils as columns_utils
@@ -25,9 +23,11 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as indexes_utils
 
 
-class IndexesUpdateTestCase(BaseTestGenerator):
-    url = "/browser/index/obj/"
-    scenarios = utils.generate_scenarios("index_put",
+class IndexesGetTestCase(BaseTestGenerator):
+    """ This class tests sql generated for existing index. """
+    # Get list of test cases
+    url = "/browser/index/sql/"
+    scenarios = utils.generate_scenarios("index_get_sql",
                                          indexes_utils.test_cases)
 
     def setUp(self):
@@ -63,26 +63,22 @@ class IndexesUpdateTestCase(BaseTestGenerator):
                                                    self.index_name,
                                                    self.column_name)
 
+        if self.is_list:
+            self.index_name_1 = "test_index_delete_%s" % (
+                str(uuid.uuid4())[1:8])
+            self.index_ids = [self.index_id,
+                              indexes_utils.create_index(self.server,
+                                                         self.db_name,
+                                                         self.schema_name,
+                                                         self.table_name,
+                                                         self.index_name_1,
+                                                         self.column_name)
+                              ]
+
     def runTest(self):
-        """This function will update the index of existing column."""
-        index_response = indexes_utils.verify_index(self.server, self.db_name,
-                                                    self.index_name)
-        if not index_response:
-            raise Exception("Could not find the index to update.")
-        self.data = self.test_data
-        self.data['oid'] = self.index_id
-
         if self.is_positive_test:
-            response = indexes_utils.api_put_index(self)
+            response = indexes_utils.api_get_index_sql(self)
             indexes_utils.assert_status_code(self, response)
-
-        else:
-            if self.mocking_required:
-                with patch(self.mock_data["function_name"],
-                           side_effect=[eval(self.mock_data["return_value"])]):
-                    response = indexes_utils.api_put_index(self)
-                    indexes_utils.assert_status_code(self, response)
-                    indexes_utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database

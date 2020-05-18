@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.columns. \
     tests import utils as columns_utils
@@ -25,11 +26,15 @@ from . import utils as indexes_utils
 
 class IndexesDeleteTestCase(BaseTestGenerator):
     """This class will delete the existing index of column."""
-    scenarios = [
-        ('Delete index Node URL', dict(url='/browser/index/obj/'))
-    ]
+    url = "/browser/index/obj/"
+    # Get test cases
+    scenarios = utils.generate_scenarios("index_delete",
+                                         indexes_utils.test_cases)
 
     def setUp(self):
+        """ This function will set up pre-requisite
+        creating index to delete."""
+        self.data = self.test_data
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -68,14 +73,24 @@ class IndexesDeleteTestCase(BaseTestGenerator):
                                                     self.index_name)
         if not index_response:
             raise Exception("Could not find the index to delete.")
-        response = self.tester.delete(self.url + str(utils.SERVER_GROUP) +
-                                      '/' + str(self.server_id) + '/' +
-                                      str(self.db_id) + '/' +
-                                      str(self.schema_id) + '/' +
-                                      str(self.table_id) + '/' +
-                                      str(self.index_id),
-                                      follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+
+        if self.is_positive_test:
+            if 'index_id' in self.data:
+                self.index_id = self.data["index_id"]
+            response = indexes_utils.api_delete_index(self)
+            indexes_utils.assert_status_code(self, response)
+
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=[eval(self.mock_data["return_value"])]):
+                    response = indexes_utils.api_delete_index(self)
+            else:
+                self.index_id = 99099
+                response = indexes_utils.api_delete_index(self)
+
+            indexes_utils.assert_status_code(self, response)
+            indexes_utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database

@@ -9,6 +9,7 @@
 
 import json
 import uuid
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
@@ -19,13 +20,14 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as indexes_utils
 
 
 class IndexesAddTestCase(BaseTestGenerator):
     """This class will add new index to existing table column"""
-    scenarios = [
-        ('Add index Node URL', dict(url='/browser/index/obj/'))
-    ]
+    url = "/browser/index/obj/"
+    scenarios = utils.generate_scenarios("index_create",
+                                         indexes_utils.test_cases)
 
     def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -50,21 +52,34 @@ class IndexesAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """This function will add index to existing table column."""
-        self.index_name = "test_index_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {"name": self.index_name,
-                "spcname": "pg_default",
-                "amname": "btree",
-                "columns": [
-                    {"colname": "id", "sort_order": False, "nulls": False}],
-                "include": ["name"]
-                }
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.schema_id) + '/' + str(self.table_id) + '/',
-            data=json.dumps(data),
-            content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.data = self.test_data
+        if "name" in self.data:
+            self.index_name = self.data["name"] + (str(uuid.uuid4())[1:8])
+            self.data["name"] = self.index_name
+
+        if self.is_positive_test:
+            response = indexes_utils.api_create_index(self)
+            indexes_utils.assert_status_code(self, response)
+            index_response = indexes_utils.verify_index(self.server,
+                                                        self.db_name,
+                                                        self.index_name)
+            self.assertIsNot(index_response, "Could not find the newly "
+                                             "created index.")
+
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = indexes_utils.api_create_index(self)
+            else:
+                response = indexes_utils.api_create_index(self)
+
+            indexes_utils.assert_status_code(self, response)
+            if self.expected_data["error_msg"] == "table_id":
+                indexes_utils.assert_error_message(self, response,
+                                                   self.table_id)
+            else:
+                indexes_utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database

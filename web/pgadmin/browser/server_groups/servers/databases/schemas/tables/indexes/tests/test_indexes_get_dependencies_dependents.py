@@ -7,10 +7,7 @@
 #
 ##########################################################################
 
-import json
 import uuid
-from unittest.mock import patch
-
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.columns. \
     tests import utils as columns_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
@@ -25,12 +22,15 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as indexes_utils
 
 
-class IndexesUpdateTestCase(BaseTestGenerator):
-    url = "/browser/index/obj/"
-    scenarios = utils.generate_scenarios("index_put",
+class IndexesGetTestCase(BaseTestGenerator):
+    """ This class will test dependent & dependencies for existing index"""
+    # Get list of test cases
+    url = "/browser/index/"
+    scenarios = utils.generate_scenarios("index_get_dependencies_dependents",
                                          indexes_utils.test_cases)
 
     def setUp(self):
+        """ Creating index required in actual tests"""
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -64,25 +64,16 @@ class IndexesUpdateTestCase(BaseTestGenerator):
                                                    self.column_name)
 
     def runTest(self):
-        """This function will update the index of existing column."""
-        index_response = indexes_utils.verify_index(self.server, self.db_name,
-                                                    self.index_name)
-        if not index_response:
-            raise Exception("Could not find the index to update.")
-        self.data = self.test_data
-        self.data['oid'] = self.index_id
-
+        """ Calling dependent & dependency API calls for existing index"""
         if self.is_positive_test:
-            response = indexes_utils.api_put_index(self)
-            indexes_utils.assert_status_code(self, response)
+            if self.is_dependent:
+                response = indexes_utils. \
+                    api_get_index_dependents(self, self.index_id)
+            else:
+                response = indexes_utils. \
+                    api_get_index_dependency(self, self.index_id)
 
-        else:
-            if self.mocking_required:
-                with patch(self.mock_data["function_name"],
-                           side_effect=[eval(self.mock_data["return_value"])]):
-                    response = indexes_utils.api_put_index(self)
-                    indexes_utils.assert_status_code(self, response)
-                    indexes_utils.assert_error_message(self, response)
+            indexes_utils.assert_status_code(self, response)
 
     def tearDown(self):
         # Disconnect the database

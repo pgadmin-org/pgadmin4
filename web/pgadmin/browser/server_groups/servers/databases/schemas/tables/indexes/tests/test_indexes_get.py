@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.columns. \
     tests import utils as columns_utils
@@ -24,12 +25,14 @@ from . import utils as indexes_utils
 
 
 class IndexesGetTestCase(BaseTestGenerator):
-    """This class will fetch the existing index of column."""
-    scenarios = [
-        ('Fetch index Node URL', dict(url='/browser/index/obj/'))
-    ]
+    """This class will get information about existing index/indexes"""
+    url = "/browser/index/obj/"
+    # Get list of test cases
+    scenarios = utils.generate_scenarios("index_get",
+                                         indexes_utils.test_cases)
 
     def setUp(self):
+        """Creating index/indexes """
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -62,15 +65,40 @@ class IndexesGetTestCase(BaseTestGenerator):
                                                    self.index_name,
                                                    self.column_name)
 
+        if self.is_list:
+            self.index_name_1 = "test_index_delete_%s" % \
+                                (str(uuid.uuid4())[1:8])
+            self.index_ids = [self.index_id, indexes_utils.create_index(
+                self.server, self.db_name, self.schema_name, self.table_name,
+                self.index_name_1, self.column_name)]
+
     def runTest(self):
-        """This function will fetch the existing column index."""
-        response = self.tester.get(
-            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
-                                                self.server_id, self.db_id,
-                                                self.schema_id, self.table_id,
-                                                self.index_id),
-            follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        """ Function will do get api call using index id or
+        empty index id for list of indexes"""
+        if self.is_positive_test:
+            if self.is_list:
+                response = indexes_utils.api_get_index(self, "")
+            else:
+                response = indexes_utils.api_get_index(self, self.index_id)
+
+            indexes_utils.assert_status_code(self, response)
+
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=[eval(self.mock_data["return_value"])]):
+                    if self.is_list:
+                        response = indexes_utils.api_get_index(self, "")
+                    else:
+                        response = indexes_utils.api_get_index(self,
+                                                               self.index_id)
+            else:
+                # Non-existing index id
+                self.index_id = 2341
+                response = indexes_utils.api_get_index(self, self.index_id)
+
+            indexes_utils.assert_status_code(self, response)
+            indexes_utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database
