@@ -924,7 +924,7 @@ WHERE
             u"Execute (async) by {pga_user} on {db_user}@{db_host}/{db_name} "
             u"#{server_id} - {conn_id} (Query-id: "
             u"{query_id}):\n{query}".format(
-                pga_user=current_user.email,
+                pga_user=current_user.username,
                 db_user=dsn['user'],
                 db_host=dsn['host'],
                 db_name=dsn['dbname'],
