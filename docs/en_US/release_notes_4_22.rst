@@ -43,5 +43,6 @@ Bug fixes
 | `Issue #5469 <https://redmine.postgresql.org/issues/5469>`_ -  Fixed an issue where select2 hover is inconsistent for the SSL field in create server dialog.
 | `Issue #5473 <https://redmine.postgresql.org/issues/5473>`_ -  Fixed post-login redirect location when running in server mode under a non-default root.
 | `Issue #5480 <https://redmine.postgresql.org/issues/5480>`_ -  Fixed an issue where the background job creation fails if there is only a version-specific python binary available in PATH.
+| `Issue #5487 <https://redmine.postgresql.org/issues/5487>`_ -  Fixed an issue where if LDAP_SEARCH_BASE_DN is not set then, the value for LDAP_BASE_DN will be considered.
 | `Issue #5503 <https://redmine.postgresql.org/issues/5503>`_ -  Clarify and correct the docs on enabling the pl/debugger plugin on the server.
 | `Issue #5510 <https://redmine.postgresql.org/issues/5510>`_ -  Fixed Unicode decode error 'utf-8' codec can't decode byte.

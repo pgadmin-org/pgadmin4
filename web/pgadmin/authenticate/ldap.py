@@ -158,7 +158,8 @@ class LDAPAuthentication(BaseAuthentication):
          search criteria."""
         try:
             search_base_dn = config.LDAP_SEARCH_BASE_DN
-            if search_base_dn is None or search_base_dn == '':
+            if search_base_dn is None or search_base_dn == '' or\
+                    search_base_dn == '<Search-Base-DN>':
                 search_base_dn = config.LDAP_BASE_DN
             self.conn.search(search_base=search_base_dn,
                              search_filter=config.LDAP_SEARCH_FILTER,

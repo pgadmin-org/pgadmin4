@@ -45,10 +45,15 @@ file and modify the values for the following parameters:
    entries, you should be able to authenticate by entering ‘admin’ in the 
    *Email Address / Username* field and its corresponding password in the *Password* 
    field."
-   "LDAP_SEARCH_BASE_DN","Specifies an element of the search request that works in
-   conjunction with the LDAP search scope to define the subtree of entries that
-   should be considered when processing the search request. You can use this parameter
-   for limiting the search request to a specific group of users."
+   "LDAP_SEARCH_BASE_DN","Specifies the distinguished name (DN) for the top-most user
+   directory that you want to search. You can use this parameter for limiting the search
+   request to a specific group of users. For example, if you want to search only within
+   the Organizational Unit named sales, you can define the value for LDAP_SEARCH_BASE_DN
+   parameter as following:
+   LDAP_SEARCH_BASE_DN = ‘ou=sales,dc=example,dc=com'
+
+   This is an optional parameter. If you do not specify any value for LDAP_SEARCH_BASE_DN,
+   then the value for LDAP_BASE_DN will be considered for the same."
    "LDAP_SEARCH_FILTER","Defines the criteria to retrieve matching entries in an
    LDAP search request. For example, LDAP_SEARCH_FILTER = '(objectclass=HR)’ setting
    searches only for users having HR as their objectClass attribute."
