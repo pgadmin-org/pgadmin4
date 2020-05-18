@@ -4,6 +4,12 @@
 REPO_RPM_VERSION=1
 REPO_RPM_BUILD=1
 
+# Set the repo base directory
+if [ "x${PGADMIN_REPO_DIR}" == "x" ]; then
+    echo "PGADMIN_REPO_DIR not set. Setting it to the default: https://ftp.postgresql.org/pub/pgadmin/pgadmin4/repos/yum"
+    export PGADMIN_REPO_DIR=https://ftp.postgresql.org/pub/pgadmin/pgadmin4/repos/yum
+fi
+
 # Exit when any command fails
 set -e
 
@@ -44,7 +50,7 @@ _create_repo_rpm() {
     cat << EOF > "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
 [pgAdmin4]
 name=pgadmin4
-baseurl=https://ftp.postgresql.org/pub/pgadmin/pgadmin4/repos/yum/${DISTRO}/${PLATFORM}-\$RELEASEVER-\$BASEARCH
+baseurl=${PGADMIN_REPO_DIR}/${DISTRO}/${PLATFORM}-\$RELEASEVER-\$BASEARCH
 enabled=1
 EOF
 
