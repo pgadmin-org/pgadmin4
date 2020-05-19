@@ -393,6 +393,7 @@ define('pgadmin.node.pga_schedule', [
               allowClear: true,
               placeholder: gettext('Select the month days...'),
               width: 'style',
+              showOnScroll: false,
               dropdownAdapter: $.fn.select2.amd.require(
                 'select2/selectAllAdapter'
               ),
@@ -427,6 +428,7 @@ define('pgadmin.node.pga_schedule', [
               allowClear: true,
               placeholder: gettext('Select the hours...'),
               width: 'style',
+              showOnScroll: false,
               dropdownAdapter: $.fn.select2.amd.require(
                 'select2/selectAllAdapter'
               ),
@@ -442,6 +444,7 @@ define('pgadmin.node.pga_schedule', [
               allowClear: true,
               placeholder: gettext('Select the minutes...'),
               width: 'style',
+              showOnScroll: false,
               dropdownAdapter: $.fn.select2.amd.require(
                 'select2/selectAllAdapter'
               ),
