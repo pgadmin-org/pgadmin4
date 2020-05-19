@@ -47,12 +47,12 @@ fi
 # Set SELinux up:
 if [ ${IS_REDHAT} == 1 ]; then
     echo "Configuring SELinux..."
-    setsebool -P httpd_can_network_connect 1
-    setsebool -P httpd_can_network_connect_db 1
-    semanage fcontext -a -t httpd_var_lib_t '/var/lib/pgadmin(/.*)?'
-    restorecon -R -v /var/lib/pgadmin
-    semanage fcontext -a -t httpd_log_t '/var/log/pgadmin(/.*)?'
-    restorecon -R -v /var/log/pgadmin
+    setsebool -P httpd_can_network_connect 1 1> /dev/null
+    setsebool -P httpd_can_network_connect_db 1 1> /dev/null
+    semanage fcontext -a -t httpd_var_lib_t '/var/lib/pgadmin(/.*)?' 1> /dev/null
+    restorecon -R -v /var/lib/pgadmin 1> /dev/null
+    semanage fcontext -a -t httpd_log_t '/var/log/pgadmin(/.*)?' 1> /dev/null
+    restorecon -R -v /var/log/pgadmin 1> /dev/null
 fi
 
 # Setup Apache on Debian/Ubuntu
@@ -97,7 +97,8 @@ else
             if [ $? != 0 ]; then
                 echo "Error starting ${APACHE}. Please check the systemd logs"
             else
-                echo "Apache successfully started. You can now start using pgAdmin 4 in web mode"
+                echo "Apache successfully started."
+                echo "You can now start using pgAdmin 4 in web mode at http://127.0.0.1/pgadmin4"
             fi;;
         * ) 
             exit 1;;
