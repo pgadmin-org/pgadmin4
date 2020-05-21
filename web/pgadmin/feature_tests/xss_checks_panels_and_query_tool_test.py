@@ -14,7 +14,8 @@ import random
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from selenium.webdriver import ActionChains
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, \
+    WebDriverException
 from regression.feature_utils.locators import QueryToolLocators
 from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
@@ -68,10 +69,19 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         # sometime the tab for dependent does not show info, so refreshing
         # the page and then again collapsing until the table node
-        self.page.refresh_page()
-        self.page.toggle_open_servers_group()
-        self._tables_node_expandable()
-        self._check_xss_in_dependents_tab()
+        retry = 2
+        while retry > 0:
+            try:
+                self.page.refresh_page()
+                self.page.toggle_open_servers_group()
+                self._tables_node_expandable()
+                self._check_xss_in_dependents_tab()
+                retry = 0
+            except WebDriverException as e:
+                print("Exception in dependent check {0}".format(retry))
+                if retry == 1:
+                    raise e
+                retry -= 1
 
         # Query tool
         self.page.open_query_tool()
@@ -145,12 +155,22 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "\n\tChecking the Dependents tab for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
-        self.page.click_tab("Dependents")
 
-        source_code = self.page.find_by_xpath(
-            "//*[@id='5']/table/tbody/tr/td/div/div/div[2]/"
-            "table/tbody/tr/td[2]"
-        ).get_attribute('innerHTML')
+        retry = 2
+        while retry > 0:
+            try:
+                self.page.click_tab("Dependents")
+                source_code = \
+                    self.page.find_by_xpath("//*[@id='5']/table/tbody/tr/td/"
+                                            "div/div/div[2]/table/tbody/tr/"
+                                            "td[2]").get_attribute('innerHTML')
+                retry = 0
+            except WebDriverException as e:
+                print("Exception in dependent tab {0}")
+                self.page.click_tab("Dependencies")
+                if retry == 1:
+                    raise e
+                retry -= 1
 
         self._check_escaped_characters(
             source_code,

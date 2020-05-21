@@ -29,6 +29,7 @@ import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as ec
+import selenium.common.exceptions
 
 import config
 import regression
@@ -1262,7 +1263,8 @@ def get_selenium_grid_status_and_browser_list(selenoid_url):
                     if browser["version"] is None:
                         print("Specified version of browser is None. Hence "
                               "latest version of {0} available with selenoid "
-                              "server will be used.\n".format(browser["name"]))
+                              "server will be used.\n".format(browser["name"]),
+                              file=sys.stderr)
                         browser_list.append(browser)
                     elif browser["version"] in versions.keys():
                         browser_list.append(browser)
@@ -1273,10 +1275,11 @@ def get_selenium_grid_status_and_browser_list(selenoid_url):
                         print("Specified Version = {0}".format(
                             browser["version"]))
                 else:
-                    print("{0} is NOT available".format(browser["name"]))
+                    print("{0} is NOT available".format(browser["name"]),
+                          file=sys.stderr)
     except Exception as e:
         (str(e))
-        print("Unable to find Selenoid Status")
+        print("Unable to find Selenoid Status", file=sys.stderr)
 
     return selenoid_status, browser_list
 
@@ -1299,7 +1302,7 @@ def is_feature_test_included(arguments):
     return feature_test_tobe_included
 
 
-def launch_url_in_browser(driver_instance, url, title='pgAdmin 4', timeout=40):
+def launch_url_in_browser(driver_instance, url, title='pgAdmin 4', timeout=50):
     """
     Function launches urls in specified driver instance
     :param driver_instance:browser instance
@@ -1338,7 +1341,6 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
     test_name = browser + browser_ver + "_" + test_name + "-" + time.strftime(
         "%m_%d_%y_%H_%M_%S", time.localtime())
     driver_local = None
-
     desired_capabilities = {
         "version": browser_ver,
         "enableVNC": True,
@@ -1347,7 +1349,8 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
         "videoName": test_name + ".mp4",
         "logName": test_name + ".log",
         "name": test_name,
-        "timeZone": "Asia/Kolkata"
+        "timeZone": "Asia/Kolkata",
+        "sessionTimeout": "180s"
     }
 
     if browser == 'firefox':
@@ -1467,3 +1470,18 @@ def get_selenium_grid_status_json(selenoid_url):
         print("Unable to find Selenoid Status.Kindly check url passed -'{0}'".
               format(selenoid_url))
         return None
+
+
+def quit_webdriver(driver):
+    """
+    Function closes webdriver instance
+    :param driver:
+    """
+    try:
+        driver.quit()
+    except selenium.common.exceptions.InvalidSessionIdException:
+        print("Driver object is already closed.")
+    except Exception as e:
+        print("Some Other exception occurred.")
+        traceback.print_exc(file=sys.stderr)
+        print(str(e))

@@ -510,7 +510,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed):
         # Delete web-driver instance
         thread_name = "parallel_tests" + server_passed['name']
         if threading.currentThread().getName() == thread_name:
-            driver_passed.quit()
+            test_utils.quit_webdriver(driver_passed)
             time.sleep(20)
 
         # Print info about completed tests

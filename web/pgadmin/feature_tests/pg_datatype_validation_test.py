@@ -86,9 +86,15 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             NavMenuLocators.file_menu_css)
         file_menu.click()
 
-        pref_menu_item = self.page.find_by_css_selector(
-            NavMenuLocators.preference_menu_item_css)
-        pref_menu_item.click()
+        # pref_menu_item = self.page.find_by_css_selector(
+        #     NavMenuLocators.preference_menu_item_css)
+        # pref_menu_item.click()
+
+        self.page.retry_click(
+            (By.CSS_SELECTOR, NavMenuLocators.preference_menu_item_css),
+            (By.XPATH, NavMenuLocators.specified_preference_tree_node
+             .format('Browser'))
+        )
 
         wait = WebDriverWait(self.page.driver, 10)
 

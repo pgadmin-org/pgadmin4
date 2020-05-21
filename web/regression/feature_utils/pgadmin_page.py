@@ -14,7 +14,7 @@ import sys
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, \
     WebDriverException, TimeoutException, NoSuchWindowException, \
-    StaleElementReferenceException
+    StaleElementReferenceException, ElementNotInteractableException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -71,12 +71,24 @@ class PgadminPage:
     def add_server(self, server_config):
         self.find_by_xpath(
             "//*[@class='aciTreeText' and contains(.,'Servers')]").click()
-        self.driver.find_element_by_link_text("Object").click()
-        ActionChains(self.driver) \
-            .move_to_element(self.driver.find_element_by_link_text("Create")) \
-            .perform()
-        self.find_by_partial_link_text("Server...").click()
 
+        if self.driver.name == 'firefox':
+            ActionChains(self.driver).context_click(self.find_by_xpath(
+                "//*[@class='aciTreeText' and contains(.,'Servers')]"))\
+                .perform()
+            ActionChains(self.driver).move_to_element(
+                self.find_by_xpath("//li/span[text()='Create']")).perform()
+            self.find_by_xpath("//li/span[text()='Server...']").click()
+        else:
+            self.driver.find_element_by_link_text("Object").click()
+            ActionChains(self.driver).move_to_element(
+                self.driver.find_element_by_link_text("Create")).perform()
+            self.find_by_partial_link_text("Server...").click()
+
+        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(
+            (By.XPATH, "//div[text()='Create - Server']")))
+
+        # After server dialogue opens
         self.fill_input_by_field_name("name", server_config['name'],
                                       loose_focus=True)
         self.find_by_partial_link_text("Connection").click()
@@ -162,6 +174,11 @@ class PgadminPage:
             self.click_element(self.find_by_xpath(
                 '//button[contains(@class, "ajs-button") and '
                 'contains(.,"Don\'t save")]'))
+
+            if self.check_if_element_exist_by_xpath(
+                    "//button[text()='Rollback']", 1):
+                self.click_element(
+                    self.find_by_xpath("//button[text()='Rollback']"))
         self.driver.switch_to.default_content()
 
     def clear_query_tool(self):
@@ -200,6 +217,12 @@ class PgadminPage:
     def check_execute_option(self, option):
         """"This function will check auto commit or auto roll back based on
         user input. If button is already checked, no action will be taken"""
+        query_options = self.driver.find_element_by_css_selector(
+            QueryToolLocators.btn_query_dropdown)
+        expanded = query_options.get_attribute("aria-expanded")
+        if expanded == "false":
+            query_options.click()
+
         retry = 3
         if option == 'auto_commit':
             check_status = self.driver.find_element_by_css_selector(
@@ -232,6 +255,12 @@ class PgadminPage:
     def uncheck_execute_option(self, option):
         """"This function will uncheck auto commit or auto roll back based on
         user input. If button is already unchecked, no action will be taken"""
+        query_options = self.driver.find_element_by_css_selector(
+            QueryToolLocators.btn_query_dropdown)
+        expanded = query_options.get_attribute("aria-expanded")
+        if expanded == "false":
+            query_options.click()
+
         retry = 3
         if option == 'auto_commit':
             check_status = self.driver.find_element_by_css_selector(
@@ -917,17 +946,29 @@ class PgadminPage:
             except (NoSuchElementException, WebDriverException):
                 return False
         time.sleep(1)
-        self.driver.switch_to.default_content()
-        self.driver.switch_to_frame(
-            self.driver.find_element_by_tag_name("iframe"))
-        self.find_by_xpath("//a[text()='Query Editor']").click()
-        codemirror_ele = WebDriverWait(
-            self.driver, timeout=self.timeout, poll_frequency=0.01)\
-            .until(find_codemirror,
-                   "Timed out waiting for codemirror to appear")
+        self.wait_for_query_tool_loading_indicator_to_disappear(12)
 
-        time.sleep(1)
-        codemirror_ele.click()
+        retry = 2
+        while retry > 0:
+            try:
+                self.driver.switch_to.default_content()
+                WebDriverWait(self.driver, 10).until(
+                    EC.frame_to_be_available_and_switch_to_it(
+                        (By.TAG_NAME, "iframe")))
+                self.find_by_xpath("//a[text()='Query Editor']").click()
+
+                codemirror_ele = WebDriverWait(
+                    self.driver, timeout=self.timeout, poll_frequency=0.01) \
+                    .until(find_codemirror,
+                           "Timed out waiting for codemirror to appear")
+                codemirror_ele.click()
+                retry = 0
+            except WebDriverException as e:
+                print("Exception in filling code mirror {0} ".format(retry))
+                print(str(e))
+                if retry == 0:
+                    raise e
+                retry -= 1
 
         # Use send keys if input_keys true, else use javascript to set content
         if input_keys:

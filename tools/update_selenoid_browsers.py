@@ -92,14 +92,17 @@ def get_browser_version(browser_name, executable_path):
         # Mozilla Firefox 75.0
         if 'esr' in version_str:
             firefox_version = '.'.join(
-                version_str.split()[-1].split('.')[:-2]) + '.0'
+                version_str.split('esr')[0].split()[-1].split('.')[:-1])
         else:
             firefox_version = '.'.join(
-                version_str.split()[-1].split('.')[:-1]) + '.0'
+                version_str.split()[-1].split('.')[:-1])
+
+        if firefox_version.count('.') == 0:
+            firefox_version = firefox_version + '.0'
 
         # Make sure browser version has only 1 decimal point
         if firefox_version.count('.') != 1:
-            print('The specified Chrome executable output an unexpected '
+            print('The specified Firefox executable output an unexpected '
                   'version string: {}.'.format(version_str))
             sys.exit(1)
         browser_version_val = firefox_version
@@ -215,7 +218,7 @@ def edit_browsers_json(browser_name, browser_version):
             data_to_insert = dict(
                 {browser_version: {
                     'image': 'selenoid/vnc_firefox:' + browser_version,
-                    'port': '4444', 'path': '/'}})
+                    'port': '4444', 'path': '/wd/hub'}})
             (existing_data['firefox']['versions']).update(data_to_insert)
             updated_data = existing_data
     else:
