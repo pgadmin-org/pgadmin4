@@ -23,6 +23,8 @@ Housekeeping
 | `Issue #5455 <https://redmine.postgresql.org/issues/5455>`_ -  Refactor pgAdmin4.py so it can be imported and is a lot more readable.
 | `Issue #5493 <https://redmine.postgresql.org/issues/5493>`_ -  Search object UI improvements.
 | `Issue #5525 <https://redmine.postgresql.org/issues/5525>`_ -  Cleanup and refactor the macOS build scripts.
+| `Issue #5552 <https://redmine.postgresql.org/issues/5552>`_ -  Update dependencies in the Docker container.
+| `Issue #5553 <https://redmine.postgresql.org/issues/5553>`_ -  Remove PG 9.4 utilities from the Docker container as it's now out of support.
 
 Bug fixes
 *********

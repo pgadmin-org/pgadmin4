@@ -17,7 +17,6 @@ maintenance functions to be executed. Multiple versions are included in the
 following directories to allow use with different versions of the database
 server:
 
-* PostgreSQL 9.4: */usr/local/pgsql-9.4*
 * PostgreSQL 9.5: */usr/local/pgsql-9.5*
 * PostgreSQL 9.6: */usr/local/pgsql-9.6*
 * PostgreSQL 10: */usr/local/pgsql-10*
