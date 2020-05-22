@@ -1257,14 +1257,14 @@ define('pgadmin.browser.node', [
 
           var fullUrl = '';
           if (that.sqlCreateHelp == '' && that.sqlAlterHelp != '') {
-            fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version);
+            fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version, server.server_type);
           } else if (that.sqlCreateHelp != '' && that.sqlAlterHelp == '') {
-            fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version);
+            fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version, server.server_type);
           } else {
             if (view.model.isNew()) {
-              fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version);
+              fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version, server.server_type);
             } else {
-              fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version);
+              fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version, server.server_type);
             }
           }
 

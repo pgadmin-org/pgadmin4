@@ -860,7 +860,7 @@ define('pgadmin.browser', [
           baseUrl = pgBrowser.utils.edbas_help_path;
         }
 
-        var fullUrl = help.getHelpUrl(baseUrl, url, server.version);
+        var fullUrl = help.getHelpUrl(baseUrl, url, server.version, server.server_type);
 
         window.open(fullUrl, 'postgres_help');
       } else if(type == 'dialog_help') {

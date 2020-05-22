@@ -866,7 +866,10 @@ class ServerNode(PGChildNodeView):
                     connected=connected,
                     server_type=manager.server_type
                     if manager and manager.server_type
-                    else 'pg'
+                    else 'pg',
+                    version=manager.version
+                    if manager and manager.version
+                    else None
                 )
             )
 

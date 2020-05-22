@@ -66,7 +66,8 @@ class HelpModule(PgAdminModule):
         self.edbas_help_path = self.help_preference.register(
             'help', 'edbas_help_path',
             gettext("EDB Advanced Server Help Path"), 'text',
-            'https://www.enterprisedb.com/docs/en/$VERSION$/pg/',
+            'https://www.enterprisedb.com/edb-docs/d/postgresql/reference/'
+            'manual/$VERSION$/',
             category_label=gettext('Help'),
             help_str=gettext(
                 'Path to the EDB Advanced Server documentation. $VERSION$ '
