@@ -12,6 +12,8 @@ from collections import OrderedDict
 
 from pgadmin.tools.sqleditor.utils.constant_definition import TX_STATUS_IDLE
 
+ignore_type_cast_list = ['character', 'character[]', 'bit', 'bit[]']
+
 
 def save_changed_data(changed_data, columns_info, conn, command_obj,
                       client_primary_key, auto_commit=True):
@@ -63,6 +65,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
 
         column_type = {}
         column_data = {}
+        type_cast_required = {}
         for each_col in columns_info:
             if (
                 columns_info[each_col]['not_null'] and
@@ -74,6 +77,10 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
             else:
                 column_type[each_col] = \
                     columns_info[each_col]['type_name']
+
+            type_cast_required[each_col] = \
+                True if column_type[each_col] not in ignore_type_cast_list \
+                else False
 
         # For newly added rows
         if of_type == 'added':
@@ -123,7 +130,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     nsp_name=command_obj.nsp_name,
                     data_type=column_type,
                     pk_names=pk_names,
-                    has_oids=command_obj.has_oids()
+                    has_oids=command_obj.has_oids(),
+                    type_cast_required=type_cast_required
                 )
 
                 select_sql = render_template(
@@ -161,7 +169,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     primary_keys=pk_escaped,
                     object_name=command_obj.object_name,
                     nsp_name=command_obj.nsp_name,
-                    data_type=column_type
+                    data_type=column_type,
+                    type_cast_required=type_cast_required
                 )
                 list_of_sql[of_type].append({'sql': sql,
                                              'data': data,

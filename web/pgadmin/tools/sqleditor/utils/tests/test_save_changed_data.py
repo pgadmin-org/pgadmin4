@@ -31,7 +31,9 @@ class TestSaveChangedData(BaseTestGenerator):
                         "data": {
                             "pk_col": "3",
                             "__temp_PK": "2",
-                            "normal_col": "three"
+                            "normal_col": "three",
+                            "char_col": "char",
+                            "bit_col": "10101"
                         }
                     }
                 },
@@ -52,8 +54,86 @@ class TestSaveChangedData(BaseTestGenerator):
                         "type": "integer",
                         "not_null": True,
                         "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
+                        "is_array": False
+                    }, {
+                        "name": "normal_col",
+                        "display_name": "normal_col",
+                        "column_type": "character varying",
+                        "column_type_internal": "character varying",
+                        "pos": 1,
+                        "label": "normal_col<br>character varying",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character varying",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "char_col",
+                        "display_name": "normal_col",
+                        "column_type": "character",
+                        "column_type_internal": "character",
+                        "pos": 2,
+                        "label": "char_col<br>character",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "bit_col",
+                        "display_name": "bit_col",
+                        "column_type": "bit",
+                        "column_type_internal": "bit",
+                        "pos": 3,
+                        "label": "bit_col<br>bit",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "bit",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }
+                ]
+            },
+            save_status=True,
+            check_sql='SELECT * FROM %s WHERE pk_col = 3',
+            check_result=[[3, "three", "char", "10101"]]
+        )),
+        ('When inserting row with long value for character varying data type',
+         dict(
+             save_payload={
+                 "updated": {},
+                 "added": {
+                     "2": {
+                         "err": False,
+                         "data": {
+                             "pk_col": "3",
+                             "__temp_PK": "2",
+                             "normal_col": "invalid-log-string"
+                         }
+                     }
+                 },
+                 "staged_rows": {},
+                 "deleted": {},
+                 "updated_index": {},
+                 "added_index": {"2": "2"},
+                 "columns": [{
+                     "name": "pk_col",
+                     "display_name": "pk_col",
+                     "column_type": "[PK] integer",
+                     "column_type_internal": "integer",
+                     "pos": 0,
+                     "label": "pk_col<br>[PK] integer",
+                     "cell": "number",
+                     "can_edit": True,
+                     "type": "integer",
+                     "not_null": True,
+                     "has_default_val": False,
+                     "is_array": False
+                 }, {
+                     "name": "normal_col",
                      "display_name": "normal_col",
                      "column_type": "character varying",
                      "column_type_internal": "character varying",
@@ -64,14 +144,39 @@ class TestSaveChangedData(BaseTestGenerator):
                      "type": "character varying",
                      "not_null": False,
                      "has_default_val": False,
-                     "is_array": False}
-                ]
-            },
-            save_status=True,
-            check_sql='SELECT * FROM %s WHERE pk_col = 3',
-            check_result=[[3, "three"]]
-        )),
-        ('When inserting row with long data', dict(
+                     "is_array": False
+                 }, {
+                     "name": "char_col",
+                     "display_name": "normal_col",
+                     "column_type": "character",
+                     "column_type_internal": "character",
+                     "pos": 2,
+                     "label": "char_col<br>character",
+                     "cell": "string",
+                     "can_edit": True,
+                     "type": "character",
+                     "not_null": False,
+                     "has_default_val": False,
+                     "is_array": False
+                 }, {
+                     "name": "bit_col",
+                     "display_name": "bit_col",
+                     "column_type": "bit",
+                     "column_type_internal": "bit",
+                     "pos": 3,
+                     "label": "bit_col<br>bit",
+                     "cell": "string",
+                     "can_edit": True,
+                     "type": "bit",
+                     "not_null": False,
+                     "has_default_val": False,
+                     "is_array": False
+                 }]
+             },
+             save_status=False,
+             check_sql='SELECT * FROM %s WHERE pk_col = 3',
+             check_result='SELECT 0')),
+        ('When inserting row with long value for character data type', dict(
             save_payload={
                 "updated": {},
                 "added": {
@@ -80,7 +185,7 @@ class TestSaveChangedData(BaseTestGenerator):
                         "data": {
                             "pk_col": "3",
                             "__temp_PK": "2",
-                            "normal_col": "invalid-log-string"
+                            "char_col": "invalid long string"
                         }
                     }
                 },
@@ -101,19 +206,124 @@ class TestSaveChangedData(BaseTestGenerator):
                         "type": "integer",
                         "not_null": True,
                         "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
+                        "is_array": False
+                    }, {
+                        "name": "normal_col",
+                        "display_name": "normal_col",
+                        "column_type": "character varying",
+                        "column_type_internal": "character varying",
+                        "pos": 1,
+                        "label": "normal_col<br>character varying",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character varying",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "char_col",
+                        "display_name": "normal_col",
+                        "column_type": "character",
+                        "column_type_internal": "character",
+                        "pos": 2,
+                        "label": "char_col<br>character",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "bit_col",
+                        "display_name": "bit_col",
+                        "column_type": "bit",
+                        "column_type_internal": "bit",
+                        "pos": 3,
+                        "label": "bit_col<br>bit",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "bit",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }
+                ]
+            },
+            save_status=False,
+            check_sql='SELECT * FROM %s WHERE pk_col = 3',
+            check_result='SELECT 0'
+        )),
+        ('When inserting row with long value for bit data type', dict(
+            save_payload={
+                "updated": {},
+                "added": {
+                    "2": {
+                        "err": False,
+                        "data": {
+                            "pk_col": "3",
+                            "__temp_PK": "2",
+                            "bit_col": "1010101010"
+                        }
+                    }
+                },
+                "staged_rows": {},
+                "deleted": {},
+                "updated_index": {},
+                "added_index": {"2": "2"},
+                "columns": [
+                    {
+                        "name": "pk_col",
+                        "display_name": "pk_col",
+                        "column_type": "[PK] integer",
+                        "column_type_internal": "integer",
+                        "pos": 0,
+                        "label": "pk_col<br>[PK] integer",
+                        "cell": "number",
+                        "can_edit": True,
+                        "type": "integer",
+                        "not_null": True,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "normal_col",
+                        "display_name": "normal_col",
+                        "column_type": "character varying",
+                        "column_type_internal": "character varying",
+                        "pos": 1,
+                        "label": "normal_col<br>character varying",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character varying",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "char_col",
+                        "display_name": "normal_col",
+                        "column_type": "character",
+                        "column_type_internal": "character",
+                        "pos": 2,
+                        "label": "char_col<br>character",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "bit_col",
+                        "display_name": "bit_col",
+                        "column_type": "bit",
+                        "column_type_internal": "bit",
+                        "pos": 3,
+                        "label": "bit_col<br>bit",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "bit",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }
                 ]
             },
             save_status=False,
@@ -150,19 +360,47 @@ class TestSaveChangedData(BaseTestGenerator):
                         "type": "integer",
                         "not_null": True,
                         "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
+                        "is_array": False
+                    }, {
+                        "name": "normal_col",
+                        "display_name": "normal_col",
+                        "column_type": "character varying",
+                        "column_type_internal": "character varying",
+                        "pos": 1,
+                        "label": "normal_col<br>character varying",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character varying",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "char_col",
+                        "display_name": "normal_col",
+                        "column_type": "character",
+                        "column_type_internal": "character",
+                        "pos": 2,
+                        "label": "char_col<br>character",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "bit_col",
+                        "display_name": "bit_col",
+                        "column_type": "bit",
+                        "column_type_internal": "bit",
+                        "pos": 3,
+                        "label": "bit_col<br>bit",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "bit",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }
                 ]
             },
             save_status=False,
@@ -198,55 +436,82 @@ class TestSaveChangedData(BaseTestGenerator):
                         "type": "integer",
                         "not_null": True,
                         "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
+                        "is_array": False
+                    }, {
+                        "name": "normal_col",
+                        "display_name": "normal_col",
+                        "column_type": "character varying",
+                        "column_type_internal": "character varying",
+                        "pos": 1,
+                        "label": "normal_col<br>character varying",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character varying",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "char_col",
+                        "display_name": "normal_col",
+                        "column_type": "character",
+                        "column_type_internal": "character",
+                        "pos": 2,
+                        "label": "char_col<br>character",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "bit_col",
+                        "display_name": "bit_col",
+                        "column_type": "bit",
+                        "column_type_internal": "bit",
+                        "pos": 3,
+                        "label": "bit_col<br>bit",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "bit",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }
                 ]
             },
             save_status=True,
             check_sql='SELECT * FROM %s WHERE pk_col = 1',
-            check_result=[[1, "ONE"]]
+            check_result=[[1, "ONE", 'ch1 ', '00000']]
         )),
-        ('When updating a row in a invalid way', dict(
-            save_payload={
-                "updated": {
-                    "1":
-                        {"err": False,
-                         "data": {"normal_col": "INVALID-COL-LENGTH"},
-                         "primary_keys":
-                             {"pk_col": 1}
-                         }
-                },
-                "added": {},
-                "staged_rows": {},
-                "deleted": {},
-                "updated_index": {"1": "1"},
-                "added_index": {},
-                "columns": [
-                    {
-                        "name": "pk_col",
-                        "display_name": "pk_col",
-                        "column_type": "[PK] integer",
-                        "column_type_internal": "integer",
-                        "pos": 0,
-                        "label": "pk_col<br>[PK] integer",
-                        "cell": "number",
-                        "can_edit": True,
-                        "type": "integer",
-                        "not_null": True,
-                        "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
+        ('When updating a row with long data for character varying data type',
+         dict(
+             save_payload={
+                 "updated": {
+                     "1": {"err": False,
+                           "data": {"normal_col": "INVALID-COL-LENGTH"},
+                           "primary_keys": {"pk_col": 1}
+                           }
+                 },
+                 "added": {},
+                 "staged_rows": {},
+                 "deleted": {},
+                 "updated_index": {"1": "1"},
+                 "added_index": {},
+                 "columns": [{
+                     "name": "pk_col",
+                     "display_name": "pk_col",
+                     "column_type": "[PK] integer",
+                     "column_type_internal": "integer",
+                     "pos": 0,
+                     "label": "pk_col<br>[PK] integer",
+                     "cell": "number",
+                     "can_edit": True,
+                     "type": "integer",
+                     "not_null": True,
+                     "has_default_val": False,
+                     "is_array": False
+                 }, {
+                     "name": "normal_col",
                      "display_name": "normal_col",
                      "column_type": "character varying",
                      "column_type_internal": "character varying",
@@ -257,13 +522,191 @@ class TestSaveChangedData(BaseTestGenerator):
                      "type": "character varying",
                      "not_null": False,
                      "has_default_val": False,
-                     "is_array": False}
-                ]
-            },
-            save_status=False,
-            check_sql='SELECT * FROM %s WHERE pk_col = 1',
-            check_result=[[1, "one"]]
-        )),
+                     "is_array": False
+                 }, {
+                     "name": "char_col",
+                     "display_name": "normal_col",
+                     "column_type": "character",
+                     "column_type_internal": "character",
+                     "pos": 2,
+                     "label": "char_col<br>character",
+                     "cell": "string",
+                     "can_edit": True,
+                     "type": "character",
+                     "not_null": False,
+                     "has_default_val": False,
+                     "is_array": False
+                 }, {
+                     "name": "bit_col",
+                     "display_name": "bit_col",
+                     "column_type": "bit",
+                     "column_type_internal": "bit",
+                     "pos": 3,
+                     "label": "bit_col<br>bit",
+                     "cell": "string",
+                     "can_edit": True,
+                     "type": "bit",
+                     "not_null": False,
+                     "has_default_val": False,
+                     "is_array": False
+                 }]
+             },
+             save_status=False,
+             check_sql='SELECT * FROM %s WHERE pk_col = 1',
+             check_result=[[1, "one", 'ch1 ', '00000']]
+         )),
+        ('When updating a row with long data for character data type',
+         dict(
+             save_payload={
+                 "updated": {
+                     "1":
+                         {"err": False,
+                          "data": {"char_col": "INVALID-COL-LENGTH"},
+                          "primary_keys":
+                              {"pk_col": 1}
+                          }
+                 },
+                 "added": {},
+                 "staged_rows": {},
+                 "deleted": {},
+                 "updated_index": {"1": "1"},
+                 "added_index": {},
+                 "columns": [
+                     {
+                         "name": "pk_col",
+                         "display_name": "pk_col",
+                         "column_type": "[PK] integer",
+                         "column_type_internal": "integer",
+                         "pos": 0,
+                         "label": "pk_col<br>[PK] integer",
+                         "cell": "number",
+                         "can_edit": True,
+                         "type": "integer",
+                         "not_null": True,
+                         "has_default_val": False,
+                         "is_array": False
+                     }, {
+                         "name": "normal_col",
+                         "display_name": "normal_col",
+                         "column_type": "character varying",
+                         "column_type_internal": "character varying",
+                         "pos": 1,
+                         "label": "normal_col<br>character varying",
+                         "cell": "string",
+                         "can_edit": True,
+                         "type": "character varying",
+                         "not_null": False,
+                         "has_default_val": False,
+                         "is_array": False
+                     }, {
+                         "name": "char_col",
+                         "display_name": "normal_col",
+                         "column_type": "character",
+                         "column_type_internal": "character",
+                         "pos": 2,
+                         "label": "char_col<br>character",
+                         "cell": "string",
+                         "can_edit": True,
+                         "type": "character",
+                         "not_null": False,
+                         "has_default_val": False,
+                         "is_array": False
+                     }, {
+                         "name": "bit_col",
+                         "display_name": "bit_col",
+                         "column_type": "bit",
+                         "column_type_internal": "bit",
+                         "pos": 3,
+                         "label": "bit_col<br>bit",
+                         "cell": "string",
+                         "can_edit": True,
+                         "type": "bit",
+                         "not_null": False,
+                         "has_default_val": False,
+                         "is_array": False
+                     }
+                 ]
+             },
+             save_status=False,
+             check_sql='SELECT * FROM %s WHERE pk_col = 1',
+             check_result=[[1, "one", 'ch1 ', '00000']]
+         )),
+        ('When updating a row with long data for bit data type',
+         dict(
+             save_payload={
+                 "updated": {
+                     "1":
+                         {"err": False,
+                          "data": {"bit_col": "1010110101"},
+                          "primary_keys":
+                              {"pk_col": 1}
+                          }
+                 },
+                 "added": {},
+                 "staged_rows": {},
+                 "deleted": {},
+                 "updated_index": {"1": "1"},
+                 "added_index": {},
+                 "columns": [
+                     {
+                         "name": "pk_col",
+                         "display_name": "pk_col",
+                         "column_type": "[PK] integer",
+                         "column_type_internal": "integer",
+                         "pos": 0,
+                         "label": "pk_col<br>[PK] integer",
+                         "cell": "number",
+                         "can_edit": True,
+                         "type": "integer",
+                         "not_null": True,
+                         "has_default_val": False,
+                         "is_array": False
+                     }, {
+                         "name": "normal_col",
+                         "display_name": "normal_col",
+                         "column_type": "character varying",
+                         "column_type_internal": "character varying",
+                         "pos": 1,
+                         "label": "normal_col<br>character varying",
+                         "cell": "string",
+                         "can_edit": True,
+                         "type": "character varying",
+                         "not_null": False,
+                         "has_default_val": False,
+                         "is_array": False
+                     }, {
+                         "name": "char_col",
+                         "display_name": "normal_col",
+                         "column_type": "character",
+                         "column_type_internal": "character",
+                         "pos": 2,
+                         "label": "char_col<br>character",
+                         "cell": "string",
+                         "can_edit": True,
+                         "type": "character",
+                         "not_null": False,
+                         "has_default_val": False,
+                         "is_array": False
+                     }, {
+                         "name": "bit_col",
+                         "display_name": "bit_col",
+                         "column_type": "bit",
+                         "column_type_internal": "bit",
+                         "pos": 3,
+                         "label": "bit_col<br>bit",
+                         "cell": "string",
+                         "can_edit": True,
+                         "type": "bit",
+                         "not_null": False,
+                         "has_default_val": False,
+                         "is_array": False
+                     }
+                 ]
+             },
+             save_status=False,
+             check_sql='SELECT * FROM %s WHERE pk_col = 1',
+             check_result=[[1, "one", 'ch1 ', '00000']]
+         )),
         ('When updating a row in an invalid way', dict(
             save_payload={
                 "updated": {
@@ -292,19 +735,47 @@ class TestSaveChangedData(BaseTestGenerator):
                         "type": "integer",
                         "not_null": True,
                         "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
+                        "is_array": False
+                    }, {
+                        "name": "normal_col",
+                        "display_name": "normal_col",
+                        "column_type": "character varying",
+                        "column_type_internal": "character varying",
+                        "pos": 1,
+                        "label": "normal_col<br>character varying",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character varying",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "char_col",
+                        "display_name": "normal_col",
+                        "column_type": "character",
+                        "column_type_internal": "character",
+                        "pos": 2,
+                        "label": "char_col<br>character",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "bit_col",
+                        "display_name": "bit_col",
+                        "column_type": "bit",
+                        "column_type_internal": "bit",
+                        "pos": 3,
+                        "label": "bit_col<br>bit",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "bit",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }
                 ]
             },
             save_status=False,
@@ -333,19 +804,47 @@ class TestSaveChangedData(BaseTestGenerator):
                         "type": "integer",
                         "not_null": True,
                         "has_default_val": False,
-                        "is_array": False},
-                    {"name": "normal_col",
-                     "display_name": "normal_col",
-                     "column_type": "character varying",
-                     "column_type_internal": "character varying",
-                     "pos": 1,
-                     "label": "normal_col<br>character varying",
-                     "cell": "string",
-                     "can_edit": True,
-                     "type": "character varying",
-                     "not_null": False,
-                     "has_default_val": False,
-                     "is_array": False}
+                        "is_array": False
+                    }, {
+                        "name": "normal_col",
+                        "display_name": "normal_col",
+                        "column_type": "character varying",
+                        "column_type_internal": "character varying",
+                        "pos": 1,
+                        "label": "normal_col<br>character varying",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character varying",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "char_col",
+                        "display_name": "normal_col",
+                        "column_type": "character",
+                        "column_type_internal": "character",
+                        "pos": 2,
+                        "label": "char_col<br>character",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "character",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }, {
+                        "name": "bit_col",
+                        "display_name": "bit_col",
+                        "column_type": "bit",
+                        "column_type_internal": "bit",
+                        "pos": 3,
+                        "label": "bit_col<br>bit",
+                        "cell": "string",
+                        "can_edit": True,
+                        "type": "bit",
+                        "not_null": False,
+                        "has_default_val": False,
+                        "is_array": False
+                    }
                 ]
             },
             save_status=True,
@@ -439,11 +938,13 @@ class TestSaveChangedData(BaseTestGenerator):
 
                             CREATE TABLE "%s"(
                             pk_col	INT PRIMARY KEY,
-                            normal_col VARCHAR(5));
+                            normal_col character varying(5),
+                            char_col character(4),
+                            bit_col bit(5));
 
                             INSERT INTO "%s" VALUES
-                            (1, 'one'),
-                            (2, 'two');
+                            (1, 'one', 'ch1', '00000'),
+                            (2, 'two', 'ch2', '11111');
                       """ % (self.test_table_name,
                              self.test_table_name,
                              self.test_table_name)
