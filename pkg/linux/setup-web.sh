@@ -70,20 +70,20 @@ fi
 
 APACHE_STATUS=`ps cax | grep ${APACHE}`
 if [ $? -eq 0 ]; then
-    read -p "The Apache web server is running. A restart is required for the pgAdmin 4 installation to complete. Would you like to continue (y/n)? " RESPONSE
+    read -p "The Apache web server is running and must be restarted for the pgAdmin 4 installation to complete. Continue (y/n)? " RESPONSE
     case ${RESPONSE} in
         y|Y )
 	    systemctl restart ${APACHE}
             if [ $? != 0 ]; then
                 echo "Error restarting ${APACHE}. Please check the systemd logs"
             else
-                echo "Apache successfully restarted. You can now start using pgAdmin 4 in web mode"
+                echo "Apache successfully restarted. You can now start using pgAdmin 4 in web mode at http://127.0.0.1/pgadmin4"
             fi;;
         * ) 
             exit 1;;
     esac
 else
-    read -p "The Apache web server is not running. We can enable and start the web server for you to finish pgAdmin 4 installation. Would you like to continue (y/n)? " RESPONSE
+    read -p "The Apache web server is not running. We can enable and start the web server for you to finish pgAdmin 4 installation. Continue (y/n)? " RESPONSE
     case ${RESPONSE} in
         y|Y )
             systemctl enable ${APACHE}
