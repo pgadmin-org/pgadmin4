@@ -440,7 +440,7 @@
              <item>
               <widget class="QLineEdit" name="pythonPathLineEdit">
                <property name="placeholderText">
-                <string>/usr/pgadmin4/lib/python2.7;/usr/pgadmin4/lib/python2.7/site-packages</string>
+                <string>/usr/pgadmin4/lib/python3.8;/usr/pgadmin4/lib/python3.8/site-packages</string>
                </property>
               </widget>
              </item>
