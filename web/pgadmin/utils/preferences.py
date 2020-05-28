@@ -120,19 +120,19 @@ class _Preference(object):
             try:
                 return int(res.value)
             except Exception as e:
-                current_app.logger.exeception(e)
+                current_app.logger.exception(e)
                 return self.default
         if self._type == 'numeric':
             try:
                 return decimal.Decimal(res.value)
             except Exception as e:
-                current_app.logger.exeception(e)
+                current_app.logger.exception(e)
                 return self.default
         if self._type == 'date' or self._type == 'datetime':
             try:
                 return dateutil_parser.parse(res.value)
             except Exception as e:
-                current_app.logger.exeception(e)
+                current_app.logger.exception(e)
                 return self.default
         if self._type == 'options':
             for opt in self.options:
@@ -149,7 +149,7 @@ class _Preference(object):
             try:
                 return json.loads(res.value)
             except Exception as e:
-                current_app.logger.exeception(e)
+                current_app.logger.exception(e)
                 return self.default
 
         return res.value
@@ -194,13 +194,13 @@ class _Preference(object):
             try:
                 value = dateutil_parser.parse(value).date()
             except Exception as e:
-                current_app.logger.exeception(e)
+                current_app.logger.exception(e)
                 return False, gettext("Invalid value for a date option.")
         elif self._type == 'datetime':
             try:
                 value = dateutil_parser.parse(value)
             except Exception as e:
-                current_app.logger.exeception(e)
+                current_app.logger.exception(e)
                 return False, gettext("Invalid value for a datetime option.")
         elif self._type == 'options':
             has_value = False
@@ -214,7 +214,7 @@ class _Preference(object):
             try:
                 value = json.dumps(value)
             except Exception as e:
-                current_app.logger.exeception(e)
+                current_app.logger.exception(e)
                 return False, gettext(
                     "Invalid value for a keyboard shortcut option."
                 )
