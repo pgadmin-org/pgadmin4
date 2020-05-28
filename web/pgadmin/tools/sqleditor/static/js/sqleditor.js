@@ -4384,7 +4384,9 @@ define('tools.querytool', [
                 else
                   self.ignore_on_close.unsaved_query = true;
                 // Go back to check for any other needed confirmations before closing
-                self.check_needed_confirmations_before_closing_panel();
+                if (!self.check_needed_confirmations_before_closing_panel()){
+                  closeEvent.cancel = true;
+                }
                 break;
               case 2: //Save
                 self.close_on_save = true;
