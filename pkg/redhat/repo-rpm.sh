@@ -88,9 +88,6 @@ EOF
     if [ ${INCLUDE_KEY} -eq 1 ]; then
         cat << EOF >> ${BUILDROOT}/${DISTRO}-repo.spec
 /etc/pki/rpm-gpg/PGADMIN_PKG_KEY
-
-%post
-rpm --import /etc/pki/rpm-gpg/PGADMIN_PKG_KEY
 EOF
         test -d ${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg || mkdir -p ${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg
         cp pkg/redhat/PGADMIN_PKG_KEY ${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg/
