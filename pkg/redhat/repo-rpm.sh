@@ -50,12 +50,13 @@ _create_repo_rpm() {
     cat << EOF > "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
 [pgAdmin4]
 name=pgadmin4
-baseurl=${PGADMIN_REPO_DIR}/${DISTRO}/${PLATFORM}-\$RELEASEVER-\$BASEARCH
+baseurl=${PGADMIN_REPO_DIR}/${DISTRO}/${PLATFORM}-\$releasever-\$basearch
 enabled=1
 EOF
 
     if [ ${INCLUDE_KEY} -eq 1 ]; then
         echo gpgcheck=1 >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
+        echo gpgkey=file:///etc/pki/rpm-gpg/PGADMIN_PKG_KEY >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
     else
         echo gpgcheck=0 >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
     fi
