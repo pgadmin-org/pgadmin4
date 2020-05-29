@@ -565,8 +565,18 @@ def index():
             browser_name = 'Chrome'
         elif browser == 'firefox' and version < 65:
             browser_name = 'Firefox'
-        elif browser == 'edge' and version < 44:
+        # comparing EdgeHTML engine version
+        elif browser == 'edge' and version < 18:
             browser_name = 'Edge'
+            # browser version returned by edge browser is actual EdgeHTML
+            # engine version. Below code gets actual browser version using
+            # EdgeHTML version
+            engine_to_actual_browser_version = {
+                16: 41,
+                17: 42,
+                18: 44
+            }
+            version = engine_to_actual_browser_version.get(version, '< 44')
         elif browser == 'safari' and version < 12:
             browser_name = 'Safari'
         elif browser == 'msie':
