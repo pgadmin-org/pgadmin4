@@ -56,15 +56,25 @@ def dump_servers(args):
     Args:
         args (ArgParser): The parsed command line options
     """
-    app = create_app()
+
+    # What user?
+    if args.user is not None:
+        dump_user = args.user
+    else:
+        dump_user = config.DESKTOP_USER
+
+    # And the sqlite path
+    if args.sqlite_path is not None:
+        config.SQLITE_PATH = args.sqlite_path
+
+    print('----------')
+    print('Dumping servers with:')
+    print('User:', dump_user)
+    print('SQLite pgAdmin config:', config.SQLITE_PATH)
+    print('----------')
+
+    app = create_app(config.APP_NAME + '-cli')
     with app.app_context():
-
-        # What user?
-        if args.user is not None:
-            dump_user = args.user
-        else:
-            dump_user = config.DESKTOP_USER
-
         user = User.query.filter_by(email=dump_user).first()
 
         if user is None:
@@ -150,6 +160,23 @@ def load_servers(args):
     Args:
         args (ArgParser): The parsed command line options
     """
+
+    # What user?
+    if args.user is not None:
+        load_user = args.user
+    else:
+        load_user = config.DESKTOP_USER
+
+    # And the sqlite path
+    if args.sqlite_path is not None:
+        config.SQLITE_PATH = args.sqlite_path
+
+    print('----------')
+    print('Loading servers with:')
+    print('User:', load_user)
+    print('SQLite pgAdmin config:', config.SQLITE_PATH)
+    print('----------')
+
     try:
         with open(args.load_servers) as f:
             data = json.load(f)
@@ -164,20 +191,13 @@ def load_servers(args):
 
     f.close()
 
-    app = create_app()
+    app = create_app(config.APP_NAME + '-cli')
     with app.app_context():
-
-        # What user?
-        if args.user is not None:
-            dump_user = args.user
-        else:
-            dump_user = config.DESKTOP_USER
-
-        user = User.query.filter_by(email=dump_user).first()
+        user = User.query.filter_by(email=load_user).first()
 
         if user is None:
             print("The specified user ID (%s) could not be found." %
-                  dump_user)
+                  load_user)
             sys.exit(1)
 
         user_id = user.id
@@ -377,21 +397,26 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Setup the pgAdmin config DB')
 
-    imp_exp_group = parser.add_mutually_exclusive_group(required=False)
-
-    exp_group = imp_exp_group.add_argument_group('Dump server config')
+    exp_group = parser.add_argument_group('Dump server config')
     exp_group.add_argument('--dump-servers', metavar="OUTPUT_FILE",
                            help='Dump the servers in the DB', required=False)
     exp_group.add_argument('--servers', metavar="SERVERS", nargs='*',
                            help='One or more servers to dump', required=False)
 
-    imp_group = imp_exp_group.add_argument_group('Load server config')
+    imp_group = parser.add_argument_group('Load server config')
     imp_group.add_argument('--load-servers', metavar="INPUT_FILE",
                            help='Load servers into the DB', required=False)
 
-    imp_exp_group.add_argument('--user', metavar="USER_NAME",
-                               help='Dump/load servers for the specified '
-                                    'username', required=False)
+    # Common args
+    parser.add_argument('--sqlite-path', metavar="PATH",
+                        help='Dump/load with the specified pgAdmin config DB'
+                             ' file. This is particularly helpful when there'
+                             ' are multiple pgAdmin configurations. It is also'
+                             ' recommended to use this option when running'
+                             ' pgAdmin in desktop mode.', required=False)
+    parser.add_argument('--user', metavar="USER_NAME",
+                        help='Dump/load servers for the specified username',
+                        required=False)
 
     args, extra = parser.parse_known_args()
 
@@ -402,8 +427,14 @@ if __name__ == '__main__':
 
     # What to do?
     if args.dump_servers is not None:
-        dump_servers(args)
+        try:
+            dump_servers(args)
+        except Exception as e:
+            print(str(e))
     elif args.load_servers is not None:
-        load_servers(args)
+        try:
+            load_servers(args)
+        except Exception as e:
+            print(str(e))
     else:
         setup_db()

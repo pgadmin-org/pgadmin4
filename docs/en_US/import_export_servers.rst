@@ -23,7 +23,11 @@ the ``--dump-servers`` command line option, followed by the name (and if require
 path) to the desired output file. By default, servers owned by the desktop mode
 user will be dumped (pgadmin4@pgadmin.org by default - see the DESKTOP_USER
 setting in ``config.py``). This can be overridden with the ``--user`` command
-line option. For example:
+line option. There can be multiple configuations of pgAdmin on the same system.
+To dump the servers from specific pgAdmin config DB file, ``--sqlite-path`` option
+can be used. It is also recommended to use this option when running pgAdmin in
+desktop mode. By default SQLITE_PATH setting in ``config.py`` is taken.
+For example:
 
 .. code-block:: bash
 
@@ -32,6 +36,10 @@ line option. For example:
     # or, to specify a non-default user name:
 
     /path/to/python /path/to/setup.py --dump-servers output_file.json --user user@example.com
+
+    # to specify a pgAdmin config DB file:
+
+    /path/to/python /path/to/setup.py --dump-servers output_file.json --sqlite-path /path/to/pgadmin4.db
 
 To export only certain servers, use the ``--servers`` option and list one or
 more server IDs. For example:
@@ -48,7 +56,10 @@ the ``--load-servers`` command line option, followed by the name (and if require
 path) of the JSON file containing the server definitions. Servers will be owned
 by the desktop mode user (pgadmin4@pgadmin.org by default - see the DESKTOP_USER
 setting in ``config.py``). This can be overridden with the ``--user`` command
-line option. For example:
+line option. There can be multiple configuations of pgAdmin on the same system.
+To load the servers into a specific pgAdmin config DB file, ``--sqlite-path`` option
+can be used. It is also recommended to use this option when running pgAdmin in
+desktop mode. By default SQLITE_PATH setting in ``config.py`` is taken. For example:
 
 .. code-block:: bash
 
@@ -57,6 +68,10 @@ line option. For example:
     # or, to specify a non-default user name to own the new servers:
 
     /path/to/python /path/to/setup.py --load-servers input_file.json --user user@example.com
+
+    # to specify a pgAdmin config DB file:
+
+    /path/to/python /path/to/setup.py --load-servers input_file.json --sqlite-path /path/to/pgadmin4.db
 
 If any Servers are defined with a Server Group that is not already present in
 the configuration database, the required Group will be created.

@@ -182,6 +182,11 @@ def create_app(app_name=None):
     if not app_name:
         app_name = config.APP_NAME
 
+    # Check if app is created for CLI operations or Web
+    cli_mode = False
+    if app_name.endswith('-cli'):
+        cli_mode = True
+
     # Only enable password related functionality in server mode.
     if config.SERVER_MODE is True:
         # Some times we need to access these config params where application
@@ -236,16 +241,17 @@ def create_app(app_name=None):
         config.MASTER_PASSWORD_REQUIRED = False
         config.UPGRADE_CHECK_ENABLED = False
 
-    # Ensure the various working directories exist
-    from pgadmin.setup import create_app_data_directory, db_upgrade
-    create_app_data_directory(config)
+    if not cli_mode:
+        # Ensure the various working directories exist
+        from pgadmin.setup import create_app_data_directory
+        create_app_data_directory(config)
 
-    # File logging
-    fh = logging.FileHandler(config.LOG_FILE, encoding='utf-8')
-    fh.setLevel(config.FILE_LOG_LEVEL)
-    fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
-    app.logger.addHandler(fh)
-    logger.addHandler(fh)
+        # File logging
+        fh = logging.FileHandler(config.LOG_FILE, encoding='utf-8')
+        fh.setLevel(config.FILE_LOG_LEVEL)
+        fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
+        app.logger.addHandler(fh)
+        logger.addHandler(fh)
 
     # Console logging
     ch = logging.StreamHandler()
@@ -320,11 +326,21 @@ def create_app(app_name=None):
     with app.app_context():
         # Run migration for the first time i.e. create database
         from config import SQLITE_PATH
+        from pgadmin.setup import db_upgrade
 
         # If version not available, user must have aborted. Tables are not
         # created and so its an empty db
         if not os.path.exists(SQLITE_PATH) or get_version() == -1:
-            db_upgrade(app)
+            # If running in cli mode then don't try to upgrade, just raise
+            # the exception
+            if not cli_mode:
+                db_upgrade(app)
+            else:
+                if not os.path.exists(SQLITE_PATH):
+                    raise FileNotFoundError(
+                        'SQLite database file "' + SQLITE_PATH +
+                        '" does not exists.')
+                raise Exception('Specified SQLite database file is not valid.')
         else:
             schema_version = get_version()
 
@@ -343,8 +359,10 @@ def create_app(app_name=None):
 
     Mail(app)
 
-    import pgadmin.utils.paths as paths
-    paths.init_app(app)
+    # Don't bother paths when running in cli mode
+    if not cli_mode:
+        import pgadmin.utils.paths as paths
+        paths.init_app(app)
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -382,9 +400,10 @@ def create_app(app_name=None):
     app.permanent_session_lifetime = timedelta(
         days=config.SESSION_EXPIRATION_TIME)
 
-    app.session_interface = create_session_interface(
-        app, config.SESSION_SKIP_PATHS
-    )
+    if not cli_mode:
+        app.session_interface = create_session_interface(
+            app, config.SESSION_SKIP_PATHS
+        )
 
     # Make the Session more secure against XSS & CSRF when running in web mode
     if config.SERVER_MODE and config.ENHANCED_COOKIE_PROTECTION:
