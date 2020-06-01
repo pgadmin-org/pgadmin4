@@ -185,15 +185,7 @@ server or desktop mode, and access it from a web browser using the URL shown in
 the terminal once pgAdmin has started up.
 
 Setup of an environment on Windows is somewhat more complicated unfortunately,
-largely due to the lack of a native compiler toolset. See the following wiki
-page for more information on the compiler you may need:
-
-https://wiki.python.org/moin/WindowsCompilers
-
-A blog detailing the setup of Virtual Environments on Windows can be found
-here:
-
-http://www.tylerbutler.com/2012/05/how-to-install-python-pip-and-virtualenv-on-windows-with-powershell/
+please see pkg/win32/README.txt for complete details.
 
 Once a virtual environment has been created and enabled, setup can continue
 from step 4 above.
@@ -299,30 +291,7 @@ run:
 
 To build the macOS AppBundle, please see pkg/mac/README.
 
-On Windows, the InnoSetup tool is required to create an installer. Download the
-Unicode version from:
-
-http://www.jrsoftware.org/isdl.php
-
-A number of environment variables may need to be set to enable the build script
-to function. The defaults will usually work on a typical 64 bit system with
-Qt 5.14.2, Python 3.8 and Visual Studio 2013. The examples below are for a
-similar 32 bit system:
-
-INNOTOOL=C:\Program Files\Inno Setup 5
-PGDIR=C:\Program Files\PostgreSQL\12
-PYTHON_DLL=C:\Python38\Python38.dll
-PYTHON_HOME=C:\Python38
-PYTHON_VERSION=38
-QTDIR=C:\Qt\5.14.2\msvc2015
-VCDIR=C:\Program Files\Microsoft Visual Studio 14.0\VC
-
-To build the installer:
-
-    C:\$PGADMIN4_SRC> make x86
-
-If you have a code signing certificate, this will automatically be used if
-found in the Windows Certificate Store to sign the installer.
+To build the Windows installer, please see pkg/win32/README.txt.
 
 Support
 -------

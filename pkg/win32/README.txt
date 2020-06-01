@@ -1,46 +1,147 @@
-﻿Building pgAdmin windows installer on windows
-=================================
+﻿These notes describe how to setup a Windows development/build environment for
+pgAdmin. They assume a 64bit build is required; adjustments will be required for
+a 32bit build.
 
-To generate a pgAdmin 4 installer for Windows bit, the following packages must be installed:
+Installing build requirements
+=============================
 
-1. Python installation
-  - Python 3.4+ or above from https://www.python.org/
+1) Install Qt 5.14.2: https://www.qt.io/download-qt-installer
 
-2. QT installation
-  - Qt 4.6 through 5.5 from http://www.qt.io/
+Use the MSVC++ 2017 64bit option.
 
-3. PostgreSQL installation
-  - PostgreSQL 9.1 or above from http://www.postgresql.org/
+2) Install Visual Studio 2017 Pro: https://my.visualstudio.com/Downloads?q=Visual%20Studio%202017
 
-4. Inno Setup Installer (unicode)
-   - 5.0 and above from http://www.jrsoftware.org/isdl.php
+Choose the Desktop development with C++ option.
 
-5. Microsoft visual studio (2008 and above)
+3) Install Chocolatey: https://chocolatey.org/install#individual
 
-Building: Depending upon the archicture of the OS(x86|amd64) set then environment variables.
+4) Install various command line tools:
 
-1. Set the PYTHON environment variable to the Python root installation directory, e.g. for x86
+choco install -y  bzip2 cmake diffutils gzip git innosetup nodejs-lts python strawberryperl wget yarn
 
-   SET "PYTHON_HOME=C:\Python38"
-   SET "PYTHON_DLL=C:\Windows\System32\python38.dll"
+5) Upgrade pip (this may give a permissions error that can be ignored) and
+   install the virtualenv package:
 
-2. Set the QTDIR environment variable to the QT root installation directory, e.g. for x86
+pip install --upgrade pip
+pip install virtualenv
 
-   SET "QTDIR=C:\Qt\Qt5.5.1\5.5\msvc2013"
+Building dependencies
+=====================
 
-3. Set the PGDIR environment variable to the PostgreSQL installation directory, e.g. for x86
+The following steps should be run from a Visual Studio 2017 64bit command
+prompt.
 
-   SET "PGDIR=C:\Program Files\PostgreSQL\9.5"
+1) Create a directory for the dependencies:
 
-4. Set the Inno Setup Installer environment variable to the Inno root installation directory, e.g. for x86
+mkdir c:\build64
 
-   SET "INNOTOOL=C:\Program Files\Inno Setup 5"
+2) Download the zlib source code, unpack, and build it:
 
-5. Set the Miscrosoft Visual studio environment variable to the Visual studio root installation directory, e.g. for x86
+wget https://zlib.net/zlib-1.2.11.tar.gz
+tar -zxvf zlib-1.2.11.tar.gz
+cd zlib-1.2.11
+cmake -DCMAKE_INSTALL_PREFIX=C:/build64/zlib -G "Visual Studio 15 2017 Win64" .
+msbuild RUN_TESTS.vcxproj /p:Configuration=Release
+msbuild INSTALL.vcxproj /p:Configuration=Release
+copy C:\build64\zlib\lib\zlib.lib C:\build64\zlib\lib\zdll.lib
 
-   SET "VCDIR=C:\Program Files\Microsoft Visual Studio 12.0\VC"
+3) Download the OpenSSL source code, unpack and build it:
 
-6. To build, go to pgAdmin4 source root directory and execute "Make.bat x86|amd64". Based on x86|amd64, this will
-   create the python virtual environment and install all the required python modules mentioned in the
-   requirements file using pip, build the runtime code and finally create the windows installer x86|amd64 in ./dist directory
+wget https://www.openssl.org/source/openssl-1.1.1g.tar.gz
+tar -zxvf openssl-1.1.1g.tar.gz
+cd openssl-1.1.1g
+perl Configure VC-WIN64A no-asm --prefix=C:\build64\openssl --openssldir=C:\build64\openssl\ssl no-ssl2 no-ssl3 no-comp
+nmake
+nmake test
+nmake install
 
+4) Download the PostgreSQL source code, unpack and build it:
+
+wget https://ftp.postgresql.org/pub/source/v12.3/postgresql-12.3.tar.bz2
+tar -zxvf postgresql-12.3.tar.gz
+cd postgresql-12.3\src\tools\msvc
+
+>> config.pl echo # Configuration arguments for vcbuild.
+>> config.pl echo use strict;
+>> config.pl echo use warnings;
+>> config.pl echo.
+>> config.pl echo our $config = {
+>> config.pl echo 	asserts   =^> 0,        # --enable-cassert
+>> config.pl echo 	ldap      =^> 1,        # --with-ldap
+>> config.pl echo 	extraver  =^> undef,    # --with-extra-version=^<string^>
+>> config.pl echo 	gss       =^> undef,    # --with-gssapi=^<path^>
+>> config.pl echo 	icu       =^> undef,    # --with-icu=^<path^>
+>> config.pl echo 	nls       =^> undef,    # --enable-nls=^<path^>
+>> config.pl echo 	tap_tests =^> undef,    # --enable-tap-tests
+>> config.pl echo 	tcl       =^> undef,    # --with-tcl=^<path^>
+>> config.pl echo 	perl      =^> undef,    # --with-perl
+>> config.pl echo 	python    =^> undef,    # --with-python=^<path^>
+>> config.pl echo 	openssl   =^> 'C:\build64\openssl',    # --with-openssl=^<path^>
+>> config.pl echo 	uuid      =^> undef,    # --with-ossp-uuid
+>> config.pl echo 	xml       =^> undef,    # --with-libxml=^<path^>
+>> config.pl echo 	xslt      =^> undef,    # --with-libxslt=^<path^>
+>> config.pl echo 	iconv     =^> undef,    # (not in configure, path to iconv)
+>> config.pl echo 	zlib      =^> 'C:\build64\zlib'     # --with-zlib=^<path^>
+>> config.pl echo };
+>> config.pl echo.
+>> config.pl echo 1;
+
+>> buildenv.pl echo $ENV{PATH} = "C:\\build64\\openssl\\bin;C:\\build64\\zlib\\bin;$ENV{PATH}";
+
+perl build.pl Release
+perl vcregress.pl check
+perl install.pl C:\build64\pgsql
+copy C:\build64\zlib\bin\zlib.dll C:\build64\pgsql\bin"
+copy C:\build64\openssl\bin\libssl-1_1-x64.dll C:\build64\pgsql\bin"
+copy C:\build64\openssl\bin\libcrypto-1_1-x64.dll C:\build64\pgsql\bin"
+
+Setting up a dev environment
+============================
+
+This section describes the steps to setup and run pgAdmin for the first time in
+a development environment. You do not need to complete this section if you just
+want to build an installer.
+
+1) Check out the source code:
+
+git clone https://git.postgresql.org/git/pgadmin4.git
+
+2) Install and build the JS dependencies
+
+cd pgadmin4\web
+yarn install
+yarn run bundle
+
+3) Create a virtual env
+
+cd pgadmin4
+python -m venv
+pip install -r web\regression\requirements.txt
+pip install sphinx
+
+You should now be able to run the pgAdmin Python application, or build the
+desktop runtime.
+
+Building an installer
+=====================
+
+1) Set the required environment variables, either system-wide, or in a Visual
+Studio 2017 64bit command prompt. Note that the examples shown below are the
+defaults for the build system, so if they match your requirements you don't
+need to set them:
+
+SET "PGADMIN_POSTGRES_DIR=C:\Program Files\PostgreSQL\12"
+SET "PGADMIN_PYTHON_DIR=C:\Python38"
+SET "PGADMIN_QT_DIR=C:\Qt\5.14.2\msvc2017_64"
+SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
+SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
+SET "PGADMIN_VCREDIST_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Redist\MSVC\14.16.27012"
+
+2) Run:
+
+make
+
+If you have a code signing certificate, this will automatically be used if
+found in the Windows Certificate Store to sign the installer.
+
+3) Find the completed installer in the dist/ subdirectory of your source tree.

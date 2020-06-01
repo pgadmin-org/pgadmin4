@@ -2,23 +2,26 @@
 SETLOCAL
 
 SET WD=%CD%
-SET "PGBUILDPATH=%WD%\win-build"
+SET "BUILDROOT=%WD%\win-build"
+SET "DISTROOT=%WD%\dist"
 
-SET CMDOPTION=""
-IF "%1" == "clean"  SET CMDOPTION="VALID"
-IF "%1" == "x86"    SET CMDOPTION="VALID"
+SET CMDOPTIONS=""
+IF "%1" == "clean" SET CMDOPTIONS="VALID"
+IF "%1" == ""      SET CMDOPTIONS="VALID"
 
-IF NOT %CMDOPTION%=="VALID" (
+IF NOT %CMDOPTIONS%=="VALID" (
     GOTO USAGE
 )
 
-SET ARCHITECTURE=%1
-
-IF "%ARCHITECTURE%"=="clean" (
+IF "%1" == "clean" (
     CALL :CLEAN
     EXIT /B %ERRORLEVEL%
 )
 
+set "ARCHITECTURE=x64"
+if "%Platform%" == "X86" (
+    set "ARCHITECTURE=x86"
+)
 
 REM Main build sequence
 CALL :SET_ENVIRONMENT
@@ -37,7 +40,7 @@ REM Main build sequence Ends
 
 :CLEAN
     ECHO Removing build directory...
-    IF EXIST "%PGBUILDPATH%" RD "%PGBUILDPATH%" /S /Q > nul || EXIT /B 1
+    IF EXIST "%BUILDROOT%" RD "%BUILDROOT%" /S /Q > nul || EXIT /B 1
 
     ECHO Removing temp build directory...
     IF EXIST "%WD%\pkg\win32\Output" rd "%WD%\pkg\win32\Output" /S /Q > nul || EXIT /B 1
@@ -50,40 +53,32 @@ REM Main build sequence Ends
 
 :SET_ENVIRONMENT
     ECHO Configuring the environment...
-    IF "%PYTHON_HOME%" == ""   SET "PYTHON_HOME=C:\Python27"
-    IF "%PYTHON_DLL%" == ""    SET "PYTHON_DLL=C:\Windows\SysWOW64\python27.dll"
-    IF "%QTDIR%" == ""         SET "QTDIR=C:\Qt\5.9.1\mingw53_32"
-    IF "%MAKE%" == ""          SET "MAKE=mingw32-make.exe"
-    IF "%PGDIR%" == ""         SET "PGDIR=C:\Program Files (x86)\PostgreSQL\10"
-    IF "%INNOTOOL%" == ""      SET "INNOTOOL=C:\Program Files (x86)\Inno Setup 5"
-    IF "%VCREDIST%" == ""      SET "VCREDIST=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\1033\vcredist_x86.exe"
-    IF "%SIGNTOOL%" == ""      SET "SIGNTOOL=C:\Program Files\Microsoft SDKs\Windows\v7.1A\Bin\signtool.exe"
+    IF "%PGADMIN_PYTHON_DIR%" == ""   SET "PGADMIN_PYTHON_DIR=C:\Python38"
+    IF "%PGADMIN_QT_DIR%" == ""       SET "PGADMIN_QT_DIR=C:\Qt\5.14.2\msvc2017_64"
+    IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\Program Files (x86)\PostgreSQL\12"
+    IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
+    IF "%PGADMIN_VCREDIST_DIR%" == "" SET "PGADMIN_VCREDIST_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Redist\MSVC\14.16.27012"
+    IF "%PGADMIN_SIGNTOOL_DIR%" == "" SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
 
-    REM Set VCREDISTNAME (the filename)
-    for /f "delims=" %%i in ("%VCREDIST%") do set "VCREDISTNAME=%%~nxi"
+    REM Set REDIST_NAME (the filename)
+    set "VCREDIST_FILE=vcredist_%ARCHITECTURE%.exe"
 
     REM Set additional variables we need
-    SET "QMAKE=%QTDIR%\bin\qmake.exe"
-    FOR /F "tokens=4,5 delims=. " %%a IN ('%QMAKE% -v ^| findstr /B /C:"Using Qt version "') DO SET QT_VERSION=%%a.%%b
-
-    SET "VIRTUALENV=venv"
-    SET "TARGET_DIR=%WD%\dist"
-
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')    DO SET APP_MAJOR=%%a
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\config.py')   DO SET APP_MINOR=%%a
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_SUFFIX =" %WD%\web\config.py')     DO SET APP_VERSION_SUFFIX=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')  DO SET APP_MAJOR=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\config.py') DO SET APP_MINOR=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_SUFFIX =" %WD%\web\config.py')   DO SET APP_VERSION_SUFFIX=%%a
     REM remove single quote from the string
     SET APP_VERSION_SUFFIX=%APP_VERSION_SUFFIX:'=%
     SET APP_NAME=""
-    FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py')   DO SET APP_NAME=%%a
-    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "print('%APP_NAME%'.lower().replace(' ', ''))"') DO SET APP_SHORTNAME=%%G
+    FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py') DO SET APP_NAME=%%a
+    FOR /f "tokens=1 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "print('%APP_NAME%'.lower().replace(' ', ''))"') DO SET APP_SHORTNAME=%%G
     SET APP_VERSION=%APP_MAJOR%.%APP_MINOR%
     SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%APP_VERSION_SUFFIX%-%ARCHITECTURE%.exe
     IF "%APP_VERSION_SUFFIX%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%ARCHITECTURE%.exe
 
     REM get Python version for the runtime build ex. 2.7.1 will be 27
-    FOR /f "tokens=1 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
-    FOR /f "tokens=2 DELims=." %%G IN ('%PYTHON_HOME%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MINOR=%%G
+    FOR /f "tokens=1 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
+    FOR /f "tokens=2 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MINOR=%%G
     SET "PYTHON_VERSION=%PYTHON_MAJOR%%PYTHON_MINOR%"
 
     EXIT /B 0
@@ -91,32 +86,24 @@ REM Main build sequence Ends
 
 :VALIDATE_ENVIRONMENT
     ECHO ****************************************************************
-    ECHO                        S U M M A R Y
+    ECHO * Build summary
     ECHO ****************************************************************
-    ECHO Build path:                %PGBUILDPATH%
-    ECHO Output directory:          %TARGET_DIR%
+    ECHO Build path:                %BUILDROOT%
+    ECHO Output directory:          %DISTROOT%
     ECHO Installer name:            %INSTALLERNAME%
     ECHO.
-    ECHO Python home:               %PYTHON_HOME%
-    ECHO Python DLL:                %PYTHON_DLL%
-    ECHO Python version:            %PYTHON_VERSION%
-    ECHO Python major version:      %PYTHON_MAJOR%
-    ECHO Python minor version:      %PYTHON_MINOR%
+    ECHO Python directory:          %PGADMIN_PYTHON_DIR%
+    ECHO Python DLL:                %PGADMIN_PYTHON_DIR%\Python%PYTHON_VERSION%.dll
+    ECHO Python version:            %PYTHON_MAJOR%.%PYTHON_MINOR%
     ECHO.
-    ECHO Qt home:                   %QTDIR%
-    ECHO qmake executable:          %QMAKE%
-    ECHO Qt version:                %QT_VERSION%
+    ECHO Qt directory:              %PGADMIN_QT_DIR%
+    ECHO PostgreSQL directory:      %PGADMIN_POSTGRES_DIR%
     ECHO.
-    ECHO PostgreSQL home:           %PGDIR%
+    ECHO VC++ redist directory:     %PGADMIN_VCREDIST_DIR%
+    ECHO VC++ redist file:          %VCREDIST_FILE%
+    ECHO InnoTool directory:        %PGADMIN_INNOTOOL_DIR%
+    ECHO signtool directory:        %PGADMIN_SIGNTOOL_DIR%
     ECHO.
-    ECHO VC++ redistributable:      %VCREDIST%
-    ECHO VC++ redistributable file: %VCREDISTNAME%
-    ECHO.
-    ECHO innotool executable:       %INNOTOOL%
-    ECHO signtool executable:       %SIGNTOOL%
-    ECHO.
-    ECHO App major version:         %APP_MAJOR%
-    ECHO App minor version:         %APP_MINOR%
     ECHO App version:               %APP_VERSION%
     ECHO App version suffix:        %APP_VERSION_SUFFIX%
     ECHO App short name:            %APP_SHORTNAME%
@@ -124,88 +111,85 @@ REM Main build sequence Ends
     ECHO ****************************************************************
 
     ECHO Checking the environment...
-    IF NOT EXIST "%INNOTOOL%" (
-        ECHO !INNOTOOL! does not exist
-        ECHO Please install Innotool and set the INNOTOOL environment variable.
+    IF NOT EXIST "%PGADMIN_INNOTOOL_DIR%" (
+        ECHO !PGADMIN_INNOTOOL_DIR! does not exist
+        ECHO Please install InnoTool and set the PGADMIN_INNOTOOL_DIR environment variable.
         EXIT /B 1
     )
 
-    IF NOT EXIST "%VCREDIST%" (
-        ECHO !VCREDIST! does not exist
-        ECHO Please install Microsoft Visual studio and set the VCREDIST environment variable.
+    IF NOT EXIST "%PGADMIN_VCREDIST_DIR%" (
+        ECHO !PGADMIN_VCREDIST_DIR! does not exist
+        ECHO Please install Microsoft Visual studio and set the PGADMIN_VCREDIST_DIR environment variable.
         EXIT /B 1
     )
 
-    IF NOT EXIST "%QTDIR%" (
-        ECHO !QTDIR! does not exist.
-        ECHO Please install Qt and set the QTDIR environment variable.
+    IF NOT EXIST "%PGADMIN_QT_DIR%" (
+        ECHO !PGADMIN_QT_DIR! does not exist.
+        ECHO Please install Qt and set the PGADMIN_QT_DIR environment variable.
         EXIT /B 1
     )
 
-    IF NOT EXIST "%QMAKE%" (
+    IF NOT EXIST "%PGADMIN_QT_DIR%\bin\qmake.exe" (
         ECHO !QMAKE! does not exist.
-        ECHO Please install Qt and set the QTDIR environment variable.
+        ECHO Please install Qt and set the PGADMIN_QT_DIR environment variable.
         EXIT /B 1
     )
 
-    IF NOT EXIST "%PYTHON_HOME%" (
-        ECHO !PYTHON_HOME! does not exist.
-        ECHO Please install Python and set the PYTHON_HOME environment variable.
+    IF NOT EXIST "%PGADMIN_PYTHON_DIR%" (
+        ECHO !PGADMIN_PYTHON_DIR! does not exist.
+        ECHO Please install Python and set the PGADMIN_PYTHON_DIR environment variable.
         EXIT /B 1
     )
 
-    IF NOT EXIST "%PYTHON_DLL%" (
-        ECHO !PYTHON_DLL! does not exist.
-        ECHO Please install Python and set the PYTHON_DLL environment variable.
+    IF NOT EXIST "%PGADMIN_PYTHON_DIR%\Python%PYTHON_VERSION%.dll" (
+        ECHO !PGADMIN_PYTHON_DIR!\Python!PYTHON_VERSION!.dll does not exist.
+        ECHO Please check your Python installation is complete.
         EXIT /B 1
     )
 
-    IF NOT EXIST "%PGDIR%" (
-        ECHO !PGDIR! does not exist.
-        ECHO Please install PostgreSQL and set the PGDIR environment variable.
+    IF NOT EXIST "%PGADMIN_POSTGRES_DIR%" (
+        ECHO !PGADMIN_POSTGRES_DIR! does not exist.
+        ECHO Please install PostgreSQL and set the PGADMIN_POSTGRES_DIR environment variable.
         EXIT /B 1
     )
 
-    IF NOT EXIST "%PYTHON_HOME%\Scripts\virtualenv.exe" (
-        ECHO !PYTHON_HOME!\Scripts\virtualenv.exe does not exist.
+    IF NOT EXIST "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" (
+        ECHO !PGADMIN_PYTHON_DIR!\Scripts\virtualenv.exe does not exist.
         ECHO Please install the virtualenv package in Python.
         EXIT /B 1
     )
 
-    SET "PATH=%PGDIR%\bin;%PATH%"
+    SET "PATH=%PGADMIN_POSTGRES_DIR%\bin;%PATH%"
 
     EXIT /B 0
 
 
 :CREATE_VIRTUAL_ENV
     ECHO Creating virtual environment...
-    IF NOT EXIST "%PGBUILDPATH%"  MKDIR "%PGBUILDPATH%"
+    IF NOT EXIST "%BUILDROOT%"  MKDIR "%BUILDROOT%"
     
-    CD "%PGBUILDPATH%"
-    "%PYTHON_HOME%\Scripts\virtualenv.exe" "%VIRTUALENV%"
+    CD "%BUILDROOT%"
+    "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
 
-    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\DLLs" "%PGBUILDPATH%\%VIRTUALENV%\DLLs" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%PYTHON_HOME%\Lib" "%PGBUILDPATH%\%VIRTUALENV%\Lib" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%BUILDROOT%\venv\DLLs" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%BUILDROOT%\venv\Lib" > nul || EXIT /B 1
 
-    ECHO Activating virtual environment -  %PGBUILDPATH%\%VIRTUALENV%...
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\activate" || EXIT /B 1
+    ECHO Activating virtual environment -  %BUILDROOT%\venv...
+    CALL "%BUILDROOT%\venv\Scripts\activate" || EXIT /B 1
 
     ECHO Installing dependencies...
     CALL pip install -r "%WD%\requirements.txt" || EXIT /B 1
     CALL pip install sphinx || EXIT /B 1
 
-    REM If we're using VC++, and this is Python 3.6+, we need to remove the hack
-    REM above or it will break qmake. Sigh.
-    IF "%MAKE%" == "nmake" (
-        IF %PYTHON_VERSION% GEQ 36 SET CL=
-    )
+    REM If this is Python 3.6+, we need to remove the hack above or it will break qmake. Sigh.
+    IF %PYTHON_VERSION% GEQ 36 SET CL=
 
     CD %WD%
     EXIT /B 0
 
 
 :CREATE_RUNTIME_ENV
-    MKDIR "%PGBUILDPATH%\runtime"
+    MKDIR "%BUILDROOT%\runtime"
 
     CD "%WD%\web"
 
@@ -219,33 +203,33 @@ REM Main build sequence Ends
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
 
     ECHO Copying web directory...
-    XCOPY /S /I /E /H /Y "%WD%\web" "%PGBUILDPATH%\web" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%WD%\web" "%BUILDROOT%\web" > nul || EXIT /B 1
 
     ECHO Cleaning up unnecessary .pyc and .pyo files...
-    FOR /R "%PGBUILDPATH%\web" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
+    FOR /R "%BUILDROOT%\web" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
     ECHO Removing tests, Python caches and node modules...
-    FOR /R "%PGBUILDPATH%\web" %%f in (tests feature_tests __pycache__ node_modules) do RD /Q /S "%%f" 1> nul 2>&1
+    FOR /R "%BUILDROOT%\web" %%f in (tests feature_tests __pycache__ node_modules) do RD /Q /S "%%f" 1> nul 2>&1
     ECHO Removing the test framework...
-    RD /Q /S "%PGBUILDPATH%\web\regression" 1> nul 2>&1
+    RD /Q /S "%BUILDROOT%\web\regression" 1> nul 2>&1
     ECHO Removing tools...
-    RD /Q /S "%PGBUILDPATH%\web\tools" 1> nul 2>&1
+    RD /Q /S "%BUILDROOT%\web\tools" 1> nul 2>&1
     ECHO Removing any existing configurations...
-    DEL /q "%PGBUILDPATH%\web\pgadmin4.db" 1> nul 2>&1
-    DEL /q "%PGBUILDPATH%\web\config_local.py" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\pgadmin4.db" 1> nul 2>&1
+    DEL /q "%BUILDROOT%\web\config_local.py" 1> nul 2>&1
     
     ECHO Creating config_distro.py
-    ECHO SERVER_MODE = False > "%PGBUILDPATH%\web\config_distro.py"
-    ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%PGBUILDPATH%\web\config_distro.py"
-    ECHO DEFAULT_BINARY_PATHS = { >> "%PGBUILDPATH%\web\config_distro.py"
-    ECHO     'pg':   '$DIR/../runtime', >> "%PGBUILDPATH%\web\config_distro.py"
-    ECHO     'ppas': '' >> "%PGBUILDPATH%\web\config_distro.py"
-    ECHO } >> "%PGBUILDPATH%\web\config_distro.py"
+    ECHO SERVER_MODE = False > "%BUILDROOT%\web\config_distro.py"
+    ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%BUILDROOT%\web\config_distro.py"
+    ECHO DEFAULT_BINARY_PATHS = { >> "%BUILDROOT%\web\config_distro.py"
+    ECHO     'pg':   '$DIR/../runtime', >> "%BUILDROOT%\web\config_distro.py"
+    ECHO     'ppas': '' >> "%BUILDROOT%\web\config_distro.py"
+    ECHO } >> "%BUILDROOT%\web\config_distro.py"
 
     ECHO Building docs...
-    MKDIR "%PGBUILDPATH%\docs\en_US\html"
+    MKDIR "%BUILDROOT%\docs\en_US\html"
     CD "%WD%\docs\en_US"
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\python.exe" build_code_snippet.py || EXIT /B 1
-    CALL "%PGBUILDPATH%\%VIRTUALENV%\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%PGBUILDPATH%\docs\en_US\html" || EXIT /B 1
+    CALL "%BUILDROOT%\venv\Scripts\python.exe" build_code_snippet.py || EXIT /B 1
+    CALL "%BUILDROOT%\venv\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%BUILDROOT%\docs\en_US\html" || EXIT /B 1
 
     ECHO Removing Sphinx
     CALL pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
@@ -254,56 +238,50 @@ REM Main build sequence Ends
     CD "%WD%\runtime"
 
     ECHO Running qmake...
-    CALL set "PGADMIN_PYTHON_DIR=%PYTHON_HOME%" && "%QMAKE%" || EXIT /B 1
+    CALL set "PGADMIN_PYTHON_DIR=%PGADMIN_PYTHON_DIR%" && "%PGADMIN_QT_DIR%\bin\qmake.exe" || EXIT /B 1
 
     ECHO Cleaning the build directory...
-    CALL %MAKE% clean || EXIT /B 1
+    CALL nmake clean || EXIT /B 1
 
     ECHO Running make...
-    CALL %MAKE% || EXIT /B 1
+    CALL nmake || EXIT /B 1
 
     ECHO Staging pgAdmin4.exe...
-    COPY "%WD%\runtime\release\pgAdmin4.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%WD%\runtime\release\pgAdmin4.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
 
     ECHO Staging Qt components...
-    COPY "%QTDIR%\bin\Qt5Core.dll"   "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%QTDIR%\bin\Qt5Gui.dll"    "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%QTDIR%\bin\Qt5Widgets.dll" "%PGBUILDPATH%\runtime" > nul  || EXIT /B 1
-    COPY "%QTDIR%\bin\Qt5Network.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%QTDIR%\bin\Qt5Svg.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    IF EXIST "%QTDIR%\bin\libgcc_s_dw2-1.dll" COPY "%QTDIR%\bin\libgcc_s_dw2-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    IF EXIST "%QTDIR%\bin\libstdc++-6.dll" COPY "%QTDIR%\bin\libstdc++-6.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    IF EXIST "%QTDIR%\bin\libwinpthread-1.dll" COPY "%QTDIR%\bin\libwinpthread-1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    MKDIR "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B 1
-    COPY "%QTDIR%\plugins\platforms\qwindows.dll" "%PGBUILDPATH%\runtime\platforms" > nul || EXIT /B 1
-    MKDIR "%PGBUILDPATH%\runtime\imageformats" > nul || EXIT /B 1
-    COPY "%QTDIR%\plugins\imageformats\qsvg.dll" "%PGBUILDPATH%\runtime\imageformats" > nul || EXIT /B 1
-    ECHO [Paths] > "%PGBUILDPATH%\runtime\qt.conf"
-    ECHO Plugins=plugins >> "%PGBUILDPATH%\runtime\qt.conf"
+    COPY "%PGADMIN_QT_DIR%\bin\Qt5Core.dll"   "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_QT_DIR%\bin\Qt5Gui.dll"    "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_QT_DIR%\bin\Qt5Widgets.dll" "%BUILDROOT%\runtime" > nul  || EXIT /B 1
+    COPY "%PGADMIN_QT_DIR%\bin\Qt5Network.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_QT_DIR%\bin\Qt5Svg.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    MKDIR "%BUILDROOT%\runtime\platforms" > nul || EXIT /B 1
+    COPY "%PGADMIN_QT_DIR%\plugins\platforms\qwindows.dll" "%BUILDROOT%\runtime\platforms" > nul || EXIT /B 1
+    MKDIR "%BUILDROOT%\runtime\imageformats" > nul || EXIT /B 1
+    COPY "%PGADMIN_QT_DIR%\plugins\imageformats\qsvg.dll" "%BUILDROOT%\runtime\imageformats" > nul || EXIT /B 1
+    ECHO [Paths] > "%BUILDROOT%\runtime\qt.conf"
+    ECHO Plugins=plugins >> "%BUILDROOT%\runtime\qt.conf"
 
     ECHO Staging PostgreSQL components...
-    COPY "%PGDIR%\bin\libpq.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    IF EXIST "%PGDIR%\bin\libcrypto-1_1.dll" (
-        REM OpenSSL 1.1.1
-        COPY "%PGDIR%\bin\libcrypto-1_1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-        COPY "%PGDIR%\bin\libssl-1_1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\libpq.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    IF "%ARCHITECTURE%" == "x64" (
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libcrypto-1_1-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libssl-1_1-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     ) ELSE (
-        REM OpenSSL 1.0.2
-        COPY "%PGDIR%\bin\ssleay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-        COPY "%PGDIR%\bin\libeay32.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libcrypto-1_1.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+        COPY "%PGADMIN_POSTGRES_DIR%\bin\libssl-1_1.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     )
-    IF EXIST "%PGDIR%\bin\libintl-*.dll" COPY "%PGDIR%\bin\libintl-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    IF EXIST "%PGDIR%\bin\libiconv-*.dll" COPY "%PGDIR%\bin\libiconv-*.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    IF EXIST "%PGDIR%\bin\zlib.dll" COPY "%PGDIR%\bin\zlib.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    IF EXIST "%PGDIR%\bin\zlib1.dll" COPY "%PGDIR%\bin\zlib1.dll" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%PGDIR%\bin\pg_dump.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%PGDIR%\bin\pg_dumpall.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1L%
-    COPY "%PGDIR%\bin\pg_restore.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY "%PGDIR%\bin\psql.exe" "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" "%BUILDROOT%\runtime" > nul
+    IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" "%BUILDROOT%\runtime" > nul
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\zlib.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dump.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_dumpall.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1L%
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\pg_restore.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\psql.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
 
     ECHO Staging VC++ runtime...
-    MKDIR "%PGBUILDPATH%\installer" || EXIT /B 1
-    COPY "%VCREDIST%" "%PGBUILDPATH%\installer" > nul || EXIT /B 1
+    MKDIR "%BUILDROOT%\installer" || EXIT /B 1
+    COPY "%PGADMIN_VCREDIST_DIR%\%VCREDIST_FILE%" "%BUILDROOT%\installer" > nul || EXIT /B 1
 
     CD %WD%
     EXIT /B 0
@@ -311,51 +289,51 @@ REM Main build sequence Ends
 
 :CREATE_PYTHON_ENV
     ECHO Staging Python...
-    COPY %PYTHON_DLL% "%PGBUILDPATH%\runtime"  > nul || EXIT /B 1
-    COPY %PYTHON_HOME%\python.exe "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
-    COPY %PYTHON_HOME%\pythonw.exe "%PGBUILDPATH%\runtime" > nul || EXIT /B 1
+    COPY %PGADMIN_PYTHON_DIR%\python%PYTHON_VERSION%.dll "%BUILDROOT%\runtime"  > nul || EXIT /B 1
+    COPY %PGADMIN_PYTHON_DIR%\python.exe "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY %PGADMIN_PYTHON_DIR%\pythonw.exe "%BUILDROOT%\runtime" > nul || EXIT /B 1
 
     ECHO Cleaning up unnecessary .pyc and .pyo files...
-    FOR /R "%PGBUILDPATH%\%VIRTUALENV%" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
+    FOR /R "%BUILDROOT%\venv" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
     ECHO Removing tests...
-    FOR /R "%PGBUILDPATH%\%VIRTUALENV%\Lib" %%f in (test tests) do RD /Q /S "%%f" 1> nul 2>&1
+    FOR /R "%BUILDROOT%\venv\Lib" %%f in (test tests) do RD /Q /S "%%f" 1> nul 2>&1
     ECHO Removing TCL...
-    RD /Q /S "%PGBUILDPATH%\%VIRTUALENV%\tcl" 1> nul 2>&1
+    RD /Q /S "%BUILDROOT%\venv\tcl" 1> nul 2>&1
 
     EXIT /B 0
 
 
 :CREATE_INSTALLER
     ECHO Preparing for creation of windows installer...
-    IF NOT EXIST "%TARGET_DIR%" MKDIR "%TARGET_DIR%"
+    IF NOT EXIST "%DISTROOT%" MKDIR "%DISTROOT%"
 
     ECHO Copying icon file...
-    COPY "%WD%\pkg\win32\Resources\pgAdmin4.ico" "%PGBUILDPATH%" > nul || EXIT /B 1
+    COPY "%WD%\pkg\win32\Resources\pgAdmin4.ico" "%BUILDROOT%" > nul || EXIT /B 1
 
     CD "%WD%\pkg\win32"
 
     ECHO Processing installer configuration script...
-    CALL "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in" "-o" "%WD%\pkg\win32\installer.iss.in_stage1" "-s" MYAPP_NAME -r """%APP_NAME%"""
-    CALL "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage1" "-o" "%WD%\pkg\win32\installer.iss.in_stage2" "-s" MYAPP_FULLVERSION -r """%APP_VERSION%"""
-    CALL "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage2" "-o" "%WD%\pkg\win32\installer.iss.in_stage3" "-s" MYAPP_VERSION -r """v%APP_MAJOR%"""
+    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in" "-o" "%WD%\pkg\win32\installer.iss.in_stage1" "-s" MYAPP_NAME -r """%APP_NAME%"""
+    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage1" "-o" "%WD%\pkg\win32\installer.iss.in_stage2" "-s" MYAPP_FULLVERSION -r """%APP_VERSION%"""
+    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage2" "-o" "%WD%\pkg\win32\installer.iss.in_stage3" "-s" MYAPP_VERSION -r """v%APP_MAJOR%"""
 
     SET ARCMODE=
-    IF "%ARCHITECTURE%"=="amd64" (
+    IF "%ARCHITECTURE%" == "x64" (
         set ARCMODE="x64"
     )
-    CALL "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage3" "-o" "%WD%\pkg\win32\installer.iss.in_stage4" "-s" MYAPP_ARCHITECTURESMODE -r """%ARCMODE%"""
-    CALL "%PYTHON_HOME%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage4" "-o" "%WD%\pkg\win32\installer.iss" "-s" MYAPP_VCDIST -r """%VCREDISTNAME%"""
+    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage3" "-o" "%WD%\pkg\win32\installer.iss.in_stage4" "-s" MYAPP_ARCHITECTURESMODE -r """%ARCMODE%"""
+    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage4" "-o" "%WD%\pkg\win32\installer.iss" "-s" MYAPP_VCDIST -r """%PGADMIN_VCREDIST_DIRNAME%\%VCREDIST_FILE%"""
 
     ECHO Cleaning up...
     DEL /s "%WD%\pkg\win32\installer.iss.in_stage*" > nul
 
     ECHO Creating windows installer using INNO tool...
-    CALL "%INNOTOOL%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss" || EXIT /B 1
+    CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" /q "%WD%\pkg\win32\installer.iss" || EXIT /B 1
 
     ECHO Renaming installer...
-    MOVE "%WD%\pkg\win32\Output\Setup.exe" "%TARGET_DIR%\%INSTALLERNAME%" > nul || EXIT /B 1
+    MOVE "%WD%\pkg\win32\Output\Setup.exe" "%DISTROOT%\%INSTALLERNAME%" > nul || EXIT /B 1
 
-    ECHO Location - %TARGET_DIR%\%INSTALLERNAME%
+    ECHO Location - %DISTROOT%\%INSTALLERNAME%
     ECHO Installer generated successfully.
 
     CD %WD%
@@ -364,7 +342,7 @@ REM Main build sequence Ends
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...
-    CALL "%SIGNTOOL%" sign  /t http://timestamp.verisign.com/scripts/timstamp.dll "%TARGET_DIR%\%INSTALLERNAME%"
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign  /t http://timestamp.verisign.com/scripts/timstamp.dll "%DISTROOT%\%INSTALLERNAME%"
     IF %ERRORLEVEL% NEQ 0 (
         ECHO.
         ECHO ************************************************************
@@ -378,15 +356,15 @@ REM Main build sequence Ends
 
 :CLEANUP_ENV
     ECHO Cleaning the build environment...
-    RD "%PGBUILDPATH%\%VIRTUALENV%\Include" /S /Q 1> nul 2>&1
-    DEL /s "%PGBUILDPATH%\%VIRTUALENV%\pip-selfcheck.json" 1> nul 2>&1
+    RD "%BUILDROOT%\venv\Include" /S /Q 1> nul 2>&1
+    DEL /s "%BUILDROOT%\venv\pip-selfcheck.json" 1> nul 2>&1
 
     EXIT /B 0
 
 
 :USAGE
     ECHO Invalid command line options.
-    ECHO Usage: "Make.bat <x86 | clean>"
+    ECHO Usage: "Make.bat [clean]"
     ECHO.
 
     EXIT /B 1

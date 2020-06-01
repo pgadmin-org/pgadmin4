@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5574 <https://redmine.postgresql.org/issues/5574>`_ -  Cleanup Windows build scripts and ensure Windows x64 builds will work.
 
 Bug fixes
 *********
