@@ -50,7 +50,7 @@ License:	PostgreSQL
 URL:		https://www.pgadmin.org/
 
 Requires:	python3, postgresql >= 9.5
-
+Conflicts:  postgresql-libs <= 9.2
 
 %description
 The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
