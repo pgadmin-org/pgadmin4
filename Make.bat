@@ -169,7 +169,7 @@ REM Main build sequence Ends
     IF NOT EXIST "%BUILDROOT%"  MKDIR "%BUILDROOT%"
     
     CD "%BUILDROOT%"
-    "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
+    "%PGADMIN_PYTHON_DIR%\python.exe" -m venv venv
 
     XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%BUILDROOT%\venv\DLLs" > nul || EXIT /B 1
     XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%BUILDROOT%\venv\Lib" > nul || EXIT /B 1

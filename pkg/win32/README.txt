@@ -19,11 +19,9 @@ Choose the Desktop development with C++ option.
 
 choco install -y  bzip2 cmake diffutils gzip git innosetup nodejs-lts python strawberryperl wget yarn
 
-5) Upgrade pip (this may give a permissions error that can be ignored) and
-   install the virtualenv package:
+5) Upgrade pip (this may give a permissions error that can be ignored):
 
 pip install --upgrade pip
-pip install virtualenv
 
 Building dependencies
 =====================
@@ -115,7 +113,7 @@ yarn run bundle
 3) Create a virtual env
 
 cd pgadmin4
-python -m venv
+python -m venv venv
 pip install -r web\regression\requirements.txt
 pip install sphinx
 
