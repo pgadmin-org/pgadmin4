@@ -49,3 +49,4 @@ web/yarn-error.log
 /web/cacert.pem
 auditjs.html
 auditpy.txt
+/venv/
