@@ -11,6 +11,9 @@ OS_VERSION=$(cat /etc/os-release | grep "^VERSION_ID=" | awk -F "=" '{ print $2 
 OS_NAME=$(cat /etc/os-release | grep "^ID=" | awk -F "=" '{ print $2 }' | sed 's/"//g')
 OS_ARCH=$(arch)
 
+# Make sure we get the right libpq
+export PATH=/usr/pgsql-12/bin:$PATH
+
 # Common Linux build functions
 source pkg/linux/build-functions.sh
 
@@ -49,8 +52,7 @@ Summary:	The core server package for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
 
-Requires:	python3, postgresql >= 9.5
-Conflicts:  postgresql-libs <= 9.2
+Requires:	python3, postgresql-libs >= 11
 
 %description
 The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -201,6 +203,9 @@ if [ ${OS_VERSION} == 7 ]; then
     rpmbuild -bb "${SOURCEDIR}/pkg/redhat/pgadmin4-python-mod_wsgi.spec"
 fi
 
+# Get the libpq we need
+yumdownloader --downloadonly --destdir=$DISTROOT postgresql12-libs
+
 #
 # Get the results!
 #
@@ -209,3 +214,5 @@ cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*${APP_LONG_VERSION}-*.noarch.rpm "$
 if [ ${OS_VERSION} == 7 ]; then
     cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.7.1-2.el7.x86_64.rpm "${DISTROOT}/"
 fi
+
+echo "Completed. RPMs created in $DESTDIR."
