@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5576 <https://redmine.postgresql.org/issues/5576>`_ - Improve error messaging if the storage and log directories cannot be created.
 
 Housekeeping
 ************
