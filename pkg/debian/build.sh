@@ -35,7 +35,7 @@ cat << EOF > "${SERVERROOT}/DEBIAN/control"
 Package: ${APP_NAME}-server
 Version: ${APP_LONG_VERSION}
 Architecture: ${OS_ARCH}
-Depends: python3, libpq5
+Depends: python3, libpq5 (>= 11.0)
 Recommends: postgresql-client | postgresql-client-12 | postgresql-client-11 | postgresql-client-10
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -106,3 +106,10 @@ EOF
 
 # Build the Debian meta package
 fakeroot dpkg-deb --build "${METAROOT}" "${DISTROOT}/${APP_NAME}_${APP_LONG_VERSION}_all.deb"
+
+# Get the libpq package
+pushd ${DISTROOT} 1> /dev/null
+apt-get download libpq5
+popd 1> /dev/null
+
+echo "Completed. DEBs created in ${DISTROOT}."
