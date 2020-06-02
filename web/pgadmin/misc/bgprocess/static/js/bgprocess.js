@@ -234,6 +234,8 @@ define('misc.bgprocess', [
                 {status_text:gettext('Failed (exit code: %s).', String(self.exit_code))}
               );
             }
+          } else if (_.isNull(self.exit_code) && self.state === 3) {
+            self.curr_status = self.other_status_tpl({status_text:gettext('Terminating the process...')});
           }
 
           if (self.state == 0 && self.stime) {
@@ -312,7 +314,7 @@ define('misc.bgprocess', [
                   <div class="pg-bg-etime my-auto mr-2"></div>
                   <div class="ml-auto">
                     <button class="btn btn-secondary pg-bg-more-details"><span class="fa fa-info-circle" role="img"></span>&nbsp;` + gettext('More details...') + `</button>
-                    <button class="btn btn-danger bg-process-stop"><span class="fa fa-times-circle" role="img"></span>&nbsp;` + gettext('Stop Process') + `</button>
+                    <button class="btn btn-danger bg-process-stop" disabled><span class="fa fa-times-circle" role="img"></span>&nbsp;` + gettext('Stop Process') + `</button>
                   </div>
                 </div>
                 <div class="pg-bg-status py-1">
@@ -372,9 +374,9 @@ define('misc.bgprocess', [
 
           var $status_bar = $(self.container.find('.pg-bg-status'));
           $status_bar.html(self.curr_status);
-          // Enable/Disable stop process button
           var $btn_stop_process = $(self.container.find('.bg-process-stop'));
-          if (isNaN(parseInt(self.exit_code))) {
+          // Enable Stop Process button only when process is running
+          if (parseInt(self.state) === 1) {
             $btn_stop_process.attr('disabled', false);
           } else {
             $btn_stop_process.attr('disabled', true);
@@ -403,8 +405,8 @@ define('misc.bgprocess', [
           $footer = container.find('.bg-process-footer'),
           $btn_stop_process = container.find('.bg-process-stop');
 
-        // Enable/Disable stop process button
-        if (isNaN(parseInt(self.exit_code))) {
+        // Enable Stop Process button only when process is running
+        if (parseInt(self.state) === 1) {
           $btn_stop_process.attr('disabled', false);
         } else {
           $btn_stop_process.attr('disabled', true);
@@ -621,7 +623,7 @@ define('misc.bgprocess', [
                   '</span>'+
                 '</div>' +
                 '<div class="ml-auto">' +
-                  '<button type="button" class="btn btn-danger bg-process-stop"><span class="fa fa-times-circle" role="img"></span>&nbsp;' + gettext('Stop Process') + '</button>' +
+                  '<button type="button" class="btn btn-danger bg-process-stop" disabled><span class="fa fa-times-circle" role="img"></span>&nbsp;' + gettext('Stop Process') + '</button>' +
                 '</div>' +
               '</div>' +
             '</div>' +
