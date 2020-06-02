@@ -139,10 +139,10 @@ _copy_code() {
     # Remove any TCL-related files that may cause us problems
     find "${SERVERROOT}/usr/${APP_NAME}/venv/" -name "_tkinter*" -print0 | xargs -0 rm -rf
 
-    pushd ${SOURCEDIR}/web
+    pushd ${SOURCEDIR}/web > /dev/null
         yarn install
         yarn run bundle
-    popd
+    popd > /dev/null
 
     # copy the web directory to the bundle as it is required by runtime
     cp -r "${SOURCEDIR}/web" "${SERVERROOT}/usr/${APP_NAME}/web/"

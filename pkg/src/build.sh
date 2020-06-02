@@ -69,7 +69,7 @@ do
     tar cf - ${FILE} | (cd src-build/${TARBALL_NAME}; tar xf -)
 done
 
-pushd web
+pushd web > /dev/null
     yarn install
     yarn run bundle
 
@@ -78,7 +78,7 @@ pushd web
         echo Adding ${FILE}
         tar cf - ${FILE} | (cd ../src-build/${TARBALL_NAME}/web; tar xf -)
     done
-popd
+popd > /dev/null
 
 # Create the tarball
 echo Creating tarball...
