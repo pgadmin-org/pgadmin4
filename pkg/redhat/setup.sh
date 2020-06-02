@@ -35,22 +35,37 @@ echo "Installing build pre-requisites..."
 yum groupinstall -y "Development Tools"
 
 if [ ${OS_VERSION} == 7 ]; then
-    yum install -y expect fakeroot httpd-devel qt5-qtbase-devel postgresql12-devel python3-devel nodejs yarn rpm-build rpm-sign
+    yum install -y expect fakeroot httpd-devel qt5-qtbase-devel postgresql12-devel python3-devel nodejs yarn rpm-build rpm-sign yum-utils
     pip3 install sphinx
 else
-    yum install -y expect fakeroot qt5-qtbase-devel postgresql12-devel python3-devel python3-sphinx nodejs yarn rpm-build rpm-sign
+    yum install -y expect fakeroot qt5-qtbase-devel postgresql12-devel python3-devel python3-sphinx nodejs yarn rpm-build rpm-sign yum-utils
 fi
 
 # Setup RPM macros for signing
 echo "Please add the following macros to ~/.rpmmacros for the user that will sign the RPMs if required:"
 echo
-cat << EOF
+if [ ${OS_VERSION} == 7 ]; then
+    cat << EOF
 # Macros for signing RPMs.
 
 %_signature gpg
 %_gpg_path ~/.gnupg
 %_gpg_name Package Manager
 %_gpgbin /usr/bin/gpg2
-%__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor --passphrase-fd 3 --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename} --digest-algo sha256 %{__plaintext_filename}'
+%__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor --passphrase-fd 3 --no-secmem-warning -u "%{_gpg_name}" -sbo %{__
+signature_filename} --digest-algo sha256 %{__plaintext_filename}
 EOF
+else
+    cat << EOF
+# Macros for signing RPMs.
+
+%_signature gpg
+%_gpg_path ~/.gnupg
+%_gpg_name <your signing key>
+%_gpgbin /usr/bin/gpg2
+%__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename
+} --digest-algo sha256 %{__plaintext_filename}
+EOF
+fi
+
 echo
