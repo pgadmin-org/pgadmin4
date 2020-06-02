@@ -8,7 +8,7 @@
 ##########################################################################
 
 import os
-import pwd
+import getpass
 
 
 def _create_directory_if_not_exists(_path):
@@ -33,7 +33,7 @@ def create_app_data_directory(config):
             "         https://www.pgadmin.org/docs/pgadmin4/{}/config_py.html".
             format(
                 os.path.dirname(config.SQLITE_PATH),
-                pwd.getpwuid(os.getuid()).pw_name,
+                getpass.getuser(),
                 config.APP_VERSION))
         exit(1)
 
@@ -50,7 +50,7 @@ def create_app_data_directory(config):
             print("HINT   : You may need to manually set the permissions on\n"
                   "         {} to allow {} to write to it.".
                   format(os.path.dirname(config.SQLITE_PATH),
-                         pwd.getpwuid(os.getuid()).pw_name))
+                         getpass.getuser()))
 
     # Create the directory containing the log file (if not present).
     try:
@@ -65,7 +65,7 @@ def create_app_data_directory(config):
             "         https://www.pgadmin.org/docs/pgadmin4/{}/config_py.html".
             format(
                 os.path.dirname(config.LOG_FILE),
-                pwd.getpwuid(os.getuid()).pw_name,
+                getpass.getuser(),
                 config.APP_VERSION))
         exit(1)
 
@@ -82,7 +82,7 @@ def create_app_data_directory(config):
             "         https://www.pgadmin.org/docs/pgadmin4/{}/config_py.html".
             format(
                 config.SESSION_DB_PATH,
-                pwd.getpwuid(os.getuid()).pw_name,
+                getpass.getuser(),
                 config.APP_VERSION))
         exit(1)
 
@@ -102,6 +102,6 @@ def create_app_data_directory(config):
             "         https://www.pgadmin.org/docs/pgadmin4/{}/config_py.html".
             format(
                 config.STORAGE_DIR,
-                pwd.getpwuid(os.getuid()).pw_name,
+                getpass.getuser(),
                 config.APP_VERSION))
         exit(1)
