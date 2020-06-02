@@ -6,10 +6,15 @@ if [ "$EUID" -ne 0 ]
 fi
 
 echo "Installing system pre-requisites..."
-apt install -y curl apt-transport-https ca-certificates
+apt install -y curl apt-transport-https ca-certificates gnupg
 
 echo "Removing yarn (which may not be the package we expect)..."
 dpkg -r yarn
+
+# PostgreSQL
+echo "Setting up the PostgreSQL repo..."
+curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
 # Node repo
 echo "Setting up the NodeJS repo..."
