@@ -215,4 +215,4 @@ if [ ${OS_VERSION} == 7 ]; then
     cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.7.1-2.el7.x86_64.rpm "${DISTROOT}/"
 fi
 
-echo "Completed. RPMs created in $DESTDIR."
+echo "Completed. RPMs created in ${DISTROOT}."
