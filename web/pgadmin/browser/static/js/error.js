@@ -13,7 +13,7 @@ define(
     pgAdmin.Browser = pgAdmin.Browser || {};
 
     _.extend(pgAdmin.Browser, {
-      report_error: function(title, message, info) {
+      report_error: function(title, message, info, callback) {
         title = _.escape(title);
         message = _.escape(message);
         info = _.escape(info);
@@ -49,7 +49,14 @@ define(
         alertify.alert(
           title,
           text
-        ).set('closable', true);
+        )
+          .set({'closable': true,
+            'onok': function() {
+              if(callback) {
+                callback();
+              }
+            },
+          });
       },
     });
 

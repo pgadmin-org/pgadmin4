@@ -23,6 +23,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
+from web.pgadmin.utils.exception import ObjectGone
 
 
 class DomainConstraintModule(CollectionNodeModule):
@@ -450,6 +451,8 @@ class DomainConstraintView(PGChildNodeView):
                     icon=icon
                 )
             )
+        except ObjectGone:
+            raise
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -686,6 +689,8 @@ class DomainConstraintView(PGChildNodeView):
                 return True, SQL.strip('\n'), data['name']
             else:
                 return True, SQL.strip('\n'), old_data['name']
+        except ObjectGone:
+            raise
         except Exception as e:
             return False, internal_server_error(errormsg=str(e)), None
 
@@ -704,6 +709,9 @@ class DomainConstraintView(PGChildNodeView):
 
         if not status:
             return False, internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            raise ObjectGone(
+                gettext("The specified domain could not be found."))
 
         return res['rows'][0]['schema'], res['rows'][0]['domain']
 

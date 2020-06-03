@@ -19,6 +19,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #3669 <https://redmine.postgresql.org/issues/3669>`_ -  Ensure that proper error should be displayed for the deleted node.
 | `Issue #3787 <https://redmine.postgresql.org/issues/3787>`_ -  Disabled the Stop process button after clicking it and added a message 'Terminating the process...' to notify the user.
 | `Issue #5416 <https://redmine.postgresql.org/issues/5416>`_ -  Ensure that the query tool panel gets closed when clicking on the 'Don't Save' button.
 | `Issue #5465 <https://redmine.postgresql.org/issues/5465>`_ -  Fixed an issue where the Edge browser version is showing wrong and warning message gets displayed.

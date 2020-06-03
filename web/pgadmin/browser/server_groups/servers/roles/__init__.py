@@ -763,7 +763,7 @@ rolmembership:{
                 )
             )
 
-        if res is None:
+        if res is None or (len(res) == 0):
             return gone(
                 _("Could not generate reversed engineered query for the role.")
             )

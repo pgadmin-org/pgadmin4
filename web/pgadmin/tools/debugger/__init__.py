@@ -24,7 +24,7 @@ from pgadmin.utils import PgAdminModule, \
     ACCESSKEY_FIELDS as accesskey_fields
 from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.ajax import make_json_response, \
-    internal_server_error
+    internal_server_error, gone
 from pgadmin.utils.driver import get_driver
 from pgadmin.settings import get_setting
 
@@ -391,6 +391,9 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
             "Error retrieving function information from database")
         return internal_server_error(errormsg=r_set)
 
+    if len(r_set['rows']) == 0:
+        return gone(
+            gettext("The specified %s could not be found." % node_type))
     ret_status = status
 
     # Check that the function is actually debuggable...

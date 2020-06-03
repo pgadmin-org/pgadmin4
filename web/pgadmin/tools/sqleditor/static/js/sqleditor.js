@@ -2107,9 +2107,18 @@ define('tools.querytool', [
             'pgadmin:query_tool:connected:' + self.transId, res.data
           );
         }).fail((xhr, status, error)=>{
-          pgBrowser.Events.trigger(
-            'pgadmin:query_tool:connected_fail:' + self.transId, xhr, error
-          );
+          if (xhr.status === 410) {
+          //checking for Query tool in new window.
+            if(self.preferences.new_browser_tab) {
+              pgBrowser.report_error(gettext('Error fetching rows - %s.', xhr.statusText), xhr.responseJSON.errormsg, undefined, window.close);
+            } else {
+              pgBrowser.report_error(gettext('Error fetching rows - %s.', xhr.statusText), xhr.responseJSON.errormsg, undefined, self.close.bind(self));
+            }
+          } else {
+            pgBrowser.Events.trigger(
+              'pgadmin:query_tool:connected_fail:' + self.transId, xhr, error
+            );
+          }
         });
       },
 
@@ -2316,10 +2325,14 @@ define('tools.querytool', [
                 msg = httpErrorHandler.handleQueryToolAjaxError(
                   pgAdmin, self, jqx, null, [], false
                 );
-                if (msg)
-                  pgBrowser.report_error(
-                    gettext('Error fetching SQL for script: %s.', msg)
-                  );
+                if (msg) {
+                  if(self.preferences.new_browser_tab) {
+                    pgBrowser.report_error(gettext('Error fetching SQL for script - %s.', jqx.statusText), jqx.responseJSON.errormsg, undefined, window.close);
+                  } else {
+                    pgBrowser.report_error(gettext('Error fetching SQL for script - %s.', jqx.statusText), jqx.responseJSON.errormsg, undefined, self.close.bind(self));
+                  }
+                }
+
               });
           }
         }

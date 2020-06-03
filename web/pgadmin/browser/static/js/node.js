@@ -815,7 +815,7 @@ define('pgadmin.browser.node', [
                 if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
                   try {
                     var data = JSON.parse(jqx.responseText);
-                    msg = data.errormsg;
+                    msg = data.info || data.errormsg;
                   } catch (e) {
                     console.warn(e.stack || e);
                   }

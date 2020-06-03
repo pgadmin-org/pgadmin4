@@ -277,7 +277,6 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
-
         if clid is not None:
             if len(rset['rows']) == 0:
                 return gone(
@@ -398,6 +397,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
         data['table'] = self.table
+        if len(data['table']) == 0:
+            return gone(gettext("The specified table could not be found."))
 
         # check type for '[]' in it
         data['cltype'], data['hasSqrBracket'] = \

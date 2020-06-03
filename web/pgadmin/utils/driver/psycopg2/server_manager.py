@@ -25,6 +25,7 @@ from pgadmin.model import Server, User
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 from pgadmin.utils.master_password import get_crypt_key
+from pgadmin.utils.exception import ObjectGone
 
 if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
@@ -209,7 +210,7 @@ WHERE db.oid = {0}""".format(did))
                                 database = self.db_info[did]['datname']
 
                         if did not in self.db_info:
-                            raise Exception(gettext(
+                            raise ObjectGone(gettext(
                                 "Could not find the specified database."
                             ))
 

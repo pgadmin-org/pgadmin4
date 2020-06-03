@@ -411,6 +411,9 @@ class UserMappingView(PGChildNodeView):
 
             if not status:
                 return internal_server_error(errormsg=res1)
+            if len(res1['rows']) == 0:
+                return gone(
+                    gettext("The specified user mappings could not be found."))
 
             fdw_data = res1['rows'][0]
 

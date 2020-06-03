@@ -544,6 +544,8 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
         data['table'] = self.table
+        if len(data['table']) == 0:
+            return gone(gettext("The specified object could not be found."))
 
         try:
             SQL = render_template("/".join([self.template_path,

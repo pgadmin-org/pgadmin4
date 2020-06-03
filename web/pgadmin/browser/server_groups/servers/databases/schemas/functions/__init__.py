@@ -1508,6 +1508,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         status, res = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(gettext("The specified function could not be found."))
 
         name = self.qtIdent(
             self.conn, res['rows'][0]['nspname'],

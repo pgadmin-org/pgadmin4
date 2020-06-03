@@ -19,7 +19,7 @@ from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas\
     .tables.base_partition_table import BasePartitionTable
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
-    make_response as ajax_response
+    gone, make_response as ajax_response
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader, parse_rule_definition
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -657,6 +657,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
            scid: Schema ID
            tid: Table ID
         """
+        # checking the table existence using the function of the same class
+        schema_name, table_name = self.get_schema_and_table_name(tid)
+
+        if table_name is None:
+            return gone(gettext("The specified table could not be found."))
+
+        # table exist
         try:
             SQL = render_template("/".join([self.table_template_path,
                                             'reset_stats.sql']),
@@ -1061,6 +1068,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
            parent_id: parent table id if current table is partition of parent
                     table else none
         """
+        # checking the table existence using the function of the same class
+        schema_name, table_name = self.get_schema_and_table_name(tid)
+
+        if table_name is None:
+            return gone(gettext("The specified table could not be found."))
+
+        # table exists
         try:
             SQL, name = self.get_sql(did, scid, tid, data, res)
 
@@ -1478,6 +1492,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                                       'get_schema_oid.sql']), tid=tid))
         if not status:
             return internal_server_error(errormsg=scid)
+        if scid is None:
+            return None, None
 
         # Fetch schema name
         status, schema_name = self.conn.execute_scalar(

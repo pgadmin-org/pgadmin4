@@ -31,6 +31,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.preferences import Preferences
 from pgadmin.settings import get_setting
 from pgadmin.browser.utils import underscore_unescape
+from web.pgadmin.utils.exception import ObjectGone
 
 MODULE_NAME = 'datagrid'
 
@@ -180,6 +181,8 @@ def initialize_datagrid(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
             did=did, obj_id=obj_id, cmd_type=cmd_type,
             sql_filter=filter_sql
         )
+    except ObjectGone:
+        raise
     except Exception as e:
         app.logger.error(e)
         return internal_server_error(errormsg=str(e))
@@ -434,6 +437,8 @@ def validate_filter(sid, did, obj_id):
 
         # Call validate_filter method to validate the SQL.
         status, res = sql_filter_obj.validate_filter(filter_sql)
+    except ObjectGone:
+        raise
     except Exception as e:
         app.logger.error(e)
         return internal_server_error(errormsg=str(e))
