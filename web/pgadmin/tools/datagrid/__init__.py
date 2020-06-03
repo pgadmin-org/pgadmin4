@@ -31,7 +31,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.preferences import Preferences
 from pgadmin.settings import get_setting
 from pgadmin.browser.utils import underscore_unescape
-from web.pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.exception import ObjectGone
 
 MODULE_NAME = 'datagrid'
 

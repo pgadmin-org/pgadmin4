@@ -21,7 +21,7 @@ from pgadmin.tools.sqleditor.utils.is_query_resultset_updatable \
 from pgadmin.tools.sqleditor.utils.save_changed_data import save_changed_data
 from pgadmin.tools.sqleditor.utils.get_column_types import get_columns_types
 from pgadmin.utils.preferences import Preferences
-from web.pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.exception import ObjectGone
 
 from config import PG_DEFAULT_DRIVER
 

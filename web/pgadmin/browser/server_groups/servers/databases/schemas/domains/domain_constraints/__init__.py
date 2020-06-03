@@ -23,7 +23,7 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from web.pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.exception import ObjectGone
 
 
 class DomainConstraintModule(CollectionNodeModule):
