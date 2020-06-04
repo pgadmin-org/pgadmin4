@@ -439,28 +439,28 @@ class Connection(BaseConnection):
                         "Failed to setup the role with error message:\n{0}"
                     ).format(status)
 
-        if manager.ver is None:
-            status = _execute(cur, "SELECT version()")
+        # Check database version every time on reconnection
+        status = _execute(cur, "SELECT version()")
 
-            if status is not None:
-                self.conn.close()
-                self.conn = None
-                self.wasConnected = False
-                current_app.logger.error(
-                    "Failed to fetch the version information on the "
-                    "established connection to the database server "
-                    "(#{server_id}) for '{conn_id}' with below error "
-                    "message:{msg}".format(
-                        server_id=self.manager.sid,
-                        conn_id=conn_id,
-                        msg=status)
-                )
-                return False, status
+        if status is not None:
+            self.conn.close()
+            self.conn = None
+            self.wasConnected = False
+            current_app.logger.error(
+                "Failed to fetch the version information on the "
+                "established connection to the database server "
+                "(#{server_id}) for '{conn_id}' with below error "
+                "message:{msg}".format(
+                    server_id=self.manager.sid,
+                    conn_id=conn_id,
+                    msg=status)
+            )
+            return False, status
 
-            if cur.rowcount > 0:
-                row = cur.fetchmany(1)[0]
-                manager.ver = row['version']
-                manager.sversion = self.conn.server_version
+        if cur.rowcount > 0:
+            row = cur.fetchmany(1)[0]
+            manager.ver = row['version']
+            manager.sversion = self.conn.server_version
 
         status = _execute(cur, """
 SELECT

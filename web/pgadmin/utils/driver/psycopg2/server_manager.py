@@ -263,9 +263,6 @@ WHERE db.oid = {0}""".format(did))
 
         from pgadmin.browser.server_groups.servers.types import ServerType
 
-        self.ver = data.get('ver', None)
-        self.sversion = data.get('sversion', None)
-
         if self.ver and not self.server_type:
             for st in ServerType.types():
                 if st.instanceOf(self.ver):
