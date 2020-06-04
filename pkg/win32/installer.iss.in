@@ -35,7 +35,7 @@ AllowNoIcons=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-;This section will override the standered error message by default which is called internally and  we don't have a controll over this.
+;This section will override the standard error message by default which is called internally and  we don't have a control over this.
 [Messages]
 InvalidPath={#MyAppInvalidPath}
 
