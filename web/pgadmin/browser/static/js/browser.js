@@ -428,6 +428,7 @@ define('pgadmin.browser', [
           mode: 'text/x-pgsql',
           readOnly: true,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+          screenReaderLabel: gettext('SQL'),
         });
       /* Cache may take time to load for the first time
        * Reflect the changes once cache is available

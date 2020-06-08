@@ -1806,6 +1806,7 @@ define([
           lineWrapping: pgAdmin.Browser.editor_options.wrapCode,
           autoCloseBrackets: pgAdmin.Browser.editor_options.insert_pair_brackets,
           matchBrackets: pgAdmin.Browser.editor_options.brace_matching,
+          screenReaderLabel: gettext('Debugger SQL editor'),
         });
 
       // Useful for keyboard navigation, when user presses escape key we will

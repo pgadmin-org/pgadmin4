@@ -67,7 +67,7 @@
     "bootstrap4-toggle": "3.4.0",
     "bowser": "2.1.2",
     "browserify": "~16.2.3",
-    "codemirror": "^5.50.0",
+    "codemirror": "^5.54.0",
     "css-loader": "2.1.0",
     "cssnano": "^4.1.10",
     "dropzone": "^5.5.1",

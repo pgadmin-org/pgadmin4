@@ -374,6 +374,7 @@ define('tools.querytool', [
         extraKeys: pgBrowser.editor_shortcut_keys,
         scrollbarStyle: 'simple',
         dragDrop: false,
+        screenReaderLabel: gettext('SQL editor'),
       });
 
       if(self.handler.is_query_tool) {

@@ -193,6 +193,7 @@ function initFilterDialog(alertify, pgBrowser) {
             lineWrapping: that.preferences.wrap_code,
             autoCloseBrackets: that.preferences.insert_pair_brackets,
             matchBrackets: that.preferences.brace_matching,
+            screenReaderLabel: gettext('Filter SQL'),
           });
 
           let sql_font_size = SqlEditorUtils.calcFontSize(that.preferences.sql_font_size);
