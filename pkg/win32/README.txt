@@ -23,6 +23,10 @@ choco install -y  bzip2 cmake diffutils gzip git innosetup nodejs-lts python str
 
 pip install --upgrade pip
 
+6) Install virtualenv
+
+pip install virtualenv
+
 Building dependencies
 =====================
 

@@ -169,7 +169,9 @@ REM Main build sequence Ends
     IF NOT EXIST "%BUILDROOT%"  MKDIR "%BUILDROOT%"
     
     CD "%BUILDROOT%"
-    "%PGADMIN_PYTHON_DIR%\python.exe" -m venv venv
+
+    REM Note that we must use virtualenv.exe here, as the venv module doesn't allow python.exe to relocate.
+    "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
 
     XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%BUILDROOT%\venv\DLLs" > nul || EXIT /B 1
     XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%BUILDROOT%\venv\Lib" > nul || EXIT /B 1
