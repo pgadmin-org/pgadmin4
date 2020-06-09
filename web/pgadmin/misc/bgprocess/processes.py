@@ -234,6 +234,11 @@ class BatchProcess(object):
         paths = os.environ['PATH'].split(os.pathsep)
         interpreter = None
 
+        current_app.logger.info(
+            u"Process Executor: Operating System Path %s",
+            str(paths)
+        )
+
         if os.name == 'nt':
             paths.insert(0, os.path.join(u(sys.prefix), u'Scripts'))
             paths.insert(0, u(sys.prefix))
@@ -242,6 +247,10 @@ class BatchProcess(object):
             if interpreter is None:
                 interpreter = which(u'python.exe', paths)
 
+            current_app.logger.info(
+                u"Process Executor: Interpreter value in path: %s",
+                str(interpreter)
+            )
             if interpreter is None and current_app.PGADMIN_RUNTIME:
                 # We've faced an issue with Windows 2008 R2 (x86) regarding,
                 # not honouring the environment variables set under the Qt
@@ -262,7 +271,12 @@ class BatchProcess(object):
 
                 interpreter = which(u'pythonw.exe', [venv])
                 if interpreter is None:
-                    interpreter = which(u'pythonw.exe', [venv])
+                    interpreter = which(u'python.exe', [venv])
+
+                current_app.logger.info(
+                    u"Process Executor: Interpreter value in virtual "
+                    u"environment: %s", str(interpreter)
+                )
 
                 if interpreter is not None:
                     # Our assumptions are proven right.
