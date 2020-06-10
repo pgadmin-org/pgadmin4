@@ -6,4 +6,3 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
