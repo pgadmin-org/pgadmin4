@@ -59,7 +59,6 @@ class SchemaDeleteMultipleTestCase(BaseTestGenerator):
             raise Exception("Could not connect to database to delete the"
                             " schema.")
 
-        schema_id = self.schema_details[0]
         schema_name = self.schema_details[1]
         schema_response = schema_utils.verify_schemas(self.server,
                                                       self.db_name,
@@ -67,7 +66,6 @@ class SchemaDeleteMultipleTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to delete.")
 
-        schema_id = self.schema_details_1[0]
         schema_name = self.schema_details_1[1]
         schema_response = schema_utils.verify_schemas(self.server,
                                                       self.db_name,

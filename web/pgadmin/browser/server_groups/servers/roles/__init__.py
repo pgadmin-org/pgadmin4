@@ -40,7 +40,6 @@ class RoleModule(CollectionNodeModule):
         """
         if self.show_node:
             yield self.generate_browser_collection_node(sid)
-        pass
 
     @property
     def node_inode(self):

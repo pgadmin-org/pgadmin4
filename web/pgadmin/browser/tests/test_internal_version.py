@@ -64,5 +64,3 @@ class InternalVersionTestCase(BaseTestGenerator):
             else:
                 self.assertFalse(url.endswith(version_string))
 
-    def tearDown(self):
-        config = self.config_bak

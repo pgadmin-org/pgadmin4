@@ -7,10 +7,3 @@
 #
 ##########################################################################
 
-# from pgadmin.utils.route import BaseTestGenerator
-#
-#
-# class ForeignKeyTestGenerator(BaseTestGenerator):
-#
-#     def runTest(self):
-#         return []

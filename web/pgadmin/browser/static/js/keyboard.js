@@ -205,7 +205,7 @@ _.extend(pgBrowser.keyboardNavigation, {
       if(currLi.hasClass('dropdown-submenu')){
         currLi.addClass('dropdown-submenu-visible');
         currLi.find('.dropdown-menu').addClass('show');
-        currLi = currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
+        currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
       }
     }
   },

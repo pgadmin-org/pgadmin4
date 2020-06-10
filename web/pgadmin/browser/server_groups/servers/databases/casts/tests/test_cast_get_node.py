@@ -62,23 +62,14 @@ class CastsGetNodeTestCase(BaseTestGenerator):
                     if self.is_list:
                         response = cast_utils.api_get_cast_node(self, "")
                         cast_utils.assert_status_code(self, response)
-                        # act_res = response.status_code
-                        # exp_res = self.expected_data["status_code"]
-                        # self.assertEquals(act_res, exp_res)
 
                         cast_utils.assert_error_message(self, response)
-
-                        # act_res = response.json["errormsg"]
-                        # exp_res = self.expected_data["error_msg"]
-                        # self.assertEquals(act_res, exp_res)
 
                     else:
                         response = cast_utils.api_get_cast_node(self,
                                                                 self.cast_id)
                         cast_utils.assert_status_code(self, response)
-                        # act_res = response.status_code
-                        # exp_res = self.expected_data["status_code"]
-                        # self.assertEquals(act_res, exp_res)
+
             else:
                 self.cast_id = 12893
                 response = cast_utils.api_get_cast(self, self.cast_id)

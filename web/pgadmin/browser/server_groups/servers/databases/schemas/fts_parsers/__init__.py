@@ -559,7 +559,6 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param scid: schema id
         :param pid: fts tempate id
         """
-        # data = request.args
         data = {}
         for k, v in request.args.items():
             try:

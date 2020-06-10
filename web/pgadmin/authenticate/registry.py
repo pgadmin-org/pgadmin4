@@ -62,4 +62,4 @@ class AuthSourceRegistry(ABCMeta):
         from werkzeug.utils import find_modules
 
         for module_name in find_modules(__package__, True):
-            module = import_module(module_name)
+            import_module(module_name)

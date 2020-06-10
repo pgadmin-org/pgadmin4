@@ -613,7 +613,6 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         :param scid: schema id
         :param dcid: FTS Dictionary id
         """
-        # data = request.args
         data = {}
         for k, v in request.args.items():
             try:
@@ -757,7 +756,6 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=rset)
 
-        datlastsysoid = self.manager.db_info[did]['datlastsysoid']
         # Empty set is added before actual list as initially it will be visible
         # at template control while creating a new FTS Dictionary
         res = [{'label': '', 'value': ''}]

@@ -376,8 +376,6 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         proargdefaultvals = [ptype for ptype in
                              data['proargdefaultvals'].split(",")] \
             if data['proargdefaultvals'] else []
-        proallargtypes = data['proallargtypes'] \
-            if data['proallargtypes'] else []
 
         proargmodenames = {'i': 'IN', 'o': 'OUT', 'b': 'INOUT',
                            'v': 'VARIADIC', 't': 'TABLE'}

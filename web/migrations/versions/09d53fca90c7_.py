@@ -222,10 +222,6 @@ def upgrade():
             sql = "INSERT INTO keys (name, value) VALUES ('SECURITY_PASSWORD_SALT', 'SuperSecret3')"
         db.engine.execute(sql)
 
-        # Finally, update the schema version
-
-    # version.value = config.SETTINGS_SCHEMA_VERSION
-
     db.engine.execute(
         'UPDATE version set value="%s" WHERE name = "ConfigDB"' % config.SETTINGS_SCHEMA_VERSION
     )

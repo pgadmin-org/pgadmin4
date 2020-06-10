@@ -688,9 +688,6 @@ define('pgadmin.browser.node', [
             return;
           }
 
-          if (!d)
-            return;
-
           l = gettext('Create - %s', this.label);
           p = addPanel();
 
@@ -834,7 +831,7 @@ define('pgadmin.browser.node', [
       // Callback for creating script(s) & opening them in Query editor
       show_script: function(args, item) {
         var scriptType = args.script,
-          obj = this,
+          obj,
           t = pgBrowser.tree,
           i = item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined;

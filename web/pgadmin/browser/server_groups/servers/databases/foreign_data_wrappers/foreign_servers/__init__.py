@@ -291,7 +291,6 @@ class ForeignServerView(PGChildNodeView):
             fsid: Foreign server ID
         """
 
-        res = []
         sql = render_template("/".join([self.template_path, 'properties.sql']),
                               fsid=fsid, conn=self.conn)
         status, r_set = self.conn.execute_2darray(sql)

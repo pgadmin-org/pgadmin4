@@ -96,7 +96,6 @@ def get_view_id(server, db_name, view_name):
                                              server['host'],
                                              server['port'],
                                              server['sslmode'])
-        old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
         # Get 'oid' from newly created view

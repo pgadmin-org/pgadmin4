@@ -517,8 +517,6 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         :param scid: schema id
         :param tid: fts tempate id
         """
-
-        # data = request.args
         data = {}
         for k, v in request.args.items():
             try:

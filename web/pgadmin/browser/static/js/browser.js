@@ -1998,7 +1998,7 @@ define('pgadmin.browser', [
     findChildCollectionTreeNode: function(_node, _collType) {
       var tree = pgBrowser.tree,
         nodeData, idx = 0,
-        node = _node,
+        node,
         children = _node && tree.children(_node);
 
       if (!children || !children.length)
