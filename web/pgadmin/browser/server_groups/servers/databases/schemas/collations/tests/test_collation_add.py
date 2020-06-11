@@ -17,20 +17,26 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as collation_utils
+from unittest.mock import patch
 
 
 class CollationAddTestCase(BaseTestGenerator):
     """ This class will add new collation under schema node. """
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for collation node.
-        ('Default Node URL', dict(url='/browser/collation/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('create_collation',
+                                         collation_utils.test_cases)
 
     def setUp(self):
         super(CollationAddTestCase, self).setUp()
         self.database_info = parent_node_dict["database"][-1]
         self.db_name = self.database_info["db_name"]
+        self.schema_info = parent_node_dict["schema"][-1]
+        self.schema_name = self.schema_info["schema_name"]
+        self.schema_id = self.schema_info["schema_id"]
+        self.server_id = self.schema_info["server_id"]
+        self.db_id = self.schema_info["db_id"]
+
         # Change the db name, so that schema will create in newly created db
         self.schema_name = "schema_get_%s" % str(uuid.uuid4())[1:8]
         connection = utils.get_db_connection(self.db_name,
@@ -42,37 +48,63 @@ class CollationAddTestCase(BaseTestGenerator):
         self.schema_details = schema_utils.create_schema(connection,
                                                          self.schema_name)
 
+    def create_collation(self):
+        """
+        This function create a collation and returns the created collation
+        response
+        :return: created collation response
+        """
+        return self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) + '/' +
+            str(self.schema_id) + '/',
+            data=json.dumps(self.test_data),
+            content_type='html/json')
+
     def runTest(self):
         """ This function will add collation under schema node. """
-        schema_info = parent_node_dict["schema"][-1]
-        server_id = schema_info["server_id"]
-        db_id = schema_info["db_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
-                                                 server_id, db_id)
+                                                 self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to add collation.")
-        schema_id = self.schema_details[0]
-        schema_name = self.schema_details[1]
+
         schema_response = schema_utils.verify_schemas(self.server,
                                                       self.db_name,
-                                                      schema_name)
+                                                      self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add the collation.")
 
-        data = {
-            "copy_collation": "pg_catalog.\"C\"",
-            "name": "collation_add_%s" % str(uuid.uuid4())[1:8],
-            "owner": self.server["username"],
-            "schema": schema_name
-        }
-        response = self.tester.post(self.url + str(utils.SERVER_GROUP) + '/' +
-                                    str(server_id) + '/' + str(db_id) + '/' +
-                                    str(schema_id) + '/',
-                                    data=json.dumps(data),
-                                    content_type='html/json')
-        self.assertEquals(response.status_code, 200)
-        # Disconnect the database
-        database_utils.disconnect_database(self, server_id, db_id)
+        self.test_data['copy_collation'] = "pg_catalog.\"C\""
+        self.test_data['name'] = "collation_add_%s" % str(uuid.uuid4())[1:8]
+        self.test_data['owner'] = self.server["username"]
+        self.test_data['schema'] = self.schema_name
+
+        if self.is_positive_test:
+            response = self.create_collation()
+        else:
+            if hasattr(self, "parameter_missing"):
+                del self.test_data['name']
+                response = self.create_collation()
+
+            if hasattr(self, "error_incomplete_definition"):
+                del self.test_data['copy_collation']
+                response = self.create_collation()
+
+            if hasattr(self, "error_getting_collation_oid"):
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.create_collation()
+
+            if hasattr(self, "internal_server_error"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.create_collation()
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
-        pass
+        # Disconnect the database
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

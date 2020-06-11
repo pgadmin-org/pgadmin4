@@ -23,10 +23,8 @@ from . import utils as collation_utils
 class CollationDeleteMultipleTestCase(BaseTestGenerator):
     """ This class will delete added collations under schema node. """
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for collation node.
-        ('Fetch collation Node URL', dict(url='/browser/collation/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('delete_multiple_collation',
+                                         collation_utils.test_cases)
 
     def setUp(self):
         super(CollationDeleteMultipleTestCase, self).setUp()
@@ -46,14 +44,29 @@ class CollationDeleteMultipleTestCase(BaseTestGenerator):
                                                             self.db_name)
                            ]
 
+    def delete_multiple(self, data):
+        """
+        This function returns multiple collation delete response
+        :param data: collation ids to delete
+        :return: collation delete response
+        """
+        return self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) + '/' + str(
+                self.server_id) + '/' +
+            str(self.db_id) + '/' + str(self.schema_id) + '/',
+            content_type='html/json',
+            data=json.dumps(data),
+            follow_redirects=True,
+        )
+
     def runTest(self):
         """ This function will delete collations under schema node. """
-        server_id = self.schema_info["server_id"]
-        db_id = self.schema_info["db_id"]
+        self.server_id = self.schema_info["server_id"]
+        self.db_id = self.schema_info["db_id"]
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
-                                                 server_id,
-                                                 db_id)
+                                                 self.server_id,
+                                                 self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database.")
 
@@ -63,18 +76,15 @@ class CollationDeleteMultipleTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema.")
         data = {'ids': [self.collations[0][0], self.collations[1][0]]}
-        schema_id = self.schema_info["schema_id"]
-        get_response = self.tester.delete(
-            self.url + str(utils.SERVER_GROUP) + '/' + str(
-                server_id) + '/' +
-            str(db_id) + '/' + str(schema_id) + '/',
-            content_type='html/json',
-            data=json.dumps(data),
-            follow_redirects=True,
-        )
-        self.assertEquals(get_response.status_code, 200)
-        # Disconnect database to delete it
-        database_utils.disconnect_database(self, server_id, db_id)
+        self.schema_id = self.schema_info["schema_id"]
+
+        if self.is_positive_test:
+            response = self.delete_multiple(data)
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
-        pass
+        # Disconnect database to delete it
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

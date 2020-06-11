@@ -9,11 +9,12 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
-| `Issue #5576 <https://redmine.postgresql.org/issues/5576>`_ - Improve error messaging if the storage and log directories cannot be created.
+| `Issue #5576 <https://redmine.postgresql.org/issues/5576>`_ -  Improve error messaging if the storage and log directories cannot be created.
 
 Housekeeping
 ************
 
+| `Issue #5325 <https://redmine.postgresql.org/issues/5325>`_ -  Improve code coverage and API test cases for Collations.
 | `Issue #5574 <https://redmine.postgresql.org/issues/5574>`_ -  Cleanup Windows build scripts and ensure Windows x64 builds will work.
 
 Bug fixes

@@ -20,20 +20,20 @@ from . import utils as collation_utils
 from unittest.mock import patch
 
 
-class CollationDeleteTestCase(BaseTestGenerator):
-    """ This class will delete added collation under schema node. """
+class CollationGetTestCase(BaseTestGenerator):
+    """ This class will fetch new collation under schema node. """
     skip_on_database = ['gpdb']
-    scenarios = utils.generate_scenarios('delete_collation',
+    scenarios = utils.generate_scenarios('get_collation_func',
                                          collation_utils.test_cases)
 
     def setUp(self):
-        super(CollationDeleteTestCase, self).setUp()
+        super(CollationGetTestCase, self).setUp()
         self.schema_info = parent_node_dict["schema"][-1]
-        self.server_id = self.schema_info["server_id"]
-        self.db_id = self.schema_info["db_id"]
         self.schema_name = self.schema_info["schema_name"]
         self.schema_id = self.schema_info["schema_id"]
         self.db_name = parent_node_dict["database"][-1]["db_name"]
+        self.server_id = self.schema_info["server_id"]
+        self.db_id = self.schema_info["db_id"]
         self.coll_name = "collation_get_%s" % str(uuid.uuid4())[1:8]
         self.collation = collation_utils.create_collation(self.server,
                                                           self.schema_name,
@@ -41,20 +41,19 @@ class CollationDeleteTestCase(BaseTestGenerator):
                                                           self.db_name)
         self.collation_id = self.collation[0]
 
-    def delete_collation(self):
+    def get_collation(self):
         """
-        This function returns the collation delete response
-        :return: collation delete response
+        This functions returns the collation list
+        :return: collation list
         """
-        return self.tester.delete(
+        return self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' + str(
                 self.server_id) + '/' +
             str(self.db_id) + '/' + str(self.schema_id) + '/' +
-            str(self.collation_id),
-            content_type='html/json')
+            str(self.collation_id), follow_redirects=True)
 
     def runTest(self):
-        """ This function will delete collation under schema node. """
+        """ This function will fetch collation under schema node. """
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
@@ -69,26 +68,16 @@ class CollationDeleteTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema.")
 
         if self.is_positive_test:
-            response = self.delete_collation()
-
+            response = self.get_collation()
         else:
-            if hasattr(self, "error_deleting_collation"):
-                with patch(self.mock_data["function_name"],
-                           return_value=eval(self.mock_data["return_value"])):
-                    response = self.delete_collation()
-
-            if hasattr(self, "error_deleting_created_collation"):
+            if self.mocking_required:
                 return_value_object = eval(self.mock_data["return_value"])
                 with patch(self.mock_data["function_name"],
                            side_effect=[return_value_object]):
-                    response = self.delete_collation()
-
-            if hasattr(self, "wrong_collation_id"):
-                self.collation_id = 99999
-                response = self.delete_collation()
+                    response = self.get_collation()
 
         actual_response_code = response.status_code
-        expected_response_code = self.expected_data['status_code']
+        expected_response_code = self.expected_data["status_code"]
         self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
