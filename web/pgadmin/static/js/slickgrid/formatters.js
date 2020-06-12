@@ -52,9 +52,9 @@
     return null;
   }
 
-  function JsonFormatter(row, cell, value, columnDef, dataContext) {
+  function JsonFormatter(row, cell, value, columnDef) {
     // If column has default value, set placeholder
-    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef);
     if (data) {
       return data;
     } else {
@@ -77,9 +77,9 @@
     }
   }
 
-  function NumbersFormatter(row, cell, value, columnDef, dataContext) {
+  function NumbersFormatter(row, cell, value, columnDef) {
     // If column has default value, set placeholder
-    var data = NullAndDefaultNumberFormatter(row, cell, value, columnDef, dataContext);
+    var data = NullAndDefaultNumberFormatter(row, cell, value, columnDef);
     if (data) {
       return data;
     } else {
@@ -87,13 +87,13 @@
     }
   }
 
-  function CheckmarkFormatter(row, cell, value, columnDef, dataContext) {
+  function CheckmarkFormatter(row, cell, value, columnDef) {
     /* Checkbox has 3 states
      * 1) checked=true
      * 2) unchecked=false
      * 3) indeterminate=null
      */
-    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef);
     if (data) {
       return data;
     } else {
@@ -101,9 +101,9 @@
     }
   }
 
-  function TextFormatter(row, cell, value, columnDef, dataContext) {
+  function TextFormatter(row, cell, value, columnDef) {
     // If column has default value, set placeholder
-    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef);
     if (data) {
       return data;
     } else {
@@ -111,9 +111,9 @@
     }
   }
 
-  function BinaryFormatter(row, cell, value, columnDef, dataContext) {
+  function BinaryFormatter(row, cell, value, columnDef) {
     // If column has default value, set placeholder
-    var data = NullAndDefaultFormatter(row, cell, value, columnDef, dataContext);
+    var data = NullAndDefaultFormatter(row, cell, value, columnDef);
     if (data) {
       return data;
     } else {

@@ -485,8 +485,8 @@ define('pgadmin.node.database', [
       },
     };
 
-    var connect_to_database = function(obj, data, tree, item) {
-        connect(obj, data, tree, item);
+    var connect_to_database = function(obj, data, tree, item, _wasConnected) {
+        connect(obj, data, tree, item, _wasConnected);
       },
       connect = function (obj, data, tree, item, _wasConnected) {
         var wasConnected = _wasConnected || data.connected,
