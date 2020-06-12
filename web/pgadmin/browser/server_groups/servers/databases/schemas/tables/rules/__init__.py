@@ -538,11 +538,10 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             SQL = ''
 
             if data:
-                if source_schema:
-                    if 'statements' in data:
-                        # Replace the source schema with the target schema
-                        data['statements'] = data['statements'].replace(
-                            source_schema, diff_schema)
+                if source_schema and 'statements' in data:
+                    # Replace the source schema with the target schema
+                    data['statements'] = data['statements'].replace(
+                        source_schema, diff_schema)
                 old_data = res_data
                 SQL = render_template(
                     "/".join([self.template_path, 'update.sql']),

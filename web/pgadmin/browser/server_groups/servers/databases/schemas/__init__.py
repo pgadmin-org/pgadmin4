@@ -487,9 +487,8 @@ It may have been removed by another user.
         if not status:
             return internal_server_error(errormsg=rset)
 
-        if scid is not None:
-            if len(rset['rows']) == 0:
-                return gone(gettext("""
+        if scid is not None and len(rset['rows']) == 0:
+            return gone(gettext("""
 Could not find the schema in the database.
 It may have been removed by another user.
 """))

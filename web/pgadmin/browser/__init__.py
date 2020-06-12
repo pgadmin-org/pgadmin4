@@ -621,18 +621,18 @@ def index():
         except Exception:
             current_app.logger.exception('Exception when checking for update')
 
-        if data is not None:
-            if data[config.UPGRADE_CHECK_KEY]['version_int'] > \
-                    config.APP_VERSION_INT:
-                msg = render_template(
-                    MODULE_NAME + "/upgrade.html",
-                    current_version=config.APP_VERSION,
-                    upgrade_version=data[config.UPGRADE_CHECK_KEY]['version'],
-                    product_name=config.APP_NAME,
-                    download_url=data[config.UPGRADE_CHECK_KEY]['download_url']
-                )
+        if data is not None and \
+            data[config.UPGRADE_CHECK_KEY]['version_int'] > \
+                config.APP_VERSION_INT:
+            msg = render_template(
+                MODULE_NAME + "/upgrade.html",
+                current_version=config.APP_VERSION,
+                upgrade_version=data[config.UPGRADE_CHECK_KEY]['version'],
+                product_name=config.APP_NAME,
+                download_url=data[config.UPGRADE_CHECK_KEY]['download_url']
+            )
 
-                flash(msg, 'warning')
+            flash(msg, 'warning')
 
     auth_only_internal = False
     auth_source = []

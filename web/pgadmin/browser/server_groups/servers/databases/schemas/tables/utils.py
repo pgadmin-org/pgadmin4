@@ -1540,13 +1540,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             reset_values = []
             for data_row in data[vacuum_key]['changed']:
                 for old_data_row in old_data[vacuum_key]:
-                    if data_row['name'] == old_data_row['name']:
-                        if 'value' in data_row:
-                            if data_row['value'] is not None:
-                                set_values.append(data_row)
-                            elif data_row['value'] is None and \
-                                    'value' in old_data_row:
-                                reset_values.append(data_row)
+                    if data_row['name'] == old_data_row['name'] and \
+                            'value' in data_row:
+                        if data_row['value'] is not None:
+                            set_values.append(data_row)
+                        elif data_row['value'] is None and \
+                                'value' in old_data_row:
+                            reset_values.append(data_row)
 
             if len(set_values) > 0:
                 data[vacuum_key]['set_values'] = set_values

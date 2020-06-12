@@ -946,32 +946,30 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 )
             # Additional checks goes here
             # If type is range then check if subtype is defined or not
-            if data and data[arg] == 'r':
-                if 'typname' not in data or data['typname'] is None:
-                    return make_json_response(
-                        status=410,
-                        success=0,
-                        errormsg=gettext(
-                            'Subtype must be defined for range types.'
-                        )
+            if data and data[arg] == 'r' and \
+                    ('typname' not in data or data['typname'] is None):
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        'Subtype must be defined for range types.'
                     )
+                )
             # If type is external then check if input/output
             # conversion function is defined
-            if data and data[arg] == 'b':
-                if (
+            if data and data[arg] == 'b' and (
                     'typinput' not in data or
                     'typoutput' not in data or
                     data['typinput'] is None or
-                    data['typoutput'] is None
-                ):
-                    return make_json_response(
-                        status=410,
-                        success=0,
-                        errormsg=gettext(
-                            'External types require both input and output '
-                            'conversion functions.'
-                        )
+                    data['typoutput'] is None):
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        'External types require both input and output '
+                        'conversion functions.'
                     )
+                )
 
         # To format privileges coming from client
         if 'typacl' in data and data['typacl'] is not None:
@@ -1307,20 +1305,18 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
             # Additional checks go here
             # If type is range then check if subtype is defined or not
-            if data and data[arg] == 'r':
-                if 'typname' not in data or data['typname'] is None:
-                    return "-- definition incomplete"
+            if data and data[arg] == 'r' and \
+                    ('typname' not in data or data['typname'] is None):
+                return "-- definition incomplete"
 
             # If type is external then check if input/output
             # conversion function is defined
-            if data and data[arg] == 'b':
-                if (
+            if data and data[arg] == 'b' and (
                     'typinput' not in data or
                     'typoutput' not in data or
                     data['typinput'] is None or
-                    data['typoutput'] is None
-                ):
-                    return "-- definition incomplete"
+                    data['typoutput'] is None):
+                return "-- definition incomplete"
 
             # Privileges
             if 'typacl' in data and data['typacl'] is not None:

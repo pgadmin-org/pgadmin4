@@ -1163,22 +1163,21 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             data['columns'] = cols['rows']
 
         # Get Inherited table names from their OID
-        if inherits:
-            if 'inherits' in data and data['inherits']:
-                inherits = tuple([int(x) for x in data['inherits']])
-                if len(inherits) == 1:
-                    inherits = "(" + str(inherits[0]) + ")"
+        if inherits and 'inherits' in data and data['inherits']:
+            inherits = tuple([int(x) for x in data['inherits']])
+            if len(inherits) == 1:
+                inherits = "(" + str(inherits[0]) + ")"
 
-                SQL = render_template("/".join([self.template_path,
-                                                'get_tables.sql']),
-                                      attrelid=inherits)
-                status, res = self.conn.execute_dict(SQL)
+            SQL = render_template("/".join([self.template_path,
+                                            'get_tables.sql']),
+                                  attrelid=inherits)
+            status, res = self.conn.execute_dict(SQL)
 
-                if not status:
-                    return False, internal_server_error(errormsg=res)
+            if not status:
+                return False, internal_server_error(errormsg=res)
 
-                if 'inherits' in res['rows'][0]:
-                    data['inherits'] = res['rows'][0]['inherits']
+            if 'inherits' in res['rows'][0]:
+                data['inherits'] = res['rows'][0]['inherits']
 
         return True, data
 

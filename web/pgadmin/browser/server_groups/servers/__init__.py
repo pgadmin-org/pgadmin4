@@ -522,13 +522,13 @@ class ServerNode(PGChildNodeView):
         if 'db_res' in data:
             data['db_res'] = ','.join(data['db_res'])
 
-        if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '':
-            if not is_valid_ipaddress(data['hostaddr']):
-                return make_json_response(
-                    success=0,
-                    status=400,
-                    errormsg=gettext('Host address not valid')
-                )
+        if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '' \
+                and not is_valid_ipaddress(data['hostaddr']):
+            return make_json_response(
+                success=0,
+                status=400,
+                errormsg=gettext('Host address not valid')
+            )
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -741,13 +741,13 @@ class ServerNode(PGChildNodeView):
                     ).format(arg)
                 )
 
-        if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '':
-            if not is_valid_ipaddress(data['hostaddr']):
-                return make_json_response(
-                    success=0,
-                    status=400,
-                    errormsg=gettext('Not a valid Host address')
-                )
+        if 'hostaddr' in data and data['hostaddr'] and data['hostaddr'] != '' \
+                and not is_valid_ipaddress(data['hostaddr']):
+            return make_json_response(
+                success=0,
+                status=400,
+                errormsg=gettext('Not a valid Host address')
+            )
 
         # To check ssl configuration
         is_ssl, data = self.check_ssl_fields(data)
@@ -1287,22 +1287,21 @@ class ServerNode(PGChildNodeView):
 
             # If there is no password found for the server
             # then check for pgpass file
-            if not server.password and not manager.password:
-                if server.passfile and \
-                        manager.passfile and \
-                        server.passfile == manager.passfile:
-                    is_passfile = True
+            if not server.password and not manager.password and \
+                    server.passfile and manager.passfile and \
+                    server.passfile == manager.passfile:
+                is_passfile = True
 
             # Check for password only if there is no pgpass file used
-            if not is_passfile:
-                if data and ('password' not in data or data['password'] == ''):
-                    return make_json_response(
-                        status=400,
-                        success=0,
-                        errormsg=gettext(
-                            "Could not find the required parameter(s)."
-                        )
+            if not is_passfile and data and \
+                    ('password' not in data or data['password'] == ''):
+                return make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=gettext(
+                        "Could not find the required parameter(s)."
                     )
+                )
 
             if data and ('newPassword' not in data or
                          data['newPassword'] == '' or
@@ -1490,11 +1489,10 @@ class ServerNode(PGChildNodeView):
                     errormsg=gettext('Please connect the server.')
                 )
 
-            if not server.password or not manager.password:
-                if server.passfile and \
-                        manager.passfile and \
-                        server.passfile == manager.passfile:
-                    is_pgpass = True
+            if (not server.password or not manager.password) and \
+                server.passfile and manager.passfile and \
+                    server.passfile == manager.passfile:
+                is_pgpass = True
             return make_json_response(
                 success=1,
                 data=dict({'is_pgpass': is_pgpass}),

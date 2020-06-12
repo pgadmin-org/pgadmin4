@@ -394,12 +394,12 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             res['rows'][0]['oid'] <= self.datlastsysoid)
 
         # Handle templates and its schema name properly
-        if res['rows'][0]['template_schema'] is not None:
-            if res['rows'][0]['template_schema'] != "pg_catalog":
-                res['rows'][0]['template'] = self.qtIdent(
-                    self.conn, res['rows'][0]['template_schema'],
-                    res['rows'][0]['template']
-                )
+        if res['rows'][0]['template_schema'] is not None and \
+                res['rows'][0]['template_schema'] != "pg_catalog":
+            res['rows'][0]['template'] = self.qtIdent(
+                self.conn, res['rows'][0]['template_schema'],
+                res['rows'][0]['template']
+            )
 
         if res['rows'][0]['options'] is not None:
             res['rows'][0]['options'] = self.tokenize_options(
@@ -669,12 +669,12 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                 data['schema'] = old_data['schema']
 
             # Handle templates and its schema name properly
-            if old_data['template_schema'] is not None:
-                if old_data['template_schema'] != "pg_catalog":
-                    old_data['template'] = self.qtIdent(
-                        self.conn, old_data['template_schema'],
-                        old_data['template']
-                    )
+            if old_data['template_schema'] is not None and \
+                    old_data['template_schema'] != "pg_catalog":
+                old_data['template'] = self.qtIdent(
+                    self.conn, old_data['template_schema'],
+                    old_data['template']
+                )
 
             # If user has changed the schema then fetch new schema directly
             # using its oid otherwise fetch old schema name using its oid
@@ -802,12 +802,12 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             ))
 
         # Handle templates and its schema name properly
-        if res['rows'][0]['template_schema'] is not None:
-            if res['rows'][0]['template_schema'] != "pg_catalog":
-                res['rows'][0]['template'] = self.qtIdent(
-                    self.conn, res['rows'][0]['template_schema'],
-                    res['rows'][0]['template']
-                )
+        if res['rows'][0]['template_schema'] is not None and \
+                res['rows'][0]['template_schema'] != "pg_catalog":
+            res['rows'][0]['template'] = self.qtIdent(
+                self.conn, res['rows'][0]['template_schema'],
+                res['rows'][0]['template']
+            )
 
         if res['rows'][0]['options'] is not None:
             res['rows'][0]['options'] = self.tokenize_options(

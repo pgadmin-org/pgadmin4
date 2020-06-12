@@ -135,11 +135,11 @@ class RoleView(PGChildNodeView):
                     else:
                         data[key] = val
 
-            if u'rid' not in kwargs or kwargs['rid'] == -1:
-                if u'rolname' not in data:
-                    return precondition_required(
-                        _("Name must be specified.")
-                    )
+            if (u'rid' not in kwargs or kwargs['rid'] == -1) and \
+                    u'rolname' not in data:
+                return precondition_required(
+                    _("Name must be specified.")
+                )
 
             if u'rolvaliduntil' in data:
                 # Make date explicit so that it works with every
@@ -275,10 +275,9 @@ rolmembership:{
                             else:
                                 data[u'admins'].append(r[u'role'])
 
-            if self.manager.version >= 90200:
-                if u'seclabels' in data:
-                    if u'rid' not in kwargs or kwargs['rid'] == -1:
-                        msg = _("""
+            if self.manager.version >= 90200 and u'seclabels' in data:
+                if u'rid' not in kwargs or kwargs['rid'] == -1:
+                    msg = _("""
 Security Label must be passed as an array of JSON objects in the following
 format:
 seclabels:[{
@@ -287,16 +286,16 @@ seclabels:[{
     },
     ...
 ]""")
-                        if type(data[u'seclabels']) != list:
-                            return precondition_required(msg)
+                    if type(data[u'seclabels']) != list:
+                        return precondition_required(msg)
 
-                        for s in data[u'seclabels']:
-                            if type(s) != dict or \
-                                    u'provider' not in s or \
-                                    u'label' not in s:
-                                return precondition_required(msg)
-                    else:
-                        msg = _("""
+                    for s in data[u'seclabels']:
+                        if type(s) != dict or \
+                                u'provider' not in s or \
+                                u'label' not in s:
+                            return precondition_required(msg)
+                else:
+                    msg = _("""
 Security Label must be passed as an array of JSON objects in the following
 format:
 seclabels:{
@@ -319,43 +318,43 @@ seclabels:{
         ...
         ]
 """)
-                        seclabels = data[u'seclabels']
-                        if type(seclabels) != dict:
+                    seclabels = data[u'seclabels']
+                    if type(seclabels) != dict:
+                        return precondition_required(msg)
+
+                    if u'added' in seclabels:
+                        new_seclabels = seclabels[u'added']
+
+                        if type(new_seclabels) != list:
                             return precondition_required(msg)
 
-                        if u'added' in seclabels:
-                            new_seclabels = seclabels[u'added']
-
-                            if type(new_seclabels) != list:
+                        for s in new_seclabels:
+                            if type(s) != dict or \
+                                    u'provider' not in s or \
+                                    u'label' not in s:
                                 return precondition_required(msg)
 
-                            for s in new_seclabels:
-                                if type(s) != dict or \
-                                        u'provider' not in s or \
-                                        u'label' not in s:
-                                    return precondition_required(msg)
+                    if u'deleted' in seclabels:
+                        removed_seclabels = seclabels[u'deleted']
 
-                        if u'deleted' in seclabels:
-                            removed_seclabels = seclabels[u'deleted']
+                        if type(removed_seclabels) != list:
+                            return precondition_required(msg)
 
-                            if type(removed_seclabels) != list:
+                        for s in removed_seclabels:
+                            if (type(s) != dict or u'provider' not in s):
                                 return precondition_required(msg)
 
-                            for s in removed_seclabels:
-                                if (type(s) != dict or u'provider' not in s):
-                                    return precondition_required(msg)
+                    if u'changed' in seclabels:
+                        changed_seclabels = seclabels[u'deleted']
 
-                        if u'changed' in seclabels:
-                            changed_seclabels = seclabels[u'deleted']
+                        if type(changed_seclabels) != list:
+                            return precondition_required(msg)
 
-                            if type(changed_seclabels) != list:
+                        for s in changed_seclabels:
+                            if type(s) != dict or \
+                                    u'provider' not in s and \
+                                    u'label' not in s:
                                 return precondition_required(msg)
-
-                            for s in changed_seclabels:
-                                if type(s) != dict or \
-                                        u'provider' not in s and \
-                                        u'label' not in s:
-                                    return precondition_required(msg)
 
             if u'variables' in data:
                 if u'rid' not in kwargs or kwargs['rid'] == -1:
@@ -521,11 +520,11 @@ rolmembership:{
                     user = self.manager.user_info
 
                     if not user['is_superuser'] and \
-                            not user['can_create_role']:
-                        if action != 'update' or 'rid' in kwargs:
-                            if kwargs['rid'] != -1:
-                                if user['id'] != kwargs['rid']:
-                                    return forbidden(forbidden_msg)
+                            not user['can_create_role'] and \
+                            (action != 'update' or 'rid' in kwargs) and \
+                            kwargs['rid'] != -1 and \
+                            user['id'] != kwargs['rid']:
+                        return forbidden(forbidden_msg)
 
                 if fetch_name:
                     status, res = self.conn.execute_dict(

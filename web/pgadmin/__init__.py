@@ -589,9 +589,8 @@ def create_app(app_name=None):
     def store_crypt_key(app, user):
         # in desktop mode, master password is used to encrypt/decrypt
         # and is stored in the keyManager memory
-        if config.SERVER_MODE:
-            if 'password' in request.form:
-                current_app.keyManager.set(request.form['password'])
+        if config.SERVER_MODE and 'password' in request.form:
+            current_app.keyManager.set(request.form['password'])
 
     @user_logged_out.connect_via(app)
     def current_user_cleanup(app, user):

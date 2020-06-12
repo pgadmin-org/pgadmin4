@@ -1637,34 +1637,32 @@ class MViewNode(ViewNode, VacuumSettings):
             data['vacuum_data']['reset'] = []
 
             # table vacuum: separate list of changed and reset data for
-            if 'vacuum_table' in data:
-                if 'changed' in data['vacuum_table']:
-                    for item in data['vacuum_table']['changed']:
-                        if 'value' in item.keys():
-                            if item['value'] is None:
-                                if old_data[item['name']] != item['value']:
-                                    data['vacuum_data']['reset'].append(item)
-                            else:
-                                if (old_data[item['name']] is None or
-                                    (float(old_data[item['name']]) != float(
-                                        item['value']))):
-                                    data['vacuum_data']['changed'].append(item)
+            if 'vacuum_table' in data and 'changed' in data['vacuum_table']:
+                for item in data['vacuum_table']['changed']:
+                    if 'value' in item.keys():
+                        if item['value'] is None:
+                            if old_data[item['name']] != item['value']:
+                                data['vacuum_data']['reset'].append(item)
+                        else:
+                            if (old_data[item['name']] is None or
+                                (float(old_data[item['name']]) != float(
+                                    item['value']))):
+                                data['vacuum_data']['changed'].append(item)
 
             # toast autovacuum: separate list of changed and reset data
-            if 'vacuum_toast' in data:
-                if 'changed' in data['vacuum_toast']:
-                    for item in data['vacuum_toast']['changed']:
-                        if 'value' in item.keys():
-                            toast_key = 'toast_' + item['name']
-                            item['name'] = 'toast.' + item['name']
-                            if item['value'] is None:
-                                if old_data[toast_key] != item['value']:
-                                    data['vacuum_data']['reset'].append(item)
-                            else:
-                                if (old_data[toast_key] is None or
-                                    (float(old_data[toast_key]) != float(
-                                        item['value']))):
-                                    data['vacuum_data']['changed'].append(item)
+            if 'vacuum_toast' in data and 'changed' in data['vacuum_toast']:
+                for item in data['vacuum_toast']['changed']:
+                    if 'value' in item.keys():
+                        toast_key = 'toast_' + item['name']
+                        item['name'] = 'toast.' + item['name']
+                        if item['value'] is None:
+                            if old_data[toast_key] != item['value']:
+                                data['vacuum_data']['reset'].append(item)
+                        else:
+                            if (old_data[toast_key] is None or
+                                (float(old_data[toast_key]) != float(
+                                    item['value']))):
+                                data['vacuum_data']['changed'].append(item)
 
             acls = []
             try:

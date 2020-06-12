@@ -48,9 +48,8 @@ class JobModule(CollectionNodeModule):
         return servers.ServerModule.NODE_TYPE
 
     def BackendSupported(self, manager, **kwargs):
-        if hasattr(self, 'show_node'):
-            if not self.show_node:
-                return False
+        if hasattr(self, 'show_node') and not self.show_node:
+            return False
 
         conn = manager.connection()
 
@@ -576,33 +575,32 @@ SELECT EXISTS(
                     format_schedule_data(changed_schedule)
 
         has_connection_str = self.manager.db_info['pgAgent']['has_connstr']
-        if 'jsteps' in data and has_connection_str:
-            if 'changed' in data['jsteps']:
-                for changed_step in data['jsteps']['changed']:
-
-                    if 'jstconntype' not in changed_step and (
-                        'jstdbname' in changed_step or
-                            'jstconnstr' in changed_step):
-                        status, rset = self.conn.execute_dict(
-                            render_template(
-                                "/".join([self.template_path, 'steps.sql']),
-                                jid=data['jobid'],
-                                jstid=changed_step['jstid'],
-                                conn=self.conn,
-                                has_connstr=has_connection_str
-                            )
+        if 'jsteps' in data and has_connection_str and \
+                'changed' in data['jsteps']:
+            for changed_step in data['jsteps']['changed']:
+                if 'jstconntype' not in changed_step and (
+                    'jstdbname' in changed_step or
+                        'jstconnstr' in changed_step):
+                    status, rset = self.conn.execute_dict(
+                        render_template(
+                            "/".join([self.template_path, 'steps.sql']),
+                            jid=data['jobid'],
+                            jstid=changed_step['jstid'],
+                            conn=self.conn,
+                            has_connstr=has_connection_str
                         )
-                        if not status:
-                            return internal_server_error(errormsg=rset)
+                    )
+                    if not status:
+                        return internal_server_error(errormsg=rset)
 
-                        row = rset['rows'][0]
-                        changed_step['jstconntype'] = row['jstconntype']
-                        if row['jstconntype']:
-                            if not ('jstdbname' in changed_step):
-                                changed_step['jstdbname'] = row['jstdbname']
-                        else:
-                            if not ('jstconnstr' in changed_step):
-                                changed_step['jstconnstr'] = row['jstconnstr']
+                    row = rset['rows'][0]
+                    changed_step['jstconntype'] = row['jstconntype']
+                    if row['jstconntype']:
+                        if not ('jstdbname' in changed_step):
+                            changed_step['jstdbname'] = row['jstdbname']
+                    else:
+                        if not ('jstconnstr' in changed_step):
+                            changed_step['jstconnstr'] = row['jstconnstr']
 
 
 JobView.register_node_view(blueprint)

@@ -222,9 +222,10 @@ def get_sql(conn, data, did, tid, ctype, cid=None, template_path=None):
         for arg in required_args:
             if isinstance(arg, list):
                 for param in arg:
-                    if param in data:
-                        if is_key_str(param, data) or is_key_list(param, data):
-                            break
+                    if param in data and \
+                            (is_key_str(param, data) or
+                             is_key_list(param, data)):
+                        break
                 else:
                     return _('-- definition incomplete'), name
 

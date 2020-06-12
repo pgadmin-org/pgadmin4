@@ -410,28 +410,26 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         for arg in definition_args:
             if (
                 arg == 'locale' and
-                (arg not in data or data[arg] == '')
+                (arg not in data or data[arg] == '') and
+                'copy_collation' not in data and
+                'lc_collate' not in data and 'lc_type' not in data
             ):
-                if 'copy_collation' not in data and (
-                    'lc_collate' not in data and 'lc_type' not in data
-                ):
-                    missing_definition_flag = True
+                missing_definition_flag = True
 
             if (
                 arg == 'copy_collation' and
-                (arg not in data or data[arg] == '')
+                (arg not in data or data[arg] == '') and
+                'locale' not in data and
+                'lc_collate' not in data and 'lc_type' not in data
             ):
-                if 'locale' not in data and (
-                    'lc_collate' not in data and 'lc_type' not in data
-                ):
-                    missing_definition_flag = True
+                missing_definition_flag = True
 
             if (
                 (arg == 'lc_collate' or arg == 'lc_type') and
-                (arg not in data or data[arg] == '')
+                (arg not in data or data[arg] == '') and
+                'copy_collation' not in data and 'locale' not in data
             ):
-                if 'copy_collation' not in data and 'locale' not in data:
-                    missing_definition_flag = True
+                missing_definition_flag = True
 
         return missing_definition_flag
 
