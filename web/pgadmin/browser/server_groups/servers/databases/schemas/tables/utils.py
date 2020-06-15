@@ -42,6 +42,9 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     triggers import utils as trigger_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     compound_triggers import utils as compound_trigger_utils
+from pgadmin.browser.server_groups.servers.databases.schemas. \
+    tables.row_security_policies import \
+    utils as row_security_policies_utils
 
 
 class BaseTableView(PGChildNodeView, BasePartitionTable):
@@ -120,6 +123,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             # Template for index node
             self.index_template_path = compile_template_path(
                 'indexes/sql', server_type, ver)
+
+            # Template for index node
+            self.row_security_policies_template_path = \
+                'row_security_policies/sql/#{0}#'.format(ver)
 
             # Template for trigger node
             self.trigger_template_path = \
@@ -510,6 +517,33 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             index_sql = re.sub('\n{2,}', '\n\n', index_sql)
 
             main_sql.append(index_sql.strip('\n'))
+
+        """
+        ########################################################
+        # 2) Reverse engineered sql for ROW SECURITY POLICY
+        ########################################################
+        """
+        if self.manager.version >= 90500:
+            SQL = \
+                render_template(
+                    "/".join([self.row_security_policies_template_path,
+                              'nodes.sql']), tid=tid)
+            status, rset = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=rset)
+
+            for row in rset['rows']:
+                policy_sql = row_security_policies_utils. \
+                    get_reverse_engineered_sql(
+                        self.conn, schema, table, did, tid, row['oid'],
+                        self.datlastsysoid,
+                        template_path=None, with_header=json_resp)
+                policy_sql = u"\n" + policy_sql
+
+                # Add into main sql
+                policy_sql = re.sub('\n{2,}', '\n\n', policy_sql)
+
+                main_sql.append(policy_sql.strip('\n'))
 
         """
         ########################################

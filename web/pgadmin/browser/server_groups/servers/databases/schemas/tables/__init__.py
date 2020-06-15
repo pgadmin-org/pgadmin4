@@ -665,6 +665,17 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         table_row_count_threshold = table_row_count_pref.get()
         estimated_row_count = int(res['rows'][0].get('reltuples', 0))
 
+        # Check whether 'rlspolicy' in response as it supported for
+        # version 9.5 and above
+        if 'rlspolicy' in res['rows'][0]:
+            # Set the value of rls policy
+            if res['rows'][0]['rlspolicy'] == "true":
+                res['rows'][0]['rlspolicy'] = True
+
+            # Set the value of force rls policy for table owner
+            if res['rows'][0]['forcerlspolicy'] == "true":
+                res['rows'][0]['forcerlspolicy'] = True
+
         # If estimated rows are greater than threshold then
         if estimated_row_count and \
                 estimated_row_count > table_row_count_threshold:

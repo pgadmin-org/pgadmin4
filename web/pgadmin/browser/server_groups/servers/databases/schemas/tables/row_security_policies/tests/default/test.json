@@ -1,0 +1,86 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table For RLS policy",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_emp_rule",
+        "columns": [
+          {
+            "name": "emp_id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "name",
+            "cltype": "text"
+          },
+          {
+            "name": "salary",
+            "cltype": "bigint"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create select RLS policy",
+      "endpoint": "NODE-row_security_policy.obj",
+      "sql_endpoint": "NODE-row_security_policy.sql_id",
+      "data": {
+        "name": "select_policy",
+        "event": "SELECT",
+        "policyowner": "public"
+      },
+      "expected_sql_file": "create_select_policy.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create INSERT RLS policy",
+      "endpoint": "NODE-row_security_policy.obj",
+      "sql_endpoint": "NODE-row_security_policy.sql_id",
+      "data": {
+        "name": "insert_policy",
+        "event": "INSERT",
+        "policyowner": "public"
+      },
+      "expected_sql_file": "create_insert_policy.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create RLS policy",
+      "endpoint": "NODE-row_security_policy.obj",
+      "sql_endpoint": "NODE-row_security_policy.sql_id",
+      "data": {
+        "name": "test"
+      },
+      "expected_sql_file": "create_public_policy.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter policy name",
+      "endpoint": "NODE-row_security_policy.obj_id",
+      "sql_endpoint": "NODE-row_security_policy.sql_id",
+      "msql_endpoint": "NODE-row_security_policy.msql_id",
+      "data": {
+        "name": "policy_1"
+      },
+      "expected_sql_file": "alter_policy.sql",
+      "expected_msql_file": "alter_policy_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop policy",
+      "endpoint": "NODE-row_security_policy.delete_id",
+      "data": {
+        "name": "test_delete_policy_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]
+}

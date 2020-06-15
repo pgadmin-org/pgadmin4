@@ -104,6 +104,23 @@ TABLESPACE {{ conn|qtIdent(data.spcname) }};
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
     OWNER to {{conn|qtIdent(data.relowner)}};
 {% endif %}
+
+{#####################################################}
+{## Enable Row Level Security Policy on table ##}
+{#####################################################}
+{% if data.rlspolicy %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    ENABLE ROW LEVEL SECURITY;
+{% endif %}
+
+{#####################################################}
+{## Force Enable Row Level Security Policy on table ##}
+{#####################################################}
+{% if data.forcerlspolicy %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    FORCE ROW LEVEL SECURITY;
+{% endif %}
+
 {### Security Labels on Table ###}
 {% if data.seclabels and data.seclabels|length > 0 %}
 

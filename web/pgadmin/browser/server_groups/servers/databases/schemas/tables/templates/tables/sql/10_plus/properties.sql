@@ -50,7 +50,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 	substring(array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
 	rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype,
 	CASE WHEN typ.typname IS NOT NULL THEN (select quote_ident(nspname) FROM pg_namespace WHERE oid = {{scid}}::oid )||'.'||quote_ident(typ.typname) ELSE typ.typname END AS typname,
-	typ.typrelid AS typoid,
+	typ.typrelid AS typoid, rel.relrowsecurity as rlspolicy, rel.relforcerowsecurity as forcerlspolicy,
 	(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
 	(SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels,
 	(CASE WHEN rel.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_table

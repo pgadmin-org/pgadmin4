@@ -171,3 +171,18 @@ EXTERNAL{% elif c.attstorage == 'x'%}EXTENDED{% endif %};
 {{CONSTRAINTS.CONSTRAINT_COMMENTS(conn, data.schema, data.name, data.foreign_key)}}
 {{CONSTRAINTS.CONSTRAINT_COMMENTS(conn, data.schema, data.name, data.check_constraint)}}
 {{CONSTRAINTS.CONSTRAINT_COMMENTS(conn, data.schema, data.name, data.exclude_constraint)}}
+{#####################################################}
+{## Enable Row Level Security Policy on table ##}
+{#####################################################}
+{% if data.rlspolicy %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    ENABLE ROW LEVEL SECURITY;
+{% endif %}
+
+{#####################################################}
+{## Force Enable Row Level Security Policy on table ##}
+{#####################################################}
+{% if data.forcerlspolicy %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    FORCE ROW LEVEL SECURITY;
+{% endif %}

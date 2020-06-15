@@ -50,6 +50,31 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
     SET TABLESPACE {{conn|qtIdent(data.spcname)}};
 
 {% endif %}
+
+
+{#####################################################}
+{## Enable Row Level Security Policy on table ##}
+{#####################################################}
+{% if data.rlspolicy %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    ENABLE ROW LEVEL SECURITY;
+{% elif  data.rlspolicy is defined and data.rlspolicy != o_data.rlspolicy%}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    DISABLE ROW LEVEL SECURITY;
+
+{% endif %}
+
+{#####################################################}
+{## Force Enable Row Level Security Policy on table ##}
+{#####################################################}
+{% if data.forcerlspolicy %}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    FORCE ROW LEVEL SECURITY;
+{% elif  data.forcerlspolicy is defined and data.forcerlspolicy != o_data.forcerlspolicy%}
+ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+    NO FORCE ROW LEVEL SECURITY;
+{% endif %}
+
 {#####################################################}
 {## change fillfactor settings ##}
 {#####################################################}

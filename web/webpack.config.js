@@ -460,6 +460,7 @@ module.exports = [{
         ',pgadmin.node.type' +
         ',pgadmin.node.rule' +
         ',pgadmin.node.index' +
+        ',pgadmin.node.row_security_policy' +
         ',pgadmin.node.trigger' +
         ',pgadmin.node.catalog_object_column' +
         ',pgadmin.node.view' +

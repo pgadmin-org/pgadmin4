@@ -468,7 +468,52 @@ define('pgadmin.node.table', [
               return tbl_oid;
             },
           }),
-        }, {
+        },
+        {
+          id: 'rlspolicy', label: gettext('RLS Policy?'), cell: 'switch',
+          type: 'switch', mode: ['properties','edit', 'create'],
+          group: gettext('advanced'),
+          visible: function(m) {
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+                m.node_info.server.version >= 90500)
+              return true;
+
+            return false;
+          },
+          disabled: function(m) {
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+                m.node_info.server.version < 90500)
+              return true;
+
+            return m.inSchema();
+          },
+        },
+        {
+          id: 'forcerlspolicy', label: gettext('Force RLS Policy?'), cell: 'switch',
+          type: 'switch', mode: ['properties','edit', 'create'], deps: ['rlspolicy'],
+          group: gettext('advanced'),
+          visible: function(m) {
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+                m.node_info.server.version >= 90500)
+              return true;
+
+            return false;
+          },
+          disabled: function(m) {
+            if (m.get('rlspolicy')){
+              return false;
+            }
+            setTimeout(function() {
+              m.set('forcerlspolicy', false);
+            }, 10);
+
+            return true;
+          },
+        },
+        {
           id: 'advanced', label: gettext('Advanced'), type: 'group',
           visible: ShowAdvancedTab.show_advanced_tab,
         }, {
@@ -1201,6 +1246,20 @@ define('pgadmin.node.table', [
             msg = gettext('Please specify at least one key for partitioned table.');
             this.errorModel.set('partition_keys', msg);
             return msg;
+          }
+          if (this.get('rlspolicy') && this.isNew()){
+            Alertify.confirm(
+              gettext('Check Policy?'),
+              gettext('Check if any policy exist. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified'),
+              function() {
+                self.close();
+                return true;
+              },
+              function() {
+                // Do nothing.
+                return true;
+              }
+            );
           }
           this.errorModel.unset('partition_keys');
           return null;

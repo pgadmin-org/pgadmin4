@@ -50,7 +50,7 @@ FROM (
 		substring(array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_max_age=([0-9]*)') AS toast_autovacuum_freeze_max_age,
 		substring(array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
 		rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, NULL AS reloftype, NULL AS typname,
-		typ.typrelid AS typoid,
+		typ.typrelid AS typoid, rel.relrowsecurity as rlspolicy, rel.relforcerowsecurity as forcerlspolicy,
 		(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
 		ARRAY[]::varchar[] AS seclabels,
 		(CASE WHEN rel.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_table

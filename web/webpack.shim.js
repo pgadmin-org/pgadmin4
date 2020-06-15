@@ -261,6 +261,7 @@ var webpackShimConfig = {
     'pgadmin.node.unique_constraint': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint'),
     'pgadmin.node.user_mapping': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/static/js/user_mapping'),
     'pgadmin.node.view': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view'),
+    'pgadmin.node.row_security_policy': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy'),
     'pgadmin.preferences': path.join(__dirname, './pgadmin/preferences/static/js/preferences'),
     'pgadmin.settings': path.join(__dirname, './pgadmin/settings/static/js/settings'),
     'pgadmin.server.supported_servers': '/browser/server/supported_servers',
