@@ -24,7 +24,6 @@ class TrayIcon : public QWidget
 
 public:
     TrayIcon();
-    ~TrayIcon();
 
     void Init();
     void enableShutdownMenu();

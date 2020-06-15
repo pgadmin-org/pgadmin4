@@ -26,7 +26,6 @@ private:
     Logger();
     virtual ~Logger();
 
-private:
     static Logger* m_pThis;
     static QString m_sFileName;
     static QFile *m_Logfile;

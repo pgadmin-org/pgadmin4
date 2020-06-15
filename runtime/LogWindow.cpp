@@ -19,22 +19,17 @@
 
 LogWindow::LogWindow(QWidget *parent, QString serverLogFile) :
     QDialog(parent),
-    ui(new Ui::LogWindow),
     m_serverLogFile(serverLogFile)
 {
+    ui = new Ui::LogWindow;
     ui->setupUi(this);
-}
-
-
-LogWindow::~LogWindow()
-{
-    delete ui;
 }
 
 
 void LogWindow::LoadLog()
 {
-    int startupLines, serverLines;
+    int startupLines;
+    int serverLines;
 
     ui->lblStatus->setText(tr("Loading logfiles..."));
 
@@ -57,7 +52,8 @@ int LogWindow::readLog(QString logFile, QPlainTextEdit *logWidget)
     FILE *log;
     char *buffer;
     long len = 0;
-    int i, lines = 0;
+    int i;
+    int lines = 0;
 
     // Look busy!
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -83,11 +79,8 @@ int LogWindow::readLog(QString logFile, QPlainTextEdit *logWidget)
     buffer = static_cast<char *>(malloc((len + 1) * sizeof(char)));
 
     for (i = 0; i < len; i++) {
-        if (fread(buffer + i, 1, 1, log) > 0)
-        {
-            if (buffer[i] == '\n')
-                lines++;
-        }
+        if (fread(buffer + i, 1, 1, log) > 0 && buffer[i] == '\n')
+            lines++;
     }
 
     buffer[i] = 0;

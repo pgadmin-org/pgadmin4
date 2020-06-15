@@ -28,7 +28,6 @@ class FloatingWindow : public QMainWindow
 
 public:
     explicit FloatingWindow(QWidget *parent = Q_NULLPTR);
-    ~FloatingWindow();
 
     bool Init();
     void enableShutdownMenu();

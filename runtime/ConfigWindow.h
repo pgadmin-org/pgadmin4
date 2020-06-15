@@ -24,7 +24,6 @@ class ConfigWindow : public QDialog
 
 public:
     explicit ConfigWindow(QWidget *parent = Q_NULLPTR);
-    ~ConfigWindow();
 
     QString getBrowserCommand();
     bool getFixedPort();

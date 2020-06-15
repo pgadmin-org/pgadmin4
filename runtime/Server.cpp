@@ -55,15 +55,13 @@ static void add_to_path(QString &python_path, QString path, bool prepend=false)
     }
 }
 
-Server::Server(quint16 port, QString key, QString logFileName)
+Server::Server(quint16 port, QString key, QString logFileName):
+    m_port(port),
+    m_key(key),
+    m_logFileName(logFileName),
+    m_wcAppName(Q_NULLPTR),
+    m_wcPythonHome(Q_NULLPTR)
 {
-    // Appserver port etc
-    m_port = port;
-    m_key = key;
-    m_logFileName = logFileName;
-    m_wcAppName = Q_NULLPTR;
-    m_wcPythonHome = Q_NULLPTR;
-
     // Initialise Python
     Py_NoSiteFlag=1;
     Py_NoUserSiteDirectory=1;
@@ -72,7 +70,7 @@ Server::Server(quint16 port, QString key, QString logFileName)
     PGA_APP_NAME_UTF8 = PGA_APP_NAME.toUtf8();
 
     // Python3 requires conversion of char  * to wchar_t *, so...
-    char *appName = PGA_APP_NAME_UTF8.data();
+    const char *appName = PGA_APP_NAME_UTF8.data();
     const size_t cSize = strlen(appName)+1;
     m_wcAppName = new wchar_t[cSize];
     mbstowcs (m_wcAppName, appName, cSize);
@@ -83,9 +81,9 @@ Server::Server(quint16 port, QString key, QString logFileName)
     QString python_path = settings.value("PythonPath").toString();
 
     // Get the application directory
-    QString app_dir = qApp->applicationDirPath(),
-            path_env = qgetenv("PATH"),
-            pythonHome;
+    QString app_dir = qApp->applicationDirPath();
+    QString path_env = qgetenv("PATH");
+    QString pythonHome;
     QStringList path_list;
     int i;
 
@@ -179,10 +177,10 @@ Server::Server(quint16 port, QString key, QString logFileName)
     if (!pythonHome.isEmpty())
     {
         pythonHome_utf8 = pythonHome.toUtf8();
-        char *python_home = pythonHome_utf8.data();
-        const size_t cSize = strlen(python_home) + 1;
-        m_wcPythonHome = new wchar_t[cSize];
-        mbstowcs (m_wcPythonHome, python_home, cSize);
+        const char *python_home = pythonHome_utf8.data();
+        const size_t home_size = strlen(python_home) + 1;
+        m_wcPythonHome = new wchar_t[home_size];
+        mbstowcs (m_wcPythonHome, python_home, home_size);
 
         Py_SetPythonHome(m_wcPythonHome);
     }
@@ -334,7 +332,7 @@ void Server::run()
      * which might allow local users to execute arbitrary code via a Trojan horse Python file in the current working directory.
      * Here we have to set arguments explicitly to python interpreter. Check more details in 'PySys_SetArgv' documentation.
      */
-    char *appName = m_appfile_utf8.data();
+    const char *appName = m_appfile_utf8.data();
     const size_t cSize = strlen(appName)+1;
     wchar_t* wcAppName = new wchar_t[cSize];
     mbstowcs (wcAppName, appName, cSize);
@@ -353,12 +351,15 @@ void Server::run()
 
 void Server::shutdown(QUrl url)
 {
-    bool shotdown = shutdownServer(url);
-    if (!shotdown)
+    if (!shutdownServer(url))
         setError(tr("Failed to shut down application server thread."));
 
     QThread::quit();
     QThread::wait();
-    while(!this->isFinished()){}
+    while(!this->isFinished())
+    {
+        Logger::GetLogger()->Log("Waiting for server to shut down.");
+        delay(250);
+    }
 }
 

@@ -25,8 +25,6 @@ class LogWindow : public QDialog
 
 public:
     explicit LogWindow(QWidget *parent = Q_NULLPTR, QString serverLogFile = "");
-    ~LogWindow();
-
     void LoadLog();
 
 private slots:

@@ -9,27 +9,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+
 #include "FloatingWindow.h"
 #include "ui_FloatingWindow.h"
 
+
 FloatingWindow::FloatingWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::FloatingWindow)
+    m_newAction(Q_NULLPTR),
+    m_configAction(Q_NULLPTR),
+    m_logAction(Q_NULLPTR),
+    m_quitAction(Q_NULLPTR),
+    m_floatingWindowMenu(Q_NULLPTR),
+    m_menuActions(Q_NULLPTR)
 {
-    m_newAction = Q_NULLPTR;
-    m_configAction = Q_NULLPTR;
-    m_logAction = Q_NULLPTR;
-    m_quitAction = Q_NULLPTR;
-    m_menuActions = Q_NULLPTR;
-    m_floatingWindowMenu = Q_NULLPTR;
-
+    ui = new Ui::FloatingWindow;
     ui->setupUi(this);
 }
 
-FloatingWindow::~FloatingWindow()
-{
-    delete ui;
-}
 
 bool FloatingWindow::Init()
 {
