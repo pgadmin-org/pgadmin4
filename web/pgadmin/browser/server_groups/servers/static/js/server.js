@@ -796,7 +796,7 @@ define('pgadmin.node.server', [
           id: 'username', label: gettext('Username'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         },{
-          id: 'password', label: gettext('Password'), type: 'password',
+          id: 'password', label: gettext('Password'), type: 'password', maxlength: '2000',
           group: gettext('Connection'), control: 'input', mode: ['create'], deps: ['connect_now'],
           visible: function(model) {
             return model.get('connect_now') && model.isNew();

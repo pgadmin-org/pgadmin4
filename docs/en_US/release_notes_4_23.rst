@@ -28,3 +28,4 @@ Bug fixes
 | `Issue #5507 <https://redmine.postgresql.org/issues/5507>`_ -  Fixed connection and version number detection issue when the database server is upgraded.
 | `Issue #5521 <https://redmine.postgresql.org/issues/5521>`_ -  Fixed an issue when dumping servers from a desktop pgAdmin app by providing an option '--sqlite-path'.
 | `Issue #5539 <https://redmine.postgresql.org/issues/5539>`_ -  Fixed typo in exception keyword.
+| `Issue #5592 <https://redmine.postgresql.org/issues/5592>`_ -  Ensure that pgadmin should be able to connect to the server which has password more than 1000 characters.
