@@ -341,48 +341,47 @@ define('pgadmin.node.foreign_table', [
         url = 'get_columns',
         m = self.model.top || self.model;
 
-      if (url) {
-        var node = this.field.get('schema_node'),
-          node_info = this.field.get('node_info'),
-          full_url = node.generate_url.apply(
-            node, [
-              null, url, this.field.get('node_data'),
-              this.field.get('url_with_id') || false, node_info,
-            ]),
-          cache_level = this.field.get('cache_level') || node.type,
-          cache_node = this.field.get('cache_node');
+      var node = this.field.get('schema_node'),
+        node_info = this.field.get('node_info'),
+        full_url = node.generate_url.apply(
+          node, [
+            null, url, this.field.get('node_data'),
+            this.field.get('url_with_id') || false, node_info,
+          ]),
+        cache_level = this.field.get('cache_level') || node.type,
+        cache_node = this.field.get('cache_node');
 
-        cache_node = (cache_node && pgBrowser.Nodes['cache_node']) || node;
+      cache_node = (cache_node && pgBrowser.Nodes['cache_node']) || node;
 
-        m.trigger('pgadmin:view:fetching', m, self.field);
-        var data = {attrelid: table_id};
+      m.trigger('pgadmin:view:fetching', m, self.field);
+      var data = {attrelid: table_id};
 
-        // Fetching Columns data for the selected table.
-        $.ajax({
-          async: false,
-          url: full_url,
-          data: data,
+      // Fetching Columns data for the selected table.
+      $.ajax({
+        async: false,
+        url: full_url,
+        data: data,
+      })
+        .done(function(res) {
+        /*
+         * We will cache this data for short period of time for avoiding
+         * same calls.
+         */
+          data = cache_node.cache(url, node_info, cache_level, res.data);
+
         })
-          .done(function(res) {
-          /*
-           * We will cache this data for short period of time for avoiding
-           * same calls.
-           */
-            data = cache_node.cache(url, node_info, cache_level, res.data);
+        .fail(function() {
+          m.trigger('pgadmin:view:fetch:error', m, self.field);
+        });
+      m.trigger('pgadmin:view:fetched', m, self.field);
 
-          })
-          .fail(function() {
-            m.trigger('pgadmin:view:fetch:error', m, self.field);
-          });
-        m.trigger('pgadmin:view:fetched', m, self.field);
+      // To fetch only options from cache, we do not need time from 'at'
+      // attribute but only options.
+      //
+      // It is feasible that the data may not have been fetched.
+      data = (data && data.data) || [];
+      return data;
 
-        // To fetch only options from cache, we do not need time from 'at'
-        // attribute but only options.
-        //
-        // It is feasible that the data may not have been fetched.
-        data = (data && data.data) || [];
-        return data;
-      }
     },
   });
 
@@ -440,7 +439,7 @@ define('pgadmin.node.foreign_table', [
 
       if (_.isUndefined(this.get('conname')) || String(this.get('conname')).replace(/^\s+|\s+$/g, '') == '') {
         err['conname'] = gettext('Constraint Name cannot be empty.');
-        errmsg = errmsg || err['conname'];
+        errmsg = err['conname'];
       }
 
       if (_.isUndefined(this.get('consrc')) || String(this.get('consrc'))
@@ -657,7 +656,7 @@ define('pgadmin.node.foreign_table', [
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
-            errmsg = errmsg || err['name'];
+            errmsg = err['name'];
           }
 
           if (_.isUndefined(this.get('basensp')) || String(this.get('basensp'))

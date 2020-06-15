@@ -166,7 +166,7 @@ define('pgadmin.node.procedure', [
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
-            errmsg = errmsg || err['name'];
+            errmsg = err['name'];
           }
 
           if (_.isUndefined(this.get('pronamespace')) || String(this.get('pronamespace')).replace(/^\s+|\s+$/g, '') == '') {

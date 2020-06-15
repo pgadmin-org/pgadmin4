@@ -118,12 +118,13 @@ define('pgadmin.node.domain_constraints', [
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
-            errmsg = errmsg || err['name'];
+            errmsg = err['name'];
           }
 
           if (_.isUndefined(this.get('consrc')) || String(this.get('consrc')).replace(/^\s+|\s+$/g, '') == '') {
             err['consrc'] = gettext('Check cannot be empty.');
             errmsg = errmsg || err['consrc'];
+
           }
 
           this.errorModel.clear().set(err);

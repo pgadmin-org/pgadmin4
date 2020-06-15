@@ -296,7 +296,7 @@ define('pgadmin.node.domain', [
 
           if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
-            errmsg = errmsg || err['name'];
+            errmsg = err['name'];
           }
 
           if (_.isUndefined(this.get('basetype')) || String(this.get('basetype')).replace(/^\s+|\s+$/g, '') == '') {
