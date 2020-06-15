@@ -1,5 +1,4 @@
 {# CREATE POLICY Statement #}
-
 -- POLICY: {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}
 
 -- DROP POLICY {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }};

@@ -6,7 +6,7 @@
       "endpoint": "NODE-table.obj",
       "sql_endpoint": "NODE-table.sql_id",
       "data": {
-        "name": "test_emp_rule",
+        "name": "test_rls_policy",
         "columns": [
           {
             "name": "emp_id",
