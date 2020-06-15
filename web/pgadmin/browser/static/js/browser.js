@@ -58,7 +58,7 @@ define('pgadmin.browser', [
     var data = JSON.parse(payload).data;
     if (data.length && data[0]._type !== 'column' &&
       data[0]._type !== 'catalog_object_column') {
-      data = data.sort(function(a, b) {
+      data.sort(function(a, b) {
         return pgAdmin.natural_sort(a.label, b.label);
       });
     }
@@ -1265,7 +1265,7 @@ define('pgadmin.browser', [
             var _parent = this.t.parent(this.i) || null;
 
             // If there is no parent then just update the node
-            if(_parent.length == 0 && ctx.op == 'UPDATE') {
+            if(_parent && _parent.length == 0 && ctx.op == 'UPDATE') {
               updateNode();
             } else {
               var postRemove = function() {

@@ -44,7 +44,7 @@ function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode)
     case 'enum':
       model.set({'value': value}, {silent:true});
       var options = [],
-        enumVals = variable.enumvals;
+        enumVals = variable && variable.enumvals;
 
       _.each(enumVals, function(enumVal) {
         options.push([enumVal, enumVal]);

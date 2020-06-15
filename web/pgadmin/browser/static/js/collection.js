@@ -349,7 +349,7 @@ define([
             sel_rows = [],
             item = pgBrowser.tree.selected(),
             d = item ? pgBrowser.tree.itemData(item) : null,
-            node = pgBrowser.Nodes[d._type],
+            node = d && pgBrowser.Nodes[d._type],
             url = undefined,
             msg = undefined,
             title = undefined;

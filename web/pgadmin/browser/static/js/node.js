@@ -896,7 +896,7 @@ define('pgadmin.browser.node', [
 
           if (bgcolor) {
             // li tag for the current branch
-            var first_level_element = element.parents()[3] || null,
+            var first_level_element = (element && element.parents()[3]) || null,
               dynamic_class = 'pga_server_' + data._id + '_bgcolor',
               style_tag;
 
@@ -1012,7 +1012,7 @@ define('pgadmin.browser.node', [
           data = item && t.itemData(item);
 
         // In case of unload remove the collection counter
-        if (self.is_collection && 'collection_count' in data) {
+        if (self.is_collection &&  data === Object(data) &&'collection_count' in data) {
           delete data.collection_count;
           t.setLabel(item, {
             label: _.escape(data._label),
