@@ -178,9 +178,8 @@ class ServerManager(object):
             if hasattr(str, 'decode') and \
                     not isinstance(database, unicode):
                 database = database.decode('utf-8')
-            if did is not None:
-                if did in self.db_info:
-                    self.db_info[did]['datname'] = database
+            if did is not None and did in self.db_info:
+                self.db_info[did]['datname'] = database
         else:
             if did is None:
                 database = self.db
@@ -274,9 +273,9 @@ WHERE db.oid = {0}""".format(did))
         # first connection for identifications.
         self.pinged = datetime.datetime.now()
         try:
-            if 'password' in data and data['password']:
-                if hasattr(data['password'], 'encode'):
-                    data['password'] = data['password'].encode('utf-8')
+            if 'password' in data and data['password'] and \
+                    hasattr(data['password'], 'encode'):
+                data['password'] = data['password'].encode('utf-8')
             if 'tunnel_password' in data and data['tunnel_password']:
                 data['tunnel_password'] = \
                     data['tunnel_password'].encode('utf-8')

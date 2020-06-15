@@ -252,9 +252,9 @@ class SQLFilter(object):
         if self._row_filter is None or self._row_filter == '':
             is_filter_applied = False
 
-        if not is_filter_applied:
-            if self._data_sorting and len(self._data_sorting) > 0:
-                is_filter_applied = True
+        if not is_filter_applied and \
+                self._data_sorting and len(self._data_sorting) > 0:
+            is_filter_applied = True
 
         return is_filter_applied
 

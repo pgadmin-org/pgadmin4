@@ -323,10 +323,9 @@ class Driver(BaseDriver):
             return False
 
         # If already quoted?, If yes then do not quote again
-        if forTypes and valNoArray:
-            if valNoArray.startswith('"') \
-                    or valNoArray.endswith('"'):
-                return False
+        if forTypes and valNoArray and \
+                (valNoArray.startswith('"') or valNoArray.endswith('"')):
+            return False
 
         if u'0' <= valNoArray[0] <= u'9':
             return True

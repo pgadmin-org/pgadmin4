@@ -212,9 +212,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         test_gui_helper.close_process_watcher(self)
 
-        if backup_file is not None:
-            if os.path.isfile(backup_file):
-                os.remove(backup_file)
+        if backup_file is not None and os.path.isfile(backup_file):
+            os.remove(backup_file)
 
     def after(self):
         test_gui_helper.close_process_watcher(self)

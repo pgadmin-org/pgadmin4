@@ -539,9 +539,9 @@ WHERE
             self.conn_id.encode('utf-8')
         ), None)
 
-        if self.connected() and cur and not cur.closed:
-            if not server_cursor or (server_cursor and cur.name):
-                return True, cur
+        if self.connected() and cur and not cur.closed and \
+                (not server_cursor or (server_cursor and cur.name)):
+            return True, cur
 
         if not self.connected():
             errmsg = ""
@@ -618,21 +618,21 @@ WHERE
         # We need to esacpe the data so that it does not fail when
         # it is encoded with python ascii
         # unicode_escape helps in escaping and unescaping
-        if self.conn:
-            if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
-                                      'MULE_INTERNAL', 'MULEINTERNAL')\
-               and params is not None and type(params) == dict:
-                for key, val in params.items():
-                    modified_val = val
-                    # "unicode_escape" will convert single backslash to double
-                    # backslash, so we will have to replace/revert them again
-                    # to store the correct value into the database.
-                    if isinstance(val, six.string_types):
-                        modified_val = val.encode('unicode_escape')\
-                            .decode('raw_unicode_escape')\
-                            .replace("\\\\", "\\")
+        if self.conn and \
+            self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
+                                   'MULE_INTERNAL', 'MULEINTERNAL')\
+                and params is not None and type(params) == dict:
+            for key, val in params.items():
+                modified_val = val
+                # "unicode_escape" will convert single backslash to double
+                # backslash, so we will have to replace/revert them again
+                # to store the correct value into the database.
+                if isinstance(val, six.string_types):
+                    modified_val = val.encode('unicode_escape')\
+                        .decode('raw_unicode_escape')\
+                        .replace("\\\\", "\\")
 
-                    params[key] = modified_val
+                params[key] = modified_val
 
         return params
 
@@ -1084,13 +1084,12 @@ WHERE
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
             cur.close()
-            if not self.connected():
-                if self.auto_reconnect and \
-                        not self.reconnecting:
-                    return self.__attempt_execution_reconnect(
-                        self.execute_2darray, query, params,
-                        formatted_exception_msg
-                    )
+            if not self.connected() and self.auto_reconnect and \
+                    not self.reconnecting:
+                return self.__attempt_execution_reconnect(
+                    self.execute_2darray, query, params,
+                    formatted_exception_msg
+                )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
                 u"Failed to execute query (execute_2darray) for the server "
@@ -1233,9 +1232,8 @@ WHERE
         return False
 
     def reset(self):
-        if self.conn:
-            if self.conn.closed:
-                self.conn = None
+        if self.conn and self.conn.closed:
+            self.conn = None
         pg_conn = None
         manager = self.manager
 
@@ -1463,23 +1461,22 @@ Failed to reset the connection to the server due to following error:
                     pos += 1
 
             self.row_count = cur.rowcount
-            if not no_result:
-                if cur.rowcount > 0:
-                    result = []
-                    # For DDL operation, we may not have result.
-                    #
-                    # Because - there is not direct way to differentiate DML
-                    # and DDL operations, we need to rely on exception to
-                    # figure that out at the moment.
-                    try:
-                        for row in cur:
-                            new_row = []
-                            for col in self.column_info:
-                                new_row.append(row[col['name']])
-                            result.append(new_row)
+            if not no_result and cur.rowcount > 0:
+                result = []
+                # For DDL operation, we may not have result.
+                #
+                # Because - there is not direct way to differentiate DML
+                # and DDL operations, we need to rely on exception to
+                # figure that out at the moment.
+                try:
+                    for row in cur:
+                        new_row = []
+                        for col in self.column_info:
+                            new_row.append(row[col['name']])
+                        result.append(new_row)
 
-                    except psycopg2.ProgrammingError:
-                        result = None
+                except psycopg2.ProgrammingError:
+                    result = None
 
         return status, result
 
@@ -1726,37 +1723,37 @@ Failed to reset the connection to the server due to following error:
             errmsg += gettext('SQL state: ')
             errmsg += self.decode_to_utf8(exception_obj.diag.sqlstate)
 
-        if exception_obj.diag.message_detail is not None:
-            if 'Detail:'.lower() not in errmsg.lower():
-                if not errmsg.endswith('\n'):
-                    errmsg += '\n'
-                errmsg += gettext('Detail: ')
-                errmsg += self.decode_to_utf8(
-                    exception_obj.diag.message_detail
-                )
+        if exception_obj.diag.message_detail is not None and \
+                'Detail:'.lower() not in errmsg.lower():
+            if not errmsg.endswith('\n'):
+                errmsg += '\n'
+            errmsg += gettext('Detail: ')
+            errmsg += self.decode_to_utf8(
+                exception_obj.diag.message_detail
+            )
 
-        if exception_obj.diag.message_hint is not None:
-            if 'Hint:'.lower() not in errmsg.lower():
-                if not errmsg.endswith('\n'):
-                    errmsg += '\n'
-                errmsg += gettext('Hint: ')
-                errmsg += self.decode_to_utf8(exception_obj.diag.message_hint)
+        if exception_obj.diag.message_hint is not None and \
+                'Hint:'.lower() not in errmsg.lower():
+            if not errmsg.endswith('\n'):
+                errmsg += '\n'
+            errmsg += gettext('Hint: ')
+            errmsg += self.decode_to_utf8(exception_obj.diag.message_hint)
 
-        if exception_obj.diag.statement_position is not None:
-            if 'Character:'.lower() not in errmsg.lower():
-                if not errmsg.endswith('\n'):
-                    errmsg += '\n'
-                errmsg += gettext('Character: ')
-                errmsg += self.decode_to_utf8(
-                    exception_obj.diag.statement_position
-                )
+        if exception_obj.diag.statement_position is not None and \
+                'Character:'.lower() not in errmsg.lower():
+            if not errmsg.endswith('\n'):
+                errmsg += '\n'
+            errmsg += gettext('Character: ')
+            errmsg += self.decode_to_utf8(
+                exception_obj.diag.statement_position
+            )
 
-        if exception_obj.diag.context is not None:
-            if 'Context:'.lower() not in errmsg.lower():
-                if not errmsg.endswith('\n'):
-                    errmsg += '\n'
-                errmsg += gettext('Context: ')
-                errmsg += self.decode_to_utf8(exception_obj.diag.context)
+        if exception_obj.diag.context is not None and \
+                'Context:'.lower() not in errmsg.lower():
+            if not errmsg.endswith('\n'):
+                errmsg += '\n'
+            errmsg += gettext('Context: ')
+            errmsg += self.decode_to_utf8(exception_obj.diag.context)
 
         notices = self.get_notices()
         return errmsg if notices == '' else notices + '\n' + errmsg

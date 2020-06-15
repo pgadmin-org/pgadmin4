@@ -141,10 +141,9 @@ class _Preference(object):
             if self.select2 and self.select2['tags']:
                 return res.value
             return self.default
-        if self._type == 'text':
-            if res.value == '' and (self.allow_blanks is None or
-                                    not self.allow_blanks):
-                return self.default
+        if self._type == 'text' and res.value == '' and \
+                (self.allow_blanks is None or not self.allow_blanks):
+            return self.default
         if self._type == 'keyboardshortcut':
             try:
                 return json.loads(res.value)

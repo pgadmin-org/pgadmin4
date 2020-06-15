@@ -58,11 +58,11 @@ class DebuggerInstance(object):
             return []
 
     def load_from_session(self):
-        if '__debugger_sessions' in session:
-            if str(self.trans_id) in session['__debugger_sessions']:
-                trans_data = session['__debugger_sessions'][str(self.trans_id)]
-                self.function_data = trans_data.get('function_data', None)
-                self.debugger_data = trans_data.get('debugger_data', None)
+        if '__debugger_sessions' in session and \
+                str(self.trans_id) in session['__debugger_sessions']:
+            trans_data = session['__debugger_sessions'][str(self.trans_id)]
+            self.function_data = trans_data.get('function_data', None)
+            self.debugger_data = trans_data.get('debugger_data', None)
 
     def update_session(self):
         with debugger_sessions_lock:
@@ -76,6 +76,6 @@ class DebuggerInstance(object):
 
     def clear(self):
         with debugger_sessions_lock:
-            if '__debugger_sessions' in session:
-                if str(self.trans_id) in session['__debugger_sessions']:
-                    session['__debugger_sessions'].pop(str(self.trans_id))
+            if '__debugger_sessions' in session and \
+                    str(self.trans_id) in session['__debugger_sessions']:
+                session['__debugger_sessions'].pop(str(self.trans_id))

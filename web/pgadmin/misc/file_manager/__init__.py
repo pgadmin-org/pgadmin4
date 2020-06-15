@@ -648,11 +648,11 @@ class Filemanager(object):
                     user_path = u"{0}/".format(user_path)
                 else:
                     # filter files based on file_type
-                    if file_type is not None and file_type != "*":
-                        if folders_only or len(supported_types) > 0 and \
-                                file_extension not in supported_types or \
-                                file_type != file_extension:
-                            continue
+                    if file_type is not None and file_type != "*" and \
+                        (folders_only or len(supported_types) > 0 and
+                         file_extension not in supported_types or
+                            file_type != file_extension):
+                        continue
 
                 # create a list of files and folders
                 files[f] = {

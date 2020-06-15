@@ -259,32 +259,32 @@ def create_restore_job(sid):
                 args.append(default_value)
 
         def set_multiple(key, param, with_schema=True):
-            if key in data:
-                if len(data[key]) > 0:
-                    if with_schema:
-                        # TODO:// This is temporary
-                        # Once object tree is implemented then we will use
-                        # list of tuples 'else' part
-                        if isinstance(data[key], list):
-                            s, t = data[key]
+            if key in data and \
+                    len(data[key]) > 0:
+                if with_schema:
+                    # TODO:// This is temporary
+                    # Once object tree is implemented then we will use
+                    # list of tuples 'else' part
+                    if isinstance(data[key], list):
+                        s, t = data[key]
+                        args.extend([
+                            param,
+                            driver.qtIdent(
+                                conn, s
+                            ) + '.' + driver.qtIdent(conn, t)
+                        ])
+                    else:
+                        for s, o in data[key]:
                             args.extend([
                                 param,
                                 driver.qtIdent(
                                     conn, s
-                                ) + '.' + driver.qtIdent(conn, t)
+                                ) + '.' + driver.qtIdent(conn, o)
                             ])
-                        else:
-                            for s, o in data[key]:
-                                args.extend([
-                                    param,
-                                    driver.qtIdent(
-                                        conn, s
-                                    ) + '.' + driver.qtIdent(conn, o)
-                                ])
-                    else:
-                        for o in data[key]:
-                            args.extend([param, o])
-                    return True
+                else:
+                    for o in data[key]:
+                        args.extend([param, o])
+                return True
             return False
 
         args.extend([

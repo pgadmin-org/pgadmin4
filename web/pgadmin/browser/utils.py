@@ -79,9 +79,9 @@ def is_version_in_range(sversion, min_ver, max_ver):
     if min_ver is None and max_ver is None:
         return True
 
-    if min_ver is None or min_ver <= sversion:
-        if max_ver is None or max_ver >= sversion:
-            return True
+    if (min_ver is None or min_ver <= sversion) and \
+            (max_ver is None or max_ver >= sversion):
+        return True
     return False
 
 

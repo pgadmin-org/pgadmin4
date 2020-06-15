@@ -78,16 +78,16 @@ pgadmin_credentials = test_setup.config_data
 # Set environment variables for email and password
 os.environ['PGADMIN_SETUP_EMAIL'] = ''
 os.environ['PGADMIN_SETUP_PASSWORD'] = ''
-if pgadmin_credentials:
-    if 'pgAdmin4_login_credentials' in pgadmin_credentials:
-        if all(item in pgadmin_credentials['pgAdmin4_login_credentials']
-               for item in ['login_username', 'login_password']):
-            pgadmin_credentials = pgadmin_credentials[
-                'pgAdmin4_login_credentials']
-            os.environ['PGADMIN_SETUP_EMAIL'] = str(pgadmin_credentials[
-                'login_username'])
-            os.environ['PGADMIN_SETUP_PASSWORD'] = str(pgadmin_credentials[
-                'login_password'])
+if pgadmin_credentials and \
+    'pgAdmin4_login_credentials' in pgadmin_credentials and \
+        all(item in pgadmin_credentials['pgAdmin4_login_credentials']
+            for item in ['login_username', 'login_password']):
+    pgadmin_credentials = pgadmin_credentials[
+        'pgAdmin4_login_credentials']
+    os.environ['PGADMIN_SETUP_EMAIL'] = str(pgadmin_credentials[
+        'login_username'])
+    os.environ['PGADMIN_SETUP_PASSWORD'] = str(pgadmin_credentials[
+        'login_password'])
 
 # Execute the setup file
 exec(open("setup.py").read())
@@ -248,10 +248,10 @@ def get_test_modules(arguments):
                 driver.implicitly_wait(1)
             else:
                 options = Options()
-                if test_setup.config_data:
-                    if 'headless_chrome' in test_setup.config_data:
-                        if test_setup.config_data['headless_chrome']:
-                            options.add_argument("--headless")
+                if test_setup.config_data and \
+                    'headless_chrome' in test_setup.config_data and \
+                        test_setup.config_data['headless_chrome']:
+                    options.add_argument("--headless")
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-setuid-sandbox")
                 options.add_argument("--window-size=1280,1024")

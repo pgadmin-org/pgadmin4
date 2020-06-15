@@ -306,12 +306,12 @@ def suggest_based_on_last_token(token, stmt):
                            require_last_table=True,
                            local_tables=stmt.local_tables),)
 
-        elif p.token_first().value.lower() == 'select':
-            # If the lparen is preceeded by a space chances are we're about to
-            # do a sub-select.
-            if last_word(stmt.text_before_cursor,
-                         'all_punctuations').startswith('('):
-                return (Keyword(),)
+        # If the lparen is preceeded by a space chances are we're about to
+        # do a sub-select.
+        elif p.token_first().value.lower() == 'select' and \
+                last_word(stmt.text_before_cursor,
+                          'all_punctuations').startswith('('):
+            return (Keyword(),)
         prev_prev_tok = prev_tok and p.token_prev(p.token_index(prev_tok))[1]
         if prev_prev_tok and prev_prev_tok.normalized == 'INTO':
             return (

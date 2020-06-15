@@ -172,12 +172,7 @@ define('pgadmin.node.language', [
             return res;
           }, disabled: function(m) {
             if (m.isNew()) {
-              if (m.get('template_list').indexOf(m.get('name')) == -1) {
-                return false;
-              }
-              else {
-                return true;
-              }
+              return m.get('template_list').indexOf(m.get('name')) != -1;
             }
             return false;
           },
@@ -202,12 +197,7 @@ define('pgadmin.node.language', [
             return res;
           }, disabled: function(m) {
             if (m.isNew()) {
-              if (m.get('template_list').indexOf(m.get('name')) == -1) {
-                return false;
-              }
-              else {
-                return true;
-              }
+              return m.get('template_list').indexOf(m.get('name')) != -1;
             }
             return false;
           },
@@ -232,12 +222,7 @@ define('pgadmin.node.language', [
             return res;
           }, disabled: function(m) {
             if (m.isNew()) {
-              if (m.get('template_list').indexOf(m.get('name')) == -1) {
-                return false;
-              }
-              else {
-                return true;
-              }
+              return m.get('template_list').indexOf(m.get('name')) != -1;
             }
             return false;
           },
