@@ -190,7 +190,6 @@
 }
 
 .upload_file .file_upload_main {
-  position: relative;
   height: 127px;;
   width: 120px;
   display: inline-block;
@@ -201,7 +200,6 @@
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   background: $color-bg;
-  margin: 2px;
   opacity: 1;
 }
 

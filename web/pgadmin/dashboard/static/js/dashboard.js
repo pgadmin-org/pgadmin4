@@ -508,6 +508,8 @@ define('pgadmin.dashboard', [
           for (var time_ind = 0; time_ind < dataset[label_ind]['data'].length; time_ind++) {
             dataset[label_ind]['data'][time_ind][0] = time_ind;
           }
+
+          return;
         });
         counter_prev_data = new_data;
       }

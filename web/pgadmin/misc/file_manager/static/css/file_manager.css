@@ -85,7 +85,6 @@ div.clip {
 
 .file_listing #contents.list td:first-child {
   display: table-cell;
-  padding-left: 0;
   width: 100%;
   padding-left: 12px;
   background-repeat: no-repeat;
