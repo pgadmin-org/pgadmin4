@@ -513,15 +513,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 data[k] = v
 
         for arg in required_args:
-            if arg not in data:
-                return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=gettext(
-                        "Could not find required parameter ({})."
-                    ).format(arg)
-                )
-            elif isinstance(data[arg], list) and len(data[arg]) < 1:
+            if arg not in data or \
+                    (isinstance(data[arg], list) and len(data[arg]) < 1):
                 return make_json_response(
                     status=400,
                     success=0,

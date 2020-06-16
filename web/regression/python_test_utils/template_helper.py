@@ -25,6 +25,7 @@ class SimpleTemplateLoader(BaseLoader):
 def file_as_template(file_path):
     """This method returns a jinja template for the given filepath """
     file_content = open(file_path, 'r').read()
-    env = Environment(loader=SimpleTemplateLoader(file_content))
+    env = Environment(loader=SimpleTemplateLoader(file_content),
+                      autoescape=True)
     template = env.get_template("")
     return template

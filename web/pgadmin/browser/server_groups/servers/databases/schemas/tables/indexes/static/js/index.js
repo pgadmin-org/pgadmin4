@@ -99,9 +99,7 @@ define('pgadmin.node.index', [
         type: 'text', disabled: 'checkAccessMethod',
         editable: function(m) {
           // Header cell then skip
-          if (m instanceof Backbone.Collection) {
-            return false;
-          } else if (m.inSchemaWithModelCheck.apply(this, arguments)) {
+          if (m instanceof Backbone.Collection || m.inSchemaWithModelCheck.apply(this, arguments)) {
             return false;
           }
           return !(m.checkAccessMethod.apply(this, arguments));

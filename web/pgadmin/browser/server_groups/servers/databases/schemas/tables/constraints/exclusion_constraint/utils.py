@@ -204,9 +204,9 @@ def get_sql(conn, data, did, tid, exid=None, template_path=None):
         sql = render_template("/".join([template_path, 'update.sql']),
                               data=data, o_data=old_data)
     else:
-        if 'columns' not in data:
-            return _('-- definition incomplete'), name
-        elif isinstance(data['columns'], list) and len(data['columns']) < 1:
+        if 'columns' not in data or \
+                (isinstance(data['columns'], list) and
+                 len(data['columns']) < 1):
             return _('-- definition incomplete'), name
 
         sql = render_template("/".join([template_path, 'create.sql']),

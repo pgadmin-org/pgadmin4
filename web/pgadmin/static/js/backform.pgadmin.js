@@ -1129,7 +1129,7 @@ define([
       // Check if unique columns provided are also in model attributes.
       if (uniqueCol.length > _.intersection(columns, uniqueCol).length) {
         var errorMsg = 'Developer: Unique columns [ ' + _.difference(uniqueCol, columns) + ' ] not found in collection model [ ' + columns + ' ].';
-        alert(errorMsg);
+        throw errorMsg;
       }
 
       var collection = self.collection = self.model.get(self.field.get('name'));

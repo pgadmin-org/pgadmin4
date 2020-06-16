@@ -233,11 +233,8 @@ define('pgadmin.node.schema', [
     disabled: function(m) {
       // We need to check additional condition to toggle enable/disable
       // for table auto-vacuum
-      if(!m.top.inSchema.apply(this, [m]) && m.isNew()) {
-        return false;
-      } else if(!m.top.inSchema.apply(this, [m]) &&
-          (m.get('toast_autovacuum_enabled') === true ||
-          m.top.get('hastoasttable') === true)) {
+      if(!m.top.inSchema.apply(this, [m]) &&
+        (m.isNew() || (m.get('toast_autovacuum_enabled') === true || m.top.get('hastoasttable') === true))) {
         return false;
       }
       return true;

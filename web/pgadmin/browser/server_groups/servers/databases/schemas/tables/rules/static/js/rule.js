@@ -134,9 +134,7 @@ define('pgadmin.node.rule', [
             if (m && m.get('name') == '_RETURN') {
               return true;
             }
-            if (m.isNew()) {
-              return false;
-            } else if (m.node_info.server.version >= 90400) {
+            if (m.isNew() || m.node_info.server.version >= 90400) {
               return false;
             }
             return true;

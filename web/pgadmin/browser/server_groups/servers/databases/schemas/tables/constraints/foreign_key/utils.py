@@ -263,9 +263,9 @@ def get_sql(conn, data, tid, fkid=None, template_path=None):
                 "/".join([template_path, 'create_index.sql']),
                 data=data, conn=conn)
     else:
-        if 'columns' not in data:
-            return _('-- definition incomplete'), name
-        elif isinstance(data['columns'], list) and len(data['columns']) < 1:
+        if 'columns' not in data or \
+                (isinstance(data['columns'], list) and
+                 len(data['columns']) < 1):
             return _('-- definition incomplete'), name
 
         if data['autoindex'] and \
