@@ -507,14 +507,14 @@ define('pgadmin.node.server', [
                 callback: function(e) {
                   if (e.button.element.name == 'submit') {
                     var self = this,
-                      args =  this.view.model.toJSON();
+                      alertArgs =  this.view.model.toJSON();
 
                     e.cancel = true;
 
                     $.ajax({
                       url: url,
                       method:'POST',
-                      data:{'data': JSON.stringify(args) },
+                      data:{'data': JSON.stringify(alertArgs) },
                     })
                       .done(function(res) {
                         if (res.success) {
@@ -1134,41 +1134,41 @@ define('pgadmin.node.server', [
             }, 100);
           });
         },
-        onSuccess = function(res, node, data, tree, item, _wasConnected) {
+        onSuccess = function(res, node, _data, _tree, _item, _wasConnected) {
           if (res && res.data) {
             if (typeof res.data.icon == 'string') {
-              tree.removeIcon(item);
-              data.icon = res.data.icon;
-              tree.addIcon(item, {icon: data.icon});
+              _tree.removeIcon(_item);
+              _data.icon = res.data.icon;
+              _tree.addIcon(_item, {icon: _data.icon});
             }
 
-            _.extend(data, res.data);
-            data.is_connecting = false;
+            _.extend(_data, res.data);
+            _data.is_connecting = false;
 
             var serverInfo = pgBrowser.serverInfo =
               pgBrowser.serverInfo || {};
-            serverInfo[data._id] = _.extend({}, data);
+            serverInfo[_data._id] = _.extend({}, _data);
 
             Alertify.success(res.info);
-            obj.trigger('connected', obj, item, data);
+            obj.trigger('connected', obj, _item, _data);
 
             // Generate the event that server is connected
             pgBrowser.Events.trigger(
-              'pgadmin:server:connected', data._id, item, data
+              'pgadmin:server:connected', _data._id, _item, _data
             );
             // Generate the event that database is connected
             pgBrowser.Events.trigger(
-              'pgadmin:database:connected', data._id, data.db, item, data
+              'pgadmin:database:connected', _data._id, _data.db, _item, _data
             );
 
             // We're not reconnecting
             if (!_wasConnected) {
-              tree.setInode(item);
-              tree.deselect(item);
+              _tree.setInode(_item);
+              _tree.deselect(_item);
 
               setTimeout(function() {
-                tree.select(item);
-                tree.open(item);
+                _tree.select(_item);
+                _tree.open(_item);
               }, 10);
             } else {
               // We just need to refresh the tree now.
@@ -1184,14 +1184,14 @@ define('pgadmin.node.server', [
         Alertify.dialog('dlgServerPass', function factory() {
           return {
             main: function(
-              title, message, node, data, tree, item,
+              title, message, node, _data, _tree, _item,
               _status, _onSuccess, _onFailure, _onCancel
             ) {
               this.set('title', title);
               this.message = message;
-              this.tree = tree;
-              this.nodeData = data;
-              this.nodeItem = item;
+              this.tree = _tree;
+              this.nodeData = _data;
+              this.nodeItem = _item;
               this.node= node;
               this.connected = _status;
               this.onSuccess = _onSuccess || onSuccess;
