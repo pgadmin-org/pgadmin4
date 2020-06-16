@@ -21,10 +21,14 @@ LogWindow::LogWindow(QWidget *parent, QString serverLogFile) :
     QDialog(parent),
     m_serverLogFile(serverLogFile)
 {
+    initLogWindow();
+}
+
+void LogWindow::initLogWindow()
+{
     ui = new Ui::LogWindow;
     ui->setupUi(this);
 }
-
 
 void LogWindow::LoadLog()
 {

@@ -36,6 +36,7 @@ private:
     QString m_startupLogFile;
     QString m_serverLogFile;
 
+    void initLogWindow();
     int readLog(QString logFile, QPlainTextEdit *logWidget);
 };
 

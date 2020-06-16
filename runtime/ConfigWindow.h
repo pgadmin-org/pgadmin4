@@ -46,6 +46,7 @@ private slots:
 
 private:
     Ui::ConfigWindow *ui;
+    void initConfigWindow();
 };
 
 #endif // CONFIGWINDOW_H

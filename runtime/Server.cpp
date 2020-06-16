@@ -58,9 +58,7 @@ static void add_to_path(QString &python_path, QString path, bool prepend=false)
 Server::Server(quint16 port, QString key, QString logFileName):
     m_port(port),
     m_key(key),
-    m_logFileName(logFileName),
-    m_wcAppName(Q_NULLPTR),
-    m_wcPythonHome(Q_NULLPTR)
+    m_logFileName(logFileName)
 {
     // Initialise Python
     Py_NoSiteFlag=1;
@@ -81,7 +79,7 @@ Server::Server(quint16 port, QString key, QString logFileName):
     QString python_path = settings.value("PythonPath").toString();
 
     // Get the application directory
-    QString app_dir = qApp->applicationDirPath();
+    QString app_dir = QCoreApplication::applicationDirPath();
     QString path_env = qgetenv("PATH");
     QString pythonHome;
     QStringList path_list;

@@ -233,9 +233,9 @@ int main(int argc, char * argv[])
 #if QT_VERSION >= 0x050000
         QTcpSocket socket;
 
-        #if QT_VERSION >= 0x050900
+#if QT_VERSION >= 0x050900
         socket.setProxy(QNetworkProxy::NoProxy);
-        #endif
+#endif
 
         socket.bind(0, QTcpSocket::ShareAddress);
 #else

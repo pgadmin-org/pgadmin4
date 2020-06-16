@@ -15,10 +15,14 @@
 ConfigWindow::ConfigWindow(QWidget *parent) :
     QDialog(parent)
 {
+    initConfigWindow();
+}
+
+void ConfigWindow::initConfigWindow()
+{
     ui = new Ui::ConfigWindow;
     ui->setupUi(this);
 }
-
 
 void ConfigWindow::on_buttonBox_accepted()
 {

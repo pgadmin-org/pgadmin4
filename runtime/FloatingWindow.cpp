@@ -15,21 +15,15 @@
 
 
 FloatingWindow::FloatingWindow(QWidget *parent) :
-    QMainWindow(parent),
-    m_newAction(Q_NULLPTR),
-    m_configAction(Q_NULLPTR),
-    m_logAction(Q_NULLPTR),
-    m_quitAction(Q_NULLPTR),
-    m_floatingWindowMenu(Q_NULLPTR),
-    m_menuActions(Q_NULLPTR)
+    QMainWindow(parent)
 {
-    ui = new Ui::FloatingWindow;
-    ui->setupUi(this);
 }
-
 
 bool FloatingWindow::Init()
 {
+    ui = new Ui::FloatingWindow;
+    ui->setupUi(this);
+
     // Creating Menu
     createMenu();
 

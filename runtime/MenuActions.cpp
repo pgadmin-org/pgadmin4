@@ -15,13 +15,9 @@
 #include <QClipboard>
 #include <QMessageBox>
 
-MenuActions::MenuActions():
-    m_appServerUrl(""),
-    m_logFile(""),
-    m_logWindow(Q_NULLPTR)
+MenuActions::MenuActions()
 {
 }
-
 
 void MenuActions::setAppServerUrl(QString appServerUrl)
 {

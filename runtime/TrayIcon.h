@@ -33,11 +33,11 @@ private:
     void createTrayIcon();
     void createActions();
 
-    QAction *m_newAction;
-    QAction *m_copyUrlAction;
-    QAction *m_configAction;
-    QAction *m_logAction;
-    QAction *m_quitAction;
+    QAction *m_newAction = Q_NULLPTR;
+    QAction *m_copyUrlAction = Q_NULLPTR;
+    QAction *m_configAction = Q_NULLPTR;
+    QAction *m_logAction = Q_NULLPTR;
+    QAction *m_quitAction = Q_NULLPTR;
 
     QSystemTrayIcon *m_trayIcon;
     QMenu *m_trayIconMenu;
