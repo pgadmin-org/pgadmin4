@@ -661,11 +661,7 @@ define('pgadmin.node.column', [
           type: 'text', mode: ['properties'], deps: ['is_inherited'],
           group: gettext('Definition'),
           visible: function(m) {
-            if (!_.isUndefined(m.get('is_inherited')) && m.get('is_inherited')) {
-              return true;
-            } else {
-              return false;
-            }
+            return (!_.isUndefined(m.get('is_inherited')) && m.get('is_inherited'));
           },
         },{
           id: 'is_sys_column', label: gettext('System column?'), cell: 'string',
@@ -871,11 +867,7 @@ define('pgadmin.node.column', [
           if(this.node_info &&  'schema' in this.node_info)
           {
             // We will disable control if it's in 'edit' mode
-            if (m.isNew()) {
-              return false;
-            } else {
-              return true;
-            }
+            return !(m.isNew());
           }
           return true;
         },
@@ -903,11 +895,7 @@ define('pgadmin.node.column', [
               return false;
             }
             // if we are in edit mode
-            if (!_.isUndefined(m.get('attnum')) && m.get('attnum') > 0 ) {
-              return false;
-            } else {
-              return true;
-            }
+            return !(!_.isUndefined(m.get('attnum')) && m.get('attnum') > 0 );
           }
           return true;
         },
@@ -947,15 +935,11 @@ define('pgadmin.node.column', [
           d = i ? t.itemData(i) : null;
         }
         // If node is under catalog then do not allow 'create' menu
-        if (_.indexOf(parents, 'catalog') > -1 ||
-              _.indexOf(parents, 'coll-view') > -1 ||
-              _.indexOf(parents, 'coll-mview') > -1 ||
-              _.indexOf(parents, 'mview') > -1 ||
-              _.indexOf(parents, 'view') > -1) {
-          return false;
-        } else {
-          return true;
-        }
+        return !(_.indexOf(parents, 'catalog') > -1 ||
+          _.indexOf(parents, 'coll-view') > -1 ||
+          _.indexOf(parents, 'coll-mview') > -1 ||
+          _.indexOf(parents, 'mview') > -1 ||
+          _.indexOf(parents, 'view') > -1);
       },
     });
   }

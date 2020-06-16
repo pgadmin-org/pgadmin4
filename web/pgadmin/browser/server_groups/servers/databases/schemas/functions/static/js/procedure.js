@@ -98,12 +98,7 @@ define('pgadmin.node.procedure', [
         ),
         canVarAdd: function() {
           var server = this.node_info.server;
-          if (server.version < 90500) {
-            return false;
-          }
-          else {
-            return true;
-          }
+          return !(server.version < 90500);
         },
         isVisible: function() {
           if (this.name == 'sysfunc') { return false; }

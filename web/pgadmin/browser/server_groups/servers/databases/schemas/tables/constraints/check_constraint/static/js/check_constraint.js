@@ -210,11 +210,7 @@ define('pgadmin.node.check_constraint', [
           d = i ? t.itemData(i) : null;
         }
         // If node is under catalog then do not allow 'create' menu
-        if (_.indexOf(parents, 'catalog') > -1) {
-          return false;
-        } else {
-          return true;
-        }
+        return !(_.indexOf(parents, 'catalog') > -1);
       },
     });
 

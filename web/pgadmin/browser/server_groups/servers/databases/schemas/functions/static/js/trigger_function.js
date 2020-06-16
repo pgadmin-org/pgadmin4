@@ -358,13 +358,12 @@ define('pgadmin.node.trigger_function', [
           if(this.node_info &&  'catalog' in this.node_info) {
             return true;
           }
-          switch(this.name){
-          case 'prorows':
+          if (this.name === 'prorows'){
             if(m.get('proretset') == true) {
               return false;
             }
             return true;
-          default:
+          } else {
             return false;
           }
         },
