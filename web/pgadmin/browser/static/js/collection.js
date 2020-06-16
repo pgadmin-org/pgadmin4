@@ -312,6 +312,9 @@ define([
               $('.pg-prop-content').on('scroll', that.__loadMoreRows.bind(that));
 
               that.collection.reset(that.data.splice(0, 50));
+
+              // Listen to select all checkbox event
+              that.collection.on('backgrid:select-all', that.__loadAllRows.bind(that));
             } else {
             // Do not listen the scroll event
               $('.pg-prop-content').off('scroll', that.__loadMoreRows);
@@ -434,6 +437,14 @@ define([
           if (this.data.length > 0) {
             this.collection.add(this.data.splice(0, 50));
           }
+        }
+      },
+      __loadAllRows: function(tmp, checked) {
+        if (this.data.length > 0) {
+          this.collection.add(this.data);
+          this.collection.each(function (model) {
+            model.trigger('backgrid:select', model, checked);
+          });
         }
       },
       generate_url: function(item, type) {
