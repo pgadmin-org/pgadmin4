@@ -490,7 +490,7 @@ define('pgadmin.dashboard', [
           });
         }
       } else {
-        Object.keys(new_data).map((label, label_ind) => {
+        Object.keys(new_data).forEach((label, label_ind) => {
           // Push new values onto the existing data structure
           // If this is a counter stat, we need to subtract the previous value
           if (!counter) {
@@ -508,8 +508,6 @@ define('pgadmin.dashboard', [
           for (var time_ind = 0; time_ind < dataset[label_ind]['data'].length; time_ind++) {
             dataset[label_ind]['data'][time_ind][0] = time_ind;
           }
-
-          return;
         });
         counter_prev_data = new_data;
       }

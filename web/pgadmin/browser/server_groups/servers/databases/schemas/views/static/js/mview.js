@@ -390,7 +390,7 @@ define('pgadmin.node.mview', [
           d = data || (i && i.length == 1 ? t.itemData(i): undefined),
           node = this || (d && pgAdmin.Browser.Nodes[d._type]),
           info = node && node.getTreeNodeHierarchy.apply(node, [i]),
-          version = info.server.version;
+          version = _.isUndefined(info) ? 0 : info.server.version;
 
         // disable refresh concurrently if server version is 9.3
         return (version >= 90400);

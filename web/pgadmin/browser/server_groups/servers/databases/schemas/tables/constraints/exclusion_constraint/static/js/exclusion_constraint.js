@@ -698,7 +698,7 @@ define('pgadmin.node.exclusion_constraint', [
           select2:{allowClear:false},
           filter: function(m) {
             // Don't show pg_global tablespace in selection.
-            return !(m.label == 'pg_global');
+            return (m.label !== 'pg_global');
           },
         },{
           id: 'amname', label: gettext('Access method'),

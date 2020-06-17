@@ -7,9 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-//import * as commonUtils from '../../../static/js/utils';
-//import Mousetrap from 'mousetrap';
-
 define([
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'backbone', 'alertify', 'backform', 'backgrid', 'sources/browser/generate_url',
@@ -357,7 +354,7 @@ define([
             msg = undefined,
             title = undefined;
 
-          if (sel_node.type && sel_node.type == 'coll-constraints') {
+          if (sel_node && sel_node.type && sel_node.type == 'coll-constraints') {
             // In order to identify the constraint type, the type should be passed to the server
             sel_rows = sel_row_models.map(row => ({id: row.get('oid'), _type: row.get('_type')}));
           }
@@ -371,6 +368,9 @@ define([
             );
             return;
           }
+
+          if (!sel_node)
+            return;
 
           if (type === 'dropCascade') {
             url = sel_node.generate_url(sel_item, 'delete');
