@@ -390,6 +390,9 @@ Expand the *Schema Diff* node to specify your display preferences.
     :alt: Preferences schema diff
     :align: center
 
+Use the *Ignore whitespaces* switch to ignores the whitespaces while comparing
+the string objects. Whitespace includes space, tabs, and CRLF.
+
 Use the *Open in new browser tab* switch to indicate if you would like Schema Diff
 to open in a new tab.
 

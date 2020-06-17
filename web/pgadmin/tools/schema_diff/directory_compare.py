@@ -10,6 +10,7 @@
 """Directory comparison"""
 
 import copy
+import string
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
 
 count = 1
@@ -20,7 +21,7 @@ list_keys_array = ['name', 'colname', 'argid', 'token', 'option', 'conname',
 
 def compare_dictionaries(view_object, source_params, target_params,
                          target_schema, source_dict, target_dict, node,
-                         node_label,
+                         node_label, ignore_whitespaces,
                          ignore_keys=None):
     """
     This function will compare the two dictionaries.
@@ -33,6 +34,7 @@ def compare_dictionaries(view_object, source_params, target_params,
     :param target_dict: Second Dictionary
     :param node: node type
     :param node_label: node label
+    :param ignore_whitespaces: If set the True then ignore whitespaces
     :param ignore_keys: List of keys that will be ignored while comparing
     :return:
     """
@@ -139,7 +141,8 @@ def compare_dictionaries(view_object, source_params, target_params,
             target_object_id = target_dict[key]['oid']
 
         # Recursively Compare the two dictionary
-        if are_dictionaries_identical(dict1[key], dict2[key], ignore_keys):
+        if are_dictionaries_identical(dict1[key], dict2[key],
+                                      ignore_whitespaces, ignore_keys):
             identical.append({
                 'id': count,
                 'type': node,
@@ -177,7 +180,7 @@ def compare_dictionaries(view_object, source_params, target_params,
                     view_object.get_sql_from_table_diff(**temp_tgt_params)
                 diff_ddl = view_object.get_sql_from_submodule_diff(
                     temp_src_params, temp_tgt_params, target_schema,
-                    dict1[key], dict2[key], diff_dict)
+                    dict1[key], dict2[key], diff_dict, ignore_whitespaces)
             else:
                 temp_src_params = copy.deepcopy(source_params)
                 temp_tgt_params = copy.deepcopy(target_params)
@@ -213,11 +216,13 @@ def compare_dictionaries(view_object, source_params, target_params,
     return source_only + target_only + different + identical
 
 
-def are_lists_identical(source_list, target_list, ignore_keys):
+def are_lists_identical(source_list, target_list, ignore_whitespaces,
+                        ignore_keys):
     """
     This function is used to compare two list.
     :param source_list:
     :param target_list:
+    :param ignore_whitespaces: ignore whitespaces
     :param ignore_keys: ignore keys to compare
     :return:
     """
@@ -231,6 +236,7 @@ def are_lists_identical(source_list, target_list, ignore_keys):
             if type(source_list[index]) is dict:
                 if not are_dictionaries_identical(source_list[index],
                                                   target_list[index],
+                                                  ignore_whitespaces,
                                                   ignore_keys):
                     return False
             else:
@@ -239,12 +245,14 @@ def are_lists_identical(source_list, target_list, ignore_keys):
     return True
 
 
-def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
+def are_dictionaries_identical(source_dict, target_dict, ignore_whitespaces,
+                               ignore_keys):
     """
     This function is used to recursively compare two dictionaries with
     same keys.
     :param source_dict: source dict
     :param target_dict: target dict
+    :param ignore_whitespaces: If set to True then ignore whitespaces
     :param ignore_keys: ignore keys to compare
     :return:
     """
@@ -275,7 +283,9 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
 
         if type(source_dict[key]) is dict:
             if not are_dictionaries_identical(source_dict[key],
-                                              target_dict[key], ignore_keys):
+                                              target_dict[key],
+                                              ignore_whitespaces,
+                                              ignore_keys):
                 return False
         elif type(source_dict[key]) is list:
             # Sort the source and target list on the basis of
@@ -284,10 +294,25 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
                                                            target_dict[key])
             # Compare the source and target lists
             if not are_lists_identical(source_dict[key], target_dict[key],
+                                       ignore_whitespaces,
                                        ignore_keys):
                 return False
         else:
-            if source_dict[key] != target_dict[key]:
+            source_value = source_dict[key]
+            target_value = target_dict[key]
+
+            # If ignore_whitespaces is True then check the source_value and
+            # target_value if of type string. If the values is of type string
+            # then using translate function ignore all the whitespaces.
+            if ignore_whitespaces:
+                if isinstance(source_value, str):
+                    source_value = source_value.translate(
+                        str.maketrans('', '', string.whitespace))
+                if isinstance(target_value, str):
+                    target_value = target_value.translate(
+                        str.maketrans('', '', string.whitespace))
+
+            if source_value != target_value:
                 return False
 
     return True

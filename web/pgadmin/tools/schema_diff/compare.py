@@ -68,6 +68,7 @@ class SchemaDiffObjectCompare:
                          'scid': kwargs.get('target_scid')
                          }
 
+        ignore_whitespaces = kwargs.get('ignore_whitespaces')
         status, target_schema = self.get_schema(kwargs.get('target_sid'),
                                                 kwargs.get('target_did'),
                                                 kwargs.get('target_scid')
@@ -88,6 +89,7 @@ class SchemaDiffObjectCompare:
                                     target_schema, source, target,
                                     self.node_type,
                                     gettext(self.blueprint.COLLECTION_LABEL),
+                                    ignore_whitespaces,
                                     self.keys_to_ignore)
 
     def ddl_compare(self, **kwargs):

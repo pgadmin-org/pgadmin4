@@ -556,6 +556,15 @@ export default class SchemaDiffUI {
       fields: [{
         name: 'source_sid', label: false,
         control: SchemaDiffSelect2Control,
+        transform: function(data) {
+          let group_template_options = [];
+          for (let key in data) {
+            if (data.hasOwnProperty(key)) {
+              group_template_options.push({'group': key, 'optval': data[key]});
+            }
+          }
+          return group_template_options;
+        },
         url: url_for('schema_diff.servers'),
         select2: {
           allowClear: true,
@@ -636,6 +645,15 @@ export default class SchemaDiffUI {
       }, {
         name: 'target_sid', label: false,
         control: SchemaDiffSelect2Control,
+        transform: function(data) {
+          let group_template_options = [];
+          for (let key in data) {
+            if (data.hasOwnProperty(key)) {
+              group_template_options.push({'group': key, 'optval': data[key]});
+            }
+          }
+          return group_template_options;
+        },
         group: 'target',
         url: url_for('schema_diff.servers'),
         select2: {

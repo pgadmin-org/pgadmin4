@@ -158,7 +158,7 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
 
     # We will need present type in edit mode
     edit_types_list.append(data['cltype'])
-    data['edit_types'] = edit_types_list
+    data['edit_types'] = sorted(edit_types_list)
 
     data['cltype'] = DataTypeReader.parse_type_name(data['cltype'])
 
@@ -205,7 +205,7 @@ def get_formatted_columns(conn, tid, data, other_columns,
                                                     edit_types.keys())))
         status, res = conn.execute_2darray(SQL)
         for row in res['rows']:
-            edit_types[row['main_oid']] = row['edit_types']
+            edit_types[row['main_oid']] = sorted(row['edit_types'])
 
         for column in data['columns']:
             column_formatter(conn, tid, column['attnum'], column,

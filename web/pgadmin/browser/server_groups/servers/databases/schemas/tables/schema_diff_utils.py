@@ -22,7 +22,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     table_keys_to_ignore = ['oid', 'schema', 'edit_types', 'attnum',
                             'col_type', 'references', 'reltuples', 'oid-2',
                             'rows_cnt', 'seqrelid', 'atttypid', 'elemoid',
-                            'hastoasttable', 'relhassubclass']
+                            'hastoasttable', 'relhassubclass', 'relacl_str']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
@@ -31,7 +31,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
     trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tfunction',
                               'tgqual', 'tgconstraint']
-    index_keys_to_ignore = ['relowner', 'indrelid']
+    index_keys_to_ignore = ['relowner', 'indrelid', 'indclass']
 
     keys_to_ignore = table_keys_to_ignore + constraint_keys_to_ignore \
         + trigger_keys_to_ignore + index_keys_to_ignore
@@ -51,6 +51,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                          'did': kwargs.get('target_did'),
                          'scid': kwargs.get('target_scid')}
 
+        ignore_whitespaces = kwargs.get('ignore_whitespaces')
         status, target_schema = self.get_schema(**target_params)
         if not status:
             return internal_server_error(errormsg=target_schema)
@@ -68,6 +69,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     target_tables,
                                     self.node_type,
                                     self.blueprint.COLLECTION_LABEL,
+                                    ignore_whitespaces,
                                     self.keys_to_ignore)
 
     def ddl_compare(self, **kwargs):
@@ -225,7 +227,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         return different
 
     def get_sql_from_submodule_diff(self, source_params, target_params,
-                                    target_schema, source, target, diff_dict):
+                                    target_schema, source, target, diff_dict,
+                                    ignore_whitespaces):
         """
         This function returns the DDL/DML statements of the
         submodules of table based on the comparison status.
@@ -236,6 +239,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         :param source:
         :param target:
         :param diff_dict:
+        :param ignore_whitespaces:
         :return:
         """
         # Get the difference result for source and target columns
@@ -250,7 +254,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         target_params['diff_data'] = diff_dict
         diff = self.get_sql_from_table_diff(**target_params)
 
-        ignore_sub_modules = ['column', 'constraints']
+        ignore_sub_modules = ['column', 'constraints', 'row_security_policy']
         if self.manager.version < 100000:
             ignore_sub_modules.append('partition')
         if self.manager.server_type == 'pg' or self.manager.version < 120000:
@@ -314,7 +318,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                     for key in intersect_keys:
                         # Recursively Compare the two dictionary
                         if not are_dictionaries_identical(
-                                dict1[key], dict2[key], self.keys_to_ignore):
+                                dict1[key], dict2[key], ignore_whitespaces,
+                                self.keys_to_ignore):
 
                             diff_ddl = module_view.ddl_compare(
                                 source_params=source_params,

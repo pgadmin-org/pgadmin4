@@ -16,6 +16,7 @@
 @import '~codemirror/addon/scroll/simplescrollbars.css';
 
 @import '~slickgrid/slick.grid.css';
+@import '~slickgrid/slick-default-theme.css';
 @import '~slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css';
 
 @import '../vendor/backgrid/backgrid.css';

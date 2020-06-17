@@ -9,6 +9,8 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5468 <https://redmine.postgresql.org/issues/5468>`_ -  Added option to ignore the whitespaces while comparing objects in schema diff.
+| `Issue #5500 <https://redmine.postgresql.org/issues/5500>`_ -  Added server group name while selecting servers in schema diff.
 | `Issue #5516 <https://redmine.postgresql.org/issues/5516>`_ -  Added support of Row Security Policies.
 | `Issue #5576 <https://redmine.postgresql.org/issues/5576>`_ -  Improve error messaging if the storage and log directories cannot be created.
 
@@ -29,4 +31,5 @@ Bug fixes
 | `Issue #5507 <https://redmine.postgresql.org/issues/5507>`_ -  Fixed connection and version number detection issue when the database server is upgraded.
 | `Issue #5521 <https://redmine.postgresql.org/issues/5521>`_ -  Fixed an issue when dumping servers from a desktop pgAdmin app by providing an option '--sqlite-path'.
 | `Issue #5539 <https://redmine.postgresql.org/issues/5539>`_ -  Fixed typo in exception keyword.
+| `Issue #5584 <https://redmine.postgresql.org/issues/5584>`_ -  Fixed an issue where two identical tables showing different by schema diff tool.
 | `Issue #5592 <https://redmine.postgresql.org/issues/5592>`_ -  Ensure that pgadmin should be able to connect to the server which has password more than 1000 characters.

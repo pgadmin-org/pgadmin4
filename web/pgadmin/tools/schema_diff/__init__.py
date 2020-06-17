@@ -24,6 +24,7 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.preferences import Preferences
 
 MODULE_NAME = 'schema_diff'
 
@@ -77,6 +78,16 @@ class SchemaDiffModule(PgAdminModule):
             category_label=gettext('Display'),
             help_str=gettext('If set to True, the Schema Diff '
                              'will be opened in a new browser tab.')
+        )
+
+        self.preference.register(
+            'display', 'ignore_whitespaces',
+            gettext("Ignore whitespaces"), 'boolean', False,
+            category_label=gettext('Display'),
+            help_str=gettext('If set to True, then the Schema Diff '
+                             'tool ignores the whitespaces while comparing '
+                             'the string objects. Whitespace includes space, '
+                             'tabs, and CRLF')
         )
 
 
@@ -257,7 +268,7 @@ def servers():
     This function will return the list of servers for the specified
     server id.
     """
-    res = []
+    res = {}
     try:
         """Return a JSON document listing the server groups for the user"""
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -269,15 +280,19 @@ def servers():
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
             connected = conn.connected()
-
-            res.append({
+            server_info = {
                 "value": server.id,
                 "label": server.name,
                 "image": server_icon_and_background(connected, manager,
                                                     server),
                 "_id": server.id,
-                "connected": connected,
-            })
+                "connected": connected
+            }
+
+            if server.servers.name in res:
+                res[server.servers.name].append(server_info)
+            else:
+                res[server.servers.name] = [server_info]
 
     except Exception as e:
         app.logger.exception(e)
@@ -443,6 +458,9 @@ def compare(trans_id, source_sid, source_did, source_scid,
                                     diff_model_obj)
 
     try:
+        pref = Preferences.module('schema_diff')
+        ignore_whitespaces = pref.preference('ignore_whitespaces').get()
+
         all_registered_nodes = SchemaDiffRegistry.get_registered_nodes()
         node_percent = round(100 / len(all_registered_nodes))
         total_percent = 0
@@ -462,7 +480,8 @@ def compare(trans_id, source_sid, source_did, source_scid,
                                    source_scid=source_scid,
                                    target_sid=target_sid,
                                    target_did=target_did,
-                                   target_scid=target_scid)
+                                   target_scid=target_scid,
+                                   ignore_whitespaces=ignore_whitespaces)
 
                 if res is not None:
                     comparison_result = comparison_result + res
