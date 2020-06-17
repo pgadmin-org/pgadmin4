@@ -188,8 +188,8 @@ def dump_header():
 def dump_cplusplus():
     print_title("C++ Dependencies")
     print_table_header()
-    print_row("QT", "4.6.2+", "LGPL v2.1/3", "http://www.qt.io/")
-    print_row("Python", "2.7/3.4+", "PSF", "https://www.python.org/")
+    print_row("QT", "5+", "LGPL v2.1/3", "https://www.qt.io/")
+    print_row("Python", "3.4+", "PSF", "https://www.python.org/")
     print_summary(2)
 
 
