@@ -33,7 +33,7 @@ def is_code_file(filename, extensions=ALLOWED_FILE_EXTENSIONS):
 
 
 # Main function which will iterate and replace the copyright year
-def findReplace(directory, find, replace):
+def find_replace(directory, find, replace):
     total = 0
     COPYRIGHT_PATTERN = re.compile(
         r'(Copyright \(C\) \d{{4}} - ){0},'.format(find)
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     # Search and Replace the Copyright information from Parent folder
     parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    failed, files_affected = findReplace(parent_dir, sys.argv[1], sys.argv[2])
+    failed, files_affected = find_replace(parent_dir, sys.argv[1], sys.argv[2])
 
     if len(failed) > 0:
         print("Failed to process the following files:\n", "\n\t".join(failed))
