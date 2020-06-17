@@ -22,10 +22,6 @@ div.body {
     background-color: #fff;
 }
 
-div.related a {
-    color: #295C85;
-}
-
 div.related a:hover {
     color: #ebeef3 !important;
     text-decoration: underline !important;
@@ -287,14 +283,11 @@ div.sphinxsidebar ul ul, div.sphinxsidebar ul.want-points {
     padding-right: 0px;
     margin-left: 0;
     margin-right: 0;
+    list-style: none;
 }
 
 div.sphinxsidebar ul {
     margin: 10px 10px 10px 0px;
-}
-
-div.sphinxsidebar ul ul, div.sphinxsidebar ul.want-points {
-    list-style: none;
 }
 
 div.sphinxsidebar ul li.toctree-l1 a cite {
@@ -303,7 +296,6 @@ div.sphinxsidebar ul li.toctree-l1 a cite {
     font-weight: 400;
     color: #295C85;
     font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-    -webkit-font-smoothing: antialiased;
     border:none;
     padding:0px;
     background-color: #f5f7f9;
