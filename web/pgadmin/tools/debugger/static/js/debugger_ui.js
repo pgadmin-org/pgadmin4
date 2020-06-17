@@ -472,20 +472,11 @@ define([
                 // If there is default arguments
                 //Below logic will assign default values to "Default value" column
                 for (j = (myargname.length - 1); j >= 0; j--) {
-                  if (debug_info['proargmodes'] == null) {
-                    if (arg_cnt) {
-                      arg_cnt = arg_cnt - 1;
-                      def_val_list[j] = default_args[arg_cnt];
-                    } else {
-                      def_val_list[j] = '<No default value>';
-                    }
+                  if (arg_cnt) {
+                    arg_cnt = arg_cnt - 1;
+                    def_val_list[j] = default_args[arg_cnt];
                   } else {
-                    if (arg_cnt) {
-                      arg_cnt = arg_cnt - 1;
-                      def_val_list[j] = default_args[arg_cnt];
-                    } else {
-                      def_val_list[j] = '<No default value>';
-                    }
+                    def_val_list[j] = '<No default value>';
                   }
                 }
 
@@ -923,22 +914,11 @@ define([
                 let node = pgBrowser.Nodes[item_data._type];
                 let treeInfo = node.getTreeNodeHierarchy.call(node, selected_item);
 
-                let f_id;
-                if (item_data._type == 'function') {
-                  f_id = item_data._id;
-                } else if (item_data._type == 'procedure') {
-                  f_id = item_data._id;
-                } else if (item_data._type == 'edbfunc') {
-                  f_id = item_data._id;
-                } else if (item_data._type == 'edbproc') {
-                  f_id = item_data._id;
-                }
-
                 baseUrl = url_for('debugger.clear_arguments', {
                   'sid': treeInfo.server._id,
                   'did': treeInfo.database._id,
                   'scid': treeInfo.schema._id,
-                  'func_id': f_id,
+                  'func_id': item_data._id,
                 });
               } else {
                 baseUrl = url_for('debugger.clear_arguments', {

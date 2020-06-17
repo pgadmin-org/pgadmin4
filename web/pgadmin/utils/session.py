@@ -375,14 +375,11 @@ def cleanup_session_files():
     iterate_session_files = False
 
     global LAST_CHECK_SESSION_FILES
-    if LAST_CHECK_SESSION_FILES is None:
+    if LAST_CHECK_SESSION_FILES is None or \
+        datetime.datetime.now() >= LAST_CHECK_SESSION_FILES + \
+            datetime.timedelta(hours=config.CHECK_SESSION_FILES_INTERVAL):
         iterate_session_files = True
         LAST_CHECK_SESSION_FILES = datetime.datetime.now()
-    else:
-        if datetime.datetime.now() >= LAST_CHECK_SESSION_FILES + \
-                datetime.timedelta(hours=config.CHECK_SESSION_FILES_INTERVAL):
-            iterate_session_files = True
-            LAST_CHECK_SESSION_FILES = datetime.datetime.now()
 
     if iterate_session_files:
         for root, dirs, files in os.walk(

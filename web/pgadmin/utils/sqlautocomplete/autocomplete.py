@@ -791,12 +791,11 @@ class SQLAutoComplete(object):
             'signature': self.signature_arg_style
         }[usage]
         args = func.args()
-        if not template:
+        if not template or (
+            usage == 'call' and (
+                len(args) < 2 or func.has_variadic())):
             return '()'
-        elif usage == 'call' and len(args) < 2:
-            return '()'
-        elif usage == 'call' and func.has_variadic():
-            return '()'
+
         multiline = usage == 'call' and len(args) > self.call_arg_oneliner_max
         max_arg_len = max(len(a.name) for a in args) if multiline else 0
         args = (

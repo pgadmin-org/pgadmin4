@@ -238,14 +238,8 @@ export default class SchemaDiffUI {
               generated_script = script_header + 'BEGIN;' + '\n' + self.model.get('diff_ddl') + '\n' + 'END;';
             }
 
-            let preferences = pgWindow.pgAdmin.Browser.get_preferences_for_module('schema_diff');
-            if (preferences.schema_diff_new_browser_tab) {
-              pgWindow.pgAdmin.ddl_diff = generated_script;
-              generateScript(server_data, pgWindow.pgAdmin.DataGrid);
-            } else {
-              pgWindow.pgAdmin.ddl_diff = generated_script;
-              generateScript(server_data, pgWindow.pgAdmin.DataGrid);
-            }
+            pgWindow.pgAdmin.ddl_diff = generated_script;
+            generateScript(server_data, pgWindow.pgAdmin.DataGrid);
           }
 
           $('#diff_fetching_data').find('.schema-diff-busy-text').text('');

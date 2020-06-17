@@ -843,15 +843,10 @@ define([
                   saveUser: function(m) {
                     var d = m.toJSON(true);
 
-                    if(m.isNew() && m.get('auth_source') == 'ldap' &&
-                     (!m.get('username') || !m.get('auth_source') || !m.get('role')) ) {
-                      return false;
-                    } else if (m.isNew() && m.get('auth_source') == DEFAULT_AUTH_SOURCE &&  (!m.get('email') || !m.get('role') ||
-                        !m.get('newPassword') || !m.get('confirmPassword') ||
-                        m.get('newPassword') != m.get('confirmPassword'))) {
-                      // New user model is valid but partially filled so return without saving.
-                      return false;
-                    } else if (!m.isNew() && m.get('newPassword') != m.get('confirmPassword')) {
+                    if((m.isNew() && m.get('auth_source') == 'ldap' && (!m.get('username') || !m.get('auth_source') || !m.get('role')))
+                      || (m.isNew() && m.get('auth_source') == DEFAULT_AUTH_SOURCE &&  (!m.get('email') || !m.get('role') ||
+                          !m.get('newPassword') || !m.get('confirmPassword') || m.get('newPassword') != m.get('confirmPassword')))
+                      || (!m.isNew() && m.get('newPassword') != m.get('confirmPassword'))) {
                       // For old user password change is in progress and user model is valid but admin has not added
                       // both the passwords so return without saving.
                       return false;

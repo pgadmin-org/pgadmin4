@@ -626,16 +626,8 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
           commonUtils.handleKeyNavigation(event);
         }
 
-        if (command.moveUp() || command.moveDown() || command.save()) {
-          // backgrid vertical navigation (Up/Down arrow key)
-          ev.preventDefault();
-          ev.stopPropagation();
-          this.model.trigger('backgrid:edited', this.model, this.column, command);
-          // model.trigger('backgrid:edited', model, column, command);
-          return;
-        }
-        // esc
-        else if (command.cancel()) {
+        if (command.moveUp() || command.moveDown() || command.save() || command.cancel() ||
+          (command.moveLeft() && ev.target.name === 'privilege' && $(ev.target).attr('privilege') === 'ALL')) {
           // undo
           ev.stopPropagation();
           model.trigger('backgrid:edited', model, column, command);
@@ -650,12 +642,6 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
               return;
             }
           }
-        } else if (command.moveLeft() && ev.target.name === 'privilege' &&
-          $(ev.target).attr('privilege') === 'ALL') {
-          // If we are at the fist privilege then we should move to previous cell
-          ev.stopPropagation();
-          model.trigger('backgrid:edited', model, column, command);
-          return;
         }
 
         /*

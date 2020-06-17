@@ -757,9 +757,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         elif key == 'foreign_key':
             if 'oid' not in data:
                 for arg in ['columns']:
-                    if arg not in data:
-                        return False
-                    elif isinstance(data[arg], list) and len(data[arg]) < 1:
+                    if arg not in data or \
+                            (isinstance(data[arg], list) and
+                             len(data[arg]) < 1):
                         return False
 
                 if 'autoindex' in data and \

@@ -1057,14 +1057,16 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
             for key in required_create_keys:
                 if key in diff_dict:
-                    if (key == 'columns' and ((
+                    if key == 'columns' and ((
                             'added' in diff_dict[key] and
                             len(diff_dict[key]['added']) > 0
                     ) or ('changed' in diff_dict[key] and
                           len(diff_dict[key]['changed']) > 0) or (
                             'deleted' in diff_dict[key] and
                             len(diff_dict[key]['deleted']) > 0)
-                    )) or key != 'columns':
+                    ):
+                        create_req = True
+                    elif key != 'columns':
                         create_req = True
 
             if create_req:
