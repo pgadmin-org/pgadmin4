@@ -93,11 +93,11 @@ define([
           gridSchema = Backform.generateGridColumnsFromModel(
             info, node.model, 'properties', that.columns
           ),
-          createButtons = function(buttons, location, extraClasses) {
+          createButtons = function(buttonsList, location, extraClasses) {
             // Arguments must be non-zero length array of type
             // object, which contains following attributes:
             // label, type, extraClasses, register
-            if (buttons && _.isArray(buttons) && buttons.length > 0) {
+            if (buttonsList && _.isArray(buttonsList) && buttonsList.length > 0) {
               // All buttons will be created within a single
               // div area.
               var btnGroup =
@@ -117,7 +117,7 @@ define([
               if (extraClasses) {
                 btnGroup.addClass(extraClasses);
               }
-              _.each(buttons, function(btn) {
+              _.each(buttonsList, function(btn) {
                 // Create the actual button, and append to
                 // the group div
 
@@ -155,7 +155,7 @@ define([
                 }
 
                 var column = this.column, model = this.model, $el = this.$el;
-                this.listenTo(column, 'change:renderable', function (column, renderable) {
+                this.listenTo(column, 'change:renderable', function (col, renderable) {
                   $el.toggleClass('renderable', renderable);
                 });
 
@@ -350,14 +350,14 @@ define([
         var onDrop = function(type, confirm=true) {
           let sel_row_models = this.grid.getSelectedModels(),
             sel_rows = [],
-            item = pgBrowser.tree.selected(),
-            d = item ? pgBrowser.tree.itemData(item) : null,
-            node = d && pgBrowser.Nodes[d._type],
+            sel_item = pgBrowser.tree.selected(),
+            d = sel_item ? pgBrowser.tree.itemData(sel_item) : null,
+            sel_node = d && pgBrowser.Nodes[d._type],
             url = undefined,
             msg = undefined,
             title = undefined;
 
-          if (node.type && node.type == 'coll-constraints') {
+          if (sel_node.type && sel_node.type == 'coll-constraints') {
             // In order to identify the constraint type, the type should be passed to the server
             sel_rows = sel_row_models.map(row => ({id: row.get('oid'), _type: row.get('_type')}));
           }
@@ -373,11 +373,11 @@ define([
           }
 
           if (type === 'dropCascade') {
-            url = node.generate_url(item, 'delete'),
-            msg = gettext('Are you sure you want to drop all the selected objects and all the objects that depend on them?'),
+            url = sel_node.generate_url(sel_item, 'delete');
+            msg = gettext('Are you sure you want to drop all the selected objects and all the objects that depend on them?');
             title = gettext('DROP CASCADE multiple objects?');
           } else {
-            url = node.generate_url(item, 'drop');
+            url = sel_node.generate_url(sel_item, 'drop');
             msg = gettext('Are you sure you want to drop all the selected objects?');
             title = gettext('DROP multiple objects?');
           }
@@ -394,9 +394,9 @@ define([
               } else {
                 $(pgBrowser.panels['properties'].panel).removeData('node-prop');
                 pgBrowser.Events.trigger(
-                  'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                  'pgadmin:browser:tree:refresh', sel_item || pgBrowser.tree.selected(), {
                     success: function() {
-                      node.callbacks.selected.apply(node, [item]);
+                      sel_node.callbacks.selected.apply(sel_node, [sel_item]);
                     },
                   });
               }
@@ -405,15 +405,15 @@ define([
               Alertify.pgNotifier(
                 error, xhr,
                 gettext('Error dropping %s', d._label.toLowerCase()),
-                function(msg) {
-                  if (msg == 'CRYPTKEY_SET') {
+                function(alertMsg) {
+                  if (alertMsg == 'CRYPTKEY_SET') {
                     onDrop(type, false);
                   } else {
                     $(pgBrowser.panels['properties'].panel).removeData('node-prop');
                     pgBrowser.Events.trigger(
-                      'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                      'pgadmin:browser:tree:refresh', sel_item || pgBrowser.tree.selected(), {
                         success: function() {
-                          node.callbacks.selected.apply(node, [item]);
+                          sel_node.callbacks.selected.apply(sel_node, [sel_item]);
                         },
                       }
                     );
