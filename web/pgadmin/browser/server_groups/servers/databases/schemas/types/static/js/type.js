@@ -385,11 +385,7 @@ define('pgadmin.node.type', [
           group: gettext('Definition'), mode: ['edit', 'create'],
           canAdd: true, canEdit: false, canDelete: function(m) {
             // We will disable it if it's in 'edit' mode
-            if (m.isNew()) {
-              return true;
-            } else {
-              return false;
-            }
+            return m.isNew();
           },
           disabled: 'inSchema', deps: ['typtype'],
           control: 'unique-col-collection', uniqueCol : ['label'],

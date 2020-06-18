@@ -201,8 +201,7 @@ define('pgadmin.node.mview', [
           type: 'text', group: gettext('Storage'), first_empty: false,
           control: 'node-list-by-name', node: 'tablespace', select2: { allowClear: false },
           filter: function(m) {
-            if (m.label == 'pg_global') return false;
-            else return true;
+            return (m.label != 'pg_global');
           },
         },{
           id: 'fillfactor', label: gettext('Fill factor'),

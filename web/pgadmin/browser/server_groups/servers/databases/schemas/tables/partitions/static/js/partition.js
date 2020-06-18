@@ -1204,22 +1204,14 @@ function(
       canCreate_with_trigger_enable: function(itemData, item, data) {
         if(this.canCreate.apply(this, [itemData, item, data])) {
           // We are here means we can create menu, now let's check condition
-          if(itemData.tigger_count > 0) {
-            return true;
-          } else {
-            return false;
-          }
+          return (itemData.tigger_count > 0);
         }
       },
       // Check to whether table has enable trigger(s)
       canCreate_with_trigger_disable: function(itemData, item, data) {
         if(this.canCreate.apply(this, [itemData, item, data])) {
           // We are here means we can create menu, now let's check condition
-          if(itemData.tigger_count > 0 && itemData.has_enable_triggers > 0) {
-            return true;
-          } else {
-            return false;
-          }
+          return (itemData.tigger_count > 0 && itemData.has_enable_triggers > 0);
         }
       },
     });
