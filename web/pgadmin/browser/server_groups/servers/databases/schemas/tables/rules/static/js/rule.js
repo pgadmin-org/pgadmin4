@@ -211,7 +211,7 @@ define('pgadmin.node.rule', [
             String(field_name).replace(/^\s+|\s+$/g, '') === '')
           {
             err['name'] = gettext('Please specify name.');
-            errmsg = errmsg || err['name'];
+            errmsg = err['name'];
             this.errorModel.set('name', errmsg);
             return errmsg;
           }

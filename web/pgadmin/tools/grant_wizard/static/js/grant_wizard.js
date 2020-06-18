@@ -79,7 +79,7 @@ define([
         node = this.get('objects').toJSON();
       if (_.isEmpty(node)) {
         err['selected'] = gettext('Please select any database object.');
-        errmsg = errmsg || err['selected'];
+        errmsg = err['selected'];
         this.errorModel.set('selected', errmsg);
         return errmsg;
       } else {

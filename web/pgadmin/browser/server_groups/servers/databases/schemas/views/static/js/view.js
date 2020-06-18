@@ -223,7 +223,7 @@ define('pgadmin.node.view', [
           if (_.isUndefined(field_name) || _.isNull(field_name) ||
             String(field_name).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Please specify name.');
-            errmsg = errmsg || err['name'];
+            errmsg = err['name'];
             this.errorModel.set('name', errmsg);
             return errmsg;
           }else{
@@ -232,7 +232,7 @@ define('pgadmin.node.view', [
           if (_.isUndefined(field_def) || _.isNull(field_def) ||
             String(field_def).replace(/^\s+|\s+$/g, '') == '') {
             err['definition'] = gettext('Please enter view code.');
-            errmsg = errmsg || err['definition'];
+            errmsg = err['definition'];
             this.errorModel.set('definition', errmsg);
             return errmsg;
           }else{

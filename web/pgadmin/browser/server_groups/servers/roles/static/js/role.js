@@ -325,7 +325,7 @@ define('pgadmin.node.role', [
         return r.label;
       },
       node_image: function(r) {
-        if (r == null || r == undefined)
+        if (!r)
           return 'icon-role';
         return (r.can_login ? 'icon-role' : 'icon-group');
       },
@@ -546,7 +546,7 @@ define('pgadmin.node.role', [
 
           if (_.isUndefined(this.get('rolname')) || String(this.get('rolname')).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
-            errmsg = errmsg || err['name'];
+            errmsg = err['name'];
           }
 
           if (seclabels) {

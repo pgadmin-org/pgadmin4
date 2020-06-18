@@ -689,7 +689,7 @@ define('pgadmin.browser', [
     set_master_password: function(password='', button_click=false, set_callback=()=>{}) {
       let data=null, self = this;
 
-      if(password != null || password!='') {
+      if(!password) {
         data = JSON.stringify({
           'password': password,
           'button_click': button_click,

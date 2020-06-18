@@ -3308,7 +3308,7 @@ define([
 
       var fields = this.field.get('fields');
 
-      if (fields == null || fields == undefined) {
+      if (!fields) {
         throw new ReferenceError('"fields" not found in keyboard shortcut');
       }
 

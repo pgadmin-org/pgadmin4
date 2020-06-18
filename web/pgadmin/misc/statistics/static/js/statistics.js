@@ -368,17 +368,15 @@ define('misc.statistics', [
        * We will wait for some time before fetching the statistics for the
        * selected node.
        **/
-      if (node) {
-        if (self.timeout) {
-          clearTimeout(self.timeout);
-        }
-        self.timeout = setTimeout(
-          function() {
-            self.__updateCollection.call(
-              self, node.generate_url(item, 'stats', data, true), node, item, data._type
-            );
-          }, 400);
+      if (self.timeout) {
+        clearTimeout(self.timeout);
       }
+      self.timeout = setTimeout(
+        function() {
+          self.__updateCollection.call(
+            self, node.generate_url(item, 'stats', data, true), node, item, data._type
+          );
+        }, 400);
     },
 
     __createMultiLineStatistics: function(data, prettifyFields) {

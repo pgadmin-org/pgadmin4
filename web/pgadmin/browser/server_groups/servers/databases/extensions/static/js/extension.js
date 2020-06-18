@@ -248,7 +248,7 @@ define('pgadmin.node.extension', [
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
             err['name'] = gettext('Name cannot be empty.');
-            errmsg = errmsg || err['name'];
+            errmsg = err['name'];
             this.errorModel.set('name', errmsg);
             return errmsg;
           }

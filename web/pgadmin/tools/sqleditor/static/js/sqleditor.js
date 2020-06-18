@@ -2316,7 +2316,7 @@ define('tools.querytool', [
             })
               .done(function(res) {
                 self.gridView.query_tool_obj.refresh();
-                if (res && res !== '') {
+                if (res) {
                   self.gridView.query_tool_obj.setValue(res);
                 }
               })

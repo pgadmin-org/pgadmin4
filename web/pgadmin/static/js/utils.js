@@ -181,7 +181,7 @@ export function parseFuncParams(label) {
       paramName = '',
       paramModes = ['IN', 'OUT', 'INOUT', 'VARIADIC'];
 
-    paramStart = i = 0;
+    i = 0;
     while(i < paramStr.length) {
       if(paramStr[i] == '"') {
         /* If quotes, skip all the chars till next quote */

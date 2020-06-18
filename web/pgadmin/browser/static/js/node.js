@@ -888,7 +888,7 @@ define('pgadmin.browser.node', [
           return;
 
         // Go further only if node type is a Server
-        if (data && data._type && data._type == 'server') {
+        if (data._type && data._type == 'server') {
           var element = $(item).find('span.aciTreeItem').first() || null,
             // First element will be icon and second will be colour code
             bgcolor = data.icon.split(' ')[1] || null,
@@ -1655,7 +1655,6 @@ define('pgadmin.browser.node', [
 
       if (action) {
         if (action == 'create') {
-          onCancelFunc = closePanel;
           onSaveFunc = saveNewNode;
         }
         if (action != 'properties') {

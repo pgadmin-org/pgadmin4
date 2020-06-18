@@ -1562,7 +1562,7 @@ define([
               );
             }
           });
-      } else if (trans_id != undefined && debug_type) {
+      } else if (trans_id != undefined) {
         // Make ajax call to execute the and start the target for execution
         baseUrl = url_for('debugger.start_listener', {
           'trans_id': trans_id,

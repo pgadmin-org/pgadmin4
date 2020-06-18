@@ -671,7 +671,7 @@ import gettext from 'sources/gettext';
       var value = item[args.column.field];
 
       // Check if value is null or undefined
-      if (value === undefined && typeof value === 'undefined') {
+      if (value === null || typeof value === 'undefined') {
         value = '';
       }
       defaultValue = value;

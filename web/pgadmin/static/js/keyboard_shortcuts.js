@@ -131,7 +131,7 @@ function focusDockerPanel(docker, op) {
 
   // Mod is used to cycle the op
   if (op == 'switch') {
-    let i = 0, total_frames = docker._frameList.length;
+    let i, total_frames = docker._frameList.length;
 
     for(i = 0; i < total_frames; i++) {
       if(focus_frame === docker._frameList[i]) break;
@@ -141,10 +141,8 @@ function focusDockerPanel(docker, op) {
     flash = true;
   } else if (op == 'left') {
     focus_id = getMod(focus_frame._curTab-1, focus_frame._panelList.length);
-    flash = false;
   } else if (op == 'right') {
     focus_id = getMod(focus_frame._curTab+1, focus_frame._panelList.length);
-    flash = false;
   }
 
   let focus_panel = focus_frame._panelList[focus_id];

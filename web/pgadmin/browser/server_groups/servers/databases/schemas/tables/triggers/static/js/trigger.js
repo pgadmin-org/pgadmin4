@@ -603,7 +603,7 @@ define('pgadmin.node.trigger', [
         },
         // Disable/Enable Transition tables
         disableTransition: function(m) {
-          var flag = true,
+          var flag = false,
             evnt = null,
             name = this.name,
             evnt_count = 0;
@@ -630,8 +630,7 @@ define('pgadmin.node.trigger', [
           // Disable New transition table if both UPDATE and INSERT events are disabled
           if(!m.get('is_constraint_trigger') && m.get('fires') == 'AFTER' &&
             (m.get('evnt_update') || m.get(evnt)) && evnt_count == 1) {
-            if (m.get('evnt_update') && (_.size(m.get('columns')) >= 1 && m.get('columns')[0] != '')) flag = true;
-            else flag = false;
+            flag = (m.get('evnt_update') && (_.size(m.get('columns')) >= 1 && m.get('columns')[0] != ''));
           }
 
           flag && setTimeout(function() {

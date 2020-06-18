@@ -120,7 +120,7 @@ define('pgadmin.node.pga_jobstep', [
         initialize: function() {
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
           if (this.isNew() && this.get('jstconntype')) {
-            var args = arguments && arguments.length > 1 && arguments[1];
+            var args = arguments.length > 1 && arguments[1];
 
             if (args) {
               if (!_.isUndefined(args['node_info']) ||

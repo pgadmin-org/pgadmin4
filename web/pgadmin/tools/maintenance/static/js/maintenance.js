@@ -247,7 +247,7 @@ define([
       if (!d)
         return;
 
-      var node = d && pgBrowser.Nodes[d._type],
+      var node = pgBrowser.Nodes[d._type],
         treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
 
       if (treeInfo.database._label.indexOf('=') >= 0) {
