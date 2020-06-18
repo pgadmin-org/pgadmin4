@@ -442,6 +442,8 @@ define([
                 d = this.d = i && i.length == 1 ? t.itemData(i) : undefined,
                 info = this.info = pgBrowser.Node.getTreeNodeHierarchy(i);
 
+              if(_.isUndefined(d))
+                return;
               /**
                 Generate a URL using:
                 gid, did, sid(server id), node_id(node id),

@@ -211,7 +211,7 @@ _.extend(pgBrowser.browserTreeState, {
       node = data && pgBrowser.Nodes[data._type],
       treeHierarchy = node && node.getTreeNodeHierarchy(item);
 
-    if (treeHierarchy === null || !pgBrowser.tree.hasParent(item) || !(self.parent in treeHierarchy))
+    if (treeHierarchy === null || !pgBrowser.tree.hasParent(item) || !(treeHierarchy.hasOwnProperty(self.parent)))
       return;
 
     let topParent = treeHierarchy && treeHierarchy[self.parent]['_id'],
@@ -231,7 +231,7 @@ _.extend(pgBrowser.browserTreeState, {
       let tmpTreeData =  self.current_state[topParent]['paths'],
         databaseId = undefined;
 
-      if ('database' in treeHierarchy)
+      if (treeHierarchy.hasOwnProperty('database'))
         databaseId = treeHierarchy['database']['id'];
 
       if (!_.isUndefined(tmpTreeData) && !_.isUndefined(tmpTreeData.length)) {
@@ -269,7 +269,7 @@ _.extend(pgBrowser.browserTreeState, {
       treeHierarchy = node && node.getTreeNodeHierarchy(item);
 
 
-    if (treeHierarchy === null || !pgBrowser.tree.hasParent(item) || !(self.parent in treeHierarchy))
+    if (treeHierarchy === null || !pgBrowser.tree.hasParent(item) || !(treeHierarchy.hasOwnProperty(self.parent)))
       return;
 
     // If the server node is open then only we should populate the tree
@@ -290,7 +290,7 @@ _.extend(pgBrowser.browserTreeState, {
       let tmpTreeDataPaths = [...tmpTreeData['paths']],
         databaseId = undefined;
 
-      if ('database' in treeHierarchy)
+      if (treeHierarchy.hasOwnProperty('database'))
         databaseId = treeHierarchy['database']['id'];
 
       _.each(tmpTreeDataPaths, function(tData) {
@@ -325,7 +325,7 @@ _.extend(pgBrowser.browserTreeState, {
       node = data && pgBrowser.Nodes[data._type],
       treeHierarchy = node.getTreeNodeHierarchy(item);
 
-    if ('database' in treeHierarchy) {
+    if (treeHierarchy.hasOwnProperty('database')) {
       let databaseItem = treeHierarchy['database']['id'],
         topParent = treeHierarchy && treeHierarchy[this.parent]['_id'];
 
@@ -358,7 +358,7 @@ _.extend(pgBrowser.browserTreeState, {
 
     selectedItem = selectedItem ? selectedItem.id : undefined;
 
-    if ('database' in treeHierarchy) {
+    if (treeHierarchy.hasOwnProperty('database')) {
       databaseItem = treeHierarchy['database']['id'];
     }
 
@@ -379,7 +379,7 @@ _.extend(pgBrowser.browserTreeState, {
       tmpTreeData = treeData[treeHierarchy[this.parent]['_id']];
 
 
-    if ('database' in treeHierarchy) {
+    if (treeHierarchy.hasOwnProperty('database')) {
       let databaseItem = treeHierarchy['database']['id'];
 
       if (tmpTreeData && 'selected' in tmpTreeData && databaseItem in tmpTreeData['selected']) {

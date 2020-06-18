@@ -463,11 +463,12 @@ define([
         i = item || t.selected(),
         d = i && i.length == 1 ? t.itemData(i) : undefined,
         node = d && pgBrowser.Nodes[d._type],
-        self = this,
-        is_edb_proc = d._type == 'edbproc';
+        self = this;
 
       if (!d)
         return;
+
+      var is_edb_proc = d._type == 'edbproc';
 
       var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]),
         _url = this.generate_url('init', treeInfo, node);

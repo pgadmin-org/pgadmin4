@@ -71,7 +71,7 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
       if (transId.readyState == 4) {
         t_res = JSON.parse(transId.responseText);
       }
-      self.trans_id = t_res.data.fileTransId;
+      self.trans_id = _.isUndefined(t_res) ? 0 : t_res.data.fileTransId;
 
       setTimeout(function() {
         $(self.$container.find('.file_manager')).on('enter-key', function() {

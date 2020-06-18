@@ -1186,7 +1186,7 @@ define([
       if (transId.readyState == 4) {
         t_res = JSON.parse(transId.responseText);
       }
-      t_id = t_res.data.fileTransId;
+      t_id = _.isUndefined(t_res) ? 0 : t_res.data.fileTransId;
       var root_url = url_for('file_manager.index'),
         file_manager_config_json = root_url + t_id + '/file_manager_config.json',
         fileConnector = root_url + 'filemanager/' + t_id + '/',
@@ -1200,6 +1200,9 @@ define([
         this.config = config = JSON.parse(cfg.responseText);
         homedir=config.options.homedir;
       }
+
+      if (_.isUndefined(config))
+        return;
 
       // set main url to filemanager and its capabilites
       var fileRoot = config.options.fileRoot,
@@ -1288,20 +1291,20 @@ define([
         }
         // handle show hidden files functionality
         this.handleClick = function(cb) {
-          var data = {
+          var tmp_data = {
             'is_checked': false,
           };
 
           if (cb.checked) {
             $('div.allowed_file_types select').trigger('change');
-            data['is_checked'] = true;
+            tmp_data['is_checked'] = true;
           } else {
             // User wants to hide it again
             $('div.allowed_file_types select').trigger('change');
-            data['is_checked'] = false;
+            tmp_data['is_checked'] = false;
           }
           // Save it in preference
-          save_show_hidden_file_option(data['is_checked'], pgAdmin.FileUtils.transId);
+          save_show_hidden_file_option(tmp_data['is_checked'], pgAdmin.FileUtils.transId);
           return;
         };
       }
@@ -1616,10 +1619,10 @@ define([
               setTimeout(function() {}, 10000);
             },
             success: function(file, response) {
-              var data = response.data.result,
+              var resp_data = response.data.result,
                 $this = $(file.previewTemplate);
 
-              if (data.Code == 1) {
+              if (resp_data.Code == 1) {
                 setTimeout(function() {
                   $this.find('.dz-upload').addClass('success');
                 }, 1000);
@@ -1628,7 +1631,7 @@ define([
               } else {
                 $this.find('.dz-upload').addClass('error');
                 $this.find('.dz-upload').css('width', '0%').html('0%');
-                Alertify.error(data.Error);
+                Alertify.error(resp_data.Error);
               }
               getFolderInfo(path);
             },
@@ -1670,7 +1673,7 @@ define([
         } else {
           $('.storage_dialog #uploader .input-path').val(path);
         }
-      } else if (!(config.options.platform_type === 'win32') &&
+      } else if ((config.options.platform_type !== 'win32') &&
         (path == '' || !path.startsWith('/'))) {
         path = '/' + path;
         $('.storage_dialog #uploader .input-path').val(path);

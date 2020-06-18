@@ -46,7 +46,7 @@ export function showDataGrid(
   const gridUrl = generateUrl(transId, connectionData, node.getData(), parentData);
   const queryToolTitle = generateDatagridTitle(pgBrowser, aciTreeIdentifier);
   if(filter) {
-    initFilterDialog(alertify, pgBrowser, preferences);
+    initFilterDialog(alertify, pgBrowser);
 
     const validateUrl = generateFilterValidateUrl(node.getData(), parentData);
 

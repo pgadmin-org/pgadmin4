@@ -272,9 +272,9 @@ define('tools.restore', [
           var t = pgBrowser.tree,
             i = t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined,
-            s = pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+            s = _.isUndefined(d) ? undefined : pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
 
-          return s.version >= 110000;
+          return _.isUndefined(s) ? false : s.version >= 110000;
         },
       }],
     }, {

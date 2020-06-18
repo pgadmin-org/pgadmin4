@@ -200,7 +200,7 @@ define([
           var t = pgBrowser.tree,
             i = t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
-          return d.version >= 110000;
+          return _.isUndefined(d) ? false : d.version >= 110000;
         }
         return true;
       },
@@ -392,9 +392,9 @@ define([
           var t = pgBrowser.tree,
             i = t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined,
-            s = pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+            s = _.isUndefined(d) ? undefined : pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
 
-          return s.version >= 110000;
+          return _.isUndefined(s) ? false : s.version >= 110000;
         },
       }],
     }, {
@@ -467,9 +467,9 @@ define([
           var t = pgBrowser.tree,
             i = t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined,
-            s = pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+            s = _.isUndefined(d) ? undefined : pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
 
-          return s.version >= 110000;
+          return _.isUndefined(s) ? false : s.version >= 110000;
         },
       }],
     }, {
@@ -519,9 +519,9 @@ define([
           var t = pgBrowser.tree,
             i = t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined,
-            s = pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+            s = _.isUndefined(d) ? undefined : pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
 
-          if (s.version >= 120000)
+          if (!_.isUndefined(s) && s.version >= 120000)
             return true;
 
           if (m.get('use_column_inserts') || m.get('use_insert_commands')) {

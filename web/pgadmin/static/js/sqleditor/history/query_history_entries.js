@@ -235,7 +235,8 @@ export class QueryHistoryEntries {
     newItem.onClick(this.setSelectedListItem.bind(this));
     newItem.render(this.is_pgadmin_queries_shown);
 
-    $groupEl.find('.query-entries').prepend(newItem.$el);
+    if (!_.isUndefined($groupEl))
+      $groupEl.find('.query-entries').prepend(newItem.$el);
     this.setSelectedListItem(newItem.$el);
   }
 

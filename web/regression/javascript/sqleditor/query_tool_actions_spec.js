@@ -375,8 +375,8 @@ describe('queryToolActions', () => {
       beforeEach(() => {
         setUpSpies('', 'a string\nddd\nsss');
 
-        sqlEditorController.gridView.query_tool_obj.getCursor = (isFrom) => {
-          return isFrom ? 3 : 3;
+        sqlEditorController.gridView.query_tool_obj.getCursor = () => {
+          return 3;
         };
       });
 
@@ -422,8 +422,8 @@ describe('queryToolActions', () => {
       beforeEach(() => {
         setUpSpies('', 'a string\nddd\nsss');
 
-        sqlEditorController.gridView.query_tool_obj.getCursor = (isFrom) => {
-          return isFrom ? 3 : 3;
+        sqlEditorController.gridView.query_tool_obj.getCursor = () => {
+          return 3;
         };
       });
 
@@ -469,8 +469,8 @@ describe('queryToolActions', () => {
       beforeEach(() => {
         setUpSpies('', 'a string\nddd\nsss');
 
-        sqlEditorController.gridView.query_tool_obj.getCursor = (isFrom) => {
-          return isFrom ? 3 : 3;
+        sqlEditorController.gridView.query_tool_obj.getCursor = () => {
+          return 3;
         };
       });
 
@@ -514,8 +514,8 @@ describe('queryToolActions', () => {
       beforeEach(() => {
         setUpSpies('', 'a string\nddd\nsss');
 
-        sqlEditorController.gridView.query_tool_obj.getCursor = (isFrom) => {
-          return isFrom ? 3 : 3;
+        sqlEditorController.gridView.query_tool_obj.getCursor = () => {
+          return 3;
         };
       });
 

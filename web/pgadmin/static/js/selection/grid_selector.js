@@ -51,7 +51,7 @@ define(['jquery',
           'title="' + gettext('Select/Deselect All') + '">' +
           '<br>' +
           columnDefinitions[0].name +
-          '<img class="select-all-icon" src="' + url_for('static', {'filename': 'img/select-all-icon.png'}) + '"></img>';
+          '<img class="select-all-icon" src="' + url_for('static', {'filename': 'img/select-all-icon.png'}) + '"></img>' +
       '</span>';
       return columnDefinitions;
     };

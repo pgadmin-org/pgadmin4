@@ -324,7 +324,9 @@ export class Tree {
     if (parent === this.rootNode) {
       node.parentNode = null;
     }
-    parent.children.push(node);
+
+    if (parent !== null && parent !== undefined)
+      parent.children.push(node);
     return node;
   }
 
