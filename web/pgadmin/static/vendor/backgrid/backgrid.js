@@ -339,7 +339,7 @@ var PercentFormatter = Backgrid.PercentFormatter = function () {
   Backgrid.NumberFormatter.apply(this, arguments);
 };
 
-PercentFormatter.prototype = new Backgrid.NumberFormatter(),
+PercentFormatter.prototype = new Backgrid.NumberFormatter();
 
 _.extend(PercentFormatter.prototype, {
 
@@ -2656,7 +2656,11 @@ var Body = Backgrid.Body = Backbone.View.extend({
       var l = func(left, attr), r = func(right, attr), t;
 
       // if descending order, swap left and right
-      if (order === 1) t = l, l = r, r = t;
+      if (order === 1) {
+        t = l;
+        l = r;
+        r = t;
+      }
 
       // compare as usual
       if (l === r) return 0;

@@ -33,7 +33,7 @@ export default class SchemaDiffUI {
     this.filters = ['Identical', 'Different', 'Source Only', 'Target Only'];
     this.sel_filters = ['Different', 'Source Only', 'Target Only'];
     this.dataView = null;
-    this.grid = null,
+    this.grid = null;
     this.selection = {};
 
     this.model = new Backbone.Model({

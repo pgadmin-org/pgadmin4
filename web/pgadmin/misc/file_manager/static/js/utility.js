@@ -841,7 +841,7 @@ define([
             $this = $('.fileinfo').find(
               'table#contents tbody tr.selected td.tbl_file'
             );
-            orig_value = decodeURI($this.find('span.less_text').html()),
+            orig_value = decodeURI($this.find('span.less_text').html());
             newvalue = orig_value.substring(0, orig_value.lastIndexOf('.'));
 
             if (orig_value.lastIndexOf('/') == orig_value.length - 1 || newvalue === '') {

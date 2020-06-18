@@ -631,7 +631,7 @@ define('pgadmin.browser.node', [
               }
             }
 
-            x = (b.offsetWidth - w) / 2,
+            x = (b.offsetWidth - w) / 2;
             y = (b.offsetHeight - h) / 4;
 
             var p = pgBrowser.docker.addPanel(

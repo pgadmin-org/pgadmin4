@@ -162,7 +162,7 @@ define([
       self.origSessAttrs = {};
       self.objects = [];
       self.arrays = [];
-      self.attrName = options.attrName,
+      self.attrName = options.attrName;
       self.top = (options.top || self.collection && self.collection.top || self.collection || self);
       self.handler = options.handler ||
         (self.collection && self.collection.handler);

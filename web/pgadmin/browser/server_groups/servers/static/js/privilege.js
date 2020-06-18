@@ -479,7 +479,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
                  * 3. Deselect and disable the checkbox for ALL with grant privilege.
                  */
                 $allPrivileges.prop('checked', false);
-                $elGrant.prop('checked', false),
+                $elGrant.prop('checked', false);
                 $allGrants.prop('checked', false);
                 $elGrant.prop('disabled', true);
                 $allGrants.prop('disabled', true);

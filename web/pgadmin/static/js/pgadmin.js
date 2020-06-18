@@ -21,15 +21,21 @@ define([], function() {
       var n, l, m, c = (e.match(s) || [])[2],
         f = 'px' === c ? 1 : d[c + 'toPx'],
         u = /r?em/i;
-      if (f || u.test(c) && !p) t = f ? t : 'rem' === c ? i : 'fontSize' === r ? t.parentNode || t : t, f = f || parseFloat(a(t, 'fontSize')), m = parseFloat(e) * f;
+      if (f || u.test(c) && !p){
+        t = f ? t : 'rem' === c ? i : 'fontSize' === r ? t.parentNode || t : t;
+        f = f || parseFloat(a(t, 'fontSize'));
+        m = parseFloat(e) * f;
+      }
       else {
-        n = t.style, l = n[r];
+        n = t.style;
+        l = n[r];
         try {
           n[r] = e;
         } catch (x) {
           return 0;
         }
-        m = n[r] ? parseFloat(a(t, r)) : 0, n[r] = l !== o ? l : null;
+        m = n[r] ? parseFloat(a(t, r)) : 0;
+        n[r] = l !== o ? l : null;
       }
       return m;
     }
@@ -61,7 +67,7 @@ define([], function() {
       f = ['mm', 'cm', 'pt', 'pc', 'in', 'mozmm'],
       u = 6;
     for (i.appendChild(n), m && (n.style.marginTop = '1%', p = '1%' === m(n).marginTop); u--;) d[f[u] + 'toPx'] = c[u] ? c[u] * d.inToPx : r(n, '1' + f[u]);
-    i.removeChild(n), n = o, t.toPx = r;
+    i.removeChild(n); t.toPx = r;
   })(pgAdmin, window.document);
 
   // Reference:

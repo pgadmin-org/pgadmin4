@@ -567,19 +567,27 @@ describe('the keyboard shortcuts', () => {
     });
 
     it('shortcut_title',()=>{
-      shortcut.alt = true, shortcut.shift = false, shortcut.control = false;
+      shortcut.alt = true;
+      shortcut.shift = false;
+      shortcut.control = false;
       expect(keyboardShortcuts.shortcut_title(
         'Title', shortcut)).toEqual(gettext('Title (Alt+A)'));
 
-      shortcut.alt = false, shortcut.shift = true, shortcut.control = false;
+      shortcut.alt = false;
+      shortcut.shift = true;
+      shortcut.control = false;
       expect(keyboardShortcuts.shortcut_title(
         'Title', shortcut)).toEqual(gettext('Title (Shift+A)'));
 
-      shortcut.alt = false, shortcut.shift = false, shortcut.control = true;
+      shortcut.alt = false;
+      shortcut.shift = false;
+      shortcut.control = true;
       expect(keyboardShortcuts.shortcut_title(
         'Title', shortcut)).toEqual(gettext('Title (Ctrl+A)'));
 
-      shortcut.alt = true, shortcut.shift = true, shortcut.control = true;
+      shortcut.alt = true;
+      shortcut.shift = true;
+      shortcut.control = true;
       expect(keyboardShortcuts.shortcut_title(
         'Title', shortcut)).toEqual(gettext('Title (Alt+Shift+Ctrl+A)'));
     });

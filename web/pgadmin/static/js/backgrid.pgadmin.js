@@ -147,7 +147,11 @@ define([
           }
 
           // if descending order, swap left and right
-          if (order === 1) t = _l, _l = _r, _r = t;
+          if (order === 1) {
+            t = _l;
+            _l = _r;
+            _r = t;
+          }
 
           if (_l.eq(_r)) // If both are equals
             return 0;
@@ -157,7 +161,11 @@ define([
             return 1;
         } else {
           // if descending order, swap left and right
-          if (order === 1) t = l, l = r, r = t;
+          if (order === 1) {
+            t = l;
+            l = r;
+            r = t;
+          }
 
           // compare as usual
           if (l === r) return 0;
