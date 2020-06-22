@@ -376,8 +376,7 @@ define('pgadmin.node.database', [
           control: 'node-list-by-name', node: 'tablespace',
           select2: { allowClear: false },
           filter: function(m) {
-            if (m.label == 'pg_global') return false;
-            else return true;
+            return (m.label != 'pg_global');
           },
         },{
           id: 'datcollate', label: gettext('Collation'),

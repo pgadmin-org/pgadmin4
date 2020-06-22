@@ -1048,16 +1048,12 @@ function(
         },
         isInheritedTable: function(m) {
           if(!m.inSchema.apply(this, [m])) {
-            if(
-              (!_.isUndefined(m.get('coll_inherits')) && m.get('coll_inherits').length != 0)
-                ||
-                  (!_.isUndefined(m.get('typname')) && String(m.get('typname')).replace(/^\s+|\s+$/g, '') !== '')
-            ) {
-              // Either of_types or coll_inherits has value
-              return false;
-            } else {
-              return true;
-            }
+            // Either of_types or coll_inherits has value
+            return (
+              (_.isUndefined(m.get('coll_inherits')) || m.get('coll_inherits').length == 0)
+                &&
+                  (_.isUndefined(m.get('typname')) || String(m.get('typname')).replace(/^\s+|\s+$/g, '') === '')
+            );
           }
           return false;
         },
@@ -1137,11 +1133,7 @@ function(
           if(this.node_info &&  'schema' in this.node_info)
           {
             // We will disbale control if it's in 'edit' mode
-            if (m.isNew()) {
-              return false;
-            } else {
-              return true;
-            }
+            return !m.isNew();
           }
           return true;
         },

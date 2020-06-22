@@ -403,11 +403,7 @@ define('pgadmin.node.unique_constraint', [
           disabled: function(m) {
             // Disable if index is selected.
             var index = m.get('index');
-            if(_.isUndefined(index) || index == '') {
-              return false;
-            } else {
-              return true;
-            }
+            return (!_.isUndefined(index) && index != '');
           },
         },{
           id: 'include', label: gettext('Include columns'),

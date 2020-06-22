@@ -315,11 +315,7 @@ define([
               if (m instanceof Backbone.Collection) {
                 return true;
               }
-              if (m.isNew() && !m.get('authOnlyInternal')) {
-                return true;
-              } else {
-                return false;
-              }
+              return (m.isNew() && !m.get('authOnlyInternal'));
             },
           }, {
             id: 'username',
@@ -395,11 +391,7 @@ define([
               if (m instanceof Backbone.Collection) {
                 return true;
               }
-              if (m.get('id') == userInfo['id']) {
-                return false;
-              } else {
-                return true;
-              }
+              return (m.get('id') != userInfo['id']);
             },
           }, {
             id: 'active',
@@ -412,11 +404,7 @@ define([
               if (m instanceof Backbone.Collection) {
                 return true;
               }
-              if (m.get('id') == userInfo['id']) {
-                return false;
-              } else {
-                return true;
-              }
+              return (m.get('id') != userInfo['id']);
             },
           }, {
             id: 'newPassword',
@@ -429,11 +417,7 @@ define([
             deps: ['auth_source'],
             sortable: false,
             editable: function(m) {
-              if (m.get('auth_source') == DEFAULT_AUTH_SOURCE) {
-                return true;
-              } else {
-                return false;
-              }
+              return (m.get('auth_source') == DEFAULT_AUTH_SOURCE);
             },
           }, {
             id: 'confirmPassword',
@@ -446,11 +430,7 @@ define([
             deps: ['auth_source'],
             sortable: false,
             editable: function(m) {
-              if (m.get('auth_source') == DEFAULT_AUTH_SOURCE) {
-                return true;
-              } else {
-                return false;
-              }
+              return (m.get('auth_source') == DEFAULT_AUTH_SOURCE);
             },
           }],
           validate: function() {

@@ -442,15 +442,11 @@ define('pgadmin.node.trigger', [
               if(!m.inSchemaWithModelCheck.apply(this, [m])) {
                 // We will enabale truncate only for EDB PPAS
                 // and both triggers row & constarint are set to false
-                if(server_type === 'ppas' &&
-                  !_.isUndefined(is_constraint_trigger) &&
-                    !_.isUndefined(is_row_trigger) &&
-                    is_constraint_trigger === false &&
-                    is_row_trigger === false) {
-                  return false;
-                } else {
-                  return true;
-                }
+                return (server_type !== 'ppas' ||
+                _.isUndefined(is_constraint_trigger) ||
+                  _.isUndefined(is_row_trigger) ||
+                  is_constraint_trigger !== false ||
+                  is_row_trigger !== false);
               } else {
                 // Disable it
                 return true;
@@ -506,12 +502,9 @@ define('pgadmin.node.trigger', [
             var tfunction = m.get('tfunction'),
               server_type = m.node_info['server']['server_type'];
 
-            if(server_type === 'ppas' &&
-              !_.isUndefined(tfunction) &&
-                tfunction === 'Inline EDB-SPL')
-              return false;
-            else
-              return true;
+            return (server_type !== 'ppas' ||
+            _.isUndefined(tfunction) ||
+              tfunction !== 'Inline EDB-SPL');
           },
         },{
           id: 'is_sys_trigger', label: gettext('System trigger?'), cell: 'string',
@@ -575,11 +568,7 @@ define('pgadmin.node.trigger', [
         inSchemaWithModelCheck: function(m) {
           if(this.node_info &&  'schema' in this.node_info) {
             // We will disable control if it's in 'edit' mode
-            if (m.isNew()) {
-              return false;
-            } else {
-              return true;
-            }
+            return !m.isNew();
           }
           return true;
         },
@@ -592,11 +581,7 @@ define('pgadmin.node.trigger', [
               return false;
             } else {
               // if we are in edit mode
-              if (!_.isUndefined(m.get('attnum')) && m.get('attnum') >= 1 ) {
-                return false;
-              } else {
-                return true;
-              }
+              return (_.isUndefined(m.get('attnum')) || m.get('attnum') < 1 );
             }
           }
           return true;

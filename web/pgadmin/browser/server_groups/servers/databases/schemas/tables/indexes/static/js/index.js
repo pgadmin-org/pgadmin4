@@ -533,11 +533,7 @@ define('pgadmin.node.index', [
               return false;
             } else {
               // if we are in edit mode
-              if (!_.isUndefined(m.get('attnum')) && m.get('attnum') >= 1 ) {
-                return false;
-              } else {
-                return true;
-              }
+              return (_.isUndefined(m.get('attnum')) || m.get('attnum') < 1 );
             }
           }
           return true;
