@@ -1404,15 +1404,19 @@ Failed to reset the connection to the server due to following error:
         is_error = False
         try:
             status = self._wait_timeout(self.conn)
+        except psycopg2.OperationalError as op_er:
+            errmsg = \
+                self._formatted_exception_msg(op_er, formatted_exception_msg)
+            is_error = True
         except psycopg2.Error as pe:
+            errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
+            is_error = True
             if self.conn.closed:
                 raise ConnectionLost(
                     self.manager.sid,
                     self.db,
                     self.conn_id[5:]
                 )
-            errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
-            is_error = True
         except OSError as e:
             # Bad File descriptor
             if e.errno == 9:

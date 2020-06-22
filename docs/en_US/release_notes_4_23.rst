@@ -24,6 +24,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #3591 <https://redmine.postgresql.org/issues/3591>`_ -  Ensure that the query tool should display the proper error message while terminating the active session.
 | `Issue #3669 <https://redmine.postgresql.org/issues/3669>`_ -  Ensure that proper error should be displayed for the deleted node.
 | `Issue #3787 <https://redmine.postgresql.org/issues/3787>`_ -  Disabled the Stop process button after clicking it and added a message 'Terminating the process...' to notify the user.
 | `Issue #4226 <https://redmine.postgresql.org/issues/4226>`_ -  Fixed an issue where select all checkbox only selects the first 50 tables.
