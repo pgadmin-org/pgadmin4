@@ -22,6 +22,7 @@ node, and select *Create Cast...*
    foreign_key_dialog
    index_dialog
    primary_key_dialog
+   rls_policy_dialog
    rule_dialog
    table_dialog
    trigger_dialog

@@ -19,6 +19,7 @@ Housekeeping
 
 | `Issue #5325 <https://redmine.postgresql.org/issues/5325>`_ -  Improve code coverage and API test cases for Collations.
 | `Issue #5574 <https://redmine.postgresql.org/issues/5574>`_ -  Cleanup Windows build scripts and ensure Windows x64 builds will work.
+| `Issue #5581 <https://redmine.postgresql.org/issues/5581>`_ -  Documentation of Row Level Security Policies.
 
 Bug fixes
 *********
