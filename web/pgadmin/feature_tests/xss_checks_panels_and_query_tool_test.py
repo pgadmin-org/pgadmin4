@@ -38,11 +38,12 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     scenarios = [
         ("Test XSS check for panels and query tool", dict())
     ]
-    test_table_name = "<h1>X" + str(random.randint(1000, 3000))
     # test_table_name = "<h1>X"
     test_type_name = '"<script>alert(1)</script>"'
 
     def before(self):
+        self.test_table_name = "<h1>X" + str(random.randint(1000, 3000))
+
         test_utils.create_type(
             self.server, self.test_db, self.test_type_name,
             ['"<script>alert(1)</script>" "char"',
@@ -166,7 +167,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                                             "td[2]").get_attribute('innerHTML')
                 retry = 0
             except WebDriverException as e:
-                print("Exception in dependent tab {0}")
+                print("Exception in dependent tab {0}".format(retry))
                 self.page.click_tab("Dependencies")
                 if retry == 1:
                     raise e

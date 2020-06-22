@@ -581,6 +581,7 @@ SELECT 1, pg_sleep(300)"""
         commit_button = self.page.find_by_css_selector("#btn-commit")
         if not commit_button.get_attribute('disabled'):
             commit_button.click()
+            time.sleep(0.5)
 
         query_op = self.page.find_by_css_selector(
             QueryToolLocators.btn_query_dropdown)

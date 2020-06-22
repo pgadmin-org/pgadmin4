@@ -1241,7 +1241,7 @@ def is_parallel_ui_tests(args):
     return False
 
 
-def get_selenium_grid_status_and_browser_list(selenoid_url):
+def get_selenium_grid_status_and_browser_list(selenoid_url, arguments):
     """
     This function checks selenoid status for given url
     :param selrnoid_url:
@@ -1253,9 +1253,18 @@ def get_selenium_grid_status_and_browser_list(selenoid_url):
     try:
         selenoid_status = get_selenium_grid_status_json(selenoid_url)
         if selenoid_status:
+            # Get available browsers from selenoid
             available_browsers = selenoid_status["browsers"]
-            list_of_browsers = test_setup.config_data['selenoid_config'][
-                'browsers_list']
+
+            # Get browser list provided in input by user
+            if 'default_browser' in arguments and \
+                    arguments['default_browser'] is not None:
+                default_browser = arguments['default_browser'].lower()
+                list_of_browsers = [{"name": default_browser,
+                                     "version": None}]
+            else:
+                list_of_browsers = test_setup.config_data['selenoid_config'][
+                    'browsers_list']
 
             for browser in list_of_browsers:
                 if browser["name"].lower() in available_browsers.keys():
@@ -1467,8 +1476,8 @@ def get_selenium_grid_status_json(selenoid_url):
         if isinstance(selenoid_status, dict):
             return selenoid_status
     except Exception as e:
-        print("Unable to find Selenoid Status.Kindly check url passed -'{0}'".
-              format(selenoid_url))
+        print("Unable to find Selenoid Status.Kindly check url passed -'{0}'."
+              "Check parsing errors in test_config.json".format(selenoid_url))
         return None
 
 

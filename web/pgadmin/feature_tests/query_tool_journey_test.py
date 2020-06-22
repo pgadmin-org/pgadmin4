@@ -17,6 +17,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.feature_utils.locators import QueryToolLocators
+import time
 
 
 class QueryToolJourneyTest(BaseFeatureTest):
@@ -329,13 +330,26 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.uncheck_execute_option("auto_commit")
 
         self._update_numeric_cell(2, 10)
+        time.sleep(0.5)
 
         self._commit_transaction()
 
         # Turn on autocommit
-        query_options = self.page.find_by_css_selector(
-            QueryToolLocators.btn_query_dropdown)
-        query_options.click()
+        retry = 3
+        while retry > 0:
+            query_options = self.page.find_by_css_selector(
+                QueryToolLocators.btn_query_dropdown)
+            query_options.click()
+            expanded = query_options.get_attribute("aria-expanded")
+            if expanded == "false":
+                print("query option not yet expanded clicking commit again",
+                      file=sys.stderr)
+                self._commit_transaction()
+                time.sleep(0.5)
+                query_options.click()
+                break
+            else:
+                retry -= 1
         self.page.check_execute_option("auto_commit")
 
     def _check_history_queries_and_icons(self, history_queries, history_icons):

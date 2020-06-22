@@ -9,6 +9,8 @@
 
 from __future__ import print_function
 import os
+import random
+import string
 import sys
 import time
 
@@ -38,8 +40,9 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
 
         self.page.add_server(self.server)
         self.wait = WebDriverWait(self.page.driver, 10)
-        self.XSS_FILE = '/tmp/<img src=x ' + self.server['name'][:13] \
-                        + '=alert("1")>.sql'
+        filename = self.server_information['type'] + \
+            str(self.server_information['server_version'])
+        self.XSS_FILE = '/tmp/<img src=x ' + filename + '=alert("1")>.sql'
         # Remove any previous file
         if os.path.isfile(self.XSS_FILE):
             os.remove(self.XSS_FILE)
@@ -115,9 +118,11 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
 
         self.page.click_modal('Cancel')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
+        filename = self.server_information['type'] + \
+            str(self.server_information['server_version'])
         self._check_escaped_characters(
             contents,
-            '&lt;img src=x ' + self.server['name'][:13] +
+            '&lt;img src=x ' + filename +
             '=alert("1")&gt;.sql', 'File manager'
         )
 
