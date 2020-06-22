@@ -8,6 +8,8 @@
 #define MyAppArchitecturesMode MYAPP_ARCHITECTURESMODE
 #define MyAppVCDist MYAPP_VCDIST
 #define MyAppInvalidPath "Please provide a valid path."
+#define MyAppErrorMsgIsWin32 "You already have a 32 bit installation of pgAdmin 4. Please uninstall this before installing the 64 bit version."
+#define MyAppErrorMsgIsWin64 "You already have a 64 bit installation of pgAdmin 4. Please uninstall this before installing the 32 bit version."
 
 [Setup]
 AppId={#MyAppName}{#MyAppVersion}
@@ -170,30 +172,70 @@ begin
   Result := Ret;
 end;
 
-// Find current version before installation
-function InitializeSetup: Boolean;
+function CheckPgAdminAlreadyInstalled: Boolean;
 var
   Version: String;
+  InstallationFound: Boolean;
 begin
-  if RegValueExists(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#MyAppVersion}', 'Version') then
+  InstallationFound := False;
+  // Check the installation mode 64 or 32 bit of installer
+  if Is64BitInstallMode then
   begin
-	UpgradeMode := True;
-    RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
-    if CompareVersions(Version, '{#MyAppFullVersion}') = 1 then
+
+    // Check if pgAdmin 32 bit is already installed
+    RegQueryStringValue(HKLM32,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
+
+    // If version is found then shouldn't install 64bit - abort
+    if Length(Version) > 0 then
     begin
-      MsgBox(ExpandConstant('{cm:NewerVersionExists}' + '(v' + Version + ') is already installed' ), mbInformation, MB_OK);
-      Result := False;
-    end
-    else
-    begin
-      Result := True;
+      MsgBox(ExpandConstant('{#MyAppErrorMsgIsWin32}'), mbCriticalError, MB_OK);
+	  Result := False;
+	  InstallationFound := True;
     end;
   end
   else
   begin
-    Result := True;
-	UpgradeMode := False;
+    // Check if pgAdmin 64 bit is already installed
+    RegQueryStringValue(HKLM64,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
+
+    // If version is found the shouldn't install 32bit - abort
+    if Length(Version) > 0 then
+    begin
+      MsgBox(ExpandConstant('{#MyAppErrorMsgIsWin64}'), mbCriticalError, MB_OK);
+	  Result := False;
+	  InstallationFound := True;
+	end;
+ end;
+
+  if  not (InstallationFound) then
+  begin
+     if RegValueExists(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#MyAppVersion}', 'Version') then
+     begin
+       UpgradeMode := True;
+       RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
+       if CompareVersions(Version, '{#MyAppFullVersion}') = 1 then
+       begin
+         MsgBox(ExpandConstant('{cm:NewerVersionExists}' + '(v' + Version + ') is already installed' ), mbInformation, MB_OK);
+         Result := False;
+       end
+	   else
+       begin
+        Result := True;
+       end;
+     end;
   end;
+
+  if  ( not (InstallationFound) and not (UpgradeMode) ) then
+  begin
+   // This is required as it will be passed on to the InitializeSetup function
+   Result := True;
+  end;
+end;
+
+// Find current version before installation
+function InitializeSetup: Boolean;
+begin
+    Result := CheckPgAdminAlreadyInstalled;
 end;
 
 function IsUpgradeMode(): Boolean;
