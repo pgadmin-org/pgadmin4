@@ -176,12 +176,23 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
     };
 
     this.dataview.setFilter((item, args)=>{
-      return !(args && args.type != 'all' && item.type != args.type);
+      if(args && args.type != 'all') {
+        if(Array.isArray(args.type)) {
+          return (args.type.indexOf(item.type) != -1);
+        } else {
+          return args.type == item.type;
+        }
+      }
+      return true;
     });
 
     /* jquery required for select2 */
     this.jquery(this.typesSelect).on('change', ()=>{
-      this.dataview.setFilterArgs({ type: this.typesVal() });
+      let type = this.typesVal();
+      if(type === 'constraints') {
+        type = ['constraints', 'check_constraint', 'foreign_key', 'primary_key', 'unique_constraint', 'exclusion_constraint'];
+      }
+      this.dataview.setFilterArgs({ type: type });
       this.dataview.refresh();
     });
 

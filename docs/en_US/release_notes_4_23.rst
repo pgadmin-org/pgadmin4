@@ -28,6 +28,7 @@ Bug fixes
 | `Issue #4226 <https://redmine.postgresql.org/issues/4226>`_ -  Fixed an issue where select all checkbox only selects the first 50 tables.
 | `Issue #5416 <https://redmine.postgresql.org/issues/5416>`_ -  Ensure that the query tool panel gets closed when clicking on the 'Don't Save' button.
 | `Issue #5465 <https://redmine.postgresql.org/issues/5465>`_ -  Fixed an issue where the Edge browser version is showing wrong and warning message gets displayed.
+| `Issue #5492 <https://redmine.postgresql.org/issues/5492>`_ -  Fixed an issue where the search object is unable to locate inherited tables and constraint filters are not working.
 | `Issue #5507 <https://redmine.postgresql.org/issues/5507>`_ -  Fixed connection and version number detection issue when the database server is upgraded.
 | `Issue #5521 <https://redmine.postgresql.org/issues/5521>`_ -  Fixed an issue when dumping servers from a desktop pgAdmin app by providing an option '--sqlite-path'.
 | `Issue #5539 <https://redmine.postgresql.org/issues/5539>`_ -  Fixed typo in exception keyword.

@@ -53,17 +53,18 @@ FROM (
     SELECT CASE WHEN c.relispartition THEN 'partition' ELSE 'table' END::text AS obj_type, c.relname AS obj_name,
     ':schema.'|| n.oid || ':/' || n.nspname || '/' || (
 		WITH RECURSIVE table_path_data as (
-			select c.oid as oid, 0 as height,
+			select c.oid as oid, 0 as height, c.relkind,
 				CASE c.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || c.oid || ':/' || c.relname as path
 			union
-			select rel.oid, pt.height+1 as height,
+			select rel.oid, pt.height+1 as height, rel.relkind,
 				CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
 				|| rel.oid || ':/' || rel.relname || '/' || pt.path as path
 			from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
 			join pg_inherits inh ON inh.inhparent = rel.oid
 			join table_path_data pt ON inh.inhrelid = pt.oid
 		)
-		select path from table_path_data order by height desc limit 1
+		select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || c.oid || ':/' || c.relname END AS path
+		from table_path_data order by height desc limit 1
 	) obj_path, n.nspname AS schema_name,
 	CASE WHEN c.relispartition THEN {{ show_node_prefs['partition'] }}
 	    ELSE {{ show_node_prefs['table'] }} END AS show_node,
@@ -88,18 +89,19 @@ FROM (
             WHEN tab.relkind in ('r', 't', 'p') THEN
                 (
                     WITH RECURSIVE table_path_data as (
-                        select tab.oid as oid, 0 as height,
+                        select tab.oid as oid, 0 as height, tab.relkind,
                             CASE tab.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || tab.oid || ':/' || tab.relname as path
                         union
-                        select rel.oid, pt.height+1 as height,
+                        select rel.oid, pt.height+1 as height, rel.relkind,
                             CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
                             || rel.oid || ':/' || rel.relname || '/' || pt.path as path
                         from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
                         join pg_inherits inh ON inh.inhparent = rel.oid
                         join table_path_data pt ON inh.inhrelid = pt.oid
                     )
-                    select path from table_path_data order by height desc limit 1
-                )
+                    select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || tab.oid || ':/' || tab.relname END AS path
+                    from table_path_data order by height desc limit 1
+               )
         end
         || '/:index.'|| cls.oid ||':/' || cls.relname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['index'] }} AS show_node, NULL AS other_info
@@ -219,17 +221,18 @@ FROM (
     ':schema.'||n.oid||':/' || n.nspname||'/'||
     (
 		WITH RECURSIVE table_path_data as (
-			select t.oid as oid, 0 as height,
+			select t.oid as oid, 0 as height, t.relkind,
 				CASE t.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || t.oid || ':/' || t.relname as path
 			union
-			select rel.oid, pt.height+1 as height,
+			select rel.oid, pt.height+1 as height, rel.relkind,
 				CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
 				|| rel.oid || ':/' || rel.relname || '/' || pt.path as path
 			from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
 			join pg_inherits inh ON inh.inhparent = rel.oid
 			join table_path_data pt ON inh.inhrelid = pt.oid
 		)
-		select path from table_path_data order by height desc limit 1
+		select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
+		from table_path_data order by height desc limit 1
 	) ||
     CASE
         WHEN c.contype = 'c' THEN  '/:check_constraint.' ||c.oid
@@ -269,17 +272,18 @@ FROM (
                 WHEN t.relkind in ('r', 't', 'p') THEN
                     (
                         WITH RECURSIVE table_path_data as (
-                            select t.oid as oid, 0 as height,
+                            select t.oid as oid, 0 as height, t.relkind,
                                 CASE t.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || t.oid || ':/' || t.relname as path
                             union
-                            select rel.oid, pt.height+1 as height,
+                            select rel.oid, pt.height+1 as height, rel.relkind,
                                 CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
                                 || rel.oid || ':/' || rel.relname || '/' || pt.path as path
                             from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
                             join pg_inherits inh ON inh.inhparent = rel.oid
                             join table_path_data pt ON inh.inhrelid = pt.oid
                         )
-                        select path from table_path_data order by height desc limit 1
+                        select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
+                        from table_path_data order by height desc limit 1
                     )
             end
             ||'/:rule.'||r.oid||':/'|| r.rulename AS obj_path,
@@ -301,17 +305,18 @@ FROM (
             WHEN t.relkind in ('r', 't', 'p') THEN
             (
                 WITH RECURSIVE table_path_data as (
-                    select t.oid as oid, 0 as height,
+                    select t.oid as oid, 0 as height, t.relkind,
                         CASE t.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || t.oid || ':/' || t.relname as path
                     union
-                    select rel.oid, pt.height+1 as height,
+                    select rel.oid, pt.height+1 as height, rel.relkind,
                         CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
                         || rel.oid || ':/' || rel.relname || '/' || pt.path as path
                     from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
                     join pg_inherits inh ON inh.inhparent = rel.oid
                     join table_path_data pt ON inh.inhrelid = pt.oid
                 )
-                select path from table_path_data order by height desc limit 1
+                select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
+                from table_path_data order by height desc limit 1
             )
         end || '/:trigger.'|| tr.oid || ':/' || tr.tgname AS obj_path, n.nspname AS schema_name,
         {{ show_node_prefs['trigger'] }} AS show_node, NULL AS other_info
