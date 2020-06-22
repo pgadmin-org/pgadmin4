@@ -581,15 +581,12 @@ define([
 
               // triggered when a dialog option gets update.
               onupdate: function(option, oldValue, newValue) {
-
-                switch (option) {
-                case 'resizable':
+                if(option === 'resizable') {
                   if (newValue) {
                     this.elements.content.removeAttribute('style');
                   } else {
                     this.elements.content.style.minHeight = 'inherit';
                   }
-                  break;
                 }
               },
 

@@ -60,9 +60,8 @@ define([
       },
       // listen and respond to changes in dialog settings.
       settingUpdated: function(key, oldValue, newValue) {
-        switch (key) {
-        case 'pg_msg':
-          var doc = iframe.contentWindow || iframe.contentDocument;
+        if(key === 'pg_msg') {
+          let doc = iframe.contentWindow || iframe.contentDocument;
           if (doc.document) {
             doc = doc.document;
           }
@@ -70,8 +69,6 @@ define([
           doc.open();
           doc.write(newValue);
           doc.close();
-
-          break;
         }
       },
       // listen to internal dialog events.
@@ -79,8 +76,7 @@ define([
         // triggered when a dialog option gets update.
         // warning! this will not be triggered for settings updates.
         onupdate: function(option, oldValue, newValue) {
-          switch (option) {
-          case 'resizable':
+          if(option === 'resizable') {
             if (newValue) {
               this.elements.content.removeAttribute('style');
               iframe && iframe.removeAttribute('style');
@@ -88,7 +84,6 @@ define([
               this.elements.content.style.minHeight = 'inherit';
               iframe && (iframe.style.minHeight = 'inherit');
             }
-            break;
           }
         },
       },
@@ -124,13 +119,13 @@ define([
           if (contentType.indexOf('text/html') == 0) {
             var alertMessage = promptmsg;
             if (type === 'error') {
-              alertMessage = '\
-                  <div class="media text-danger text-14">\
-                    <div class="media-body media-middle">\
-                      <div class="alert-text" role="alert">' + promptmsg + '</div><br/>\
-                      <div class="alert-text" role="alert">' + gettext('Click for details.') + '</div>\
-                    </div>\
-                  </div>';
+              alertMessage =
+                  '<div class="media text-danger text-14">'
+                  +  '<div class="media-body media-middle">'
+                  +    '<div class="alert-text" role="alert">' + promptmsg + '</div><br/>'
+                  +    '<div class="alert-text" role="alert">' + gettext('Click for details.') + '</div>'
+                  +  '</div>'
+                  + '</div>';
             }
 
             alertify.notify(
@@ -173,13 +168,13 @@ define([
             }
           }
           if (contentType.indexOf('text/html') >= 0) {
-            var alertMessage = '\
-                   <div class="media text-danger text-14">\
-                     <div class="media-body media-middle">\
-                       <div class="alert-text" role="alert">' + gettext('INTERNAL SERVER ERROR') + '</div><br/>\
-                       <div class="alert-text" role="alert">' + gettext('Click for details.') + '</div>\
-                     </div>\
-                   </div>';
+            var alertMessage =
+                   '<div class="media text-danger text-14">'
+                   +  '<div class="media-body media-middle">'
+                   +  '<div class="alert-text" role="alert">' + gettext('INTERNAL SERVER ERROR') + '</div><br/>'
+                   +    '<div class="alert-text" role="alert">' + gettext('Click for details.') + '</div>'
+                   +  '</div>'
+                   + '</div>';
 
             alertify.notify(
               alertMessage, 'error', 0, () => {
