@@ -3,7 +3,7 @@
 
 -- DROP POLICY {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }};
 
-CREATE POLICY {{ data.name }}
+CREATE POLICY {{ conn|qtIdent(data.name) }}
     ON {{conn|qtIdent(data.schema, data.table)}}
 {% if data.event %}
     FOR {{ data.event|upper }}
