@@ -39,10 +39,10 @@ private:
     QAction *m_logAction = Q_NULLPTR;
     QAction *m_quitAction = Q_NULLPTR;
 
-    QSystemTrayIcon *m_trayIcon;
-    QMenu *m_trayIconMenu;
+    QSystemTrayIcon *m_trayIcon = Q_NULLPTR;
+    QMenu *m_trayIconMenu = Q_NULLPTR;
 
-    MenuActions *m_menuActions;
+    MenuActions *m_menuActions = Q_NULLPTR;
 };
 
 #endif // TRAYICON_H

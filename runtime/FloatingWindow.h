@@ -46,8 +46,8 @@ private:
     QAction *m_logAction = Q_NULLPTR;
     QAction *m_quitAction = Q_NULLPTR;
 
-    QMenu *m_floatingWindowMenu;
-    MenuActions *m_menuActions;
+    QMenu *m_floatingWindowMenu = Q_NULLPTR;
+    MenuActions *m_menuActions = Q_NULLPTR;
 
 signals:
     void shutdownSignal(QUrl);
