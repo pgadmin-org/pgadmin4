@@ -71,6 +71,9 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         property_object = self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.properties_obj_css)))
         property_object.click()
+        WebDriverWait(self.page.driver, 4).until(
+            EC.presence_of_element_located((
+                By.XPATH, "//a[normalize-space(text())='Membership']")))
         self.click_membership_tab()
         # Fetch the source code for our custom control
         source_code = self.page.find_by_xpath(
