@@ -41,7 +41,7 @@ define('pgadmin.node.row_security_policy', [
       width: pgBrowser.stdW.sm + 'px',
       sqlAlterHelp: 'sql-alterpolicy.html',
       sqlCreateHelp: 'sql-createpolicy.html',
-      dialogHelp: url_for('help.static', {'filename': 'row_security_policy_dialog.html'}),
+      dialogHelp: url_for('help.static', {'filename': 'rls_policy_dialog.html'}),
       url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid mulitple registration of menus */
