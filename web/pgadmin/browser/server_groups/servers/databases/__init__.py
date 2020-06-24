@@ -278,11 +278,11 @@ class DatabaseView(PGChildNodeView):
             dbname = row['name']
             if self.manager.db == dbname:
                 connected = True
-                canDrop = canDisConn = False
+                can_drop = can_dis_conn = False
             else:
                 conn = self.manager.connection(dbname, did=row['did'])
                 connected = conn.connected()
-                canDrop = canDisConn = True
+                can_drop = can_dis_conn = True
 
             res.append(
                 self.blueprint.generate_browser_node(
@@ -295,8 +295,8 @@ class DatabaseView(PGChildNodeView):
                     tablespace=row['spcname'],
                     allowConn=row['datallowconn'],
                     canCreate=row['cancreate'],
-                    canDisconn=canDisConn,
-                    canDrop=canDrop,
+                    canDisconn=can_dis_conn,
+                    canDrop=can_drop,
                     inode=True if row['datallowconn'] else False
                 )
             )
@@ -733,9 +733,9 @@ class DatabaseView(PGChildNodeView):
 
         res = rset['rows'][0]
 
-        canDrop = canDisConn = True
+        can_drop = can_dis_conn = True
         if self.manager.db == res['name']:
-            canDrop = canDisConn = False
+            can_drop = can_dis_conn = False
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -750,8 +750,8 @@ class DatabaseView(PGChildNodeView):
                 tablespace=res['spcname'],
                 allowConn=res['datallowconn'],
                 canCreate=res['cancreate'],
-                canDisconn=canDisConn,
-                canDrop=canDrop,
+                canDisconn=can_dis_conn,
+                canDrop=can_drop,
                 inode=True if res['datallowconn'] else False
             )
         )
@@ -883,7 +883,6 @@ class DatabaseView(PGChildNodeView):
                 return _(" -- definition incomplete")
 
         acls = []
-        SQL_acl = ''
 
         try:
             acls = render_template(
@@ -901,7 +900,7 @@ class DatabaseView(PGChildNodeView):
                     data[aclcol], allowedacl['acl']
                 )
 
-        SQL_acl = render_template(
+        sql_acl = render_template(
             "/".join([self.template_path, 'grant.sql']),
             data=data,
             conn=self.conn
@@ -912,7 +911,7 @@ class DatabaseView(PGChildNodeView):
             data=data, conn=self.conn
         )
         SQL += "\n"
-        SQL += SQL_acl
+        SQL += sql_acl
         return SQL
 
     def get_online_sql(self, gid, sid, data, did=None):
