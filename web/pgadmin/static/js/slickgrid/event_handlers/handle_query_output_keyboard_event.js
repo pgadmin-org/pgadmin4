@@ -19,7 +19,6 @@ function (copyData, RangeSelectionHelper) {
     var isModifierDown = event.ctrlKey || event.metaKey;
     var self = this || window;
     self.slickgrid = args.grid;
-    self.csvOptions;
 
     if (isModifierDown && modifiedKey == KEY_C) {
       copyData.apply(self);

@@ -366,8 +366,8 @@ define([
               // It will assign default values to "Default value" column
               for (j = (argname.length - 1); j >= 0; j--) {
                 if (debug_info['proargmodes'] != null) {
-                  if (argmode[j] == 'i' || argmode[j] == 'b' ||
-                    (is_edb_proc && argmode[j] == 'o')) {
+                  if (argmode && (argmode[j] == 'i' || argmode[j] == 'b' ||
+                    (is_edb_proc && argmode[j] == 'o'))) {
                     if (arg_cnt) {
                       arg_cnt = arg_cnt - 1;
                       def_val_list[j] = default_args[arg_cnt];
@@ -386,8 +386,8 @@ define([
               if (argtype.length != 0) {
                 for (i = 0; i < argtype.length; i++) {
                   if (debug_info['proargmodes'] != null) {
-                    if (argmode[i] == 'i' || argmode[i] == 'b' ||
-                      (is_edb_proc && argmode[i] == 'o')) {
+                    if (argmode && (argmode[i] == 'i' || argmode[i] == 'b' ||
+                      (is_edb_proc && argmode[i] == 'o'))) {
                       use_def_value = false;
                       if (def_val_list[i] != '<no default>') {
                         use_def_value = true;
@@ -419,7 +419,7 @@ define([
                 for (i = 0; i < func_args_data.length; i++) {
                   index = func_args_data[i]['arg_id'];
                   if (debug_info['proargmodes'] != null &&
-                    (argmode[index] == 'o' && !is_edb_proc)) {
+                    (argmode && argmode[index] == 'o' && !is_edb_proc)) {
                     continue;
                   }
 
@@ -493,8 +493,8 @@ define([
                       'default_value': def_val_list[i],
                     });
                   } else {
-                    if (argmode[i] == 'i' || argmode[i] == 'b' ||
-                      (is_edb_proc && argmode[i] == 'o')) {
+                    if (argmode && (argmode[i] == 'i' || argmode[i] == 'b' ||
+                      (is_edb_proc && argmode[i] == 'o'))) {
                       use_def_value = false;
                       if (def_val_list[i] != '<No default value>') {
                         use_def_value = true;
@@ -706,7 +706,7 @@ define([
 
               // If debugging is not started again then we should initialize the target otherwise not
               if (self.setting('restart_debug') == 0) {
-                if (d._type == 'function') {
+                if (d && d._type == 'function') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
                     'trans_id': self.setting('trans_id'),
@@ -715,7 +715,7 @@ define([
                     'scid': treeInfo.schema._id,
                     'func_id': treeInfo.function._id,
                   });
-                } else if (d._type == 'procedure') {
+                } else if (d && d._type == 'procedure') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
                     'trans_id': self.setting('trans_id'),
@@ -724,7 +724,7 @@ define([
                     'scid': treeInfo.schema._id,
                     'func_id': treeInfo.procedure._id,
                   });
-                } else if (d._type == 'edbfunc') {
+                } else if (d && d._type == 'edbfunc') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
                     'trans_id': self.setting('trans_id'),
@@ -733,7 +733,7 @@ define([
                     'scid': treeInfo.schema._id,
                     'func_id': treeInfo.edbfunc._id,
                   });
-                } else if (d._type == 'edbproc') {
+                } else if (d && d._type == 'edbproc') {
                   baseUrl = url_for('debugger.initialize_target_for_function', {
                     'debug_type': 'direct',
                     'trans_id': self.setting('trans_id'),

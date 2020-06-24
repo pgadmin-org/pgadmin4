@@ -96,3 +96,24 @@
   vertical-align: middle;
   display: inline-block;
 }
+
+.slick-group-toggle.collapsed::before {
+  font-family: $font-family-icon;
+  content: "\f054";
+  font-size: 0.6rem;
+  border: none;
+}
+
+.slick-group-toggle.expanded::before {
+  font-family: $font-family-icon;
+  content: "\f078";
+  font-size: 0.6rem;
+  margin-left: 0rem;
+}
+
+#schema-diff-ddl-comp .badge .caret::before {
+  font-family: $font-family-icon;
+  content: "\f078";
+  font-size: 0.7rem;
+  margin-left: 0rem;
+}

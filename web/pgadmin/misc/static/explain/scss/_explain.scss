@@ -92,13 +92,8 @@ div.tab-pane[data-explain-tabpanel=table] {
           overflow-wrap: break-word;
           word-break: break-all;
           overflow: visible;
-          white-space: -moz-pre-wrap !important;
-          white-space: -pre-wrap;
-          white-space: -o-pre-wrap;
           white-space: pre-wrap;
           word-wrap: break-word;
-          white-space: -webkit-pre-wrap;
-          white-space: normal;
         }
         &.pg-ex-highlighter {
           color: $color-primary;

@@ -285,9 +285,9 @@
 
 /* Message panel shown on browser tabs */
 .pg-panel-message {
-    margin-top: 25px !important;
     width: 80%;
     margin: 0 auto;
+    margin-top: 25px !important;
     position: relative;
     text-align: center;
 
@@ -586,7 +586,7 @@ fieldset.inline-fieldset > div {
 }
 
 .icon-fa::before {
-    font: normal normal normal 14px/1 FontAwesome;
+    font: normal normal normal 14px/1 $font-family-icon;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -700,7 +700,6 @@ div.rolmembership {
 
 .inline-tab-panel > ul.tab-content {
   padding-left: 5px; padding-right: 5px; border-color: $color-gray-lighter;
-  border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
   border-width: 0px 1px 1px 1px; border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px; border-style: solid solid;
 }

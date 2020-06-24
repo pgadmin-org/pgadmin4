@@ -1,17 +1,4 @@
 .icon-schema-diff:before {
-  /*
-  display: inline-block;
-  align-content: center;
-  vertical-align: middle;
-  height: 18px;
-  width: 18px;
-  background-size: 20px !important;
-  background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: center;
-  background-image: url('../img/compare.svg') !important;
-  */
-
   font-icon: url('../img/compare.svg');
   font-size: 1.3em !important;
 }
@@ -115,20 +102,6 @@
   width: 20px;
 }
 
-.slick-group-toggle.collapsed::before {
-  font-family: "FontAwesome";
-  content: "\f054";
-  font-size: 0.6rem;
-  border: none;
-}
-
-.slick-group-toggle.expanded::before {
-  font-family: "FontAwesome";
-  content: "\f078";
-  font-size: 0.6rem;
-  margin-left: 0rem;
-}
-
 .slick-group-toggle {
   margin-right: 0px !important;
   height: 11px !important;
@@ -139,13 +112,6 @@
     margin-left: 2px;
     margin-right: 4px;
     width: 0.7rem;
-}
-
-#schema-diff-ddl-comp .badge .caret::before {
-  font-family: "FontAwesome";
-  content: "\f078";
-  font-size: 0.7rem;
-  margin-left: 0rem;
 }
 
 #schema-diff-ddl-comp .badge {
