@@ -18,7 +18,7 @@ class PPAS(ServerType):
         " programs (pg_dump, pg_restore etc)."
     )
 
-    def instanceOf(self, ver):
+    def instance_of(self, ver):
         return "EnterpriseDB" in ver
 
 

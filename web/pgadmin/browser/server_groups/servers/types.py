@@ -78,7 +78,7 @@ class ServerType(object):
             self.stype, self.desc, self.spriority
         )
 
-    def instanceOf(self, version):
+    def instance_of(self, version):
         return True
 
     @property

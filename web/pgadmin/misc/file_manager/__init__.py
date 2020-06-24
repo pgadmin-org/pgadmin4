@@ -1032,7 +1032,7 @@ class Filemanager(object):
         return result
 
     @staticmethod
-    def getNewName(dir, path, newName, count=1):
+    def get_new_name(dir, path, newName, count=1):
         """
         Utility to provide new name for folder if file
         with same name already exists
@@ -1046,7 +1046,7 @@ class Filemanager(object):
             newPath = u"{}/{}{}_{}".format(dir, path, newName, last_char)
             if path_exists(newPath):
                 count += 1
-                return Filemanager.getNewName(dir, path, newName, count)
+                return Filemanager.get_new_name(dir, path, newName, count)
             else:
                 return newPath, newName
 
@@ -1160,7 +1160,7 @@ class Filemanager(object):
                 code = 0
                 err_msg = gettext(u"Error: {0}").format(e.strerror)
         else:
-            newPath, newName = self.getNewName(dir, path, name)
+            newPath, newName = self.get_new_name(dir, path, name)
             try:
                 os.mkdir(newPath)
             except Exception as e:

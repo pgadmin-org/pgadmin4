@@ -264,7 +264,7 @@ WHERE db.oid = {0}""".format(did))
 
         if self.ver and not self.server_type:
             for st in ServerType.types():
-                if st.instanceOf(self.ver):
+                if st.instance_of(self.ver):
                     self.server_type = st.stype
                     self.server_cls = st
                     break

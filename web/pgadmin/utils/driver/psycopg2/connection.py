@@ -509,7 +509,7 @@ WHERE
             server_types = ServerType.types()
 
         for st in server_types:
-            if st.instanceOf(manager.ver):
+            if st.instance_of(manager.ver):
                 manager.server_type = st.stype
                 manager.server_cls = st
                 break
