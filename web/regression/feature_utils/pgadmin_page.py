@@ -798,7 +798,6 @@ class PgadminPage:
                 break
             except TimeoutException:
                 retry -= 1
-                pass
 
     def toggle_open_server(self, tree_item_text):
         def check_for_password_dialog_or_tree_open(driver):

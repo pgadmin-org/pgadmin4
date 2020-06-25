@@ -21,7 +21,7 @@ def user_info():
         email = config.DESKTOP_USER
         p1 = ''.join([
             random.choice(string.ascii_letters + string.digits)
-            for n in range(32)
+            for _ in range(32)
         ])
 
     else:

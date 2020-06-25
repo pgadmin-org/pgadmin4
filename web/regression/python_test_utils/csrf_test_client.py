@@ -120,5 +120,5 @@ class TestClient(testing.FlaskClient):
         return res
 
     def logout(self):
-        res = self.get('/logout?next=/browser/', follow_redirects=False)
+        self.get('/logout?next=/browser/', follow_redirects=False)
         self.csrf_token = None

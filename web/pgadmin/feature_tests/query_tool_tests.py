@@ -165,7 +165,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
             (By.CSS_SELECTOR,
              QueryToolLocators.query_output_cells)))
 
-        canvas = self.page.find_by_css_selector(
+        self.page.find_by_css_selector(
             QueryToolLocators.query_output_canvas_css)
 
         self._check_ondemand_result(row_id_to_find)
@@ -176,7 +176,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
         self.page.click_execute_query_button()
 
         # wait for header of the table to be visible
-        canvas = self.page.find_by_css_selector(
+        self.page.find_by_css_selector(
             QueryToolLocators.query_output_canvas_css)
 
         # wait for the rows in the table to be displayed
@@ -187,7 +187,6 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 
         # Select all rows in a table
         multiple_check = True
-        count = 0
         while multiple_check:
             try:
                 select_all = self.wait.until(EC.element_to_be_clickable(
@@ -196,7 +195,6 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
                 multiple_check = False
             except (StaleElementReferenceException,
                     ElementClickInterceptedException):
-                count += 1
                 pass
 
         self._check_ondemand_result(row_id_to_find)
@@ -218,7 +216,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
              QueryToolLocators.query_output_cells))
         )
 
-        canvas = self.wait.until(EC.presence_of_element_located(
+        self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
         self._check_ondemand_result(row_id_to_find)
@@ -668,8 +666,6 @@ SELECT 1, pg_sleep(300)"""
             self.server['sslmode']
         )
         pg_cursor = connection.cursor()
-        pg_cursor.execute('select version()')
-        version_string = pg_cursor.fetchone()
 
         # check if jit is turned on
         jit_enabled = False
@@ -680,10 +676,6 @@ SELECT 1, pg_sleep(300)"""
                 jit_enabled = True
         except Exception as e:
             pass
-
-        is_edb = False
-        if len(version_string) > 0:
-            is_edb = 'EnterpriseDB' in version_string[0]
 
         connection.close()
         return connection.server_version >= 110000 and jit_enabled

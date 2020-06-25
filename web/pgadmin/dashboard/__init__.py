@@ -282,7 +282,6 @@ def index(sid=None, did=None):
 
     """
     rates = {}
-    settings = {}
 
     # Get the server version
     if sid is not None:

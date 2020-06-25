@@ -242,7 +242,6 @@ def file_manager_config_js():
 @login_required
 def file_manager_config(trans_id):
     """render the required json"""
-    # trans_id = Filemanager.create_new_transaction()
     data = Filemanager.get_trasaction_selection(trans_id)
     pref = Preferences.module('file_manager')
     file_dialog_view = pref.preference('file_dialog_view').get()

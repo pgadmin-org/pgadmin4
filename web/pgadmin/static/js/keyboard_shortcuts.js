@@ -301,7 +301,7 @@ function keyboardShortcutsQueryTool(
         /*open submenu if any*/
         if(currLi.hasClass('dropdown-submenu')){
           currLi.find('.dropdown-menu').addClass('show');
-          currLi = currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
+          currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
         }
       } else if(keyCode === LEFT_KEY) {
         /*close submenu*/

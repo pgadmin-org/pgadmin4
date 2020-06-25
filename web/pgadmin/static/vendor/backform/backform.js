@@ -71,7 +71,7 @@
 
   // Backform Form view
   // A collection of field models.
-  var Form = Backform.Form = Backbone.View.extend({
+  Backform.Form = Backbone.View.extend({
     fields: undefined,
     errorModel: undefined,
     tagName: "form",
@@ -100,8 +100,7 @@
       this.cleanup();
       this.$el.empty();
 
-      var form = this,
-          $form = this.$el,
+      var $form = this.$el,
           model = this.model,
           controls = this.controls;
 
@@ -265,7 +264,6 @@
     },
     onChange: function(e) {
       var model = this.model,
-          $el = $(e.target),
           attrArr = this.field.get("name").split('.'),
           name = attrArr.shift(),
           path = attrArr.join('.'),
@@ -348,10 +346,7 @@
       this.clearInvalid();
 
       this.$el.find(':input').not('button').each(function(ix, el) {
-        var attrArr = $(el).attr('name').split('.'),
-          name = attrArr.shift(),
-          path = attrArr.join('.'),
-          error = self.keyPathAccessor(errorModel.toJSON(), $(el).attr('name'));
+        var error = self.keyPathAccessor(errorModel.toJSON(), $(el).attr('name'));
 
         if (_.isEmpty(error)) return;
 
@@ -406,9 +401,9 @@
 
   // Built-in controls
 
-  var UneditableInputControl = Backform.UneditableInputControl = Control;
+  Backform.UneditableInputControl = Control;
 
-  var HelpControl = Backform.HelpControl = Control.extend({
+  Backform.HelpControl = Control.extend({
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>">&nbsp;</label>',
       '<div class="<%=Backform.controlsClassName%>">',
@@ -417,13 +412,13 @@
     ].join("\n"))
   });
 
-  var SpacerControl = Backform.SpacerControl = Control.extend({
+  Backform.SpacerControl = Control.extend({
     template: _.template([
       '<div class="<%=Backform.controlsClassName%>"></div>'
     ].join("\n"))
   });
 
-  var TextareaControl = Backform.TextareaControl = Control.extend({
+  Backform.TextareaControl = Control.extend({
     defaults: {
       label: "",
       maxlength: 4000,
@@ -476,7 +471,7 @@
   });
 
   // Note: Value here is null or an array. Since jQuery val() returns either.
-  var MultiSelectControl = Backform.MultiSelectControl = SelectControl.extend({
+  Backform.MultiSelectControl = SelectControl.extend({
     defaults: {
       label: "",
       options: [], // List of options as [{label:<label>, value:<value>}, ...]
@@ -564,9 +559,9 @@
     }
   });
 
-  var CheckboxControl = Backform.CheckboxControl = BooleanControl;
+  Backform.CheckboxControl = BooleanControl;
 
-  var RadioControl = Backform.RadioControl = InputControl.extend({
+  Backform.RadioControl = InputControl.extend({
     defaults: {
       type: "radio",
       label: "",
@@ -605,7 +600,7 @@
   });
 
   // Requires the Bootstrap Datepicker to work.
-  var DatepickerControl = Backform.DatepickerControl = InputControl.extend({
+  Backform.DatepickerControl = InputControl.extend({
     defaults: {
       type: "text",
       label: "",
@@ -627,7 +622,7 @@
     }
   });
 
-  var ButtonControl = Backform.ButtonControl = Control.extend({
+  Backform.ButtonControl = Control.extend({
     defaults: {
       type: "submit",
       label: "Submit",

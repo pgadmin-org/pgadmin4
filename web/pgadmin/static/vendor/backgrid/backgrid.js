@@ -1053,7 +1053,7 @@ var UriCell = Backgrid.UriCell = Cell.extend({
    @class Backgrid.EmailCell
    @extends Backgrid.StringCell
 */
-var EmailCell = Backgrid.EmailCell = StringCell.extend({
+Backgrid.EmailCell = StringCell.extend({
 
   /** @property */
   className: "email-cell",
@@ -1126,7 +1126,7 @@ var NumberCell = Backgrid.NumberCell = Cell.extend({
    @class Backgrid.IntegerCell
    @extends Backgrid.NumberCell
 */
-var IntegerCell = Backgrid.IntegerCell = NumberCell.extend({
+Backgrid.IntegerCell = NumberCell.extend({
 
   /** @property */
   className: "integer-cell",
@@ -1245,7 +1245,7 @@ var DatetimeCell = Backgrid.DatetimeCell = Cell.extend({
    @class Backgrid.DateCell
    @extends Backgrid.DatetimeCell
 */
-var DateCell = Backgrid.DateCell = DatetimeCell.extend({
+Backgrid.DateCell = DatetimeCell.extend({
 
   /** @property */
   className: "date-cell",
@@ -1261,7 +1261,7 @@ var DateCell = Backgrid.DateCell = DatetimeCell.extend({
    @class Backgrid.TimeCell
    @extends Backgrid.DatetimeCell
 */
-var TimeCell = Backgrid.TimeCell = DatetimeCell.extend({
+Backgrid.TimeCell = DatetimeCell.extend({
 
   /** @property */
   className: "time-cell",
@@ -1365,7 +1365,7 @@ var BooleanCellEditor = Backgrid.BooleanCellEditor = CellEditor.extend({
    @class Backgrid.BooleanCell
    @extends Backgrid.Cell
 */
-var BooleanCell = Backgrid.BooleanCell = Cell.extend({
+Backgrid.BooleanCell = Cell.extend({
 
   /** @property */
   className: "boolean-cell",
@@ -2234,7 +2234,7 @@ var EmptyHeaderCell = Backgrid.EmptyHeaderCell = Backbone.View.extend({
    @class Backgrid.HeaderRow
    @extends Backgrid.Row
  */
-var HeaderRow = Backgrid.HeaderRow = Backgrid.Row.extend({
+Backgrid.HeaderRow = Backgrid.Row.extend({
 
   /**
      Initializer.
@@ -2753,7 +2753,7 @@ var Body = Backgrid.Body = Backbone.View.extend({
    @class Backgrid.Footer
    @extends Backbone.View
  */
-var Footer = Backgrid.Footer = Backbone.View.extend({
+Backgrid.Footer = Backbone.View.extend({
 
   /** @property */
   tagName: "tfoot",
@@ -2832,7 +2832,7 @@ var Footer = Backgrid.Footer = Backbone.View.extend({
    - Backgrid.Row
    - Backgrid.Footer
 */
-var Grid = Backgrid.Grid = Backbone.View.extend({
+Backgrid.Grid = Backbone.View.extend({
 
   /** @property */
   tagName: "table",

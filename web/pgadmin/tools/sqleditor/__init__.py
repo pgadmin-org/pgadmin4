@@ -338,7 +338,6 @@ def poll(trans_id):
     primary_keys = None
     types = {}
     client_primary_key = None
-    rset = None
     has_oids = False
     oids = None
     additional_messages = None

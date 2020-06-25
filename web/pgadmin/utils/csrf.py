@@ -16,7 +16,7 @@ class _PGCSRFProtect(CSRFProtect):
         super(_PGCSRFProtect, self).__init__(*args, **kwargs)
 
     def init_app(self, app):
-        res = super(_PGCSRFProtect, self).init_app(app)
+        super(_PGCSRFProtect, self).init_app(app)
         self._pg_csrf_exempt(app)
 
     def _pg_csrf_exempt(self, app):

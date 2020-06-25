@@ -126,7 +126,7 @@ define('pgadmin.node.rule', [
             if (m && m.get('name') == '_RETURN') {
               return true;
             }
-            if (m.isNew() || m.node_info.server.version >= 90400) {
+            if (m.isNew && m.isNew() || m.node_info && m.node_info.server.version >= 90400) {
               return false;
             }
             return true;
@@ -236,7 +236,6 @@ define('pgadmin.node.rule', [
             //Check if we are not child of rule
             var prev_i = t.hasParent(i) ? t.parent(i) : null,
               prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null,
-              prev_e = prev_j ? t.itemData(prev_j) : null,
               prev_k = t.hasParent(prev_j) ? t.parent(prev_j) : null,
               prev_f = prev_k ? t.itemData(prev_k) : null;
             return (_.isNull(prev_f) || prev_f._type != 'catalog');
@@ -249,7 +248,7 @@ define('pgadmin.node.rule', [
           else if('view' == d._type || 'table' == d._type){
             prev_i = t.hasParent(i) ? t.parent(i) : null;
             prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null;
-            prev_e = prev_j ? t.itemData(prev_j) : null;
+            var prev_e = prev_j ? t.itemData(prev_j) : null;
             return (!_.isNull(prev_e) && prev_e._type == 'schema');
           }
           i = t.hasParent(i) ? t.parent(i) : null;

@@ -1577,10 +1577,6 @@ define([
       formatter: JSONBCellFormatter,
     });
 
-  Backgrid.Extension.DatepickerCell = Backgrid.Cell.extend({
-    editor: DatepickerCellEditor,
-  });
-
   var DatepickerCellEditor = Backgrid.InputCellEditor.extend({
     events: {},
     initialize: function() {
@@ -1594,10 +1590,14 @@ define([
           input.model.trigger(
             'backgrid:edited', input.model, input.column, command
           );
-          command = input = null;
+          input = null;
         },
       });
     },
+  });
+
+  Backgrid.Extension.DatepickerCell = Backgrid.Cell.extend({
+    editor: DatepickerCellEditor,
   });
 
   // Reference:

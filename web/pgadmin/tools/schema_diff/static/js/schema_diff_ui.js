@@ -490,7 +490,7 @@ export default class SchemaDiffUI {
     var self = this,
       node_type = data.type,
       source_oid = data.oid,
-      target_oid = data.oid;
+      target_oid;
 
     self.model.set({
       'source_ddl': undefined,

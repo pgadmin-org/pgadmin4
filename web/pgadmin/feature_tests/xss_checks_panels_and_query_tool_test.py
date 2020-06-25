@@ -38,7 +38,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     scenarios = [
         ("Test XSS check for panels and query tool", dict())
     ]
-    # test_table_name = "<h1>X"
     test_type_name = '"<script>alert(1)</script>"'
 
     def before(self):

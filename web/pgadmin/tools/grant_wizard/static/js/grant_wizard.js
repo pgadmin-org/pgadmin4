@@ -820,7 +820,6 @@ define([
                         Privileges array is generated based on
                         the type of nodes selected.
                        */
-                      var privModel = self.privModel;
                       var PrivModel = pgNode.Model.extend({
                         defaults: {
                           acl: undefined,
@@ -849,8 +848,8 @@ define([
                         present in object privileges array(object_priv)
                        */
                       var data = {};
-                      if (privModel) {
-                        data = privModel.toJSON();
+                      if (self.privModel) {
+                        data = self.privModel.toJSON();
                         var rolePrivs = data['acl'];
                         if (!_.isUndefined(rolePrivs) && rolePrivs.length > 0) {
                           for (var idx in rolePrivs) {
@@ -875,7 +874,7 @@ define([
                       }
 
                       // Instantiate privModel
-                      privModel = self.privModel = new PrivModel(data, {
+                      self.privModel = new PrivModel(data, {
                         node_info: self.info,
                       });
 
