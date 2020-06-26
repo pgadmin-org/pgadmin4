@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import json
 import uuid
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -20,19 +21,20 @@ from . import utils as domain_utils
 from unittest.mock import patch
 
 
-class DomainGetTestCase(BaseTestGenerator):
-    """ This class will fetch new collation under schema node. """
-    scenarios = utils.generate_scenarios('domain_get',
+class DomainGetCollationsTestCase(BaseTestGenerator):
+    """ This class will add new domain under schema node. """
+    skip_on_database = ['gpdb']
+    scenarios = utils.generate_scenarios('domain_get_collations',
                                          domain_utils.test_cases)
 
     def setUp(self):
-        self.database_info = parent_node_dict["database"][-1]
-        self.db_name = self.database_info["db_name"]
-        self.db_id = self.database_info["db_id"]
-        self.server_id = self.database_info["server_id"]
-        self.schema_info = parent_node_dict["schema"][-1]
-        self.schema_name = self.schema_info["schema_name"]
-        self.schema_id = self.schema_info["schema_id"]
+        super(DomainGetCollationsTestCase, self).setUp()
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+        schema_info = parent_node_dict["schema"][-1]
+        self.server_id = schema_info["server_id"]
+        self.db_id = schema_info["db_id"]
+        self.schema_id = schema_info["schema_id"]
+        self.schema_name = schema_info["schema_name"]
         self.domain_name = "domain_get_%s" % (str(uuid.uuid4())[1:8])
         self.domain_info = domain_utils.create_domain(self.server,
                                                       self.db_name,
@@ -40,61 +42,37 @@ class DomainGetTestCase(BaseTestGenerator):
                                                       self.schema_id,
                                                       self.domain_name)
 
-    def get_domain(self):
+    def get_collations(self):
         """
-        This functions returns the domain details
-        :return: domain details
+        This function returns the domain collation details
+        :return: domain collation details
         """
         return self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' +
             str(self.db_id) + '/' +
-            str(self.schema_id) + '/' +
-            str(self.domain_id),
-            content_type='html/json')
-
-    def get_domain_list(self):
-        """
-        This functions returns the domain list
-        :return: domain list
-        """
-        return self.tester.get(
-            self.url +
-            str(utils.SERVER_GROUP) + '/' + str(self.server_id) + '/' +
-            str(self.db_id) + '/' + str(self.schema_id) + "/",
+            str(self.schema_id) + '/', follow_redirects=True,
             content_type='html/json'
         )
 
     def runTest(self):
-        """ This function will add domain under schema node. """
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to get the domain.")
-        db_name = self.database_info["db_name"]
+            raise Exception("Could not connect to database to add domain.")
         schema_response = schema_utils.verify_schemas(self.server,
-                                                      db_name,
+                                                      self.db_name,
                                                       self.schema_name)
         if not schema_response:
-            raise Exception("Could not find the schema to get the domain.")
+            raise Exception("Could not find the schema to add the domain.")
         self.domain_id = self.domain_info[0]
-        # Call GET API to verify the domain
+
         if self.is_positive_test:
-            if hasattr(self, "domain_list"):
-                response = self.get_domain_list()
-            else:
-                response = self.get_domain()
+            response = self.get_collations()
         else:
-            if hasattr(self, "error_fetching_domain"):
-                with patch(self.mock_data["function_name"],
-                           return_value=eval(self.mock_data["return_value"])):
-                    if hasattr(self, "domain_list"):
-                        response = self.get_domain_list()
-                    else:
-                        response = self.get_domain()
-            if hasattr(self, "wrong_domain_id"):
-                self.domain_id = 99999
-                response = self.get_domain()
+            with patch(self.mock_data["function_name"],
+                       return_value=eval(self.mock_data["return_value"])):
+                response = self.get_collations()
 
         actual_response_code = response.status_code
         expected_response_code = self.expected_data['status_code']

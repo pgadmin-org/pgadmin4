@@ -18,17 +18,18 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as domain_utils
+from unittest.mock import patch
 
 
 class DomainPutTestCase(BaseTestGenerator):
-    """ This class will fetch new collation under schema node. """
-    scenarios = [
-        # Fetching default URL for domain node.
-        ('Fetch domain Node URL', dict(url='/browser/domain/obj/'))
-    ]
+    """ This class will fetch new domain under schema node. """
+    scenarios = utils.generate_scenarios('domain_update',
+                                         domain_utils.test_cases)
 
     def setUp(self):
         self.database_info = parent_node_dict["database"][-1]
+        self.db_id = self.database_info["db_id"]
+        self.server_id = self.database_info["server_id"]
         self.db_name = self.database_info["db_name"]
         self.schema_info = parent_node_dict["schema"][-1]
         self.schema_name = self.schema_info["schema_name"]
@@ -40,12 +41,24 @@ class DomainPutTestCase(BaseTestGenerator):
                                                       self.schema_id,
                                                       self.domain_name)
 
+    def update_domain(self):
+        """
+        This functions update domain  details
+        :return: Domain update request details
+        """
+        return self.tester.put(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' +
+            str(self.db_id) + '/' +
+            str(self.schema_id) + '/' +
+            str(self.domain_id),
+            data=json.dumps(self.test_data),
+            follow_redirects=True)
+
     def runTest(self):
         """ This function will update domain under schema node. """
-        db_id = self.database_info["db_id"]
-        server_id = self.database_info["server_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
-                                                 server_id, db_id)
+                                                 self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to get the domain.")
         db_name = self.database_info["db_name"]
@@ -60,21 +73,27 @@ class DomainPutTestCase(BaseTestGenerator):
                                                      self.domain_name)
         if not domain_response:
             raise Exception("Could not find the domain to update.")
-        domain_id = self.domain_info[0]
-        data = {"description": "This is domain update comment",
-                "id": domain_id,
-                }
-        response = self.tester.put(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(server_id) + '/' +
-            str(db_id) + '/' +
-            str(self.schema_id) + '/' +
-            str(domain_id),
-            data=json.dumps(data),
-            follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
-        # Disconnect the database
-        database_utils.disconnect_database(self, server_id, db_id)
+        self.domain_id = self.domain_info[0]
+        self.test_data['id'] = self.domain_id
+
+        if self.is_positive_test:
+            response = self.update_domain()
+        else:
+            if hasattr(self, "error_updating_domain"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.update_domain()
+
+            if hasattr(self, "error_in_db"):
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = self.update_domain()
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
-        pass
+        # Disconnect the database
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

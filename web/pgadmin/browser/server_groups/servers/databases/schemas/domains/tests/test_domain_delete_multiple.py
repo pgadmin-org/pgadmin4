@@ -22,14 +22,14 @@ from . import utils as domain_utils
 
 class DomainDeleteMultipleTestCase(BaseTestGenerator):
     """ This class will delete new domains under schema node. """
-    scenarios = [
-        # Fetching default URL for domain node.
-        ('Fetch domain Node URL', dict(url='/browser/domain/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('domain_multiple_delete',
+                                         domain_utils.test_cases)
 
     def setUp(self):
         super(DomainDeleteMultipleTestCase, self).setUp()
         self.database_info = parent_node_dict["database"][-1]
+        self.db_id = self.database_info["db_id"]
+        self.server_id = self.database_info["server_id"]
         self.db_name = self.database_info["db_name"]
         self.schema_info = parent_node_dict["schema"][-1]
         self.schema_name = self.schema_info["schema_name"]
@@ -47,12 +47,22 @@ class DomainDeleteMultipleTestCase(BaseTestGenerator):
                                                         self.schema_id,
                                                         self.domain_names[1])]
 
+    def delete_multiple(self, data):
+        """
+        This function returns multiple domain delete response
+        :param data: domain ids to delete
+        :return: domain delete response
+        """
+        return self.tester.delete(
+            self.url,
+            content_type='html/json',
+            follow_redirects=True,
+            data=json.dumps(data))
+
     def runTest(self):
         """ This function will add domain under schema node. """
-        db_id = self.database_info["db_id"]
-        server_id = self.database_info["server_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
-                                                 server_id, db_id)
+                                                 self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to get the domain.")
         db_name = self.database_info["db_name"]
@@ -62,18 +72,16 @@ class DomainDeleteMultipleTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to get the domain.")
         data = {'ids': [self.domain_infos[0][0], self.domain_infos[1][0]]}
-        url = self.url + str(utils.SERVER_GROUP) + '/' + str(
-            server_id) + '/' + str(db_id) + '/' + str(self.schema_id) + "/"
+        self.url = self.url + str(utils.SERVER_GROUP) + '/' + str(
+            self.server_id) + '/' + str(self.db_id) + '/' +\
+            str(self.schema_id) + "/"
         # Call GET API to verify the domain
-        get_response = self.tester.delete(
-            url,
-            content_type='html/json',
-            follow_redirects=True,
-            data=json.dumps(data))
+        get_response = self.delete_multiple(data)
 
-        self.assertEquals(get_response.status_code, 200)
-        # Disconnect the database
-        database_utils.disconnect_database(self, server_id, db_id)
+        actual_response_code = get_response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
-        pass
+        # Disconnect the database
+        database_utils.disconnect_database(self, self.server_id, self.db_id)
