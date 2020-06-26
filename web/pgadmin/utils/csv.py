@@ -383,17 +383,15 @@ class reader(object):
             self.parse_add_char(c)
 
     def _parse_in_quoted_field(self, c):
-        if c == '\0':
-            pass
-        elif c == self.dialect.escapechar:
+        if c != '\0' and c == self.dialect.escapechar:
             self.state = ESCAPE_IN_QUOTED_FIELD
-        elif (c == self.dialect.quotechar and
-              self.dialect.quoting != QUOTE_NONE):
+        elif c != '\0' and (c == self.dialect.quotechar and
+                            self.dialect.quoting != QUOTE_NONE):
             if self.dialect.doublequote:
                 self.state = QUOTE_IN_QUOTED_FIELD
             else:
                 self.state = IN_FIELD
-        else:
+        elif c != '\0':
             self.parse_add_char(c)
 
     def _parse_escape_in_quoted_field(self, c):
@@ -427,11 +425,9 @@ class reader(object):
             ))
 
     def _parse_eat_crnl(self, c):
-        if c == '\n' or c == '\r':
-            pass
-        elif c == '\0':
+        if c != '\n' and c != '\r' and c == '\0':
             self.state = START_RECORD
-        else:
+        elif c != '\n' and c != '\r':
             raise Error('new-line character seen in unquoted field - do you '
                         'need to open the file in universal-newline mode?')
 

@@ -345,7 +345,7 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference={}):
 
         # ignore the keys if available.
         if key in ignore_keys:
-            pass
+            continue
         elif key in tar_only:
             if type(target_dict[key]) is list:
                 difference[key] = {}

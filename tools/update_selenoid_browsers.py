@@ -150,8 +150,7 @@ def check_and_download_vnc_browser_image(browser_name, browser_version):
         elif idx == len(version_tag):
             print("{0} Image is not available.".format(image_name))
             vnc_image_available = False
-        else:
-            pass
+
     return vnc_image_available
 
 

@@ -36,9 +36,7 @@ def Themes(app):
             try:
                 misc_preference = Preferences.module('misc')
                 theme = misc_preference.preference('theme').get()
-                if theme not in all_themes:
-                    pass
-                else:
+                if theme in all_themes:
                     theme_css = all_themes[theme]['cssfile'] + '.css'
             except Exception:
                 # Let the default theme go if exception occurs

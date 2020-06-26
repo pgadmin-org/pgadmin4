@@ -219,7 +219,7 @@ class FileBackedSessionManager(SessionManager):
 
         # touch the file
         with open(fname, 'wb'):
-            pass
+            return ManagedSession(sid=sid)
 
         return ManagedSession(sid=sid)
 

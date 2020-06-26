@@ -776,9 +776,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     return False
             return True
 
-        elif key == 'exclude_constraint':
-            pass
-
         return True
 
     @staticmethod

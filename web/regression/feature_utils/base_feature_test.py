@@ -107,7 +107,5 @@ class BaseFeatureTest(BaseTestGenerator):
         try:
             os.mkdir(path)
         except OSError as e:
-            if e.errno == errno.EEXIST:
-                pass
-            else:
+            if e.errno != errno.EEXIST:
                 raise

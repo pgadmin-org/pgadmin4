@@ -192,7 +192,7 @@ def filename_with_file_manager_path(_file, _present=False):
     if not _present:
         # Touch the file to get the short path of the file on windows.
         with open(_file, 'a'):
-            pass
+            return fs_short_path(_file)
     else:
         if not os.path.isfile(_file):
             return None

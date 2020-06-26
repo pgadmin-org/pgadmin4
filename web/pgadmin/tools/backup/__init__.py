@@ -240,34 +240,33 @@ def filename_with_file_manager_path(_file, create_file=True):
     Args:
         file: File name returned from client file manager
         create_file: Set flag to False when file creation doesn't required
-
     Returns:
         Filename to use for backup with full path taken from preference
     """
     # Set file manager directory from preference
     storage_dir = get_storage_directory()
-
     if storage_dir:
         _file = os.path.join(storage_dir, _file.lstrip(u'/').lstrip(u'\\'))
     elif not os.path.isabs(_file):
         _file = os.path.join(document_dir(), _file)
 
+    def short_filepath():
+        short_path = fs_short_path(_file)
+        # fs_short_path() function may return empty path on Windows
+        # if directory doesn't exists. In that case we strip the last path
+        # component and get the short path.
+        if os.name == 'nt' and short_path == '':
+            base_name = os.path.basename(_file)
+            dir_name = os.path.dirname(_file)
+            short_path = fs_short_path(dir_name) + '\\' + base_name
+        return short_path
+
     if create_file:
         # Touch the file to get the short path of the file on windows.
         with open(_file, 'a'):
-            pass
+            return short_filepath()
 
-    short_path = fs_short_path(_file)
-
-    # fs_short_path() function may return empty path on Windows
-    # if directory doesn't exists. In that case we strip the last path
-    # component and get the short path.
-    if os.name == 'nt' and short_path == '':
-        base_name = os.path.basename(_file)
-        dir_name = os.path.dirname(_file)
-        short_path = fs_short_path(dir_name) + '\\' + base_name
-
-    return short_path
+    return short_filepath()
 
 
 @blueprint.route(
