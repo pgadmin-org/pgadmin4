@@ -148,24 +148,24 @@ class ServerManager(object):
 
         return res
 
-    def ServerVersion(self):
+    def server_version(self):
         return self.ver
 
     @property
     def version(self):
         return self.sversion
 
-    def MajorVersion(self):
+    def major_version(self):
         if self.sversion is not None:
             return int(self.sversion / 10000)
         raise Exception(gettext("Information is not available."))
 
-    def MinorVersion(self):
+    def minor_version(self):
         if self.sversion:
             return int(int(self.sversion / 100) % 100)
         raise Exception(gettext("Information is not available."))
 
-    def PatchVersion(self):
+    def patch_version(self):
         if self.sversion:
             return int(int(self.sversion / 100) / 100)
         raise Exception(gettext("Information is not available."))

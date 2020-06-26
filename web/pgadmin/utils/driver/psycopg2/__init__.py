@@ -197,7 +197,7 @@ class Driver(BaseDriver):
                 str(sid) in self.managers[session.sid]:
             del self.managers[session.sid][str(sid)]
 
-    def gc(self):
+    def gc_timeout(self):
         """
         Release the connections for the sessions, which have not pinged the
         server for more than config.MAX_SESSION_IDLE_TIME.

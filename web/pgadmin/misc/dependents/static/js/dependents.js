@@ -236,7 +236,8 @@ define('misc.dependents', [
               $msgContainer.text(gettext('Failed to retrieve data from the server.'));
             });
         }
-      } if (msg != '') {
+      }
+      if (msg != '') {
         $msgContainer.text(msg);
         $msgContainer.removeClass('d-none');
         if (!$gridContainer.hasClass('d-none')) {

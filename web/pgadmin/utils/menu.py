@@ -26,15 +26,15 @@ class Panel(object):
         self.content = content
         self.width = width
         self.height = height
-        self.isIframe = isIframe
-        self.showTitle = showTitle
-        self.isCloseable = isCloseable
-        self.isPrivate = isPrivate
+        self.is_iframe = isIframe
+        self.show_title = showTitle
+        self.is_closeable = isCloseable
+        self.is_private = isPrivate
         self.icon = icon
         self.data = data
         self.events = events
         self.limit = limit
-        self.canHide = canHide
+        self.can_hide = canHide
         if priority is None:
             global PRIORITY
             PRIORITY += 100

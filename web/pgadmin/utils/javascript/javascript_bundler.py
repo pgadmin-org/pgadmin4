@@ -24,24 +24,24 @@ class JavascriptBundler:
     """Builds Javascript bundle files by delegating to webpack"""
 
     def __init__(self):
-        self.jsState = JsState.NONE
+        self.js_state = JsState.NONE
 
     def bundle(self):
         try:
             try_building_js()
-            self.jsState = JsState.NEW
+            self.js_state = JsState.NEW
         except OSError:
             webdir_path()
             generatedJavascriptDir = os.path.join(
                 webdir_path(), 'pgadmin', 'static', 'js', 'generated')
             if os.path.exists(generatedJavascriptDir) and \
                     os.listdir(generatedJavascriptDir):
-                self.jsState = JsState.OLD
+                self.js_state = JsState.OLD
             else:
-                self.jsState = JsState.NONE
+                self.js_state = JsState.NONE
 
     def report(self):
-        return self.jsState
+        return self.js_state
 
 
 @contextmanager

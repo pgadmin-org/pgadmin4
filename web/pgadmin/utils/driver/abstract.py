@@ -67,7 +67,7 @@ class BaseDriver(object):
         pass
 
     @abstractmethod
-    def gc(self):
+    def gc_timeout(self):
         pass
 
 
