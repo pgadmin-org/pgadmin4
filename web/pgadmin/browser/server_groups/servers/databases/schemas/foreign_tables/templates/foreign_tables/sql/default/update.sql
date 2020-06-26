@@ -12,7 +12,7 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, o_data.name) }}
 {% if data.owner %}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
-    OWNER TO {{ data.owner }};
+    OWNER TO {{ conn|qtIdent(data.owner) }};
 {% endif -%}
 
 {% if data.columns %}

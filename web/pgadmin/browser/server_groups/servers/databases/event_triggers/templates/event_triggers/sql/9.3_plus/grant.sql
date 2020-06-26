@@ -22,5 +22,5 @@ COMMENT ON EVENT TRIGGER {{ conn|qtIdent(data.name) }}
 {% endfor %}{% endif %}
 
 ALTER EVENT TRIGGER {{ conn|qtIdent(data.name) }}
-    OWNER TO {{data.eventowner}};
+    OWNER TO {{ conn|qtIdent(data.eventowner) }};
 {% endif %}

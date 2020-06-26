@@ -33,7 +33,7 @@ CREATE FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}(
 {% if data.owner %}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}
-    OWNER TO {{ data.owner }};
+    OWNER TO {{ conn|qtIdent(data.owner) }};
 {% endif -%}
 {% if data.constraints %}
 {% for c in data.constraints %}

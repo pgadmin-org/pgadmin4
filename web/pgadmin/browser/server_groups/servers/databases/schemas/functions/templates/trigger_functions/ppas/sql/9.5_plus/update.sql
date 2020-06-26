@@ -40,7 +40,7 @@ $BODY${{ o_data.prosrc }}$BODY${% endif -%};
 {% if data.funcowner %}
 
 ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{o_data.proargtypenames }})
-    OWNER TO {{ data.funcowner }};
+    OWNER TO {{ conn|qtIdent(data.funcowner) }};
 {% endif -%}
 {# The SQL generated below will change priviledges #}
 {% if data.acl %}

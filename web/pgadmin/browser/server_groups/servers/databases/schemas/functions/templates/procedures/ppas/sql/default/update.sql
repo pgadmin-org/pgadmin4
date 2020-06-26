@@ -23,7 +23,7 @@ AS
 {% if data.funcowner %}
 
 ALTER PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}{% if o_data.proargtypenames %}({{ o_data.proargtypenames }}){% endif %}
-    OWNER TO {{ data.funcowner }};
+    OWNER TO {{ conn|qtIdent(data.funcowner) }};
 {% endif -%}
 {# The SQL generated below will change priviledges #}
 {% if data.acl %}
