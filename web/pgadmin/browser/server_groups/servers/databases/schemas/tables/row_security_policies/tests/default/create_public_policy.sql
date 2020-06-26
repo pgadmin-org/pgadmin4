@@ -5,6 +5,5 @@
 CREATE POLICY test
     ON public.test_rls_policy
     FOR ALL
-    TO public
-;
+    TO public;
 

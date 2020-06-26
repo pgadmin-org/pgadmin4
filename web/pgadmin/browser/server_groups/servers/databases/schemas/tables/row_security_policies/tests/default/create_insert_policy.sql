@@ -5,6 +5,5 @@
 CREATE POLICY insert_policy
     ON public.test_rls_policy
     FOR INSERT
-    TO public
-;
+    TO public;
 

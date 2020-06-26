@@ -5,6 +5,5 @@
 CREATE POLICY select_policy
     ON public.test_rls_policy
     FOR SELECT
-    TO public
-;
+    TO public;
 
