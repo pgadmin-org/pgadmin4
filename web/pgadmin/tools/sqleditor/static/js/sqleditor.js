@@ -3536,8 +3536,9 @@ define('tools.querytool', [
             return 2000;
           } else if (seconds >= 90) {
             return 5000;
-          } else
+          } else {
             return 1;
+          }
         };
       },
 
@@ -3857,8 +3858,9 @@ define('tools.querytool', [
                 if (res.data.status) {
                 // Refresh the sql grid
                   queryToolActions.executeQuery(self);
-                } else
+                } else {
                   alertify.alert(gettext('Change limit Error'), res.data.result);
+                }
               }, 10
             );
           })

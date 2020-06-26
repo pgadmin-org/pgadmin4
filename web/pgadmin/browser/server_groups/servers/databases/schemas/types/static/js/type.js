@@ -776,7 +776,7 @@ define('pgadmin.node.type', [
               if(acl.length > 0)
                 acl.reset();
             }
-            return !(m.get('typtype') === 'p');
+            return (m.get('typtype') !== 'p');
           },
         },{
           id: 'seclabels', label: gettext('Security labels'),
@@ -792,7 +792,7 @@ define('pgadmin.node.type', [
               if(secLabs.length > 0)
                 secLabs.reset();
             }
-            return !(m.get('typtype') === 'p');
+            return (m.get('typtype') !== 'p');
           },
         }],
         validate: function() {

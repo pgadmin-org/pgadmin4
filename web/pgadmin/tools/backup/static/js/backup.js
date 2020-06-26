@@ -210,7 +210,7 @@ define([
       type: 'int',
       deps: ['format'],
       disabled: function(m) {
-        return !(m.get('format') === 'directory');
+        return (m.get('format') !== 'directory');
       },
       visible: function(m) {
         if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')

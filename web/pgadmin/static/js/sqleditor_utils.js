@@ -191,7 +191,8 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
 
       calcFontSize: function(fontSize) {
         if(fontSize) {
-          let rounded = Number((Math.round(fontSize + 'e+2') + 'e-2'));
+          fontSize = parseFloat((Math.round(parseFloat(fontSize + 'e+2')) + 'e-2'));
+          let rounded = Number(fontSize);
           if(rounded > 0) {
             return rounded + 'em';
           }

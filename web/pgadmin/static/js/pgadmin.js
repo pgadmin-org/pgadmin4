@@ -66,7 +66,7 @@ define([], function() {
       c = [1 / 25.4, 1 / 2.54, 1 / 72, 1 / 6],
       f = ['mm', 'cm', 'pt', 'pc', 'in', 'mozmm'],
       u = 6;
-    for (i.appendChild(n), m && (n.style.marginTop = '1%', p = '1%' === m(n).marginTop); u--;) d[f[u] + 'toPx'] = c[u] ? c[u] * d.inToPx : r(n, '1' + f[u]);
+    for (i.appendChild(n), m && ((n.style.marginTop = '1%'), (p = '1%' === m(n).marginTop)); u--;) d[f[u] + 'toPx'] = c[u] ? c[u] * d.inToPx : r(n, '1' + f[u]);
     i.removeChild(n); t.toPx = r;
   })(pgAdmin, window.document);
 

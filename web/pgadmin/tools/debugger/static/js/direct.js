@@ -1590,8 +1590,9 @@ define([
               );
             }
           });
-      } else
+      } else {
         this.intializePanels();
+      }
     },
 
     // Read the messages of the database server and get the port ID and attach

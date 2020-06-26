@@ -535,8 +535,8 @@ define([
               } else {
                 if ((_.isUndefined(this.get('newPassword')) || _.isNull(this.get('newPassword')) ||
                     this.get('newPassword') == '') &&
-                  ((_.isUndefined(this.get('confirmPassword')) || _.isNull(this.get('confirmPassword')) ||
-                    this.get('confirmPassword') == ''))) {
+                  (_.isUndefined(this.get('confirmPassword')) || _.isNull(this.get('confirmPassword')) ||
+                    this.get('confirmPassword') == '')) {
 
                   this.errorModel.unset('newPassword');
                   if (this.get('newPassword') == '') {

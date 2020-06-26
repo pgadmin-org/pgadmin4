@@ -26,7 +26,7 @@
     let tokenSetNo = 0;
     let startTkn = tokenSet[tokenSetNo].start,
       endTkn = tokenSet[tokenSetNo].end;
-    for (; at > 0;) {
+    while (at > 0) {
       var found = lineText.lastIndexOf(startTkn, at);
       var startToken = startTkn;
       var endToken = endTkn;
@@ -57,7 +57,8 @@
     outer: for (var i = line + 1; i < lastLine; ++i) {
       var text = cm.getLine(i),
         pos = 0;
-      for (;;) {
+      var whileloopvar = 0;
+      while (whileloopvar < 1) {
         var nextOpen = text.indexOf(startToken, pos),
           nextClose = text.indexOf(endToken, pos);
         if (nextOpen < 0) nextOpen = text.length;
