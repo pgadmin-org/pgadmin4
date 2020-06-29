@@ -5,6 +5,8 @@
 CREATE OR REPLACE PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(
 	i1 integer)
 LANGUAGE 'plpgsql'
-AS $BODY$begin
+AS $BODY$
+begin
 select 1;
-end;$BODY$;
+end;
+$BODY$;

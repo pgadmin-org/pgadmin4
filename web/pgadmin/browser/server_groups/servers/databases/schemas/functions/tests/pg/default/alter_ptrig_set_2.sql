@@ -9,9 +9,11 @@ CREATE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     IMMUTABLE LEAKPROOF STRICT SECURITY DEFINER
     SET application_name='appname'
     SET search_path=public, pg_temp
-AS $BODY$begin
+AS $BODY$
+begin
 select 1;
-end;$BODY$;
+end;
+$BODY$;
 
 ALTER FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     OWNER TO postgres;

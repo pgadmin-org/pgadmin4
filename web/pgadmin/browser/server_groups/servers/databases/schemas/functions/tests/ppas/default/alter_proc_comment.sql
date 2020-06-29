@@ -6,7 +6,7 @@ CREATE OR REPLACE PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(
 	i1 integer)
     VOLATILE SECURITY DEFINER
     COST 100
-AS  begin
+AS begin
 select 1;
 end;
 

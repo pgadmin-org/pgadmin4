@@ -1009,6 +1009,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         resp_data['func_args_without'] = ', '.join(args_without_name)
 
+        self.reformat_prosrc_code(resp_data)
+
         if self.node_type == 'procedure':
             object_type = 'procedure'
             if 'provolatile' in resp_data:
@@ -1292,6 +1294,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     for v in data['variables']['added']:
                         data['merged_variables'].append(v)
 
+            self.reformat_prosrc_code(data)
+
             SQL = render_template(
                 "/".join([self.sql_template_path, 'update.sql']),
                 data=data, o_data=old_data
@@ -1336,6 +1340,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             data['func_args'] = args.strip(' ')
 
             data['func_args_without'] = ', '.join(args_without_name)
+
+            self.reformat_prosrc_code(data)
+
             # Create mode
             SQL = render_template("/".join([self.sql_template_path,
                                             'create.sql']),
@@ -1679,6 +1686,30 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
                                json_resp=False)
         return sql
+
+    def reformat_prosrc_code(self, data):
+        """
+        :param data:
+        :return:
+        """
+        if 'prosrc' in data and data['prosrc'] is not None:
+
+            is_prc_version_lesser_than_11 = \
+                self.node_type == 'procedure' and\
+                self.manager.sversion <= 110000
+
+            data['prosrc'] = re.sub(r"^\s+", '',
+                                    re.sub(r"\s+$", '',
+                                           data['prosrc']))
+
+            if not is_prc_version_lesser_than_11:
+                if data['prosrc'].startswith('\n') is False:
+                    data['prosrc'] = ''.join(
+                        ('\n', data['prosrc']))
+
+                if data['prosrc'].endswith('\n') is False:
+                    data['prosrc'] = ''.join(
+                        (data['prosrc'], '\n'))
 
     @check_precondition
     def fetch_objects_to_compare(self, sid, did, scid, oid=None):

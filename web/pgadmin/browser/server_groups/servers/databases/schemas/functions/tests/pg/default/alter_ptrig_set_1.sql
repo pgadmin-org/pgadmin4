@@ -7,9 +7,11 @@ CREATE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     LANGUAGE 'plpgsql'
     COST 100
     STABLE LEAKPROOF STRICT SECURITY DEFINER
-AS $BODY$begin
+AS $BODY$
+begin
 select 1;
-end;$BODY$;
+end;
+$BODY$;
 
 ALTER FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     OWNER TO postgres;

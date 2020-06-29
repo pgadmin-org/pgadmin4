@@ -10,9 +10,11 @@ CREATE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     SET application_name='appname2'
     SET search_path=public, pg_catalog
     SET array_nulls='true'
-AS $BODY$begin
+AS $BODY$
+begin
 select 1;
-end;$BODY$;
+end;
+$BODY$;
 
 ALTER FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     OWNER TO postgres;

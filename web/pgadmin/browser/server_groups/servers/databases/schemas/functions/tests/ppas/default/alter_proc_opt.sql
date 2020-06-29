@@ -7,7 +7,7 @@ CREATE OR REPLACE PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(
     STABLE SECURITY DEFINER
     COST 120
     SET application_name='pgadmin'
-AS   begin
+AS begin
 select 1;
 end;
 
