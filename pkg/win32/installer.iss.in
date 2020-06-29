@@ -195,15 +195,20 @@ begin
   end
   else
   begin
-    // Check if pgAdmin 64 bit is already installed
-    RegQueryStringValue(HKLM64,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
+    // Suppose system is running a 32-bit version of Windows then no need to check HKLM64 in RegQueryStringValue
+    // So IsWin64 - will make sure its should only execute on 64-bit veersion of windows.
+    if IsWin64 then
+	begin
+        // Check if pgAdmin 64 bit is already installed
+        RegQueryStringValue(HKLM64,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
 
-    // If version is found the shouldn't install 32bit - abort
-    if Length(Version) > 0 then
-    begin
-      MsgBox(ExpandConstant('{#MyAppErrorMsgIsWin64}'), mbCriticalError, MB_OK);
-	  Result := False;
-	  InstallationFound := True;
+        // If version is found the shouldn't install 32bit - abort
+        if Length(Version) > 0 then
+        begin
+          MsgBox(ExpandConstant('{#MyAppErrorMsgIsWin64}'), mbCriticalError, MB_OK);
+	      Result := False;
+	      InstallationFound := True;
+	    end;
 	end;
  end;
 

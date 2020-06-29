@@ -13,7 +13,8 @@ New features
 Housekeeping
 ************
 
-| `Issue #5326 <https://redmine.postgresql.org/issues/5326>`_ -  Improve code coverage and API test cases for Domain and Domain Constraints
+| `Issue #5326 <https://redmine.postgresql.org/issues/5326>`_ -  Improve code coverage and API test cases for Domain and Domain Constraints.
+| `Issue #5630 <https://redmine.postgresql.org/issues/5630>`_ -  Fixed an issue where installation of pgadmin4 not working on 32-bit Windows.
 
 Bug fixes
 *********
