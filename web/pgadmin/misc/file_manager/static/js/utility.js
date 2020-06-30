@@ -828,9 +828,9 @@ define([
             $this.find('span').toggle();
 
             // Rename folder/file on pressing enter key
-            $('.file_manager').off().on('keyup', function(e) {
-              if (e.keyCode == 13) {
-                e.stopPropagation();
+            $('.file_manager').off().on('keyup', function(event) {
+              if (event.keyCode == 13) {
+                event.stopPropagation();
                 $('.fileinfo #contents li.selected div').find(
                   'input'
                 ).trigger('blur');
@@ -852,9 +852,9 @@ define([
             $this.find('.fm_file_name').toggle();
 
             // Rename folder/file on pressing enter key
-            $('.file_manager').off().on('keyup', function(e) {
-              if (e.keyCode == 13) {
-                e.stopPropagation();
+            $('.file_manager').off().on('keyup', function(event) {
+              if (event.keyCode == 13) {
+                event.stopPropagation();
                 $('.fileinfo table#contents tr.selected td.tbl_file').find(
                   'fm_file_rename'
                 ).trigger('blur');

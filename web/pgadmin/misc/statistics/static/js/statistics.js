@@ -316,8 +316,8 @@ define('misc.statistics', [
                   Alertify.pgNotifier(
                     error, xhr,
                     gettext('Error retrieving the information - %s', message || _label),
-                    function(msg) {
-                      if(msg === 'CRYPTKEY_SET') {
+                    function(alertMsg) {
+                      if(alertMsg === 'CRYPTKEY_SET') {
                         ajaxHook();
                       } else {
                         console.warn(arguments);

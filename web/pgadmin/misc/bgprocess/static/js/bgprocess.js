@@ -454,9 +454,9 @@ define('misc.bgprocess', [
             }, 1000
           );
 
-          var resize_log_container = function($logs, $header, $footer) {
-            var h = $header.outerHeight() + $footer.outerHeight();
-            $logs.css('padding-bottom', h);
+          var resize_log_container = function(logs, header, footer) {
+            var h = header.outerHeight() + footer.outerHeight();
+            logs.css('padding-bottom', h);
           }.bind(panel, $logs, $header, $footer);
 
           panel.on(wcDocker.EVENT.RESIZED, resize_log_container);

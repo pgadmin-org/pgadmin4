@@ -224,8 +224,8 @@ define('misc.dependents', [
                 Alertify.pgNotifier(
                   error, xhr,
                   gettext('Error retrieving data from the server: %s', message || _label),
-                  function(msg) {
-                    if(msg === 'CRYPTKEY_SET') {
+                  function(alertMsg) {
+                    if(alertMsg === 'CRYPTKEY_SET') {
                       self.showDependents(item, data, node);
                     } else {
                       console.warn(arguments);

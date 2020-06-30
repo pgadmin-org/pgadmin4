@@ -155,10 +155,10 @@ define([
       if (deps && _.isArray(deps)) {
         _.each(deps, function(d) {
 
-          var attrArr = d.split('.');
-          var name = attrArr.shift();
+          var attrArray = d.split('.');
+          var depname = attrArray.shift();
 
-          self.stopListening(self.model, 'change:' + name, self.render);
+          self.stopListening(self.model, 'change:' + depname, self.render);
         });
       }
 
@@ -758,8 +758,8 @@ define([
         tmpls = this.template,
         self = this,
         idx = (this.tabIndex * 100),
-        evalF = function(f, d, m) {
-          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        evalF = function(f, d, model) {
+          return (_.isFunction(f) ? !!f.apply(d, [model]) : !!f);
         };
 
       this.$el
@@ -804,13 +804,13 @@ define([
           function() {
             self.hidden_tab = $(this).data('tabIndex');
           }).on('shown.bs.tab', function() {
-          var self = this;
-          self.shown_tab = $(self).data('tabIndex');
+          var ctx = this;
+          ctx.shown_tab = $(ctx).data('tabIndex');
           m.trigger('pg-property-tab-changed', {
             'model': m,
-            'shown': self.shown_tab,
-            'hidden': self.hidden_tab,
-            'tab': self,
+            'shown': ctx.shown_tab,
+            'hidden': ctx.hidden_tab,
+            'tab': ctx,
           });
         });
       });
@@ -894,8 +894,8 @@ define([
           'collapse': _.result(this, 'collapse'),
         },
         idx = (this.tabIndex * 100),
-        evalF = function(f, d, m) {
-          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        evalF = function(f, d, model) {
+          return (_.isFunction(f) ? !!f.apply(d, [model]) : !!f);
         };
 
       this.$el.empty();
@@ -970,8 +970,8 @@ define([
           'collapse': _.result(this, 'collapse'),
         },
         idx = (this.tabIndex * 100),
-        evalF = function(f, d, m) {
-          return (_.isFunction(f) ? !!f.apply(d, [m]) : !!f);
+        evalF = function(f, d, model) {
+          return (_.isFunction(f) ? !!f.apply(d, [model]) : !!f);
         };
 
       this.$el.empty();
@@ -1652,13 +1652,13 @@ define([
       }
 
       var cellEditing = function(args) {
-        var self = this,
+        var ctx = this,
           cell = args[0];
         // Search for any other rows which are open.
         this.each(function(m) {
           // Check if row which we are about to close is not current row.
           if (cell.model != m) {
-            var idx = self.indexOf(m);
+            var idx = ctx.indexOf(m);
             if (idx > -1) {
               var row = grid.body.rows[idx],
                 editCell = row.$el.find('.subnode-edit-in-process').parent();
@@ -3360,8 +3360,8 @@ define([
 
       var $container = $(self.$el.find('.pgadmin-controls'));
 
-      _.each(innerFields, function(field) {
-        initial_value[field['name']] = value[field['name']];
+      _.each(innerFields, function(inField) {
+        initial_value[inField['name']] = value[inField['name']];
       });
 
       self.innerModel.set(initial_value);
