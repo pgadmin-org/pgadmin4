@@ -10,30 +10,30 @@
 """Implements Functions/Procedures Node."""
 
 import copy
-import simplejson as json
 import re
 import sys
 import traceback
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
-from flask import render_template, make_response, request, jsonify, \
+import simplejson as json
+from flask import render_template, request, jsonify, \
     current_app
 from flask_babelex import gettext
+
+import pgadmin.browser.server_groups.servers.databases as databases
+from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
-    SchemaChildModule, DataTypeReader, get_schema
+    SchemaChildModule, DataTypeReader
 from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db, parse_variables_from_db
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
-from config import PG_DEFAULT_DRIVER
-from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from pgadmin.tools.schema_diff.model import SchemaDiffModel
-from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 
 class FunctionModule(SchemaChildModule):
@@ -247,6 +247,47 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             'probin'
         ]
 
+    @staticmethod
+    def _create_wrap_data(req, key, data):
+        list_params = []
+        if request.method == 'GET':
+            list_params = ['arguments', 'variables', 'proacl',
+                           'seclabels', 'acl', 'args']
+
+        if (
+            key in list_params and req[key] != '' and
+            req[key] is not None
+        ):
+            # Coverts string into python list as expected.
+            data[key] = json.loads(req[key], encoding='utf-8')
+        elif (
+            key == 'proretset' or key == 'proisstrict' or
+            key == 'prosecdef' or key == 'proiswindow' or
+            key == 'proleakproof'
+        ):
+            if req[key] == 'true' or req[key] is True:
+                data[key] = True
+            else:
+                data[key] = False if (
+                    req[key] == 'false' or req[key] is False) else ''
+        else:
+            data[key] = req[key]
+
+    @staticmethod
+    def _remove_parameters_for_c_lang(req, req_args):
+        # We need to remove 'prosrc' from the required arguments list
+        # if language is 'c'.
+        if req['lanname'] == 'c' and 'prosrc' in req_args:
+            req_args.remove('prosrc')
+
+    @staticmethod
+    def _get_request_data():
+        if request.data:
+            req = json.loads(request.data, encoding='utf-8')
+        else:
+            req = request.args or request.form
+        return req
+
     def validate_request(f):
         """
         Works as a decorator.
@@ -255,20 +296,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         @wraps(f)
         def wrap(self, **kwargs):
-
-            data = {}
-            if request.data:
-                req = json.loads(request.data, encoding='utf-8')
-            else:
-                req = request.args or request.form
+            req = FunctionView._get_request_data()
 
             if 'fnid' not in kwargs:
                 req_args = self.required_args
-                # We need to remove 'prosrc' from the required arguments list
-                # if language is 'c'.
-                if req['lanname'] == 'c' and 'prosrc' in req_args:
-                    req_args.remove('prosrc')
-
+                FunctionView._remove_parameters_for_c_lang(req, req_args)
                 for arg in req_args:
                     if (arg not in req or req[arg] == '') or \
                         (arg == 'probin' and req['lanname'] == 'c' and
@@ -281,29 +313,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                             ).format(arg)
                         )
 
-            list_params = []
-            if request.method == 'GET':
-                list_params = ['arguments', 'variables', 'proacl',
-                               'seclabels', 'acl', 'args']
-
+            data = {}
             for key in req:
-                if (
-                    key in list_params and req[key] != '' and
-                    req[key] is not None
-                ):
-                    # Coverts string into python list as expected.
-                    data[key] = json.loads(req[key], encoding='utf-8')
-                elif (
-                    key == 'proretset' or key == 'proisstrict' or
-                    key == 'prosecdef' or key == 'proiswindow' or
-                    key == 'proleakproof'
-                ):
-                    data[key] = True if (
-                        req[key] == 'true' or req[key] is True) \
-                        else False if (req[key] == 'false' or
-                                       req[key] is False) else ''
-                else:
-                    data[key] = req[key]
+                FunctionView._create_wrap_data(req, key, data)
 
             self.request = data
             return f(self, **kwargs)
@@ -360,9 +372,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             scid: Schema Id
         """
 
-        SQL = render_template("/".join([self.sql_template_path, 'node.sql']),
+        sql = render_template("/".join([self.sql_template_path, 'node.sql']),
                               scid=scid)
-        status, res = self.conn.execute_dict(SQL)
+        status, res = self.conn.execute_dict(sql)
 
         if not status:
             return internal_server_error(errormsg=res)
@@ -384,12 +396,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
 
         res = []
-        SQL = render_template(
+        sql = render_template(
             "/".join([self.sql_template_path, 'node.sql']),
             scid=scid,
             fnid=fnid
         )
-        status, rset = self.conn.execute_2darray(SQL)
+        status, rset = self.conn.execute_2darray(sql)
 
         if not status:
             return internal_server_error(errormsg=rset)
@@ -481,7 +493,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         # default values.
         if len(proargmodes_fltrd) > len(proargdefaultvals):
             dif = len(proargmodes_fltrd) - len(proargdefaultvals)
-            while (dif > 0):
+            while dif > 0:
                 proargdefaultvals.insert(0, '')
                 dif -= 1
 
@@ -523,10 +535,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 ]
             Where
                 Arguments:
-                    proargtypes: Argument Types (Data Type)
-                    proargmodes: Argument Modes [IN, OUT, INOUT, VARIADIC]
-                    proargnames: Argument Name
-                    proargdefaultvals: Default Value of the Argument
+                    # proargtypes: Argument Types (Data Type)
+                    # proargmodes: Argument Modes [IN, OUT, INOUT, VARIADIC]
+                    # proargnames: Argument Name
+                    # proargdefaultvals: Default Value of the Argument
         """
         arguments = self._get_argument_values(data)
         proargtypes = arguments['proargtypes']
@@ -570,10 +582,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         cnt = 0
         for m in proargmodes:
             if m == 'o':  # Out Mode
-                SQL = render_template("/".join([self.sql_template_path,
+                sql = render_template("/".join([self.sql_template_path,
                                                 'get_out_types.sql']),
                                       out_arg_oid=proallargtypes[cnt])
-                status, out_arg_type = self.conn.execute_scalar(SQL)
+                status, out_arg_type = self.conn.execute_scalar(sql)
                 if not status:
                     return internal_server_error(errormsg=out_arg_type)
 
@@ -724,10 +736,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         res = [{'label': '', 'value': ''}]
         try:
-            SQL = render_template("/".join([self.sql_template_path,
+            sql = render_template("/".join([self.sql_template_path,
                                             'get_languages.sql'])
                                   )
-            status, rows = self.conn.execute_dict(SQL)
+            status, rows = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
@@ -765,10 +777,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             This function will return list of variables available for
             table spaces.
         """
-        SQL = render_template(
+        sql = render_template(
             "/".join([self.sql_template_path, 'variables.sql'])
         )
-        status, rset = self.conn.execute_dict(SQL)
+        status, rset = self.conn.execute_dict(sql)
 
         if not status:
             return internal_server_error(errormsg=rset)
@@ -789,7 +801,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             sid: Server Id
             did: Database Id
             scid: Schema Id
-            fnid: Function Id
 
         Returns:
             Function object in json format.
@@ -856,10 +867,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         try:
             for fnid in data['ids']:
                 # Fetch Name and Schema Name to delete the Function.
-                SQL = render_template("/".join([self.sql_template_path,
+                sql = render_template("/".join([self.sql_template_path,
                                                 'delete.sql']), scid=scid,
                                       fnid=fnid)
-                status, res = self.conn.execute_2darray(SQL)
+                status, res = self.conn.execute_2darray(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
                 elif not res['rows']:
@@ -873,15 +884,15 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                         )
                     )
 
-                SQL = render_template("/".join([self.sql_template_path,
+                sql = render_template("/".join([self.sql_template_path,
                                                 'delete.sql']),
                                       name=res['rows'][0]['name'],
                                       func_args=res['rows'][0]['func_args'],
                                       nspname=res['rows'][0]['nspname'],
                                       cascade=cascade)
                 if only_sql:
-                    return SQL
-                status, res = self.conn.execute_scalar(SQL)
+                    return sql
+                status, res = self.conn.execute_scalar(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
 
@@ -907,14 +918,14 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             fnid: Function Id
         """
 
-        status, SQL = self._get_sql(gid, sid, did, scid, self.request, fnid)
+        status, sql = self._get_sql(gid, sid, did, scid, self.request, fnid)
 
         if not status:
-            return internal_server_error(errormsg=SQL)
+            return internal_server_error(errormsg=sql)
 
-        if SQL and SQL.strip('\n') and SQL.strip(' '):
+        if sql and sql.strip('\n') and sql.strip(' '):
 
-            status, res = self.conn.execute_scalar(SQL)
+            status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
@@ -954,6 +965,51 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 }
             )
 
+    @staticmethod
+    def _check_argtype(args, args_without_name, a):
+        if 'argtype' in a:
+            args += a['argtype']
+            args_without_name.append(a['argtype'])
+
+    def _get_arguments(self, args_list, args, args_without_name):
+        cnt = 1
+        for a in args_list:
+            if (
+                (
+                    'argmode' in a and a['argmode'] != 'OUT' and
+                    a['argmode'] is not None
+                ) or 'argmode' not in a
+            ):
+                if 'argmode' in a:
+                    args += a['argmode'] + " "
+                if (
+                    'argname' in a and a['argname'] != '' and
+                    a['argname'] is not None
+                ):
+                    args += self.qtIdent(
+                        self.conn, a['argname']) + " "
+
+                FunctionView._check_argtype(args, args_without_name, a)
+
+                if cnt < len(args_list):
+                    args += ', '
+            cnt += 1
+
+    def _parse_privilege_data(self, resp_data):
+        # Parse privilege data
+        if 'acl' in resp_data:
+            resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
+
+            # Check Revoke all for public
+            resp_data['revoke_all'] = self._set_revoke_all(
+                resp_data['acl'])
+
+    def _get_schema_name_from_iod(self, resp_data):
+        # Get Schema Name from its OID.
+        if 'pronamespace' in resp_data:
+            resp_data['pronamespace'] = self._get_schema(
+                resp_data['pronamespace'])
+
     @check_precondition
     def sql(self, gid, sid, did, scid, fnid=None, diff_schema=None,
             json_resp=True):
@@ -975,7 +1031,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         # Fetch the function definition.
         args = u''
         args_without_name = []
-        cnt = 1
+
         args_list = []
         vol_dict = {'v': 'VOLATILE', 's': 'STABLE', 'i': 'IMMUTABLE'}
 
@@ -983,27 +1039,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             args_list = resp_data['arguments']
             resp_data['args'] = resp_data['arguments']
 
-        for a in args_list:
-            if (
-                (
-                    'argmode' in a and a['argmode'] != 'OUT' and
-                    a['argmode'] is not None
-                ) or 'argmode' not in a
-            ):
-                if 'argmode' in a:
-                    args += a['argmode'] + " "
-                if (
-                    'argname' in a and a['argname'] != '' and
-                    a['argname'] is not None
-                ):
-                    args += self.qtIdent(
-                        self.conn, a['argname']) + " "
-                if 'argtype' in a:
-                    args += a['argtype']
-                    args_without_name.append(a['argtype'])
-                if cnt < len(args_list):
-                    args += ', '
-            cnt += 1
+        self._get_arguments(args_list, args, args_without_name)
 
         resp_data['func_args'] = args.strip(' ')
 
@@ -1019,20 +1055,17 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 )
 
             # Get Schema Name from its OID.
-            if 'pronamespace' in resp_data:
-                resp_data['pronamespace'] = self._get_schema(
-                    resp_data['pronamespace'])
+            self._get_schema_name_from_iod(resp_data)
 
-            SQL = render_template("/".join([self.sql_template_path,
+            sql = render_template("/".join([self.sql_template_path,
                                             'get_definition.sql']
                                            ), data=resp_data,
                                   fnid=fnid, scid=scid)
 
-            status, res = self.conn.execute_2darray(SQL)
+            status, res = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-
-            if diff_schema:
+            elif diff_schema:
                 res['rows'][0]['nspname'] = diff_schema
 
             # Add newline and tab before each argument to format
@@ -1044,12 +1077,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 replace(', ', ',\n\t') + ')'
 
             # Parse privilege data
-            if 'acl' in resp_data:
-                resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
-
-                # Check Revoke all for public
-                resp_data['revoke_all'] = self._set_revoke_all(
-                    resp_data['acl'])
+            self._parse_privilege_data(resp_data)
 
             # Generate sql for "SQL panel"
             # func_def is procedure signature with default arguments
@@ -1063,29 +1091,20 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             object_type = 'function'
 
             # Get Schema Name from its OID.
-            if 'pronamespace' in resp_data:
-                resp_data['pronamespace'] = self._get_schema(
-                    resp_data['pronamespace']
-                )
+            self._get_schema_name_from_iod(resp_data)
 
             # Parse privilege data
-            if 'acl' in resp_data:
-                resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
+            self._parse_privilege_data(resp_data)
 
-                # Check Revoke all for public
-                resp_data['revoke_all'] = self._set_revoke_all(
-                    resp_data['acl'])
-
-            SQL = render_template("/".join([self.sql_template_path,
+            sql = render_template("/".join([self.sql_template_path,
                                             'get_definition.sql']
                                            ), data=resp_data,
                                   fnid=fnid, scid=scid)
 
-            status, res = self.conn.execute_2darray(SQL)
+            status, res = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-
-            if diff_schema:
+            elif diff_schema:
                 res['rows'][0]['nspname'] = diff_schema
                 resp_data['pronamespace'] = diff_schema
 
@@ -1118,10 +1137,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if not json_resp:
             return re.sub('\n{2,}', '\n\n', func_def)
 
-        SQL = sql_header + func_def
-        SQL = re.sub('\n{2,}', '\n\n', SQL)
+        sql = sql_header + func_def
+        sql = re.sub('\n{2,}', '\n\n', sql)
 
-        return ajax_response(response=SQL)
+        return ajax_response(response=sql)
 
     @check_precondition
     @validate_request
@@ -1139,17 +1158,188 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             SQL statements to create/update the Domain.
         """
 
-        status, SQL = self._get_sql(gid, sid, did, scid, self.request, fnid)
+        status, sql = self._get_sql(gid, sid, did, scid, self.request, fnid)
 
         if status:
-            SQL = re.sub('\n{2,}', '\n\n', SQL)
+            sql = re.sub('\n{2,}', '\n\n', sql)
             return make_json_response(
-                data=SQL,
+                data=sql,
                 status=200
             )
         else:
-            SQL = re.sub('\n{2,}', '\n\n', SQL)
-            return SQL
+            sql = re.sub('\n{2,}', '\n\n', sql)
+            return sql
+
+    @staticmethod
+    def _update_arguments_for_get_sql(data, old_data):
+        # If Function Definition/Arguments are changed then merge old
+        #  Arguments with changed ones for Create/Replace Function
+        # SQL statement
+        if 'arguments' in data and len(data['arguments']) > 0:
+            for arg in data['arguments']['changed']:
+                for old_arg in old_data['arguments']:
+                    if arg['argid'] == old_arg['argid']:
+                        old_arg.update(arg)
+                        break
+            data['arguments'] = old_data['arguments']
+        elif data['change_func']:
+            data['arguments'] = old_data['arguments']
+
+    @staticmethod
+    def _delete_variable_in_edit_mode(data, del_variables):
+        if 'variables' in data and 'deleted' in data['variables']:
+            for v in data['variables']['deleted']:
+                del_variables[v['name']] = v['value']
+
+    @staticmethod
+    def _prepare_final_dict(data, old_data, chngd_variables, del_variables,
+                            all_ids_dict):
+        # To compare old and new variables, preparing name :
+        # value dict
+
+        # if 'variables' in data and 'changed' in data['variables']:
+        #     for v in data['variables']['changed']:
+        #         chngd_variables[v['name']] = v['value']
+        #
+        # if 'variables' in data and 'added' in data['variables']:
+        #     for v in data['variables']['added']:
+        #         chngd_variables[v['name']] = v['value']
+
+        # In case of schema diff we don't want variables from
+        # old data
+        if not all_ids_dict['is_schema_diff']:
+            for v in old_data['variables']:
+                old_data['chngd_variables'][v['name']] = v['value']
+
+        # Prepare final dict of new and old variables
+        for name, val in old_data['chngd_variables'].items():
+            if (
+                name not in chngd_variables and
+                name not in del_variables
+            ):
+                chngd_variables[name] = val
+
+        # Prepare dict in [{'name': var_name, 'value': var_val},..]
+        # format
+        for name, val in chngd_variables.items():
+            data['merged_variables'].append({'name': name,
+                                             'value': val})
+
+    @staticmethod
+    def _parser_privilege(data):
+        if 'acl' in data:
+            for key in ['added', 'deleted', 'changed']:
+                if key in data['acl']:
+                    data['acl'][key] = parse_priv_to_db(
+                        data['acl'][key], ["X"])
+
+    @staticmethod
+    def _merge_variable_changes(data, chngd_variables):
+        if 'variables' in data and 'changed' in data['variables']:
+            for v in data['variables']['changed']:
+                chngd_variables[v['name']] = v['value']
+
+        if 'variables' in data and 'added' in data['variables']:
+            for v in data['variables']['added']:
+                chngd_variables[v['name']] = v['value']
+
+    @staticmethod
+    def _merge_variables(data):
+        if 'variables' in data and 'changed' in data['variables']:
+            for v in data['variables']['changed']:
+                data['merged_variables'].append(v)
+
+        if 'variables' in data and 'added' in data['variables']:
+            for v in data['variables']['added']:
+                data['merged_variables'].append(v)
+
+    def _get_sql_for_edit_mode(self, data, parallel_dict, all_ids_dict,
+                               vol_dict):
+        if 'proparallel' in data and data['proparallel']:
+            data['proparallel'] = parallel_dict[data['proparallel']]
+
+        # Fetch Old Data from database.
+        old_data = self._fetch_properties(all_ids_dict['gid'],
+                                          all_ids_dict['sid'],
+                                          all_ids_dict['did'],
+                                          all_ids_dict['scid'],
+                                          all_ids_dict['fnid'])
+        # Most probably this is due to error
+        if not isinstance(old_data, dict):
+            return False, gettext(
+                "Could not find the function in the database."
+            )
+
+        # Get Schema Name
+        old_data['pronamespace'] = self._get_schema(
+            old_data['pronamespace']
+        )
+
+        if 'provolatile' in old_data and \
+                old_data['provolatile'] is not None:
+            old_data['provolatile'] = vol_dict[old_data['provolatile']]
+
+        if 'proparallel' in old_data and \
+                old_data['proparallel'] is not None:
+            old_data['proparallel'] = \
+                parallel_dict[old_data['proparallel']]
+
+        # If any of the below argument is changed,
+        # then CREATE OR REPLACE SQL statement should be called
+        fun_change_args = ['lanname', 'prosrc', 'probin', 'prosrc_c',
+                           'provolatile', 'proisstrict', 'prosecdef',
+                           'proparallel', 'procost', 'proleakproof',
+                           'arguments', 'prorows', 'prosupportfunc']
+
+        data['change_func'] = False
+        for arg in fun_change_args:
+            if (arg == 'arguments' and arg in data and len(
+                    data[arg]) > 0) or arg in data:
+                data['change_func'] = True
+
+        # If Function Definition/Arguments are changed then merge old
+        #  Arguments with changed ones for Create/Replace Function
+        # SQL statement
+        FunctionView._update_arguments_for_get_sql(data, old_data)
+
+        # Parse Privileges
+        FunctionView._parser_privilege(data)
+
+        # Parse Variables
+        chngd_variables = {}
+        data['merged_variables'] = []
+        old_data['chngd_variables'] = {}
+        del_variables = {}
+
+        # If Function Definition/Arguments are changed then,
+        # Merge old, new (added, changed, deleted) variables,
+        # which will be used in the CREATE or REPLACE Function sql
+        # statement
+        if data['change_func']:
+            # Deleted Variables
+            FunctionView._delete_variable_in_edit_mode(data, del_variables)
+            FunctionView._merge_variable_changes(data, chngd_variables)
+            # if 'variables' in data and 'changed' in data['variables']:
+            #     for v in data['variables']['changed']:
+            #         chngd_variables[v['name']] = v['value']
+            #
+            # if 'variables' in data and 'added' in data['variables']:
+            #     for v in data['variables']['added']:
+            #         chngd_variables[v['name']] = v['value']
+
+            # Prepare final dict
+            FunctionView._prepare_final_dict(data, old_data, chngd_variables,
+                                             del_variables, all_ids_dict)
+        else:
+            FunctionView._merge_variables(data)
+
+        self.reformat_prosrc_code(data)
+
+        sql = render_template(
+            "/".join([self.sql_template_path, 'update.sql']),
+            data=data, o_data=old_data
+        )
+        return sql
 
     def _get_sql(self, gid, sid, did, scid, data, fnid=None, is_sql=False,
                  is_schema_diff=False):
@@ -1163,16 +1353,16 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             scid: Schema Id
             data: Function data
             fnid: Function Id
+            is_sql: sql flag
+            is_schema_diff: schema diff flag
         """
 
         vol_dict = {'v': 'VOLATILE', 's': 'STABLE', 'i': 'IMMUTABLE'}
         parallel_dict = {'u': 'UNSAFE', 's': 'SAFE', 'r': 'RESTRICTED'}
 
         # Get Schema Name from its OID.
-        if 'pronamespace' in data:
-            data['pronamespace'] = self._get_schema(
-                data['pronamespace']
-            )
+        self._get_schema_name_from_iod(data)
+
         if 'provolatile' in data:
             data['provolatile'] = vol_dict[data['provolatile']]\
                 if data['provolatile'] else ''
@@ -1180,162 +1370,32 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if fnid is not None:
             # Edit Mode
 
-            if 'proparallel' in data and data['proparallel']:
-                data['proparallel'] = parallel_dict[data['proparallel']]
-
-            # Fetch Old Data from database.
-            old_data = self._fetch_properties(gid, sid, did, scid, fnid)
-            # Most probably this is due to error
-            if not isinstance(old_data, dict):
-                return False, gettext(
-                    "Could not find the function in the database."
-                )
-
-            # Get Schema Name
-            old_data['pronamespace'] = self._get_schema(
-                old_data['pronamespace']
-            )
-
-            if 'provolatile' in old_data and \
-                    old_data['provolatile'] is not None:
-                old_data['provolatile'] = vol_dict[old_data['provolatile']]
-
-            if 'proparallel' in old_data and \
-                    old_data['proparallel'] is not None:
-                old_data['proparallel'] = \
-                    parallel_dict[old_data['proparallel']]
-
-            # If any of the below argument is changed,
-            # then CREATE OR REPLACE SQL statement should be called
-            fun_change_args = ['lanname', 'prosrc', 'probin', 'prosrc_c',
-                               'provolatile', 'proisstrict', 'prosecdef',
-                               'proparallel', 'procost', 'proleakproof',
-                               'arguments', 'prorows', 'prosupportfunc']
-
-            data['change_func'] = False
-            for arg in fun_change_args:
-                if (arg == 'arguments' and arg in data and len(data[arg]) > 0)\
-                        or arg in data:
-                    data['change_func'] = True
-
-            # If Function Definition/Arguments are changed then merge old
-            #  Arguments with changed ones for Create/Replace Function
-            # SQL statement
-            if 'arguments' in data and len(data['arguments']) > 0:
-                for arg in data['arguments']['changed']:
-                    for old_arg in old_data['arguments']:
-                        if arg['argid'] == old_arg['argid']:
-                            old_arg.update(arg)
-                            break
-                data['arguments'] = old_data['arguments']
-            elif data['change_func']:
-                data['arguments'] = old_data['arguments']
-
-            # Parse Privileges
-            if 'acl' in data:
-                for key in ['added', 'deleted', 'changed']:
-                    if key in data['acl']:
-                        data['acl'][key] = parse_priv_to_db(
-                            data['acl'][key], ["X"])
-
-            # Parse Variables
-            chngd_variables = {}
-            data['merged_variables'] = []
-            old_data['chngd_variables'] = {}
-            del_variables = {}
-
-            # If Function Definition/Arguments are changed then,
-            # Merge old, new (added, changed, deleted) variables,
-            # which will be used in the CREATE or REPLACE Function sql
-            # statement
-
-            if data['change_func']:
-                # To compare old and new variables, preparing name :
-                # value dict
-
-                # Deleted Variables
-                if 'variables' in data and 'deleted' in data['variables']:
-                    for v in data['variables']['deleted']:
-                        del_variables[v['name']] = v['value']
-
-                if 'variables' in data and 'changed' in data['variables']:
-                    for v in data['variables']['changed']:
-                        chngd_variables[v['name']] = v['value']
-
-                if 'variables' in data and 'added' in data['variables']:
-                    for v in data['variables']['added']:
-                        chngd_variables[v['name']] = v['value']
-
-                # In case of schema diff we don't want variables from
-                # old data
-                if not is_schema_diff:
-                    for v in old_data['variables']:
-                        old_data['chngd_variables'][v['name']] = v['value']
-
-                # Prepare final dict of new and old variables
-                for name, val in old_data['chngd_variables'].items():
-                    if (
-                        name not in chngd_variables and
-                        name not in del_variables
-                    ):
-                        chngd_variables[name] = val
-
-                # Prepare dict in [{'name': var_name, 'value': var_val},..]
-                # format
-                for name, val in chngd_variables.items():
-                    data['merged_variables'].append({'name': name,
-                                                     'value': val})
-            else:
-                if 'variables' in data and 'changed' in data['variables']:
-                    for v in data['variables']['changed']:
-                        data['merged_variables'].append(v)
-
-                if 'variables' in data and 'added' in data['variables']:
-                    for v in data['variables']['added']:
-                        data['merged_variables'].append(v)
-
-            self.reformat_prosrc_code(data)
-
-            SQL = render_template(
-                "/".join([self.sql_template_path, 'update.sql']),
-                data=data, o_data=old_data
-            )
+            all_ids_dict = {
+                'gid': gid,
+                'sid': sid,
+                'did': did,
+                'scid': scid,
+                'data': data,
+                'fnid': fnid,
+                'is_sql': is_sql,
+                'is_schema_diff': is_schema_diff,
+            }
+            sql = self._get_sql_for_edit_mode(data, parallel_dict,
+                                              all_ids_dict, vol_dict)
         else:
             # Parse Privileges
-            if 'acl' in data:
-                data['acl'] = parse_priv_to_db(data['acl'], ["X"])
-
-                # Check Revoke all for public
-                data['revoke_all'] = self._set_revoke_all(data['acl'])
+            self._parse_privilege_data(data)
 
             args = u''
             args_without_name = []
-            cnt = 1
+
             args_list = []
             if 'arguments' in data and len(data['arguments']) > 0:
                 args_list = data['arguments']
             elif 'args' in data and len(data['args']) > 0:
                 args_list = data['args']
-            for a in args_list:
-                if (
-                    (
-                        'argmode' in a and a['argmode'] != 'OUT' and
-                        a['argmode'] is not None
-                    ) or 'argmode' not in a
-                ):
-                    if 'argmode' in a:
-                        args += a['argmode'] + " "
-                    if (
-                        'argname' in a and a['argname'] != '' and
-                        a['argname'] is not None
-                    ):
-                        args += self.qtIdent(self.conn, a['argname']) + " "
-                    if 'argtype' in a:
-                        args += a['argtype']
-                        args_without_name.append(a['argtype'])
-                    if cnt < len(args_list):
-                        args += ', '
-                cnt += 1
+
+            self._get_arguments(args_list, args, args_without_name)
 
             data['func_args'] = args.strip(' ')
 
@@ -1344,10 +1404,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             self.reformat_prosrc_code(data)
 
             # Create mode
-            SQL = render_template("/".join([self.sql_template_path,
+            sql = render_template("/".join([self.sql_template_path,
                                             'create.sql']),
                                   data=data, is_sql=is_sql)
-        return True, SQL.strip('\n')
+        return True, sql.strip('\n')
 
     def _fetch_properties(self, gid, sid, did, scid, fnid=None):
         """
@@ -1362,12 +1422,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             fnid: Function Id
         """
 
-        resp_data = {}
-
-        SQL = render_template("/".join([self.sql_template_path,
+        sql = render_template("/".join([self.sql_template_path,
                                         'properties.sql']),
                               scid=scid, fnid=fnid)
-        status, res = self.conn.execute_dict(SQL)
+        status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
 
@@ -1384,9 +1442,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         resp_data.update(frmtd_proargs)
 
         # Fetch privileges
-        SQL = render_template("/".join([self.sql_template_path, 'acl.sql']),
+        sql = render_template("/".join([self.sql_template_path, 'acl.sql']),
                               fnid=fnid)
-        status, proaclres = self.conn.execute_dict(SQL)
+        status, proaclres = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
 
@@ -1431,10 +1489,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         Args:
             scid: Schema Id
         """
-        SQL = render_template("/".join([self.sql_template_path,
+        sql = render_template("/".join([self.sql_template_path,
                                         'get_schema.sql']), scid=scid)
 
-        status, schema_name = self.conn.execute_scalar(SQL)
+        status, schema_name = self.conn.execute_scalar(sql)
 
         if not status:
             return internal_server_error(errormsg=schema_name)
@@ -1462,12 +1520,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         res = [{'label': '', 'value': ''}]
 
         try:
-            SQL = render_template(
+            sql = render_template(
                 "/".join([self.sql_template_path,
                           'get_support_functions.sql']),
                 show_system_objects=self.blueprint.show_system_objects
             )
-            status, rset = self.conn.execute_2darray(SQL)
+            status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
@@ -1495,7 +1553,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             sid: Server Id
             did: Database Id
             scid: Schema Id
-            doid: Function Id
+            fnid: Function Id
         """
         dependents_result = self.get_dependents(self.conn, fnid)
         return ajax_response(
@@ -1514,7 +1572,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             sid: Server Id
             did: Database Id
             scid: Schema Id
-            doid: Function Id
+            fnid: Function Id
         """
         dependencies_result = self.get_dependencies(self.conn, fnid)
         return ajax_response(
@@ -1532,7 +1590,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             sid: Server Id
             did: Database Id
             scid: Schema Id
-            doid: Function Id
+            fnid: Function Id
         """
         # Fetch the function definition.
         sql = render_template("/".join([self.sql_template_path,
@@ -1576,7 +1634,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             sid: Server Id
             did: Database Id
             scid: Schema Id
-            doid: Function Id
+            fnid: Function Id
         """
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
         # Most probably this is due to error
@@ -1662,7 +1720,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
                           diff_schema=None, drop_sql=False):
-        sql = ''
         if data:
             if diff_schema:
                 data['schema'] = diff_schema
@@ -1670,7 +1727,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                         True)
             # Check if return type is changed then we need to drop the
             # function first and then recreate it.
-            drop_fun_sql = ''
             if 'prorettypename' in data:
                 drop_fun_sql = self.delete(gid=gid, sid=sid, did=did,
                                            scid=scid, fnid=oid, only_sql=True)
@@ -1734,9 +1790,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             return res
 
         if not oid:
-            SQL = render_template("/".join([self.sql_template_path,
+            sql = render_template("/".join([self.sql_template_path,
                                             'node.sql']), scid=scid)
-            status, rset = self.conn.execute_2darray(SQL)
+            status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
