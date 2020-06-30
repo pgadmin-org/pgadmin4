@@ -70,16 +70,15 @@ def get_sql(conn, data, did, tid, plid, datlastsysoid, schema, table,
     if plid is not None:
         sql = render_template("/".join(
             [template_path, 'properties.sql']), plid=plid)
+
         status, res = conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
+
         if len(res['rows']) == 0:
             raise ObjectGone(_('Could not find the index in the table.'))
-        res_data = dict(res['rows'][0])
 
-        res = res_data
-
-        old_data = res
+        old_data = dict(res['rows'][0])
         old_data['schema'] = schema
         old_data['table'] = table
         sql = render_template(
@@ -91,6 +90,7 @@ def get_sql(conn, data, did, tid, plid, datlastsysoid, schema, table,
         data['table'] = table
         sql = render_template("/".join(
             [template_path, 'create.sql']), data=data)
+
     return sql, data['name'] if 'name' in data else old_data['name']
 
 

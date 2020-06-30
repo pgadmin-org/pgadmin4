@@ -186,6 +186,16 @@ def get_sql(conn, data, did, tid, idx, datlastsysoid,
             raise ObjectGone(_('Could not find the index in the table.'))
 
         old_data = dict(res['rows'][0])
+        # Remove opening and closing bracket as we already have in jinja
+        # template.
+        if 'using' in old_data and old_data['using'] is not None and \
+            old_data['using'].startswith('(') and \
+                old_data['using'].endswith(')'):
+            old_data['using'] = old_data['using'][1:-1]
+        if 'withcheck' in old_data and old_data['withcheck'] is not None and \
+            old_data['withcheck'].startswith('(') and \
+                old_data['withcheck'].endswith(')'):
+            old_data['withcheck'] = old_data['withcheck'][1:-1]
 
         # If name is not present in data then
         # we will fetch it from old data, we also need schema & table name

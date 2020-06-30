@@ -15,5 +15,3 @@ WHERE
 {% if tid %}
       pl.polrelid = {{ tid }}
 {% endif %};
-
-

@@ -326,9 +326,17 @@ class RowSecurityView(PGChildNodeView):
 
         data = dict(res['rows'][0])
 
-        res = data
+        # Remove opening and closing bracket as we already have in jinja
+        # template.
+        if 'using' in data and data['using'] is not None and \
+                data['using'].startswith('(') and data['using'].endswith(')'):
+            data['using'] = data['using'][1:-1]
+        if 'withcheck' in data and data['withcheck'] is not None and \
+            data['withcheck'].startswith('(') and \
+                data['withcheck'].endswith(')'):
+            data['withcheck'] = data['withcheck'][1:-1]
 
-        return True, res
+        return True, data
 
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
@@ -527,15 +535,10 @@ class RowSecurityView(PGChildNodeView):
         """
         This function will generate sql to render into the sql panel
         """
-        sql = render_template("/".join(
-            [self.template_path, 'properties.sql']), plid=plid)
-        status, res = self.conn.execute_dict(sql)
+        status, res_data = self._fetch_properties(plid)
         if not status:
-            return internal_server_error(errormsg=res)
-        if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the policy in the table."""))
-        res = dict(res['rows'][0])
-        res_data = res
+            return res_data
+
         res_data['schema'] = self.schema
         res_data['table'] = self.table
 

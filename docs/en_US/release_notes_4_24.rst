@@ -19,4 +19,5 @@ Bug fixes
 *********
 
 | `Issue #3851 <https://redmine.postgresql.org/issues/3851>`_ -  Add proper indentation to the code while generating functions, procedures, and trigger functions.
+| `Issue #5621 <https://redmine.postgresql.org/issues/5621>`_ -  Remove extra brackets from reverse engineering SQL of RLS Policy.
 | `Issue #5630 <https://redmine.postgresql.org/issues/5630>`_ -  Fixed an issue where installation of pgadmin4 not working on 32-bit Windows.
