@@ -73,7 +73,8 @@ def get_db_data(db_owner):
         "name": "db_add_%s" % str(uuid.uuid4())[1: 8],
         "privileges": [],
         "securities": [],
-        "variables": []
+        "variables": [],
+        "schema_res": ["public", "sample"]
     }
     return data
 

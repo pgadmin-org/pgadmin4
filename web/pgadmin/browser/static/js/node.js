@@ -1339,6 +1339,21 @@ define('pgadmin.browser.node', [
           }
         }.bind(panel),
 
+        informBeforeAttributeChange = function(ok_callback) {
+          var j = this.$container.find('.obj_properties').first();
+          view = j && j.data('obj-view');
+
+          if (view && view.model && !_.isUndefined(view.model.inform_text) && !_.isNull(view.model.inform_text)) {
+            Alertify.alert(
+              gettext('Warning'),
+              gettext(view.model.inform_text)
+            );
+
+          }
+          ok_callback();
+          return true;
+        }.bind(panel),
+
         onSave = function(view, saveBtn) {
           var m = view.model,
             d = m.toJSON(true),
@@ -1535,9 +1550,11 @@ define('pgadmin.browser.node', [
                   warnBeforeAttributeChange.call(
                     panel,
                     function() {
-                      setTimeout(function() {
-                        onSave.call(this, view, btn);
-                      }, 0);
+                      informBeforeAttributeChange.call(panel, function(){
+                        setTimeout(function() {
+                          onSave.call(this, view, btn);
+                        }, 0);
+                      });
                     }
                   );
                 });

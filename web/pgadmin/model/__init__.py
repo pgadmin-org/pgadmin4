@@ -290,3 +290,18 @@ class QueryHistoryModel(db.Model):
     dbname = db.Column(db.String(), nullable=False, primary_key=True)
     query_info = db.Column(db.String(), nullable=False)
     last_updated_flag = db.Column(db.String(), nullable=False)
+
+
+class Database(db.Model):
+    """
+    Define a Database.
+    """
+    __tablename__ = 'database'
+    id = db.Column(db.Integer, primary_key=True)
+    schema_res = db.Column(db.String(256), nullable=True)
+    server = db.Column(
+        db.Integer,
+        db.ForeignKey('server.id'),
+        nullable=False,
+        primary_key=True
+    )

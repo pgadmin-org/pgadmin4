@@ -24,6 +24,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone, bad_request
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.model import Database
 
 """
     This module is responsible for generating two nodes
@@ -384,10 +385,21 @@ class SchemaView(PGChildNodeView):
         Returns:
             JSON of available schema nodes
         """
+        database = Database.query.filter_by(id=did, server=sid).first()
+        param = None
+        if database:
+            schema_restrictions = database.schema_res
+
+            if schema_restrictions:
+                schema_res = ",".join(
+                    ["'%s'"] * len(schema_restrictions.split(',')))
+                param = schema_res % (tuple(schema_restrictions.split(',')))
+
         SQL = render_template(
             "/".join([self.template_path, 'sql/properties.sql']),
             _=gettext,
-            show_sysobj=self.blueprint.show_system_objects
+            show_sysobj=self.blueprint.show_system_objects,
+            schema_restrictions=param
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -413,11 +425,22 @@ class SchemaView(PGChildNodeView):
             JSON of available schema child nodes
         """
         res = []
+        database = Database.query.filter_by(id=did, server=sid).first()
+        param = None
+        if database:
+            schema_restrictions = database.schema_res
+
+            if schema_restrictions:
+                schema_res = ",".join(
+                    ["'%s'"] * len(schema_restrictions.split(',')))
+                param = schema_res % (tuple(schema_restrictions.split(',')))
+
         SQL = render_template(
             "/".join([self.template_path, 'sql/nodes.sql']),
             show_sysobj=self.blueprint.show_system_objects,
             _=gettext,
-            scid=scid
+            scid=scid,
+            schema_restrictions=param
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -428,10 +451,9 @@ class SchemaView(PGChildNodeView):
 
         if scid is not None:
             if len(rset['rows']) == 0:
-                return gone(gettext("""
-Could not find the schema in the database.
-It may have been removed by another user.
-"""))
+                return gone(gettext(
+                    """Could not find the schema in the database.
+                    It may have been removed by another user."""))
             row = rset['rows'][0]
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
@@ -896,10 +918,9 @@ It may have been removed by another user.
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""
-Could not find the schema in the database.
-It may have been removed by another user.
-"""))
+            return gone(gettext(
+                """Could not find the schema in the database.
+                It may have been removed by another user."""))
 
         data = res['rows'][0]
         backend_support_keywords = kwargs.copy()

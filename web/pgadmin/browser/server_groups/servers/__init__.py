@@ -536,7 +536,7 @@ class ServerNode(PGChildNodeView):
 
         if connected:
             for arg in (
-                    'host', 'hostaddr', 'port', 'db', 'username', 'sslmode',
+                    'hostaddr', 'db', 'sslmode',
                     'role', 'service'
             ):
                 if arg in data:
@@ -1016,6 +1016,7 @@ class ServerNode(PGChildNodeView):
 
         # Connect the Server
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        manager.update(server)
         conn = manager.connection()
 
         # Get enc key

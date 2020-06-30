@@ -32,7 +32,7 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from pgadmin.model import Server
+from pgadmin.model import db, Server, Database
 
 
 class DatabaseModule(CollectionNodeModule):
@@ -423,6 +423,11 @@ class DatabaseView(PGChildNodeView):
         )
 
         status, res1 = self.conn.execute_dict(SQL)
+        database = Database.query.filter_by(id=did, server=sid).first()
+
+        if database:
+            result['schema_res'] = database.schema_res.split(
+                ',') if database.schema_res else []
 
         if not status:
             return internal_server_error(errormsg=res1)
@@ -611,6 +616,11 @@ class DatabaseView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
         response = res['rows'][0]
+        # Add database entry into database table with schema_restrictions.
+        database = Database(id=response['did'], server=sid,
+                            schema_res=','.join(data['schema_res']))
+        db.session.add(database)
+        db.session.commit()
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -627,53 +637,27 @@ class DatabaseView(PGChildNodeView):
             )
         )
 
-    @check_precondition(action='update')
-    def update(self, gid, sid, did):
-        """Update the database."""
+    @staticmethod
+    def _update_db_schema_res(data, did, sid):
+        database = Database.query.filter_by(id=did, server=sid).first()
+        if 'schema_res' in data:
+            if database:
+                data['schema_res'] = ','.join(data['schema_res'])
+                setattr(database, 'schema_res', data['schema_res'])
+            else:
+                database_obj = Database(id=did, server=sid,
+                                        schema_res=','.join(
+                                            data['schema_res']))
+                db.session.add(database_obj)
 
-        data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
-        )
-
-        # Generic connection for offline updates
-        conn = self.manager.connection(conn_id='db_offline_update')
-        status, errmsg = conn.connect()
-        if not status:
-            current_app.logger.error(
-                "Could not create database connection for offline updates\n"
-                "Err: {0}".format(errmsg)
-            )
-            return internal_server_error(errmsg)
-
-        if did is not None:
-            # Fetch the name of database for comparison
-            status, rset = self.conn.execute_dict(
-                render_template(
-                    "/".join([self.template_path, 'nodes.sql']),
-                    did=did, conn=self.conn, last_system_oid=0
-                )
-            )
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            if len(rset['rows']) == 0:
-                return gone(
-                    _('Could not find the database on the server.')
-                )
-
-            data['old_name'] = (rset['rows'][0])['name']
-            if 'name' not in data:
-                data['name'] = data['old_name']
-
-        # Release any existing connection from connection manager
-        # to perform offline operation
-        self.manager.release(did=did)
+    def _check_rename_db_or_change_table_space(self, data, conn, all_ids):
 
         for action in ["rename_database", "tablespace"]:
-            SQL = self.get_offline_sql(gid, sid, data, did, action)
-            SQL = SQL.strip('\n').strip(' ')
-            if SQL and SQL != "":
-                status, msg = conn.execute_scalar(SQL)
+            sql = self.get_offline_sql(all_ids['gid'], all_ids['sid'], data,
+                                       all_ids['did'], action)
+            sql = sql.strip('\n').strip(' ')
+            if sql and sql != "":
+                status, msg = conn.execute_scalar(sql)
                 if not status:
                     # In case of error from server while rename it,
                     # reconnect to the database with old name again.
@@ -684,13 +668,38 @@ class DatabaseView(PGChildNodeView):
                     if not status:
                         current_app.logger.error(
                             'Could not reconnected to database(#{0}).\n'
-                            'Error: {1}'.format(did, errmsg)
+                            'Error: {1}'.format(all_ids['did'], errmsg)
                         )
-                    return internal_server_error(errormsg=msg)
+                    return True, msg
 
                 QueryHistory.update_history_dbname(
-                    current_user.id, sid, data['old_name'], data['name'])
-        # Make connection for database again
+                    current_user.id, all_ids['sid'], data['old_name'],
+                    data['name'])
+        return False, ''
+
+    def _fetch_db_details(self, data, did):
+        if did is not None:
+            # Fetch the name of database for comparison
+            status, rset = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'nodes.sql']),
+                    did=did, conn=self.conn, last_system_oid=0
+                )
+            )
+            if not status:
+                return True, rset
+
+            if len(rset['rows']) == 0:
+                return gone(
+                    _('Could not find the database on the server.')
+                )
+
+            data['old_name'] = (rset['rows'][0])['name']
+            if 'name' not in data:
+                data['name'] = data['old_name']
+        return False, ''
+
+    def _reconnect_connect_db(self, data, did):
         if self._db['datallowconn']:
             self.conn = self.manager.connection(
                 database=data['name'], auto_reconnect=True
@@ -702,12 +711,70 @@ class DatabaseView(PGChildNodeView):
                     'Could not connected to database(#{0}).\n'
                     'Error: {1}'.format(did, errmsg)
                 )
-                return internal_server_error(errmsg)
+                return True, errmsg
+        return False, ''
 
-        SQL = self.get_online_sql(gid, sid, data, did)
-        SQL = SQL.strip('\n').strip(' ')
-        if SQL and SQL != "":
-            status, msg = self.conn.execute_scalar(SQL)
+    def _commit_db_changes(self, res, can_drop):
+        if self.manager.db == res['name']:
+            can_drop = False
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            current_app.logger.exception(e)
+            return True, e.message, False
+        return False, '', can_drop
+
+    def _get_data_from_request(self):
+        return request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+
+    @check_precondition(action='update')
+    def update(self, gid, sid, did):
+        """Update the database."""
+
+        data = self._get_data_from_request()
+        # Update schema restriction in db object.
+        DatabaseView._update_db_schema_res(data, did, sid)
+
+        # Generic connection for offline updates
+        conn = self.manager.connection(conn_id='db_offline_update')
+        status, errmsg = conn.connect()
+        if not status:
+            current_app.logger.error(
+                "Could not create database connection for offline updates\n"
+                "Err: {0}".format(errmsg)
+            )
+            return internal_server_error(errmsg)
+
+        fetching_error, err_msg = self._fetch_db_details(data, did)
+        if fetching_error:
+            return internal_server_error(errormsg=err_msg)
+
+        # Release any existing connection from connection manager
+        # to perform offline operation
+        self.manager.release(did=did)
+        all_ids = {
+            'gid': gid,
+            'sid': sid,
+            'did': did
+        }
+        is_error, errmsg = self._check_rename_db_or_change_table_space(data,
+                                                                       conn,
+                                                                       all_ids)
+        if is_error:
+            return internal_server_error(errmsg)
+
+        # Make connection for database again
+        connection_error, errmsg = self._reconnect_connect_db(data, did)
+        if connection_error:
+            return internal_server_error(errmsg)
+
+        sql = self.get_online_sql(gid, sid, data, did)
+        sql = sql.strip('\n').strip(' ')
+        if sql and sql != "":
+            status, msg = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=msg)
 
@@ -733,9 +800,15 @@ class DatabaseView(PGChildNodeView):
 
         res = rset['rows'][0]
 
-        can_drop = can_dis_conn = True
-        if self.manager.db == res['name']:
-            can_drop = can_dis_conn = False
+        can_drop = True
+        error, errmsg, is_can_drop = self._commit_db_changes(res, can_drop)
+        if error:
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
+
+        can_drop = can_dis_conn = is_can_drop
 
         return jsonify(
             node=self.blueprint.generate_browser_node(

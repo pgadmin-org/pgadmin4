@@ -39,7 +39,6 @@ define('pgadmin.node.server', [
       }],
       validate: function() {
         this.errorModel.clear();
-
         if (_.isUndefined(this.get('label')) ||
           _.isNull(this.get('label')) ||
             String(this.get('label')).replace(/^\s+|\s+$/g, '') == '') {
@@ -66,7 +65,6 @@ define('pgadmin.node.server', [
         return d && d.connected;
       },
       Init: function() {
-
         /* Avoid multiple registration of same menus */
         if (this.initialized)
           return;
@@ -785,16 +783,70 @@ define('pgadmin.node.server', [
           mode: ['properties', 'edit', 'create'],
         },{
           id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+          mode: ['properties', 'edit', 'create'],
+          control: Backform.InputControl.extend({
+            onChange: function() {
+              Backform.InputControl.prototype.onChange.apply(this, arguments);
+              if (!this.model || !this.model.changed) {
+                this.model.inform_text = undefined;
+                return;
+              }
+
+              if(this.model.origSessAttrs.host != this.model.changed.host && !this.model.isNew() && this.model.get('connected'))
+              {
+                this.model.inform_text = gettext(
+                  'To apply changes to the connection configuration, please disconnect from the server and then reconnect.'
+                );
+              } else {
+                this.model.inform_text = undefined;
+              }
+            },
+          }),
         },{
           id: 'port', label: gettext('Port'), type: 'int', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], readonly: 'isConnected', min: 1, max: 65535,
+          mode: ['properties', 'edit', 'create'], min: 1, max: 65535,
+          control: Backform.InputControl.extend({
+            onChange: function() {
+              Backform.InputControl.prototype.onChange.apply(this, arguments);
+              if (!this.model || !this.model.changed) {
+                this.model.inform_text = undefined;
+                return;
+              }
+
+              if(this.model.origSessAttrs.port != this.model.changed.port && !this.model.isNew() && this.model.get('connected'))
+              {
+                this.model.inform_text = gettext(
+                  'To apply changes to the connection configuration, please disconnect from the server and then reconnect.'
+                );
+              } else {
+                this.model.inform_text = undefined;
+              }
+            },
+          }),
         },{
           id: 'db', label: gettext('Maintenance database'), type: 'text', group: gettext('Connection'),
           mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         },{
           id: 'username', label: gettext('Username'), type: 'text', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+          mode: ['properties', 'edit', 'create'],
+          control: Backform.InputControl.extend({
+            onChange: function() {
+              Backform.InputControl.prototype.onChange.apply(this, arguments);
+              if (!this.model || !this.model.changed) {
+                this.model.inform_text = undefined;
+                return;
+              }
+
+              if(this.model.origSessAttrs.username != this.model.changed.username && !this.model.isNew() && this.model.get('connected'))
+              {
+                this.model.inform_text = gettext(
+                  'To apply changes to the connection configuration, please disconnect from the server and then reconnect.'
+                );
+              } else {
+                this.model.inform_text = undefined;
+              }
+            },
+          }),
         },{
           id: 'password', label: gettext('Password'), type: 'password', maxlength: '2000',
           group: gettext('Connection'), control: 'input', mode: ['create'], deps: ['connect_now'],

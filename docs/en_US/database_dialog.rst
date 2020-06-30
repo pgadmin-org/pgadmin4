@@ -97,6 +97,19 @@ Follow these steps to add additional parameter value definitions; to discard a
 parameter, click the trash icon to the left of the row and confirm deletion in
 the *Delete Row* popup.
 
+Click the *Advanced* tab to continue.
+
+.. image:: images/database_advanced.png
+   :alt: Database dialog advanced tab
+   :align: center
+
+Use the *Advanced* tab to set advanced parameters for the database.
+
+* Use *Schema restriction* field to provide a SQL restriction that will be used
+  against the pg_namespace table to limit the schemas that you see.
+  For example, you might enter: *public* so that only *public* are shown in
+  the pgAdmin browser.Separate entries with a comma or tab as you type.
+
 Click the *SQL* tab to continue.
 
 Your entries in the *Database* dialog generate a SQL command (see an example
