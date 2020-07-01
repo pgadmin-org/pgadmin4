@@ -224,6 +224,22 @@ function updateUIPreferences(sqlEditor) {
   sqlEditor.query_tool_obj.setOption('lineWrapping', preferences.wrap_code);
   sqlEditor.query_tool_obj.setOption('autoCloseBrackets', preferences.insert_pair_brackets);
   sqlEditor.query_tool_obj.setOption('matchBrackets', preferences.brace_matching);
+  // Added extra logic to handel tab indent and use space setting.
+  sqlEditor.query_tool_obj.setOption('extraKeys', {
+    Tab: (cm) => {
+      if(cm.somethingSelected()){
+        cm.execCommand('indentMore');
+      } else {
+        if (!preferences.use_spaces) {
+          cm.replaceSelection('\t', 'end', '+input');
+        }
+        else {
+          cm.execCommand('insertSoftTab');
+        }
+      }
+    },
+    'Shift-Tab': (cm) => cm.execCommand('indentLess'),
+  });
   sqlEditor.query_tool_obj.refresh();
 
   /* Render history to reflect Font size change */
