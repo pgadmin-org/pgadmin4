@@ -90,6 +90,8 @@
   &.wcFrame, & .wcPanelBackground {
     border-bottom-left-radius: $card-border-radius;
     border-bottom-right-radius: $card-border-radius;
+    max-width: 100%;
+    max-height: 100%;
   }
 
   & .pg-panel-content {
