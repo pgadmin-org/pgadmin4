@@ -19,7 +19,7 @@ export function childCreateMenuEnabled(itemData, item, data) {
 
   if (node)
     return node.anyFamilyMember(
-      (node) => (node.getData()._type === 'schema')
+      (parentNode) => (parentNode.getData()._type === 'schema')
     );
 
   return false;

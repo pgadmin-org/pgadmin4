@@ -1363,11 +1363,11 @@ define([
             var idx = that.indexOf(m);
             if (idx > -1) {
               var row = self.grid.body.rows[idx],
-                editCell = row.$el.find('.subnode-edit-in-process').parent();
+                rowEditCell = row.$el.find('.subnode-edit-in-process').parent();
               // Only close row if it's open.
-              if (editCell.length > 0) {
+              if (rowEditCell.length > 0) {
                 var event = new Event('click');
-                editCell[0].dispatchEvent(event);
+                rowEditCell[0].dispatchEvent(event);
               }
             }
           }
@@ -1420,11 +1420,11 @@ define([
           if (canAddRow) {
             // Close any existing expanded row before adding new one.
             _.each(self.grid.body.rows, function(row) {
-              var editCell = row.$el.find('.subnode-edit-in-process').parent();
+              var rowEditCell = row.$el.find('.subnode-edit-in-process').parent();
               // Only close row if it's open.
-              if (editCell.length > 0) {
+              if (rowEditCell.length > 0) {
                 var event = new Event('click');
-                editCell[0].dispatchEvent(event);
+                rowEditCell[0].dispatchEvent(event);
               }
             });
 
@@ -1661,11 +1661,11 @@ define([
             var idx = ctx.indexOf(m);
             if (idx > -1) {
               var row = grid.body.rows[idx],
-                editCell = row.$el.find('.subnode-edit-in-process').parent();
+                rowEditCell = row.$el.find('.subnode-edit-in-process').parent();
               // Only close row if it's open.
-              if (editCell.length > 0) {
+              if (rowEditCell.length > 0) {
                 var event = new Event('click');
-                editCell[0].dispatchEvent(event);
+                rowEditCell[0].dispatchEvent(event);
               }
             }
           }
@@ -1716,11 +1716,11 @@ define([
         if (canAddRow) {
           // Close any existing expanded row before adding new one.
           _.each(grid.body.rows, function(row) {
-            var editCell = row.$el.find('.subnode-edit-in-process').parent();
+            var rowEditCell = row.$el.find('.subnode-edit-in-process').parent();
             // Only close row if it's open.
-            if (editCell.length > 0) {
+            if (rowEditCell.length > 0) {
               var event = new Event('click');
-              editCell[0].dispatchEvent(event);
+              rowEditCell[0].dispatchEvent(event);
             }
           });
 

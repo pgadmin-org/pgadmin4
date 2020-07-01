@@ -323,7 +323,7 @@ define('pgadmin.node.exclusion_constraint', [
               // This will only get called in case of NodeListByNameControl.
 
               var that = this,
-                node = that.field.get('schema_node'),
+                schema_node = that.field.get('schema_node'),
                 res = [],
                 col_types = [],
                 filter = that.field.get('filter') || function() { return true; };
@@ -332,14 +332,14 @@ define('pgadmin.node.exclusion_constraint', [
 
               _.each(rows, function(r) {
                 if (filter(r)) {
-                  var l = (_.isFunction(node['node_label']) ?
-                      (node['node_label']).apply(node, [r, that.model, that]) :
+                  var l = (_.isFunction(schema_node['node_label']) ?
+                      (schema_node['node_label']).apply(schema_node, [r, that.model, that]) :
                       r.label),
-                    image = (_.isFunction(node['node_image']) ?
-                      (node['node_image']).apply(
-                        node, [r, that.model, that]
+                    image = (_.isFunction(schema_node['node_image']) ?
+                      (schema_node['node_image']).apply(
+                        schema_node, [r, that.model, that]
                       ) :
-                      (node['node_image'] || ('icon-' + node.type)));
+                      (schema_node['node_image'] || ('icon-' + schema_node.type)));
                   res.push({
                     'value': r.label,
                     'image': image,

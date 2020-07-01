@@ -553,42 +553,42 @@ define('pgadmin.node.database', [
             });
           },
           onSuccess = function(
-            res, model, data, tree, item, connected
+            res, model, _data, _tree, _item, _connected
           ) {
-            data.is_connecting = false;
-            if (!connected) {
-              tree.deselect(item);
-              tree.setInode(item);
+            _data.is_connecting = false;
+            if (!_connected) {
+              _tree.deselect(_item);
+              _tree.setInode(_item);
             }
-            if (res && res.data) {
-              if(typeof res.data.connected == 'boolean') {
-                data.connected = res.data.connected;
+            if (res && res._data) {
+              if(typeof res._data.connected == 'boolean') {
+                _data.connected = res._data.connected;
               }
               if (typeof res.data.icon == 'string') {
-                tree.removeIcon(item);
-                data.icon = res.data.icon;
-                tree.addIcon(item, {icon: data.icon});
+                _tree.removeIcon(_item);
+                _data.icon = res._data.icon;
+                _tree.addIcon(_item, {icon: _data.icon});
               }
-              if(res.data.already_connected) {
+              if(res._data.already_connected) {
                 res.info = gettext('Database already connected.');
               }
-              if(res.data.info_prefix) {
-                res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
+              if(res._data.info_prefix) {
+                res.info = `${_.escape(res._data.info_prefix)} - ${res.info}`;
               }
-              if(res.data.already_connected) {
+              if(res._data.already_connected) {
                 Alertify.info(res.info);
               } else {
                 Alertify.success(res.info);
               }
-              obj.trigger('connected', obj, item, data);
+              obj.trigger('connected', obj, _item, _data);
               pgBrowser.Events.trigger(
-                'pgadmin:database:connected', item, data
+                'pgadmin:database:connected', _item, _data
               );
 
-              if (!connected) {
+              if (!_connected) {
                 setTimeout(function() {
-                  tree.select(item);
-                  tree.open(item);
+                  _tree.select(_item);
+                  _tree.open(_item);
                 }, 10);
               }
             }

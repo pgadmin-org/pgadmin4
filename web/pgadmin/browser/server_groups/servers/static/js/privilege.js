@@ -104,11 +104,11 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
           }
 
           var rerender = function (m) {
-            var self = this;
+            var _self = this;
             if ('grantee' in m.changed && this.model.cid != m.cid) {
               setTimeout(
                 function() {
-                  self.render();
+                  _self.render();
                 }, 50
               );
             }

@@ -263,12 +263,12 @@ define([
       $(this.elements.commands.close).attr('aria-label', gettext('Close'));
       $(this.elements.commands.maximize).attr('aria-label', gettext('Maximize'));
       alertifyDialogResized.apply(this, arguments);
-      let self = this;
+      let _self = this;
 
       let cmds = Object.values(this.elements.commands);
       $(cmds).on('keydown', 'button', (event) => {
         if (event.shiftKey && event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0){
-          let container = $(self.elements.footer);
+          let container = $(_self.elements.footer);
           commonUtils.findAndSetFocus(container.find('button:not([disabled]):last'));
         }
       });
@@ -339,7 +339,7 @@ define([
           args: args,
         },
         reconnectServer = function() {
-          var ctx = this,
+          var ctx_local = this,
             onServerConnect = function(_sid, _i, _d) {
               // Yay - server is reconnected.
               if (this.args.info.server._id == _sid) {
@@ -363,7 +363,7 @@ define([
                   );
                 }
               }
-            }.bind(ctx),
+            }.bind(ctx_local),
             onConnectCancel = function(_sid, _item, _data) {
               // User has cancelled the operation in between.
               if (_sid == this.args.info.server.id) {
@@ -376,7 +376,7 @@ define([
                   this.resp.data.database || _data.db, _item, _data
                 );
               }
-            }.bind(ctx);
+            }.bind(ctx_local);
 
           pgBrowser.Events.on('pgadmin:server:connected', onServerConnect);
           pgBrowser.Events.on('pgadmin:server:connect:cancelled', onConnectCancel);

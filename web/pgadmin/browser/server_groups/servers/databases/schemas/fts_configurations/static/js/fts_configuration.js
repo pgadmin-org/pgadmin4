@@ -84,13 +84,13 @@ define('pgadmin.node.fts_configuration', [
                   this,
                   arguments
                 );
-                var self = this,
-                  url = self.field.get('url') || self.defaults.url,
-                  m = self.model.top || self.model;
+                var _self = this,
+                  url = _self.field.get('url') || _self.defaults.url,
+                  m = _self.model.top || _self.model;
 
-                /* Fetch the tokens/dict list from 'self' node.
-                 * Here 'self' refers to unique collection control where
-                 * 'self' refers to nodeAjaxOptions control for dictionary
+                /* Fetch the tokens/dict list from '_self' node.
+                 * Here '_self' refers to unique collection control where
+                 * '_self' refers to nodeAjaxOptions control for dictionary
                  */
                 if (url) {
                   var node = this.field.get('schema_node'),
@@ -118,7 +118,7 @@ define('pgadmin.node.fts_configuration', [
                   // Fetch token/dictionary list
                   if (this.field.get('version_compatible') &&
                     (_.isUndefined(data) || _.isNull(data))) {
-                    m.trigger('pgadmin:view:fetching', m, self.field);
+                    m.trigger('pgadmin:view:fetching', m, _self.field);
                     $.ajax({
                       async: false,
                       url: full_url,
@@ -135,9 +135,9 @@ define('pgadmin.node.fts_configuration', [
                         );
                       })
                       .fail(function() {
-                        m.trigger('pgadmin:view:fetch:error', m, self.field);
+                        m.trigger('pgadmin:view:fetch:error', m, _self.field);
                       });
-                    m.trigger('pgadmin:view:fetched', m, self.field);
+                    m.trigger('pgadmin:view:fetched', m, _self.field);
                   }
 
                   // It is feasible that the data may not have been fetched.
@@ -147,11 +147,11 @@ define('pgadmin.node.fts_configuration', [
                    * Transform the data
                    */
                   var transform = (this.field.get('transform')
-                                || self.defaults.transform);
+                                || _self.defaults.transform);
                   if (transform && _.isFunction(transform)) {
-                    self.field.set('options', transform.bind(self, data));
+                    _self.field.set('options', transform.bind(_self, data));
                   } else {
-                    self.field.set('options', data);
+                    _self.field.set('options', data);
                   }
                 }
               },

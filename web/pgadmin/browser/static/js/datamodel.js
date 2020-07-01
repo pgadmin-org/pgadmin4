@@ -1282,12 +1282,12 @@ define([
       } else {
         var msg = 'Duplicate rows.';
         setTimeout(function() {
-          _.each(new_conflicting_models, function(m) {
+          _.each(new_conflicting_models, function(local_model) {
             self.trigger(
-              'pgadmin-session:model:invalid', msg, m, self.handler
+              'pgadmin-session:model:invalid', msg, local_model, self.handler
             );
-            m.trigger(
-              'pgadmin-session:model:duplicate', m, msg
+            local_model.trigger(
+              'pgadmin-session:model:duplicate', local_model, msg
             );
           });
         }, 10);

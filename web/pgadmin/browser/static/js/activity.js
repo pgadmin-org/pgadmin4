@@ -61,8 +61,8 @@ _.extend(pgBrowser, {
       let eventHandler = function() {
         if(self.is_pgadmin_timedout()) {
           /* If the main page has logged out then remove the listener and call the timeout callback */
-          inactivity_events.forEach((event)=>{
-            target.removeEventListener(event, eventHandler, true);
+          inactivity_events.forEach((events)=>{
+            target.removeEventListener(events, eventHandler, true);
           });
           timeout_callback();
         } else {

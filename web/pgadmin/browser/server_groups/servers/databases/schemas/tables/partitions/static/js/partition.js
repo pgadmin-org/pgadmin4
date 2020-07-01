@@ -461,12 +461,12 @@ function(
               var self = this,
                 collection = self.model.get(self.field.get('name'));
 
-              collection.on('change:is_primary_key', function(m) {
+              collection.on('change:is_primary_key', function(local_model) {
                 var primary_key_coll = self.model.get('primary_key'),
-                  column_name = m.get('name'),
+                  column_name = local_model.get('name'),
                   primary_key, primary_key_column_coll;
 
-                if(m.get('is_primary_key')) {
+                if(local_model.get('is_primary_key')) {
                 // Add column to primary key.
                   if (primary_key_coll.length < 1) {
                     primary_key = new (primary_key_coll.model)({}, {
