@@ -9,7 +9,7 @@ ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
 {#####################################################}
 {## Change policy using condition ##}
 {#####################################################}
-{% if data.using and o_data.withcheck != data.using %}
+{% if data.using and o_data.using != data.using %}
 ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
     USING ({{ data.using }});
 {% endif %}

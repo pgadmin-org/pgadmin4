@@ -535,7 +535,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             for row in rset['rows']:
                 policy_sql = row_security_policies_utils. \
                     get_reverse_engineered_sql(
-                        self.conn, schema, table, did, tid, row['oid'],
+                        self.conn, schema, table, did, scid, tid, row['oid'],
                         self.datlastsysoid,
                         template_path=None, with_header=json_resp)
                 policy_sql = u"\n" + policy_sql

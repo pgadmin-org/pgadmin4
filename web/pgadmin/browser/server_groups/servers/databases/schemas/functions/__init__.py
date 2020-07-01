@@ -1194,16 +1194,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     @staticmethod
     def _prepare_final_dict(data, old_data, chngd_variables, del_variables,
                             all_ids_dict):
-        # To compare old and new variables, preparing name :
-        # value dict
-
-        # if 'variables' in data and 'changed' in data['variables']:
-        #     for v in data['variables']['changed']:
-        #         chngd_variables[v['name']] = v['value']
-        #
-        # if 'variables' in data and 'added' in data['variables']:
-        #     for v in data['variables']['added']:
-        #         chngd_variables[v['name']] = v['value']
 
         # In case of schema diff we don't want variables from
         # old data
@@ -1319,13 +1309,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Deleted Variables
             FunctionView._delete_variable_in_edit_mode(data, del_variables)
             FunctionView._merge_variable_changes(data, chngd_variables)
-            # if 'variables' in data and 'changed' in data['variables']:
-            #     for v in data['variables']['changed']:
-            #         chngd_variables[v['name']] = v['value']
-            #
-            # if 'variables' in data and 'added' in data['variables']:
-            #     for v in data['variables']['added']:
-            #         chngd_variables[v['name']] = v['value']
 
             # Prepare final dict
             FunctionView._prepare_final_dict(data, old_data, chngd_variables,

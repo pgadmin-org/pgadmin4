@@ -1671,6 +1671,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 self.manager.version >= 120000:
             sub_modules.append('compound_trigger')
 
+        if self.manager.version >= 90500:
+            sub_modules.append('row_security_policy')
+
         if tid:
             status, data = self._fetch_properties(did, scid, tid)
 

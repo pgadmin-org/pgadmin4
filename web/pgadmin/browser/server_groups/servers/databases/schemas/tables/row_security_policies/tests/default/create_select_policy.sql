@@ -1,4 +1,4 @@
--- POLICY: select_policy ON public.test_rls_policy
+-- POLICY: select_policy
 
 -- DROP POLICY select_policy ON public.test_rls_policy;
 

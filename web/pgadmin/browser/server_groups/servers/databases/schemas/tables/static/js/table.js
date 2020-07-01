@@ -1247,21 +1247,13 @@ define('pgadmin.node.table', [
             this.errorModel.set('partition_keys', msg);
             return msg;
           }
-          if (this.get('rlspolicy') && this.isNew()){
-            Alertify.confirm(
+          this.errorModel.unset('partition_keys');
+          if (this.get('rlspolicy') && this.isNew() && this.changed.rlspolicy){
+            Alertify.alert(
               gettext('Check Policy?'),
-              gettext('Check if any policy exist. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified'),
-              function() {
-                self.close();
-                return true;
-              },
-              function() {
-                // Do nothing.
-                return true;
-              }
+              gettext('Please check if any policy exist. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')
             );
           }
-          this.errorModel.unset('partition_keys');
           return null;
         },
         // We will disable everything if we are under catalog node

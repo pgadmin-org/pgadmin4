@@ -1,4 +1,4 @@
--- POLICY: test ON public.test_rls_policy
+-- POLICY: test
 
 -- DROP POLICY test ON public.test_rls_policy;
 

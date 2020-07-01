@@ -80,6 +80,10 @@ define('pgadmin.node.row_security_policy', [
           name: undefined,
           policyowner: 'public',
           event: 'ALL',
+          using: undefined,
+          using_orig: undefined,
+          withcheck: undefined,
+          withcheck_orig: undefined,
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
@@ -111,7 +115,7 @@ define('pgadmin.node.row_security_policy', [
           control: 'sql-field', visible: true, group: gettext('Commands'),
         },
         {
-          id: 'withcheck', label: gettext('With Check'), deps: ['withcheck', 'event'],
+          id: 'withcheck', label: gettext('With check'), deps: ['withcheck', 'event'],
           type: 'text', mode: ['create', 'edit', 'properties'],
           control: 'sql-field', visible: true, group: gettext('Commands'),
           disabled: 'disableWithCheck',
@@ -135,7 +139,6 @@ define('pgadmin.node.row_security_policy', [
         validate: function(keys) {
           var msg;
           this.errorModel.clear();
-
           // If nothing to validate
           if (keys && keys.length == 0) {
             return null;
@@ -145,6 +148,16 @@ define('pgadmin.node.row_security_policy', [
             || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
+            return msg;
+          }
+          if (!this.isNew() && !_.isNull(this.get('using_orig')) && this.get('using_orig') != '' && String(this.get('using')).replace(/^\s+|\s+$/g, '') == ''){
+            msg = gettext('"USING" can not be empty once the value is set');
+            this.errorModel.set('using', msg);
+            return msg;
+          }
+          if (!this.isNew() && !_.isNull(this.get('withcheck_orig')) && this.get('withcheck_orig') != '' && String(this.get('withcheck')).replace(/^\s+|\s+$/g, '') == ''){
+            msg = gettext('"Withcheck" can not be empty once the value is set');
+            this.errorModel.set('withcheck', msg);
             return msg;
           }
           return null;

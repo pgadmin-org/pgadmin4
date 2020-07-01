@@ -254,7 +254,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         target_params['diff_data'] = diff_dict
         diff = self.get_sql_from_table_diff(**target_params)
 
-        ignore_sub_modules = ['column', 'constraints', 'row_security_policy']
+        ignore_sub_modules = ['column', 'constraints']
         if self.manager.version < 100000:
             ignore_sub_modules.append('partition')
         if self.manager.server_type == 'pg' or self.manager.version < 120000:
