@@ -81,7 +81,7 @@ class IEMessage(IProcessDesc):
         if _storage:
             _storage = _storage.replace('\\', '/')
 
-        def cmdArg(x):
+        def cmd_arg(x):
             if x:
                 x = x.replace('\\', '\\\\')
                 x = x.replace('"', '\\"')
@@ -97,12 +97,12 @@ class IEMessage(IProcessDesc):
                     replace_next = True
                 self._cmd += ' ' + arg
             elif replace_next:
-                arg = cmdArg(arg)
+                arg = cmd_arg(arg)
                 if _storage is not None:
                     arg = arg.replace(_storage, '<STORAGE_DIR>')
                 self._cmd += ' "' + arg + '"'
             else:
-                self._cmd += cmdArg(arg)
+                self._cmd += cmd_arg(arg)
 
     @property
     def message(self):

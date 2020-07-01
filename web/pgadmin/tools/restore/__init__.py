@@ -71,7 +71,7 @@ class RestoreMessage(IProcessDesc):
         self.bfile = _bfile
         self.cmd = ''
 
-        def cmdArg(x):
+        def cmd_arg(x):
             if x:
                 x = x.replace('\\', '\\\\')
                 x = x.replace('"', '\\"')
@@ -83,7 +83,7 @@ class RestoreMessage(IProcessDesc):
             if arg and len(arg) >= 2 and arg[:2] == '--':
                 self.cmd += ' ' + arg
             else:
-                self.cmd += cmdArg(arg)
+                self.cmd += cmd_arg(arg)
 
     def get_server_details(self):
         # Fetch the server details like hostname, port, roles etc

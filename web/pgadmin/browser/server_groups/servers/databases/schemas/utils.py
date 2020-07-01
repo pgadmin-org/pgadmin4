@@ -215,7 +215,7 @@ class DataTypeReader:
         return length, precision, typeval
 
     @staticmethod
-    def get_full_type(nsp, typname, isDup, numdims, typmod):
+    def get_full_type(nsp, typname, is_dup, numdims, typmod):
         """
         Returns full type name with Length and Precision.
 

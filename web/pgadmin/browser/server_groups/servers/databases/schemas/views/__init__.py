@@ -547,9 +547,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                     ).format(arg)
                 )
         try:
-            SQL, nameOrError = self.getSQL(gid, sid, did, data)
+            SQL, name_or_error = self.getSQL(gid, sid, did, data)
             if SQL is None:
-                return nameOrError
+                return name_or_error
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -729,9 +729,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             except ValueError:
                 data[k] = v
 
-        sql, nameOrError = self.getSQL(gid, sid, did, data, vid)
+        sql, name_or_error = self.getSQL(gid, sid, did, data, vid)
         if sql is None:
-            return nameOrError
+            return name_or_error
 
         sql = sql.strip('\n').strip(' ')
 
@@ -967,7 +967,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
 
         self.rule_temp_path = 'rules'
-        SQL_data = ''
+        sql_data = ''
         SQL = render_template("/".join(
             [self.rule_temp_path, 'sql/properties.sql']), tid=vid)
 
@@ -989,16 +989,16 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 SQL = render_template("/".join(
                     [self.rule_temp_path, 'sql/create.sql']),
                     data=res, display_comments=display_comments)
-                SQL_data += '\n'
-                SQL_data += SQL
-        return SQL_data
+                sql_data += '\n'
+                sql_data += SQL
+        return sql_data
 
     def get_compound_trigger_sql(self, vid, display_comments=True):
         """
         Get all compound trigger nodes associated with view node,
         generate their sql and render into sql tab
         """
-        SQL_data = ''
+        sql_data = ''
         if self.manager.server_type == 'ppas' \
                 and self.manager.version >= 120000:
 
@@ -1065,10 +1065,10 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                      'sql/{0}/#{1}#/create.sql'.format(
                          self.manager.server_type, self.manager.version)]),
                     data=res_rows, display_comments=display_comments)
-                SQL_data += '\n'
-                SQL_data += SQL
+                sql_data += '\n'
+                sql_data += SQL
 
-        return SQL_data
+        return sql_data
 
     def get_trigger_sql(self, vid, display_comments=True):
         """
@@ -1085,7 +1085,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         # Define template path
         self.trigger_temp_path = 'triggers'
 
-        SQL_data = ''
+        sql_data = ''
         SQL = render_template("/".join(
             [self.trigger_temp_path,
              'sql/{0}/#{1}#/properties.sql'.format(
@@ -1158,10 +1158,10 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                  'sql/{0}/#{1}#/create.sql'.format(
                      self.manager.server_type, self.manager.version)]),
                 data=res_rows, display_comments=display_comments)
-            SQL_data += '\n'
-            SQL_data += SQL
+            sql_data += '\n'
+            sql_data += SQL
 
-        return SQL_data
+        return sql_data
 
     def get_index_sql(self, did, vid, display_comments=True):
         """
@@ -1171,7 +1171,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
 
         self.index_temp_path = 'indexes'
-        SQL_data = ''
+        sql_data = ''
         SQL = render_template("/".join(
             [self.index_temp_path,
              'sql/#{0}#/properties.sql'.format(self.manager.version)]),
@@ -1204,9 +1204,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 [self.index_temp_path,
                  'sql/#{0}#/create.sql'.format(self.manager.version)]),
                 data=data, display_comments=display_comments)
-            SQL_data += '\n'
-            SQL_data += SQL
-        return SQL_data
+            sql_data += '\n'
+            sql_data += SQL
+        return sql_data
 
     @check_precondition
     def sql(self, gid, sid, did, scid, vid, diff_schema=None,
@@ -1220,7 +1220,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         if not json_resp:
             display_comments = False
 
-        SQL_data = ''
+        sql_data = ''
         SQL = render_template("/".join(
             [self.template_path, 'sql/properties.sql']),
             vid=vid,
@@ -1289,15 +1289,15 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         SQL += render_template("/".join(
             [self.template_path, 'sql/grant.sql']), data=result)
 
-        SQL_data += SQL
-        SQL_data += self.get_rule_sql(vid, display_comments)
-        SQL_data += self.get_trigger_sql(vid, display_comments)
-        SQL_data += self.get_compound_trigger_sql(vid, display_comments)
-        SQL_data += self.get_index_sql(did, vid, display_comments)
+        sql_data += SQL
+        sql_data += self.get_rule_sql(vid, display_comments)
+        sql_data += self.get_trigger_sql(vid, display_comments)
+        sql_data += self.get_compound_trigger_sql(vid, display_comments)
+        sql_data += self.get_index_sql(did, vid, display_comments)
 
         if not json_resp:
-            return SQL_data
-        return ajax_response(response=SQL_data)
+            return sql_data
+        return ajax_response(response=sql_data)
 
     @check_precondition
     def get_tblspc(self, gid, sid, did, scid):
@@ -1531,7 +1531,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         if data:
             if diff_schema:
                 data['schema'] = diff_schema
-            sql, nameOrError = self.getSQL(gid, sid, did, data, oid)
+            sql, name_or_error = self.getSQL(gid, sid, did, data, oid)
             if sql.find('DROP VIEW') != -1:
                 sql = gettext("""
 -- Changing the columns in a view requires dropping and re-creating the view.
@@ -1767,7 +1767,7 @@ class MViewNode(ViewNode, VacuumSettings):
         if not json_resp:
             display_comments = False
 
-        SQL_data = ''
+        sql_data = ''
         status, result = self._fetch_properties(did, scid, vid)
 
         if not status:
@@ -1817,15 +1817,15 @@ class MViewNode(ViewNode, VacuumSettings):
         SQL += render_template("/".join(
             [self.template_path, 'sql/grant.sql']), data=result)
 
-        SQL_data += SQL
-        SQL_data += self.get_rule_sql(vid, display_comments)
-        SQL_data += self.get_trigger_sql(vid, display_comments)
-        SQL_data += self.get_index_sql(did, vid, display_comments)
-        SQL_data = SQL_data.strip('\n')
+        sql_data += SQL
+        sql_data += self.get_rule_sql(vid, display_comments)
+        sql_data += self.get_trigger_sql(vid, display_comments)
+        sql_data += self.get_index_sql(did, vid, display_comments)
+        sql_data = sql_data.strip('\n')
 
         if not json_resp:
-            return SQL_data
-        return ajax_response(response=SQL_data)
+            return sql_data
+        return ajax_response(response=sql_data)
 
     @check_precondition
     def get_table_vacuum(self, gid, sid, did, scid):
