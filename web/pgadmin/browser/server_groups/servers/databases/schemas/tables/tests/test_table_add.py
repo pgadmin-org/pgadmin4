@@ -158,9 +158,19 @@ class TableAddTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
+
+        if hasattr(self, 'server_min_version'):
+            server_con = server_utils.connect_server(self, self.server_id)
+            if not server_con["info"] == "Server connected.":
+                raise Exception("Could not connect to server to add "
+                                "partitioned table.")
+            if server_con["data"]["version"] < self.server_min_version:
+                self.skipTest(self.skip_msg)
+
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
+
         self.db_id = schema_info["db_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
@@ -174,13 +184,7 @@ class TableAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
 
-        if hasattr(self, 'server_min_version'):
-            server_con = server_utils.connect_server(self, self.server_id)
-            if not server_con["info"] == "Server connected.":
-                raise Exception("Could not connect to server to add "
-                                "partitioned table.")
-            if server_con["data"]["version"] < self.server_min_version:
-                self.skipTest(self.skip_msg)
+
 
     def runTest(self):
         """ This function will add table under schema node. """

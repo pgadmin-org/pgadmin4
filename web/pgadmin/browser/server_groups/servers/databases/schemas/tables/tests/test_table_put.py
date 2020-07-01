@@ -91,20 +91,9 @@ class TableUpdateTestCase(BaseTestGenerator):
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
-        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
-                                                 self.server_id, self.db_id)
-        if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to add a table.")
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
-        schema_response = schema_utils.verify_schemas(self.server,
-                                                      self.db_name,
-                                                      self.schema_name)
-        if not schema_response:
-            raise Exception("Could not find the schema to add a table.")
-        self.table_name = "test_table_put_%s" % (str(uuid.uuid4())[1:8])
 
-        self.is_partition = False
         if hasattr(self, 'server_min_version'):
             server_con = server_utils.connect_server(self, self.server_id)
             if not server_con["info"] == "Server connected.":
@@ -114,9 +103,23 @@ class TableUpdateTestCase(BaseTestGenerator):
                 message = "Partitioned table are not supported by " \
                           "PPAS/PG 10.0 and below."
                 self.skipTest(message)
-            else:
-                self.is_partition = True
 
+        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
+                                                 self.server_id, self.db_id)
+        if not db_con['data']["connected"]:
+            raise Exception("Could not connect to database to add a table.")
+
+        schema_response = schema_utils.verify_schemas(self.server,
+                                                      self.db_name,
+                                                      self.schema_name)
+        if not schema_response:
+            raise Exception("Could not find the schema to add a table.")
+
+        self.table_name = "test_table_put_%s" % (str(uuid.uuid4())[1:8])
+        self.is_partition = False
+
+        if hasattr(self, 'server_min_version'):
+            self.is_partition = True
             self.table_id = tables_utils.create_table_for_partition(
                 self.server,
                 self.db_name,
