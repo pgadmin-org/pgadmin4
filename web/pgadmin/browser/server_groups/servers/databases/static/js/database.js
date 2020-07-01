@@ -560,22 +560,22 @@ define('pgadmin.node.database', [
               _tree.deselect(_item);
               _tree.setInode(_item);
             }
-            if (res && res._data) {
-              if(typeof res._data.connected == 'boolean') {
-                _data.connected = res._data.connected;
+            if (res && res.data) {
+              if(typeof res.data.connected == 'boolean') {
+                _data.connected = res.data.connected;
               }
               if (typeof res.data.icon == 'string') {
                 _tree.removeIcon(_item);
-                _data.icon = res._data.icon;
+                _data.icon = res.data.icon;
                 _tree.addIcon(_item, {icon: _data.icon});
               }
-              if(res._data.already_connected) {
+              if(res.data.already_connected) {
                 res.info = gettext('Database already connected.');
               }
-              if(res._data.info_prefix) {
-                res.info = `${_.escape(res._data.info_prefix)} - ${res.info}`;
+              if(res.data.info_prefix) {
+                res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
               }
-              if(res._data.already_connected) {
+              if(res.data.already_connected) {
                 Alertify.info(res.info);
               } else {
                 Alertify.success(res.info);
