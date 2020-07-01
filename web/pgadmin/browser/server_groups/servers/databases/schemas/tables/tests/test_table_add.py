@@ -184,8 +184,6 @@ class TableAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
 
-
-
     def runTest(self):
         """ This function will add table under schema node. """
         db_user = self.server["username"]
