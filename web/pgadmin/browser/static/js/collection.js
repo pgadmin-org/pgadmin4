@@ -186,6 +186,10 @@ define([
             headerCell: Backgrid.Extension.SelectAllHeaderCell,
           });
         }
+        /* Columns should be always non-editable  */
+        gridSchema.columns.forEach((col)=>{
+          col.disabled = true;
+        });
         // Initialize a new Grid instance
         that.grid = new Backgrid.Grid({
           emptyText: gettext('No data found'),
