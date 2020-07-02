@@ -346,3 +346,10 @@ td.switch-cell > div.toggle {
     border-color: $custom-control-indicator-focus-border-color;
   }
 }
+
+@media (max-width: 992px) {
+  .navbar-collapse {
+    max-height: 99vh;
+    overflow-y: auto;
+  }
+}
