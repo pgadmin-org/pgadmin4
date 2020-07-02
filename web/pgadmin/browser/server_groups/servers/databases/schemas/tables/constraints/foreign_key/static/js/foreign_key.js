@@ -51,11 +51,15 @@ define('pgadmin.node.foreign_key', [
     },
     schema: [{
       id: 'local_column', label: gettext('Local'), type:'text', editable: false,
-      cellHeaderClasses: 'width_percent_50', cell:'string',
+      cellHeaderClasses: 'width_percent_35', cell:'string',
       headerCell: Backgrid.Extension.CustomHeaderCell,
     },{
       id: 'referenced', label: gettext('Referenced'), type: 'text', editable: false,
-      cell:'string', cellHeaderClasses: 'width_percent_50',
+      cell:'string', cellHeaderClasses: 'width_percent_35',
+      headerCell: Backgrid.Extension.CustomHeaderCell,
+    },{
+      id: 'references_table_name', label: gettext('Referenced Table'), type: 'text', editable: false,
+      cell:'string', cellHeaderClasses: 'width_percent_30',
       headerCell: Backgrid.Extension.CustomHeaderCell,
     }],
   });
@@ -203,6 +207,9 @@ define('pgadmin.node.foreign_key', [
                   url = self.field.get('url') || self.defaults.url,
                   m = self.model,
                   tid = m.get('references');
+                // Store name for selected table
+                var a = $('select[name="references"]').find(':selected').text();
+                this.model.set('references_table_name', a,{silent: true});
 
                 // Clear any existing value before setting new options.
                 m.set(self.field.get('name'), null, {silent: true});
@@ -267,7 +274,7 @@ define('pgadmin.node.foreign_key', [
           headerDefaults = {local_column: null,
             references: null,
             referenced:null},
-          gridCols = ['local_column', 'references', 'referenced'];
+          gridCols = ['local_column', 'references', 'referenced','references_table_name'];
 
         if ((!self.model.isNew() && _.isUndefined(self.model.handler)) ||
           (_.has(self.model, 'handler') &&
@@ -689,6 +696,7 @@ define('pgadmin.node.foreign_key', [
 
         defaults: {
           name: undefined,
+          reftab: undefined,
           oid: undefined,
           is_sys_obj: undefined,
           comment: undefined,
@@ -712,7 +720,7 @@ define('pgadmin.node.foreign_key', [
         schema: [{
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], editable:true,
-          headerCell: Backgrid.Extension.CustomHeaderCell, cellHeaderClasses: 'width_percent_50',
+          headerCell: Backgrid.Extension.CustomHeaderCell, cellHeaderClasses: 'width_percent_30',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
@@ -899,10 +907,44 @@ define('pgadmin.node.foreign_key', [
             return !m.isNew();
           },
         },{
+          id: 'references_table_name', label: gettext('Referenced Table'),
+          type: 'text', group: gettext('Columns'),
+          node: 'foreign_key', editable: false,visible:false,
+          cellHeaderClasses: 'width_percent_30',
+          cell: Backgrid.StringCell.extend({
+            initialize: function() {
+              Backgrid.StringCell.prototype.initialize.apply(this, arguments);
+              var self = this,
+                collection = this.model.get('columns');
+              self.model.get('columns').on('pgadmin:columns:updated', function() {
+                self.render.apply(self);
+              });
+              self.listenTo(collection, 'add', self.render);
+              self.listenTo(collection, 'remove', self.render);
+            },
+            formatter: {
+              fromRaw: function (rawValue,model,) {
+                var remote_tables = [],
+                  m = model.get('columns');
+                if (m.length > 0) {
+                  m.each(function(col){
+                    remote_tables.push(col.get('references_table_name'));
+                  });
+                  return remote_tables;
+                }
+
+              },
+              toRaw: function (val) { return val; },
+            },
+            render: function() {
+              return Backgrid.StringCell.prototype.render.apply(this, arguments);
+            },
+          }),
+        },{
           id: 'columns', label: gettext('Columns'),
           type: 'collection', group: gettext('Columns'),
           node: 'foreign_key', editable: false, headerCell: Backgrid.Extension.CustomHeaderCell,
-          cellHeaderClasses: 'width_percent_50',
+          cellHeaderClasses: 'width_percent_30',
           cell: Backgrid.StringCell.extend({
             initialize: function() {
               Backgrid.StringCell.prototype.initialize.apply(this, arguments);

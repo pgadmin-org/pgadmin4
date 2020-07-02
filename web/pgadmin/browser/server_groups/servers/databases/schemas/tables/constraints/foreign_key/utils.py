@@ -69,7 +69,9 @@ def get_foreign_keys(conn, tid, fkid=None, template_path=None):
         for row in res['rows']:
             columns.append({"local_column": row['conattname'],
                             "references": fk['confrelid'],
-                            "referenced": row['confattname']})
+                            "referenced": row['confattname'],
+                            "references_table_name":
+                                fk['refnsp'] + '.' + fk['reftab']})
             cols.append(row['conattname'])
 
         fk['columns'] = columns

@@ -698,7 +698,7 @@ define('pgadmin.node.table', [
 
               return true;
             },
-            columns : ['name', 'columns'],
+            columns : ['name', 'columns','references_table_name'],
             canAddRow: function(m) {
               // User can only add if there is at least one column with name.
               var columns = m.get('columns');
