@@ -121,6 +121,19 @@ define('pgadmin.node.row_security_policy', [
           disabled: 'disableWithCheck',
         },
         {
+          id: 'rls_expression_key_note', label: gettext('RLS policy expression'),
+          type: 'note', group: 'Commands', mode: ['create', 'edit'],
+          text: [
+            '<ul><li>',
+            '<strong>', gettext('Using: '), '</strong>',
+            gettext('This expression will be added to queries that refer to the table if row level security is enabled. Rows for which the expression returns true will be visible. Any rows for which the expression returns false or null will not be visible to the user (in a SELECT), and will not be available for modification (in an UPDATE or DELETE). Such rows are silently suppressed; no error is reported.'),
+            '</li><li>',
+            '<strong>', gettext('With check: '), '</strong>',
+            gettext('This expression will be used in INSERT and UPDATE queries against the table if row level security is enabled. Only rows for which the expression evaluates to true will be allowed. An error will be thrown if the expression evaluates to false or null for any of the records inserted or any of the records that result from the update.'),
+            '</li></ul>',
+          ].join(''),
+        },
+        {
           id: 'policyowner', label: gettext('Role'), cell: 'string',
           control: 'node-list-by-name',
           node: 'role', select2: { allowClear: false },

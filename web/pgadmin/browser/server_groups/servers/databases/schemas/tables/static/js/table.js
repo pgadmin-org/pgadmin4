@@ -1248,7 +1248,7 @@ define('pgadmin.node.table', [
             return msg;
           }
           this.errorModel.unset('partition_keys');
-          if (this.get('rlspolicy') && this.isNew() && this.changed.rlspolicy){
+          if (this.get('rlspolicy') && this.changed.rlspolicy){
             Alertify.alert(
               gettext('Check Policy?'),
               gettext('Please check if any policy exist. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')
