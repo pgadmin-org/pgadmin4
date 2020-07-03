@@ -601,7 +601,7 @@ define('pgadmin.browser.node', [
               w = pgAdmin.toPx(el, '95%', 'width', true);
             } else {
               w = pgAdmin.toPx(
-                el, (self.width || pgBrowser.stdW.default) + 'px',
+                el, self.width || (pgBrowser.stdW.default + 'px'),
                 'width', true
               );
 
@@ -621,7 +621,7 @@ define('pgadmin.browser.node', [
               h = pgAdmin.toPx(el, '95%', 'height', true);
             } else {
               h = pgAdmin.toPx(
-                el, (self.height || pgBrowser.stdH.default) + 'px',
+                el, self.height || (pgBrowser.stdH.default + 'px'),
                 'height', true
               );
 
