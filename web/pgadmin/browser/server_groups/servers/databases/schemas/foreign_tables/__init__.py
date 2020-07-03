@@ -666,7 +666,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
         try:
             # Get SQL to create Foreign Table
-            SQL, name = self.get_sql(gid, sid, did, scid, self.request)
+            SQL, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                     data=self.request)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -787,7 +788,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
 
         try:
-            SQL, name = self.get_sql(gid, sid, did, scid, self.request, foid)
+            SQL, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                     data=self.request, foid=foid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -893,7 +895,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             SQL statements to create/update the Foreign Table.
         """
         try:
-            SQL, name = self.get_sql(gid, sid, did, scid, self.request, foid)
+            SQL, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                     data=self.request, foid=foid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -908,19 +911,21 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, gid, sid, did, scid, data, foid=None,
-                is_schema_diff=False):
+    def get_sql(self, **kwargs):
         """
-        Genrates the SQL statements to create/update the Foreign Table.
+        Generates the SQL statements to create/update the Foreign Table.
 
         Args:
-            gid: Server Group Id
-            sid: Server Id
-            did: Database Id
-            scid: Schema Id
-            foid: Foreign Table Id
-            is_schema_diff: True is function gets called from schema diff
+            kwargs: Server Group Id
         """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        data = kwargs.get('data')
+        foid = kwargs.get('foid', None)
+        is_schema_diff = kwargs.get('is_schema_diff', False)
+
         if foid is not None:
             status, old_data = self._fetch_properties(gid, sid, did, scid,
                                                       foid, inherits=True)
@@ -1447,21 +1452,21 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         return res
 
-    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
-                          diff_schema=None, drop_sql=False):
+    def get_sql_from_diff(self, **kwargs):
         """
         This function is used to get the DDL/DML statements.
-        :param gid: Group ID
-        :param sid: Serve ID
-        :param did: Database ID
-        :param scid: Schema ID
-        :param oid: Collation ID
-        :param data: Difference data
-        :param diff_schema: Target Schema
-        :param drop_sql: True if need to drop the domains
+        :param kwargs
         :return:
         """
-        sql = ''
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        diff_schema = kwargs.get('diff_schema', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
         if data:
             if diff_schema:
                 data['schema'] = diff_schema

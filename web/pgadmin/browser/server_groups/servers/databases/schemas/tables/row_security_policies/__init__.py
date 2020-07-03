@@ -594,15 +594,28 @@ class RowSecurityView(PGChildNodeView):
         )
 
     @check_precondition
-    def get_sql_from_diff(self, gid, sid, did, scid, tid, plid, data=None,
-                          diff_schema=None, drop_req=False):
+    def get_sql_from_diff(self, **kwargs):
+        """
+        This function is used to get the DDL/DML statements.
+        :param kwargs
+        :return:
+        """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        tid = kwargs.get('tid')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        diff_schema = kwargs.get('diff_schema', None)
+        drop_req = kwargs.get('drop_req', False)
 
         sql = ''
         if data:
             data['schema'] = self.schema
             data['table'] = self.table
             sql, name = row_security_policies_utils.get_sql(
-                self.conn, data, did, scid, tid, plid, self.datlastsysoid,
+                self.conn, data, did, scid, tid, oid, self.datlastsysoid,
                 self.schema, self.table)
 
             sql = sql.strip('\n').strip(' ')
@@ -612,7 +625,7 @@ class RowSecurityView(PGChildNodeView):
 
             sql = row_security_policies_utils.get_reverse_engineered_sql(
                 self.conn, schema,
-                self.table, did, scid, tid, plid,
+                self.table, did, scid, tid, oid,
                 self.datlastsysoid,
                 template_path=None, with_header=False)
 
@@ -620,7 +633,7 @@ class RowSecurityView(PGChildNodeView):
         if drop_req:
             drop_sql = '\n' + self.delete(gid=1, sid=sid, did=did,
                                           scid=scid, tid=tid,
-                                          plid=plid, only_sql=True)
+                                          plid=oid, only_sql=True)
         if drop_sql != '':
             sql = drop_sql + '\n\n' + sql
         return sql

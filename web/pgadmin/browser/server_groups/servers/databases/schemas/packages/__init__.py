@@ -381,7 +381,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
         data['schema'] = self.schema
 
-        sql, name = self.getSQL(gid, sid, did, data, scid, None)
+        sql, name = self.getSQL(data=data, scid=scid, pkgid=None)
 
         status, msg = self.conn.execute_scalar(sql)
         if not status:
@@ -503,7 +503,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             request.data, encoding='utf-8'
         )
 
-        sql, name = self.getSQL(gid, sid, did, data, scid, pkgid)
+        sql, name = self.getSQL(data=data, scid=scid, pkgid=pkgid)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql
@@ -558,7 +558,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                         ).format(arg)
                     )
 
-        sql, name = self.getSQL(gid, sid, did, data, scid, pkgid)
+        sql, name = self.getSQL(data=data, scid=scid, pkgid=pkgid)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql
@@ -571,20 +571,18 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
-    def getSQL(self, gid, sid, did, data, scid, pkgid=None, sqltab=False,
-               diff_schema=None):
+    def getSQL(self, **kwargs):
         """
         This function will generate sql from model data.
-
-        Args:
-            gid: Server Group ID
-            sid: Server ID
-            did: Database ID
-            scid: Schema ID
-            pkgid: Package ID
-            sqltab: True
-            diff_schema: Target Schema
+        :param kwargs
+        :return:
         """
+
+        scid = kwargs.get('scid')
+        data = kwargs.get('data')
+        pkgid = kwargs.get('pkgid', None)
+        sqltab = kwargs.get('sqltab', False)
+        diff_schema = kwargs.get('diff_schema', None)
 
         if diff_schema:
             data['schema'] = diff_schema
@@ -714,8 +712,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
             result = res['rows'][0]
-            sql, name = self.getSQL(gid, sid, did, result, scid, pkgid, True,
-                                    diff_schema)
+            sql, name = self.getSQL(data=result, scid=scid, pkgid=pkgid,
+                                    sqltab=True, diff_schema=diff_schema)
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -826,25 +824,25 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return res
 
-    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
-                          diff_schema=None, drop_sql=False):
+    def get_sql_from_diff(self, **kwargs):
         """
         This function is used to get the DDL/DML statements.
-        :param gid: Group ID
-        :param sid: Serve ID
-        :param did: Database ID
-        :param scid: Schema ID
-        :param oid: Package ID
-        :param data: Difference data
-        :param diff_schema: Target Schema
-        :param drop_sql: True if need to drop the domains
+        :param kwargs
         :return:
         """
-        sql = ''
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        diff_schema = kwargs.get('diff_schema', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
         if data:
             if diff_schema:
                 data['schema'] = diff_schema
-            sql, name = self.getSQL(gid, sid, did, data, scid, oid)
+            sql, name = self.getSQL(data=data, scid=scid, pkgid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

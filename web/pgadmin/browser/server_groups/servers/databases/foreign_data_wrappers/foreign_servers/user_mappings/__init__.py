@@ -470,7 +470,7 @@ class UserMappingView(PGChildNodeView):
             request.data, encoding='utf-8'
         )
         try:
-            sql, name = self.get_sql(gid, sid, data, did, fid, fsid, umid)
+            sql, name = self.get_sql(data=data, fsid=fsid, umid=umid)
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -596,7 +596,7 @@ class UserMappingView(PGChildNodeView):
             except ValueError:
                 data[k] = v
         try:
-            sql, name = self.get_sql(gid, sid, data, did, fid, fsid, umid)
+            sql, name = self.get_sql(data=data, fsid=fsid, umid=umid)
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -609,19 +609,16 @@ class UserMappingView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, gid, sid, data, did, fid, fsid, umid=None):
+    def get_sql(self, **kwargs):
         """
         This function will generate sql from model data.
 
         Args:
-            gid: Server Group ID
-            sid: Server ID
-            did: Database ID
-            data: Contains the data of the selected user mapping node
-            fid: foreign data wrapper ID
-            fsid: foreign server ID
-            umid: User mapping ID
+            kwargs: Server Group ID
         """
+        fsid = kwargs.get('fsid')
+        data = kwargs.get('data')
+        umid = kwargs.get('umid', None)
 
         required_args = [
             'name'

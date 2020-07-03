@@ -807,7 +807,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
 
         # Get SQL to create Function
-        status, sql = self._get_sql(gid, sid, did, scid, self.request)
+        status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                    data=self.request)
         if not status:
             return internal_server_error(errormsg=sql)
 
@@ -918,8 +919,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             fnid: Function Id
         """
 
-        status, sql = self._get_sql(gid, sid, did, scid, self.request, fnid)
-
+        status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                    data=self.request, fnid=fnid)
         if not status:
             return internal_server_error(errormsg=sql)
 
@@ -1165,7 +1166,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             SQL statements to create/update the Domain.
         """
 
-        status, sql = self._get_sql(gid, sid, did, scid, self.request, fnid)
+        status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                    data=self.request, fnid=fnid)
 
         if status:
             sql = re.sub('\n{2,}', '\n\n', sql)
@@ -1330,21 +1332,21 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         )
         return sql
 
-    def _get_sql(self, gid, sid, did, scid, data, fnid=None, is_sql=False,
-                 is_schema_diff=False):
+    def _get_sql(self, **kwargs):
         """
         Generates the SQL statements to create/update the Function.
 
         Args:
-            gid: Server Group Id
-            sid: Server Id
-            did: Database Id
-            scid: Schema Id
-            data: Function data
-            fnid: Function Id
-            is_sql: sql flag
-            is_schema_diff: schema diff flag
+            kwargs:
         """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        data = kwargs.get('data')
+        fnid = kwargs.get('fnid', None)
+        is_sql = kwargs.get('is_sql', False)
+        is_schema_diff = kwargs.get('is_schema_diff', False)
 
         vol_dict = {'v': 'VOLATILE', 's': 'STABLE', 'i': 'IMMUTABLE'}
         parallel_dict = {'u': 'UNSAFE', 's': 'SAFE', 'r': 'RESTRICTED'}
@@ -1707,13 +1709,27 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             status=200
         )
 
-    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
-                          diff_schema=None, drop_sql=False):
+    def get_sql_from_diff(self, **kwargs):
+        """
+        This function is used to get the DDL/DML statements.
+        :param kwargs
+        :return:
+        """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        diff_schema = kwargs.get('diff_schema', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
         if data:
             if diff_schema:
                 data['schema'] = diff_schema
-            status, sql = self._get_sql(gid, sid, did, scid, data, oid, False,
-                                        True)
+            status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                        data=data, fnid=oid, is_sql=False,
+                                        is_schema_diff=True)
             # Check if return type is changed then we need to drop the
             # function first and then recreate it.
             if 'prorettypename' in data:

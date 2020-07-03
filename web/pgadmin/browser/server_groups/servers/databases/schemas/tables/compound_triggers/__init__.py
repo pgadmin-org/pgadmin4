@@ -875,8 +875,22 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def get_sql_from_diff(self, gid, sid, did, scid, tid, oid,
-                          data=None, diff_schema=None, drop_sql=False):
+    def get_sql_from_diff(self, **kwargs):
+        """
+        This function is used to get the DDL/DML statements.
+        :param kwargs
+        :return:
+        """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        tid = kwargs.get('oid')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        diff_schema = kwargs.get('diff_schema', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
         if data:
             sql, name = compound_trigger_utils.get_sql(self.conn,
                                                        data,
