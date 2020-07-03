@@ -297,13 +297,6 @@ td.switch-cell > div.toggle {
 	font-weight: bold;
 }
 
-.navbar-brand:hover {
-	color: $color-brand !important;
-}
-.navbar-brand:focus {
-	color: $color-brand !important;
-}
-
 .btn-sm-sq {
   @extend .btn-sm;
   line-height: 0.7rem;

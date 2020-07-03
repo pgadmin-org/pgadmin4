@@ -71,16 +71,8 @@ define('pgadmin.node.column', [
         Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
       },
       dependentChanged: function () {
-        this.$el.empty();
-        var model = this.model,
-          column = this.column,
-          editable = this.column.get('editable'),
-          is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
-
-        if (is_editable){ this.$el.addClass('editable'); }
-        else { this.$el.removeClass('editable'); }
-
-        this.delegateEvents();
+        this.model.set(this.column.get('name'), null);
+        this.render();
         return this;
       },
       render: function() {

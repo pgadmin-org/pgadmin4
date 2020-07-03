@@ -5,6 +5,13 @@
 
 .backgrid td {
   font-weight: normal!important;
+  &.editable {
+    & .display-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      @extend .form-control;
+    }
+  }
 }
 
 .backgrid.table th.sortable > button {
@@ -62,6 +69,12 @@
   z-index: 10 !important;
 }
 
+.backgrid td.editor {
+  & input[type=text], & input[type=password] {
+    @extend .form-control;
+  }
+}
+
 .backgrid .string-cell.editor input[type=password] {
   text-align: left;
 }
@@ -97,17 +110,12 @@
 }
 
 .backgrid:not(.presentation) td.renderable:not(.editable):not(.delete-cell) {
-    background-color: $color-gray-lighter;
     // if transparent border then setting color will help
     border-bottom-color: $color-gray-lighter;
 }
 
 .backgrid tr.header td.renderable:not(.editable):not(.delete-cell) {
     background-color: $color-gray-light;
-}
-
-.backgrid:not(.presentation) td.renderable.editable:not(.delete-cell):not(.edit-cell) {
-    background-color: $input-bg;
 }
 
 .sql-editor-grid-container .backgrid > thead > th.renderable,

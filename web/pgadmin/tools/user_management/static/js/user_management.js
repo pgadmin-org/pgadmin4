@@ -45,6 +45,7 @@ define([
       },
       dependentChanged: function () {
         this.$el.empty();
+        this.render();
         var model = this.model,
           column = this.column,
           editable = this.column.get('editable'),

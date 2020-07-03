@@ -5,6 +5,11 @@ $theme-colors: (
   "warning": $color-warning,
 );
 
+/* Certain variables are required in JS directly */
+:root {
+  --border-color: #{$border-color};
+}
+
 @import "node_modules/bootstrap/scss/bootstrap";
 
 @import 'webcabin.pgadmin';

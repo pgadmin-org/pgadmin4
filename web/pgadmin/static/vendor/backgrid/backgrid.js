@@ -889,7 +889,8 @@ var Cell = Backgrid.Cell = Backbone.View.extend({
     $el.empty();
     var model = this.model;
     var columnName = this.column.get("name");
-    $el.text(this.formatter.fromRaw(model.get(columnName), model));
+    var value = this.formatter.fromRaw(model.get(columnName), model);
+    $el.append($(`<span class="display-text" title="${value}">${value}</span>`));
     $el.addClass(columnName);
     this.updateStateClassesMaybe();
     this.delegateEvents();
@@ -932,9 +933,15 @@ var Cell = Backgrid.Cell = Backbone.View.extend({
 
       // Need to redundantly undelegate events for Firefox
       this.undelegateEvents();
+      var dispText = this.$el.find('.display-text');
+      var width = '100%';
+      if(dispText.length === 1) {
+        width = dispText.width();
+      }
       this.$el.empty();
       this.$el.append(this.currentEditor.$el);
       this.currentEditor.render();
+      this.currentEditor.$el.css('min-width',width);
       this.$el.addClass("editor");
 
       model.trigger("backgrid:editing", model, column, this, this.currentEditor);

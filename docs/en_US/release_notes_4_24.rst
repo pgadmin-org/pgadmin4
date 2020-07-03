@@ -22,6 +22,8 @@ Bug fixes
 
 | `Issue #3851 <https://redmine.postgresql.org/issues/3851>`_ -  Add proper indentation to the code while generating functions, procedures, and trigger functions.
 | `Issue #4235 <https://redmine.postgresql.org/issues/4235>`_ -  Fixed tab indent issue on a selection of lines is deleting the content when 'use spaces == true' in the preferences.
+| `Issue #5287 <https://redmine.postgresql.org/issues/5287>`_ -  Fixed dark theme-related CSS and modify the color codes.
+| `Issue #5470 <https://redmine.postgresql.org/issues/5470>`_ -  Fixed backgrid row hover issue where on hover background color is set for edit and delete cell only.
 | `Issue #5530 <https://redmine.postgresql.org/issues/5530>`_ -  Ensure that the referenced table should be displayed on foreign key constraints.
 | `Issue #5621 <https://redmine.postgresql.org/issues/5621>`_ -  Remove extra brackets from reverse engineering SQL of RLS Policy.
 | `Issue #5629 <https://redmine.postgresql.org/issues/5629>`_ -  Fixed an issue where the user is able to edit properties when some of the collection nodes are selected.

@@ -214,20 +214,23 @@
 }
 
 .ajs-message.ajs-error.ajs-visible {
-  background: $color-danger-lighter;
-  border: $border-width solid $color-danger;
+  background: $alert-danger-bg;
+  border: $border-width solid $alert-danger-color;
+  color: $alert-danger-color;
   @extend .ajs-text-smoothing;
 }
 
 .ajs-message.ajs-success.ajs-visible {
-  background: $color-success-light;
-  border: $border-width solid $color-success;
+  background: $alert-success-bg;
+  border: $border-width solid $alert-success-color;
+  color: $alert-success-color;
   @extend .ajs-text-smoothing;
 }
 
 .ajs-message.ajs-visible {
-  background: $color-primary-light;
-  border: $border-width solid $color-primary;
+  background: $alert-primary-bg;
+  border: $border-width solid $alert-primary-color;
+  color: $alert-primary-color;
   @extend .ajs-text-smoothing;
 }
 

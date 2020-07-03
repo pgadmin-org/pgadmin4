@@ -36,16 +36,8 @@ define('pgadmin.node.type', [
       Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
     },
     dependentChanged: function () {
-      this.$el.empty();
-      var model = this.model;
-      var column = this.column;
-      var editable = this.column.get('editable');
-
-      var is_editable = _.isFunction(editable) ? !!editable.apply(column, [model]) : !!editable;
-      if (is_editable){ this.$el.addClass('editable'); }
-      else { this.$el.removeClass('editable'); }
-
-      this.delegateEvents();
+      this.model.set(this.column.get('name'), null);
+      this.render();
       return this;
     },
     remove: Backgrid.Extension.DependentCell.prototype.remove,
@@ -269,6 +261,7 @@ define('pgadmin.node.type', [
       collection_type: 'coll-type',
       hasSQL: true,
       hasDepends: true,
+      width: pgBrowser.stdW.md + 'px',
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)

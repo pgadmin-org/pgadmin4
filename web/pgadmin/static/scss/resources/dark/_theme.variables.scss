@@ -8,7 +8,6 @@ $color-primary: #234d6e;
 $color-primary-fg: $color-fg;
 $color-primary-light: #323E43;
 $color-primary-light-fg: $color-primary-fg;
-$color-primary-dark: #15354f;
 
 $color-secondary: #6b6b6b;
 
@@ -36,6 +35,9 @@ $border-color: #4a4a4a;
 $shadow-base-color: #111111;
 
 $text-muted: #8A8A8A;
+
+$table-hover-color: #fff;
+
 $input-bg: $color-bg;
 $input-color: $color-fg;
 $input-border-color: #6b6b6b;
@@ -47,6 +49,13 @@ $popover-body-color: $color-fg;
 $active-color: $color-fg;
 
 $header-bg: $color-gray-lighter;
+
+$alert-primary-bg: $color-bg;
+$alert-primary-color: #50B0F0;
+$alert-danger-bg: $color-bg;
+$alert-danger-color: $color-danger;
+$alert-success-bg: $color-bg;
+$alert-success-color: $color-success;
 
 $table-bg: $color-gray-lighter;
 

@@ -44,6 +44,7 @@
   align-self: center;
   // To make sure IE picks up the correct font
   font-family: $font-family-primary;
+  color: $color-fg;
 }
 
 .alert-info {
@@ -114,20 +115,23 @@
 
   .error-in-footer {
     border-radius: $border-radius;
-    border: 1px solid $color-danger-light;
-    background: $color-danger-lighter;
+    background: $alert-danger-bg;
+    border: $border-width solid $alert-danger-color;
+    color: $alert-danger-color;
   }
 
   .success-in-footer {
     border-radius: $border-radius;
-    border: 1px solid $color-success-light;
-    background: $color-success-light;
+    background: $alert-success-bg;
+    border: $border-width solid $alert-success-color;
+    color: $alert-success-color;
   }
 
   .info-in-footer {
     border-radius: $border-radius;
-    border: 1px solid $color-primary;
-    background: $color-primary-light;
+    background: $alert-primary-bg;
+    border: $border-width solid $alert-primary-color;
+    color: $alert-primary-color;
 
     .fa {
         font-size: 1rem;

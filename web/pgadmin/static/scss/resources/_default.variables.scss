@@ -11,7 +11,6 @@ $color-primary: #326690 !default;
 $color-primary-fg: $white !default;
 $color-primary-light: #d6effc !default;
 $color-primary-light-fg: $color-primary !default;
-$color-primary-dark: #295c85 !default;
 
 $color-secondary: $white !default;
 
@@ -64,6 +63,13 @@ $text-muted: #667185 !default;
 $header-bg: $color-bg !default;
 
 $tree-font-size: 0.815rem;
+
+$alert-primary-bg: $color-primary-light !default;
+$alert-primary-color: $color-primary !default;
+$alert-danger-bg: $color-danger-lighter !default;
+$alert-danger-color: $color-danger !default;
+$alert-success-bg: $color-success-light !default;
+$alert-success-color: $color-success !default;
 
 $navbar-bg: $color-primary;
 $navbar-font-size: 0.925rem;
@@ -130,6 +136,7 @@ $nav-tabs-link-active-border-color: none;
 $table-cell-padding: 0.25rem;
 $table-header-cell-padding: 0.75rem;
 $table-hover-bg: none; //we will use our own classes
+$table-hover-color: #000 !default;
 $table-active-bg: $color-primary-light;
 $table-border-width: $border-width;
 $table-border-color: $border-color;

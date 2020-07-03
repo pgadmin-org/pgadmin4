@@ -801,6 +801,7 @@ define('pgadmin.dashboard', [
 
     reflectPreferences: function() {
       var self = this;
+      var tickColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color');
 
       /* We will use old preferences for selective graph updates on preference change */
       if(self.preferences) {
@@ -828,6 +829,10 @@ define('pgadmin.dashboard', [
           },
           yaxis: {
             autoscale: 1,
+          },
+          grid: {
+            color: 'transparent',
+            tickColor: tickColor,
           },
         };
 

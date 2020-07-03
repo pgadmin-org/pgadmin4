@@ -440,7 +440,7 @@ define([
       var alertMessage =
       `<div class="d-flex px-3 py-2">
         <div class="pr-2">
-          <i class="fa fa-check text-success" aria-hidden="true"></i>
+          <i class="fa fa-check" aria-hidden="true"></i>
         </div>
         <div class="text-body" role="status">${message}</div>
       </div>`;
@@ -450,7 +450,7 @@ define([
       var alertMessage =
       `<div class="d-flex px-3 py-2">
         <div class="pr-2">
-          <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
         </div>
         <div class="text-body" role="status">${message}</div>
       </div>`;
@@ -460,7 +460,7 @@ define([
       var alertMessage =
       `<div class="d-flex px-3 py-2">
         <div class="mr-3">
-          <i class="fa fa-info text-primary" aria-hidden="true"></i>
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
         </div>
         <div class="text-body" role="status">${message}</div>
       </div>`;

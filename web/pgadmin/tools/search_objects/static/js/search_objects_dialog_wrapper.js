@@ -29,7 +29,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
           <div class="error-in-footer">
             <div class="d-flex px-2 py-1">
               <div class="pr-2">
-                <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true" role="img"></i>
+                <i class="fa fa-exclamation-triangle" aria-hidden="true" role="img"></i>
               </div>
               <div role="alert" class="alert-text">${text}</div>
               <div class="ml-auto close-error-bar">
@@ -47,7 +47,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
           <div class="info-in-footer">
             <div class="d-flex px-2 py-1">
               <div class="pr-2">
-                <i class="fa fa-info-circle text-primary" aria-hidden="true"></i>
+                <i class="fa fa-info-circle" aria-hidden="true"></i>
               </div>
               <div class="alert-text" role="alert">${text}</div>
             </div>
