@@ -24,7 +24,7 @@ describe('alertify_wrapper', function () {
 
       expect(spyObj).toHaveBeenCalled();
       expect(spyObj.calls.mostRecent().args[0]).toContain('Yay, congrats!');
-      expect(spyObj.calls.mostRecent().args[0]).toContain('class="fa fa-check text-success"');
+      expect(spyObj.calls.mostRecent().args[0]).toContain('class="fa fa-check"');
     });
   });
 
@@ -35,7 +35,7 @@ describe('alertify_wrapper', function () {
 
       expect(spyOrigError).toHaveBeenCalled();
       expect(spyOrigError.calls.mostRecent().args[0]).toContain('bad, very bad');
-      expect(spyOrigError.calls.mostRecent().args[0]).toContain('class="fa fa-exclamation-triangle text-danger"');
+      expect(spyOrigError.calls.mostRecent().args[0]).toContain('class="fa fa-exclamation-triangle"');
     });
   });
 
