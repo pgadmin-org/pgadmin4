@@ -200,22 +200,6 @@ function initFilterDialog(alertify, pgBrowser) {
           $(this.filter_obj.getWrapperElement()).css('font-size', sql_font_size);
 
           setTimeout(function() {
-            // Added extra logic to handel tab indent and use space setting.
-            that.filter_obj.setOption('extraKeys', {
-              Tab: (cm) => {
-                if(cm.somethingSelected()){
-                  cm.execCommand('indentMore');
-                } else {
-                  if (!that.preferences.use_spaces) {
-                    cm.replaceSelection('\t', 'end', '+input');
-                  }
-                  else {
-                    cm.execCommand('insertSoftTab');
-                  }
-                }
-              },
-              'Shift-Tab': (cm) => cm.execCommand('indentLess'),
-            });
             // Set focus on editor
             that.filter_obj.refresh();
             that.filter_obj.focus();

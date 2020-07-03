@@ -2527,22 +2527,6 @@ define([
         self.sqlCtrl.setOption('lineWrapping', sqlEditPreferences.wrap_code);
         self.sqlCtrl.setOption('autoCloseBrackets', sqlEditPreferences.insert_pair_brackets);
         self.sqlCtrl.setOption('matchBrackets', sqlEditPreferences.brace_matching);
-        // Added extra logic to handel tab indent and use space setting.
-        self.sqlCtrl.setOption('extraKeys', {
-          Tab: (cm) => {
-            if(cm.somethingSelected()){
-              cm.execCommand('indentMore');
-            } else {
-              if (!sqlEditPreferences.use_spaces) {
-                cm.replaceSelection('\t', 'end', '+input');
-              }
-              else {
-                cm.execCommand('insertSoftTab');
-              }
-            }
-          },
-          'Shift-Tab': (cm) => cm.execCommand('indentLess'),
-        });
         setTimeout(function() {
           if (self.sqlCtrl) self.sqlCtrl.refresh();
         }, 500);

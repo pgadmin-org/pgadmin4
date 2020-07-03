@@ -36,6 +36,23 @@ cmds.focusOut = function(){
   }
 };
 
-CodeMirror.keyMap.default['Esc'] = 'focusOut';
+CodeMirror.defineInitHook(function (codeMirror) {
+  codeMirror.addKeyMap({
+    Tab: function (cm) {
+      if(cm.somethingSelected()){
+        cm.execCommand('indentMore');
+      }
+      else {
+        if (cm.getOption('indentWithTabs')) {
+          cm.replaceSelection('\t', 'end', '+input');
+        }
+        else {
+          cm.execCommand('insertSoftTab');
+        }
+      }
+    },
+  });
+});
 
+CodeMirror.keyMap.default['Esc'] = 'focusOut';
 export default CodeMirror;
