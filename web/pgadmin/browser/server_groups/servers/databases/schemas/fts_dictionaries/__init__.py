@@ -564,8 +564,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                 status, res = self.conn.execute_dict(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
-
-                if not res['rows']:
+                elif not res['rows']:
                     return make_json_response(
                         success=0,
                         errormsg=_(
@@ -639,6 +638,37 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
+    def _get_sql_for_create(self, data, schema):
+        # Replace schema oid with schema name
+        new_data = data.copy()
+        new_data['schema'] = schema
+
+        if (
+            'template' in new_data and
+            'name' in new_data and
+            'schema' in new_data
+        ):
+            sql = render_template("/".join([self.template_path,
+                                            'create.sql']),
+                                  data=new_data,
+                                  conn=self.conn
+                                  )
+        else:
+            sql = u"-- definition incomplete"
+        return sql
+
+    def _check_template_name_and_schema_name(self, data, old_data):
+        if 'schema' not in data:
+            data['schema'] = old_data['schema']
+
+        # Handle templates and its schema name properly
+        if old_data['template_schema'] is not None and \
+                old_data['template_schema'] != "pg_catalog":
+            old_data['template'] = self.qtIdent(
+                self.conn, old_data['template_schema'],
+                old_data['template']
+            )
+
     def get_sql(self, gid, sid, did, scid, data, dcid=None):
         """
         This function will return SQL for model data
@@ -660,21 +690,11 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-
-            if len(res['rows']) == 0:
+            elif len(res['rows']) == 0:
                 return gone(_("Could not find the FTS Dictionary node."))
 
             old_data = res['rows'][0]
-            if 'schema' not in data:
-                data['schema'] = old_data['schema']
-
-            # Handle templates and its schema name properly
-            if old_data['template_schema'] is not None and \
-                    old_data['template_schema'] != "pg_catalog":
-                old_data['template'] = self.qtIdent(
-                    self.conn, old_data['template_schema'],
-                    old_data['template']
-                )
+            self._check_template_name_and_schema_name(data, old_data)
 
             # If user has changed the schema then fetch new schema directly
             # using its oid otherwise fetch old schema name using its oid
@@ -721,22 +741,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=schema)
 
-            # Replace schema oid with schema name
-            new_data = data.copy()
-            new_data['schema'] = schema
-
-            if (
-                'template' in new_data and
-                'name' in new_data and
-                'schema' in new_data
-            ):
-                sql = render_template("/".join([self.template_path,
-                                                'create.sql']),
-                                      data=new_data,
-                                      conn=self.conn
-                                      )
-            else:
-                sql = u"-- definition incomplete"
+            sql = self._get_sql_for_create(data, schema)
             return sql.strip('\n'), data['name']
 
     @check_precondition

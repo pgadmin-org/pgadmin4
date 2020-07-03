@@ -568,8 +568,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                 status, res = self.conn.execute_dict(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
-
-                if not res['rows']:
+                elif not res['rows']:
                     return make_json_response(
                         success=0,
                         errormsg=_(
@@ -643,6 +642,29 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
+    def _get_sql_for_create(self, data, schema):
+        # Replace schema oid with schema name
+        new_data = data.copy()
+        new_data['schema'] = schema
+
+        if (
+            'name' in new_data and
+            'schema' in new_data
+        ):
+            sql = render_template("/".join([self.template_path,
+                                            'create.sql']),
+                                  data=new_data,
+                                  conn=self.conn
+                                  )
+        else:
+            sql = u"-- definition incomplete"
+        return sql
+
+    @staticmethod
+    def _replace_schema_oid_with_schema_name(new_schema, new_data):
+        if 'schema' in new_data:
+            new_data['schema'] = new_schema
+
     def get_sql(self, gid, sid, did, scid, data, cfgid=None):
         """
         This function will return SQL for model data
@@ -663,8 +685,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-
-            if len(res['rows']) == 0:
+            elif len(res['rows']) == 0:
                 return gone(_("Could not find the FTS Configuration node."))
 
             old_data = res['rows'][0]
@@ -681,10 +702,9 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=new_schema)
 
-            # Replace schema oid with schema name
             new_data = data.copy()
-            if 'schema' in new_data:
-                new_data['schema'] = new_schema
+            # Replace schema oid with schema name
+            self._replace_schema_oid_with_schema_name(new_schema, new_data)
 
             # Fetch old schema name using old schema oid
             sql = render_template(
@@ -719,21 +739,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=schema)
 
-            # Replace schema oid with schema name
-            new_data = data.copy()
-            new_data['schema'] = schema
-
-            if (
-                'name' in new_data and
-                'schema' in new_data
-            ):
-                sql = render_template("/".join([self.template_path,
-                                                'create.sql']),
-                                      data=new_data,
-                                      conn=self.conn
-                                      )
-            else:
-                sql = u"-- definition incomplete"
+            sql = self._get_sql_for_create(data, schema)
             return sql.strip('\n'), data['name']
 
     @check_precondition

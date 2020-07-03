@@ -970,6 +970,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if 'argtype' in a:
             args += a['argtype']
             args_without_name.append(a['argtype'])
+        return args, args_without_name
 
     def _get_arguments(self, args_list, args, args_without_name):
         cnt = 1
@@ -989,7 +990,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     args += self.qtIdent(
                         self.conn, a['argname']) + " "
 
-                FunctionView._check_argtype(args, args_without_name, a)
+                args, args_without_name = FunctionView._check_argtype(
+                    args,
+                    args_without_name,
+                    a
+                )
 
                 if cnt < len(args_list):
                     args += ', '
@@ -1194,7 +1199,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     @staticmethod
     def _prepare_final_dict(data, old_data, chngd_variables, del_variables,
                             all_ids_dict):
-
         # In case of schema diff we don't want variables from
         # old data
         if not all_ids_dict['is_schema_diff']:

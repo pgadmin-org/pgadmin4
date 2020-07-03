@@ -543,6 +543,45 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
+    def _replace_schema_oid_with_name(self, new_schema, old_data,
+                                      new_data):
+        # Replace schema oid with schema name
+
+        if 'schema' in new_data:
+            new_data['schema'] = new_schema
+
+        # Fetch old schema name using old schema oid
+        sql = render_template(
+            "/".join([self.template_path, 'schema.sql']),
+            data=old_data)
+
+        status, old_schema = self.conn.execute_scalar(sql)
+        if not status:
+            return True, old_schema
+
+        # Replace old schema oid with old schema name
+        old_data['schema'] = old_schema
+        return False, ''
+
+    def _get_sql_for_create(self, data, schema):
+        # Replace schema oid with schema name
+        new_data = data.copy()
+        new_data['schema'] = schema
+
+        if (
+            'tmpllexize' in new_data and
+            'name' in new_data and
+            'schema' in new_data
+        ):
+            sql = render_template("/".join([self.template_path,
+                                            'create.sql']),
+                                  data=new_data,
+                                  conn=self.conn
+                                  )
+        else:
+            sql = u"-- definition incomplete"
+        return sql
+
     def get_sql(self, gid, sid, did, scid, data, tid=None):
         """
         This function will return SQL for model data
@@ -550,6 +589,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         :param sid: server id
         :param did: database id
         :param scid: schema id
+        :param data: sql data
         :param tid: fts tempate id
         """
 
@@ -564,7 +604,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
+            elif len(res['rows']) == 0:
                 return gone(
                     gettext("Could not find the requested FTS template.")
                 )
@@ -586,25 +626,18 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # Replace schema oid with schema name
             new_data = data.copy()
-            if 'schema' in new_data:
-                new_data['schema'] = new_schema
-
-            # Fetch old schema name using old schema oid
-            sql = render_template(
-                "/".join([self.template_path, 'schema.sql']),
-                data=old_data)
-
-            status, old_schema = self.conn.execute_scalar(sql)
-            if not status:
-                return internal_server_error(errormsg=old_schema)
-
-            # Replace old schema oid with old schema name
-            old_data['schema'] = old_schema
+            error, errmsg = self._replace_schema_oid_with_name(new_schema,
+                                                               old_data,
+                                                               new_data)
+            if error:
+                print('ERROR INSIDE UPDATE:: {0}'.format(errmsg))
+                return internal_server_error(errormsg=errmsg)
 
             sql = render_template(
                 "/".join([self.template_path, 'update.sql']),
                 data=new_data, o_data=old_data
             )
+
             # Fetch sql query for modified data
             if 'name' in data:
                 return sql.strip('\n'), data['name']
@@ -618,22 +651,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=schema)
 
-            # Replace schema oid with schema name
-            new_data = data.copy()
-            new_data['schema'] = schema
-
-            if (
-                'tmpllexize' in new_data and
-                'name' in new_data and
-                'schema' in new_data
-            ):
-                sql = render_template("/".join([self.template_path,
-                                                'create.sql']),
-                                      data=new_data,
-                                      conn=self.conn
-                                      )
-            else:
-                sql = u"-- definition incomplete"
+            sql = self._get_sql_for_create(data, schema)
             return sql.strip('\n'), data['name']
 
     @check_precondition
