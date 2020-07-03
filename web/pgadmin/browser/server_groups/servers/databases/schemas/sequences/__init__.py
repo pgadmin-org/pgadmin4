@@ -689,8 +689,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     )
 
     @check_precondition(action="sql")
-    def sql(self, gid, sid, did, scid, seid, diff_schema=None,
-            json_resp=True):
+    def sql(self, gid, sid, did, scid, seid, **kwargs):
         """
         This function will generate sql for sql panel
 
@@ -703,6 +702,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             diff_schema:  Schema diff target schema name
             json_resp: json response or plain text response
         """
+        diff_schema = kwargs.get('diff_schema', None)
+        json_resp = kwargs.get('json_resp', True)
 
         sql = render_template(
             "/".join([self.template_path, 'properties.sql']),

@@ -392,10 +392,13 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, rid=None, only_sql=False):
+    def delete(self, gid, sid, did, scid, tid, **kwargs):
         """
         This function will drop a rule object
         """
+        rid = kwargs.get('rid', None)
+        only_sql = kwargs.get('only_sql', False)
+
         if rid is None:
             data = request.form if request.form else json.loads(
                 request.data, encoding='utf-8'

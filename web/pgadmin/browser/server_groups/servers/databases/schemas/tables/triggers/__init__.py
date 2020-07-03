@@ -575,7 +575,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, trid=None, only_sql=False):
+    def delete(self, gid, sid, did, scid, tid, **kwargs):
         """
         This function will updates existing the trigger object
 
@@ -587,6 +587,9 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
            tid: Table ID
            trid: Trigger ID
         """
+        trid = kwargs.get('trid', None)
+        only_sql = kwargs.get('only_sql', False)
+
         if trid is None:
             data = request.form if request.form else json.loads(
                 request.data, encoding='utf-8'

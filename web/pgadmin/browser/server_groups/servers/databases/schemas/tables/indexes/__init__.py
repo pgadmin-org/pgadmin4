@@ -645,8 +645,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, idx=None,
-               only_sql=False):
+    def delete(self, gid, sid, did, scid, tid, **kwargs):
         """
         This function will updates existing the schema object
 
@@ -658,6 +657,9 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
            tid: Table ID
            idx: Index ID
         """
+        idx = kwargs.get('idx', None)
+        only_sql = kwargs.get('only_sql', False)
+
         if idx is None:
             data = request.form if request.form else json.loads(
                 request.data, encoding='utf-8'

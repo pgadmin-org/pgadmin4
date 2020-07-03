@@ -668,8 +668,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         return sql, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition(action="sql")
-    def sql(self, gid, sid, did, scid, pkgid, diff_schema=None,
-            json_resp=True):
+    def sql(self, gid, sid, did, scid, pkgid, **kwargs):
         """
         This function will generate sql for sql panel
 
@@ -682,6 +681,9 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             diff_schema:  Schema diff target schema name
             json_resp: json response or plain text response
         """
+        diff_schema = kwargs.get('diff_schema', None)
+        json_resp = kwargs.get('json_resp', True)
+
         try:
             sql = render_template(
                 "/".join([self.template_path, 'properties.sql']), scid=scid,

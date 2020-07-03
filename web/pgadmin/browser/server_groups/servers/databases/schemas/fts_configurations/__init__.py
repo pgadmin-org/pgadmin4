@@ -882,8 +882,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, cfgid, diff_schema=None,
-            json_resp=True):
+    def sql(self, gid, sid, did, scid, cfgid, **kwargs):
         """
         This function will reverse generate sql for sql panel
         :param gid: group id
@@ -894,6 +893,9 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         :param diff_schema: Target Schema for schema diff
         :param json_resp: True then return json response
         """
+        diff_schema = kwargs.get('diff_schema', None)
+        json_resp = kwargs.get('json_resp', True)
+
         try:
             sql = render_template(
                 "/".join([self.template_path, 'sql.sql']),

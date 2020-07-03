@@ -660,8 +660,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         return SQL.strip('\n'), name
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, syid, diff_schema=None,
-            json_resp=True):
+    def sql(self, gid, sid, did, scid, syid, **kwargs):
         """
         This function will generates reverse engineered sql for synonym object
 
@@ -674,6 +673,9 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
            diff_schema:
            json_resp:
         """
+        diff_schema = kwargs.get('diff_schema', None)
+        json_resp = kwargs.get('json_resp', True)
+
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
                               scid=scid, syid=syid)

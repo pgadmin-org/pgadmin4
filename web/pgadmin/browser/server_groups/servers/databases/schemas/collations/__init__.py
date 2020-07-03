@@ -698,8 +698,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             return SQL.strip('\n'), data['name']
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, coid, diff_schema=None,
-            json_resp=True):
+    def sql(self, gid, sid, did, scid, coid, **kwargs):
         """
         This function will generates reverse engineered sql for collation
         object
@@ -713,6 +712,9 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
            diff_schema: Target Schema for schema diff
            json_resp: True then return json response
         """
+        diff_schema = kwargs.get('diff_schema', None)
+        json_resp = kwargs.get('json_resp', True)
+
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),
                               scid=scid, coid=coid)

@@ -1016,8 +1016,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 resp_data['pronamespace'])
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, fnid=None, diff_schema=None,
-            json_resp=True):
+    def sql(self, gid, sid, did, scid, fnid=None, **kwargs):
         """
         Returns the SQL for the Function object.
 
@@ -1028,6 +1027,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             scid: Schema Id
             fnid: Function Id
         """
+        diff_schema = kwargs.get('diff_schema', None)
+        json_resp = kwargs.get('json_resp', True)
+
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
         # Most probably this is due to error
         if not isinstance(resp_data, dict):

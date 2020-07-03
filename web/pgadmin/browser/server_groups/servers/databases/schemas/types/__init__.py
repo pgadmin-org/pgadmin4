@@ -1339,8 +1339,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, tid, diff_schema=None,
-            json_resp=True):
+    def sql(self, gid, sid, did, scid, tid, **kwargs):
         """
         This function will generates reverse engineered sql for type object
 
@@ -1353,6 +1352,9 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
            diff_schema: Target Schema for schema diff
            json_resp: True then return json response
         """
+        diff_schema = kwargs.get('diff_schema', None)
+        json_resp = kwargs.get('json_resp', True)
+
         SQL = render_template(
             "/".join([self.template_path,
                       'properties.sql']),

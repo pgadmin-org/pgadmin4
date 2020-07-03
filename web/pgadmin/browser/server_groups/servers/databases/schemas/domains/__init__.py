@@ -690,8 +690,7 @@ AND relkind != 'c'))"""
         )
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, doid=None, diff_schema=None,
-            json_resp=True):
+    def sql(self, gid, sid, did, scid, doid=None, **kwargs):
         """
         Returns the SQL for the Domain object.
 
@@ -704,6 +703,8 @@ AND relkind != 'c'))"""
             diff_schema: Target Schema for schema diff
             json_resp: True then return json response
         """
+        diff_schema = kwargs.get('diff_schema', None)
+        json_resp = kwargs.get('json_resp', True)
 
         SQL = render_template("/".join([self.template_path,
                                         'properties.sql']),

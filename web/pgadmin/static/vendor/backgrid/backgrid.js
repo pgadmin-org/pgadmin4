@@ -889,7 +889,7 @@ var Cell = Backgrid.Cell = Backbone.View.extend({
     $el.empty();
     var model = this.model;
     var columnName = this.column.get("name");
-    var value = this.formatter.fromRaw(model.get(columnName), model);
+    var value = _.escape(this.formatter.fromRaw(model.get(columnName), model));
     $el.append($(`<span class="display-text" title="${value}">${value}</span>`));
     $el.addClass(columnName);
     this.updateStateClassesMaybe();

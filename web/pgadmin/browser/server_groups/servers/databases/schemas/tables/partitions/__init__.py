@@ -717,7 +717,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def delete(self, gid, sid, did, scid, tid, ptid=None, only_sql=False):
+    def delete(self, gid, sid, did, scid, tid, ptid=None):
         """
         This function will delete the table object
 
