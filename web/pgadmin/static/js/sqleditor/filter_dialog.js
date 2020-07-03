@@ -230,9 +230,9 @@ let FilterDialog = {
                     self.showFilterProgress[0]
                   ).addClass('d-none');
 
-                  let response = result.data.data;
+                  let filterResponse = result.data.data;
 
-                  if (response.status) {
+                  if (filterResponse.status) {
                     setTimeout(
                       function() {
                         self.close(); // Close the dialog now
@@ -243,7 +243,7 @@ let FilterDialog = {
                   } else {
                     Alertify.alert(
                       gettext('Validation Error'),
-                      response.result
+                      filterResponse.result
                     );
                   }
 

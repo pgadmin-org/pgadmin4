@@ -607,9 +607,9 @@ describe('queryToolActions', () => {
     });
   });
 
-  function setUpSpies(selectedQueryString, entireQueryString) {
-    getValueSpy = jasmine.createSpy('getValueSpy').and.returnValue(entireQueryString);
-    getSelectionSpy = jasmine.createSpy('getSelectionSpy').and.returnValue(selectedQueryString);
+  function setUpSpies(selectedQueryStringArg, entireQueryStringArg) {
+    getValueSpy = jasmine.createSpy('getValueSpy').and.returnValue(entireQueryStringArg);
+    getSelectionSpy = jasmine.createSpy('getSelectionSpy').and.returnValue(selectedQueryStringArg);
     replaceSelectionSpy = jasmine.createSpy('replaceSelectionSpy');
 
     sqlEditorController = {
@@ -622,7 +622,7 @@ describe('queryToolActions', () => {
           uncomment: jasmine.createSpy('uncommentSpy'),
           replaceSelection: replaceSelectionSpy,
           getCursor: (isFrom) => {
-            return entireQueryString.indexOf(selectedQueryString) + (isFrom ? 0 : selectedQueryString.length);
+            return entireQueryStringArg.indexOf(selectedQueryStringArg) + (isFrom ? 0 : selectedQueryStringArg.length);
           },
         },
       },

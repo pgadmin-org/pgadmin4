@@ -373,8 +373,8 @@ export default class SchemaDiffUI {
 
     // Grid filter
     self.filter = function (item) {
-      let self = this;
-      if (self.sel_filters.indexOf(item.status) !== -1) return true;
+      let self_local = this;
+      if (self_local.sel_filters.indexOf(item.status) !== -1) return true;
       return false;
     };
 
@@ -586,12 +586,12 @@ export default class SchemaDiffUI {
           placeholder: gettext('Select database...'),
         },
         disabled: function(m) {
-          let self = this;
+          let self_local = this;
           if (!_.isUndefined(m.get('source_sid')) && !_.isNull(m.get('source_sid'))
               && m.get('source_sid') !== '') {
             setTimeout(function() {
-              if (self.options.length > 0) {
-                m.set('source_did', self.options[0].value);
+              if (self_local.options.length > 0) {
+                m.set('source_did', self_local.options[0].value);
               }
             }, 10);
             return false;
@@ -620,12 +620,12 @@ export default class SchemaDiffUI {
           placeholder: gettext('Select schema...'),
         },
         disabled: function(m) {
-          let self = this;
+          let self_local = this;
           if (!_.isUndefined(m.get('source_did')) && !_.isNull(m.get('source_did'))
               && m.get('source_did') !== '') {
             setTimeout(function() {
-              if (self.options.length > 0) {
-                m.set('source_scid', self.options[0].value);
+              if (self_local.options.length > 0) {
+                m.set('source_scid', self_local.options[0].value);
               }
             }, 10);
             return false;

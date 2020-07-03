@@ -1158,7 +1158,7 @@ define([
                         self.releaseObjects();
                         self.close();
                       },
-                      error: function(m, jqxhr) {
+                      error: function(model, jqxhr) {
                         Alertify.pgNotifier(
                           'error', jqxhr,
                           gettext('Error saving properties')

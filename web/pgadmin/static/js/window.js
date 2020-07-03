@@ -12,22 +12,22 @@ let getWindowOpener = (opener) => {
 };
 
 let pgWindow = function() {
-  let pgWindow = null;
+  let localPgWindow = null;
   try {
     if(window.opener && window.opener.pgAdmin) {
       /* Windows can be opened at multiple levels */
-      pgWindow = getWindowOpener(window.opener);
+      localPgWindow = getWindowOpener(window.opener);
     } else if(window.parent && window.parent.pgAdmin){
-      pgWindow = window.parent;
+      localPgWindow = window.parent;
     } else if(window.top && window.top.pgAdmin){
-      pgWindow = window.top;
+      localPgWindow = window.top;
     } else {
-      pgWindow = window;
+      localPgWindow = window;
     }
   } catch (error) {
-    pgWindow = window;
+    localPgWindow = window;
   }
-  return pgWindow;
+  return localPgWindow;
 }();
 
 export default pgWindow;

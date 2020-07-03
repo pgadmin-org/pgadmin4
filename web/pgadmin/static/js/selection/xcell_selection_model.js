@@ -142,12 +142,12 @@ define([
       function shouldScrollToRightmostColumn() { return anchorActiveCell.cell === newSelectedRange.fromCell; }
 
       function getMobileCellFromRange(range, activeCell) {
-        var mobileCell = {};
+        var localMobileCell = {};
 
-        mobileCell.row = range.fromRow === activeCell.row ? range.toRow : range.fromRow;
-        mobileCell.cell = range.fromCell === activeCell.cell ? range.toCell : range.fromCell;
+        localMobileCell.row = range.fromRow === activeCell.row ? range.toRow : range.fromRow;
+        localMobileCell.cell = range.fromCell === activeCell.cell ? range.toCell : range.fromCell;
 
-        return mobileCell;
+        return localMobileCell;
       }
 
       function getNewRange(rangeCorner, oppositeCorner) {

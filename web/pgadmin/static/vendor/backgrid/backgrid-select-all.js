@@ -57,13 +57,13 @@
       }
 
       var column = this.column, model = this.model, $el = this.$el;
-      this.listenTo(column, "change:renderable", function (column, renderable) {
+      this.listenTo(column, "change:renderable", function (col, renderable) {
         $el.toggleClass("renderable", renderable);
       });
 
       if (Backgrid.callByNeed(column.renderable(), column, model)) $el.addClass("renderable");
 
-      this.listenTo(model, "backgrid:select", function (model, selected) {
+      this.listenTo(model, "backgrid:select", function (mod, selected) {
         this.checkbox().prop("checked", selected).change();
       });
     },
@@ -214,7 +214,7 @@
       });
 
       var column = this.column, $el = this.$el;
-      this.listenTo(column, "change:renderable", function (column, renderable) {
+      this.listenTo(column, "change:renderable", function (col, renderable) {
         $el.toggleClass("renderable", renderable);
       });
 

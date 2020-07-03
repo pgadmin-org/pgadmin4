@@ -616,8 +616,8 @@ define('pgadmin.node.table', [
                     var removedCols = primary_key_column_coll.where({column:column_name});
                     if (removedCols.length > 0) {
                       primary_key_column_coll.remove(removedCols);
-                      _.each(removedCols, function(m) {
-                        m.destroy();
+                      _.each(removedCols, function(local_model) {
+                        local_model.destroy();
                       });
                       if (primary_key_column_coll.length == 0) {
                         /* Ideally above line of code should be "primary_key_coll.reset()".

@@ -89,10 +89,10 @@ define([
       if (!alertify.ChangePassword) {
         alertify.dialog('ChangePassword', function factory() {
           return {
-            main: function(title, url) {
+            main: function(alertTitle, alertUrl) {
               this.set({
-                'title': title,
-                'url': url,
+                'title': alertTitle,
+                'url': alertUrl,
               });
             },
             build: function() {
@@ -195,10 +195,10 @@ define([
       if(!alertify.PgaLogin) {
         alertify.dialog('PgaLogin' ,function factory() {
           return {
-            main: function(title, url) {
+            main: function(alertTitle, alertUrl) {
               this.set({
-                'title': title,
-                'url': url,
+                'title': alertTitle,
+                'url': alertUrl,
               });
             },
             build: function() {
@@ -241,11 +241,11 @@ define([
               // create the iframe element
               var self = this,
                 iframe = document.createElement('iframe'),
-                url = this.setting('url');
+                frameUrl = this.setting('url');
 
               iframe.onload = function() {
                 var doc = this.contentDocument || this.contentWindow.document;
-                if (doc.location.href.indexOf(url) == -1) {
+                if (doc.location.href.indexOf(frameUrl) == -1) {
                   // login successful.
 
                   this.contentWindow.stop();
@@ -260,7 +260,7 @@ define([
               iframe.frameBorder = 'no';
               iframe.width = '100%';
               iframe.height = '100%';
-              iframe.src = url;
+              iframe.src = frameUrl;
               // add it to the dialog
               self.elements.content.appendChild(iframe);
             },

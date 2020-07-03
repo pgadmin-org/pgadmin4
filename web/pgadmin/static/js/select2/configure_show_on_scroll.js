@@ -11,10 +11,10 @@ export default function (options) {
      * The trick is, ajax: {} will also work even if you're actually not
      * using ajax.
      */
-    let ScrollDataAdapter = function ($element, options) {
+    let ScrollDataAdapter = function ($element, dropdownOptions) {
       this.$element = $element;
-      this.options = options;
-      this._dataToConvert = options.get('data') || [];
+      this.options = dropdownOptions;
+      this._dataToConvert = dropdownOptions.get('data') || [];
     };
 
     let BaseAdapter = null;

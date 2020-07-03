@@ -378,10 +378,10 @@ describe('ColumnSelector', function () {
     });
   });
 
-  function setupGrid(columns) {
+  function setupGrid(gridColumns) {
     var columnSelector = new ColumnSelector();
-    columns = columnSelector.getColumnDefinitions(columns);
-    var grid = new SlickGrid(container, data, columns, options);
+    gridColumns = columnSelector.getColumnDefinitions(gridColumns);
+    var grid = new SlickGrid(container, data, gridColumns, options);
 
     var cellSelectionModel = new XCellSelectionModel();
     grid.setSelectionModel(cellSelectionModel);

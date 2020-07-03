@@ -839,13 +839,13 @@ describe('ExecuteQuery', () => {
           errormsg: 'Some error in JSON',
         };
         let errorMessageText = 'Some plain text error';
-        let response;
+        let res;
 
         describe('when the connection to the server was lost', () => {
           describe('when JSON response is available', () => {
             beforeEach(() => {
-              response = {responseJSON: errorMessageJson};
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(401, response);
+              res = {responseJSON: errorMessageJson};
+              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(401, res);
 
               executeQuery.poll();
             });
@@ -906,8 +906,8 @@ describe('ExecuteQuery', () => {
           });
           describe('when no JSON response is available', () => {
             beforeEach(() => {
-              response = {errormsg: errorMessageText};
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(401, response);
+              res = {errormsg: errorMessageText};
+              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(401, res);
 
               executeQuery.poll();
             });

@@ -347,11 +347,11 @@ define('pgadmin.node.fts_configuration', [
           idx = -1;
 
         // Find if token exists in grid
-        self.collection.each(function(m) {
+        self.collection.each(function(local_model) {
           _.each(checkVars, function(v) {
-            var val = m.get(v);
+            var val = local_model.get(v);
             if(val == token) {
-              idx = coll.indexOf(m);
+              idx = coll.indexOf(local_model);
             }
           });
         });

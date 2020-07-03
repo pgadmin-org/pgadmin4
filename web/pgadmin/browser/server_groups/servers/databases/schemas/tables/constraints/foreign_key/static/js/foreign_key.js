@@ -203,29 +203,29 @@ define('pgadmin.node.foreign_key', [
               formatter: Backform.ControlFormatter,
               template: headerSelectControlTemplate,
               render: function() {
-                var self = this,
-                  url = self.field.get('url') || self.defaults.url,
-                  m = self.model,
+                var self_referenced = this,
+                  url = self_referenced.field.get('url') || self_referenced.defaults.url,
+                  m = self_referenced.model,
                   tid = m.get('references');
                 // Store name for selected table
                 var a = $('select[name="references"]').find(':selected').text();
                 this.model.set('references_table_name', a,{silent: true});
 
                 // Clear any existing value before setting new options.
-                m.set(self.field.get('name'), null, {silent: true});
+                m.set(self_referenced.field.get('name'), null, {silent: true});
 
                 if (url && !_.isUndefined(tid) && !_.isNull(tid) && tid != '') {
-                  var node = this.field.get('schema_node'),
+                  var schema_node = this.field.get('schema_node'),
                     node_info = this.field.get('node_info'),
-                    full_url = node.generate_url.apply(
-                      node, [
+                    full_url = schema_node.generate_url.apply(
+                      schema_node, [
                         null, url, this.field.get('node_data'),
                         this.field.get('url_with_id') || false, node_info,
                       ]),
                     data = [];
 
                   if (this.field.get('version_compatible')) {
-                    m.trigger('pgadmin:view:fetching', m, self.field);
+                    m.trigger('pgadmin:view:fetching', m, self_referenced.field);
                     $.ajax({
                       async: false,
                       data : {tid:tid},
@@ -235,24 +235,24 @@ define('pgadmin.node.foreign_key', [
                         data = res.data;
                       })
                       .fail(function() {
-                        m.trigger('pgadmin:view:fetch:error', m, self.field);
+                        m.trigger('pgadmin:view:fetch:error', m, self_referenced.field);
                       });
-                    m.trigger('pgadmin:view:fetched', m, self.field);
+                    m.trigger('pgadmin:view:fetched', m, self_referenced.field);
                   }
                   /*
                      * Transform the data
                      */
-                  var transform = this.field.get('transform') || self.defaults.transform;
+                  var transform = this.field.get('transform') || self_referenced.defaults.transform;
                   if (transform && _.isFunction(transform)) {
                     // We will transform the data later, when rendering.
                     // It will allow us to generate different data based on the
                     // dependencies.
-                    self.field.set('options', transform.bind(self, data));
+                    self_referenced.field.set('options', transform.bind(self_referenced, data));
                   } else {
-                    self.field.set('options', data);
+                    self_referenced.field.set('options', data);
                   }
                 } else {
-                  self.field.set('options', []);
+                  self_referenced.field.set('options', []);
                 }
                 Backform.Select2Control.prototype.render.apply(this, arguments);
                 return this;
@@ -555,8 +555,8 @@ define('pgadmin.node.foreign_key', [
           coveringindex = null,
           url_jump_after_node = 'schema';
 
-        self.collection.each(function(m){
-          cols.push(m.get('local_column'));
+        self.collection.each(function(local_model){
+          cols.push(local_model.get('local_column'));
         });
 
         if (cols.length > 0) {
