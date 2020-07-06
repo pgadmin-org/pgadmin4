@@ -527,6 +527,16 @@ LDAP_BASE_DN = '<Base-DN>'
 # whilst in AD, 'sAMAccountName' might be appropriate. (REQUIRED)
 LDAP_USERNAME_ATTRIBUTE = '<User-id>'
 
+# LDAP Bind User DN Example: cn=username,dc=example,dc=com (OPTIONAL)
+# Set this parameter to allow the connection to bind using a dedicated user.
+# After the connection is made, the pgadmin login user will be further
+# authenticated by the username and password provided
+# at the login screen. (OPTIONAL)
+LDAP_BIND_USER = None
+
+# LDAP Bind User Password (OPTIONAL)
+LDAP_BIND_PASSWORD = None
+
 # Search ldap for further authentication
 LDAP_SEARCH_BASE_DN = '<Search-Base-DN>'
 

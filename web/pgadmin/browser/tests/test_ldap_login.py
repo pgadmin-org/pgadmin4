@@ -29,6 +29,9 @@ class LDAPLoginTestCase(BaseTestGenerator):
         ('LDAP With TLS Authentication', dict(
             config_key_param='ldap_with_tls',
             is_gravtar_image_check=False)),
+        ('LDAP With Dedicated User Authentication', dict(
+            config_key_param='ldap_with_dedicated_user',
+            is_gravtar_image_check=False)),
     ]
 
     @classmethod
@@ -59,6 +62,10 @@ class LDAPLoginTestCase(BaseTestGenerator):
             app_config.LDAP_CA_CERT_FILE = ldap_config['ca_cert_file']
             app_config.LDAP_CERT_FILE = ldap_config['cert_file']
             app_config.LDAP_KEY_FILE = ldap_config['key_file']
+            if ldap_config['bind_user'] != "" and\
+                    ldap_config['bind_password'] != "":
+                app_config.LDAP_BIND_USER = ldap_config['bind_user']
+                app_config.LDAP_BIND_PASSWORD = ldap_config['bind_password']
         else:
             self.skipTest(
                 "LDAP config not set."

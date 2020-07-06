@@ -36,16 +36,51 @@ class LDAPAuthentication(BaseAuthentication):
     def authenticate(self, form):
         self.username = form.data['email']
         self.password = form.data['password']
+        user_email = None
+        dedicated_user = True
 
+        # Check the dedicated ldap user
+        self.bind_user = getattr(config, 'LDAP_BIND_USER', None)
+        self.bind_pass = getattr(config, 'LDAP_BIND_PASSWORD', None)
+
+        if self.bind_user and not self.bind_pass:
+            return False, "LDAP configuration error: Set the bind password."
+
+        # if no dedicated ldap user is configured then use the login
+        # username and password
+        if not self.bind_user or not self.bind_pass:
+            user_dn = "{0}={1},{2}".format(config.LDAP_USERNAME_ATTRIBUTE,
+                                           self.username,
+                                           config.LDAP_BASE_DN
+                                           )
+
+            self.bind_user = user_dn
+            self.bind_pass = self.password
+            dedicated_user = False
+
+        # Connect ldap server
         status, msg = self.connect()
 
         if not status:
             return status, msg
 
-        status, user_email = self.search_ldap_user()
+        status, ldap_user = self.search_ldap_user()
 
         if not status:
-            return status, user_email
+            return status, ldap_user
+
+        # If dedicated user is configured
+        if dedicated_user:
+            # Get the user DN from the user ldap entry
+            self.bind_user = ldap_user.entry_dn
+            self.bind_pass = self.password
+            status, msg = self.connect()
+
+            if not status:
+                return status, msg
+
+        if 'mail' in ldap_user:
+            user_email = ldap_user['mail'].value
 
         return self.__auto_create_user(user_email)
 
@@ -101,13 +136,10 @@ class LDAPAuthentication(BaseAuthentication):
 
         # Create the connection
         try:
-            user_dn = "{0}={1},{2}".format(config.LDAP_USERNAME_ATTRIBUTE,
-                                           self.username,
-                                           config.LDAP_BASE_DN
-                                           )
+
             self.conn = Connection(server,
-                                   user=user_dn,
-                                   password=self.password,
+                                   user=self.bind_user,
+                                   password=self.bind_pass,
                                    auto_bind=True
                                    )
 
@@ -184,11 +216,8 @@ class LDAPAuthentication(BaseAuthentication):
             return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(e.args[0])
 
         for entry in self.conn.entries:
-            user_email = None
             if config.LDAP_USERNAME_ATTRIBUTE in entry and self.username == \
                     entry[config.LDAP_USERNAME_ATTRIBUTE].value:
-                if 'mail' in entry:
-                    user_email = entry['mail'].value
-                return True, user_email
+                return True, entry
         return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(
             "Could not find the specified user.")
