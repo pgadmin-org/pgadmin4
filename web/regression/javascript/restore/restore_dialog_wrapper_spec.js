@@ -87,6 +87,8 @@ describe('RestoreDialogWrapper', () => {
         return restoreJQueryContainerSpy;
       } else if (selector === restoreNode.elements.body.childNodes[0]) {
         return restoreNodeChildNodeSpy;
+      } else {
+        return jasmine.createSpyObj('obj', ['appendTo']);
       }
     });
   });

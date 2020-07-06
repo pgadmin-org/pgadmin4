@@ -624,37 +624,63 @@ define([
               );
               view.render();
 
+              const statusBar = $(
+                '<div class=\'pg-prop-status-bar pg-prop-status-bar-absolute pg-el-xs-12 d-none\'>' +
+              '  <div class="error-in-footer"> ' +
+              '    <div class="d-flex px-2 py-1"> ' +
+              '      <div class="pr-2"> ' +
+              '        <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ' +
+              '      </div> ' +
+              '      <div class="alert-text" role="alert"></div> ' +
+              '    </div> ' +
+              '  </div> ' +
+              '</div>').appendTo($container);
               this.elements.content.appendChild($container.get(0));
 
               // Listen to model & if filename is provided then enable OK button
               // For the 'Quote', 'escape' and 'delimiter' only one character is allowed to enter
               this.view.model.on('change', function() {
+                const ctx = this;
+                var errmsg;
+                const showError = function(errorField, errormsg) {
+                  ctx.errorModel.set(errorField, errormsg);
+                  statusBar.removeClass('d-none');
+                  statusBar.find('.alert-text').html(errormsg);
+                };
                 if (!_.isUndefined(this.get('filename')) && this.get('filename') !== '') {
                   this.errorModel.clear();
+                  statusBar.addClass('d-none');
                   if (!_.isUndefined(this.get('delimiter')) && !_.isNull(this.get('delimiter'))) {
                     this.errorModel.clear();
+                    statusBar.addClass('d-none');
                     if (!_.isUndefined(this.get('quote')) && this.get('quote') !== '' &&
                       this.get('quote').length == 1) {
                       this.errorModel.clear();
+                      statusBar.addClass('d-none');
                       if (!_.isUndefined(this.get('escape')) && this.get('escape') !== '' &&
                         this.get('escape').length == 1) {
                         this.errorModel.clear();
+                        statusBar.addClass('d-none');
                         self.__internal.buttons[1].element.disabled = false;
                       } else {
                         self.__internal.buttons[1].element.disabled = true;
-                        this.errorModel.set('escape', gettext('Escape should contain only one character'));
+                        errmsg = gettext('Escape should contain only one character');
+                        showError('escape', errmsg);
                       }
                     } else {
                       self.__internal.buttons[1].element.disabled = true;
-                      this.errorModel.set('quote', gettext('Quote should contain only one character'));
+                      errmsg = gettext('Quote should contain only one character');
+                      showError('quote', errmsg);
                     }
                   } else {
                     self.__internal.buttons[1].element.disabled = true;
-                    this.errorModel.set('delimiter', gettext('Delimiter should contain only one character'));
+                    errmsg = gettext('Delimiter should contain only one character');
+                    showError('delimiter', errmsg);
                   }
                 } else {
                   self.__internal.buttons[1].element.disabled = true;
-                  this.errorModel.set('filename', gettext('Please provide filename'));
+                  errmsg = gettext('Please provide filename');
+                  showError('filename', errmsg);
                 }
               });
 

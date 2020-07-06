@@ -94,6 +94,8 @@ describe('BackupDialogWrapper', () => {
         return backupJQueryContainerSpy;
       } else if (selector === backupNode.elements.body.childNodes[0]) {
         return backupNodeChildNodeSpy;
+      } else {
+        return jasmine.createSpyObj('obj', ['appendTo']);
       }
     });
     alertifySpy = jasmine.createSpyObj('alertify', ['alert', 'dialog']);
