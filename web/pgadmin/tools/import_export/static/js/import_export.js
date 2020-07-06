@@ -478,10 +478,10 @@ define([
         Alertify.dialog('ImportDialog', function factory() {
 
           return {
-            main: function(title, node, item, data) {
+            main: function(title, pg_node, pg_item, data) {
               this.set('title', title);
-              this.setting('pg_node', node);
-              this.setting('pg_item', item);
+              this.setting('pg_node', pg_node);
+              this.setting('pg_item', pg_item);
               this.setting('pg_item_data', data);
             },
 
@@ -523,19 +523,19 @@ define([
 
                 var n = this.settings['pg_node'],
                   i = this.settings['pg_item'],
-                  treeInfo = n.getTreeNodeHierarchy.apply(n, [i]);
+                  treeData = n.getTreeNodeHierarchy.apply(n, [i]);
 
                 this.view.model.set({
-                  'database': treeInfo.database._label,
-                  'schema': treeInfo.schema._label,
-                  'table': treeInfo.table._label,
+                  'database': treeData.database._label,
+                  'schema': treeData.schema._label,
+                  'table': treeData.table._label,
                 });
                 var self = this;
 
                 $.ajax({
                   url: url_for(
                     'import_export.create_job', {
-                      'sid': treeInfo.server._id,
+                      'sid': treeData.server._id,
                     }
                   ),
                   method: 'POST',
@@ -561,8 +561,8 @@ define([
                         gettext('Import/Export job failed.'),
                         err.errormsg
                       );
-                    } catch (e) {
-                      console.warn(e.stack || e);
+                    } catch (error) {
+                      console.warn(error.stack || error);
                     }
                   });
               }
@@ -605,13 +605,13 @@ define([
 
               var $container = $('<div class=\'import_dlg\'></div>'),
                 n = this.settings.pg_node,
-                i = this.settings.pg_item,
-                treeInfo = n.getTreeNodeHierarchy.apply(n, [i]),
+                itemArr = this.settings.pg_item,
+                treeData = n.getTreeNodeHierarchy.apply(n, [itemArr]),
                 newModel = new ImportExportModel({}, {
-                  node_info: treeInfo,
+                  node_info: treeData,
                 }),
                 fields = Backform.generateViewSchema(
-                  treeInfo, newModel, 'create', node, treeInfo.server, true
+                  treeData, newModel, 'create', node, treeData.server, true
                 ),
                 view = this.view = new Backform.Dialog({
                   el: $container,

@@ -763,7 +763,7 @@ define([
                 }),
 
                 beforeNext: function(obj) {
-                  var self = this;
+                  var ctx = this;
                   obj.options.disable_next = true;
 
                   /**
@@ -777,10 +777,10 @@ define([
                   }
 
                   // Clean the view
-                  if (self.view) {
-                    self.view.cleanup();
-                    delete self.view;
-                    self.view = null;
+                  if (ctx.view) {
+                    ctx.view.cleanup();
+                    delete ctx.view;
+                    ctx.view = null;
                   }
                   return true;
                 },
@@ -1019,24 +1019,24 @@ define([
                     // This method fetches the modified SQL for the wizard
                     onWizardNextPageChange: function() {
 
-                      var self = this;
+                      var ctx = this;
 
                       // Fetches modified SQL
                       $.ajax({
                         url: this.msql_url,
                         type: 'POST',
                         cache: false,
-                        data: JSON.stringify(self.model.toJSON(true)),
+                        data: JSON.stringify(ctx.model.toJSON(true)),
                         dataType: 'json',
                         contentType: 'application/json',
                       }).done(function(res) {
-                        self.sqlCtrl.clearHistory();
-                        self.sqlCtrl.setValue(res.data);
-                        self.sqlCtrl.refresh();
+                        ctx.sqlCtrl.clearHistory();
+                        ctx.sqlCtrl.setValue(res.data);
+                        ctx.sqlCtrl.refresh();
                       }).fail(function() {
-                        self.model.trigger('pgadmin-view:msql:error');
+                        ctx.model.trigger('pgadmin-view:msql:error');
                       }).always(function() {
-                        self.model.trigger('pgadmin-view:msql:fetched');
+                        ctx.model.trigger('pgadmin-view:msql:fetched');
                       });
                     },
 
@@ -1144,12 +1144,12 @@ define([
                 // Callback for finish button
                 onFinish: function() {
                   var m = newModel,
-                    d = m.toJSON('GET');
+                    grant_data = m.toJSON('GET');
 
                   // Save model
-                  if (d && !_.isEmpty(d) && !_.isUndefined(d.objects)) {
+                  if (grant_data && !_.isEmpty(grant_data) && !_.isUndefined(grant_data.objects)) {
                     m.save({}, {
-                      attrs: d,
+                      attrs: grant_data,
                       validate: false,
                       cache: false,
                       success: function() {
