@@ -43,7 +43,6 @@ _IS_WIN = (os.name == 'nt')
 _ZERO = timedelta(0)
 _sys_encoding = None
 _fs_encoding = None
-_u = None
 _out_dir = None
 _log_file = None
 
@@ -321,13 +320,13 @@ def execute(argv):
 
         _log('Waiting for the process to finish...')
         # Child process return code
-        exitCode = process.wait()
+        exit_code = process.wait()
 
-        if exitCode is None:
-            exitCode = process.poll()
+        if exit_code is None:
+            exit_code = process.poll()
 
-        _log('Process exited with code: {0}'.format(exitCode))
-        args.update({'exit_code': exitCode})
+        _log('Process exited with code: {0}'.format(exit_code))
+        args.update({'exit_code': exit_code})
 
         # Add end_time
         args.update({'end_time': get_current_time()})
@@ -415,11 +414,7 @@ if __name__ == '__main__':
         # encoding or 'ascii'.
         _fs_encoding = 'utf-8'
 
-    def u(_s, _encoding=_sys_encoding):
-        return _s
-    _u = u
-
-    _out_dir = u(os.environ['OUTDIR'])
+    _out_dir = os.environ['OUTDIR']
     _log_file = os.path.join(_out_dir, ('log_%s' % os.getpid()))
 
     _log('Starting the process executor...')

@@ -44,5 +44,5 @@ class BackendSupportedTestCase(BaseTestGenerator):
         manager.sversion = self.manager['sversion']
         manager.server_type = self.manager['server_type']
         self.assertEquals(
-            self.expected_result, module.BackendSupported(manager)
+            self.expected_result, module.backend_supported(manager)
         )

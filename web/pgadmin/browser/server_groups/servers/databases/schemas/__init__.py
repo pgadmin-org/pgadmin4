@@ -933,7 +933,7 @@ It may have been removed by another user.
             if isinstance(module, PGChildModule):
                 if (
                     self.manager is not None and
-                    module.BackendSupported(
+                    module.backend_supported(
                         self.manager, **backend_support_keywords
                     )
                 ):

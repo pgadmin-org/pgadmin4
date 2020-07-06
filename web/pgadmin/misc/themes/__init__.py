@@ -27,7 +27,7 @@ def get_all_themes():
     return all_themes
 
 
-def Themes(app):
+def themes(app):
     @app.context_processor
     def inject_theme_func():
         def get_theme_css():

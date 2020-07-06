@@ -47,7 +47,7 @@ class JobModule(CollectionNodeModule):
         """
         return servers.ServerModule.NODE_TYPE
 
-    def BackendSupported(self, manager, **kwargs):
+    def backend_supported(self, manager, **kwargs):
         if hasattr(self, 'show_node') and not self.show_node:
             return False
 

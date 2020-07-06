@@ -73,14 +73,14 @@ class CompoundTriggerModule(CollectionNodeModule):
         self.min_gpdbver = 1000000000
         self.server_type = ['ppas']
 
-    def BackendSupported(self, manager, **kwargs):
+    def backend_supported(self, manager, **kwargs):
         """
         Load this module if vid is view, we will not load it under
         material view
         """
         if manager.server_type == 'gpdb':
             return False
-        if super(CompoundTriggerModule, self).BackendSupported(
+        if super(CompoundTriggerModule, self).backend_supported(
                 manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 

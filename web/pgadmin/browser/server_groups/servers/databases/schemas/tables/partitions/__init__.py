@@ -30,7 +30,7 @@ from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 def backend_supported(module, manager, **kwargs):
 
-    if CollectionNodeModule.BackendSupported(module, manager, **kwargs):
+    if CollectionNodeModule.backend_supported(module, manager, **kwargs):
         if 'tid' not in kwargs:
             return True
 
@@ -110,7 +110,7 @@ class PartitionsModule(CollectionNodeModule):
         """
         return True
 
-    def BackendSupported(self, manager, **kwargs):
+    def backend_supported(self, manager, **kwargs):
         """
         Load this module if it is a partition table
         """
@@ -239,13 +239,13 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         for module in self.blueprint.submodules:
             if isinstance(module, PGChildModule):
                 if manager is not None and \
-                        module.BackendSupported(manager, **kwargs):
+                        module.backend_supported(manager, **kwargs):
                     nodes.extend(module.get_nodes(**kwargs))
             else:
                 nodes.extend(module.get_nodes(**kwargs))
 
         if manager is not None and \
-                self.blueprint.BackendSupported(manager, **kwargs):
+                self.blueprint.backend_supported(manager, **kwargs):
             nodes.extend(self.blueprint.get_nodes(**kwargs))
 
         return nodes

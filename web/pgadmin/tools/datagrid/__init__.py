@@ -314,9 +314,9 @@ def initialize_query_tool(trans_id, sgid, sid, did=None):
     if request.data:
         _ = request.data
 
-    reqArgs = request.args
-    if ('recreate' in reqArgs and
-            reqArgs['recreate'] == '1'):
+    req_args = request.args
+    if ('recreate' in req_args and
+            req_args['recreate'] == '1'):
         connect = False
 
     # Create asynchronous connection using random connection id.

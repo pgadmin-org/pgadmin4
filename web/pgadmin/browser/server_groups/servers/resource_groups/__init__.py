@@ -37,7 +37,7 @@ class ResourceGroupModule(CollectionNodeModule):
       - Method is used to initialize the ResourceGroupModule and it's
       base module.
 
-    * BackendSupported(manager, **kwargs)
+    * backend_supported(manager, **kwargs)
       - This function is used to check the database server type and version.
         Resource Group only supported in PPAS 9.4 and above.
 

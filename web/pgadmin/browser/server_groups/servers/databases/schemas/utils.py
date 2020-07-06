@@ -45,7 +45,7 @@ class SchemaChildModule(CollectionNodeModule):
     CATALOG_DB_SUPPORTED = True
     SUPPORTED_SCHEMAS = None
 
-    def BackendSupported(self, manager, **kwargs):
+    def backend_supported(self, manager, **kwargs):
         return (
             (
                 (
@@ -70,7 +70,7 @@ class SchemaChildModule(CollectionNodeModule):
                     not kwargs['is_catalog'] and self.CATALOG_DB_SUPPORTED
                 )
             ) and
-            CollectionNodeModule.BackendSupported(self, manager, **kwargs)
+            CollectionNodeModule.backend_supported(self, manager, **kwargs)
         )
 
     @property

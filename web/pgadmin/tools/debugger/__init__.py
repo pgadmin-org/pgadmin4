@@ -1672,7 +1672,7 @@ def get_arguments_sqlite(sid, did, scid, func_id):
     """
 
     """Get the count of the existing data available in sqlite database"""
-    DbgFuncArgsCount = DebuggerFunctionArguments.query.filter_by(
+    dbg_func_args_count = DebuggerFunctionArguments.query.filter_by(
         server_id=sid,
         database_id=did,
         schema_id=scid,
@@ -1681,18 +1681,18 @@ def get_arguments_sqlite(sid, did, scid, func_id):
 
     args_data = []
 
-    if DbgFuncArgsCount:
+    if dbg_func_args_count:
         """Update the Debugger Function Arguments settings"""
-        DbgFuncArgs = DebuggerFunctionArguments.query.filter_by(
+        dbg_func_args = DebuggerFunctionArguments.query.filter_by(
             server_id=sid,
             database_id=did,
             schema_id=scid,
             function_id=func_id
         )
 
-        args_list = DbgFuncArgs.all()
+        args_list = dbg_func_args.all()
 
-        for i in range(0, DbgFuncArgsCount):
+        for i in range(0, dbg_func_args_count):
             info = {
                 "arg_id": args_list[i].arg_id,
                 "is_null": args_list[i].is_null,
@@ -1705,13 +1705,13 @@ def get_arguments_sqlite(sid, did, scid, func_id):
         # As we do have entry available for that function so we need to add
         # that entry
         return make_json_response(
-            data={'result': args_data, 'args_count': DbgFuncArgsCount}
+            data={'result': args_data, 'args_count': dbg_func_args_count}
         )
     else:
         # As we do not have any entry available for that function so we need
         # to add that entry
         return make_json_response(
-            data={'result': 'result', 'args_count': DbgFuncArgsCount}
+            data={'result': 'result', 'args_count': dbg_func_args_count}
         )
 
 
@@ -1743,7 +1743,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
     try:
         for i in range(0, len(data)):
-            DbgFuncArgsExists = DebuggerFunctionArguments.query.filter_by(
+            dbg_func_args_exists = DebuggerFunctionArguments.query.filter_by(
                 server_id=data[i]['server_id'],
                 database_id=data[i]['database_id'],
                 schema_id=data[i]['schema_id'],
@@ -1771,8 +1771,8 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
             # Check if data is already available in database then update the
             # existing value otherwise add the new value
-            if DbgFuncArgsExists:
-                DbgFuncArgs = DebuggerFunctionArguments.query.filter_by(
+            if dbg_func_args_exists:
+                dbg_func_args = DebuggerFunctionArguments.query.filter_by(
                     server_id=data[i]['server_id'],
                     database_id=data[i]['database_id'],
                     schema_id=data[i]['schema_id'],
@@ -1780,10 +1780,10 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                     arg_id=data[i]['arg_id']
                 ).first()
 
-                DbgFuncArgs.is_null = data[i]['is_null']
-                DbgFuncArgs.is_expression = data[i]['is_expression']
-                DbgFuncArgs.use_default = data[i]['use_default']
-                DbgFuncArgs.value = array_string
+                dbg_func_args.is_null = data[i]['is_null']
+                dbg_func_args.is_expression = data[i]['is_expression']
+                dbg_func_args.use_default = data[i]['use_default']
+                dbg_func_args.value = array_string
             else:
                 debugger_func_args = DebuggerFunctionArguments(
                     server_id=data[i]['server_id'],

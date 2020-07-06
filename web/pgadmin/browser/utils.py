@@ -95,7 +95,7 @@ class PGChildModule(object):
 
     Method:
     ------
-    * BackendSupported(manager)
+    * backend_supported(manager)
     - Return True when it supports certain version.
       Uses the psycopg2 server connection manager as input for checking the
       compatibility of the current module.
@@ -112,7 +112,7 @@ class PGChildModule(object):
 
         super(PGChildModule, self).__init__()
 
-    def BackendSupported(self, manager, **kwargs):
+    def backend_supported(self, manager, **kwargs):
         if hasattr(self, 'show_node'):
             if not self.show_node:
                 return False
@@ -385,7 +385,7 @@ class PGChildNodeView(NodeView):
             if isinstance(module, PGChildModule):
                 if (
                     manager is not None and
-                    module.BackendSupported(manager, **kwargs)
+                    module.backend_supported(manager, **kwargs)
                 ):
                     nodes.extend(module.get_nodes(**kwargs))
             else:

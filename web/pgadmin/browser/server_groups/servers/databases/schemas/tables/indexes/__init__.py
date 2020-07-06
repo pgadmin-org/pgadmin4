@@ -68,12 +68,12 @@ class IndexesModule(CollectionNodeModule):
         self.max_ver = None
         super(IndexesModule, self).__init__(*args, **kwargs)
 
-    def BackendSupported(self, manager, **kwargs):
+    def backend_supported(self, manager, **kwargs):
         """
         Load this module if vid is view, we will not load it under
         material view
         """
-        if super(IndexesModule, self).BackendSupported(manager, **kwargs):
+        if super(IndexesModule, self).backend_supported(manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 
             # If PG version > 100000 and < 110000 then index is

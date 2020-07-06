@@ -17,7 +17,7 @@ from unittest.mock import MagicMock, Mock
 
 class TestExternalTablesModule(BaseTestGenerator):
     scenarios = [
-        ('#BackendSupported When access the on a Postgresql Database, '
+        ('#backend_supported When access the on a Postgresql Database, '
          'it returns false',
          dict(
              test_type='backend-support',
@@ -27,8 +27,8 @@ class TestExternalTablesModule(BaseTestGenerator):
              ),
              expected_result=False,
          )),
-        ('#BackendSupported When access the on a Postgres Plus Advance Server '
-         'Database, it returns false',
+        ('#backend_supported When access the on a Postgres Plus Advance '
+         'Server Database, it returns false',
          dict(
              test_type='backend-support',
              manager=dict(
@@ -37,7 +37,7 @@ class TestExternalTablesModule(BaseTestGenerator):
              ),
              expected_result=False,
          )),
-        ('#BackendSupported When access the on a GreenPlum Database, '
+        ('#backend_supported When access the on a GreenPlum Database, '
          'it returns true',
          dict(
              test_type='backend-support',
@@ -82,7 +82,7 @@ class TestExternalTablesModule(BaseTestGenerator):
         module = ExternalTablesModule('something')
         self.assertEquals(
             self.expected_result,
-            module.BackendSupported(manager)
+            module.backend_supported(manager)
         )
 
     def __test_get_nodes(self):

@@ -717,8 +717,8 @@ def create_app(app_name=None):
         from flask_compress import Compress
         Compress(app)
 
-    from pgadmin.misc.themes import Themes
-    Themes(app)
+    from pgadmin.misc.themes import themes
+    themes(app)
 
     @app.context_processor
     def inject_blueprint():

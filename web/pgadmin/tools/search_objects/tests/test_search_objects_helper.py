@@ -86,7 +86,7 @@ class SearchObjectsHelperTest(BaseTestGenerator):
             for data in blueprints:
                 if node_type == data['node_type']:
                     blueprint = MagicMock(
-                        BackendSupported=MagicMock(
+                        backend_supported=MagicMock(
                             return_value=data['backend_supported']),
                         collection_label=data['coll_label'],
                         show_node=data['backend_supported'],

@@ -111,10 +111,10 @@ class TestBackendSupport(BaseTestGenerator):
         connection_mock.execute_scalar.return_value = \
             self.connection_execution_return_value
         module.manager.connection.return_value = connection_mock
-        CollectionNodeModule_mock.BackendSupported.return_value = \
+        CollectionNodeModule_mock.backend_supported.return_value = \
             self.collection_node_active
 
-        result = module.BackendSupported(
+        result = module.backend_supported(
             module.manager, **self.input_arguments
         )
 

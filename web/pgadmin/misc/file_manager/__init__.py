@@ -70,12 +70,12 @@ def sizeof_fmt(num, suffix='B'):
 
 
 # return size of file
-def getSize(path):
+def getsize(path):
     st = os.stat(path)
     return st.st_size
 
 
-def getDriveSize(path):
+def getdrivesize(path):
     if _platform == "win32":
         free_bytes = ctypes.c_ulonglong(0)
         ctypes.windll.kernel32.GetDiskFreeSpaceExW(
@@ -581,7 +581,7 @@ class Filemanager(object):
                 protected = 0
                 path = file_name = u"{0}:".format(drive)
                 try:
-                    drive_size = getDriveSize(path)
+                    drive_size = getdrivesize(path)
                     drive_size_in_units = sizeof_fmt(drive_size)
                 except Exception:
                     drive_size = 0
@@ -662,7 +662,7 @@ class Filemanager(object):
                     "Properties": {
                         "Date Created": created,
                         "Date Modified": modified,
-                        "Size": sizeof_fmt(getSize(system_path))
+                        "Size": sizeof_fmt(getsize(system_path))
                     }
                 }
         except Exception as e:
@@ -811,7 +811,7 @@ class Filemanager(object):
 
         thefile['Properties']['Date Created'] = created
         thefile['Properties']['Date Modified'] = modified
-        thefile['Properties']['Size'] = sizeof_fmt(getSize(orig_path))
+        thefile['Properties']['Size'] = sizeof_fmt(getsize(orig_path))
 
         return thefile
 
@@ -962,9 +962,9 @@ class Filemanager(object):
                     'utf-8').decode('utf-8')
                 file_name = file_obj.filename.encode('utf-8').decode('utf-8')
             orig_path = u"{0}{1}".format(dir, path)
-            newName = u"{0}{1}".format(orig_path, file_name)
+            new_name = u"{0}{1}".format(orig_path, file_name)
 
-            with open(newName, 'wb') as f:
+            with open(new_name, 'wb') as f:
                 while True:
                     # 4MB chunk (4 * 1024 * 1024 Bytes)
                     data = file_obj.read(4194304)
@@ -987,7 +987,7 @@ class Filemanager(object):
 
         result = {
             'Path': path,
-            'Name': newName,
+            'Name': new_name,
             'Error': err_msg,
             'Code': code
         }
@@ -1011,8 +1011,8 @@ class Filemanager(object):
             Filemanager.check_access_permission(
                 dir, u"{}{}".format(path, name))
 
-            newName = u"{0}{1}".format(orig_path, name)
-            if not os.path.exists(newName):
+            new_name = u"{0}{1}".format(orig_path, name)
+            if not os.path.exists(new_name):
                 code = 0
         except Exception as e:
             code = 0
@@ -1031,23 +1031,23 @@ class Filemanager(object):
         return result
 
     @staticmethod
-    def get_new_name(dir, path, newName, count=1):
+    def get_new_name(dir, path, new_name, count=1):
         """
         Utility to provide new name for folder if file
         with same name already exists
         """
-        last_char = newName[-1]
-        tnewPath = u"{}/{}{}_{}".format(dir, path, newName, count)
-        if last_char == 'r' and not path_exists(tnewPath):
-            return tnewPath, newName
+        last_char = new_name[-1]
+        t_new_path = u"{}/{}{}_{}".format(dir, path, new_name, count)
+        if last_char == 'r' and not path_exists(t_new_path):
+            return t_new_path, new_name
         else:
-            last_char = int(tnewPath[-1]) + 1
-            newPath = u"{}/{}{}_{}".format(dir, path, newName, last_char)
-            if path_exists(newPath):
+            last_char = int(t_new_path[-1]) + 1
+            new_path = u"{}/{}{}_{}".format(dir, path, new_name, last_char)
+            if path_exists(new_path):
                 count += 1
-                return Filemanager.get_new_name(dir, path, newName, count)
+                return Filemanager.get_new_name(dir, path, new_name, count)
             else:
-                return newPath, newName
+                return new_path, new_name
 
     @staticmethod
     def check_file_for_bom_and_binary(filename, enc="utf-8"):
@@ -1145,30 +1145,30 @@ class Filemanager(object):
             return res
 
         if dir != "":
-            newPath = u"{}/{}{}/".format(dir, path, name)
+            new_path = u"{}/{}{}/".format(dir, path, name)
         else:
-            newPath = u"{}{}/".format(path, name)
+            new_path = u"{}{}/".format(path, name)
 
         err_msg = ''
         code = 1
-        newName = name
-        if not path_exists(newPath):
+        new_name = name
+        if not path_exists(new_path):
             try:
-                os.mkdir(newPath)
+                os.mkdir(new_path)
             except Exception as e:
                 code = 0
                 err_msg = gettext(u"Error: {0}").format(e.strerror)
         else:
-            newPath, newName = self.get_new_name(dir, path, name)
+            new_path, new_name = self.get_new_name(dir, path, name)
             try:
-                os.mkdir(newPath)
+                os.mkdir(new_path)
             except Exception as e:
                 code = 0
                 err_msg = gettext(u"Error: {0}").format(e.strerror)
 
         result = {
             'Parent': path,
-            'Name': newName,
+            'Name': new_name,
             'Error': err_msg,
             'Code': code
         }
@@ -1233,7 +1233,7 @@ def file_manager(trans_id):
     It gets unique transaction id from post request and
     rotate it into Filemanager class.
     """
-    myFilemanager = Filemanager(trans_id)
+    my_fm = Filemanager(trans_id)
     mode = ''
     kwargs = {}
     if req.method == 'POST':
@@ -1253,8 +1253,8 @@ def file_manager(trans_id):
         mode = req.args['mode']
 
     try:
-        func = getattr(myFilemanager, mode)
+        func = getattr(my_fm, mode)
         res = func(**kwargs)
         return make_json_response(data={'result': res, 'status': True})
     except Exception:
-        return getattr(myFilemanager, mode)(**kwargs)
+        return getattr(my_fm, mode)(**kwargs)

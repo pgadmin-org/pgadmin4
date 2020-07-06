@@ -71,8 +71,8 @@ class SearchObjectsHelper:
             if blueprint is None:
                 continue
 
-            if blueprint.BackendSupported(self.manager, is_catalog=False,
-                                          did=self.did) or skip_check:
+            if blueprint.backend_supported(self.manager, is_catalog=False,
+                                           did=self.did) or skip_check:
                 if node_type in ['edbfunc', 'edbproc']:
                     return_types[node_type] =\
                         gettext('Package {0}').format(
