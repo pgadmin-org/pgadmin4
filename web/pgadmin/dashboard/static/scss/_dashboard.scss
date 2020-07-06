@@ -8,10 +8,6 @@
     min-height: 100%;
 }
 
-.dashboard-graph-body {
-    padding: 0.25rem 0.5rem;
-}
-
 .dashboard-row {
     margin-bottom: $grid-gutter-width/2;
 }
@@ -40,6 +36,8 @@
 }
 
 .dashboard-graph-body {
+    padding: 0.25rem 0.5rem;
+
     & .flotr-labels {
         color: $color-fg !important;
     }

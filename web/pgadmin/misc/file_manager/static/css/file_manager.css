@@ -39,8 +39,8 @@
 .file-input-container {
   margin:0;
   position:relative;
-  top:0px;
-  width:215px;
+  top:16px;
+  width:198px;
   height:32px;
   overflow: hidden;
 }
@@ -52,9 +52,6 @@
     width:255px;
   }
 }
-
-/** Opera hack */
-x:-o-prefocus, .file-input-container {top:16px;width:198px;}
 
 /** Input file Replacement - end */
 .file_listing #contents.grid {

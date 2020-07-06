@@ -56,10 +56,6 @@
   background: $table-hover-bg-color;
 }
 
-.fileinfo table#contents tr td {
-  font-family: $font-family-primary;
-}
-
 .fileinfo #contents li span.less_text {
   width: 100%;
   text-overflow: ellipsis;
@@ -70,6 +66,8 @@
 }
 
 .fileinfo table#contents tr td {
+  font-family: $font-family-primary;
+
   & span.less_text {
     text-overflow: ellipsis;
     overflow: hidden;
