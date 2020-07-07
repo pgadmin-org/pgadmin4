@@ -312,8 +312,8 @@ _.extend(NumberFormatter.prototype, {
 
     var decimalParts = rawData.split(this.decimalSeparator);
     rawData = '';
-    for (var i = 0; i < decimalParts.length; i++) {
-      rawData = rawData + decimalParts[i] + '.';
+    for (var j = 0; j < decimalParts.length; j++) {
+      rawData = rawData + decimalParts[j] + '.';
     }
 
     if (rawData[rawData.length - 1] === '.') {
@@ -1474,12 +1474,11 @@ var SelectCellEditor = Backgrid.SelectCellEditor = CellEditor.extend({
 
     var optionValue = null;
     var optionText = null;
-    var optionValue = null;
     var optgroupName = null;
     var optgroup = null;
 
     for (var i = 0; i < optionValues.length; i++) {
-      var optionValue = optionValues[i];
+      optionValue = optionValues[i];
 
       if (_.isArray(optionValue)) {
         optionText  = optionValue[0];
@@ -1637,7 +1636,7 @@ var SelectCell = Backgrid.SelectCell = Cell.extend({
 
           if (_.isArray(optionValue)) {
             var optionText  = optionValue[0];
-            var optionValue = optionValue[1];
+            optionValue = optionValue[1];
 
             if (optionValue == rawDatum) selectedText.push(optionText);
           }

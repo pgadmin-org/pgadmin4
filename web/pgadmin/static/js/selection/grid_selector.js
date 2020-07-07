@@ -42,18 +42,18 @@ define(['jquery',
       });
     };
 
-    var getColumnDefinitions = function (columnDefinitions) {
-      columnDefinitions = columnSelector.getColumnDefinitions(columnDefinitions);
-      columnDefinitions = rowSelector.getColumnDefinitions(columnDefinitions);
+    var getColumnDefinitions = function (columnDefinition) {
+      columnDefinition = columnSelector.getColumnDefinitions(columnDefinition);
+      columnDefinition = rowSelector.getColumnDefinitions(columnDefinition);
 
-      columnDefinitions[0].selectAllOnClick = true;
-      columnDefinitions[0].name = '<span data-id="select-all" ' +
+      columnDefinition[0].selectAllOnClick = true;
+      columnDefinition[0].name = '<span data-id="select-all" ' +
           'title="' + gettext('Select/Deselect All') + '">' +
           '<br>' +
-          columnDefinitions[0].name +
+          columnDefinition[0].name +
           '<img class="select-all-icon" src="' + url_for('static', {'filename': 'img/select-all-icon.png'}) + '"></img>' +
       '</span>';
-      return columnDefinitions;
+      return columnDefinition;
     };
 
     function handleSelectedRangesChanged(grid) {
