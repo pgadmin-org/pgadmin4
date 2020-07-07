@@ -59,6 +59,22 @@ def get_parent(conn, tid, template_path=None):
     return schema, table
 
 
+def _get_column_property_display_data(row, col_str, data):
+    if row['collnspname']:
+        col_str += ' COLLATE ' + row['collnspname']
+    if row['opcname']:
+        col_str += ' ' + row['opcname']
+
+    # ASC/DESC and NULLS works only with btree indexes
+    if 'amname' in data and data['amname'] == 'btree':
+        # Append sort order
+        col_str += ' ' + row['options'][0]
+        # Append nulls value
+        col_str += ' ' + row['options'][1]
+
+    return col_str
+
+
 @get_template_path
 def get_column_details(conn, idx, data, mode='properties', template_path=None):
     """
@@ -108,17 +124,7 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
         # We need same data as string to display in properties window
         # If multiple column then separate it by colon
         cols_str = row['attdef']
-        if row['collnspname']:
-            cols_str += ' COLLATE ' + row['collnspname']
-        if row['opcname']:
-            cols_str += ' ' + row['opcname']
-
-        # ASC/DESC and NULLS works only with btree indexes
-        if 'amname' in data and data['amname'] == 'btree':
-            # Append sort order
-            cols_str += ' ' + row['options'][0]
-            # Append nulls value
-            cols_str += ' ' + row['options'][1]
+        cols_str += _get_column_property_display_data(row, cols_str, data)
 
         cols.append(cols_str)
 
@@ -156,6 +162,36 @@ def get_include_details(conn, idx, data, template_path=None):
     return data
 
 
+def _get_sql_with_index_none(data, template_path, conn, mode, name):
+    required_args = {
+        'name': 'Name',
+        'columns': 'Columns'
+    }
+    for arg in required_args:
+        err = False
+        if arg == 'columns' and len(data['columns']) < 1:
+            err = True
+
+        if arg not in data:
+            err = True
+            # Check if we have at least one column
+        if err:
+            return _('-- definition incomplete'), name
+
+    # If the request for new object which do not have did
+    sql = render_template(
+        "/".join([template_path, 'create.sql']),
+        data=data, conn=conn, mode=mode
+    )
+    sql += "\n"
+
+    sql += render_template(
+        "/".join([template_path, 'alter.sql']),
+        data=data, conn=conn
+    )
+    return sql
+
+
 @get_template_path
 def get_sql(conn, data, did, tid, idx, datlastsysoid,
             mode=None, template_path=None):
@@ -174,11 +210,11 @@ def get_sql(conn, data, did, tid, idx, datlastsysoid,
     """
     name = data['name'] if 'name' in data else None
     if idx is not None:
-        SQL = render_template("/".join([template_path, 'properties.sql']),
+        sql = render_template("/".join([template_path, 'properties.sql']),
                               did=did, tid=tid, idx=idx,
                               datlastsysoid=datlastsysoid)
 
-        status, res = conn.execute_dict(SQL)
+        status, res = conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
 
@@ -202,38 +238,14 @@ def get_sql(conn, data, did, tid, idx, datlastsysoid,
         if 'name' not in data:
             name = data['name'] = old_data['name']
 
-        SQL = render_template(
+        sql = render_template(
             "/".join([template_path, 'update.sql']),
             data=data, o_data=old_data, conn=conn
         )
     else:
-        required_args = {
-            'name': 'Name',
-            'columns': 'Columns'
-        }
-        for arg in required_args:
-            err = False
-            if arg == 'columns' and len(data['columns']) < 1:
-                err = True
+        sql = _get_sql_with_index_none(data, template_path, conn, mode, name)
 
-            if arg not in data:
-                err = True
-                # Check if we have at least one column
-            if err:
-                return _('-- definition incomplete'), name
-
-        # If the request for new object which do not have did
-        SQL = render_template(
-            "/".join([template_path, 'create.sql']),
-            data=data, conn=conn, mode=mode
-        )
-        SQL += "\n"
-        SQL += render_template(
-            "/".join([template_path, 'alter.sql']),
-            data=data, conn=conn
-        )
-
-    return SQL, name
+    return sql, name
 
 
 @get_template_path

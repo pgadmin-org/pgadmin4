@@ -536,6 +536,22 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return True, data
 
+    @staticmethod
+    def _check_for_error(required_args, data):
+        for arg in required_args:
+            err_msg = None
+            if arg == 'columns' and len(data['columns']) < 1:
+                err_msg = gettext("You must provide one or more column to "
+                                  "create index.")
+
+            if arg not in data:
+                err_msg = gettext("Could not find the required parameter ({})"
+                                  ".").format(required_args[arg])
+                # Check if we have at least one column
+            if err_msg is not None:
+                return True, err_msg
+        return False, ''
+
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
         """
@@ -568,22 +584,13 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             'columns': 'Columns'
         }
 
-        for arg in required_args:
-            err_msg = None
-            if arg == 'columns' and len(data['columns']) < 1:
-                err_msg = gettext("You must provide one or more column to "
-                                  "create index.")
-
-            if arg not in data:
-                err_msg = gettext("Could not find the required parameter ({})"
-                                  ".").format(required_args[arg])
-                # Check if we have at least one column
-            if err_msg is not None:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(err_msg)
-                )
+        is_error, err_msg = IndexesView._check_for_error(required_args, data)
+        if is_error:
+            return make_json_response(
+                status=410,
+                success=0,
+                errormsg=gettext(err_msg)
+            )
 
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
@@ -686,8 +693,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
-
-                if not res['rows']:
+                elif not res['rows']:
                     return make_json_response(
                         success=0,
                         errormsg=gettext(
@@ -1018,6 +1024,22 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return res
 
+    @staticmethod
+    def _check_for_create_req(required_create_keys, diff_dict):
+        create_req = False
+        for key in required_create_keys:
+            if key in diff_dict and \
+                ((key == 'columns' and
+                  (('added' in diff_dict[key] and
+                    len(diff_dict[key]['added']) > 0) or
+                   ('changed' in diff_dict[key] and
+                    len(diff_dict[key]['changed']) > 0) or
+                   ('deleted' in diff_dict[key] and
+                    len(diff_dict[key]['deleted']) > 0))) or
+                 key != 'columns'):
+                create_req = True
+        return create_req
+
     def ddl_compare(self, **kwargs):
         """
         This function returns the DDL/DML statements based on the
@@ -1055,19 +1077,11 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
             required_create_keys = ['columns']
-            create_req = False
 
-            for key in required_create_keys:
-                if key in diff_dict and \
-                    ((key == 'columns' and
-                      (('added' in diff_dict[key] and
-                        len(diff_dict[key]['added']) > 0) or
-                       ('changed' in diff_dict[key] and
-                        len(diff_dict[key]['changed']) > 0) or
-                       ('deleted' in diff_dict[key] and
-                        len(diff_dict[key]['deleted']) > 0))) or
-                     key != 'columns'):
-                    create_req = True
+            create_req = IndexesView._check_for_create_req(
+                required_create_keys,
+                diff_dict
+            )
 
             if create_req:
                 diff = self.get_sql_from_index_diff(sid=src_params['sid'],
