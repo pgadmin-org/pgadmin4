@@ -414,22 +414,22 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             status=200
         )
 
-    def get_reverse_engineered_sql(self, did, scid, tid, main_sql, data,
-                                   json_resp=True, diff_partition_sql=False):
+    def get_reverse_engineered_sql(self, **kwargs):
         """
         This function will creates reverse engineered sql for
         the table object
 
          Args:
-           did: Database ID
-           scid: Schema ID
-           tid: Table ID
-           main_sql: List contains all the reversed engineered sql
-           data: Table's Data
-           json_resp: Json response or plain SQL
-           diff_partition_sql: In Schema diff, the Partition sql should be
-           return separately to perform further task
+           kwargs
         """
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        tid = kwargs.get('tid')
+        main_sql = kwargs.get('main_sql')
+        data = kwargs.get('data')
+        json_resp = kwargs.get('json_resp', True)
+        diff_partition_sql = kwargs.get('diff_partition_sql', False)
+
         """
         #####################################
         # 1) Reverse engineered sql for TABLE
@@ -508,8 +508,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             tables.indexes import utils as index_utils
         for row in rset['rows']:
             index_sql = index_utils.get_reverse_engineered_sql(
-                self.conn, schema, table, did, tid, row['oid'],
-                self.datlastsysoid,
+                self.conn, schema=schema, table=table, did=did, tid=tid,
+                idx=row['oid'], datlastsysoid=self.datlastsysoid,
                 template_path=None, with_header=json_resp)
             index_sql = u"\n" + index_sql
 
@@ -533,10 +533,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 return internal_server_error(errormsg=rset)
 
             for row in rset['rows']:
-                policy_sql = row_security_policies_utils. \
+                policy_sql = row_security_policies_utils.\
                     get_reverse_engineered_sql(
-                        self.conn, schema, table, did, scid, tid, row['oid'],
-                        self.datlastsysoid,
+                        self.conn, schema=schema, table=table, scid=scid,
+                        plid=row['oid'], datlastsysoid=self.datlastsysoid,
                         template_path=None, with_header=json_resp)
                 policy_sql = u"\n" + policy_sql
 
@@ -558,8 +558,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         for row in rset['rows']:
             trigger_sql = trigger_utils.get_reverse_engineered_sql(
-                self.conn, schema, table, tid, row['oid'],
-                self.datlastsysoid, self.blueprint.show_system_objects,
+                self.conn, schema=schema, table=table, tid=tid,
+                trid=row['oid'], datlastsysoid=self.datlastsysoid,
+                show_system_objects=self.blueprint.show_system_objects,
                 template_path=None, with_header=json_resp)
             trigger_sql = u"\n" + trigger_sql
 
@@ -585,8 +586,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             for row in rset['rows']:
                 compound_trigger_sql = \
                     compound_trigger_utils.get_reverse_engineered_sql(
-                        self.conn, schema, table, tid, row['oid'],
-                        self.datlastsysoid)
+                        self.conn, schema=schema, table=table, tid=tid,
+                        trid=row['oid'], datlastsysoid=self.datlastsysoid)
                 compound_trigger_sql = u"\n" + compound_trigger_sql
 
                 # Add into main sql
@@ -1084,7 +1085,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         return SQL, data['name'] if 'name' in data else old_data['name']
 
-    def update(self, gid, sid, did, scid, tid, data, res, parent_id=None):
+    def update(self, gid, sid, did, scid, tid, **kwargs):
         """
         This function will update an existing table object
 
@@ -1099,6 +1100,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
            parent_id: parent table id if current table is partition of parent
                     table else none
         """
+        data = kwargs.get('data')
+        res = kwargs.get('res')
+        parent_id = kwargs.get('parent_id', None)
+
         # checking the table existence using the function of the same class
         schema_name, table_name = self.get_schema_and_table_name(tid)
 
@@ -1221,8 +1226,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def properties(self, gid, sid, did, scid, tid, res,
-                   return_ajax_response=True):
+    def properties(self, gid, sid, did, scid, tid, **kwargs):
         """
         This function will show the properties of the selected table node.
 
@@ -1233,12 +1237,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             scid: Schema ID
             scid: Schema ID
             tid: Table ID
-            res: Table/Partition table properties
-            return_ajax_response: If True then return the ajax response
 
         Returns:
             JSON of selected table node
         """
+        res = kwargs.get('res')
+        return_ajax_response = kwargs.get('return_ajax_response', True)
+
         data = res['rows'][0]
 
         data['vacuum_settings_str'] = ''

@@ -140,21 +140,22 @@ def get_trigger_function_and_columns(conn, data, tid,
 
 
 @get_template_path
-def get_sql(conn, data, tid, trid, datlastsysoid,
-            show_system_objects, is_schema_diff=False, template_path=None):
+def get_sql(conn, **kwargs):
     """
     This function will generate sql from model data.
 
     :param conn: Connection Object
-    :param data: Data
-    :param tid: Table ID
-    :param trid: Trigger ID
-    :param datlastsysoid:
-    :param show_system_objects: Show System Object value True or False
-    :param is_schema_diff:
-    :param template_path: Optional template path
+    :param kwargs
     :return:
     """
+    data = kwargs.get('data')
+    tid = kwargs.get('tid')
+    trid = kwargs.get('trid')
+    datlastsysoid = kwargs.get('datlastsysoid')
+    show_system_objects = kwargs.get('show_system_objects')
+    is_schema_diff = kwargs.get('is_schema_diff', False)
+    template_path = kwargs.get('template_path', None)
+
     name = data['name'] if 'name' in data else None
     if trid is not None:
         sql = render_template("/".join([template_path, 'properties.sql']),
@@ -232,24 +233,23 @@ def get_sql(conn, data, tid, trid, datlastsysoid,
 
 
 @get_template_path
-def get_reverse_engineered_sql(conn, schema, table, tid, trid,
-                               datlastsysoid, show_system_objects,
-                               template_path=None, with_header=True):
+def get_reverse_engineered_sql(conn, **kwargs):
     """
     This function will return reverse engineered sql for specified trigger.
 
     :param conn: Connection Object
-    :param schema: Schema
-    :param table: Table
-    :param tid: Table ID
-    :param trid: Trigger ID
-    :param datlastsysoid:
-    :param show_system_objects: Show System Object value True or False
-    :param template_path: Optional template path
-    :param with_header: Optional parameter to decide whether the SQL will be
-     returned with header or not
+    :param kwargs:
     :return:
     """
+    schema = kwargs.get('schema')
+    table = kwargs.get('table')
+    tid = kwargs.get('tid')
+    trid = kwargs.get('trid')
+    datlastsysoid = kwargs.get('datlastsysoid')
+    show_system_objects = kwargs.get('show_system_objects')
+    template_path = kwargs.get('template_path', None)
+    with_header = kwargs.get('with_header', True)
+
     SQL = render_template("/".join([template_path, 'properties.sql']),
                           tid=tid, trid=trid,
                           datlastsysoid=datlastsysoid)
@@ -272,8 +272,9 @@ def get_reverse_engineered_sql(conn, schema, table, tid, trid,
 
     data = trigger_definition(data)
 
-    SQL, name = get_sql(conn, data, tid, None, datlastsysoid,
-                        show_system_objects)
+    SQL, name = get_sql(conn, data=data, tid=tid, trid=None,
+                        datlastsysoid=datlastsysoid,
+                        show_system_objects=show_system_objects)
 
     if with_header:
         sql_header = u"-- Trigger: {0}\n\n-- ".format(data['name'])

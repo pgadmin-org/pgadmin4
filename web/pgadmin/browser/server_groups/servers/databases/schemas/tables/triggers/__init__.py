@@ -672,8 +672,9 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             data['table'] = self.table
 
             SQL, name = trigger_utils.get_sql(
-                self.conn, data, tid, trid, self.datlastsysoid,
-                self.blueprint.show_system_objects)
+                self.conn, data=data, tid=tid, trid=trid,
+                datlastsysoid=self.datlastsysoid,
+                show_system_objects=self.blueprint.show_system_objects)
 
             if not isinstance(SQL, str):
                 return SQL
@@ -754,8 +755,9 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         try:
             sql, name = trigger_utils.get_sql(
-                self.conn, data, tid, trid, self.datlastsysoid,
-                self.blueprint.show_system_objects)
+                self.conn, data=data, tid=tid, trid=trid,
+                datlastsysoid=self.datlastsysoid,
+                show_system_objects=self.blueprint.show_system_objects)
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -784,8 +786,9 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = trigger_utils.get_reverse_engineered_sql(
-            self.conn, self.schema, self.table, tid, trid,
-            self.datlastsysoid, self.blueprint.show_system_objects)
+            self.conn, schema=self.schema, table=self.table, tid=tid,
+            trid=trid, datlastsysoid=self.datlastsysoid,
+            show_system_objects=self.blueprint.show_system_objects)
 
         return ajax_response(response=SQL)
 
@@ -808,9 +811,10 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if data:
             SQL, name = trigger_utils.get_sql(
-                self.conn, data, tid, oid,
-                self.datlastsysoid,
-                self.blueprint.show_system_objects, True)
+                self.conn, data=data, tid=tid, trid=oid,
+                datlastsysoid=self.datlastsysoid,
+                show_system_objects=self.blueprint.show_system_objects,
+                is_schema_diff=True)
 
             if not isinstance(SQL, str):
                 return SQL
@@ -825,10 +829,9 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 if diff_schema:
                     schema = diff_schema
                 SQL = trigger_utils.get_reverse_engineered_sql(
-                    self.conn, schema,
-                    self.table, tid, oid,
-                    self.datlastsysoid,
-                    self.blueprint.show_system_objects,
+                    self.conn, schema=schema, table=self.table, tid=tid,
+                    trid=oid, datlastsysoid=self.datlastsysoid,
+                    show_system_objects=self.blueprint.show_system_objects,
                     template_path=None, with_header=False)
 
         return SQL

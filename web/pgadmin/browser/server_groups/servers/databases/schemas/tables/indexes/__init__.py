@@ -745,7 +745,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         data['table'] = self.table
         try:
             SQL, name = index_utils.get_sql(
-                self.conn, data, did, tid, idx, self.datlastsysoid)
+                self.conn, data=data, did=did, tid=tid, idx=idx,
+                datlastsysoid=self.datlastsysoid)
             if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
@@ -795,8 +796,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         try:
             sql, name = index_utils.get_sql(
-                self.conn, data, did, tid, idx, self.datlastsysoid,
-                mode='create')
+                self.conn, data=data, did=did, tid=tid, idx=idx,
+                datlastsysoid=self.datlastsysoid, mode='create')
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -824,24 +825,36 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = index_utils.get_reverse_engineered_sql(
-            self.conn, self.schema, self.table, did, tid, idx,
-            self.datlastsysoid)
+            self.conn, schema=self.schema, table=self.table, did=did,
+            tid=tid, idx=idx, datlastsysoid=self.datlastsysoid)
 
         return ajax_response(response=SQL)
 
     @check_precondition
-    def get_sql_from_index_diff(self, sid, did, scid, tid, idx, data=None,
-                                diff_schema=None, drop_req=False):
-
+    def get_sql_from_index_diff(self, **kwargs):
+        """
+        This function get the sql from index diff.
+        :param kwargs:
+        :return:
+        """
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        scid = kwargs.get('scid')
+        tid = kwargs.get('tid')
+        idx = kwargs.get('idx')
+        data = kwargs.get('data', None)
+        diff_schema = kwargs.get('diff_schema', None)
+        drop_req = kwargs.get('drop_req', False)
         sql = ''
+
         if data:
             data['schema'] = self.schema
             data['nspname'] = self.schema
             data['table'] = self.table
 
             sql, name = index_utils.get_sql(
-                self.conn, data, did, tid, idx, self.datlastsysoid,
-                mode='create')
+                self.conn, data=data, did=did, tid=tid, idx=idx,
+                datlastsysoid=self.datlastsysoid, mode='create')
 
             sql = sql.strip('\n').strip(' ')
 

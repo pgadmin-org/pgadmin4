@@ -458,8 +458,8 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
         data = res['rows'][0]
 
-        return BaseTableView.get_reverse_engineered_sql(self, did, scid, ptid,
-                                                        main_sql, data)
+        return BaseTableView.get_reverse_engineered_sql(
+            self, did=did, scid=scid, tid=ptid, main_sql=main_sql, data=data)
 
     @BaseTableView.check_precondition
     def get_sql_from_diff(self, **kwargs):

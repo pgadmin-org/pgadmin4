@@ -193,21 +193,23 @@ def _get_sql_with_index_none(data, template_path, conn, mode, name):
 
 
 @get_template_path
-def get_sql(conn, data, did, tid, idx, datlastsysoid,
-            mode=None, template_path=None):
+def get_sql(conn, **kwargs):
     """
     This function will generate sql from model data.
 
     :param conn: Connection Object
-    :param data: Data
-    :param did:
-    :param tid: Table ID
-    :param idx: Index ID
-    :param datlastsysoid:
-    :param mode:
-    :param template_path: Optional template path
+    :param kwargs:
     :return:
     """
+
+    data = kwargs.get('data')
+    did = kwargs.get('did')
+    tid = kwargs.get('tid')
+    idx = kwargs.get('idx')
+    datlastsysoid = kwargs.get('datlastsysoid')
+    mode = kwargs.get('mode', None)
+    template_path = kwargs.get('template_path', None)
+
     name = data['name'] if 'name' in data else None
     if idx is not None:
         sql = render_template("/".join([template_path, 'properties.sql']),
@@ -249,23 +251,23 @@ def get_sql(conn, data, did, tid, idx, datlastsysoid,
 
 
 @get_template_path
-def get_reverse_engineered_sql(conn, schema, table, did, tid, idx,
-                               datlastsysoid,
-                               template_path=None, with_header=True):
+def get_reverse_engineered_sql(conn, **kwargs):
     """
     This function will return reverse engineered sql for specified trigger.
 
     :param conn: Connection Object
-    :param schema: Schema
-    :param table: Table
-    :param tid: Table ID
-    :param idx: Index ID
-    :param datlastsysoid:
-    :param template_path: Optional template path
-    :param with_header: Optional parameter to decide whether the SQL will be
-     returned with header or not
+    :param kwargs:
     :return:
     """
+    schema = kwargs.get('schema')
+    table = kwargs.get('table')
+    did = kwargs.get('did')
+    tid = kwargs.get('tid')
+    idx = kwargs.get('idx')
+    datlastsysoid = kwargs.get('datlastsysoid')
+    template_path = kwargs.get('template_path', None)
+    with_header = kwargs.get('with_header', True)
+
     SQL = render_template("/".join([template_path, 'properties.sql']),
                           did=did, tid=tid, idx=idx,
                           datlastsysoid=datlastsysoid)
@@ -289,7 +291,8 @@ def get_reverse_engineered_sql(conn, schema, table, did, tid, idx,
     if conn.manager.version >= 110000:
         data = get_include_details(conn, idx, data)
 
-    SQL, name = get_sql(conn, data, did, tid, None, datlastsysoid)
+    SQL, name = get_sql(conn, data=data, did=did, tid=tid, idx=None,
+                        datlastsysoid=datlastsysoid)
 
     if with_header:
         sql_header = u"-- Index: {0}\n\n-- ".format(data['name'])

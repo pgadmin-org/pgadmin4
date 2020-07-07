@@ -597,7 +597,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return gone(gettext("The specified table could not be found."))
 
         return super(TableView, self).properties(
-            gid, sid, did, scid, tid, res
+            gid, sid, did, scid, tid, res=res
         )
 
     def _fetch_properties(self, did, scid, tid):
@@ -1082,7 +1082,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 return res
 
             return super(TableView, self).update(
-                gid, sid, did, scid, tid, data, res)
+                gid, sid, did, scid, tid, data=data, res=res)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -1282,7 +1282,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data['schema'] = diff_schema
 
             sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
-                self, did, scid, tid, main_sql, data, json_resp)
+                self, did=did, scid=scid, tid=tid, main_sql=main_sql,
+                data=data, json_resp=json_resp)
 
             return sql
 
@@ -1390,7 +1391,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         data = res['rows'][0]
 
         return BaseTableView.get_reverse_engineered_sql(
-            self, did, scid, tid, main_sql, data)
+            self, did=did, scid=scid, tid=tid, main_sql=main_sql, data=data)
 
     @BaseTableView.check_precondition
     def select_sql(self, gid, sid, did, scid, tid):
@@ -1682,7 +1683,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 return False
 
             data = super(TableView, self).properties(
-                0, sid, did, scid, tid, data, False
+                0, sid, did, scid, tid, res=data, return_ajax_response=False
             )
 
             return data
@@ -1701,7 +1702,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
                 if status:
                     data = super(TableView, self).properties(
-                        0, sid, did, scid, row['oid'], data, False
+                        0, sid, did, scid, row['oid'], res=data,
+                        return_ajax_response=False
                     )
 
                     # Get sub module data of a specified table for object

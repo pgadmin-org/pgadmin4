@@ -143,19 +143,20 @@ def get_sql(conn, data, tid, trid, datlastsysoid, template_path=None):
 
 
 @get_template_path
-def get_reverse_engineered_sql(conn, schema, table, tid, trid,
-                               datlastsysoid, template_path=None):
+def get_reverse_engineered_sql(conn, **kwargs):
     """
     This function will return reverse engineered sql for trigger(s).
     :param conn: Connection Object
-    :param schema: Schema
-    :param table: Table
-    :param tid: Table ID
-    :param trid: Trigger ID
-    :param datlastsysoid:
-    :param template_path: Optional template path
+    :param kwargs
     :return:
     """
+    schema = kwargs.get('schema')
+    table = kwargs.get('table')
+    tid = kwargs.get('tid')
+    trid = kwargs.get('trid')
+    datlastsysoid = kwargs.get('datlastsysoid')
+    template_path = kwargs.get('template_path', None)
+
     SQL = render_template("/".join([template_path, 'properties.sql']),
                           tid=tid, trid=trid,
                           datlastsysoid=datlastsysoid)

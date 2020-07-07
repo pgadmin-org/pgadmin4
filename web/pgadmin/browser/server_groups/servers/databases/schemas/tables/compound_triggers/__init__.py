@@ -751,8 +751,8 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         try:
             SQL = compound_trigger_utils.get_reverse_engineered_sql(
-                self.conn, self.schema, self.table, tid, trid,
-                self.datlastsysoid)
+                self.conn, schema=self.schema, table=self.table, tid=tid,
+                trid=trid, datlastsysoid=self.datlastsysoid)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 

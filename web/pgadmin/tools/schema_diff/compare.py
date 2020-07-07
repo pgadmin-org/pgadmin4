@@ -85,12 +85,16 @@ class SchemaDiffObjectCompare:
                 len(source) <= 0 and len(target) <= 0):
             return None
 
-        return compare_dictionaries(self, source_params, target_params,
-                                    target_schema, source, target,
-                                    self.node_type,
-                                    gettext(self.blueprint.COLLECTION_LABEL),
-                                    ignore_whitespaces,
-                                    self.keys_to_ignore)
+        return compare_dictionaries(view_object=self,
+                                    source_params=source_params,
+                                    target_params=target_params,
+                                    target_schema=target_schema,
+                                    source_dict=source,
+                                    target_dict=target,
+                                    node=self.node_type,
+                                    node_label=self.blueprint.COLLECTION_LABEL,
+                                    ignore_whitespaces=ignore_whitespaces,
+                                    ignore_keys=self.keys_to_ignore)
 
     def ddl_compare(self, **kwargs):
         """
