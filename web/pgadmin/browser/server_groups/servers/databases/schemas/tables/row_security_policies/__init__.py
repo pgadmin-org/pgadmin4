@@ -413,12 +413,10 @@ class RowSecurityView(PGChildNodeView):
             request.data, encoding='utf-8'
         )
         try:
-            sql, name = row_security_policies_utils.get_sql(self.conn, data,
-                                                            did, scid,
-                                                            tid, plid,
-                                                            self.datlastsysoid,
-                                                            self.schema,
-                                                            self.table)
+            sql, name = row_security_policies_utils.get_sql(
+                self.conn, data=data, scid=scid, plid=plid,
+                schema=self.schema, table=self.table)
+
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -439,7 +437,7 @@ class RowSecurityView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, plid=None, only_sql=False):
+    def delete(self, gid, sid, did, scid, tid, **kwargs):
         """
         This function will drop the policy object
         :param plid: policy id
@@ -448,8 +446,12 @@ class RowSecurityView(PGChildNodeView):
         :param gid: group id
         :param tid: table id
         :param scid: Schema ID
+        :param kwargs
         :return:
         """
+        plid = kwargs.get('plid', None)
+        only_sql = kwargs.get('only_sql', False)
+
         # Below will deplide if it's simple drop or drop with cascade call
         if self.cmd == 'delete':
             # This is a cascade operation
@@ -517,11 +519,9 @@ class RowSecurityView(PGChildNodeView):
         """
         data = dict(request.args)
 
-        sql, name = row_security_policies_utils.get_sql(self.conn, data, did,
-                                                        scid, tid, plid,
-                                                        self.datlastsysoid,
-                                                        self.schema,
-                                                        self.table)
+        sql, name = row_security_policies_utils.get_sql(
+            self.conn, data=data, scid=scid, plid=plid,
+            schema=self.schema, table=self.table)
         if not isinstance(sql, str):
             return sql
         sql = sql.strip('\n').strip(' ')
@@ -548,8 +548,8 @@ class RowSecurityView(PGChildNodeView):
         """
 
         SQL = row_security_policies_utils.get_reverse_engineered_sql(
-            self.conn, self.schema, self.table, did, scid, tid, plid,
-            self.datlastsysoid)
+            self.conn, schema=self.schema, table=self.table, scid=scid,
+            plid=plid, datlastsysoid=self.datlastsysoid)
 
         return ajax_response(response=SQL)
 
@@ -600,12 +600,11 @@ class RowSecurityView(PGChildNodeView):
         :param kwargs
         :return:
         """
-        gid = kwargs.get('gid')
         sid = kwargs.get('sid')
         did = kwargs.get('did')
         scid = kwargs.get('scid')
         tid = kwargs.get('tid')
-        oid = kwargs.get('oid')
+        oid = kwargs.get('plid')
         data = kwargs.get('data', None)
         diff_schema = kwargs.get('diff_schema', None)
         drop_req = kwargs.get('drop_req', False)
@@ -615,8 +614,8 @@ class RowSecurityView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
             sql, name = row_security_policies_utils.get_sql(
-                self.conn, data, did, scid, tid, oid, self.datlastsysoid,
-                self.schema, self.table)
+                self.conn, data=data, scid=scid, plid=oid,
+                schema=self.schema, table=self.table)
 
             sql = sql.strip('\n').strip(' ')
 
@@ -624,10 +623,8 @@ class RowSecurityView(PGChildNodeView):
             schema = diff_schema
 
             sql = row_security_policies_utils.get_reverse_engineered_sql(
-                self.conn, schema,
-                self.table, did, scid, tid, oid,
-                self.datlastsysoid,
-                template_path=None, with_header=False)
+                self.conn, schema=schema, table=self.table, scid=scid,
+                plid=oid, datlastsysoid=self.datlastsysoid, with_header=False)
 
         drop_sql = ''
         if drop_req:
@@ -711,7 +708,7 @@ class RowSecurityView(PGChildNodeView):
             diff_dict = directory_diff(
                 source, target, difference={}
             )
-            if 'event' in diff_dict:
+            if 'event' in diff_dict or 'type' in diff_dict:
                 delete_sql = self.get_sql_from_diff(gid=1,
                                                     sid=tgt_params['sid'],
                                                     did=tgt_params['did'],

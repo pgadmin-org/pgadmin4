@@ -84,6 +84,7 @@ define('pgadmin.node.row_security_policy', [
           using_orig: undefined,
           withcheck: undefined,
           withcheck_orig: undefined,
+          type:'PERMISSIVE',
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
@@ -148,7 +149,29 @@ define('pgadmin.node.row_security_policy', [
             });
             return res;
           },
-        }],
+        },
+        {
+          id: 'type', label: gettext('Type'), control: 'select2', deps:['type'],
+          type: 'text',readonly: function(m) {
+            return !m.isNew();},
+          select2: {
+            width: '100%',
+            allowClear: false,
+          },
+          options:[
+            {label: 'PERMISSIVE', value: 'PERMISSIVE'},
+            {label: 'RESTRICTIVE', value: 'RESTRICTIVE'},
+          ],
+          visible: function(m) {
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+                m.node_info.server.version >= 100000)
+              return true;
+
+            return false;
+          },
+        },
+        ],
         validate: function(keys) {
           var msg;
           this.errorModel.clear();

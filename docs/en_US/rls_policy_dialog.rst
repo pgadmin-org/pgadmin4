@@ -20,6 +20,7 @@ Use the fields in the *General* tab to define the RLS Policy:
 
 * Use the *Name* field to add a descriptive name for the RLS Policy. The name will be displayed in the *pgAdmin* tree control.
 * Use the drop-down listbox next to *Role* to select the Role to which the RLS Policy is to be applied.
+* Use the drop-down listbox next to *Type* to select the type of the policy.
 
 Click the *Commands* tab to continue.
 
@@ -31,7 +32,7 @@ Use the fields in the *Commands* tab to define the RLS Policy:
 
 * Use the drop-down listbox next to *Event* to select the command to which policy applies. Valid options are ALL, SELECT, INSERT, UPDATE, and DELETE. Default is ALL.
 * Use the *Using* field to add a SQL conditional expression returning boolean. This expression will be added to queries that refer to the table if row level security is enabled.
-* Use the *With Check* field to add a SQL conditional expression returning boolean. This expression will be used in INSERT and UPDATE queries against the table if row level security is enabled.
+* Use the *With check* field to add a SQL conditional expression returning boolean. This expression will be used in INSERT and UPDATE queries against the table if row level security is enabled.
 
 Click the *SQL* tab to continue.
 

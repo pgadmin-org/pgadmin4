@@ -61,11 +61,16 @@ def get_parent(conn, tid, template_path=None):
 
 
 @get_template_path
-def get_sql(conn, data, did, scid, tid, plid, datlastsysoid, schema, table,
-            template_path=None):
+def get_sql(conn, **kwargs):
     """
     This function will generate sql from model data
     """
+    data = kwargs.get('data')
+    scid = kwargs.get('scid')
+    plid = kwargs.get('plid')
+    schema = kwargs.get('schema')
+    table = kwargs.get('table')
+    template_path = kwargs.get('template_path', None)
 
     if plid is not None:
         sql = render_template("/".join([template_path, 'properties.sql']),
@@ -94,24 +99,21 @@ def get_sql(conn, data, did, scid, tid, plid, datlastsysoid, schema, table,
 
 
 @get_template_path
-def get_reverse_engineered_sql(conn, schema, table, did, scid, tid, plid,
-                               datlastsysoid,
-                               template_path=None, with_header=True):
+def get_reverse_engineered_sql(conn, **kwargs):
     """
     This function will return reverse engineered sql for specified trigger.
-
-    :param conn: Connection Object
-    :param schema: Schema
-    :param table: Table
-    :param did: DB ID
-    :param tid: Table ID
-    :param plid: Policy ID
-    :param datlastsysoid:
-    :param template_path: Optional template path
-    :param with_header: Optional parameter to decide whether the SQL will be
-     returned with header or not
+    :param conn:
+    :param kwargs:
     :return:
     """
+    schema = kwargs.get('schema')
+    table = kwargs.get('table')
+    scid = kwargs.get('scid')
+    plid = kwargs.get('plid')
+    datlastsysoid = kwargs.get('datlastsysoid')
+    template_path = kwargs.get('template_path', None)
+    with_header = kwargs.get('with_header', True)
+
     SQL = render_template("/".join(
         [template_path, 'properties.sql']), plid=plid, scid=scid)
 
@@ -127,10 +129,9 @@ def get_reverse_engineered_sql(conn, schema, table, did, scid, tid, plid,
     data['schema'] = schema
     data['table'] = table
 
-    SQL, name = get_sql(conn, data, did, scid, tid, None, datlastsysoid,
-                        schema,
-                        table)
-
+    SQL, name = get_sql(conn, data=data, scid=scid, plid=None,
+                        datlastsysoid=datlastsysoid, schema=schema,
+                        table=table)
     if with_header:
         sql_header = u"-- POLICY: {0}\n\n-- ".format(data['name'])
 
