@@ -522,8 +522,8 @@ define([
               if (e.button['data-btn-name'] === 'ok') {
 
                 var n = this.settings['pg_node'],
-                  i = this.settings['pg_item'],
-                  treeData = n.getTreeNodeHierarchy.apply(n, [i]);
+                  itemArr = this.settings['pg_item'],
+                  treeData = n.getTreeNodeHierarchy.apply(n, [itemArr]);
 
                 this.view.model.set({
                   'database': treeData.database._label,

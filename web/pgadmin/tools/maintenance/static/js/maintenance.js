@@ -315,14 +315,14 @@ define([
             },
             // Callback functions when click on the buttons of the Alertify dialogs
             callback: function(e) {
-              var i = pgBrowser.tree.selected(),
-                d = i && i.length == 1 ? pgBrowser.tree.itemData(i) : undefined,
-                node = d && pgBrowser.Nodes[d._type];
+              var sel_item = pgBrowser.tree.selected(),
+                itemData = sel_item && sel_item.length == 1 ? pgBrowser.tree.itemData(sel_item) : undefined,
+                sel_node = itemData && pgBrowser.Nodes[itemData._type];
 
               if (e.button.element.name == 'dialog_help' || e.button.element.name == 'object_help') {
                 e.cancel = true;
                 pgBrowser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
-                  node, i);
+                  sel_node, sel_item);
                 return;
               }
 
@@ -334,33 +334,33 @@ define([
                   unique_constraint = undefined,
                   index = undefined;
 
-                if (!d)
+                if (!itemData)
                   return;
 
-                var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+                var node_hierarchy = sel_node.getTreeNodeHierarchy.apply(sel_node, [sel_item]);
 
-                if (treeInfo.schema != undefined) {
-                  schema = treeInfo.schema._label;
+                if (node_hierarchy.schema != undefined) {
+                  schema = node_hierarchy.schema._label;
                 }
 
-                if (treeInfo.partition != undefined) {
-                  table = treeInfo.partition._label;
-                } else if (treeInfo.table != undefined) {
-                  table = treeInfo.table._label;
-                } else if (treeInfo.mview != undefined) {
-                  table = treeInfo.mview._label;
+                if (node_hierarchy.partition != undefined) {
+                  table = node_hierarchy.partition._label;
+                } else if (node_hierarchy.table != undefined) {
+                  table = node_hierarchy.table._label;
+                } else if (node_hierarchy.mview != undefined) {
+                  table = node_hierarchy.mview._label;
                 }
 
-                if (treeInfo.primary_key != undefined) {
-                  primary_key = treeInfo.primary_key._label;
-                } else if (treeInfo.unique_constraint != undefined) {
-                  unique_constraint = treeInfo.unique_constraint._label;
-                } else if (treeInfo.index != undefined) {
-                  index = treeInfo.index._label;
+                if (node_hierarchy.primary_key != undefined) {
+                  primary_key = node_hierarchy.primary_key._label;
+                } else if (node_hierarchy.unique_constraint != undefined) {
+                  unique_constraint = node_hierarchy.unique_constraint._label;
+                } else if (node_hierarchy.index != undefined) {
+                  index = node_hierarchy.index._label;
                 }
 
                 this.view.model.set({
-                  'database': treeInfo.database._label,
+                  'database': node_hierarchy.database._label,
                   'schema': schema,
                   'table': table,
                   'primary_key': primary_key,
@@ -371,8 +371,8 @@ define([
                 $.ajax({
                   url: url_for(
                     'maintenance.create_job', {
-                      'sid': treeInfo.server._id,
-                      'did': treeInfo.database._id,
+                      'sid': node_hierarchy.server._id,
+                      'did': node_hierarchy.database._id,
                     }),
                   method: 'POST',
                   data: {
@@ -419,21 +419,21 @@ define([
             prepare: function() {
               // Main maintenance tool dialog container
               var $container = $('<div class=\'maintenance_dlg\'></div>');
-              var t = pgBrowser.tree,
-                i = t.selected(),
-                d = i && i.length == 1 ? t.itemData(i) : undefined,
-                node = d && pgBrowser.Nodes[d._type];
+              var tree = pgBrowser.tree,
+                sel_item = tree.selected(),
+                itemInfo = sel_item && sel_item.length == 1 ? tree.itemData(sel_item) : undefined,
+                nodeData = itemInfo && pgBrowser.Nodes[itemInfo._type];
 
-              if (!d)
+              if (!itemInfo)
                 return;
 
-              var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+              var treeData = nodeData.getTreeNodeHierarchy.apply(nodeData, [sel_item]);
 
               var newModel = new MaintenanceModel({}, {
-                  node_info: treeInfo,
+                  node_info: treeData,
                 }),
                 fields = Backform.generateViewSchema(
-                  treeInfo, newModel, 'create', node, treeInfo.server, true
+                  treeData, newModel, 'create', nodeData, treeData.server, true
                 );
 
               var view = this.view = new Backform.Dialog({
@@ -446,8 +446,8 @@ define([
               view.render();
 
               // If node is Index, Unique or Primary key then disable vacuum & analyze button
-              if (d._type == 'primary_key' || d._type == 'unique_constraint' ||
-                d._type == 'index') {
+              if (itemInfo._type == 'primary_key' || itemInfo._type == 'unique_constraint' ||
+                itemInfo._type == 'index') {
                 var vacuum_analyze_btns = $container.find(
                   '.btn-group label.btn:lt(2)'
                 ).addClass('disabled');
