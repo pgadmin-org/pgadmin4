@@ -222,6 +222,11 @@ define('pgadmin.node.row_security_policy', [
         var treeData = this.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
+        // If node is under catalog then do not allow 'create' menu
+        if (treeData['catalog'] != undefined)
+          return false;
+
+        // If server is less than 9.5 then do not allow 'create' menu
         if (server && server.version < 90500)
           return false;
 

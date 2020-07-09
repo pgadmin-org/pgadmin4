@@ -32,3 +32,4 @@ Bug fixes
 | `Issue #5629 <https://redmine.postgresql.org/issues/5629>`_ -  Fixed an issue where the user is able to edit properties when some of the collection nodes are selected.
 | `Issue #5630 <https://redmine.postgresql.org/issues/5630>`_ -  Fixed an issue where installation of pgadmin4 not working on 32-bit Windows.
 | `Issue #5631 <https://redmine.postgresql.org/issues/5631>`_ -  Fixed 'cant execute empty query' issue when remove the value of 'USING' or 'WITH CHECK' option of RLS Policy.
+| `Issue #5633 <https://redmine.postgresql.org/issues/5633>`_ -  Ensure that create RLS Policy menu should not be visible for catalog objects.
