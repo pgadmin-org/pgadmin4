@@ -301,10 +301,10 @@ define([
     var isDeleted = false,
       lg = pgAdmin.FileUtils.lg;
 
-    var doDelete = function(data) {
+    var doDelete = function(sel_data) {
       var post_data = {
         'mode': 'delete',
-        'path': data.Path,
+        'path': sel_data.Path,
       };
 
       $.ajax({
@@ -870,7 +870,7 @@ define([
           var old_name = decodeURI($(this).siblings('span').attr('title'));
           newvalue = old_name.substring(0, old_name.indexOf('.'));
           var last = getFileExtension(old_name),
-            data, new_name, path, full_name;
+            file_data, new_name, file_path, full_name;
 
           if (old_name.indexOf('.') == 0) {
             last = '';
@@ -890,17 +890,17 @@ define([
               $(this).siblings('span').toggle().html(full_name);
 
               new_name = decodeURI($(this).val());
-              path = decodeURI($(this).parent().parent().find(
+              file_path = decodeURI($(this).parent().parent().find(
                 'span'
               ).attr('data-alt'));
-              data = {
+              file_data = {
                 'Filename': old_name,
-                'Path': path,
+                'Path': file_path,
                 'NewFilename': new_name,
               };
 
               if (newvalue !== new_name) {
-                renameItem(data);
+                renameItem(file_data);
                 var parent = $('.currentpath').val();
                 getFolderInfo(parent);
               }
@@ -923,17 +923,17 @@ define([
               $(this).siblings('span').toggle().html(full_name);
 
               new_name = decodeURI($(this).val());
-              path = decodeURI($(this).parent().parent().find(
+              file_path = decodeURI($(this).parent().parent().find(
                 'span'
               ).attr('data-alt'));
-              data = {
+              file_data = {
                 'Filename': old_name,
-                'Path': path,
+                'Path': file_path,
                 'NewFilename': new_name,
               };
 
               if (newvalue !== new_name) {
-                renameItem(data);
+                renameItem(file_data);
                 getFolderInfo($('.currentpath').val());
               }
             }
@@ -946,14 +946,14 @@ define([
           'blur dblclick', 'input',
           function(e) {
             var old_name = decodeURI($(this).siblings('span').attr('title')),
-              newvalue = old_name.substring(0, old_name.indexOf('.')),
+              new_value = old_name.substring(0, old_name.indexOf('.')),
               last = getFileExtension(old_name);
             if (old_name.indexOf('.') == 0) {
               last = '';
             }
 
-            if (newvalue == '') {
-              newvalue = old_name;
+            if (new_value == '') {
+              new_value = old_name;
             }
 
             if (e.type == 'focusout') {
@@ -965,16 +965,16 @@ define([
                 $(this).siblings('span').toggle().html(full_name);
 
                 var new_name = decodeURI($(this).val()),
-                  path = decodeURI($(this).parent().parent().attr('title')),
-                  data = {
+                  file_path = decodeURI($(this).parent().parent().attr('title')),
+                  file_data = {
                     'Filename': old_name,
-                    'Path': path,
+                    'Path': file_path,
                     'NewFilename': new_name,
                   };
 
-                if (newvalue !== new_name) {
-                  renameItem(data);
-                  var parent = path.split('/').reverse().slice(2).reverse().join('/') + '/';
+                if (new_value !== new_name) {
+                  renameItem(file_data);
+                  var parent = file_path.split('/').reverse().slice(2).reverse().join('/') + '/';
                   getFolderInfo(parent);
                 }
               }
@@ -996,18 +996,18 @@ define([
             // Enable/Disable level up button
             enab_dis_level_up();
 
-            var path = decodeURI($(this).find('span').attr('data-alt'));
+            var file_path = decodeURI($(this).find('span').attr('data-alt'));
 
-            if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
+            if (file_path.lastIndexOf('/') == file_path.length - 1 || file_path.lastIndexOf('\\') == file_path.length - 1) {
               $('.file_manager_ok').addClass('disabled');
               $('.file_manager_ok').attr('disabled', true);
               $('.file_manager button.delete, .file_manager button.rename').attr('disabled', 'disabled');
               $('.file_manager button.download').attr('disabled', 'disabled');
 
-              getFolderInfo(path);
+              getFolderInfo(file_path);
 
             } else {
-              var is_valid_file = getFileInfo(path);
+              var is_valid_file = getFileInfo(file_path);
               if (is_valid_file && check_file_capability(e, data_cap, 'grid')) {
                 $('.file_manager_ok').trigger('click');
               }
@@ -1016,12 +1016,12 @@ define([
 
           $('.fileinfo').find('#contents li').on('click', function(e) {
             e.stopPropagation();
-            var path = decodeURI($(this).find('.clip span').attr('data-alt')),
+            var file_path = decodeURI($(this).find('.clip span').attr('data-alt')),
               is_protected = $(this).find(
                 '.clip span.fm_lock_icon'
               ).attr('data-protected');
 
-            if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
+            if (file_path.lastIndexOf('/') == file_path.length - 1 || file_path.lastIndexOf('\\') == file_path.length - 1) {
               if (
                 has_capability(data_cap, 'select_folder') &&
               is_protected == undefined
@@ -1040,11 +1040,11 @@ define([
                 // set selected folder name in breadcrums
                 $('.file_manager #uploader .input-path').hide();
                 $('.file_manager #uploader .show_selected_file').remove();
-                $('<span class="show_selected_file">' + path + '</span>').appendTo(
+                $('<span class="show_selected_file">' + file_path + '</span>').appendTo(
                   '.file_manager #uploader .filemanager-path-group'
                 );
               }
-              pgAdmin.FileUtils.setUploader(path);
+              pgAdmin.FileUtils.setUploader(file_path);
             } else {
               if (
                 has_capability(data_cap, 'select_file') &&
@@ -1061,18 +1061,18 @@ define([
                 $('.file_manager #uploader .show_selected_file').remove();
               }
 
-              getFileInfo(path);
+              getFileInfo(file_path);
             }
           });
         } else {
           $('.fileinfo table#contents tbody tr').on('click', function(e) {
             e.stopPropagation();
-            var path = decodeURI($('td:first-child', this).attr('title')),
+            var file_path = decodeURI($('td:first-child', this).attr('title')),
               is_protected = $('td:first-child', this).find(
                 'i.tbl_lock_icon'
               ).attr('data-protected');
 
-            if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
+            if (file_path.lastIndexOf('/') == file_path.length - 1 || file_path.lastIndexOf('\\') == file_path.length - 1) {
               if (has_capability(data_cap, 'select_folder') && is_protected == undefined) {
                 $(this).parent().find('tr.selected').removeClass('selected');
                 $('td:first-child', this).parent().addClass('selected');
@@ -1084,11 +1084,11 @@ define([
                 // set selected folder name in breadcrums
                 $('.file_manager #uploader .input-path').hide();
                 $('.file_manager #uploader .show_selected_file').remove();
-                $('<span class="show_selected_file">' + path + '</span>').appendTo(
+                $('<span class="show_selected_file">' + file_path + '</span>').appendTo(
                   '.file_manager #uploader .filemanager-path-group'
                 );
               }
-              pgAdmin.FileUtils.setUploader(path);
+              pgAdmin.FileUtils.setUploader(file_path);
             } else {
               if (has_capability(data_cap, 'select_file') && is_protected == undefined) {
                 $(this).parent().find('tr.selected').removeClass('selected');
@@ -1100,7 +1100,7 @@ define([
                 $('.file_manager #uploader .show_selected_file').remove();
               }
 
-              getFileInfo(path);
+              getFileInfo(file_path);
             }
           });
 
@@ -1108,16 +1108,16 @@ define([
             e.stopPropagation();
             // Enable/Disable level up button
             enab_dis_level_up();
-            var path = $('td:first-child', this).attr('title');
+            var file_path = $('td:first-child', this).attr('title');
 
-            if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
+            if (file_path.lastIndexOf('/') == file_path.length - 1 || file_path.lastIndexOf('\\') == file_path.length - 1) {
               $('.file_manager_ok').addClass('disabled');
               $('.file_manager_ok').attr('disabled', true);
               $('.file_manager button.download').attr('disabled', 'disabled');
               $('.file_manager button.delete, .file_manager button.rename').attr('disabled', 'disabled');
-              getFolderInfo(path);
+              getFolderInfo(file_path);
             } else {
-              var is_valid_file = getFileInfo(path);
+              var is_valid_file = getFileInfo(file_path);
               if (
                 is_valid_file && check_file_capability(e, data_cap, 'table')
               ) {
