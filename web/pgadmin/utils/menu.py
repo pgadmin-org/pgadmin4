@@ -17,24 +17,24 @@ class MenuItem(object):
 
 class Panel(object):
     def __init__(
-        self, name, title, content='', width=500, height=600, isIframe=True,
-        showTitle=True, isCloseable=True, isPrivate=False, priority=None,
-        icon=None, data=None, events=None, limit=None, canHide=False
+        self, name, title, content='', width=500, height=600, is_iframe=True,
+        show_title=True, is_closeable=True, is_private=False, priority=None,
+        icon=None, data=None, events=None, limit=None, can_hide=False
     ):
         self.name = name
         self.title = title
         self.content = content
         self.width = width
         self.height = height
-        self.isIframe = isIframe
-        self.showTitle = showTitle
-        self.isCloseable = isCloseable
-        self.isPrivate = isPrivate
+        self.isIframe = is_iframe
+        self.showTitle = show_title
+        self.isCloseable = is_closeable
+        self.isPrivate = is_private
         self.icon = icon
         self.data = data
         self.events = events
         self.limit = limit
-        self.canHide = canHide
+        self.canHide = can_hide
         if priority is None:
             global PRIORITY
             PRIORITY += 100

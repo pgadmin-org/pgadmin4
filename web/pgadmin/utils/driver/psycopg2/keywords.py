@@ -10,8 +10,8 @@
 # ScanKeyword function for PostgreSQL 9.5rc1
 
 
-def ScanKeyword(key):
-    keywordDict = {
+def scan_keyword(key):
+    keywords = {
         'abort': 0,
         'absolute': 0,
         'access': 0,
@@ -429,4 +429,4 @@ def ScanKeyword(key):
         'zone': 0,
     }
 
-    return keywordDict.get(key, None)
+    return keywords.get(key, None)

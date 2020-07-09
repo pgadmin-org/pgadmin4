@@ -39,7 +39,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
-    RegisterQueryToolPreferences
+    register_query_tool_preferences
 from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
     read_file_generator
 from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
@@ -110,7 +110,7 @@ class SqlEditorModule(PgAdminModule):
         ]
 
     def register_preferences(self):
-        RegisterQueryToolPreferences(self)
+        register_query_tool_preferences(self)
 
 
 blueprint = SqlEditorModule(MODULE_NAME, __name__, static_url_path='/static')

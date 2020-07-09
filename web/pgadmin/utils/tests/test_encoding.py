@@ -6,7 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-from pgadmin.utils.driver.psycopg2.encoding import getEncoding
+from pgadmin.utils.driver.psycopg2.encoding import get_encoding
 from pgadmin.utils.route import BaseTestGenerator
 
 
@@ -223,5 +223,5 @@ class TestEncoding(BaseTestGenerator):
     ]
 
     def runTest(self):
-        result = getEncoding(self.db_encoding)
+        result = get_encoding(self.db_encoding)
         self.assertEquals(result, self.expected_return_value)

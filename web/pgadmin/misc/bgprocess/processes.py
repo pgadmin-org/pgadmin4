@@ -21,7 +21,7 @@ from pickle import dumps, loads
 from subprocess import Popen, PIPE
 import logging
 
-from pgadmin.utils import u, file_quote, fs_encoding, \
+from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path
 
 import pytz
@@ -197,7 +197,7 @@ class BatchProcess(object):
             for path in paths:
                 if not os.path.isdir(path):
                     continue
-                exe_file = os.path.join(u(path, fs_encoding), program)
+                exe_file = os.path.join(u_encode(path, fs_encoding), program)
                 if is_exe(exe_file):
                     return file_quote(exe_file)
             return None
@@ -229,7 +229,7 @@ class BatchProcess(object):
             )
 
         executor = file_quote(os.path.join(
-            os.path.dirname(u(__file__)), u'process_executor.py'
+            os.path.dirname(u_encode(__file__)), u'process_executor.py'
         ))
         paths = os.environ['PATH'].split(os.pathsep)
         interpreter = None
@@ -240,8 +240,8 @@ class BatchProcess(object):
         )
 
         if os.name == 'nt':
-            paths.insert(0, os.path.join(u(sys.prefix), u'Scripts'))
-            paths.insert(0, u(sys.prefix))
+            paths.insert(0, os.path.join(u_encode(sys.prefix), u'Scripts'))
+            paths.insert(0, u_encode(sys.prefix))
 
             interpreter = which(u'pythonw.exe', paths)
             if interpreter is None:
@@ -293,10 +293,10 @@ class BatchProcess(object):
             # directory in the PATH environment variable. Hence - it will
             # anyway be the redundant value in paths.
             if not current_app.PGADMIN_RUNTIME:
-                paths.insert(0, os.path.join(u(sys.prefix), u'bin'))
+                paths.insert(0, os.path.join(u_encode(sys.prefix), u'bin'))
             python_binary_name = 'python{0}'.format(sys.version_info[0]) \
                 if sys.version_info[0] >= 3 else 'python'
-            interpreter = which(u(python_binary_name), paths)
+            interpreter = which(u_encode(python_binary_name), paths)
 
         p = None
         cmd = [

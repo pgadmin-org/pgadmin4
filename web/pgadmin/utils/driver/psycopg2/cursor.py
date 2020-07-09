@@ -17,9 +17,9 @@ result.
 from collections import OrderedDict
 import psycopg2
 from psycopg2.extensions import cursor as _cursor, encodings
-from .encoding import configureDriverEncodings
+from .encoding import configure_driver_encodings
 
-configureDriverEncodings(encodings)
+configure_driver_encodings(encodings)
 
 
 class _WrapperColumn(object):

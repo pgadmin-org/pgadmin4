@@ -33,7 +33,7 @@ else:
 
 import config
 from pgadmin import create_app
-from pgadmin.utils import u, fs_encoding, file_quote
+from pgadmin.utils import u_encode, fs_encoding, file_quote
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
@@ -79,7 +79,7 @@ config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 # Check if the database exists. If it does not, create it.
 if not os.path.isfile(config.SQLITE_PATH):
     setup_py = os.path.join(
-        os.path.dirname(os.path.realpath(u(__file__, fs_encoding))),
+        os.path.dirname(os.path.realpath(u_encode(__file__, fs_encoding))),
         u'setup.py'
     )
     exec(open(file_quote(setup_py), 'r').read())

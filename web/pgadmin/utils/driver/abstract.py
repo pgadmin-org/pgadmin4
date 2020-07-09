@@ -51,7 +51,7 @@ class BaseDriver(object):
     """
 
     @abstractproperty
-    def Version(cls):
+    def version(cls):
         pass
 
     @abstractproperty

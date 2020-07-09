@@ -59,7 +59,7 @@ encode_dict = {
 }
 
 
-def getEncoding(key):
+def get_encoding(key):
     """
     :param key: Database Encoding
     :return:
@@ -72,7 +72,7 @@ def getEncoding(key):
     return encode_dict.get(key, ['UNICODE', 'utf-8', 'utf-8'])
 
 
-def configureDriverEncodings(encodings):
+def configure_driver_encodings(encodings):
     # Replace the python encoding for original name and renamed encodings
     # psycopg2 removes the underscore in conn.encoding
     # Setting the encodings dict value will only help for select statements

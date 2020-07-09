@@ -56,11 +56,11 @@ class DashboardModule(PgAdminModule):
                 title=gettext('Dashboard'),
                 icon='',
                 content='',
-                isCloseable=True,
-                isPrivate=False,
+                is_closeable=True,
+                is_private=False,
                 limit=1,
-                isIframe=False,
-                canHide=True
+                is_iframe=False,
+                can_hide=True
             ).__dict__
         ]
 

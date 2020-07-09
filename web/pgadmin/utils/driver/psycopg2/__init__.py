@@ -22,7 +22,7 @@ from threading import Lock
 
 import config
 from pgadmin.model import Server
-from .keywords import ScanKeyword
+from .keywords import scan_keyword
 from ..abstract import BaseDriver
 from .connection import Connection
 from .server_manager import ServerManager
@@ -120,16 +120,16 @@ class Driver(BaseDriver):
 
         return managers[str(sid)]
 
-    def Version(cls):
+    def version(cls):
         """
-        Version(...)
+        version(...)
 
         Returns the current version of psycopg2 driver
         """
-        version = getattr(psycopg2, '__version__', None)
+        _version = getattr(psycopg2, '__version__', None)
 
-        if version:
-            return version
+        if _version:
+            return _version
 
         raise Exception(
             "Driver Version information for psycopg2 is not available!"
@@ -239,7 +239,7 @@ class Driver(BaseDriver):
                 mgr.release()
 
     @staticmethod
-    def qtLiteral(value, forceQuote=False):
+    def qtLiteral(value, force_quote=False):
         adapted = adapt(value)
 
         # Not all adapted objects have encoding
@@ -255,7 +255,7 @@ class Driver(BaseDriver):
         if isinstance(res, bytes):
             res = res.decode('utf-8')
 
-        if forceQuote is True:
+        if force_quote is True:
             # Convert the input to the string to use the startsWith(...)
             res = str(res)
             if not res.startswith("'"):
@@ -269,7 +269,7 @@ class Driver(BaseDriver):
         # COL_NAME_KEYWORD        1
         # TYPE_FUNC_NAME_KEYWORD  2
         # RESERVED_KEYWORD        3
-        extraKeywords = {
+        extra_keywords = {
             'connect': 3,
             'convert': 3,
             'distributed': 0,
@@ -293,22 +293,22 @@ class Driver(BaseDriver):
             'varchar2': 3
         }
 
-        return extraKeywords.get(key, None) or ScanKeyword(key)
+        return extra_keywords.get(key, None) or scan_keyword(key)
 
     @staticmethod
-    def needsQuoting(key, forTypes):
+    def needsQuoting(key, for_types):
         value = key
-        valNoArray = value
+        val_noarray = value
 
         # check if the string is number or not
         if isinstance(value, int):
             return True
         # certain types should not be quoted even though it contains a space.
         # Evilness.
-        elif forTypes and value[-2:] == u"[]":
-            valNoArray = value[:-2]
+        elif for_types and value[-2:] == u"[]":
+            val_noarray = value[:-2]
 
-        if forTypes and valNoArray.lower() in [
+        if for_types and val_noarray.lower() in [
             u'bit varying',
             u'"char"',
             u'character varying',
@@ -323,14 +323,14 @@ class Driver(BaseDriver):
             return False
 
         # If already quoted?, If yes then do not quote again
-        if forTypes and valNoArray and \
-                (valNoArray.startswith('"') or valNoArray.endswith('"')):
+        if for_types and val_noarray and \
+                (val_noarray.startswith('"') or val_noarray.endswith('"')):
             return False
 
-        if u'0' <= valNoArray[0] <= u'9':
+        if u'0' <= val_noarray[0] <= u'9':
             return True
 
-        for c in valNoArray:
+        for c in val_noarray:
             if (not (u'a' <= c <= u'z') and c != u'_' and
                     not (u'0' <= c <= u'9')):
                 return True
@@ -346,7 +346,7 @@ class Driver(BaseDriver):
             return False
 
         # COL_NAME_KEYWORD
-        if forTypes and category == 1:
+        if for_types and category == 1:
             return False
 
         return True

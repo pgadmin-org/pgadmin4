@@ -745,7 +745,7 @@ class Filemanager(object):
         trans_data = Filemanager.get_trasaction_selection(self.trans_id)
         return False if capability not in trans_data['capabilities'] else True
 
-    def getinfo(self, path=None, getsize=True, name=None, req=None):
+    def getinfo(self, path=None, get_size=True, name=None, req=None):
         """
         Returns a JSON object containing information
         about the given file.

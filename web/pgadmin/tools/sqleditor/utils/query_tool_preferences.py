@@ -14,7 +14,7 @@ from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields, \
 from pgadmin.utils.preferences import Preferences
 
 
-def RegisterQueryToolPreferences(self):
+def register_query_tool_preferences(self):
     self.info_notifier_timeout = self.preference.register(
         'display', 'info_notifier_timeout',
         gettext("Query info notifier timeout"), 'integer', 5,

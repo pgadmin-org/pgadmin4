@@ -173,7 +173,7 @@ if not fs_encoding or fs_encoding == 'ascii':
     fs_encoding = 'utf-8'
 
 
-def u(_s, _encoding=sys_encoding):
+def u_encode(_s, _encoding=sys_encoding):
     return _s
 
 

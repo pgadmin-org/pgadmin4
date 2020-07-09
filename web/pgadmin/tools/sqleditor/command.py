@@ -919,7 +919,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         conn = manager.connection(did=self.did, conn_id=self.conn_id)
 
         # Get the driver version as a float
-        driver_version = float('.'.join(driver.Version().split('.')[:2]))
+        driver_version = float('.'.join(driver.version().split('.')[:2]))
 
         # Checking for updatable resultsets uses features in psycopg 2.8
         if driver_version < 2.8:

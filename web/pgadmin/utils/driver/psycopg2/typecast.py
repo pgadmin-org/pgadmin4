@@ -17,9 +17,9 @@ from psycopg2.extensions import DECIMAL as _DECIMAL, encodings
 import psycopg2
 from psycopg2.extras import Json as psycopg2_json
 
-from .encoding import configureDriverEncodings, getEncoding
+from .encoding import configure_driver_encodings, get_encoding
 
-configureDriverEncodings(encodings)
+configure_driver_encodings(encodings)
 
 
 # OIDs of data types which need to typecast as string to avoid JavaScript
@@ -180,7 +180,7 @@ def register_string_typecasters(connection):
     # are escaped again and sent to the DB.
 
     postgres_encoding, python_encoding, typecast_encoding = \
-        getEncoding(connection.encoding)
+        get_encoding(connection.encoding)
     if postgres_encoding != 'UNICODE':
         def non_ascii_escape(value, cursor):
             if value is None:

@@ -35,7 +35,7 @@ from .typecast import register_global_typecasters, \
     register_string_typecasters, register_binary_typecasters, \
     unregister_numeric_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
-from .encoding import getEncoding, configureDriverEncodings
+from .encoding import get_encoding, configure_driver_encodings
 from pgadmin.utils import csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
@@ -44,7 +44,7 @@ _ = gettext
 
 # Register global type caster which will be applicable to all connections.
 register_global_typecasters()
-configureDriverEncodings(encodings)
+configure_driver_encodings(encodings)
 
 
 class Connection(BaseConnection):
@@ -400,7 +400,7 @@ class Connection(BaseConnection):
             register_binary_typecasters(self.conn)
 
         postgres_encoding, self.python_encoding, typecast_encoding = \
-            getEncoding(self.conn.encoding)
+            get_encoding(self.conn.encoding)
 
         # Note that we use 'UPDATE pg_settings' for setting bytea_output as a
         # convenience hack for those running on old, unsupported versions of
