@@ -29,7 +29,6 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
       this.set('title', params['dialog_title']);
       this.params = JSON.stringify(params);
 
-      this.elements.dialog.style.minWidth = '630px';
       this.show();
 
     },

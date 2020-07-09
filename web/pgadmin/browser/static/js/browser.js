@@ -171,12 +171,41 @@ define('pgadmin.browser', [
       md: 700,
       lg: 900,
       default: 500,
+      // If you change above values then make sure to update
+      // calc method logic
+      calc: () => {
+        let iw = window.innerWidth;
+        if (iw > pgAdmin.Browser.stdW.lg)
+          return pgAdmin.Browser.stdW.lg;
+        else if (iw > pgAdmin.Browser.stdW.md)
+          return pgAdmin.Browser.stdW.md;
+        else if (iw > pgAdmin.Browser.stdW.sm)
+          return pgAdmin.Browser.stdW.sm;
+        else
+          // if avilable screen resolution is still
+          // less then return the width value as it
+          return iw;
+      },
     },
     stdH: {
       sm: 200,
       md: 400,
       lg: 550,
       default: 550,
+      // If you change above values then make sure to update
+      // calc method logic
+      calc: () => {
+        // We are excluding sm as it is too small for dialog
+        let ih = window.innerHeight;
+        if (ih > pgAdmin.Browser.stdH.lg)
+          return pgAdmin.Browser.stdH.lg;
+        else if (ih > pgAdmin.Browser.stdH.md)
+          return pgAdmin.Browser.stdH.md;
+        else
+          // if avilable screen resolution is still
+          // less then return the height value as it
+          return ih;
+      },
     },
     // Default panels
     panels: {

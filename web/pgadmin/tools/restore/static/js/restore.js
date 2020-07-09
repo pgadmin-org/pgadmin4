@@ -424,7 +424,7 @@ define('tools.restore', [
       let dialog = new restoreDialog.RestoreDialog(
         pgBrowser, $, alertify, RestoreObjectModel
       );
-      dialog.draw(action, treeItem, pgBrowser.stdW.md, pgBrowser.stdH.md);
+      dialog.draw(action, treeItem, pgBrowser.stdW.calc(), pgBrowser.stdH.calc());
     },
   };
   return pgBrowser.Restore;

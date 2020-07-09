@@ -23,12 +23,32 @@ describe('fileSelectDialog', function () {
       md: 700,
       lg: 900,
       default: 500,
+      calc: () => {
+        let iw = window.innerWidth;
+        if (iw > pgAdmin.Browser.stdW.lg)
+          return pgAdmin.Browser.stdW.lg;
+        else if (iw > pgAdmin.Browser.stdW.md)
+          return pgAdmin.Browser.stdW.md;
+        else if (iw > pgAdmin.Browser.stdW.sm)
+          return pgAdmin.Browser.stdW.sm;
+        else
+          return iw;
+      },
     },
     stdH: {
       sm: 200,
       md: 400,
       lg: 550,
       default: 550,
+      calc: () => {
+        let ih = window.innerHeight;
+        if (ih > pgAdmin.Browser.stdH.lg)
+          return pgAdmin.Browser.stdH.lg;
+        else if (ih > pgAdmin.Browser.stdH.md)
+          return pgAdmin.Browser.stdH.md;
+        else
+          return ih;
+      },
     },
   };
 

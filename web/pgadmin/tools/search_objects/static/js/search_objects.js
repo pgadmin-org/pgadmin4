@@ -82,7 +82,7 @@ define([
         alertify,
         {},
       );
-      dialog.draw(action, item, {}, pgBrowser.stdW.md, pgBrowser.stdH.lg);
+      dialog.draw(action, item, {}, pgBrowser.stdW.calc(), pgBrowser.stdH.calc());
     },
   };
 

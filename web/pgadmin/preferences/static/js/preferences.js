@@ -512,7 +512,7 @@ define('pgadmin.preferences', [
 
     },
     show: function() {
-      Alertify.preferencesDlg(true).resizeTo(pgAdmin.Browser.stdW.lg,pgAdmin.Browser.stdH.lg);
+      Alertify.preferencesDlg(true).resizeTo(pgAdmin.Browser.stdW.calc(),pgAdmin.Browser.stdH.calc());
     },
   };
 
