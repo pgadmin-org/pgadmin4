@@ -176,14 +176,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         if not status:
             return internal_server_error(errormsg=acl)
 
-        # We will set get privileges from acl sql so we don't need
-        # it from properties sql
-        for row in acl['rows']:
-            priv = parse_priv_from_db(row)
-            if row['deftype'] in data:
-                data[row['deftype']].append(priv)
-            else:
-                data[row['deftype']] = [priv]
+        BaseTableView._set_privileges_for_properties(data, acl)
 
         # We will add Auto vacuum defaults with out result for grid
         data['vacuum_table'] = copy.deepcopy(
@@ -214,29 +207,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             table_or_type = 'type'
         # Get inherited table(s) columns and add it into columns dict
         elif data['coll_inherits'] and len(data['coll_inherits']) > 0:
-            # Return all tables which can be inherited & do not show
-            # system columns
-            SQL = render_template("/".join([self.table_template_path,
-                                            'get_inherits.sql']),
-                                  show_system_objects=False,
-                                  scid=scid
-                                  )
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            for row in rset['rows']:
-                if row['inherits'] in data['coll_inherits']:
-                    # Fetch columns using inherited table OID
-                    SQL = render_template("/".join(
-                        [self.table_template_path,
-                         'get_columns_for_table.sql']),
-                        tid=row['oid']
-                    )
-                    status, res = self.conn.execute_dict(SQL)
-                    if not status:
-                        return internal_server_error(errormsg=res)
-                    other_columns.extend(res['rows'][:])
+            is_error, errmsg = self._get_inherited_tables(scid, data,
+                                                          other_columns)
+            if is_error:
+                return internal_server_error(errormsg=errmsg)
 
             table_or_type = 'table'
 
@@ -246,6 +220,49 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                                                   data, other_columns,
                                                   table_or_type)
 
+        self._add_constrints_to_output(data, did, tid)
+
+        return data
+
+    def _get_inherited_tables(self, scid, data, other_columns):
+        # Return all tables which can be inherited & do not show
+        # system columns
+        SQL = render_template("/".join([self.table_template_path,
+                                        'get_inherits.sql']),
+                              show_system_objects=False,
+                              scid=scid
+                              )
+        status, rset = self.conn.execute_2darray(SQL)
+        if not status:
+            return True, rset
+
+        for row in rset['rows']:
+            if row['inherits'] in data['coll_inherits']:
+                # Fetch columns using inherited table OID
+                SQL = render_template("/".join(
+                    [self.table_template_path,
+                     'get_columns_for_table.sql']),
+                    tid=row['oid']
+                )
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return True, res
+                other_columns.extend(res['rows'][:])
+
+        return False, ''
+
+    @staticmethod
+    def _set_privileges_for_properties(data, acl):
+        # We will set get privileges from acl sql so we don't need
+        # it from properties sql
+        for row in acl['rows']:
+            priv = parse_priv_from_db(row)
+            if row['deftype'] in data:
+                data[row['deftype']].append(priv)
+            else:
+                data[row['deftype']] = [priv]
+
+    def _add_constrints_to_output(self, data, did, tid):
         # Here we will add constraint in our output
         index_constraints = {
             'p': 'primary_key', 'u': 'unique_constraint'
@@ -277,8 +294,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         if status:
             for ex in exclusion_constraints:
                 data.setdefault('exclude_constraint', []).append(ex)
-
-        return data
 
     def get_table_dependents(self, tid):
         """
@@ -756,27 +771,35 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             else:
                 return False
         elif key == 'foreign_key':
-            if 'oid' not in data:
-                for arg in ['columns']:
-                    if arg not in data or \
-                            (isinstance(data[arg], list) and
-                             len(data[arg]) < 1):
-                        return False
-
-                if 'autoindex' in data and \
-                        data['autoindex'] and \
-                        ('coveringindex' not in data or
-                         data['coveringindex'] == ''):
-                    return False
-
-            return True
+            return BaseTableView._check_foreign_key()
 
         elif key == 'check_constraint':
-            for arg in ['consrc']:
-                if arg not in data or data[arg] == '':
-                    return False
-            return True
+            return BaseTableView._check_constraint(data)
 
+        return True
+
+    @staticmethod
+    def _check_foreign_key(data):
+        if 'oid' not in data:
+            for arg in ['columns']:
+                if arg not in data or \
+                    (isinstance(data[arg], list) and
+                     len(data[arg]) < 1):
+                    return False
+
+            if 'autoindex' in data and \
+                data['autoindex'] and \
+                ('coveringindex' not in data or
+                 data['coveringindex'] == ''):
+                return False
+
+        return True
+
+    @staticmethod
+    def _check_constraint(data):
+        for arg in ['consrc']:
+            if arg not in data or data[arg] == '':
+                return False
         return True
 
     @staticmethod
@@ -1284,61 +1307,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 if data['schema'] != row['schema_name']:
                     partition_name = row['schema_name'] + '.' + row['name']
 
-                if data['partition_type'] == 'range':
-                    if row['partition_value'] == 'DEFAULT':
-                        is_default = True
-                        range_from = None
-                        range_to = None
-                    else:
-                        range_part = row['partition_value'].split(
-                            'FOR VALUES FROM (')[1].split(') TO')
-                        range_from = range_part[0]
-                        range_to = range_part[1][2:-1]
-                        is_default = False
-
-                    partitions.append({
-                        'oid': row['oid'],
-                        'partition_name': partition_name,
-                        'values_from': range_from,
-                        'values_to': range_to,
-                        'is_default': is_default,
-                        'is_sub_partitioned': row['is_sub_partitioned'],
-                        'sub_partition_scheme': row['sub_partition_scheme']
-                    })
-                elif data['partition_type'] == 'list':
-                    if row['partition_value'] == 'DEFAULT':
-                        is_default = True
-                        range_in = None
-                    else:
-                        range_part = row['partition_value'].split(
-                            'FOR VALUES IN (')[1]
-                        range_in = range_part[:-1]
-                        is_default = False
-
-                    partitions.append({
-                        'oid': row['oid'],
-                        'partition_name': partition_name,
-                        'values_in': range_in,
-                        'is_default': is_default,
-                        'is_sub_partitioned': row['is_sub_partitioned'],
-                        'sub_partition_scheme': row['sub_partition_scheme']
-                    })
-                else:
-                    range_part = row['partition_value'].split(
-                        'FOR VALUES WITH (')[1].split(",")
-                    range_modulus = range_part[0].strip().strip(
-                        "modulus").strip()
-                    range_remainder = range_part[1].strip().\
-                        strip(" remainder").strip(")").strip()
-
-                    partitions.append({
-                        'oid': row['oid'],
-                        'partition_name': partition_name,
-                        'values_modulus': range_modulus,
-                        'values_remainder': range_remainder,
-                        'is_sub_partitioned': row['is_sub_partitioned'],
-                        'sub_partition_scheme': row['sub_partition_scheme']
-                    })
+                BaseTableView._partition_type_check(data, row, partitions,
+                                                    partition_name)
 
             data['partitions'] = partitions
 
@@ -1349,6 +1319,64 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             response=data,
             status=200
         )
+
+    @staticmethod
+    def _partition_type_check(data, row, partitions, partition_name):
+        if data['partition_type'] == 'range':
+            if row['partition_value'] == 'DEFAULT':
+                is_default = True
+                range_from = None
+                range_to = None
+            else:
+                range_part = row['partition_value'].split(
+                    'FOR VALUES FROM (')[1].split(') TO')
+                range_from = range_part[0]
+                range_to = range_part[1][2:-1]
+                is_default = False
+
+            partitions.append({
+                'oid': row['oid'],
+                'partition_name': partition_name,
+                'values_from': range_from,
+                'values_to': range_to,
+                'is_default': is_default,
+                'is_sub_partitioned': row['is_sub_partitioned'],
+                'sub_partition_scheme': row['sub_partition_scheme']
+            })
+        elif data['partition_type'] == 'list':
+            if row['partition_value'] == 'DEFAULT':
+                is_default = True
+                range_in = None
+            else:
+                range_part = row['partition_value'].split(
+                    'FOR VALUES IN (')[1]
+                range_in = range_part[:-1]
+                is_default = False
+
+            partitions.append({
+                'oid': row['oid'],
+                'partition_name': partition_name,
+                'values_in': range_in,
+                'is_default': is_default,
+                'is_sub_partitioned': row['is_sub_partitioned'],
+                'sub_partition_scheme': row['sub_partition_scheme']
+            })
+        else:
+            range_part = row['partition_value'].split(
+                'FOR VALUES WITH (')[1].split(",")
+            range_modulus = range_part[0].strip().strip(
+                "modulus").strip()
+            range_remainder = range_part[1].strip(). \
+                strip(" remainder").strip(")").strip()
+
+            partitions.append({
+                'oid': row['oid'],
+                'partition_name': partition_name,
+                'values_modulus': range_modulus,
+                'values_remainder': range_remainder,
+                'is_sub_partitioned': row['is_sub_partitioned'],
+                'sub_partition_scheme': row['sub_partition_scheme']
+            })
 
     def get_partitions_sql(self, partitions, schema_diff=False):
         """
@@ -1412,33 +1440,39 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                                                + ', REMAINDER ' +\
                                                remainder_str + ')'
 
-            # Check if partition is again declare as partitioned table.
-            if 'is_sub_partitioned' in row and row['is_sub_partitioned']:
-                part_data['partition_scheme'] = row['sub_partition_scheme'] \
-                    if 'sub_partition_scheme' in row else \
-                    self.get_partition_scheme(row)
-
-                part_data['is_partitioned'] = True
-
-            if 'is_attach' in row and row['is_attach']:
-                partition_sql = render_template(
-                    "/".join([self.partition_template_path, 'attach.sql']),
-                    data=part_data, conn=self.conn
-                )
-            else:
-                # For schema diff we create temporary partitions to copy the
-                # data from original table to temporary table.
-                if schema_diff:
-                    part_data['name'] = row['temp_partition_name']
-
-                partition_sql = render_template(
-                    "/".join([self.partition_template_path, 'create.sql']),
-                    data=part_data, conn=self.conn
-                )
+            partition_sql = self._check_for_partitioned_table(row, part_data,
+                                                              schema_diff)
 
             sql += partition_sql
 
         return sql
+
+    def _check_for_partitioned_table(self, row, part_data, schema_diff):
+        # Check if partition is again declare as partitioned table.
+        if 'is_sub_partitioned' in row and row['is_sub_partitioned']:
+            part_data['partition_scheme'] = row['sub_partition_scheme'] \
+                if 'sub_partition_scheme' in row else \
+                self.get_partition_scheme(row)
+
+            part_data['is_partitioned'] = True
+
+        if 'is_attach' in row and row['is_attach']:
+            partition_sql = render_template(
+                "/".join([self.partition_template_path, 'attach.sql']),
+                data=part_data, conn=self.conn
+            )
+        else:
+            # For schema diff we create temporary partitions to copy the
+            # data from original table to temporary table.
+            if schema_diff:
+                part_data['name'] = row['temp_partition_name']
+
+            partition_sql = render_template(
+                "/".join([self.partition_template_path, 'create.sql']),
+                data=part_data, conn=self.conn
+            )
+
+        return partition_sql
 
     def truncate(self, gid, sid, did, scid, tid, res):
         """
@@ -1574,18 +1608,23 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 and vacuum_key in old_data:
             set_values = []
             reset_values = []
-            for data_row in data[vacuum_key]['changed']:
-                for old_data_row in old_data[vacuum_key]:
-                    if data_row['name'] == old_data_row['name'] and \
-                            'value' in data_row:
-                        if data_row['value'] is not None:
-                            set_values.append(data_row)
-                        elif data_row['value'] is None and \
-                                'value' in old_data_row:
-                            reset_values.append(data_row)
+            self._iterate_vacuume_table(data, old_data, set_values,
+                                        reset_values, vacuum_key)
 
-            if len(set_values) > 0:
-                data[vacuum_key]['set_values'] = set_values
+    def _iterate_vacuume_table(self, data, old_data, set_values, reset_values,
+                               vacuum_key):
+        for data_row in data[vacuum_key]['changed']:
+            for old_data_row in old_data[vacuum_key]:
+                if data_row['name'] == old_data_row['name'] and \
+                        'value' in data_row:
+                    if data_row['value'] is not None:
+                        set_values.append(data_row)
+                    elif data_row['value'] is None and \
+                            'value' in old_data_row:
+                        reset_values.append(data_row)
 
-            if len(reset_values) > 0:
-                data[vacuum_key]['reset_values'] = reset_values
+        if len(set_values) > 0:
+            data[vacuum_key]['set_values'] = set_values
+
+        if len(reset_values) > 0:
+            data[vacuum_key]['reset_values'] = reset_values
