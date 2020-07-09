@@ -33,6 +33,7 @@ from ..abstract import BaseConnection
 from .cursor import DictCursor
 from .typecast import register_global_typecasters, \
     register_string_typecasters, register_binary_typecasters, \
+    unregister_numeric_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
 from .encoding import getEncoding, configureDriverEncodings
 from pgadmin.utils import csv
@@ -689,6 +690,8 @@ WHERE
             )
         )
         try:
+            # Unregistering type casting for large size data types.
+            unregister_numeric_typecasters(self.conn)
             self.__internal_blocking_execute(cur, query, params)
         except psycopg2.Error as pe:
             cur.close()
@@ -834,7 +837,9 @@ WHERE
                     results = handle_null_values(results, replace_nulls_with)
                 csv_writer.writerows(results)
                 yield res_io.getvalue()
-
+        # Registering back type caster for large size data types to string
+        # which was unregistered at starting
+        register_string_typecasters(self.conn)
         return True, gen
 
     def execute_scalar(self, query, params=None,

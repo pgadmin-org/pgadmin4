@@ -13,8 +13,8 @@ data types.
 """
 
 from psycopg2 import STRING as _STRING
+from psycopg2.extensions import DECIMAL as _DECIMAL, encodings
 import psycopg2
-from psycopg2.extensions import encodings
 from psycopg2.extras import Json as psycopg2_json
 
 from .encoding import configureDriverEncodings, getEncoding
@@ -33,11 +33,13 @@ TO_STRING_DATATYPES = (
     # To cast bytea, interval type
     17, 1186,
 
-    # date, timestamp, timestamptz, bigint, double precision
-    1700, 1082, 1114, 1184, 20, 701,
+    # date, timestamp, timestamp with zone, time without time zone
+    1082, 1114, 1184, 1083
+)
 
-    # real, time without time zone
-    700, 1083
+TO_STRING_NUMERIC_DATATYPES = (
+    # Real, double precision, numeric, bigint
+    700, 701, 1700, 20
 )
 
 # OIDs of array data types which need to typecast to array of string.
@@ -142,8 +144,8 @@ def register_global_typecasters():
 
     # define type caster to convert various pg types into string type
     pg_types_to_string_type = psycopg2.extensions.new_type(
-        TO_STRING_DATATYPES + PSYCOPG_SUPPORTED_RANGE_TYPES,
-        'TYPECAST_TO_STRING', _STRING
+        TO_STRING_DATATYPES + TO_STRING_NUMERIC_DATATYPES +
+        PSYCOPG_SUPPORTED_RANGE_TYPES, 'TYPECAST_TO_STRING', _STRING
     )
 
     # define type caster to convert pg array types of above types into
@@ -241,3 +243,10 @@ def register_array_to_string_typecasters(connection):
             _STRING),
         connection
     )
+
+
+def unregister_numeric_typecasters(connection):
+    string_type_to_decimal = \
+        psycopg2.extensions.new_type(TO_STRING_NUMERIC_DATATYPES,
+                                     'TYPECAST_TO_DECIMAL', _DECIMAL)
+    psycopg2.extensions.register_type(string_type_to_decimal, connection)
