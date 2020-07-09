@@ -155,9 +155,9 @@ def main():
             JavascriptBundler, JsState
         app.debug = True
 
-        javascriptBundler = JavascriptBundler()
-        javascriptBundler.bundle()
-        if javascriptBundler.report() == JsState.NONE:
+        javascript_bundler = JavascriptBundler()
+        javascript_bundler.bundle()
+        if javascript_bundler.report() == JsState.NONE:
             app.logger.error(
                 "Unable to generate javascript.\n"
                 "To run the app ensure that yarn install command runs "

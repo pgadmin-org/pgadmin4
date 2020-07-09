@@ -352,15 +352,15 @@ def fetch_length_precision(data):
 
     # If we have length & precision both
     if length and precision:
-        matchObj = re.search(r'(\d+),(\d+)', fulltype)
-        if matchObj:
-            data['attlen'] = matchObj.group(1)
-            data['attprecision'] = matchObj.group(2)
+        match_obj = re.search(r'(\d+),(\d+)', fulltype)
+        if match_obj:
+            data['attlen'] = match_obj.group(1)
+            data['attprecision'] = match_obj.group(2)
     elif length:
         # If we have length only
-        matchObj = re.search(r'(\d+)', fulltype)
-        if matchObj:
-            data['attlen'] = matchObj.group(1)
+        match_obj = re.search(r'(\d+)', fulltype)
+        if match_obj:
+            data['attlen'] = match_obj.group(1)
             data['attprecision'] = None
 
     return data
