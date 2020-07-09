@@ -684,12 +684,12 @@ define([
             } else {
             // Debugging of void function is started again so we need to start
             // the listener again
-              var baseUrl = url_for('debugger.start_listener', {
+              var base_url = url_for('debugger.start_listener', {
                 'trans_id': trans_id,
               });
 
               $.ajax({
-                url: baseUrl,
+                url: base_url,
                 method: 'GET',
               })
                 .done(function() {
@@ -894,9 +894,9 @@ define([
           .done(function(res) {
             if (res.data.status) {
             // Call function to create and update local variables ....
-              var info = pgTools.DirectDebug.editor.lineInfo(self.active_line_no);
+              var info_local = pgTools.DirectDebug.editor.lineInfo(self.active_line_no);
 
-              if (info.gutterMarkers != undefined) {
+              if (info_local.gutterMarkers != undefined) {
                 pgTools.DirectDebug.editor.setGutterMarker(self.active_line_no, 'breakpoints', null);
               } else {
                 pgTools.DirectDebug.editor.setGutterMarker(self.active_line_no, 'breakpoints', function() {
@@ -955,12 +955,12 @@ define([
         })
           .done(function(res) {
             if (res.data.status) {
-              for (var i = 0; i < breakpoint_list.length; i++) {
-                var info = pgTools.DirectDebug.editor.lineInfo((breakpoint_list[i] - 1));
+              for (var j = 0; j < breakpoint_list.length; j++) {
+                var info = pgTools.DirectDebug.editor.lineInfo((breakpoint_list[j] - 1));
 
                 if (info) {
                   if (info.gutterMarkers != undefined) {
-                    pgTools.DirectDebug.editor.setGutterMarker((breakpoint_list[i] - 1), 'breakpoints', null);
+                    pgTools.DirectDebug.editor.setGutterMarker((breakpoint_list[j] - 1), 'breakpoints', null);
                   }
                 }
               }

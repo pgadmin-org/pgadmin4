@@ -500,12 +500,12 @@ define('tools.querytool', [
              * Render function for hint to add our own class
              * and icon as per the object type.
              */
-            hint_render: function(elt, data, cur) {
+            hint_render: function(elt, data_arg, cur_arg) {
               var el = document.createElement('span');
 
-              switch (cur.type) {
+              switch (cur_arg.type) {
               case 'database':
-                el.className = 'sqleditor-hint pg-icon-' + cur.type;
+                el.className = 'sqleditor-hint pg-icon-' + cur_arg.type;
                 break;
               case 'datatype':
                 el.className = 'sqleditor-hint icon-type';
@@ -517,10 +517,10 @@ define('tools.querytool', [
                 el.className = 'fa fa-at';
                 break;
               default:
-                el.className = 'sqleditor-hint icon-' + cur.type;
+                el.className = 'sqleditor-hint icon-' + cur_arg.type;
               }
 
-              el.appendChild(document.createTextNode(cur.text));
+              el.appendChild(document.createTextNode(cur_arg.text));
               elt.appendChild(el);
             },
           };
@@ -539,13 +539,13 @@ define('tools.querytool', [
 
         return {
           then: function(cb) {
-            var self = this;
+            var self_local = this;
             // Make ajax call to find the autocomplete data
             $.ajax({
-              url: self.url,
+              url: self_local.url,
               method: 'POST',
               contentType: 'application/json',
-              data: JSON.stringify(self.data),
+              data: JSON.stringify(self_local.data),
             })
               .done(function(res) {
                 var result = [];
@@ -554,7 +554,7 @@ define('tools.querytool', [
                   result.push({
                     text: key,
                     type: obj.object_type,
-                    render: self.hint_render,
+                    render: self_local.hint_render,
                   });
                 });
 
@@ -573,7 +573,7 @@ define('tools.querytool', [
                * Below logic find the start and end point
                * to replace the selected auto complete suggestion.
                */
-                var token = self.editor.getTokenAt(cur),
+                var token = self_local.editor.getTokenAt(cur),
                   start, end, search;
                 if (token.end > cur.ch) {
                   token.end = cur.ch;
@@ -600,18 +600,18 @@ define('tools.querytool', [
                 cb({
                   list: result,
                   from: {
-                    line: self.current_line,
+                    line: self_local.current_line,
                     ch: start,
                   },
                   to: {
-                    line: self.current_line,
+                    line: self_local.current_line,
                     ch: end,
                   },
                 });
               })
               .fail(function(e) {
                 return httpErrorHandler.handleLoginRequiredAndTransactionRequired(
-                  pgAdmin, self, e, null, [], false
+                  pgAdmin, self_local, e, null, [], false
                 );
               });
           }.bind(ctx),
@@ -896,20 +896,20 @@ define('tools.querytool', [
       // Add-on function which allow us to identify the faulty row after insert/update
       // and apply css accordingly
 
-      dataView.getItemMetadata = function(i) {
+      dataView.getItemMetadata = function(rows) {
         var cssClass = '',
           data_store = self.handler.data_store;
 
         if (_.has(self.handler, 'data_store')) {
-          if (i in data_store.added_index &&
-            data_store.added_index[i] in data_store.added) {
+          if (rows in data_store.added_index &&
+            data_store.added_index[rows] in data_store.added) {
             cssClass = 'new_row';
-            if (data_store.added[data_store.added_index[i]].err) {
+            if (data_store.added[data_store.added_index[rows]].err) {
               cssClass += ' error';
             }
-          } else if (i in data_store.updated_index && i in data_store.updated) {
+          } else if (rows in data_store.updated_index && rows in data_store.updated) {
             cssClass = 'updated_row';
-            if (data_store.updated[data_store.updated_index[i]].err) {
+            if (data_store.updated[data_store.updated_index[rows]].err) {
               cssClass += ' error';
             }
           }
@@ -918,7 +918,7 @@ define('tools.querytool', [
         // Disable rows having default values
         if (!_.isUndefined(self.handler.rows_to_disable) &&
           self.handler.rows_to_disable.length > 0 &&
-          _.indexOf(self.handler.rows_to_disable, i) !== -1) {
+          _.indexOf(self.handler.rows_to_disable, rows) !== -1) {
           cssClass += ' disabled_row';
         }
 
@@ -938,8 +938,8 @@ define('tools.querytool', [
       headerButtonsPlugin.onCommand.subscribe(function (e, args) {
         let command = args.command;
         if (command === 'view-geometries') {
-          let columns = args.grid.getColumns();
-          let columnIndex = columns.indexOf(args.column);
+          let cols = args.grid.getColumns();
+          let columnIndex = cols.indexOf(args.column);
           let selectedRows = args.grid.getSelectedRows();
           if (selectedRows.length === 0) {
             // if no rows are selected, load and render all the rows
@@ -948,12 +948,12 @@ define('tools.querytool', [
                 // trigger onGridSelectAll manually with new event data.
                 gridSelector.onGridSelectAll.notify(args, new Slick.EventData());
                 let items = args.grid.getData().getItems();
-                GeometryViewer.render_geometries(self.handler, items, columns, columnIndex);
+                GeometryViewer.render_geometries(self.handler, items, cols, columnIndex);
               });
             } else {
               gridSelector.onGridSelectAll.notify(args, new Slick.EventData());
               let items = args.grid.getData().getItems();
-              GeometryViewer.render_geometries(self.handler, items, columns, columnIndex);
+              GeometryViewer.render_geometries(self.handler, items, cols, columnIndex);
             }
           } else {
             // render selected rows
@@ -961,7 +961,7 @@ define('tools.querytool', [
             let selectedItems = _.map(selectedRows, function (row) {
               return items[row];
             });
-            GeometryViewer.render_geometries(self.handler, selectedItems, columns, columnIndex);
+            GeometryViewer.render_geometries(self.handler, selectedItems, cols, columnIndex);
           }
         }
       });
@@ -992,10 +992,10 @@ define('tools.querytool', [
       }
 
       grid.onColumnsResized.subscribe(function() {
-        var columns = this.getColumns();
-        _.each(columns, function(col) {
-          var column_size = self.handler['col_size'];
-          column_size[self.handler['table_name']][col['id']] = col['width'];
+        var cols = this.getColumns();
+        _.each(cols, function(col) {
+          var col_size = self.handler['col_size'];
+          col_size[self.handler['table_name']][col['id']] = col['width'];
         });
       }.bind(grid));
 
@@ -1106,8 +1106,8 @@ define('tools.querytool', [
         // The purpose is to remove row_id from temp_new_row
         // if new row has primary key instead of [default_value]
         // so that cell edit is enabled for that row.
-        var grid = args.grid,
-          row_data = grid.getDataItem(args.row),
+        var grid_edit = args.grid,
+          row_data = grid_edit.getDataItem(args.row),
           is_primary_key = self.primary_keys &&
           _.all(
             _.values(
@@ -1164,25 +1164,25 @@ define('tools.querytool', [
       grid.onAddNewRow.subscribe(function(e, args) {
         // self.handler.data_store.added will holds all the newly added rows/data
         var column = args.column,
-          item = args.item,
+          item_current = args.item,
           data_length = this.grid.getDataLength(),
           _key = (self.client_primary_key_counter++).toString(),
-          dataView = this.grid.getData();
+          data_view = this.grid.getData();
 
         // Add new row in list to keep track of it
-        if (_.isUndefined(item[0])) {
+        if (_.isUndefined(item_current[0])) {
           self.handler.temp_new_rows.push(data_length);
         }
 
         // If copied item has already primary key, use it.
-        if (item) {
-          item[self.client_primary_key] = _key;
+        if (item_current) {
+          item_current[self.client_primary_key] = _key;
         }
 
-        dataView.addItem(item);
+        data_view.addItem(item_current);
         self.handler.data_store.added[_key] = {
           'err': false,
-          'data': item,
+          'data': item_current,
         };
         self.handler.data_store.added_index[data_length] = _key;
 
@@ -1195,7 +1195,7 @@ define('tools.querytool', [
         grid.render();
 
         // Highlight the first added cell of the new row
-        var row = dataView.getRowByItem(item);
+        var row = data_view.getRowByItem(item_current);
         self.handler.numberOfModifiedCells++;
         args.grid.addCellCssStyles(self.handler.numberOfModifiedCells, {
           [row] : {
@@ -2615,25 +2615,25 @@ define('tools.querytool', [
         self._fetch_column_metadata.call(
           self, data,
           function() {
-            var self = this;
+            var self_col = this;
 
-            self.trigger(
+            self_col.trigger(
               'pgadmin-sqleditor:loading-icon:message',
               gettext('Loading data from the database server and rendering...'),
-              self
+              self_col
             );
 
             // Show message in message and history tab in case of query tool
-            self.total_time = calculateQueryRunTime.calculateQueryRunTime(
-              self.query_start_time,
-              self.query_end_time
+            self_col.total_time = calculateQueryRunTime.calculateQueryRunTime(
+              self_col.query_start_time,
+              self_col.query_end_time
             );
-            var msg1 = gettext('Successfully run. Total query runtime: %s.',self.total_time);
-            var msg2 = gettext('%s rows affected.',self.rows_affected);
+            var msg1 = gettext('Successfully run. Total query runtime: %s.',self_col.total_time);
+            var msg2 = gettext('%s rows affected.',self_col.rows_affected);
 
             // Display the notifier if the timeout is set to >= 0
-            if (self.info_notifier_timeout >= 0) {
-              alertify.success(msg1 + ' ' + msg2, self.info_notifier_timeout);
+            if (self_col.info_notifier_timeout >= 0) {
+              alertify.success(msg1 + ' ' + msg2, self_col.info_notifier_timeout);
             }
 
             var _msg = msg1 + '\n' + msg2;
@@ -2645,7 +2645,7 @@ define('tools.querytool', [
               _msg = data.additional_messages + '\n' + _msg;
             }
 
-            self.update_msg_history(true, _msg, false);
+            self_col.update_msg_history(true, _msg, false);
 
             /* Add the data to the collection and render the grid.
              * In case of Explain draw the graph on explain panel
@@ -2654,8 +2654,8 @@ define('tools.querytool', [
             var explain_data_array = [],
               explain_data_json = null;
 
-            if(data.result && !_.isEmpty(self.colinfo)
-             && self.colinfo[0].name == 'QUERY PLAN' && !_.isEmpty(data.types)
+            if(data.result && !_.isEmpty(self_col.colinfo)
+             && self_col.colinfo[0].name == 'QUERY PLAN' && !_.isEmpty(data.types)
              && data.types[0] && data.types[0].typname === 'json') {
               /* json is sent as text, parse it */
               explain_data_json = JSON.parse(data.result[0][0]);
@@ -2669,16 +2669,16 @@ define('tools.querytool', [
               explain_data_array.push(explain_data);
               // Make sure - the 'Data Output' panel is visible, before - we
               // start rendering the grid.
-              self.gridView.data_output_panel.focus();
+              self_col.gridView.data_output_panel.focus();
               setTimeout(
                 function() {
-                  self.gridView.render_grid(
-                    explain_data_array, self.columns, self.can_edit,
-                    self.client_primary_key, 0
+                  self_col.gridView.render_grid(
+                    explain_data_array, self_col.columns, self_col.can_edit,
+                    self_col.client_primary_key, 0
                   );
                   // Make sure - the 'Explain' panel is visible, before - we
                   // start rendering the grid.
-                  self.gridView.explain_panel.focus();
+                  self_col.gridView.explain_panel.focus();
                   pgExplain.DrawJSONPlan(
                     $('.sql-editor-explain'), explain_data_json
                   );
@@ -2687,17 +2687,17 @@ define('tools.querytool', [
             } else {
               // Make sure - the 'Data Output' panel is visible, before - we
               // start rendering the grid.
-              self.gridView.data_output_panel.focus();
+              self_col.gridView.data_output_panel.focus();
               setTimeout(
                 function() {
-                  self.gridView.render_grid(data.result, self.columns,
-                    self.can_edit, self.client_primary_key, data.rows_affected);
+                  self_col.gridView.render_grid(data.result, self_col.columns,
+                    self_col.can_edit, self_col.client_primary_key, data.rows_affected);
                 }, 10
               );
             }
 
             // Hide the loading icon
-            self.trigger('pgadmin-sqleditor:loading-icon:hide');
+            self_col.trigger('pgadmin-sqleditor:loading-icon:hide');
             $('#btn-flash').prop('disabled', false);
             $('#btn-download').prop('disabled', false);
           }.bind(self)
@@ -3146,8 +3146,8 @@ define('tools.querytool', [
                     _.each(req_data.added_index, function(v, k) {
                       if (v == row_id) {
                       // Fetch item data through row index
-                        var item = grid.getDataItem(k);
-                        _.extend(item, r.row_added[row_id]);
+                        var item_fetched = grid.getDataItem(k);
+                        _.extend(item_fetched, r.row_added[row_id]);
                       }
                     });
                   }
@@ -3175,8 +3175,8 @@ define('tools.querytool', [
                   dataView.setItems(data, self.client_primary_key);
                 } else {
                   dataView.beginUpdate();
-                  for (var i = 0; i < rows.length; i++) {
-                    var item = grid.getDataItem(rows[i]);
+                  for (var j = 0; j < rows.length; j++) {
+                    var item = grid.getDataItem(rows[j]);
                     data.push(item);
                     dataView.deleteItem(item[self.client_primary_key]);
                   }
@@ -3423,11 +3423,11 @@ define('tools.querytool', [
             self.is_query_changed = false;
             setTimeout(() => { self.gridView.query_tool_obj.focus(); }, 200);
           })
-          .fail(function(e) {
+          .fail(function(er) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             let stateParams = [_e];
             let msg = httpErrorHandler.handleQueryToolAjaxError(
-              pgAdmin, self, e, '_select_file_handler', stateParams, false
+              pgAdmin, self, er, '_select_file_handler', stateParams, false
             );
             if (msg)
               alertify.error(msg);
@@ -3475,11 +3475,11 @@ define('tools.querytool', [
               self.check_needed_confirmations_before_closing_panel();
             }
           })
-          .fail(function(e) {
+          .fail(function(er) {
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             let stateParams = [_e];
             let msg = httpErrorHandler.handleQueryToolAjaxError(
-              pgAdmin, self, e, '_save_file_handler', stateParams, false
+              pgAdmin, self, er, '_save_file_handler', stateParams, false
             );
             if (msg)
               alertify.error(msg);
@@ -3743,21 +3743,21 @@ define('tools.querytool', [
           // split each row with field separator character
           const values = item.split(self.preferences.results_grid_field_separator);
           let row = {};
-          for (let k in self.columns) {
+          for (let col in self.columns) {
             let v = null;
-            if (values.length > k) {
-              v = values[k].replace(new RegExp(`^\\${self.preferences.results_grid_quote_char}`), '').replace(new RegExp(`\\${self.preferences.results_grid_quote_char}$`), '');
+            if (values.length > col) {
+              v = values[col].replace(new RegExp(`^\\${self.preferences.results_grid_quote_char}`), '').replace(new RegExp(`\\${self.preferences.results_grid_quote_char}$`), '');
             }
 
             // set value to default or null depending on column metadata
             if(v === '') {
-              if(self.columns[k].has_default_val) {
+              if(self.columns[col].has_default_val) {
                 v = undefined;
               } else {
                 v = null;
               }
             }
-            row[self.columns[k].name] = v;
+            row[self.columns[col].name] = v;
           }
           partial.push(row);
           return partial;
@@ -4054,7 +4054,7 @@ define('tools.querytool', [
           } else {
             let respBlob = new Blob([response], {type : 'text/csv'}),
               urlCreator = window.URL || window.webkitURL,
-              url = urlCreator.createObjectURL(respBlob),
+              download_url = urlCreator.createObjectURL(respBlob),
               current_browser = pgAdmin.Browser.get_browser(),
               link = document.createElement('a');
 
@@ -4064,7 +4064,7 @@ define('tools.querytool', [
             // IE10+ : (has Blob, but not a[download] or URL)
               window.navigator.msSaveBlob(respBlob, filename);
             } else {
-              link.setAttribute('href', url);
+              link.setAttribute('href', download_url);
               link.setAttribute('download', filename);
               link.click();
             }
@@ -4292,8 +4292,8 @@ define('tools.querytool', [
 
         alertify.confirmCommit || alertify.dialog('confirmCommit', function() {
           return {
-            main: function(title, message, is_commit_disabled) {
-              this.is_commit_disabled = is_commit_disabled;
+            main: function(title, message, is_commit_disabled_arg) {
+              this.is_commit_disabled = is_commit_disabled_arg;
               this.setHeader(title);
               this.setContent(message);
             },
@@ -4359,8 +4359,8 @@ define('tools.querytool', [
 
         alertify.confirmSave || alertify.dialog('confirmSave', function() {
           return {
-            main: function(title, message, is_unsaved_data) {
-              this.is_unsaved_data = is_unsaved_data;
+            main: function(title, message, is_unsaved_data_arg) {
+              this.is_unsaved_data = is_unsaved_data_arg;
               this.setHeader(title);
               this.setContent(message);
             },
