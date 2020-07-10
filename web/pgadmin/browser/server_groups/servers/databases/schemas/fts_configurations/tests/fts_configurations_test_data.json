@@ -1,0 +1,291 @@
+{
+  "dependency_dependent_fts_configurations": [
+    {
+      "name": "Get FTS Configuration dependency",
+      "url": "/browser/fts_configuration/dependency/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get FTS Configuration dependent",
+      "url": "/browser/fts_configuration/dependent/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "get_fts_configuration_nodes_and_node": [
+    {
+      "name": "Get FTS Configuration nodes",
+      "url": "/browser/fts_configuration/nodes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching FTS Configuration nodes",
+      "url": "/browser/fts_configuration/nodes/",
+      "error_fetching_fts_configuration": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts configuration nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Get FTS Configuration node",
+      "url": "/browser/fts_configuration/nodes/",
+      "is_positive_test": true,
+      "node": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching FTS Configuration node",
+      "url": "/browser/fts_configuration/nodes/",
+      "error_fetching_fts_configuration": true,
+      "is_positive_test": false,
+      "node": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts configuration nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while fetching FTS Configuration node",
+      "url": "/browser/fts_configuration/nodes/",
+      "error_fetching_fts_configuration": true,
+      "set_wrong_fts_configuration_value": true,
+      "is_positive_test": false,
+      "node": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(True, {'rows': []})"
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Get FTS Configuration nodes list",
+      "url": "/browser/fts_configuration/obj/",
+      "is_positive_test": true,
+      "node": false,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Configuration nodes list",
+      "url": "/browser/fts_configuration/obj/",
+      "is_positive_test": false,
+      "error_fetching_fts_configuration": true,
+      "node": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts configuration nodes list')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "fts_configuration_get_sql": [
+    {
+      "name": "Get fts configuration SQL",
+      "url": "/browser/fts_configuration/sql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching a created fts configuration sql",
+      "url": "/browser/fts_configuration/sql/",
+      "error_fetching_fts_configuration": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a fts configuration sql')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while fetching a created fts configuration sql",
+      "url": "/browser/fts_configuration/sql/",
+      "error_fetching_fts_configuration": true,
+      "is_positive_test": false,
+      "msql": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(True, None)"
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Get fts configuration msql: With existing fts configuration id.",
+      "url": "/browser/fts_configuration/msql/",
+      "is_positive_test": true,
+      "msql": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Error while fetching a created fts configuration sql",
+      "url": "/browser/fts_configuration/msql/",
+      "error_fetching_fts_configuration": true,
+      "is_positive_test": false,
+      "msql": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a fts configuration sql')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "get_fts_configuration_get_dictionaries": [
+    {
+      "name": "Get fts configuration dictionaries",
+      "url": "/browser/fts_configuration/dictionaries/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get fts configuration dictionaries",
+      "url": "/browser/fts_configuration/dictionaries/",
+      "is_positive_test": false,
+      "error_fetching_fts_configuration": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a fts configuration dictionaries')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "get_fts_configuration_get_tokens": [
+    {
+      "name": "Get fts configuration tokens",
+      "url": "/browser/fts_configuration/tokens/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get fts configuration tokens",
+      "url": "/browser/fts_configuration/tokens/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False, 0)"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "get_fts_configuration_copy_config": [
+    {
+      "name": "Get fts configuration copy",
+      "url": "/browser/fts_configuration/copyConfig/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get fts configuration copy negative",
+      "url": "/browser/fts_configuration/copyConfig/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a fts configuration dictionaries')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "get_fts_configuration_parsers": [
+    {
+      "name": "Get fts configuration parsers",
+      "url": "/browser/fts_configuration/parsers/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get fts configuration parsers",
+      "url": "/browser/fts_configuration/parsers/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a fts configuration dictionaries')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "delete_fts_configuration": [
+  ]
+}

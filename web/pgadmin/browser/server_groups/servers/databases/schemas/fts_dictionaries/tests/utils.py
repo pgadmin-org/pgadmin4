@@ -12,10 +12,14 @@ from __future__ import print_function
 import os
 import sys
 import traceback
+import json
 
 from regression.python_test_utils.test_utils import get_db_connection
 
 file_name = os.path.basename(__file__)
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/fts_dictionaries_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
 
 def create_fts_dictionary(server, db_name, schema_name, fts_dict_name):

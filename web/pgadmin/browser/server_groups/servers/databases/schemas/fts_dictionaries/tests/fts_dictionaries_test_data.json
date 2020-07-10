@@ -1,0 +1,143 @@
+{
+  "get_fts_dictionaries_nodes_and_node": [
+    {
+      "name": "Get FTS Dictionary nodes",
+      "url": "/browser/fts_dictionary/nodes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching FTS Dictionary nodes",
+      "url": "/browser/fts_dictionary/nodes/",
+      "error_fetching_fts_dictionaries": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts dictionary nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Get FTS Dictionary node",
+      "url": "/browser/fts_dictionary/nodes/",
+      "is_positive_test": true,
+      "node": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching FTS Dictionary node",
+      "url": "/browser/fts_dictionary/nodes/",
+      "error_fetching_fts_dictionaries": true,
+      "is_positive_test": false,
+      "node": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts dictionary nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while fetching FTS Dictionary node",
+      "url": "/browser/fts_dictionary/nodes/",
+      "error_fetching_fts_dictionaries": true,
+      "set_wrong_fts_configuration_value": true,
+      "is_positive_test": false,
+      "node": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(True, {'rows': []})"
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Get FTS Dictionary nodes list",
+      "url": "/browser/fts_dictionary/obj/",
+      "is_positive_test": true,
+      "node": false,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Dictionary nodes list",
+      "url": "/browser/fts_dictionary/obj/",
+      "is_positive_test": false,
+      "error_fetching_fts_dictionaries": true,
+      "node": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts dictionary nodes list')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "dependency_dependent_fts_dictionaries": [
+    {
+      "name": "Get FTS Dictionaries dependency",
+      "url": "/browser/fts_dictionary/dependency/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get FTS Dictionaries dependent",
+      "url": "/browser/fts_dictionary/dependent/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "fetch_templates_fts_dictionaries": [
+    {
+      "name": "Get FTS Dictionaries templates",
+      "url": "/browser/fts_dictionary/fetch_templates/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Dictionaries templates",
+      "url": "/browser/fts_dictionary/fetch_templates/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts dictionary template')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ]
+}

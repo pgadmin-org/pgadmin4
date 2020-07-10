@@ -18,6 +18,7 @@ Housekeeping
 ************
 
 | `Issue #5326 <https://redmine.postgresql.org/issues/5326>`_ -  Improve code coverage and API test cases for Domain and Domain Constraints.
+| `Issue #5329 <https://redmine.postgresql.org/issues/5329>`_ -  Improve code coverage and API test cases for FTS Configuration, FTS Parser, FTS Dictionaries, and FTS Template.
 
 Bug fixes
 *********
