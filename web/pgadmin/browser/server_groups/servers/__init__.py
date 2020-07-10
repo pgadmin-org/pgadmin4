@@ -295,24 +295,25 @@ class ServerNode(PGChildNodeView):
             required_ssl_fields_server_mode = ['sslcert', 'sslkey']
 
             for field in ssl_fields:
-                if field not in data:
+                if field in data:
+                    continue
+                elif config.SERVER_MODE and \
+                        field in required_ssl_fields_server_mode:
                     # In Server mode,
                     # we will set dummy SSL certificate file path which will
                     # prevent using default SSL certificates from web servers
 
-                    if config.SERVER_MODE and \
-                            field in required_ssl_fields_server_mode:
-                        # Set file manager directory from preference
-                        import os
-                        file_extn = '.key' if field.endswith('key') else '.crt'
-                        dummy_ssl_file = os.path.join(
-                            '<STORAGE_DIR>', '.postgresql',
-                            'postgresql' + file_extn
-                        )
-                        data[field] = dummy_ssl_file
+                    # Set file manager directory from preference
+                    import os
+                    file_extn = '.key' if field.endswith('key') else '.crt'
+                    dummy_ssl_file = os.path.join(
+                        '<STORAGE_DIR>', '.postgresql',
+                        'postgresql' + file_extn
+                    )
+                    data[field] = dummy_ssl_file
                     # For Desktop mode, we will allow to default
-                    else:
-                        data[field] = None
+                else:
+                    data[field] = None
 
         return flag, data
 
@@ -534,28 +535,10 @@ class ServerNode(PGChildNodeView):
         conn = manager.connection()
         connected = conn.connected()
 
-        if connected:
-            for arg in (
-                    'hostaddr', 'db', 'sslmode',
-                    'role', 'service'
-            ):
-                if arg in data:
-                    return forbidden(
-                        errmsg=gettext(
-                            "'{0}' is not allowed to modify, "
-                            "when server is connected."
-                        ).format(disp_lbl[arg])
-                    )
+        self._server_modify_disallowed_when_connected(
+            connected, data, disp_lbl)
 
-        for arg in config_param_map:
-            if arg in data:
-                value = data[arg]
-                # sqlite3 do not have boolean type so we need to convert
-                # it manually to integer
-                if arg == 'sslcompression':
-                    value = 1 if value else 0
-                setattr(server, config_param_map[arg], value)
-                idx += 1
+        idx = self._set_valid_attr_value(data, config_param_map, server)
 
         if idx == 0:
             return make_json_response(
@@ -590,6 +573,37 @@ class ServerNode(PGChildNodeView):
                 server_type='pg'  # default server type
             )
         )
+
+    def _set_valid_attr_value(self, data, config_param_map, server):
+
+        idx = 0
+        for arg in config_param_map:
+            if arg in data:
+                value = data[arg]
+                # sqlite3 do not have boolean type so we need to convert
+                # it manually to integer
+                if arg == 'sslcompression':
+                    value = 1 if value else 0
+                setattr(server, config_param_map[arg], value)
+                idx += 1
+
+        return idx
+
+    def _server_modify_disallowed_when_connected(
+            self, connected, data, disp_lbl):
+
+        if connected:
+            for arg in (
+                    'hostaddr', 'db', 'sslmode',
+                    'role', 'service'
+            ):
+                if arg in data:
+                    return forbidden(
+                        errmsg=gettext(
+                            "'{0}' is not allowed to modify, "
+                            "when server is connected."
+                        ).format(disp_lbl[arg])
+                    )
 
     @login_required
     def list(self, gid):

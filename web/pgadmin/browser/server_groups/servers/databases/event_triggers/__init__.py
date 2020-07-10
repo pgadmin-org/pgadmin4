@@ -623,34 +623,39 @@ class EventTriggerView(PGChildNodeView):
                 data=data, o_data=old_data
             )
         else:
-            required_args = {
-                'name': 'Name',
-                'eventowner': 'Owner',
-                'eventfunname': 'Trigger function',
-                'enabled': 'Enabled status',
-                'eventname': 'Events'
-            }
-            err = []
-            for arg in required_args:
-                if arg not in data:
-                    err.append(required_args.get(arg, arg))
-            if err:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        "Could not find the required parameter ({})."
-                    ).format(arg)
-                )
-            sql = render_template(
-                "/".join([self.template_path, 'create.sql']),
-                data=data
+            sql = self._get_create_with_grant_sql(data)
+        return sql
+
+    def _get_create_with_grant_sql(self, data):
+
+        required_args = {
+            'name': 'Name',
+            'eventowner': 'Owner',
+            'eventfunname': 'Trigger function',
+            'enabled': 'Enabled status',
+            'eventname': 'Events'
+        }
+        err = []
+        for arg in required_args:
+            if arg not in data:
+                err.append(required_args.get(arg, arg))
+        if err:
+            return make_json_response(
+                status=410,
+                success=0,
+                errormsg=gettext(
+                    "Could not find the required parameter ({})."
+                ).format(arg)
             )
-            sql += "\n"
-            sql += render_template(
-                "/".join([self.template_path, 'grant.sql']),
-                data=data
-            )
+        sql = render_template(
+            "/".join([self.template_path, 'create.sql']),
+            data=data
+        )
+        sql += "\n"
+        sql += render_template(
+            "/".join([self.template_path, 'grant.sql']),
+            data=data
+        )
         return sql
 
     @check_precondition
