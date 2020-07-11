@@ -18,6 +18,7 @@ QFile* Logger::m_Logfile = Q_NULLPTR;
 Logger::Logger()
 {
 }
+
 Logger::~Logger()
 {
 }
@@ -39,7 +40,7 @@ Logger* Logger::GetLogger()
 
 void Logger::Log(const QString& sMessage)
 {
-    QString text = QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss ") + sMessage + "\n";
+    QString text = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss: ") + sMessage + "\n";
     if (m_Logfile != Q_NULLPTR)
     {
         QTextStream out(m_Logfile);
