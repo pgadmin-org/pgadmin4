@@ -680,57 +680,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     part_data['is_partitioned'] = row['is_partitioned']
                     part_data['partition_scheme'] = row['partition_scheme']
 
-                    self.update_autovacuum_properties(row)
-
-                    part_data['fillfactor'] = row['fillfactor']
-                    part_data['autovacuum_custom'] = row['autovacuum_custom']
-                    part_data['autovacuum_enabled'] = row['autovacuum_enabled']
-                    part_data['autovacuum_vacuum_threshold'] = row[
-                        'autovacuum_vacuum_threshold']
-                    part_data['autovacuum_vacuum_scale_factor'] = row[
-                        'autovacuum_vacuum_scale_factor']
-                    part_data['autovacuum_analyze_threshold'] = row[
-                        'autovacuum_analyze_threshold']
-                    part_data['autovacuum_analyze_scale_factor'] = row[
-                        'autovacuum_analyze_scale_factor']
-                    part_data['autovacuum_vacuum_cost_delay'] = row[
-                        'autovacuum_vacuum_cost_delay']
-                    part_data['autovacuum_vacuum_cost_limit'] = row[
-                        'autovacuum_vacuum_cost_limit']
-                    part_data['autovacuum_freeze_min_age'] = row[
-                        'autovacuum_freeze_min_age']
-                    part_data['autovacuum_freeze_max_age'] = row[
-                        'autovacuum_freeze_max_age']
-                    part_data['autovacuum_freeze_table_age'] = row[
-                        'autovacuum_freeze_table_age']
-                    part_data['toast_autovacuum'] = row['toast_autovacuum']
-                    part_data['toast_autovacuum_enabled'] = row[
-                        'toast_autovacuum_enabled']
-                    part_data['toast_autovacuum_vacuum_threshold'] = row[
-                        'toast_autovacuum_vacuum_threshold']
-                    part_data['toast_autovacuum_vacuum_scale_factor'] = row[
-                        'toast_autovacuum_vacuum_scale_factor']
-                    part_data['toast_autovacuum_analyze_threshold'] = row[
-                        'toast_autovacuum_analyze_threshold']
-                    part_data['toast_autovacuum_analyze_scale_factor'] = row[
-                        'toast_autovacuum_analyze_scale_factor']
-                    part_data['toast_autovacuum_vacuum_cost_delay'] = row[
-                        'toast_autovacuum_vacuum_cost_delay']
-                    part_data['toast_autovacuum_vacuum_cost_limit'] = row[
-                        'toast_autovacuum_vacuum_cost_limit']
-                    part_data['toast_autovacuum_freeze_min_age'] = row[
-                        'toast_autovacuum_freeze_min_age']
-                    part_data['toast_autovacuum_freeze_max_age'] = row[
-                        'toast_autovacuum_freeze_max_age']
-                    part_data['toast_autovacuum_freeze_table_age'] = row[
-                        'toast_autovacuum_freeze_table_age']
-
-                    # We will add Auto vacuum defaults with out result for grid
-                    part_data['vacuum_table'] = copy.deepcopy(
-                        self.parse_vacuum_data(self.conn, row, 'table'))
-                    part_data['vacuum_toast'] = copy.deepcopy(
-                        self.parse_vacuum_data(self.conn, row, 'toast'))
-
                     partition_sql += render_template("/".join(
                         [self.partition_template_path, 'create.sql']),
                         data=part_data, conn=self.conn)
@@ -1679,46 +1628,3 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         if len(reset_values) > 0:
             data[vacuum_key]['reset_values'] = reset_values
-
-    def update_autovacuum_properties(self, res):
-        """
-        This function sets the appropriate value for autovacuum_enabled and
-        autovacuum_custom for table & toast table both.
-        :param res:
-        :return:
-        """
-        # Set value based on
-        # x: No set, t: true, f: false
-        if res is not None:
-            res['autovacuum_enabled'] = 'x' \
-                if res['autovacuum_enabled'] is None else \
-                {True: 't', False: 'f'}[res['autovacuum_enabled']]
-            res['toast_autovacuum_enabled'] = 'x' \
-                if res['toast_autovacuum_enabled'] is None else \
-                {True: 't', False: 'f'}[
-                    res['toast_autovacuum_enabled']]
-            # Enable custom autovaccum only if one of the options is set
-            # or autovacuum is set
-        res['autovacuum_custom'] = any([
-            res['autovacuum_vacuum_threshold'],
-            res['autovacuum_vacuum_scale_factor'],
-            res['autovacuum_analyze_threshold'],
-            res['autovacuum_analyze_scale_factor'],
-            res['autovacuum_vacuum_cost_delay'],
-            res['autovacuum_vacuum_cost_limit'],
-            res['autovacuum_freeze_min_age'],
-            res['autovacuum_freeze_max_age'],
-            res['autovacuum_freeze_table_age']]) or \
-            res['autovacuum_enabled'] in ('t', 'f')
-
-        res['toast_autovacuum'] = any([
-            res['toast_autovacuum_vacuum_threshold'],
-            res['toast_autovacuum_vacuum_scale_factor'],
-            res['toast_autovacuum_analyze_threshold'],
-            res['toast_autovacuum_analyze_scale_factor'],
-            res['toast_autovacuum_vacuum_cost_delay'],
-            res['toast_autovacuum_vacuum_cost_limit'],
-            res['toast_autovacuum_freeze_min_age'],
-            res['toast_autovacuum_freeze_max_age'],
-            res['toast_autovacuum_freeze_table_age']]) or \
-            res['toast_autovacuum_enabled'] in ('t', 'f')
