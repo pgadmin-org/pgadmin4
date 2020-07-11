@@ -12,7 +12,7 @@
 #ifndef PGADMIN4_H
 #define PGADMIN4_H
 
-// Include the Python header here as it needs to appear before any QT 
+// Include the Python header here as it needs to appear before any QT
 // headers anywhere in the app.
 #ifdef __MINGW32__
 #include <cmath>
@@ -35,10 +35,11 @@ const QString PGA_APP_NAME = QString("pgAdmin 4");
 
 // Global function prototypes
 int main(int argc, char * argv[]);
-bool PingServer(QUrl url);
+QString serverRequest(QUrl url, QString path);
+bool pingServer(QUrl url);
+bool shutdownServer(QUrl url);
 void delay(int milliseconds);
 void cleanup();
 unsigned long sdbm(unsigned char *str);
-bool shutdownServer(QUrl url);
 
 #endif // PGADMIN4_H

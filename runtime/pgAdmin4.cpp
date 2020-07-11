@@ -389,7 +389,7 @@ int main(int argc, char * argv[])
     Logger::GetLogger()->Log("The server should be up, we'll attempt to connect and get a response. Ping the server");
     while(QTime::currentTime() <= endTime)
     {
-        alive = PingServer(QUrl(appServerUrl));
+        alive = pingServer(QUrl(appServerUrl));
 
         if (alive)
         {
@@ -412,7 +412,7 @@ int main(int argc, char * argv[])
 
     // Attempt to connect one more time in case of a long network timeout while looping
     Logger::GetLogger()->Log("Attempt to connect one more time in case of a long network timeout while looping");
-    if (!alive && !PingServer(QUrl(appServerUrl)))
+    if (!alive && !pingServer(QUrl(appServerUrl)))
     {
         splash->finish(Q_NULLPTR);
         QString error(QWidget::tr("The application server could not be contacted."));
@@ -474,20 +474,20 @@ int main(int argc, char * argv[])
 }
 
 
-// Ping the application server to see if it's alive
-bool PingServer(QUrl url)
+QString serverRequest(QUrl url, QString path)
 {
     QNetworkAccessManager manager;
     QEventLoop loop;
     QNetworkReply *reply;
     QVariant redirectUrl;
 
-    url.setPath("/misc/ping");
+
+    url.setPath(path);
+    QString requestUrl = url.toString();
 
     do
     {
         reply = manager.get(QNetworkRequest(url));
-
         QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
         loop.exec();
 
@@ -501,18 +501,28 @@ bool PingServer(QUrl url)
 
     if (reply->error() != QNetworkReply::NoError)
     {
-        return false;
+        qDebug() << "Failed to connect to the server:" << reply->errorString() << "( request URL:" << requestUrl << ").";
+        return QString();
     }
 
     QString response = reply->readAll();
+    qDebug() << "Server response:" << response << "( request URL:" << requestUrl << ").";
 
-    if (response != "PING")
-    {
-        qDebug() << "Failed to connect, server response: " << response;
-        return false;
-    }
+    return response;
+}
 
-    return true;
+
+// Ping the application server to see if it's alive
+bool pingServer(QUrl url)
+{
+    return serverRequest(url, "/misc/ping") == "PING";
+}
+
+
+// Shutdown the application server
+bool shutdownServer(QUrl url)
+{
+    return serverRequest(url, "/misc/shutdown") == "SHUTDOWN";
 }
 
 
@@ -547,45 +557,4 @@ unsigned long sdbm(unsigned char *str)
         hash = c + (hash << 6) + (hash << 16) - hash;
 
     return hash;
-}
-
-// Shutdown the application server
-bool shutdownServer(QUrl url)
-{
-    QNetworkAccessManager manager;
-    QEventLoop loop;
-    QNetworkReply *reply;
-    QVariant redirectUrl;
-
-    url.setPath("/misc/shutdown");
-
-    do
-    {
-        reply = manager.get(QNetworkRequest(url));
-
-        QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-        loop.exec();
-
-        redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-        url = redirectUrl.toUrl();
-
-        if (!redirectUrl.isNull())
-            delete reply;
-
-    } while (!redirectUrl.isNull());
-
-    if (reply->error() != QNetworkReply::NoError)
-    {
-        return false;
-    }
-
-    QString response = reply->readAll();
-
-    if (response != "SHUTDOWN")
-    {
-        qDebug() << "Failed to connect, server response: " << response;
-        return false;
-    }
-
-    return true;
 }
