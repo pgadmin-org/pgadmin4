@@ -109,11 +109,12 @@ int main(int argc, char * argv[])
 #endif
 
     // Create a hash of the executable path so we can run copies side-by-side
-    QString homeDir = QDir::homePath();
     unsigned long exeHash = sdbm(reinterpret_cast<unsigned char *>(argv[0]));
 
     // Create the address file, that will be used to store the appserver URL for this instance
-    addrFileName = homeDir + (QString("/.%1.%2.addr").arg(PGA_APP_NAME).arg(exeHash)).remove(" ");
+    QDir workdir;
+    workdir.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
+    addrFileName = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + (QString("/.%1.%2.addr").arg(PGA_APP_NAME).arg(exeHash)).remove(" ");
     QFile addrFile(addrFileName);
 
     // Create a system-wide semaphore keyed by app name, exe hash and the username
@@ -250,7 +251,7 @@ int main(int argc, char * argv[])
     key = key.mid(1, key.length() - 2);
 
     // Generate the filename for the log
-    logFileName = homeDir + (QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash)).remove(" ");
+    logFileName = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + (QString("/.%1.%2.log").arg(PGA_APP_NAME).arg(exeHash)).remove(" ");
 
     // Create Menu Actions
     MenuActions *menuActions = new MenuActions();

@@ -27,7 +27,7 @@ Logger* Logger::GetLogger()
     if (m_pThis == Q_NULLPTR)
     {
         m_pThis = new Logger();
-        m_sFileName = QDir::homePath() + (QString("/.%1.startup.log").arg(PGA_APP_NAME)).remove(" ");
+        m_sFileName = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + (QString("/.%1.startup.log").arg(PGA_APP_NAME)).remove(" ");
         m_Logfile = new QFile;
         m_Logfile->setFileName(m_sFileName);
         m_Logfile->open(QIODevice::WriteOnly | QIODevice::Text);

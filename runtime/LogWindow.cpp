@@ -35,9 +35,14 @@ void LogWindow::LoadLog()
     int startupLines;
     int serverLines;
 
+    QString startup_log = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + (QString("/.%1.startup.log").arg(PGA_APP_NAME)).remove(" ");
+
     ui->lblStatus->setText(tr("Loading logfiles..."));
 
-    startupLines = this->readLog(QDir::homePath() + (QString("/.%1.startup.log").arg(PGA_APP_NAME)).remove(" "), ui->textStartupLog);
+    ui->lblStartupLog->setText(tr("Startup Log (%1):").arg(startup_log));
+    ui->lblServerLog->setText(tr("Server Log (%1):").arg(m_serverLogFile));
+
+    startupLines = this->readLog(startup_log, ui->textStartupLog);
     serverLines = this->readLog(m_serverLogFile, ui->textServerLog);
 
     ui->lblStatus->setText(QString(tr("Loaded startup log (%1 lines) and server log (%2 lines).")).arg(startupLines).arg(serverLines));
