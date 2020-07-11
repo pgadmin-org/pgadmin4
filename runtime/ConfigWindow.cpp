@@ -9,6 +9,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#include "pgAdmin4.h"
+
 #include "ConfigWindow.h"
 #include "ui_ConfigWindow.h"
 
@@ -42,45 +44,15 @@ void ConfigWindow::on_chkFixedPort_stateChanged(int state)
         ui->spinPortNumber->setEnabled(false);
 }
 
-QString ConfigWindow::getBrowserCommand()
+void ConfigWindow::LoadSettings()
 {
-    return ui->browserCommandLineEdit->text();
-}
+    QSettings settings;
 
-bool ConfigWindow::getFixedPort()
-{
-    return ui->chkFixedPort->isChecked();
-}
+    setWindowTitle(QString(tr("%1 Configuration")).arg(PGA_APP_NAME));
 
-int ConfigWindow::getPortNumber()
-{
-    return ui->spinPortNumber->value();
-}
+    ui->browserCommandLineEdit->setText(settings.value("BrowserCommand").toString());
 
-bool ConfigWindow::getOpenTabAtStartup()
-{
-    return ui->chkOpenTabAtStartup->isChecked();
-}
-
-QString ConfigWindow::getPythonPath()
-{
-    return ui->pythonPathLineEdit->text();
-}
-
-QString ConfigWindow::getApplicationPath()
-{
-    return ui->applicationPathLineEdit->text();
-}
-
-
-void ConfigWindow::setBrowserCommand(QString command)
-{
-    ui->browserCommandLineEdit->setText(command);
-}
-
-void ConfigWindow::setFixedPort(bool fixedPort)
-{
-    if (fixedPort)
+    if(settings.value("FixedPort").toBool())
     {
         ui->chkFixedPort->setCheckState(Qt::Checked);
         ui->spinPortNumber->setEnabled(true);
@@ -90,16 +62,10 @@ void ConfigWindow::setFixedPort(bool fixedPort)
         ui->chkFixedPort->setCheckState(Qt::Unchecked);
         ui->spinPortNumber->setEnabled(false);
     }
-}
 
-void ConfigWindow::setPortNumber(int port)
-{
-    ui->spinPortNumber->setValue(port);
-}
+    ui->spinPortNumber->setValue(settings.value("PortNumber").toInt());
 
-void ConfigWindow::setOpenTabAtStartup(bool openTabAtStartup)
-{
-    if (openTabAtStartup)
+    if (settings.value("OpenTabAtStartup", true).toBool())
     {
         ui->chkOpenTabAtStartup->setCheckState(Qt::Checked);
     }
@@ -107,15 +73,37 @@ void ConfigWindow::setOpenTabAtStartup(bool openTabAtStartup)
     {
         ui->chkOpenTabAtStartup->setCheckState(Qt::Unchecked);
     }
+
+    ui->pythonPathLineEdit->setText(settings.value("PythonPath").toString());
+    ui->applicationPathLineEdit->setText(settings.value("ApplicationPath").toString());
 }
 
-void ConfigWindow::setPythonPath(QString path)
+bool ConfigWindow::SaveSettings()
 {
-    ui->pythonPathLineEdit->setText(path);
-}
+    QSettings settings;
 
-void ConfigWindow::setApplicationPath(QString path)
-{
-    ui->applicationPathLineEdit->setText(path);
+    // Save the settings, and return true if a restart is required, otherwise false.
+    QString browsercommand = ui->browserCommandLineEdit->text();
+    bool fixedport = ui->chkFixedPort->isChecked();
+    int portnumber = ui->spinPortNumber->value();
+    bool opentabatstartup = ui->chkOpenTabAtStartup->isChecked();
+    QString pythonpath = ui->pythonPathLineEdit->text();
+    QString applicationpath = ui->applicationPathLineEdit->text();
+
+    bool needRestart = (settings.value("FixedPort").toBool() != fixedport ||
+                        settings.value("PortNumber").toInt() != portnumber ||
+                        settings.value("PythonPath").toString() != pythonpath ||
+                        settings.value("ApplicationPath").toString() != applicationpath);
+
+    settings.setValue("BrowserCommand", browsercommand);
+    settings.setValue("FixedPort", fixedport);
+    settings.setValue("PortNumber", portnumber);
+    settings.setValue("OpenTabAtStartup", opentabatstartup);
+    settings.setValue("PythonPath", pythonpath);
+    settings.setValue("ApplicationPath", applicationpath);
+
+    settings.sync();
+
+    return needRestart;
 }
 

@@ -64,45 +64,19 @@ void MenuActions::onCopyUrl()
 // Show the config dialogue
 void MenuActions::onConfig()
 {
-    QSettings settings;
     bool ok;
 
     ConfigWindow *dlg = new ConfigWindow();
-    dlg->setWindowTitle(QString(tr("%1 Configuration")).arg(PGA_APP_NAME));
-    dlg->setBrowserCommand(settings.value("BrowserCommand").toString());
-    dlg->setFixedPort(settings.value("FixedPort").toBool());
-    dlg->setPortNumber(settings.value("PortNumber").toInt());
-    dlg->setOpenTabAtStartup(settings.value("OpenTabAtStartup", true).toBool());
-    dlg->setPythonPath(settings.value("PythonPath").toString());
-    dlg->setApplicationPath(settings.value("ApplicationPath").toString());
+    dlg->LoadSettings();
     dlg->setModal(true);
     ok = dlg->exec();
 
-    QString browsercommand = dlg->getBrowserCommand();
-    bool fixedport = dlg->getFixedPort();
-    int portnumber = dlg->getPortNumber();
-    bool opentabatstartup = dlg->getOpenTabAtStartup();
-    QString pythonpath = dlg->getPythonPath();
-    QString applicationpath = dlg->getApplicationPath();
-
     if (ok)
     {
-        bool needRestart = (settings.value("FixedPort").toBool() != fixedport ||
-                            settings.value("PortNumber").toInt() != portnumber ||
-                            settings.value("PythonPath").toString() != pythonpath ||
-                            settings.value("ApplicationPath").toString() != applicationpath);
-
-        settings.setValue("BrowserCommand", browsercommand);
-        settings.setValue("FixedPort", fixedport);
-        settings.setValue("PortNumber", portnumber);
-        settings.setValue("OpenTabAtStartup", opentabatstartup);
-        settings.setValue("PythonPath", pythonpath);
-        settings.setValue("ApplicationPath", applicationpath);
+        bool needRestart = dlg->SaveSettings();
 
         if (needRestart && QMessageBox::Yes == QMessageBox::question(Q_NULLPTR, tr("Shut down server?"), QString(tr("The %1 server must be restarted for changes to take effect. Do you want to shut down the server now?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
-        {
             exit(0);
-        }
     }
 }
 

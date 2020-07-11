@@ -25,19 +25,8 @@ class ConfigWindow : public QDialog
 public:
     explicit ConfigWindow(QWidget *parent = Q_NULLPTR);
 
-    QString getBrowserCommand();
-    bool getFixedPort();
-    int getPortNumber();
-    bool getOpenTabAtStartup();
-    QString getPythonPath();
-    QString getApplicationPath();
-
-    void setBrowserCommand(QString command);
-    void setFixedPort(bool fixedPort);
-    void setPortNumber(int port);
-    void setOpenTabAtStartup(bool openTabAtStartup);
-    void setPythonPath(QString path);
-    void setApplicationPath(QString path);
+    void LoadSettings();
+    bool SaveSettings();
 
 private slots:
     void on_buttonBox_accepted();
