@@ -868,7 +868,7 @@ WHERE
             if not self.connected():
                 if self.auto_reconnect and not self.reconnecting:
                     return self.__attempt_execution_reconnect(
-                        self.execute_dict, query, params,
+                        self.execute_scalar, query, params,
                         formatted_exception_msg
                     )
                 raise ConnectionLost(
