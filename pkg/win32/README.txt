@@ -52,10 +52,16 @@ copy C:\build64\zlib\lib\zlib.lib C:\build64\zlib\lib\zdll.lib
 wget https://www.openssl.org/source/openssl-1.1.1g.tar.gz
 tar -zxvf openssl-1.1.1g.tar.gz
 cd openssl-1.1.1g
-perl Configure VC-WIN64A no-asm --prefix=C:\build64\openssl --openssldir=C:\build64\openssl\ssl no-ssl2 no-ssl3 no-comp
+perl Configure VC-WIN64A no-asm --prefix=C:\build64\openssl no-ssl2 no-ssl3 no-comp
 nmake
 nmake test
 nmake install
+
+Note that if you are not working in an administrative account, you may need to
+create and give your regular account appropriate permissions to write/modify
+files in C:\Program Files\Common Files\SSL. This is the default directory used
+for the OPENSSLDIR, and should not be changed to a directory that un-privileged
+users could potentially write to.
 
 4) Download the PostgreSQL source code, unpack and build it:
 
