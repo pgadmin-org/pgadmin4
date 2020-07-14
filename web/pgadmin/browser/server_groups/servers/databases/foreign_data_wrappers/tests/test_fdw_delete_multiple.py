@@ -23,9 +23,8 @@ from . import utils as fdw_utils
 class FDWDDeleteMultipleTestCase(BaseTestGenerator):
     """This class will delete foreign data wrappers under test database."""
     skip_on_database = ['gpdb']
-    scenarios = [  # Fetching default URL for foreign_data_wrapper node.
-        ('Check FDW Node',
-         dict(url='/browser/foreign_data_wrapper/obj/'))]
+    scenarios = utils.generate_scenarios('fdw_delete_multiple',
+                                         fdw_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -41,6 +40,19 @@ class FDWDDeleteMultipleTestCase(BaseTestGenerator):
                                              self.fdw_names[0]),
                         fdw_utils.create_fdw(self.server, self.db_name,
                                              self.fdw_names[1])]
+
+    def delete_multiple(self, data):
+        """
+        This function returns multiple fdw delete response
+        :param data: fdw ids to delete
+        :return: fdw delete response
+        """
+        return self.tester.delete(self.url + str(utils.SERVER_GROUP) +
+                                  '/' + str(self.server_id) +
+                                  '/' + str(self.db_id) + '/',
+                                  follow_redirects=True,
+                                  data=json.dumps(data),
+                                  content_type='html/json')
 
     def runTest(self):
         """This function will fetch foreign data wrapper present under test
@@ -60,14 +72,10 @@ class FDWDDeleteMultipleTestCase(BaseTestGenerator):
         if not fdw_response:
             raise Exception("Could not find FDW.")
         data = {'ids': self.fdw_ids}
-        delete_response = self.tester.delete(self.url +
-                                             str(utils.SERVER_GROUP) +
-                                             '/' + str(self.server_id) + '/' +
-                                             str(self.db_id) + '/',
-                                             follow_redirects=True,
-                                             data=json.dumps(data),
-                                             content_type='html/json')
-        self.assertEquals(delete_response.status_code, 200)
+        delete_response = self.delete_multiple(data)
+
+        self.assertEquals(delete_response.status_code,
+                          self.expected_data['status_code'])
 
     def tearDown(self):
         """This function disconnect the test database and drop added extension

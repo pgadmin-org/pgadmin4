@@ -17,16 +17,15 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as fdw_utils
+from unittest.mock import patch
 
 
 class FDWDGetTestCase(BaseTestGenerator):
-    """ This class will add foreign data wrappers under test database. """
+    """ This class will test fdw properties
+    and list API under test database. """
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for foreign_data_wrapper node.
-        ('Check FDW Node',
-         dict(url='/browser/foreign_data_wrapper/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('fdw_get',
+                                         fdw_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -40,6 +39,28 @@ class FDWDGetTestCase(BaseTestGenerator):
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
 
+    def get_fdw(self):
+        """
+        This functions returns the fdw properties
+        :return: fdw properties
+        """
+        return self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' + str(
+                self.server_id) + '/' +
+            str(self.db_id) + '/' + str(self.fdw_id),
+            content_type='html/json')
+
+    def get_fdw_list(self):
+        """
+        This functions returns the fdw list
+        :return: fdw list
+        """
+        return self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' + str(
+                self.server_id) + '/' +
+            str(self.db_id) + '/',
+            content_type='html/json')
+
     def runTest(self):
         """This function will fetch foreign data wrapper present under test
          database."""
@@ -49,12 +70,28 @@ class FDWDGetTestCase(BaseTestGenerator):
                                                  self.db_id)
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database.")
-        response = self.tester.get(
-            self.url + str(utils.SERVER_GROUP) + '/' + str(
-                self.server_id) + '/' +
-            str(self.db_id) + '/' + str(self.fdw_id),
-            content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+
+        if self.is_positive_test:
+            if hasattr(self, "fdw_list"):
+                response = self.get_fdw_list()
+            else:
+                response = self.get_fdw()
+        else:
+            if hasattr(self, "error_fetching_fdw"):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    if hasattr(self, "fdw_list"):
+                        response = self.get_fdw_list()
+                    else:
+                        response = self.get_fdw()
+
+            if hasattr(self, "wrong_fdw_id"):
+                self.fdw_id = 99999
+                response = self.get_fdw()
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function delete the FDW and disconnect the test database """

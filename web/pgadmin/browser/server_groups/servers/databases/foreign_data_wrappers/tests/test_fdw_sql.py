@@ -20,15 +20,15 @@ from . import utils as fdw_utils
 from unittest.mock import patch
 
 
-class FDWDeleteTestCase(BaseTestGenerator):
-    """This class will delete foreign data wrappers under test database."""
+class FDWDGetSQLTestCase(BaseTestGenerator):
+    """ This class will add foreign data wrappers under test database. """
     skip_on_database = ['gpdb']
-    scenarios = utils.generate_scenarios('fdw_delete',
+    scenarios = utils.generate_scenarios('fdw_get_sql',
                                          fdw_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
-        super(FDWDeleteTestCase, self).setUp()
+        super(FDWDGetSQLTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
@@ -38,17 +38,17 @@ class FDWDeleteTestCase(BaseTestGenerator):
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
 
-    def delete_fdw(self):
+    def get_fdw_sql(self):
         """
-        This function deletes fdw
-        :return: fdw delete
+        This functions returns the collation sql
+        :return: collation sql
         """
-        return self.tester.delete(self.url +
-                                  str(utils.SERVER_GROUP) +
-                                  '/' + str(self.server_id) + '/' +
-                                  str(self.db_id) +
-                                  '/' + str(self.fdw_id),
-                                  follow_redirects=True)
+        return self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' + str(
+                self.server_id) + '/' +
+            str(self.db_id) + '/' +
+            str(self.fdw_id),
+            content_type='html/json')
 
     def runTest(self):
         """This function will fetch foreign data wrapper present under test
@@ -59,35 +59,24 @@ class FDWDeleteTestCase(BaseTestGenerator):
                                                  self.db_id)
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database.")
-        fdw_response = fdw_utils.verify_fdw(self.server, self.db_name,
-                                            self.fdw_name)
-        if not fdw_response:
-            raise Exception("Could not find FDW.")
 
         if self.is_positive_test:
-            response = self.delete_fdw()
-
+            response = self.get_fdw_sql()
         else:
-            if hasattr(self, "error_deleting_fdw"):
+            if hasattr(self, "internal_server_error"):
                 return_value_object = eval(self.mock_data["return_value"])
                 with patch(self.mock_data["function_name"],
                            side_effect=[return_value_object]):
-                    response = self.delete_fdw()
-
-            if hasattr(self, "internal_server_error"):
-                with patch(self.mock_data["function_name"],
-                           side_effect=eval(self.mock_data["return_value"])):
-                    response = self.delete_fdw()
+                    response = self.get_fdw_sql()
 
             if hasattr(self, "wrong_fdw_id"):
                 self.fdw_id = 99999
-                response = self.delete_fdw()
+                response = self.get_fdw_sql()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data['status_code'])
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
-        """This function disconnect the test database and drop added extension
-         and dependant objects."""
-        database_utils.disconnect_database(self, self.server_id,
-                                           self.db_id)
+        # Disconnect database to delete it
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

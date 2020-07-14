@@ -9,7 +9,6 @@
 
 from __future__ import print_function
 
-import json
 import uuid
 
 from pgadmin.browser.server_groups.servers.databases.tests import \
@@ -21,64 +20,53 @@ from . import utils as fdw_utils
 from unittest.mock import patch
 
 
-class FDWDPutTestCase(BaseTestGenerator):
-    """This class will update foreign data wrappers under test database."""
+class FDWDGetMSQLTestCase(BaseTestGenerator):
+    """ This class will test fdw msql under test database. """
     skip_on_database = ['gpdb']
-    scenarios = utils.generate_scenarios('fdw_update',
+    scenarios = utils.generate_scenarios('fdw_get_msql',
                                          fdw_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
-        super(FDWDPutTestCase, self).setUp()
+        super(FDWDGetMSQLTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
-        self.fdw_name = "fdw_put_{0}".format(str(uuid.uuid4())[1:8])
+        self.fdw_name = "fdw_{0}".format(str(uuid.uuid4())[1:8])
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
 
-    def update_fdw(self):
+    def get_fdw_msql(self):
         """
-        This function returns the fdw update response
-        :return: fdw update response
+        This functions returns the fdw msql
+        :return: fdw sql
         """
-        return self.tester.put(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' +
-            str(self.db_id) + '/' + str(self.fdw_id),
-            data=json.dumps(self.test_data),
-            follow_redirects=True)
+        return self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' + str(
+                self.server_id) + '/' +
+            str(self.db_id) + '/' +
+            str(self.fdw_id),
+            content_type='html/json')
 
     def runTest(self):
-        """ This function will fetch foreign data wrapper present under
-            test database. """
+        """This function will fetch foreign data wrapper present under test
+         database."""
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
                                                  self.db_id)
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database.")
-        fdw_response = fdw_utils.verify_fdw(self.server, self.db_name,
-                                            self.fdw_name)
-        if not fdw_response:
-            raise Exception("Could not find FDW.")
-        self.test_data['id'] = self.fdw_id
 
         if self.is_positive_test:
-            put_response = self.update_fdw()
+            response = self.get_fdw_msql()
 
-        else:
-            if hasattr(self, "internal_server_error"):
-                with patch(self.mock_data["function_name"],
-                           return_value=eval(self.mock_data["return_value"])):
-                    put_response = self.update_fdw()
-
-        self.assertEquals(put_response.status_code,
-                          self.expected_data['status_code'])
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
-        """This function delete the FDW and disconnect the test database """
-        database_utils.disconnect_database(self, self.server_id,
-                                           self.db_id)
+        # Disconnect database to delete it
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

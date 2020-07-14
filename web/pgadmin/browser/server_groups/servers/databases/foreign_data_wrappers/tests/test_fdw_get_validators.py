@@ -20,15 +20,15 @@ from . import utils as fdw_utils
 from unittest.mock import patch
 
 
-class FDWDeleteTestCase(BaseTestGenerator):
-    """This class will delete foreign data wrappers under test database."""
+class FDWValidatorsTestCase(BaseTestGenerator):
+    """This class will test fdw validators under test database."""
     skip_on_database = ['gpdb']
-    scenarios = utils.generate_scenarios('fdw_delete',
+    scenarios = utils.generate_scenarios('fdw_get_validators',
                                          fdw_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
-        super(FDWDeleteTestCase, self).setUp()
+        super(FDWValidatorsTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
@@ -38,17 +38,16 @@ class FDWDeleteTestCase(BaseTestGenerator):
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
 
-    def delete_fdw(self):
+    def get_validators_fdw(self):
         """
-        This function deletes fdw
-        :return: fdw delete
+        This function gets fdw validators
+        :return: fdw validators
         """
-        return self.tester.delete(self.url +
-                                  str(utils.SERVER_GROUP) +
-                                  '/' + str(self.server_id) + '/' +
-                                  str(self.db_id) +
-                                  '/' + str(self.fdw_id),
-                                  follow_redirects=True)
+        return self.tester.get(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' +
+            str(self.db_id) + '/',
+            content_type='html/json')
 
     def runTest(self):
         """This function will fetch foreign data wrapper present under test
@@ -65,29 +64,18 @@ class FDWDeleteTestCase(BaseTestGenerator):
             raise Exception("Could not find FDW.")
 
         if self.is_positive_test:
-            response = self.delete_fdw()
-
+            response = self.get_validators_fdw()
         else:
-            if hasattr(self, "error_deleting_fdw"):
+            if hasattr(self, "internal_server_error"):
                 return_value_object = eval(self.mock_data["return_value"])
                 with patch(self.mock_data["function_name"],
                            side_effect=[return_value_object]):
-                    response = self.delete_fdw()
-
-            if hasattr(self, "internal_server_error"):
-                with patch(self.mock_data["function_name"],
-                           side_effect=eval(self.mock_data["return_value"])):
-                    response = self.delete_fdw()
-
-            if hasattr(self, "wrong_fdw_id"):
-                self.fdw_id = 99999
-                response = self.delete_fdw()
+                    response = self.get_validators_fdw()
 
         self.assertEquals(response.status_code,
                           self.expected_data['status_code'])
 
     def tearDown(self):
-        """This function disconnect the test database and drop added extension
-         and dependant objects."""
+        """This function delete the FDW and disconnect the test database """
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

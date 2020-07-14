@@ -12,8 +12,14 @@ from __future__ import print_function
 import sys
 import traceback
 import uuid
+import json
+import os
 
 from regression.python_test_utils.test_utils import get_db_connection
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/fdw_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
 
 def get_fdw_data(schema_name, db_user):
@@ -63,7 +69,8 @@ def create_fdw(server, db_name, fdw_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''CREATE FOREIGN DATA WRAPPER "%s"''' % fdw_name)
+        pg_cursor.execute('''CREATE FOREIGN DATA WRAPPER "%s"
+        OPTIONS (op1 '5')''' % fdw_name)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created foreign data wrapper
