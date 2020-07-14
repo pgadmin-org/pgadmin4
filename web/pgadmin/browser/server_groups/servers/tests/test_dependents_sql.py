@@ -32,7 +32,7 @@ class TestDependentsSql(SQLTemplateTestBase):
 
     def generate_sql(self, version):
         file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
-                                 "depends", "sql")
+                                 "depends", self.server['type'])
         template_file = self.get_template_file(version, file_path,
                                                "dependents.sql")
         template = file_as_template(template_file)

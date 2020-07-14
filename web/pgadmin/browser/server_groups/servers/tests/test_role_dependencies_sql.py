@@ -8,12 +8,13 @@
 ##########################################################################
 import os
 
-from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils
 from regression.python_test_utils.template_helper import file_as_template
+from regression.python_test_utils.sql_template_test_base import \
+    SQLTemplateTestBase
 
 
-class TestRoleDependenciesSql(BaseTestGenerator):
+class TestRoleDependenciesSql(SQLTemplateTestBase):
     scenarios = [
         # Fetching default URL for schema node.
         ('Test Role Dependencies SQL file', dict())
@@ -50,7 +51,7 @@ class TestRoleDependenciesSql(BaseTestGenerator):
                            "WHERE pg_class.relname='test_new_role_table'")
             self.table_id = cursor.fetchone()[0]
 
-            sql = self.generate_sql('default')
+            sql = self.generate_sql(connection.server_version)
             cursor.execute(sql)
 
             fetch_result = cursor.fetchall()
@@ -63,7 +64,9 @@ class TestRoleDependenciesSql(BaseTestGenerator):
             connection.commit()
 
     def generate_sql(self, version):
-        template_file = self.get_template_file(version,
+        file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
+                                 "depends", self.server['type'])
+        template_file = self.get_template_file(version, file_path,
                                                "role_dependencies.sql")
         template = file_as_template(template_file)
         sql = template.render(
@@ -79,8 +82,3 @@ class TestRoleDependenciesSql(BaseTestGenerator):
             first_row[description.name] = fetch_result[0][index]
 
         self.assertEqual('o', first_row["deptype"])
-
-    @staticmethod
-    def get_template_file(version, filename):
-        return os.path.join(os.path.dirname(__file__), "..", "templates",
-                            "depends", "sql", version, filename)

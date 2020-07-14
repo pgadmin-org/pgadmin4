@@ -446,7 +446,8 @@ class PGChildNodeView(NodeView):
         """
 
         # Set the sql_path
-        sql_path = 'depends/sql/#{0}#'.format(conn.manager.version)
+        sql_path = 'depends/{0}/#{1}#'.format(
+            conn.manager.server_type, conn.manager.version)
 
         if where is None:
             where_clause = "WHERE dep.objid={0}::oid".format(object_id)
@@ -500,7 +501,8 @@ class PGChildNodeView(NodeView):
         Returns: Dictionary of dependents for the selected node.
         """
         # Set the sql_path
-        sql_path = 'depends/sql/#{0}#'.format(conn.manager.version)
+        sql_path = 'depends/{0}/#{1}#'.format(
+            conn.manager.server_type, conn.manager.version)
 
         if where is None:
             where_clause = "WHERE dep.refobjid={0}::oid".format(object_id)
@@ -525,28 +527,37 @@ class PGChildNodeView(NodeView):
         Returns: Dictionary of dependency for the selected node.
         """
 
-        # Dictionary for the object types
-        types = {
-            # None specified special handling for this type
+        standard_types = {
             'r': None,
             'i': 'index',
             'S': 'sequence',
             'v': 'view',
-            'x': 'external_table',
-            'p': 'partition',
-            'P': 'function',
-            'n': 'schema',
-            'y': 'type',
-            'd': 'domain',
-            't': 'trigger_function',
-            'T': 'trigger',
-            'l': 'language',
-            'f': 'foreign_data_wrapper',
-            'F': 'foreign_server',
-            'R': None,
-            'C': None,
+            'p': 'partition_table',
+            'f': 'foreign_table',
+            'm': 'materialized_view',
+            't': 'toast_table',
+            'I': 'partition_index'
+        }
+
+        # Dictionary for the object types
+        custom_types = {
+            'x': 'external_table', 'n': 'schema', 'd': 'domain',
+            'l': 'language', 'Cc': 'check', 'Cd': 'domain_constraints',
+            'Cf': 'foreign_key', 'Cp': 'primary_key', 'Co': 'collation',
+            'Cu': 'unique_constraint', 'Cx': 'exclusion_constraint',
+            'Fw': 'foreign_data_wrapper', 'Fs': 'foreign_server',
+            'Fc': 'fts_configuration', 'Fp': 'fts_parser',
+            'Fd': 'fts_dictionary', 'Ft': 'fts_template',
+            'Ex': 'extension', 'Et': 'event_trigger', 'Pa': 'package',
+            'Pf': 'function', 'Pt': 'trigger_function', 'Pp': 'procedure',
+            'Rl': 'rule', 'Rs': 'row_security_policy', 'Sy': 'synonym',
+            'Ty': 'type', 'Tr': 'trigger', 'Tc': 'compound_trigger',
+            # None specified special handling for this type
             'A': None
         }
+
+        # Merging above two dictionaries
+        types = {**standard_types, **custom_types}
 
         # Dictionary for the restrictions
         dep_types = {
@@ -579,61 +590,50 @@ class PGChildNodeView(NodeView):
             # Fetch the type name from the dictionary
             # if type is not present in the types dictionary then
             # we will continue and not going to add it.
-            if len(type_str) and type_str[0] in types:
-
+            if len(type_str) and type_str in types and \
+                    types[type_str] is not None:
+                type_name = types[type_str]
+                if type_str == 'Rl':
+                    ref_name = \
+                        _ref_name + ' ON ' + ref_name + row['ownertable']
+                    _ref_name = None
+                elif type_str == 'Cf':
+                    ref_name += row['ownertable'] + '.'
+                elif type_str == 'm':
+                    icon = 'icon-mview'
+            elif len(type_str) and type_str[0] in types and \
+                    types[type_str[0]] is None:
                 # if type is present in the types dictionary, but it's
                 # value is None then it requires special handling.
-                if types[type_str[0]] is None:
-                    if type_str[0] == 'r':
-                        if int(type_str[1]) > 0:
-                            type_name = 'column'
-                        else:
-                            type_name = 'table'
-                            if 'is_inherits' in row \
-                                    and row['is_inherits'] == '1':
-                                if 'is_inherited' in row \
-                                        and row['is_inherited'] == '1':
-                                    icon = 'icon-table-multi-inherit'
-                                # For tables under partitioned tables,
-                                # is_inherits will be true and dependency
-                                # will be auto as it inherits from parent
-                                # partitioned table
-                                elif ('is_inherited' in row and
-                                      row['is_inherited'] == '0')\
-                                        and dep_str == 'a':
-                                    type_name = 'partition'
-                                else:
-                                    icon = 'icon-table-inherits'
-                            elif 'is_inherited' in row \
-                                    and row['is_inherited'] == '1':
-                                icon = 'icon-table-inherited'
-
-                    elif type_str[0] == 'R':
-                        type_name = 'rule'
-                        ref_name = \
-                            _ref_name + ' ON ' + ref_name + row['ownertable']
-                        _ref_name = None
-                    elif type_str[0] == 'C':
-                        if type_str[1] == 'c':
-                            type_name = 'check'
-                        elif type_str[1] == 'f':
-                            type_name = 'foreign_key'
-                            ref_name += row['ownertable'] + '.'
-                        elif type_str[1] == 'p':
-                            type_name = 'primary_key'
-                        elif type_str[1] == 'u':
-                            type_name = 'unique_constraint'
-                        elif type_str[1] == 'x':
-                            type_name = 'exclusion_constraint'
-                    elif type_str[0] == 'A':
-                        # Include only functions
-                        if row['adbin'].startswith('{FUNCEXPR'):
-                            type_name = 'function'
-                            ref_name = row['adsrc']
-                        else:
-                            continue
-                else:
-                    type_name = types[type_str[0]]
+                if type_str[0] == 'r':
+                    if int(type_str[1]) > 0:
+                        type_name = 'column'
+                    else:
+                        type_name = 'table'
+                        if 'is_inherits' in row and row['is_inherits'] == '1':
+                            if 'is_inherited' in row and \
+                                    row['is_inherited'] == '1':
+                                icon = 'icon-table-multi-inherit'
+                            # For tables under partitioned tables,
+                            # is_inherits will be true and dependency
+                            # will be auto as it inherits from parent
+                            # partitioned table
+                            elif ('is_inherited' in row and
+                                  row['is_inherited'] == '0') and \
+                                    dep_str == 'a':
+                                type_name = 'partition'
+                            else:
+                                icon = 'icon-table-inherits'
+                        elif 'is_inherited' in row and \
+                                row['is_inherited'] == '1':
+                            icon = 'icon-table-inherited'
+                elif type_str[0] == 'A':
+                    # Include only functions
+                    if row['adbin'].startswith('{FUNCEXPR'):
+                        type_name = 'function'
+                        ref_name = row['adsrc']
+                    else:
+                        continue
             else:
                 continue
 
@@ -644,7 +644,6 @@ class PGChildNodeView(NodeView):
             if show_system_objects is None:
                 show_system_objects = self.blueprint.show_system_objects
             if dep_str[0] in dep_types:
-
                 # if dep_type is present in the dep_types dictionary, but it's
                 # value is None then it requires special handling.
                 if dep_types[dep_str[0]] is None:
