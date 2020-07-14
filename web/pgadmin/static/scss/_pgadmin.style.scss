@@ -1,6 +1,3 @@
-.pgadmin-control-group {
-  min-width: 34px;
-}
 .control-label {
   margin: 0px;
   display: inline-block;
@@ -312,8 +309,15 @@
 
 
 .pgadmin-control-group {
-    margin: 0rem 0rem $form-group-margin-bottom 0rem;
-    padding: 0rem;
+  margin: 0rem 0rem $form-group-margin-bottom 0rem;
+  padding: 0rem;
+  min-width: 34px;
+
+  &.sql, &.sqltab {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+  }
 }
 
 .pgadmin-controls {
@@ -514,14 +518,6 @@ fieldset.inline-fieldset > div {
   padding: 15px;
 }
 
-.pgadmin-control-group{
-  &.sql, &.sqltab {
-    margin: 0px;
-    padding: 0px;
-    height: 100%;
-  }
-}
-
 .tab-pane.sql-code-control {
   & .pgadmin-control-group{
     margin: 0px;
@@ -683,12 +679,6 @@ div.rolmembership {
     margin-top: 15px;
 }
 
-.inline-tab-panel {
-    float: left; width: 100%;
-    background-color: $header-bg;
-    border: 1px solid $border-color;
-    border-radius: $card-border-radius;
-}
 
 .inline-tab-panel > ul.nav-tabs > li:first-child > a,
 .inline-tab-panel > ul.nav-tabs > li:first-child > a:active,
@@ -705,6 +695,10 @@ div.rolmembership {
 }
 
 .inline-tab-panel  {
+  float: left; width: 100%;
+  background-color: $header-bg;
+  border: 1px solid $border-color;
+  border-radius: $card-border-radius;
   & > .tab-content {
     padding: 0px;
     margin: 0px;
@@ -715,10 +709,6 @@ div.rolmembership {
   &.inline-tab-panel-padded > .tab-content {
     padding: 0.5rem;
   }
-}
-
-.inline-tab-panel > .tab-content > div.tab-pane {
-  padding: 0px;
 }
 
 .inline-tab-panel > ul.tab-content > div.tab-pane {
@@ -734,6 +724,7 @@ div.rolmembership {
 }
 
 .inline-tab-panel > .tab-content > div.tab-pane {
+  padding: 0px;
   & > .pgadmin-control-group {
     & > div.subnode {
       border: none !important;

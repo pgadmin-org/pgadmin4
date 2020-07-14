@@ -129,6 +129,7 @@
 
 table.backgrid {
   position: initial;
+  overflow: auto;
 }
 
 .backgrid td.editor input[type=password] {
@@ -209,9 +210,12 @@ table.backgrid {
   border-color: $color-gray-light;
   border-style: inset inset inset solid;
   border-width: 2px 1px 0;
+  margin: 0px, 15px;
   margin-top: -10px;
+  height: 38px;
+  min-height: 40px;
+  vertical-align: bottom;
 }
-
 .subnode-footer .ajs-button {
   margin: 2px 2px 0;
 }
@@ -266,12 +270,6 @@ table.backgrid {
       background: $color-bg;
     }
 }
-.subnode-footer {
-    height: 38px;
-    margin: 0px, 15px;
-    min-height: 40px;
-    vertical-align: bottom;
-}
 
 .sub-node-form {
     height: auto;
@@ -298,10 +296,6 @@ table.backgrid {
 
 .subnode-error .help-block {
     color: $color-danger;
-}
-
-table.backgrid {
-  overflow: auto;
 }
 
 .backgrid tbody {

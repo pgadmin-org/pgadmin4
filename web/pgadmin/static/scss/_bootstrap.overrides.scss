@@ -192,19 +192,7 @@ legend {
 					border-top: none !important;
 				}
 			}
-		}
-	}
-	& tbody {
-		& tr {
-			& th, & td {
-				border-top: $panel-border;
-				border-bottom: none;
-			}
-		}
-	}
 
-	& thead {
-		& tr {
 			& th {
 				&:first-of-type {
 					border-left: none;
@@ -216,9 +204,13 @@ legend {
 			}
 		}
 	}
-
 	& tbody {
 		& tr {
+			& th, & td {
+				border-top: $panel-border;
+				border-bottom: none;
+			}
+
 			& td {
 				&:first-of-type {
 					border-left: none;

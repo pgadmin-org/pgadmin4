@@ -50,6 +50,7 @@
     & .ajs-body {
       & .ajs-content {
         top: 0 !important;
+        bottom: 0px !important;
         padding: 0px;
       }
     }
@@ -129,10 +130,6 @@
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-}
-
-.alertify.ajs-frameless .ajs-body .ajs-content {
-  bottom: 0px !important;
 }
 
 .alertify.ajs-maximized .ajs-commands,

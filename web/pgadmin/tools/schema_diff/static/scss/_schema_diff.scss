@@ -7,11 +7,6 @@
   background-color: $color-gray-light;
 }
 
-#schema-diff-grid {
-  font-family: $font-family-primary;
-  font-size: $tree-font-size;
-}
-
 #schema-diff-grid .slick-header .slick-header-columns {
   background: $color-bg;
   height: 40px;
@@ -25,6 +20,8 @@
 }
 
 #schema-diff-grid {
+  font-family: $font-family-primary;
+  font-size: $tree-font-size;
   .ui-widget-content {
     background-color: $input-bg;
     color: $input-color;

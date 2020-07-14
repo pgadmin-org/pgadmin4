@@ -97,13 +97,6 @@
   display: none;
 }
 
-.CodeMirror-foldmarker {
-  color: $color-primary;
-  text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
-  line-height: .3;
-  cursor: pointer;
-}
-
 .CodeMirror-linenumber {
   color: $color-fg;
 }

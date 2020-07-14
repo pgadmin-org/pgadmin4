@@ -73,10 +73,6 @@
   top: $title-height;
 }
 
-.wcLayoutGrid, .wcLayoutGrid tr, .wcLayoutGrid td {
-  border: 1px solid $panel-border-color;
-}
-
 .wcPanelTab, .wcFrameTitle{
   color: $color-fg;
   padding: $tabs-padding;

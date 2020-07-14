@@ -170,10 +170,6 @@ li {
   display: table-cell;
 }
 
-.column-description {
-  display: table-cell;
-}
-
 .long_text_editor {
   margin-left: 5px;
   font-size: 12px !important;

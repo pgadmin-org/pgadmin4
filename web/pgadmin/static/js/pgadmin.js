@@ -16,46 +16,46 @@ define([], function() {
   (function(t, e, o) {
     'use strict';
 
-    function r(t, e, r, p) {
-      r = r || 'width';
-      var n, l, m, c = (e.match(s) || [])[2],
-        f = 'px' === c ? 1 : d[c + 'toPx'],
-        u = /r?em/i;
-      if (f || u.test(c) && !p){
-        t = f ? t : 'rem' === c ? i : 'fontSize' === r ? t.parentNode || t : t;
-        f = f || parseFloat(a(t, 'fontSize'));
-        m = parseFloat(e) * f;
+    function r(_t, _e, _r, _p) {
+      _r = _r || 'width';
+      let _n, _l, _m, _c = (_e.match(s) || [])[2],
+        _f = 'px' === _c ? 1 : d[_c + 'toPx'],
+        _u = /r?em/i;
+      if (_f || _u.test(_c) && !_p){
+        _t = _f ? _t : 'rem' === _c ? i : 'fontSize' === _r ? +t.parentNode || _t : _t;
+        _f = _f || parseFloat(a(_t, 'fontSize'));
+        _m = parseFloat(_e) * _f;
       }
       else {
-        n = t.style;
-        l = n[r];
+        _n = _t.style;
+        _l = _n[_r];
         try {
-          n[r] = e;
+          _n[_r] = _e;
         } catch (x) {
           return 0;
         }
-        m = n[r] ? parseFloat(a(t, r)) : 0;
-        n[r] = l !== o ? l : null;
+        _m = _n[_r] ? parseFloat(a(_t, _r)) : 0;
+        _n[_r] = _l !== o ? _l : null;
       }
-      return m;
+      return _m;
     }
 
-    function a(t, e) {
-      var o, n, i, l, d, c = /^top|bottom/,
-        f = ['paddingTop', 'paddingBottom', 'borderTop', 'borderBottom'],
-        u = 4;
+    function a(_t, _e) {
+      let _o, _n, _i, _l, _d, _c = /^top|bottom/,
+        _f = ['paddingTop', 'paddingBottom', 'borderTop', 'borderBottom'],
+        _u = 4;
 
-      n = t.style['pixel' + e.charAt(0).toUpperCase() + e.slice(1)];
-      o = m ? m(t)[e] : (n) ? n + 'px' : 'fontSize' === e ? r(t, '1em', 'left', 1) + 'px' : t.currentStyle[e];
-      i = (o.match(s) || [])[2];
+      _n = _t.style['pixel' + _e.charAt(0).toUpperCase() + _e.slice(1)];
+      _o = m ? m(_t)[_e] : (_n) ? _n + 'px' : 'fontSize' === _e ? r(_t, '1em', 'left', 1) + 'px' : _t.currentStyle[_e];
+      _i = (_o.match(s) || [])[2];
 
-      if ('%' === i && p)
-        if (c.test(e)) {
-          for (l = (d = t.parentNode || t).offsetHeight; u--;) l -= parseFloat(a(d, f[u]));
-          o = parseFloat(o) / 100 * l + 'px';
-        } else o = r(t, o);
-      else('auto' === o || i && 'px' !== i) && m ? o = 0 : i && 'px' !== i && !m && (o = r(t, o) + 'px');
-      return o;
+      if ('%' === _i && p)
+        if (_c.test(_e)) {
+          for (_l = (_d = _t.parentNode || _t).offsetHeight; _u--;) _l -= parseFloat(a(_d, _f[_u]));
+          _o = parseFloat(_o) / 100 * _l + 'px';
+        } else _o = r(_t, _o);
+      else('auto' === _o || _i && 'px' !== _i) && m ? _o = 0 : _i && 'px' !== _i && !m && (_o = r(_t, _o) + 'px');
+      return _o;
     }
     var p, n = e.createElement('test'),
       i = e.documentElement,
