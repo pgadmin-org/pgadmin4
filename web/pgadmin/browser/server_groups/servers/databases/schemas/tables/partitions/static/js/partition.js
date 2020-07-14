@@ -995,6 +995,16 @@ function(
           id: 'vacuum_settings_str', label: gettext('Storage settings'),
           type: 'multiline', group: gettext('Advanced'), mode: ['properties'],
         }],
+        sessChanged: function() {
+          /* If only custom autovacuum option is enabled then check if the options table is also changed. */
+          if(_.size(this.sessAttrs) == 2 && this.sessAttrs['autovacuum_custom'] && this.sessAttrs['toast_autovacuum']) {
+            return this.get('vacuum_table').sessChanged() || this.get('vacuum_toast').sessChanged();
+          }
+          if(_.size(this.sessAttrs) == 1 && (this.sessAttrs['autovacuum_custom'] || this.sessAttrs['toast_autovacuum'])) {
+            return this.get('vacuum_table').sessChanged() || this.get('vacuum_toast').sessChanged();
+          }
+          return pgBrowser.DataModel.prototype.sessChanged.apply(this);
+        },
         validate: function(keys) {
           var msg,
             name = this.get('name'),

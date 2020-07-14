@@ -356,20 +356,44 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
             JSON of selected table node
         """
 
-        SQL = render_template("/".join([self.partition_template_path,
-                                        'properties.sql']),
-                              did=did, scid=scid, tid=tid,
-                              ptid=ptid, datlastsysoid=self.datlastsysoid)
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
+        status, res = self._fetch_properties(did, scid, tid, ptid)
 
         if len(res['rows']) == 0:
             return gone(gettext(
                 "The specified partitioned table could not be found."))
 
         return super(PartitionsView, self).properties(
-            gid, sid, did, scid, ptid, res)
+            gid, sid, did, scid, ptid, res=res)
+
+    def _fetch_properties(self, did, scid, tid, ptid=None):
+
+        """
+        This function is used to fetch the properties of the specified object
+        :param did:
+        :param scid:
+        :param tid:
+        :return:
+        """
+        try:
+            SQL = render_template("/".join([self.partition_template_path,
+                                            'properties.sql']),
+                                  did=did, scid=scid, tid=tid,
+                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if len(res['rows']) == 0:
+                return False, gone(
+                    gettext("The specified table could not be found."))
+
+            # Update autovacuum properties
+            self.update_autovacuum_properties(res['rows'][0])
+
+        except Exception as e:
+            return False, internal_server_error(errormsg=str(e))
+
+        return True, res
 
     @BaseTableView.check_precondition
     def fetch_objects_to_compare(self, sid, did, scid, tid, ptid=None):
@@ -444,13 +468,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         """
         main_sql = []
 
-        SQL = render_template("/".join([self.partition_template_path,
-                                        'properties.sql']),
-                              did=did, scid=scid, tid=tid,
-                              ptid=ptid, datlastsysoid=self.datlastsysoid)
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
+        status, res = self._fetch_properties(did, scid, tid, ptid)
 
         if len(res['rows']) == 0:
             return gone(gettext(
@@ -627,13 +645,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
                 data[k] = v
 
         if ptid is not None:
-            SQL = render_template("/".join([self.partition_template_path,
-                                            'properties.sql']),
-                                  did=did, scid=scid, tid=tid,
-                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+            status, res = self._fetch_properties(did, scid, tid, ptid)
 
         SQL, name = self.get_sql(did, scid, ptid, data, res)
         SQL = re.sub('\n{2,}', '\n\n', SQL)
@@ -674,16 +686,10 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
                 data[k] = v
 
         try:
-            SQL = render_template("/".join([self.partition_template_path,
-                                            'properties.sql']),
-                                  did=did, scid=scid, tid=tid,
-                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+            status, res = self._fetch_properties(did, scid, tid, ptid)
 
             return super(PartitionsView, self).update(
-                gid, sid, did, scid, ptid, data, res, parent_id=tid)
+                gid, sid, did, scid, ptid, data=data, res=res, parent_id=tid)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
