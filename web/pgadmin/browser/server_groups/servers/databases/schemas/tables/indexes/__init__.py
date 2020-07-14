@@ -860,11 +860,10 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         elif diff_schema:
             schema = diff_schema
-
             sql = index_utils.get_reverse_engineered_sql(
-                self.conn, schema,
-                self.table, did, tid, idx,
-                self.datlastsysoid,
+                self.conn, schema=schema,
+                table=self.table, did=did, tid=tid, idx=idx,
+                datlastsysoid=self.datlastsysoid,
                 template_path=None, with_header=False)
 
         drop_sql = ''

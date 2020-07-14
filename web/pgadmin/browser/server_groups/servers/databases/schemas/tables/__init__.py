@@ -600,6 +600,19 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             gid, sid, did, scid, tid, res=res
         )
 
+    @staticmethod
+    def _check_rlspolicy_support(res):
+        # Check whether 'rlspolicy' in response as it supported for
+        # version 9.5 and above
+        if 'rlspolicy' in res['rows'][0]:
+            # Set the value of rls policy
+            if res['rows'][0]['rlspolicy'] == "true":
+                res['rows'][0]['rlspolicy'] = True
+
+            # Set the value of force rls policy for table owner
+            if res['rows'][0]['forcerlspolicy'] == "true":
+                res['rows'][0]['forcerlspolicy'] = True
+
     def _fetch_properties(self, did, scid, tid):
         """
         This function is used to fetch the properties of the specified object
@@ -608,16 +621,16 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         :param tid:
         :return:
         """
-        SQL = render_template(
+        sql = render_template(
             "/".join([self.table_template_path, 'properties.sql']),
             did=did, scid=scid, tid=tid,
             datlastsysoid=self.datlastsysoid
         )
-        status, res = self.conn.execute_dict(SQL)
+        status, res = self.conn.execute_dict(sql)
         if not status:
             return False, internal_server_error(errormsg=res)
 
-        if len(res['rows']) == 0:
+        elif len(res['rows']) == 0:
             return False, gone(
                 gettext("The specified table could not be found."))
 
@@ -667,14 +680,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         # Check whether 'rlspolicy' in response as it supported for
         # version 9.5 and above
-        if 'rlspolicy' in res['rows'][0]:
-            # Set the value of rls policy
-            if res['rows'][0]['rlspolicy'] == "true":
-                res['rows'][0]['rlspolicy'] = True
-
-            # Set the value of force rls policy for table owner
-            if res['rows'][0]['forcerlspolicy'] == "true":
-                res['rows'][0]['forcerlspolicy'] = True
+        TableView._check_rlspolicy_support(res)
 
         # If estimated rows are greater than threshold then
         if estimated_row_count and \
@@ -684,13 +690,13 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         # If estimated rows is lower than threshold then calculate the count
         elif estimated_row_count and \
                 table_row_count_threshold >= estimated_row_count:
-            SQL = render_template(
+            sql = render_template(
                 "/".join(
                     [self.table_template_path, 'get_table_row_count.sql']
                 ), data=res['rows'][0]
             )
 
-            status, count = self.conn.execute_scalar(SQL)
+            status, count = self.conn.execute_scalar(sql)
 
             if not status:
                 return False, internal_server_error(errormsg=count)
@@ -921,6 +927,39 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    def _parser_data_input_from_client(self, data):
+        # Parse privilege data coming from client according to database format
+        if 'relacl' in data:
+            data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
+
+            # Parse & format columns
+            data = column_utils.parse_format_columns(data)
+            data = TableView.check_and_convert_name_to_string(data)
+
+        # 'coll_inherits' is Array but it comes as string from browser
+        # We will convert it again to list
+        if 'coll_inherits' in data and \
+                isinstance(data['coll_inherits'], str):
+            data['coll_inherits'] = json.loads(
+                data['coll_inherits'], encoding='utf-8'
+            )
+
+        if 'foreign_key' in data:
+            for c in data['foreign_key']:
+                schema, table = fkey_utils.get_parent(
+                    self.conn, c['columns'][0]['references'])
+                c['remote_schema'] = schema
+                c['remote_table'] = table
+
+    def _check_for_table_partitions(self, data):
+        partitions_sql = ''
+        if self.is_table_partitioned(data):
+            data['relkind'] = 'p'
+            # create partition scheme
+            data['partition_scheme'] = self.get_partition_scheme(data)
+            partitions_sql = self.get_partitions_sql(data)
+        return partitions_sql
+
     @BaseTableView.check_precondition
     def create(self, gid, sid, did, scid):
         """
@@ -962,50 +1001,25 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 )
 
         # Parse privilege data coming from client according to database format
-        if 'relacl' in data:
-            data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
-
-        # Parse & format columns
-        data = column_utils.parse_format_columns(data)
-        data = TableView.check_and_convert_name_to_string(data)
-
-        # 'coll_inherits' is Array but it comes as string from browser
-        # We will convert it again to list
-        if 'coll_inherits' in data and \
-                isinstance(data['coll_inherits'], str):
-            data['coll_inherits'] = json.loads(
-                data['coll_inherits'], encoding='utf-8'
-            )
-
-        if 'foreign_key' in data:
-            for c in data['foreign_key']:
-                schema, table = fkey_utils.get_parent(
-                    self.conn, c['columns'][0]['references'])
-                c['remote_schema'] = schema
-                c['remote_table'] = table
+        self._parser_data_input_from_client(data)
 
         try:
-            partitions_sql = ''
-            if self.is_table_partitioned(data):
-                data['relkind'] = 'p'
-                # create partition scheme
-                data['partition_scheme'] = self.get_partition_scheme(data)
-                partitions_sql = self.get_partitions_sql(data)
+            partitions_sql = self._check_for_table_partitions(data)
 
             # Update the vacuum table settings.
             BaseTableView.update_vacuum_settings(self, 'vacuum_table', data)
             # Update the vacuum toast table settings.
             BaseTableView.update_vacuum_settings(self, 'vacuum_toast', data)
 
-            SQL = render_template(
+            sql = render_template(
                 "/".join([self.table_template_path, 'create.sql']),
                 data=data, conn=self.conn
             )
 
             # Append SQL for partitions
-            SQL += '\n' + partitions_sql
+            sql += '\n' + partitions_sql
 
-            status, res = self.conn.execute_scalar(SQL)
+            status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=res)
 
@@ -1018,22 +1032,22 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data['name'] = data['name'][0:CONST_MAX_CHAR_COUNT]
 
             # Get updated schema oid
-            SQL = render_template(
+            sql = render_template(
                 "/".join([self.table_template_path, 'get_schema_oid.sql']),
                 tname=data['name']
             )
 
-            status, new_scid = self.conn.execute_scalar(SQL)
+            status, new_scid = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=new_scid)
 
             # we need oid to to add object in tree at browser
-            SQL = render_template(
+            sql = render_template(
                 "/".join([self.table_template_path, 'get_oid.sql']),
                 scid=new_scid, data=data
             )
 
-            status, tid = self.conn.execute_scalar(SQL)
+            status, tid = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(errormsg=tid)
 
@@ -1690,9 +1704,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         else:
             res = dict()
-            SQL = render_template("/".join([self.table_template_path,
+            sql = render_template("/".join([self.table_template_path,
                                             'nodes.sql']), scid=scid)
-            status, tables = self.conn.execute_2darray(SQL)
+            status, tables = self.conn.execute_2darray(sql)
             if not status:
                 current_app.logger.error(tables)
                 return False
@@ -1708,18 +1722,25 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
                     # Get sub module data of a specified table for object
                     # comparison
-                    for module in sub_modules:
-                        module_view = SchemaDiffRegistry.get_node_view(module)
-                        if module_view.blueprint.server_type is None or \
-                            self.manager.server_type in \
-                                module_view.blueprint.server_type:
-                            sub_data = module_view.fetch_objects_to_compare(
-                                sid=sid, did=did, scid=scid, tid=row['oid'],
-                                oid=None)
-                            data[module] = sub_data
+                    self._get_sub_module_data_for_compare(sid, did, scid, data,
+                                                          row, sub_modules)
                     res[row['name']] = data
 
             return res
+
+    def _get_sub_module_data_for_compare(self, sid, did, scid, data,
+                                         row, sub_modules):
+        # Get sub module data of a specified table for object
+        # comparison
+        for module in sub_modules:
+            module_view = SchemaDiffRegistry.get_node_view(module)
+            if module_view.blueprint.server_type is None or \
+                self.manager.server_type in \
+                    module_view.blueprint.server_type:
+                sub_data = module_view.fetch_objects_to_compare(
+                    sid=sid, did=did, scid=scid, tid=row['oid'],
+                    oid=None)
+                data[module] = sub_data
 
 
 SchemaDiffRegistry(blueprint.node_type, TableView)
