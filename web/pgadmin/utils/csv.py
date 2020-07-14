@@ -670,12 +670,12 @@ register_dialect("unix", UnixDialect)
 
 class DictReader(object):
     def __init__(self, f, fieldnames=None, restkey=None, restval=None,
-                 dialect="excel", *args, **kwds):
+                 *args, **kwds):
         self._fieldnames = fieldnames   # list of keys for the dict
         self.restkey = restkey          # key to catch long rows
         self.restval = restval          # default value for short rows
-        self.reader = Reader(f, dialect, *args, **kwds)
-        self.dialect = dialect
+        self.dialect = kwds.get('dialect', "excel")
+        self.reader = Reader(f, self.dialect, *args, **kwds)
         self.line_num = 0
 
     def __iter__(self):
@@ -721,14 +721,14 @@ class DictReader(object):
 
 
 class DictWriter(object):
-    def __init__(self, f, fieldnames, restval="", extrasaction="raise",
-                 dialect="excel", *args, **kwds):
+    def __init__(self, f, fieldnames, *args, **kwds):
         self.fieldnames = fieldnames    # list of keys for the dict
-        self.restval = restval          # for writing short dicts
-        if extrasaction.lower() not in ("raise", "ignore"):
+        self.extrasaction = kwds.get('extrasaction', "raise")
+        self.restval = kwds.get('restval', "")  # for writing short dicts
+        if self.extrasaction.lower() not in ("raise", "ignore"):
             raise ValueError("extrasaction (%s) must be 'raise' or 'ignore'"
-                             % extrasaction)
-        self.extrasaction = extrasaction
+                             % self.extrasaction)
+        dialect = kwds.get('dialect', "excel")
         self.Writer = Writer(f, dialect, *args, **kwds)
 
     def writeheader(self):

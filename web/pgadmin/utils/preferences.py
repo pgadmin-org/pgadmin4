@@ -31,9 +31,7 @@ class _Preference(object):
     """
 
     def __init__(
-        self, cid, name, label, _type, default, help_str=None,
-        min_val=None, max_val=None, options=None, select2=None, fields=None,
-        allow_blanks=None
+        self, cid, name, label, _type, default, **kwargs
     ):
         """
         __init__
@@ -67,13 +65,13 @@ class _Preference(object):
         self.default = default
         self.label = label
         self._type = _type
-        self.help_str = help_str
-        self.min_val = min_val
-        self.max_val = max_val
-        self.options = options
-        self.select2 = select2
-        self.fields = fields
-        self.allow_blanks = allow_blanks
+        self.help_str = kwargs.get('help_str', None)
+        self.min_val = kwargs.get('min_val', None)
+        self.max_val = kwargs.get('max_val', None)
+        self.options = kwargs.get('options', None)
+        self.select2 = kwargs.get('select2', None)
+        self.fields = kwargs.get('fields', None)
+        self.allow_blanks = kwargs.get('allow_blanks', None)
 
         # Look into the configuration table to find out the id of the specific
         # preference.
@@ -391,9 +389,7 @@ class Preferences(object):
         return res
 
     def register(
-            self, category, name, label, _type, default, min_val=None,
-            max_val=None, options=None, help_str=None, category_label=None,
-            select2=None, fields=None, allow_blanks=None
+            self, category, name, label, _type, default, **kwargs
     ):
         """
         register
@@ -419,6 +415,15 @@ class Preferences(object):
                         take input from user e.g. keyboardshortcut preference)
         :param allow_blanks: Flag specify whether to allow blank value.
         """
+        min_val = kwargs.get('min_val', None)
+        max_val = kwargs.get('max_val', None)
+        options = kwargs.get('options', None)
+        help_str = kwargs.get('help_str', None)
+        category_label = kwargs.get('category_label', None)
+        select2 = kwargs.get('select2', None)
+        fields = kwargs.get('fields', None)
+        allow_blanks = kwargs.get('allow_blanks', None)
+
         cat = self.__category(category, category_label)
         if name in cat['preferences']:
             return (cat['preferences'])[name]
@@ -432,8 +437,9 @@ class Preferences(object):
         ), "Type cannot be found in the defined list!"
 
         (cat['preferences'])[name] = res = _Preference(
-            cat['id'], name, label, _type, default, help_str, min_val,
-            max_val, options, select2, fields, allow_blanks
+            cat['id'], name, label, _type, default, help_str=help_str,
+            min_val=min_val, max_val=max_val, options=options,
+            select2=select2, fields=fields, allow_blanks=allow_blanks
         )
 
         return res
@@ -469,9 +475,7 @@ class Preferences(object):
 
     @classmethod
     def register_preference(
-            cls, module, category, name, label, _type, default, min_val=None,
-            max_val=None, options=None, help_str=None, module_label=None,
-            category_label=None
+            cls, module, category, name, label, _type, default, **kwargs
     ):
         """
         register
@@ -493,6 +497,13 @@ class Preferences(object):
         :param module_label: Label for the module
         :param category_label: Label for the category
         """
+        min_val = kwargs.get('min_val', None)
+        max_val = kwargs.get('max_val', None)
+        options = kwargs.get('options', None)
+        help_str = kwargs.get('help_str', None)
+        module_label = kwargs.get('module_label', None)
+        category_label = kwargs.get('category_label', None)
+
         m = None
         if module in Preferences.modules:
             m = Preferences.modules[module]
@@ -502,8 +513,9 @@ class Preferences(object):
             m = Preferences(module, module_label)
 
         return m.register(
-            category, name, label, _type, default, min_val, max_val,
-            options, help_str, category_label
+            category, name, label, _type, default, min_val=min_val,
+            max_val=max_val, options=options, help_str=help_str,
+            category_label=category_label
         )
 
     @staticmethod
