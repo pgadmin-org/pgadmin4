@@ -387,7 +387,8 @@ def databases(sid):
                 "connected": db['connected'],
                 "allowConn": db['allowConn'],
                 "image": db['icon'],
-                "canDisconn": db['canDisconn']
+                "canDisconn": db['canDisconn'],
+                "is_maintenance_db": db['label'] == server.maintenance_db
             })
 
     except Exception as e:
@@ -412,14 +413,15 @@ def schemas(sid, did):
         view = SchemaDiffRegistry.get_node_view('schema')
         server = Server.query.filter_by(id=sid).first()
         response = view.nodes(gid=server.servergroup_id, sid=sid, did=did)
-        schemas = json.loads(response.data)['data']
-        for sch in schemas:
-            res.append({
-                "value": sch['_id'],
-                "label": sch['label'],
-                "_id": sch['_id'],
-                "image": sch['icon'],
-            })
+        if response.status_code == 200:
+            schemas = json.loads(response.data)['data']
+            for sch in schemas:
+                res.append({
+                    "value": sch['_id'],
+                    "label": sch['label'],
+                    "_id": sch['_id'],
+                    "image": sch['icon'],
+                })
     except Exception as e:
         app.logger.exception(e)
 

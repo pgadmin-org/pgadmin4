@@ -590,8 +590,10 @@ export default class SchemaDiffUI {
           if (!_.isUndefined(m.get('source_sid')) && !_.isNull(m.get('source_sid'))
               && m.get('source_sid') !== '') {
             setTimeout(function() {
-              if (self_local.options.length > 0) {
-                m.set('source_did', self_local.options[0].value);
+              for (var i = 0; i < self_local.options.length; i++) {
+                if (self_local.options[i].is_maintenance_db) {
+                  m.set('source_did', self_local.options[i].value);
+                }
               }
             }, 10);
             return false;
@@ -679,8 +681,10 @@ export default class SchemaDiffUI {
           if (!_.isUndefined(m.get('target_sid')) && !_.isNull(m.get('target_sid'))
               && m.get('target_sid') !== '') {
             setTimeout(function() {
-              if (self.options.length > 0) {
-                m.set('target_did', self.options[0].value);
+              for (var i = 0; i < self.options.length; i++) {
+                if (self.options[i].is_maintenance_db) {
+                  m.set('target_did', self.options[i].value);
+                }
               }
             }, 10);
             return false;
