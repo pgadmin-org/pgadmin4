@@ -27,7 +27,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
                                  'references', 'refnsp', 'remote_schema',
-                                 'conkey', 'indkey']
+                                 'conkey', 'indkey', 'references_table_name']
 
     trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tfunction',
                               'tgqual', 'tgconstraint']
