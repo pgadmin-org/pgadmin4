@@ -639,6 +639,12 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     def _get_sql_for_create(self, data, schema):
+        """
+        This function is used to get the create sql.
+        :param data:
+        :param schema:
+        :return:
+        """
         # Replace schema oid with schema name
         new_data = data.copy()
         new_data['schema'] = schema
@@ -658,6 +664,12 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         return sql
 
     def _check_template_name_and_schema_name(self, data, old_data):
+        """
+        This function is used to check the template and schema name.
+        :param data:
+        :param old_data:
+        :return:
+        """
         if 'schema' not in data:
             data['schema'] = old_data['schema']
 

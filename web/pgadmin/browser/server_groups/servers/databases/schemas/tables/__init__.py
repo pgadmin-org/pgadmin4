@@ -602,8 +602,12 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
     @staticmethod
     def _check_rlspolicy_support(res):
-        # Check whether 'rlspolicy' in response as it supported for
-        # version 9.5 and above
+        """
+        This function is used to check whether 'rlspolicy' in response
+        as it supported for version 9.5 and above
+        :param res:
+        :return:
+        """
         if 'rlspolicy' in res['rows'][0]:
             # Set the value of rls policy
             if res['rows'][0]['rlspolicy'] == "true":
@@ -895,6 +899,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     def _parser_data_input_from_client(self, data):
+        """
+        This function is used to parse the data.
+        :param data:
+        :return:
+        """
         # Parse privilege data coming from client according to database format
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
@@ -919,6 +928,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 c['remote_table'] = table
 
     def _check_for_table_partitions(self, data):
+        """
+        This function is used to check for table partition.
+        :param data:
+        :return:
+        """
         partitions_sql = ''
         if self.is_table_partitioned(data):
             data['relkind'] = 'p'

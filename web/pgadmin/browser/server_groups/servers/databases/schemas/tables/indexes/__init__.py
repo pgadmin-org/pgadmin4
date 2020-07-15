@@ -538,6 +538,12 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
     @staticmethod
     def _check_for_error(required_args, data):
+        """
+        This function is used to check for any error.
+        :param required_args:
+        :param data:
+        :return:
+        """
         for arg in required_args:
             err_msg = None
             if arg == 'columns' and len(data['columns']) < 1:
@@ -1038,6 +1044,12 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
     @staticmethod
     def _check_for_create_req(required_create_keys, diff_dict):
+        """
+        This function is used to check whether create required or not.
+        :param required_create_keys:
+        :param diff_dict:
+        :return:
+        """
         create_req = False
         for key in required_create_keys:
             if key in diff_dict and \

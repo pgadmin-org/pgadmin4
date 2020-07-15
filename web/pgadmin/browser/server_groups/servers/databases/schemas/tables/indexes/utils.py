@@ -60,6 +60,13 @@ def get_parent(conn, tid, template_path=None):
 
 
 def _get_column_property_display_data(row, col_str, data):
+    """
+    This function is used to get the columns data.
+    :param row:
+    :param col_str:
+    :param data:
+    :return:
+    """
     if row['collnspname']:
         col_str += ' COLLATE ' + row['collnspname']
     if row['opcname']:
@@ -162,7 +169,16 @@ def get_include_details(conn, idx, data, template_path=None):
     return data
 
 
-def _get_sql_with_index_none(data, template_path, conn, mode, name):
+def _get_create_sql(data, template_path, conn, mode, name):
+    """
+    This function is used to get the sql where index is None
+    :param data:
+    :param template_path:
+    :param conn:
+    :param mode:
+    :param name:
+    :return:
+    """
     required_args = {
         'name': 'Name',
         'columns': 'Columns'
@@ -245,7 +261,7 @@ def get_sql(conn, **kwargs):
             data=data, o_data=old_data, conn=conn
         )
     else:
-        sql = _get_sql_with_index_none(data, template_path, conn, mode, name)
+        sql = _get_create_sql(data, template_path, conn, mode, name)
 
     return sql, name
 

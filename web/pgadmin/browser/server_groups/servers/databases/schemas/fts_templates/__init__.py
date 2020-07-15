@@ -543,10 +543,14 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
-    def _replace_schema_oid_with_name(self, new_schema, old_data,
-                                      new_data):
-        # Replace schema oid with schema name
-
+    def _replace_schema_oid_with_name(self, new_schema, old_data, new_data):
+        """
+        This function is used to Replace schema oid with schema name
+        :param new_schema:
+        :param old_data:
+        :param new_data:
+        :return:
+        """
         if 'schema' in new_data:
             new_data['schema'] = new_schema
 
@@ -564,6 +568,12 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         return False, ''
 
     def _get_sql_for_create(self, data, schema):
+        """
+        This function is used to get the create sql.
+        :param data:
+        :param schema:
+        :return:
+        """
         # Replace schema oid with schema name
         new_data = data.copy()
         new_data['schema'] = schema

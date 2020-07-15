@@ -643,6 +643,12 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     def _get_sql_for_create(self, data, schema):
+        """
+        This function is used to get the create sql.
+        :param data:
+        :param schema:
+        :return:
+        """
         # Replace schema oid with schema name
         new_data = data.copy()
         new_data['schema'] = schema
@@ -662,6 +668,12 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
     @staticmethod
     def _replace_schema_oid_with_schema_name(new_schema, new_data):
+        """
+        This function is used to replace schema oid with schema name.
+        :param new_schema:
+        :param new_data:
+        :return:
+        """
         if 'schema' in new_data:
             new_data['schema'] = new_schema
 

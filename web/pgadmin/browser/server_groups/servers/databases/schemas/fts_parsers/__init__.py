@@ -585,11 +585,22 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
 
     @staticmethod
     def _replace_schema_oid_with_name(new_data, new_schema):
+        """
+        This function is used to replace schema oid with schema name.
+        :param new_data:
+        :param new_schema:
+        :return:
+        """
         if 'schema' in new_data:
             new_data['schema'] = new_schema
 
     def _get_sql_for_create(self, data, schema):
-        # Replace schema oid with schema name
+        """
+        This function is used to get the create sql.
+        :param data:
+        :param schema:
+        :return:
+        """
         new_data = data.copy()
         new_data['schema'] = schema
 

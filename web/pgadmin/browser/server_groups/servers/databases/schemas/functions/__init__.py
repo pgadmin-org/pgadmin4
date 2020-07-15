@@ -249,22 +249,24 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     @staticmethod
     def _create_wrap_data(req, key, data):
+        """
+        This function is used to create data required by validate_request().
+        :param req:
+        :param key:
+        :param data:
+        :return:
+        """
         list_params = []
         if request.method == 'GET':
             list_params = ['arguments', 'variables', 'proacl',
                            'seclabels', 'acl', 'args']
 
-        if (
-            key in list_params and req[key] != '' and
-            req[key] is not None
-        ):
+        if key in list_params and req[key] != '' and req[key] is not None:
             # Coverts string into python list as expected.
             data[key] = json.loads(req[key], encoding='utf-8')
-        elif (
-            key == 'proretset' or key == 'proisstrict' or
-            key == 'prosecdef' or key == 'proiswindow' or
-            key == 'proleakproof'
-        ):
+        elif (key == 'proretset' or key == 'proisstrict' or
+              key == 'prosecdef' or key == 'proiswindow' or
+              key == 'proleakproof'):
             if req[key] == 'true' or req[key] is True:
                 data[key] = True
             else:
@@ -275,13 +277,22 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     @staticmethod
     def _remove_parameters_for_c_lang(req, req_args):
-        # We need to remove 'prosrc' from the required arguments list
-        # if language is 'c'.
+        """
+        This function is used to remove 'prosrc' from the required
+        arguments list if language is 'c'.
+        :param req:
+        :param req_args:
+        :return:
+        """
         if req['lanname'] == 'c' and 'prosrc' in req_args:
             req_args.remove('prosrc')
 
     @staticmethod
     def _get_request_data():
+        """
+        This function is used to get the request data.
+        :return:
+        """
         if request.data:
             req = json.loads(request.data, encoding='utf-8')
         else:
@@ -471,6 +482,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         )
 
     def _get_argument_values(self, data):
+        """
+        This function is used to get the argument values for
+        function/procedure.
+        :param data:
+        :return:
+        """
         proargtypes = [ptype for ptype in data['proargtypenames'].split(",")] \
             if data['proargtypenames'] else []
         proargmodes = data['proargmodes'] if data['proargmodes'] else \
@@ -489,6 +506,15 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     def _params_list_for_display(self, proargmodes_fltrd, proargtypes,
                                  proargnames, proargdefaultvals):
+        """
+        This function is used to prepare dictionary of arguments to
+        display on UI.
+        :param proargmodes_fltrd:
+        :param proargtypes:
+        :param proargnames:
+        :param proargdefaultvals:
+        :return:
+        """
         # Insert null value against the parameters which do not have
         # default values.
         if len(proargmodes_fltrd) > len(proargdefaultvals):
@@ -510,6 +536,14 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     def _display_properties_argument_list(self, proargmodes_fltrd,
                                           proargtypes, proargnames,
                                           proargdefaultvals):
+        """
+        This function is used to prepare list of arguments to display on UI.
+        :param proargmodes_fltrd:
+        :param proargtypes:
+        :param proargnames:
+        :param proargdefaultvals:
+        :return:
+        """
         proargs = [self._map_arguments_list(
             proargmodes_fltrd[i] if len(proargmodes_fltrd) > i else '',
             proargtypes[i] if len(proargtypes) > i else '',
@@ -968,12 +1002,26 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     @staticmethod
     def _check_argtype(args, args_without_name, a):
+        """
+        This function is used to check the arg type.
+        :param args:
+        :param args_without_name:
+        :param a:
+        :return:
+        """
         if 'argtype' in a:
             args += a['argtype']
             args_without_name.append(a['argtype'])
         return args, args_without_name
 
     def _get_arguments(self, args_list, args, args_without_name):
+        """
+        This function is used to get the arguments.
+        :param args_list:
+        :param args:
+        :param args_without_name:
+        :return:
+        """
         cnt = 1
         for a in args_list:
             if (
@@ -1002,6 +1050,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             cnt += 1
 
     def _parse_privilege_data(self, resp_data):
+        """
+        This function is used to parse the privilege data.
+        :param resp_data:
+        :return:
+        """
         # Parse privilege data
         if 'acl' in resp_data:
             resp_data['acl'] = parse_priv_to_db(resp_data['acl'], ['X'])
@@ -1010,8 +1063,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             resp_data['revoke_all'] = self._set_revoke_all(
                 resp_data['acl'])
 
-    def _get_schema_name_from_iod(self, resp_data):
-        # Get Schema Name from its OID.
+    def _get_schema_name_from_oid(self, resp_data):
+        """
+        This function is used to get te schema name from OID.
+        :param resp_data:
+        :return:
+        """
         if 'pronamespace' in resp_data:
             resp_data['pronamespace'] = self._get_schema(
                 resp_data['pronamespace'])
@@ -1063,7 +1120,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 )
 
             # Get Schema Name from its OID.
-            self._get_schema_name_from_iod(resp_data)
+            self._get_schema_name_from_oid(resp_data)
 
             sql = render_template("/".join([self.sql_template_path,
                                             'get_definition.sql']
@@ -1099,7 +1156,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             object_type = 'function'
 
             # Get Schema Name from its OID.
-            self._get_schema_name_from_iod(resp_data)
+            self._get_schema_name_from_oid(resp_data)
 
             # Parse privilege data
             self._parse_privilege_data(resp_data)
@@ -1181,9 +1238,13 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     @staticmethod
     def _update_arguments_for_get_sql(data, old_data):
-        # If Function Definition/Arguments are changed then merge old
-        #  Arguments with changed ones for Create/Replace Function
-        # SQL statement
+        """
+        If Function Definition/Arguments are changed then merge old
+        Arguments with changed ones for Create/Replace Function SQL statement
+        :param data:
+        :param old_data:
+        :return:
+        """
         if 'arguments' in data and len(data['arguments']) > 0:
             for arg in data['arguments']['changed']:
                 for old_arg in old_data['arguments']:
@@ -1196,6 +1257,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     @staticmethod
     def _delete_variable_in_edit_mode(data, del_variables):
+        """
+        This function is used to create variables that marked for delete.
+        :param data:
+        :param del_variables:
+        :return:
+        """
         if 'variables' in data and 'deleted' in data['variables']:
             for v in data['variables']['deleted']:
                 del_variables[v['name']] = v['value']
@@ -1203,6 +1270,15 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     @staticmethod
     def _prepare_final_dict(data, old_data, chngd_variables, del_variables,
                             all_ids_dict):
+        """
+        This function is used to prepare the final dict.
+        :param data:
+        :param old_data:
+        :param chngd_variables:
+        :param del_variables:
+        :param all_ids_dict:
+        :return:
+        """
         # In case of schema diff we don't want variables from
         # old data
         if not all_ids_dict['is_schema_diff']:
@@ -1225,6 +1301,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     @staticmethod
     def _parser_privilege(data):
+        """
+        This function is used to parse the privilege data.
+        :param data:
+        :return:
+        """
         if 'acl' in data:
             for key in ['added', 'deleted', 'changed']:
                 if key in data['acl']:
@@ -1233,6 +1314,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     @staticmethod
     def _merge_variable_changes(data, chngd_variables):
+        """
+        This function is used to merge the changed variables.
+        :param data:
+        :param chngd_variables:
+        :return:
+        """
         if 'variables' in data and 'changed' in data['variables']:
             for v in data['variables']['changed']:
                 chngd_variables[v['name']] = v['value']
@@ -1243,6 +1330,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     @staticmethod
     def _merge_variables(data):
+        """
+        This function is used to prepare the merged variables.
+        :param data:
+        :return:
+        """
         if 'variables' in data and 'changed' in data['variables']:
             for v in data['variables']['changed']:
                 data['merged_variables'].append(v)
@@ -1253,6 +1345,14 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     def _get_sql_for_edit_mode(self, data, parallel_dict, all_ids_dict,
                                vol_dict):
+        """
+        This function is used to get the sql for edit mode.
+        :param data:
+        :param parallel_dict:
+        :param all_ids_dict:
+        :param vol_dict:
+        :return:
+        """
         if 'proparallel' in data and data['proparallel']:
             data['proparallel'] = parallel_dict[data['proparallel']]
 
@@ -1352,7 +1452,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         parallel_dict = {'u': 'UNSAFE', 's': 'SAFE', 'r': 'RESTRICTED'}
 
         # Get Schema Name from its OID.
-        self._get_schema_name_from_iod(data)
+        self._get_schema_name_from_oid(data)
 
         if 'provolatile' in data:
             data['provolatile'] = vol_dict[data['provolatile']]\

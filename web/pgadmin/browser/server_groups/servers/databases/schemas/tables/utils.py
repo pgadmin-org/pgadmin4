@@ -856,15 +856,19 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
     @staticmethod
     def validate_constrains(key, data):
-
+        """
+        This function is used to validate the constraints.
+        :param key:
+        :param data:
+        :return:
+        """
         if key == 'primary_key' or key == 'unique_constraint':
             if 'columns' in data and len(data['columns']) > 0:
                 return True
             else:
                 return False
         elif key == 'foreign_key':
-            return BaseTableView._check_foreign_key()
-
+            return BaseTableView._check_foreign_key(data)
         elif key == 'check_constraint':
             return BaseTableView._check_constraint(data)
 
