@@ -411,7 +411,7 @@ define([
       editorOptions['columns_length'] = this.column.collection.length;
       editorOptions['el'].attr('tabindex', 0);
 
-      this.listenTo(this.model, 'backgrid:edit', function(model, column, cell, editor) {
+      this.listenTo(this.model, 'backgrid:edit', function(model, column, sel_cell, editor) {
         if (column.get('name') == this.column.get('name'))
           editor.extendWithOptions(editorOptions);
       });
@@ -850,7 +850,7 @@ define([
         }
 
         if (gotoCell) {
-          let command = new Backgrid.Command({
+          let cmd = new Backgrid.Command({
             key: 'Tab',
             keyCode: 9,
             which: 9,
@@ -862,12 +862,12 @@ define([
               e.preventDefault();
               e.stopPropagation();
               self.model.trigger('backgrid:edited', self.model,
-                self.column, command);
+                self.column, cmd);
             }
             else {
               // When we have Non-Editable Cell
               self.model.trigger('backgrid:edited', self.model,
-                self.column, command);
+                self.column, cmd);
             }
           }, 20);
         }
@@ -1008,11 +1008,11 @@ define([
       // Select the highlighted item on Tab press.
       if (this.$sel) {
         this.$sel.data('select2').on('keypress', function(ev) {
-          var self = this;
+          var ctx = this;
 
           // keycode 9 is for TAB key
-          if (ev.which === 9 && self.isOpen()) {
-            self.trigger('results:select', {});
+          if (ev.which === 9 && ctx.isOpen()) {
+            ctx.trigger('results:select', {});
             ev.preventDefault();
           }
         });

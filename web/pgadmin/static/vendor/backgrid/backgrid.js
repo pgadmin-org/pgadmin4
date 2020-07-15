@@ -859,8 +859,8 @@ var Cell = Backgrid.Cell = Backbone.View.extend({
     this.listenTo(model, "backgrid:error", this.renderError);
 
     this.listenTo(column, "change:editable change:sortable change:renderable",
-                  function (column) {
-                    var changed = column.changedAttributes();
+                  function (col) {
+                    var changed = col.changedAttributes();
                     for (var key in changed) {
                       if (changed.hasOwnProperty(key)) {
                         $el.toggleClass(key, changed[key]);
@@ -1944,24 +1944,24 @@ var Row = Backgrid.Row = Backbone.View.extend({
       cells.push(this.makeCell(columns.at(i), options));
     }
 
-    this.listenTo(columns, "add", function (column, columns) {
-      var i = columns.indexOf(column);
+    this.listenTo(columns, "add", function (column, cols) {
+      var index = cols.indexOf(column);
       var cell = this.makeCell(column, options);
-      cells.splice(i, 0, cell);
+      cells.splice(index, 0, cell);
 
       var $el = this.$el;
-      if (i === 0) {
+      if (index === 0) {
         $el.prepend(cell.render().$el);
       }
-      else if (i === columns.length - 1) {
+      else if (index === cols.length - 1) {
         $el.append(cell.render().$el);
       }
       else {
-        $el.children().eq(i).before(cell.render().$el);
+        $el.children().eq(index).before(cell.render().$el);
       }
     });
 
-    this.listenTo(columns, "remove", function (column, columns, opts) {
+    this.listenTo(columns, "remove", function (column, cols, opts) {
       cells[opts.index].remove();
       cells.splice(opts.index, 1);
     });
@@ -2107,8 +2107,8 @@ var HeaderCell = Backgrid.HeaderCell = Backbone.View.extend({
     var column = this.column, collection = this.collection, $el = this.$el;
 
     this.listenTo(column, "change:editable change:sortable change:renderable",
-                  function (column) {
-                    var changed = column.changedAttributes();
+                  function (col) {
+                    var changed = col.changedAttributes();
                     for (var key in changed) {
                       if (changed.hasOwnProperty(key)) {
                         $el.toggleClass(key, changed[key]);
