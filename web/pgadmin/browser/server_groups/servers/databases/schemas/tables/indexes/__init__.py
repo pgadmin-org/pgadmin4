@@ -53,8 +53,8 @@ class IndexesModule(CollectionNodeModule):
         initialized.
     """
 
-    NODE_TYPE = 'index'
-    COLLECTION_LABEL = gettext("Indexes")
+    _NODE_TYPE = 'index'
+    _COLLECTION_LABEL = gettext("Indexes")
 
     def __init__(self, *args, **kwargs):
         """
@@ -113,7 +113,7 @@ class IndexesModule(CollectionNodeModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def node_inode(self):
@@ -388,7 +388,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']), tid=tid
+            "/".join([self.template_path, self._NODES_SQL]), tid=tid
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -417,7 +417,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             JSON of available schema child nodes
         """
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             tid=tid, idx=idx
         )
         status, rset = self.conn.execute_2darray(SQL)
@@ -457,7 +457,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']), tid=tid
+            "/".join([self.template_path, self._NODES_SQL]), tid=tid
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -512,7 +512,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
         )
 
@@ -608,7 +608,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             # Start transaction.
             self.conn.execute_scalar("BEGIN;")
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn, mode='create'
             )
             status, res = self.conn.execute_scalar(SQL)
@@ -633,7 +633,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # we need oid to to add object in tree at browser
             SQL = render_template(
-                "/".join([self.template_path, 'get_oid.sql']),
+                "/".join([self.template_path, self._OID_SQL]),
                 tid=tid, data=data
             )
             status, idx = self.conn.execute_scalar(SQL)
@@ -692,7 +692,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 # We will first fetch the index name for current request
                 # so that we create template for dropping index
                 SQL = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
                     did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
                 )
 
@@ -713,7 +713,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 data = dict(res['rows'][0])
 
                 SQL = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.template_path, self._DELETE_SQL]),
                     data=data, conn=self.conn, cascade=cascade
                 )
 
@@ -962,7 +962,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             if is_pgstattuple:
                 # Fetch index details only if extended stats available
                 SQL = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
                     did=did, tid=tid, idx=idx,
                     datlastsysoid=self.datlastsysoid
                 )
@@ -1021,7 +1021,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if not oid:
             SQL = render_template("/".join([self.template_path,
-                                            'nodes.sql']), tid=tid)
+                                            self._NODES_SQL]), tid=tid)
             status, indexes = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(indexes)

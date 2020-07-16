@@ -43,8 +43,8 @@ class CatalogObjectModule(SchemaChildModule):
       - Load the module script for Catalog objects, when any of the server node
         is initialized.
     """
-    NODE_TYPE = 'catalog_object'
-    COLLECTION_LABEL = gettext("Catalog Objects")
+    _NODE_TYPE = 'catalog_object'
+    _COLLECTION_LABEL = gettext("Catalog Objects")
 
     # Flag for not to show node under Schema/Catalog node
     # By default its set to True to display node in schema/catalog
@@ -78,7 +78,7 @@ class CatalogObjectModule(SchemaChildModule):
         Load the module script for server, when any of the database node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
 
 blueprint = CatalogObjectModule(__name__)
@@ -176,7 +176,7 @@ class CatalogObjectView(PGChildNodeView):
         """
 
         SQL = render_template("/".join([
-            self.template_path, 'properties.sql'
+            self.template_path, self._PROPERTIES_SQL
         ]), scid=scid
         )
 
@@ -207,7 +207,7 @@ class CatalogObjectView(PGChildNodeView):
         """
         res = []
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']), scid=scid
+            "/".join([self.template_path, self._NODES_SQL]), scid=scid
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -244,7 +244,7 @@ class CatalogObjectView(PGChildNodeView):
             JSON of given catalog objects child node
         """
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']), coid=coid
+            "/".join([self.template_path, self._NODES_SQL]), coid=coid
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -283,7 +283,7 @@ class CatalogObjectView(PGChildNodeView):
             JSON of selected catalog objects node
         """
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid, coid=coid
         )
         status, res = self.conn.execute_dict(SQL)

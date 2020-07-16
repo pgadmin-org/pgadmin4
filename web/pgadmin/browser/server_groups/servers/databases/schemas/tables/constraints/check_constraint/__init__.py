@@ -48,8 +48,8 @@ class CheckConstraintModule(CollectionNodeModule):
       - Load the module script for the Check Constraint, when any of the
         Check node is initialized.
     """
-    NODE_TYPE = 'check_constraint'
-    COLLECTION_LABEL = _("Check Constraints")
+    _NODE_TYPE = 'check_constraint'
+    _COLLECTION_LABEL = _("Check Constraints")
 
     def __init__(self, *args, **kwargs):
         super(CheckConstraintModule, self).__init__(*args, **kwargs)
@@ -75,7 +75,7 @@ class CheckConstraintModule(CollectionNodeModule):
         Load the module script for the Check Constraint, when any of the
         Check node is initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -272,8 +272,8 @@ class CheckConstraintView(PGChildNodeView):
         self.schema = schema
         self.table = table
 
-        SQL = render_template("/".join([self.template_path, 'properties.sql']),
-                              tid=tid)
+        SQL = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]), tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
         for row in res['rows']:
@@ -295,7 +295,7 @@ class CheckConstraintView(PGChildNodeView):
             cid: Check constraint Id.
         """
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid,
                               cid=cid)
         status, rset = self.conn.execute_2darray(SQL)
@@ -337,7 +337,7 @@ class CheckConstraintView(PGChildNodeView):
         """
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid)
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -391,7 +391,7 @@ class CheckConstraintView(PGChildNodeView):
 
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid)
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -506,7 +506,7 @@ class CheckConstraintView(PGChildNodeView):
 
             # The below SQL will execute CREATE DDL only
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data
             )
 
@@ -533,7 +533,7 @@ class CheckConstraintView(PGChildNodeView):
 
             else:
                 sql = render_template(
-                    "/".join([self.template_path, 'get_oid.sql']),
+                    "/".join([self.template_path, self._OID_SQL]),
                     tid=tid,
                     name=data['name']
                 )
@@ -591,7 +591,7 @@ class CheckConstraintView(PGChildNodeView):
         try:
             for cid in data['ids']:
                 SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
+                                                self._PROPERTIES_SQL]),
                                       tid=tid, cid=cid)
                 status, res = self.conn.execute_dict(SQL)
 
@@ -613,7 +613,7 @@ class CheckConstraintView(PGChildNodeView):
                 data = res['rows'][0]
 
                 SQL = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       data=data)
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
@@ -698,7 +698,7 @@ class CheckConstraintView(PGChildNodeView):
         """
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               tid=tid, cid=cid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -713,13 +713,13 @@ class CheckConstraintView(PGChildNodeView):
         data['table'] = self.table
 
         SQL = render_template("/".join([self.template_path,
-                                        'create.sql']),
+                                        self._CREATE_SQL]),
                               data=data)
 
         sql_header = u"-- Constraint: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template(
-            "/".join([self.template_path, 'delete.sql']),
+            "/".join([self.template_path, self._DELETE_SQL]),
             data=data)
         sql_header += "\n"
 

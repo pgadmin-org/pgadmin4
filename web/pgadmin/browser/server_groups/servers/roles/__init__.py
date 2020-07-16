@@ -25,8 +25,8 @@ from config import PG_DEFAULT_DRIVER
 
 
 class RoleModule(CollectionNodeModule):
-    NODE_TYPE = 'role'
-    COLLECTION_LABEL = _("Login/Group Roles")
+    _NODE_TYPE = 'role'
+    _COLLECTION_LABEL = _("Login/Group Roles")
 
     def __init__(self, *args, **kwargs):
         self.min_ver = None
@@ -54,7 +54,7 @@ class RoleModule(CollectionNodeModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return sg.ServerGroupModule.NODE_TYPE
+        return sg.ServerGroupModule.node_type
 
     @property
     def csssnippets(self):
@@ -565,7 +565,7 @@ rolmembership:{
     def list(self, gid, sid):
         status, res = self.conn.execute_dict(
             render_template(
-                self.sql_path + 'properties.sql'
+                self.sql_path + self._PROPERTIES_SQL
             )
         )
 
@@ -587,7 +587,7 @@ rolmembership:{
     def nodes(self, gid, sid):
 
         status, rset = self.conn.execute_2darray(
-            render_template(self.sql_path + 'nodes.sql')
+            render_template(self.sql_path + self._NODES_SQL)
         )
 
         if not status:
@@ -620,7 +620,7 @@ rolmembership:{
 
         status, rset = self.conn.execute_2darray(
             render_template(
-                self.sql_path + 'nodes.sql',
+                self.sql_path + self._NODES_SQL,
                 rid=rid
             )
         )
@@ -674,7 +674,7 @@ rolmembership:{
 
         status, res = self.conn.execute_dict(
             render_template(
-                self.sql_path + 'properties.sql',
+                self.sql_path + self._PROPERTIES_SQL,
                 rid=rid
             )
         )
@@ -773,7 +773,7 @@ rolmembership:{
     def create(self, gid, sid):
 
         sql = render_template(
-            self.sql_path + 'create.sql',
+            self.sql_path + self._CREATE_SQL,
             data=self.request,
             dummy=False,
             conn=self.conn
@@ -797,7 +797,7 @@ rolmembership:{
             )
 
         status, rset = self.conn.execute_dict(
-            render_template(self.sql_path + 'nodes.sql',
+            render_template(self.sql_path + self._NODES_SQL,
                             rid=rid
                             )
         )
@@ -826,7 +826,7 @@ rolmembership:{
     def update(self, gid, sid, rid):
 
         sql = render_template(
-            self.sql_path + 'update.sql',
+            self.sql_path + self._UPDATE_SQL,
             data=self.request,
             dummy=False,
             conn=self.conn,
@@ -845,7 +845,7 @@ rolmembership:{
             )
 
         status, rset = self.conn.execute_dict(
-            render_template(self.sql_path + 'nodes.sql',
+            render_template(self.sql_path + self._NODES_SQL,
                             rid=rid
                             )
         )
@@ -877,7 +877,7 @@ rolmembership:{
         if rid is None:
             return make_json_response(
                 data=render_template(
-                    self.sql_path + 'create.sql',
+                    self.sql_path + self._CREATE_SQL,
                     data=self.request,
                     dummy=True,
                     conn=self.conn
@@ -886,7 +886,7 @@ rolmembership:{
         else:
             return make_json_response(
                 data=render_template(
-                    self.sql_path + 'update.sql',
+                    self.sql_path + self._UPDATE_SQL,
                     data=self.request,
                     dummy=True,
                     conn=self.conn,

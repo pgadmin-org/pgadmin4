@@ -53,8 +53,8 @@ class TableModule(SchemaChildModule):
       - Load the module script for schema, when any of the server node is
         initialized.
     """
-    NODE_TYPE = 'table'
-    COLLECTION_LABEL = gettext("Tables")
+    _NODE_TYPE = 'table'
+    _COLLECTION_LABEL = gettext("Tables")
 
     def __init__(self, *args, **kwargs):
         """
@@ -80,7 +80,7 @@ class TableModule(SchemaChildModule):
         Load the module script for database, when any of the database node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def csssnippets(self):
@@ -304,7 +304,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             JSON of available table nodes
         """
         SQL = render_template(
-            "/".join([self.table_template_path, 'properties.sql']),
+            "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid,
             datlastsysoid=self.datlastsysoid
         )
@@ -357,7 +357,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         """
         res = []
         SQL = render_template(
-            "/".join([self.table_template_path, 'nodes.sql']),
+            "/".join([self.table_template_path, self._NODES_SQL]),
             scid=scid, tid=tid
         )
         status, rset = self.conn.execute_2darray(SQL)
@@ -401,7 +401,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         """
         res = []
         SQL = render_template(
-            "/".join([self.table_template_path, 'nodes.sql']),
+            "/".join([self.table_template_path, self._NODES_SQL]),
             scid=scid
         )
         status, rset = self.conn.execute_2darray(SQL)
@@ -626,7 +626,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         :return:
         """
         sql = render_template(
-            "/".join([self.table_template_path, 'properties.sql']),
+            "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
             datlastsysoid=self.datlastsysoid
         )
@@ -993,7 +993,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             BaseTableView.update_vacuum_settings(self, 'vacuum_toast', data)
 
             sql = render_template(
-                "/".join([self.table_template_path, 'create.sql']),
+                "/".join([self.table_template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn
             )
 
@@ -1024,7 +1024,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
             # we need oid to to add object in tree at browser
             sql = render_template(
-                "/".join([self.table_template_path, 'get_oid.sql']),
+                "/".join([self.table_template_path, self._OID_SQL]),
                 scid=new_scid, data=data
             )
 
@@ -1103,7 +1103,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         try:
             for tid in data['ids']:
                 SQL = render_template(
-                    "/".join([self.table_template_path, 'properties.sql']),
+                    "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                     did=did, scid=scid, tid=tid,
                     datlastsysoid=self.datlastsysoid
                 )
@@ -1151,7 +1151,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         try:
             SQL = render_template(
-                "/".join([self.table_template_path, 'properties.sql']),
+                "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
                 datlastsysoid=self.datlastsysoid
             )
@@ -1190,7 +1190,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         try:
             SQL = render_template(
-                "/".join([self.table_template_path, 'properties.sql']),
+                "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
                 datlastsysoid=self.datlastsysoid
             )
@@ -1258,7 +1258,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             main_sql = []
 
             SQL = render_template(
-                "/".join([self.table_template_path, 'properties.sql']),
+                "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
                 datlastsysoid=self.datlastsysoid
             )
@@ -1404,7 +1404,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             SELECT Script sql for the object
         """
         SQL = render_template(
-            "/".join([self.table_template_path, 'properties.sql']),
+            "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
             datlastsysoid=self.datlastsysoid
         )
@@ -1452,7 +1452,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             INSERT Script sql for the object
         """
         SQL = render_template(
-            "/".join([self.table_template_path, 'properties.sql']),
+            "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
             datlastsysoid=self.datlastsysoid
         )
@@ -1503,7 +1503,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             UPDATE Script sql for the object
         """
         SQL = render_template(
-            "/".join([self.table_template_path, 'properties.sql']),
+            "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
             datlastsysoid=self.datlastsysoid
         )
@@ -1556,7 +1556,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             DELETE Script sql for the object
         """
         SQL = render_template(
-            "/".join([self.table_template_path, 'properties.sql']),
+            "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
             datlastsysoid=self.datlastsysoid
         )
@@ -1636,7 +1636,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
     @BaseTableView.check_precondition
     def get_drop_sql(self, sid, did, scid, tid):
         SQL = render_template("/".join(
-            [self.table_template_path, 'properties.sql']),
+            [self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
             datlastsysoid=self.datlastsysoid
         )
@@ -1686,7 +1686,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         else:
             res = dict()
             sql = render_template("/".join([self.table_template_path,
-                                            'nodes.sql']), scid=scid)
+                                            self._NODES_SQL]), scid=scid)
             status, tables = self.conn.execute_2darray(sql)
             if not status:
                 current_app.logger.error(tables)

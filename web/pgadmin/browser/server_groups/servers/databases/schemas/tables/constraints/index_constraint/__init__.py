@@ -50,8 +50,8 @@ class IndexConstraintModule(ConstraintTypeModule):
         initialized.
     """
 
-    NODE_TYPE = 'index_constraint'
-    COLLECTION_LABEL = _('Index constraint')
+    _NODE_TYPE = 'index_constraint'
+    _COLLECTION_LABEL = _('Index constraint')
 
     def __init__(self, *args, **kwargs):
         """
@@ -92,7 +92,7 @@ class IndexConstraintModule(ConstraintTypeModule):
 
         Returns: node type of the server module.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -111,8 +111,8 @@ class PrimaryKeyConstraintModule(IndexConstraintModule):
         IndexConstraintModule.
     """
 
-    NODE_TYPE = 'primary_key'
-    COLLECTION_LABEL = _("Primary Key")
+    _NODE_TYPE = 'primary_key'
+    _COLLECTION_LABEL = _("Primary Key")
 
 
 primary_key_blueprint = PrimaryKeyConstraintModule(__name__)
@@ -126,8 +126,8 @@ class UniqueConstraintModule(IndexConstraintModule):
         IndexConstraintModule.
     """
 
-    NODE_TYPE = 'unique_constraint'
-    COLLECTION_LABEL = _("Unique Constraint")
+    _NODE_TYPE = 'unique_constraint'
+    _COLLECTION_LABEL = _("Unique Constraint")
 
 
 unique_constraint_blueprint = UniqueConstraintModule(__name__)
@@ -355,8 +355,8 @@ class IndexConstraintView(PGChildNodeView):
         self.schema = schema
         self.table = table
 
-        SQL = render_template("/".join([self.template_path, 'properties.sql']),
-                              did=did,
+        SQL = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]), did=did,
                               tid=tid,
                               constraint_type=self.constraint_type)
         status, res = self.conn.execute_dict(SQL)
@@ -382,7 +382,7 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        SQL = render_template("/".join([self.template_path, 'nodes.sql']),
+        SQL = render_template("/".join([self.template_path, self._NODES_SQL]),
                               cid=cid,
                               tid=tid,
                               constraint_type=self.constraint_type)
@@ -425,7 +425,7 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        SQL = render_template("/".join([self.template_path, 'nodes.sql']),
+        SQL = render_template("/".join([self.template_path, self._NODES_SQL]),
                               tid=tid,
                               constraint_type=self.constraint_type)
         status, rset = self.conn.execute_2darray(SQL)
@@ -475,7 +475,7 @@ class IndexConstraintView(PGChildNodeView):
         self.table = table
 
         res = []
-        SQL = render_template("/".join([self.template_path, 'nodes.sql']),
+        SQL = render_template("/".join([self.template_path, self._NODES_SQL]),
                               tid=tid,
                               constraint_type=self.constraint_type)
         status, rset = self.conn.execute_2darray(SQL)
@@ -566,7 +566,7 @@ class IndexConstraintView(PGChildNodeView):
 
             # The below SQL will execute CREATE DDL only
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn,
                 constraint_name=self.constraint_name
             )
@@ -594,7 +594,7 @@ class IndexConstraintView(PGChildNodeView):
 
             else:
                 sql = render_template(
-                    "/".join([self.template_path, 'get_oid.sql']),
+                    "/".join([self.template_path, self._OID_SQL]),
                     tid=tid,
                     constraint_type=self.constraint_type,
                     name=data['name']
@@ -656,7 +656,7 @@ class IndexConstraintView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             sql = render_template(
-                "/".join([self.template_path, 'get_oid.sql']),
+                "/".join([self.template_path, self._OID_SQL]),
                 tid=tid,
                 constraint_type=self.constraint_type,
                 name=data['name']
@@ -733,7 +733,7 @@ class IndexConstraintView(PGChildNodeView):
                 data['table'] = self.table
 
                 sql = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       data=data,
                                       cascade=cascade)
                 status, res = self.conn.execute_scalar(sql)
@@ -820,7 +820,7 @@ class IndexConstraintView(PGChildNodeView):
         """
 
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did,
             tid=tid,
             conn=self.conn,
@@ -867,14 +867,14 @@ class IndexConstraintView(PGChildNodeView):
             data['include'] = [col['colname'] for col in res['rows']]
 
         SQL = render_template(
-            "/".join([self.template_path, 'create.sql']),
+            "/".join([self.template_path, self._CREATE_SQL]),
             data=data,
             constraint_name=self.constraint_name)
 
         sql_header = u"-- Constraint: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template(
-            "/".join([self.template_path, 'delete.sql']),
+            "/".join([self.template_path, self._DELETE_SQL]),
             data=data)
         sql_header += "\n"
 
@@ -911,7 +911,7 @@ class IndexConstraintView(PGChildNodeView):
         if is_pgstattuple:
             # Fetch index details only if extended stats available
             sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 did=did,
                 tid=tid,
                 cid=cid,

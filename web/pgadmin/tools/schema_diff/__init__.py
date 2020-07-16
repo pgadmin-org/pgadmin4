@@ -471,7 +471,7 @@ def compare(trans_id, source_sid, source_did, source_scid,
             view = SchemaDiffRegistry.get_node_view(node_name)
             if hasattr(view, 'compare'):
                 msg = gettext('Comparing {0}').\
-                    format(gettext(view.blueprint.COLLECTION_LABEL))
+                    format(gettext(view.blueprint.collection_label))
                 diff_model_obj.set_comparison_info(msg, total_percent)
                 # Update the message and total percentage in session object
                 update_session_diff_transaction(trans_id, session_obj,

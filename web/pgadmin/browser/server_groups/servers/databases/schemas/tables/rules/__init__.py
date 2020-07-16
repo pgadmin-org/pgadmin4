@@ -41,8 +41,8 @@ class RuleModule(CollectionNodeModule):
           script_load - tells when to load js file.
           csssnppets - add css to page
     """
-    NODE_TYPE = 'rule'
-    COLLECTION_LABEL = gettext("Rules")
+    _NODE_TYPE = 'rule'
+    _COLLECTION_LABEL = gettext("Rules")
 
     def __init__(self, *args, **kwargs):
         self.min_ver = None
@@ -97,7 +97,7 @@ class RuleModule(CollectionNodeModule):
         Load the module script for rule, when any of the database nodes are
         initialized.
         """
-        return schemas.SchemaModule.NODE_TYPE
+        return schemas.SchemaModule.node_type
 
     @property
     def csssnippets(self):
@@ -219,7 +219,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # fetch schema name by schema id
         SQL = render_template("/".join(
-            [self.template_path, 'properties.sql']), tid=tid)
+            [self.template_path, self._PROPERTIES_SQL]), tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -235,7 +235,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         return single node
         """
         SQL = render_template("/".join(
-            [self.template_path, 'nodes.sql']), rid=rid)
+            [self.template_path, self._NODES_SQL]), rid=rid)
 
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -263,7 +263,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template("/".join(
-            [self.template_path, 'nodes.sql']), tid=tid)
+            [self.template_path, self._NODES_SQL]), tid=tid)
 
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -305,7 +305,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         SQL = render_template("/".join(
-            [self.template_path, 'properties.sql']
+            [self.template_path, self._PROPERTIES_SQL]
         ), rid=rid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
 
@@ -341,7 +341,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
         try:
             SQL = render_template("/".join(
-                [self.template_path, 'create.sql']), data=data)
+                [self.template_path, self._CREATE_SQL]), data=data)
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -413,7 +413,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             for rid in data['ids']:
                 # Get name for rule from did
                 SQL = render_template("/".join(
-                    [self.template_path, 'delete.sql']), rid=rid)
+                    [self.template_path, self._DELETE_SQL]), rid=rid)
                 status, res_data = self.conn.execute_dict(SQL)
                 if not status:
                     return internal_server_error(errormsg=res_data)
@@ -432,7 +432,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                 # drop rule
                 rset = res_data['rows'][0]
                 SQL = render_template("/".join(
-                    [self.template_path, 'delete.sql']),
+                    [self.template_path, self._DELETE_SQL]),
                     rulename=rset['rulename'],
                     relname=rset['relname'],
                     nspname=rset['nspname'],
@@ -476,7 +476,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         This function will generate sql to render into the sql panel
         """
         SQL = render_template("/".join(
-            [self.template_path, 'properties.sql']), rid=rid)
+            [self.template_path, self._PROPERTIES_SQL]), rid=rid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -485,7 +485,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
 
         res_data = parse_rule_definition(res)
         SQL = render_template("/".join(
-            [self.template_path, 'create.sql']),
+            [self.template_path, self._CREATE_SQL]),
             data=res_data, display_comments=True)
 
         return ajax_response(response=SQL)
@@ -497,7 +497,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if rid is not None:
             SQL = render_template("/".join(
-                [self.template_path, 'properties.sql']), rid=rid)
+                [self.template_path, self._PROPERTIES_SQL]), rid=rid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -509,12 +509,12 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
 
             old_data = res_data
             SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data
             )
         else:
             SQL = render_template("/".join(
-                [self.template_path, 'create.sql']), data=data)
+                [self.template_path, self._CREATE_SQL]), data=data)
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
@@ -541,7 +541,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                               rid=oid, only_sql=True)
         else:
             SQL = render_template("/".join(
-                [self.template_path, 'properties.sql']), rid=oid)
+                [self.template_path, self._PROPERTIES_SQL]), rid=oid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -560,7 +560,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                         source_schema, diff_schema)
                 old_data = res_data
                 SQL = render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.template_path, self._UPDATE_SQL]),
                     data=data, o_data=old_data
                 )
             else:
@@ -573,7 +573,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                     res_data['schema'] = diff_schema
 
                 SQL = render_template("/".join(
-                    [self.template_path, 'create.sql']),
+                    [self.template_path, self._CREATE_SQL]),
                     data=res_data, display_comments=True)
 
         return SQL
@@ -639,7 +639,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             res = data
         else:
             SQL = render_template("/".join([self.template_path,
-                                            'nodes.sql']),
+                                            self._NODES_SQL]),
                                   tid=tid)
             status, rules = self.conn.execute_2darray(SQL)
             if not status:

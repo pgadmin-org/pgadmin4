@@ -29,8 +29,8 @@ from pgadmin.browser.server_groups.servers.pgagent.utils \
 
 
 class JobModule(CollectionNodeModule):
-    NODE_TYPE = 'pga_job'
-    COLLECTION_LABEL = _("pgAgent Jobs")
+    _NODE_TYPE = 'pga_job'
+    _COLLECTION_LABEL = _("pgAgent Jobs")
 
     def get_nodes(self, gid, sid):
         """
@@ -45,7 +45,7 @@ class JobModule(CollectionNodeModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return servers.ServerModule.NODE_TYPE
+        return servers.ServerModule.node_type
 
     def backend_supported(self, manager, **kwargs):
         if hasattr(self, 'show_node') and not self.show_node:
@@ -180,7 +180,7 @@ SELECT EXISTS(
     @check_precondition
     def nodes(self, gid, sid, jid=None):
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             jid=jid, conn=self.conn
         )
         status, rset = self.conn.execute_dict(SQL)
@@ -224,7 +224,7 @@ SELECT EXISTS(
     @check_precondition
     def properties(self, gid, sid, jid=None):
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             jid=jid, conn=self.conn
         )
         status, rset = self.conn.execute_dict(SQL)
@@ -294,7 +294,7 @@ SELECT EXISTS(
 
         status, res = self.conn.execute_scalar(
             render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn, fetch_id=True,
                 has_connstr=self.manager.db_info['pgAgent']['has_connstr']
             )
@@ -307,7 +307,7 @@ SELECT EXISTS(
         # We need oid of newly created database
         status, res = self.conn.execute_dict(
             render_template(
-                "/".join([self.template_path, 'nodes.sql']),
+                "/".join([self.template_path, self._NODES_SQL]),
                 jid=res, conn=self.conn
             )
         )
@@ -341,7 +341,7 @@ SELECT EXISTS(
 
         status, res = self.conn.execute_void(
             render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, conn=self.conn, jid=jid,
                 has_connstr=self.manager.db_info['pgAgent']['has_connstr']
             )
@@ -353,7 +353,7 @@ SELECT EXISTS(
         # We need oid of newly created database
         status, res = self.conn.execute_dict(
             render_template(
-                "/".join([self.template_path, 'nodes.sql']),
+                "/".join([self.template_path, self._NODES_SQL]),
                 jid=jid, conn=self.conn
             )
         )
@@ -387,7 +387,7 @@ SELECT EXISTS(
         for jid in data['ids']:
             status, res = self.conn.execute_void(
                 render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.template_path, self._DELETE_SQL]),
                     jid=jid, conn=self.conn
                 )
             )
@@ -417,7 +417,7 @@ SELECT EXISTS(
             data=render_template(
                 "/".join([
                     self.template_path,
-                    'create.sql' if jid is None else 'update.sql'
+                    self._CREATE_SQL if jid is None else self._UPDATE_SQL
                 ]),
                 jid=jid, data=data, conn=self.conn, fetch_id=False,
                 has_connstr=self.manager.db_info['pgAgent']['has_connstr']
@@ -460,7 +460,7 @@ SELECT EXISTS(
         This function will generate sql for sql panel
         """
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             jid=jid, conn=self.conn, last_system_oid=0
         )
         status, res = self.conn.execute_dict(SQL)
@@ -517,7 +517,7 @@ SELECT EXISTS(
 
         return ajax_response(
             response=render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 jid=jid, data=row, conn=self.conn, fetch_id=False,
                 has_connstr=self.manager.db_info['pgAgent']['has_connstr']
             )

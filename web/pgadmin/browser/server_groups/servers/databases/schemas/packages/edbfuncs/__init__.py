@@ -55,8 +55,8 @@ class EdbFuncModule(CollectionNodeModule):
       - Returns a snippet of css.
     """
 
-    NODE_TYPE = 'edbfunc'
-    COLLECTION_LABEL = gettext("Functions")
+    _NODE_TYPE = 'edbfunc'
+    _COLLECTION_LABEL = gettext("Functions")
 
     def __init__(self, *args, **kwargs):
         """
@@ -83,7 +83,7 @@ class EdbFuncModule(CollectionNodeModule):
         Load the module script for Functions, when the
         package node is initialized.
         """
-        return packages.PackageModule.NODE_TYPE
+        return packages.PackageModule.node_type
 
     @property
     def node_inode(self):
@@ -246,7 +246,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
             scid: Schema Id
         """
 
-        SQL = render_template("/".join([self.sql_template_path, 'node.sql']),
+        SQL = render_template("/".join([self.sql_template_path,
+                                        self._NODE_SQL]),
                               pkgid=pkgid)
         status, res = self.conn.execute_dict(SQL)
 
@@ -271,7 +272,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
 
         res = []
         SQL = render_template(
-            "/".join([self.sql_template_path, 'node.sql']),
+            "/".join([self.sql_template_path, self._NODE_SQL]),
             pkgid=pkgid,
             fnid=edbfnid
         )
@@ -326,7 +327,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
             edbfnid: Function Id
         """
         SQL = render_template("/".join([self.sql_template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               pkgid=pkgid, edbfnid=edbfnid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -618,8 +619,8 @@ class EdbProcModule(CollectionNodeModule):
 
     """
 
-    NODE_TYPE = 'edbproc'
-    COLLECTION_LABEL = gettext("Procedures")
+    _NODE_TYPE = 'edbproc'
+    _COLLECTION_LABEL = gettext("Procedures")
 
     def __init__(self, *args, **kwargs):
         """
@@ -655,7 +656,7 @@ class EdbProcModule(CollectionNodeModule):
         Load the module script for Procedures, when the
         database node is initialized.
         """
-        return packages.PackageModule.NODE_TYPE
+        return packages.PackageModule.node_type
 
     def register_preferences(self):
         """

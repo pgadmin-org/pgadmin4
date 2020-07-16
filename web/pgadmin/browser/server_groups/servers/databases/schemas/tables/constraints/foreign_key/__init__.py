@@ -52,8 +52,8 @@ class ForeignKeyConstraintModule(ConstraintTypeModule):
         initialized.
     """
 
-    NODE_TYPE = 'foreign_key'
-    COLLECTION_LABEL = gettext("Foreign Keys")
+    _NODE_TYPE = 'foreign_key'
+    _COLLECTION_LABEL = gettext("Foreign Keys")
 
     def __init__(self, *args, **kwargs):
         """
@@ -94,7 +94,7 @@ class ForeignKeyConstraintModule(ConstraintTypeModule):
 
         Returns: node type of the server module.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -346,7 +346,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         self.table = table
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
@@ -373,7 +373,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
         """
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']), tid=tid
+            "/".join([self.template_path, self._NODES_SQL]), tid=tid
         )
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -418,7 +418,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
         """
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid)
         status, rset = self.conn.execute_2darray(SQL)
         res = []
@@ -458,7 +458,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid)
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -543,7 +543,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
             # The below SQL will execute CREATE DDL only
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn
             )
             status, res = self.conn.execute_scalar(SQL)
@@ -568,7 +568,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
             else:
                 sql = render_template(
-                    "/".join([self.template_path, 'get_oid.sql']),
+                    "/".join([self.template_path, self._OID_SQL]),
                     name=data['name']
                 )
                 status, res = self.conn.execute_dict(sql)
@@ -647,7 +647,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             sql = render_template(
-                "/".join([self.template_path, 'get_oid.sql']),
+                "/".join([self.template_path, self._OID_SQL]),
                 tid=tid,
                 name=data['name']
             )
@@ -727,7 +727,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 data['table'] = self.table
 
                 sql = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.template_path, self._DELETE_SQL]),
                     data=data, cascade=cascade)
                 status, res = self.conn.execute_scalar(sql)
                 if not status:
@@ -806,7 +806,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         """
 
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             tid=tid, conn=self.conn, cid=fkid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -844,12 +844,12 @@ class ForeignKeyConstraintView(PGChildNodeView):
         data['remote_table'] = table
 
         SQL = render_template(
-            "/".join([self.template_path, 'create.sql']), data=data)
+            "/".join([self.template_path, self._CREATE_SQL]), data=data)
 
         sql_header = u"-- Constraint: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template(
-            "/".join([self.template_path, 'delete.sql']),
+            "/".join([self.template_path, self._DELETE_SQL]),
             data=data)
         sql_header += "\n"
 

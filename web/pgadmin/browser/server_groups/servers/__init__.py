@@ -97,12 +97,12 @@ def server_icon_and_background(is_connected, manager, server):
 
 
 class ServerModule(sg.ServerGroupPluginModule):
-    NODE_TYPE = "server"
+    _NODE_TYPE = "server"
     LABEL = gettext("Servers")
 
     @property
     def node_type(self):
-        return self.NODE_TYPE
+        return self._NODE_TYPE
 
     @property
     def script_load(self):
@@ -110,7 +110,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return sg.ServerGroupModule.NODE_TYPE
+        return sg.ServerGroupModule.node_type
 
     @login_required
     def get_nodes(self, gid):
@@ -144,7 +144,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 server.name,
                 server_icon_and_background(connected, manager, server),
                 True,
-                self.NODE_TYPE,
+                self.node_type,
                 connected=connected,
                 server_type=manager.server_type if connected else "pg",
                 version=manager.version,
@@ -231,7 +231,7 @@ class ServerModule(sg.ServerGroupPluginModule):
 
 class ServerMenuItem(MenuItem):
     def __init__(self, **kwargs):
-        kwargs.setdefault("type", ServerModule.NODE_TYPE)
+        kwargs.setdefault("type", ServerModule.node_type)
         super(ServerMenuItem, self).__init__(**kwargs)
 
 
@@ -239,7 +239,7 @@ blueprint = ServerModule(__name__)
 
 
 class ServerNode(PGChildNodeView):
-    node_type = ServerModule.NODE_TYPE
+    node_type = ServerModule._NODE_TYPE
 
     parent_ids = [{'type': 'int', 'id': 'gid'}]
     ids = [{'type': 'int', 'id': 'sid'}]

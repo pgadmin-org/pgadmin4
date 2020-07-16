@@ -72,8 +72,8 @@ class PartitionsModule(CollectionNodeModule):
         initialized.
     """
 
-    NODE_TYPE = 'partition'
-    COLLECTION_LABEL = gettext("Partitions")
+    _NODE_TYPE = 'partition'
+    _COLLECTION_LABEL = gettext("Partitions")
 
     def __init__(self, *args, **kwargs):
         """
@@ -101,7 +101,7 @@ class PartitionsModule(CollectionNodeModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return schema.SchemaModule.NODE_TYPE
+        return schema.SchemaModule.node_type
 
     @property
     def node_inode(self):
@@ -139,10 +139,10 @@ class PartitionsModule(CollectionNodeModule):
             # Exclude 'partition' module for now to avoid cyclic import issue.
             modules_to_skip = ['partition', 'column']
             for parent in self.parentmodules:
-                if parent.NODE_TYPE == 'table':
+                if parent.node_type == 'table':
                     self.submodules += [
                         submodule for submodule in parent.submodules
-                        if submodule.NODE_TYPE not in modules_to_skip
+                        if submodule.node_type not in modules_to_skip
                     ]
 
     @property
@@ -267,7 +267,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
             JSON of available table nodes
         """
         SQL = render_template("/".join([self.partition_template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               did=did, scid=scid, tid=tid,
                               datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
@@ -297,7 +297,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
             JSON of available table nodes
         """
         SQL = render_template(
-            "/".join([self.partition_template_path, 'nodes.sql']),
+            "/".join([self.partition_template_path, self._NODES_SQL]),
             scid=scid, tid=tid, ptid=ptid
         )
         status, rset = self.conn.execute_2darray(SQL)
@@ -376,7 +376,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         """
         try:
             SQL = render_template("/".join([self.partition_template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
                                   ptid=ptid, datlastsysoid=self.datlastsysoid)
             status, res = self.conn.execute_dict(SQL)
@@ -412,7 +412,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
         if ptid:
             SQL = render_template("/".join([self.partition_template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
                                   ptid=ptid, datlastsysoid=self.datlastsysoid)
             status, result = self.conn.execute_dict(SQL)
@@ -425,7 +425,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
         else:
             SQL = render_template(
-                "/".join([self.partition_template_path, 'nodes.sql']),
+                "/".join([self.partition_template_path, self._NODES_SQL]),
                 scid=scid, tid=tid
             )
             status, partitions = self.conn.execute_2darray(SQL)
@@ -435,7 +435,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
             for row in partitions['rows']:
                 SQL = render_template("/".join([self.partition_template_path,
-                                                'properties.sql']),
+                                                self._PROPERTIES_SQL]),
                                       did=did, scid=scid, tid=tid,
                                       ptid=row['oid'],
                                       datlastsysoid=self.datlastsysoid)
@@ -708,7 +708,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
         try:
             SQL = render_template("/".join([self.partition_template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
                                   ptid=ptid, datlastsysoid=self.datlastsysoid)
             status, res = self.conn.execute_dict(SQL)
@@ -745,7 +745,8 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         try:
             for ptid in data['ids']:
                 SQL = render_template(
-                    "/".join([self.partition_template_path, 'properties.sql']),
+                    "/".join([self.partition_template_path,
+                              self._PROPERTIES_SQL]),
                     did=did, scid=scid, tid=tid, ptid=ptid,
                     datlastsysoid=self.datlastsysoid
                 )
@@ -799,7 +800,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
         try:
             SQL = render_template(
-                "/".join([self.partition_template_path, 'properties.sql']),
+                "/".join([self.partition_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid, ptid=ptid,
                 datlastsysoid=self.datlastsysoid
             )

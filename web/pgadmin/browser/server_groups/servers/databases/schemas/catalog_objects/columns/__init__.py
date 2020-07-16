@@ -47,8 +47,8 @@ class CatalogObjectColumnsModule(CollectionNodeModule):
         initialized.
     """
 
-    NODE_TYPE = 'catalog_object_column'
-    COLLECTION_LABEL = gettext("Columns")
+    _NODE_TYPE = 'catalog_object_column'
+    _COLLECTION_LABEL = gettext("Columns")
 
     def __init__(self, *args, **kwargs):
         """
@@ -74,7 +74,7 @@ class CatalogObjectColumnsModule(CollectionNodeModule):
         Load the module script for server, when any of the database node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def node_inode(self):
@@ -201,7 +201,7 @@ class CatalogObjectColumnsView(PGChildNodeView):
             JSON of available column nodes
         """
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), coid=coid)
+                                        self._PROPERTIES_SQL]), coid=coid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -230,7 +230,7 @@ class CatalogObjectColumnsView(PGChildNodeView):
         """
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), coid=coid)
+                                        self._NODES_SQL]), coid=coid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -267,7 +267,7 @@ class CatalogObjectColumnsView(PGChildNodeView):
             JSON of selected column node
         """
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), coid=coid,
+                                        self._PROPERTIES_SQL]), coid=coid,
                               clid=clid)
         status, res = self.conn.execute_dict(SQL)
 

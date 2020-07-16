@@ -61,8 +61,8 @@ class FunctionModule(SchemaChildModule):
       - Returns a snippet of css.
     """
 
-    NODE_TYPE = 'function'
-    COLLECTION_LABEL = gettext("Functions")
+    _NODE_TYPE = 'function'
+    _COLLECTION_LABEL = gettext("Functions")
 
     def __init__(self, *args, **kwargs):
         """
@@ -99,7 +99,7 @@ class FunctionModule(SchemaChildModule):
         Load the module script for Functions, when the
         schema node is initialized.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
     @property
     def csssnippets(self):
@@ -383,7 +383,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             scid: Schema Id
         """
 
-        sql = render_template("/".join([self.sql_template_path, 'node.sql']),
+        sql = render_template("/".join([self.sql_template_path,
+                                        self._NODE_SQL]),
                               scid=scid)
         status, res = self.conn.execute_dict(sql)
 
@@ -408,7 +409,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         res = []
         sql = render_template(
-            "/".join([self.sql_template_path, 'node.sql']),
+            "/".join([self.sql_template_path, self._NODE_SQL]),
             scid=scid,
             fnid=fnid
         )
@@ -852,7 +853,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join(
-                [self.sql_template_path, 'get_oid.sql']
+                [self.sql_template_path, self._OID_SQL]
             ),
             nspname=self.request['pronamespace'],
             name=self.request['name']
@@ -903,7 +904,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             for fnid in data['ids']:
                 # Fetch Name and Schema Name to delete the Function.
                 sql = render_template("/".join([self.sql_template_path,
-                                                'delete.sql']), scid=scid,
+                                                self._DELETE_SQL]), scid=scid,
                                       fnid=fnid)
                 status, res = self.conn.execute_2darray(sql)
                 if not status:
@@ -920,7 +921,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     )
 
                 sql = render_template("/".join([self.sql_template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       name=res['rows'][0]['name'],
                                       func_args=res['rows'][0]['func_args'],
                                       nspname=res['rows'][0]['nspname'],
@@ -1148,7 +1149,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # func_def is procedure signature with default arguments
             # query_for - To distinguish the type of call
             func_def = render_template("/".join([self.sql_template_path,
-                                                 'create.sql']),
+                                                 self._CREATE_SQL]),
                                        data=resp_data, query_type="create",
                                        func_def=name_with_default_args,
                                        query_for="sql_panel")
@@ -1185,7 +1186,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # func_def is function signature with default arguments
             # query_for - To distinguish the type of call
             func_def = render_template("/".join([self.sql_template_path,
-                                                 'create.sql']),
+                                                 self._CREATE_SQL]),
                                        data=resp_data, query_type="create",
                                        func_def=name_with_default_args,
                                        query_for="sql_panel")
@@ -1427,7 +1428,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         self.reformat_prosrc_code(data)
 
         sql = render_template(
-            "/".join([self.sql_template_path, 'update.sql']),
+            "/".join([self.sql_template_path, self._UPDATE_SQL]),
             data=data, o_data=old_data
         )
         return sql
@@ -1496,7 +1497,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
             # Create mode
             sql = render_template("/".join([self.sql_template_path,
-                                            'create.sql']),
+                                            self._CREATE_SQL]),
                                   data=data, is_sql=is_sql)
         return True, sql.strip('\n')
 
@@ -1514,7 +1515,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
 
         sql = render_template("/".join([self.sql_template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               scid=scid, fnid=fnid)
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -1533,7 +1534,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         resp_data.update(frmtd_proargs)
 
         # Fetch privileges
-        sql = render_template("/".join([self.sql_template_path, 'acl.sql']),
+        sql = render_template("/".join([self.sql_template_path,
+                                        self._ACL_SQL]),
                               fnid=fnid)
         status, proaclres = self.conn.execute_dict(sql)
         if not status:
@@ -1896,7 +1898,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         if not oid:
             sql = render_template("/".join([self.sql_template_path,
-                                            'node.sql']), scid=scid)
+                                            self._NODE_SQL]), scid=scid)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1939,8 +1941,8 @@ class ProcedureModule(SchemaChildModule):
 
     """
 
-    NODE_TYPE = 'procedure'
-    COLLECTION_LABEL = gettext("Procedures")
+    _NODE_TYPE = 'procedure'
+    _COLLECTION_LABEL = gettext("Procedures")
 
     def __init__(self, *args, **kwargs):
         """
@@ -1978,7 +1980,7 @@ class ProcedureModule(SchemaChildModule):
         Load the module script for Procedures, when the
         database node is initialized.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
 
 procedure_blueprint = ProcedureModule(__name__)
@@ -2040,8 +2042,8 @@ class TriggerFunctionModule(SchemaChildModule):
 
     """
 
-    NODE_TYPE = 'trigger_function'
-    COLLECTION_LABEL = gettext("Trigger Functions")
+    _NODE_TYPE = 'trigger_function'
+    _COLLECTION_LABEL = gettext("Trigger Functions")
 
     def __init__(self, *args, **kwargs):
         """
@@ -2077,7 +2079,7 @@ class TriggerFunctionModule(SchemaChildModule):
         Load the module script for Trigger function, when the
         schema node is initialized.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
 
 trigger_function_blueprint = TriggerFunctionModule(__name__)

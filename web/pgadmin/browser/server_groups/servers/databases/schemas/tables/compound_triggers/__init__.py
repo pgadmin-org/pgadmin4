@@ -55,8 +55,8 @@ class CompoundTriggerModule(CollectionNodeModule):
       node is initialized.
     """
 
-    NODE_TYPE = 'compound_trigger'
-    COLLECTION_LABEL = gettext("Compound Triggers")
+    _NODE_TYPE = 'compound_trigger'
+    _COLLECTION_LABEL = gettext("Compound Triggers")
 
     def __init__(self, *args, **kwargs):
         """
@@ -118,7 +118,7 @@ class CompoundTriggerModule(CollectionNodeModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def node_inode(self):
@@ -313,7 +313,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), tid=tid)
+                                        self._PROPERTIES_SQL]), tid=tid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -343,7 +343,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid,
                               trid=trid)
         status, rset = self.conn.execute_2darray(SQL)
@@ -388,7 +388,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), tid=tid)
+                                        self._NODES_SQL]), tid=tid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -445,7 +445,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     def _fetch_properties(self, tid, trid):
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               tid=tid, trid=trid,
                               datlastsysoid=self.datlastsysoid)
 
@@ -515,7 +515,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         try:
             SQL = render_template("/".join([self.template_path,
-                                            'create.sql']),
+                                            self._CREATE_SQL]),
                                   data=data, conn=self.conn)
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -523,7 +523,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # we need oid to to add object in tree at browser
             SQL = render_template("/".join([self.template_path,
-                                            'get_oid.sql']),
+                                            self._OID_SQL]),
                                   tid=tid, data=data)
             status, trid = self.conn.execute_scalar(SQL)
             if not status:
@@ -576,7 +576,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 # current request so that we create template for
                 # dropping compound trigger
                 SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
+                                                self._PROPERTIES_SQL]),
                                       tid=tid, trid=trid,
                                       datlastsysoid=self.datlastsysoid)
 
@@ -599,7 +599,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 data = dict(res['rows'][0])
 
                 SQL = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       data=data,
                                       conn=self.conn,
                                       cascade=cascade
@@ -653,7 +653,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             # update the compound trigger then new OID is getting generated
             # so we need to return new OID of compound trigger.
             SQL = render_template(
-                "/".join([self.template_path, 'get_oid.sql']),
+                "/".join([self.template_path, self._OID_SQL]),
                 tid=tid, data=data
             )
             status, new_trid = self.conn.execute_scalar(SQL)
@@ -661,7 +661,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=new_trid)
             # Fetch updated properties
             SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   tid=tid, trid=new_trid,
                                   datlastsysoid=self.datlastsysoid)
 
@@ -783,7 +783,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
 
             SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   tid=tid, trid=trid,
                                   datlastsysoid=self.datlastsysoid)
 
@@ -906,7 +906,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                                   trid=oid, only_sql=True)
             else:
                 SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
+                                                self._PROPERTIES_SQL]),
                                       tid=tid, trid=oid,
                                       datlastsysoid=self.datlastsysoid)
 
@@ -971,7 +971,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             res = data
         else:
             SQL = render_template("/".join([self.template_path,
-                                            'nodes.sql']), tid=tid)
+                                            self._NODES_SQL]), tid=tid)
             status, triggers = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(triggers)

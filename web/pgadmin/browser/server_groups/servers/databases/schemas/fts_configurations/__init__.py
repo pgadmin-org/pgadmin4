@@ -51,8 +51,8 @@ class FtsConfigurationModule(SchemaChildModule):
       node is initialized.
 
     """
-    NODE_TYPE = 'fts_configuration'
-    COLLECTION_LABEL = _('FTS Configurations')
+    _NODE_TYPE = 'fts_configuration'
+    _COLLECTION_LABEL = _('FTS Configurations')
 
     def __init__(self, *args, **kwargs):
         self.min_ver = None
@@ -84,7 +84,7 @@ class FtsConfigurationModule(SchemaChildModule):
         Load the module script for fts template, when any of the schema
         node is initialized.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
 
 blueprint = FtsConfigurationModule(__name__)
@@ -250,7 +250,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid
         )
         status, res = self.conn.execute_dict(sql)
@@ -277,7 +277,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         res = []
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             scid=scid
         )
         status, rset = self.conn.execute_2darray(sql)
@@ -312,7 +312,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             cfgid=cfgid
         )
         status, rset = self.conn.execute_2darray(sql)
@@ -365,7 +365,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
             cfgid=cfgid
         )
@@ -440,7 +440,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # Fetch schema name from schema oid
         sql = render_template("/".join([self.template_path,
-                                        'schema.sql']),
+                                        self._SCHEMA_SQL]),
                               data=data,
                               conn=self.conn,
                               )
@@ -455,7 +455,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         new_data['schema'] = schema
 
         sql = render_template(
-            "/".join([self.template_path, 'create.sql']),
+            "/".join([self.template_path, self._CREATE_SQL]),
             data=new_data,
             conn=self.conn,
         )
@@ -466,7 +466,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         # We need cfgid to add object in tree at browser,
         # Below sql will give the same
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             name=data['name'],
             scid=data['schema']
         )
@@ -510,7 +510,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if cfgid is not None:
             sql = render_template(
-                "/".join([self.template_path, 'nodes.sql']),
+                "/".join([self.template_path, self._NODES_SQL]),
                 cfgid=cfgid,
                 scid=data['schema'] if 'schema' in data else scid
             )
@@ -583,7 +583,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                 # Drop FTS Configuration
                 result = res['rows'][0]
                 sql = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.template_path, self._DELETE_SQL]),
                     name=result['name'],
                     schema=result['schema'],
                     cascade=cascade
@@ -658,7 +658,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             'schema' in new_data
         ):
             sql = render_template("/".join([self.template_path,
-                                            'create.sql']),
+                                            self._CREATE_SQL]),
                                   data=new_data,
                                   conn=self.conn
                                   )
@@ -689,7 +689,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         # Fetch sql for update
         if cfgid is not None:
             sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 cfgid=cfgid,
                 scid=scid
             )
@@ -707,7 +707,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             # If user has changed the schema then fetch new schema directly
             # using its oid otherwise fetch old schema name using its oid
             sql = render_template(
-                "/".join([self.template_path, 'schema.sql']),
+                "/".join([self.template_path, self._SCHEMA_SQL]),
                 data=data)
 
             status, new_schema = self.conn.execute_scalar(sql)
@@ -720,7 +720,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # Fetch old schema name using old schema oid
             sql = render_template(
-                "/".join([self.template_path, 'schema.sql']),
+                "/".join([self.template_path, self._SCHEMA_SQL]),
                 data=old_data
             )
 
@@ -732,7 +732,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             old_data['schema'] = old_schema
 
             sql = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=new_data, o_data=old_data
             )
             # Fetch sql query for modified data
@@ -743,7 +743,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         else:
             # Fetch schema name from schema oid
             sql = render_template(
-                "/".join([self.template_path, 'schema.sql']),
+                "/".join([self.template_path, self._SCHEMA_SQL]),
                 data=data
             )
 
@@ -936,7 +936,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                 data = {'schema': scid}
                 # Fetch schema name from schema oid
                 sql = render_template("/".join([self.template_path,
-                                                'schema.sql']),
+                                                self._SCHEMA_SQL]),
                                       data=data,
                                       conn=self.conn,
                                       )
@@ -1007,7 +1007,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), scid=scid)
+                                        self._NODES_SQL]), scid=scid)
         status, fts_cfg = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

@@ -31,8 +31,8 @@ class ExtensionModule(CollectionNodeModule):
         class and define methods to get child nodes, to load its own
         javascript file.
     """
-    NODE_TYPE = "extension"
-    COLLECTION_LABEL = gettext("Extensions")
+    _NODE_TYPE = "extension"
+    _COLLECTION_LABEL = gettext("Extensions")
 
     def __init__(self, *args, **kwargs):
         """
@@ -60,7 +60,7 @@ class ExtensionModule(CollectionNodeModule):
         Load the module script for extension, when any of the database nodes
         are initialized.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -147,7 +147,8 @@ class ExtensionView(PGChildNodeView):
         """
         Fetches all extensions properties and render into properties tab
         """
-        SQL = render_template("/".join([self.template_path, 'properties.sql']))
+        SQL = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]))
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -163,7 +164,8 @@ class ExtensionView(PGChildNodeView):
         Lists all extensions under the Extensions Collection node
         """
         res = []
-        SQL = render_template("/".join([self.template_path, 'properties.sql']))
+        SQL = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]))
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -187,7 +189,8 @@ class ExtensionView(PGChildNodeView):
         """
         This function will fetch the properties of extension
         """
-        SQL = render_template("/".join([self.template_path, 'properties.sql']),
+        SQL = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               eid=eid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -212,7 +215,7 @@ class ExtensionView(PGChildNodeView):
         Fetch the properties of a single extension and render in properties tab
         """
         SQL = render_template("/".join(
-            [self.template_path, 'properties.sql']), eid=eid)
+            [self.template_path, self._PROPERTIES_SQL]), eid=eid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -254,7 +257,7 @@ class ExtensionView(PGChildNodeView):
 
         status, res = self.conn.execute_dict(
             render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data
             )
         )
@@ -264,7 +267,7 @@ class ExtensionView(PGChildNodeView):
 
         status, rset = self.conn.execute_dict(
             render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 ename=data['name']
             )
         )
@@ -331,7 +334,7 @@ class ExtensionView(PGChildNodeView):
             for eid in data['ids']:
                 # check if extension with eid exists
                 SQL = render_template("/".join(
-                    [self.template_path, 'delete.sql']), eid=eid)
+                    [self.template_path, self._DELETE_SQL]), eid=eid)
                 status, name = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=name)
@@ -350,7 +353,7 @@ class ExtensionView(PGChildNodeView):
 
                 # drop extension
                 SQL = render_template("/".join(
-                    [self.template_path, 'delete.sql']
+                    [self.template_path, self._DELETE_SQL]
                 ), name=name, cascade=cascade)
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
@@ -395,7 +398,7 @@ class ExtensionView(PGChildNodeView):
 
         if eid is not None:
             SQL = render_template("/".join(
-                [self.template_path, 'properties.sql']
+                [self.template_path, self._PROPERTIES_SQL]
             ), eid=eid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -411,12 +414,12 @@ class ExtensionView(PGChildNodeView):
                 if arg not in data:
                     data[arg] = old_data[arg]
             SQL = render_template("/".join(
-                [self.template_path, 'update.sql']
+                [self.template_path, self._UPDATE_SQL]
             ), data=data, o_data=old_data)
             return SQL, data['name'] if 'name' in data else old_data['name']
         else:
             SQL = render_template("/".join(
-                [self.template_path, 'create.sql']
+                [self.template_path, self._CREATE_SQL]
             ), data=data)
             return SQL, data['name']
 
@@ -454,7 +457,7 @@ class ExtensionView(PGChildNodeView):
         This function will generate sql for the sql panel
         """
         SQL = render_template("/".join(
-            [self.template_path, 'properties.sql']
+            [self.template_path, self._PROPERTIES_SQL]
         ), eid=eid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -467,7 +470,7 @@ class ExtensionView(PGChildNodeView):
         result = res['rows'][0]
 
         SQL = render_template("/".join(
-            [self.template_path, 'create.sql']
+            [self.template_path, self._CREATE_SQL]
         ),
             data=result,
             conn=self.conn,

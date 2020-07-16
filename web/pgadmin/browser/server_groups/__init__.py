@@ -26,7 +26,7 @@ from pgadmin.model import db, ServerGroup
 
 
 class ServerGroupModule(BrowserPluginModule):
-    NODE_TYPE = "server_group"
+    _NODE_TYPE = "server_group"
 
     def get_nodes(self, *arg, **kwargs):
         """Return a JSON document listing the server groups for the user"""
@@ -47,10 +47,10 @@ class ServerGroupModule(BrowserPluginModule):
     def node_type(self):
         """
         node_type
-        Node type for Server Group is server-group. It is defined by NODE_TYPE
+        Node type for Server Group is server-group. It is defined by _NODE_TYPE
         static attribute of the class.
         """
-        return self.NODE_TYPE
+        return self._NODE_TYPE
 
     @property
     def script_load(self):
@@ -72,7 +72,7 @@ class ServerGroupModule(BrowserPluginModule):
 
 class ServerGroupMenuItem(MenuItem):
     def __init__(self, **kwargs):
-        kwargs.setdefault("type", ServerGroupModule.NODE_TYPE)
+        kwargs.setdefault("type", ServerGroupModule.node_type)
         super(ServerGroupMenuItem, self).__init__(**kwargs)
 
 
@@ -91,7 +91,7 @@ blueprint = ServerGroupModule(__name__)
 
 
 class ServerGroupView(NodeView):
-    node_type = ServerGroupModule.NODE_TYPE
+    node_type = ServerGroupModule.node_type
     parent_ids = []
     ids = [{'type': 'int', 'id': 'gid'}]
 

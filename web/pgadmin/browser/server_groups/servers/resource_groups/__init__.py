@@ -52,8 +52,8 @@ class ResourceGroupModule(CollectionNodeModule):
       node is initialized.
     """
 
-    NODE_TYPE = 'resource_group'
-    COLLECTION_LABEL = gettext("Resource Groups")
+    _NODE_TYPE = 'resource_group'
+    _COLLECTION_LABEL = gettext("Resource Groups")
 
     def __init__(self, *args, **kwargs):
         """

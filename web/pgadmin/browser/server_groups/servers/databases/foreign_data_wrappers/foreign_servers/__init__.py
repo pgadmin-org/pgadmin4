@@ -46,8 +46,8 @@ class ForeignServerModule(CollectionNodeModule):
         the database node is initialized.
     """
 
-    NODE_TYPE = 'foreign_server'
-    COLLECTION_LABEL = gettext("Foreign Servers")
+    _NODE_TYPE = 'foreign_server'
+    _COLLECTION_LABEL = gettext("Foreign Servers")
 
     def __init__(self, *args, **kwargs):
         """
@@ -84,7 +84,7 @@ class ForeignServerModule(CollectionNodeModule):
 
         Returns: node type of the server module.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -230,7 +230,8 @@ class ForeignServerView(PGChildNodeView):
             fid: Foreign data wrapper ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               fid=fid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
@@ -257,7 +258,8 @@ class ForeignServerView(PGChildNodeView):
         """
 
         res = []
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               fid=fid, conn=self.conn)
         status, r_set = self.conn.execute_2darray(sql)
 
@@ -291,7 +293,8 @@ class ForeignServerView(PGChildNodeView):
             fsid: Foreign server ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               fsid=fsid, conn=self.conn)
         status, r_set = self.conn.execute_2darray(sql)
 
@@ -326,7 +329,8 @@ class ForeignServerView(PGChildNodeView):
             fsid: foreign server ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               fsid=fsid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
@@ -346,7 +350,7 @@ class ForeignServerView(PGChildNodeView):
                 res['rows'][0]['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
             )
 
-        sql = render_template("/".join([self.template_path, 'acl.sql']),
+        sql = render_template("/".join([self.template_path, self._ACL_SQL]),
                               fsid=fsid
                               )
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
@@ -399,7 +403,7 @@ class ForeignServerView(PGChildNodeView):
                 data['fsrvacl'] = parse_priv_to_db(data['fsrvacl'], ['U'])
 
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   fdwid=fid, conn=self.conn)
             status, res1 = self.conn.execute_dict(sql)
             if not status:
@@ -416,7 +420,8 @@ class ForeignServerView(PGChildNodeView):
                     data['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
                 )
 
-            sql = render_template("/".join([self.template_path, 'create.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            self._CREATE_SQL]),
                                   data=data, fdwdata=fdw_data,
                                   is_valid_options=is_valid_options,
                                   conn=self.conn)
@@ -425,7 +430,7 @@ class ForeignServerView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   data=data, fdwdata=fdw_data,
                                   conn=self.conn)
             status, r_set = self.conn.execute_dict(sql)
@@ -513,7 +518,7 @@ class ForeignServerView(PGChildNodeView):
             for fsid in data['ids']:
                 # Get name of foreign data wrapper from fid
                 sql = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       fsid=fsid, conn=self.conn)
                 status, name = self.conn.execute_scalar(sql)
                 if not status:
@@ -534,7 +539,7 @@ class ForeignServerView(PGChildNodeView):
 
                 # drop foreign server
                 sql = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       name=name, cascade=cascade,
                                       conn=self.conn)
                 status, res = self.conn.execute_scalar(sql)
@@ -608,7 +613,7 @@ class ForeignServerView(PGChildNodeView):
 
         if fsid is not None:
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   fsid=fsid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -662,7 +667,7 @@ class ForeignServerView(PGChildNodeView):
                         'fsrvvalue')
 
             sql = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data,
                 o_data=old_data,
                 is_valid_added_options=is_valid_added_options,
@@ -672,7 +677,7 @@ class ForeignServerView(PGChildNodeView):
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   fdwid=fid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -690,7 +695,8 @@ class ForeignServerView(PGChildNodeView):
                     data['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
                 )
 
-            sql = render_template("/".join([self.template_path, 'create.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            self._CREATE_SQL]),
                                   data=data, fdwdata=fdw_data,
                                   is_valid_options=is_valid_options,
                                   conn=self.conn)
@@ -711,7 +717,8 @@ class ForeignServerView(PGChildNodeView):
             fsid: Foreign server ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               fsid=fsid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -730,7 +737,7 @@ class ForeignServerView(PGChildNodeView):
             if len(res['rows'][0]['fsrvoptions']) > 0:
                 is_valid_options = True
 
-        sql = render_template("/".join([self.template_path, 'acl.sql']),
+        sql = render_template("/".join([self.template_path, self._ACL_SQL]),
                               fsid=fsid)
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
         if not status:
@@ -750,7 +757,8 @@ class ForeignServerView(PGChildNodeView):
                 ['U']
             )
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               fdwid=fid, conn=self.conn)
         status, res1 = self.conn.execute_dict(sql)
         if not status:
@@ -759,7 +767,8 @@ class ForeignServerView(PGChildNodeView):
         fdw_data = res1['rows'][0]
 
         sql = ''
-        sql = render_template("/".join([self.template_path, 'create.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._CREATE_SQL]),
                               data=res['rows'][0], fdwdata=fdw_data,
                               is_valid_options=is_valid_options,
                               conn=self.conn)

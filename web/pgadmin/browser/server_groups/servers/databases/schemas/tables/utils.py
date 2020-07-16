@@ -170,7 +170,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             data['seclabels'] = seclabels
 
         # We need to parse & convert ACL coming from database to json format
-        sql = render_template("/".join([self.table_template_path, 'acl.sql']),
+        sql = render_template("/".join([self.table_template_path,
+                                        self._ACL_SQL]),
                               tid=tid, scid=scid)
         status, acl = self.conn.execute_dict(sql)
         if not status:
@@ -460,7 +461,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 data['schema'], data['name'])
 
             sql_header += render_template("/".join([self.table_template_path,
-                                                    'delete.sql']),
+                                                    self._DELETE_SQL]),
                                           data=data, conn=self.conn)
 
             sql_header = sql_header.strip('\n')
@@ -476,11 +477,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         # if table is partitions then
         if 'relispartition' in data and data['relispartition']:
             table_sql = render_template("/".join([self.partition_template_path,
-                                                  'create.sql']),
+                                                  self._CREATE_SQL]),
                                         data=data, conn=self.conn)
         else:
             table_sql = render_template("/".join([self.table_template_path,
-                                                  'create.sql']),
+                                                  self._CREATE_SQL]),
                                         data=data, conn=self.conn, is_sql=True)
 
         # Add into main sql
@@ -496,7 +497,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         """
 
         sql = render_template("/".join([self.index_template_path,
-                                        'nodes.sql']), tid=tid)
+                                        self._NODES_SQL]), tid=tid)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -527,7 +528,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             sql = \
                 render_template(
                     "/".join([self.row_security_policies_template_path,
-                              'nodes.sql']), tid=tid)
+                              self._NODES_SQL]), tid=tid)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=rset)
@@ -553,7 +554,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         ########################################
         """
         sql = render_template("/".join([self.trigger_template_path,
-                                        'nodes.sql']), tid=tid)
+                                        self._NODES_SQL]), tid=tid)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -580,7 +581,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         if self.manager.server_type == 'ppas' \
                 and self.manager.version >= 120000:
             sql = render_template("/".join(
-                [self.compound_trigger_template_path, 'nodes.sql']), tid=tid)
+                [self.compound_trigger_template_path, self._NODES_SQL]),
+                tid=tid)
 
             status, rset = self.conn.execute_2darray(sql)
             if not status:
@@ -606,7 +608,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         """
 
         sql = render_template("/".join(
-            [self.rules_template_path, 'nodes.sql']), tid=tid)
+            [self.rules_template_path, self._NODES_SQL]), tid=tid)
 
         status, rset = self.conn.execute_2darray(sql)
         if not status:
@@ -615,7 +617,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         for row in rset['rows']:
             rules_sql = '\n'
             sql = render_template("/".join(
-                [self.rules_template_path, 'properties.sql']
+                [self.rules_template_path, self._PROPERTIES_SQL]
             ), rid=row['oid'], datlastsysoid=self.datlastsysoid)
 
             status, res = self.conn.execute_dict(sql)
@@ -631,7 +633,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 res_data['view'] = table
 
             rules_sql += render_template("/".join(
-                [self.rules_template_path, 'create.sql']),
+                [self.rules_template_path, self._CREATE_SQL]),
                 data=res_data, display_comments=display_comments)
 
             # Add into main sql
@@ -720,7 +722,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     copy.deepcopy(self.parse_vacuum_data(
                         self.conn, row, 'toast'))
                 partition_sql += render_template("/".join(
-                    [self.partition_template_path, 'create.sql']),
+                    [self.partition_template_path, self._CREATE_SQL]),
                     data=part_data, conn=self.conn) + '\n'
 
             # Add into main sql
@@ -776,7 +778,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         partition_main_sql = ""
         if is_partitioned:
             sql = render_template("/".join([self.partition_template_path,
-                                            'nodes.sql']),
+                                            self._NODES_SQL]),
                                   scid=scid, tid=tid)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
@@ -966,7 +968,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 # Sql for drop column
                 if 'inheritedfrom' not in c:
                     column_sql += render_template("/".join(
-                        [self.column_template_path, 'delete.sql']),
+                        [self.column_template_path, self._DELETE_SQL]),
                         data=c, conn=self.conn).strip('\n') + '\n\n'
         return column_sql
 
@@ -980,7 +982,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
                 properties_sql = render_template(
                     "/".join([self.column_template_path,
-                              'properties.sql']),
+                              self._PROPERTIES_SQL]),
                     tid=tid,
                     clid=c['attnum'],
                     show_sys_objects=self.blueprint.show_system_objects
@@ -1008,7 +1010,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 if 'inheritedfrom' not in c and \
                         'inheritedfromtable' not in c:
                     column_sql += render_template("/".join(
-                        [self.column_template_path, 'update.sql']),
+                        [self.column_template_path, self._UPDATE_SQL]),
                         data=c, o_data=old_col_data, conn=self.conn
                     ).strip('\n') + '\n\n'
         return column_sql
@@ -1025,7 +1027,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 if 'inheritedfrom' not in c and \
                         'inheritedfromtable' not in c:
                     column_sql += render_template("/".join(
-                        [self.column_template_path, 'create.sql']),
+                        [self.column_template_path, self._CREATE_SQL]),
                         data=c, conn=self.conn).strip('\n') + '\n\n'
         return column_sql
 
@@ -1179,7 +1181,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             self.update_vacuum_settings('vacuum_toast', old_data, data)
 
             sql = render_template(
-                "/".join([self.table_template_path, 'update.sql']),
+                "/".join([self.table_template_path, self._UPDATE_SQL]),
                 o_data=old_data, data=data, conn=self.conn
             )
             # Removes training new lines
@@ -1248,7 +1250,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             self.update_vacuum_settings('vacuum_toast', data)
 
             sql = render_template("/".join([self.table_template_path,
-                                            'create.sql']),
+                                            self._CREATE_SQL]),
                                   data=data, conn=self.conn)
 
             # Append SQL for partitions
@@ -1392,7 +1394,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     tmp_data['name'] = row['partition_name']
                     sql = render_template(
                         "/".join([
-                            self.table_template_path, 'get_oid.sql'
+                            self.table_template_path, self._OID_SQL
                         ]),
                         scid=scid, data=tmp_data
                     )
@@ -1454,7 +1456,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
             partitions = []
             sql = render_template("/".join([self.partition_template_path,
-                                            'nodes.sql']),
+                                            self._NODES_SQL]),
                                   scid=scid, tid=tid)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
@@ -1628,7 +1630,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 part_data['name'] = row['temp_partition_name']
 
             partition_sql = render_template(
-                "/".join([self.partition_template_path, 'create.sql']),
+                "/".join([self.partition_template_path, self._CREATE_SQL]),
                 data=part_data, conn=self.conn
             )
 
@@ -1681,7 +1683,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         data = res['rows'][0]
 
         return render_template(
-            "/".join([self.table_template_path, 'delete.sql']),
+            "/".join([self.table_template_path, self._DELETE_SQL]),
             data=data, cascade=cascade,
             conn=self.conn
         )

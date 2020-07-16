@@ -371,6 +371,17 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
 class PGChildNodeView(NodeView):
 
+    _NODE_SQL = 'node.sql'
+    _NODES_SQL = 'nodes.sql'
+    _CREATE_SQL = 'create.sql'
+    _UPDATE_SQL = 'update.sql'
+    _PROPERTIES_SQL = 'properties.sql'
+    _DELETE_SQL = 'delete.sql'
+    _GRANT_SQL = 'grant.sql'
+    _SCHEMA_SQL = 'schema.sql'
+    _ACL_SQL = 'acl.sql'
+    _OID_SQL = 'get_oid.sql'
+
     def get_children_nodes(self, manager, **kwargs):
         """
         Returns the list of children nodes for the current nodes.

@@ -50,8 +50,8 @@ class CollationModule(SchemaChildModule):
         initialized.
     """
 
-    NODE_TYPE = 'collation'
-    COLLECTION_LABEL = gettext("Collations")
+    _NODE_TYPE = 'collation'
+    _COLLECTION_LABEL = gettext("Collations")
 
     def __init__(self, *args, **kwargs):
         """
@@ -79,7 +79,7 @@ class CollationModule(SchemaChildModule):
         Load the module script for database, when any of the database node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def node_inode(self):
@@ -225,7 +225,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), scid=scid)
+                                        self._PROPERTIES_SQL]), scid=scid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -254,7 +254,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), scid=scid)
+                                        self._NODES_SQL]), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -290,7 +290,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), coid=coid)
+                                        self._NODES_SQL]), coid=coid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -343,7 +343,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               scid=scid, coid=coid,
                               datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
@@ -474,7 +474,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         SQL = render_template(
-            "/".join([self.template_path, 'create.sql']),
+            "/".join([self.template_path, self._CREATE_SQL]),
             data=data, conn=self.conn
         )
         status, res = self.conn.execute_scalar(SQL)
@@ -483,7 +483,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # We need oid to to add object in tree at browser
         SQL = render_template(
-            "/".join([self.template_path, 'get_oid.sql']), data=data
+            "/".join([self.template_path, self._OID_SQL]), data=data
         )
         status, coid = self.conn.execute_scalar(SQL)
         if not status:
@@ -491,7 +491,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # Get updated schema oid
         SQL = render_template(
-            "/".join([self.template_path, 'get_oid.sql']), coid=coid
+            "/".join([self.template_path, self._OID_SQL]), coid=coid
         )
 
         status, new_scid = self.conn.execute_scalar(SQL)
@@ -551,7 +551,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
                 data = res['rows'][0]
 
                 SQL = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       name=data['name'],
                                       nspname=data['schema'],
                                       cascade=cascade,
@@ -600,7 +600,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # We need oid to to add object in tree at browser
         SQL = render_template("/".join([self.template_path,
-                                        'get_oid.sql']), coid=coid)
+                                        self._OID_SQL]), coid=coid)
 
         status, res = self.conn.execute_2darray(SQL)
         if not status:
@@ -662,7 +662,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if coid is not None:
             SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   scid=scid, coid=coid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -675,7 +675,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             old_data = res['rows'][0]
             SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data, conn=self.conn
             )
             return SQL.strip('\n'), data['name'] if 'name' in data else \
@@ -693,7 +693,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
                 return "-- missing definition"
 
             SQL = render_template("/".join([self.template_path,
-                                            'create.sql']),
+                                            self._CREATE_SQL]),
                                   data=data, conn=self.conn)
             return SQL.strip('\n'), data['name']
 
@@ -716,7 +716,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         json_resp = kwargs.get('json_resp', True)
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               scid=scid, coid=coid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -732,13 +732,13 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             data['schema'] = diff_schema
 
         SQL = render_template("/".join([self.template_path,
-                                        'create.sql']),
+                                        self._CREATE_SQL]),
                               data=data, conn=self.conn)
 
         sql_header = u"-- Collation: {0};\n\n-- ".format(data['name'])
 
         sql_header += render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       name=data['name'],
                                       nspname=data['schema'])
         SQL = sql_header + '\n\n' + SQL.strip('\n')
@@ -805,7 +805,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), scid=scid)
+                                        self._NODES_SQL]), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

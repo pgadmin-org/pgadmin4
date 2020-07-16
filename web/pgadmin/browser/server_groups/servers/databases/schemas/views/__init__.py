@@ -72,8 +72,8 @@ class ViewModule(SchemaChildModule):
       - Load the module script for View, when any of the server node is
         initialized.
     """
-    NODE_TYPE = 'view'
-    COLLECTION_LABEL = gettext("Views")
+    _NODE_TYPE = 'view'
+    _COLLECTION_LABEL = gettext("Views")
 
     def __init__(self, *args, **kwargs):
         """
@@ -100,7 +100,7 @@ class ViewModule(SchemaChildModule):
         initialized, The reason is views are also listed under catalogs
         which are loaded under database node.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
     @property
     def csssnippets(self):
@@ -184,8 +184,8 @@ class MViewModule(ViewModule):
         A module class for the materialized view node derived from ViewModule.
     """
 
-    NODE_TYPE = 'mview'
-    COLLECTION_LABEL = gettext("Materialized Views")
+    _NODE_TYPE = 'mview'
+    _COLLECTION_LABEL = gettext("Materialized Views")
 
     def __init__(self, *args, **kwargs):
         """
@@ -1397,7 +1397,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         SQL = render_template(
             "/".join([
-                self.column_template_path, 'properties.sql'
+                self.column_template_path, self._PROPERTIES_SQL
             ]),
             scid=scid, tid=vid,
             datlastsysoid=self.datlastsysoid
@@ -1459,7 +1459,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         SQL = render_template(
             "/".join([
-                self.column_template_path, 'properties.sql'
+                self.column_template_path, self._PROPERTIES_SQL
             ]),
             scid=scid, tid=vid,
             datlastsysoid=self.datlastsysoid

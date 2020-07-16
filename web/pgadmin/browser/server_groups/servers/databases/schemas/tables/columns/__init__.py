@@ -52,8 +52,8 @@ class ColumnsModule(CollectionNodeModule):
         initialized.
     """
 
-    NODE_TYPE = 'column'
-    COLLECTION_LABEL = gettext("Columns")
+    _NODE_TYPE = 'column'
+    _COLLECTION_LABEL = gettext("Columns")
 
     def __init__(self, *args, **kwargs):
         """
@@ -82,7 +82,7 @@ class ColumnsModule(CollectionNodeModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def node_inode(self):
@@ -239,7 +239,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
 
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             tid=tid, show_sys_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
@@ -269,7 +269,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         res = []
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             tid=tid,
             clid=clid,
             show_sys_objects=self.blueprint.show_system_objects
@@ -328,7 +328,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
 
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             tid=tid, clid=clid,
             show_sys_objects=self.blueprint.show_system_objects
         )
@@ -406,7 +406,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         data = column_utils.convert_length_precision_to_string(data)
 
         SQL = render_template("/".join([self.template_path,
-                                        'create.sql']),
+                                        self._CREATE_SQL]),
                               data=data, conn=self.conn)
         status, res = self.conn.execute_scalar(SQL)
         if not status:
@@ -455,7 +455,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         try:
             for clid in data['ids']:
                 SQL = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
                     tid=tid, clid=clid,
                     show_sys_objects=self.blueprint.show_system_objects
                 )
@@ -481,7 +481,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                 data['table'] = self.table
 
                 SQL = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       data=data, conn=self.conn)
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
@@ -591,7 +591,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         if clid is not None:
             SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 tid=tid, clid=clid,
                 show_sys_objects=self.blueprint.show_system_objects
             )
@@ -647,7 +647,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     )
 
             SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data, conn=self.conn
             )
         else:
@@ -667,7 +667,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                                                   self.acl)
             # If the request for new object which do not have did
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn, is_sql=is_sql
             )
         return SQL, data['name'] if 'name' in data else old_data['name']
@@ -687,7 +687,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         try:
             SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 tid=tid, clid=clid,
                 show_sys_objects=self.blueprint.show_system_objects
             )
@@ -728,7 +728,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             )
 
             sql_header += render_template(
-                "/".join([self.template_path, 'delete.sql']),
+                "/".join([self.template_path, self._DELETE_SQL]),
                 data=data, conn=self.conn
             )
             SQL = sql_header + '\n\n' + SQL
@@ -839,7 +839,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         # Fetch column name
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             tid=tid, clid=clid,
             show_sys_objects=self.blueprint.show_system_objects
         )

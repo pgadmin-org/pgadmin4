@@ -50,8 +50,8 @@ class UserMappingModule(CollectionNodeModule):
         foreign server node is initialized.
     """
 
-    NODE_TYPE = 'user_mapping'
-    COLLECTION_LABEL = gettext("User Mappings")
+    _NODE_TYPE = 'user_mapping'
+    _COLLECTION_LABEL = gettext("User Mappings")
 
     def __init__(self, *args, **kwargs):
         """
@@ -100,7 +100,7 @@ class UserMappingModule(CollectionNodeModule):
         Returns: node type of the server module.
         """
 
-        return servers.ServerModule.NODE_TYPE
+        return servers.ServerModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -248,7 +248,7 @@ class UserMappingView(PGChildNodeView):
         """
 
         sql = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               fsid=fsid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
@@ -277,7 +277,7 @@ class UserMappingView(PGChildNodeView):
 
         res = []
         sql = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               fsid=fsid, conn=self.conn)
         status, r_set = self.conn.execute_2darray(sql)
 
@@ -312,7 +312,7 @@ class UserMappingView(PGChildNodeView):
             umid: User mapping ID
         """
         sql = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               conn=self.conn, umid=umid)
         status, r_set = self.conn.execute_2darray(sql)
 
@@ -348,7 +348,7 @@ class UserMappingView(PGChildNodeView):
         """
 
         sql = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               umid=umid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
@@ -405,7 +405,7 @@ class UserMappingView(PGChildNodeView):
 
         try:
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   fserid=fsid, conn=self.conn)
             status, res1 = self.conn.execute_dict(sql)
 
@@ -423,7 +423,8 @@ class UserMappingView(PGChildNodeView):
                     data['umoptions'], 'umoption', 'umvalue'
                 )
 
-            sql = render_template("/".join([self.template_path, 'create.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            self._CREATE_SQL]),
                                   data=data, fdwdata=fdw_data,
                                   is_valid_options=is_valid_options,
                                   conn=self.conn)
@@ -432,7 +433,7 @@ class UserMappingView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   fsid=fsid, data=data,
                                   conn=self.conn)
             status, r_set = self.conn.execute_dict(sql)
@@ -521,7 +522,7 @@ class UserMappingView(PGChildNodeView):
             for umid in data['ids']:
                 # Get name of foreign server from fsid
                 sql = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       fsid=fsid, conn=self.conn)
                 status, name = self.conn.execute_scalar(sql)
                 if not status:
@@ -541,7 +542,7 @@ class UserMappingView(PGChildNodeView):
                     )
 
                 sql = render_template("/".join([self.template_path,
-                                                'properties.sql']),
+                                                self._PROPERTIES_SQL]),
                                       umid=umid, conn=self.conn)
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -560,7 +561,7 @@ class UserMappingView(PGChildNodeView):
 
                 # drop user mapping
                 sql = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       data=data, name=name, cascade=cascade,
                                       conn=self.conn)
                 status, res = self.conn.execute_scalar(sql)
@@ -626,7 +627,7 @@ class UserMappingView(PGChildNodeView):
 
         if umid is not None:
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   umid=umid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -644,7 +645,7 @@ class UserMappingView(PGChildNodeView):
             old_data = res['rows'][0]
 
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   fserid=fsid, conn=self.conn)
             status, res1 = self.conn.execute_dict(sql)
             if not status:
@@ -673,7 +674,7 @@ class UserMappingView(PGChildNodeView):
                         'umvalue')
 
             sql = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data,
                 o_data=old_data,
                 is_valid_added_options=is_valid_added_options,
@@ -684,7 +685,7 @@ class UserMappingView(PGChildNodeView):
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   fserid=fsid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -697,7 +698,8 @@ class UserMappingView(PGChildNodeView):
                     data['umoptions'], 'umoption', 'umvalue'
                 )
 
-            sql = render_template("/".join([self.template_path, 'create.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            self._CREATE_SQL]),
                                   data=data, fdwdata=fdw_data,
                                   is_valid_options=is_valid_options,
                                   conn=self.conn)
@@ -719,7 +721,8 @@ class UserMappingView(PGChildNodeView):
             umid: User mapping ID
         """
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               umid=umid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -738,7 +741,8 @@ class UserMappingView(PGChildNodeView):
             if len(res['rows'][0]['umoptions']) > 0:
                 is_valid_options = True
 
-        sql = render_template("/".join([self.template_path, 'properties.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               fserid=fsid, conn=self.conn
                               )
         status, res1 = self.conn.execute_dict(sql)
@@ -748,7 +752,8 @@ class UserMappingView(PGChildNodeView):
         fdw_data = res1['rows'][0]
 
         sql = ''
-        sql = render_template("/".join([self.template_path, 'create.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._CREATE_SQL]),
                               data=res['rows'][0], fdwdata=fdw_data,
                               is_valid_options=is_valid_options,
                               conn=self.conn)

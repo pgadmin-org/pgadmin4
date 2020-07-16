@@ -50,8 +50,8 @@ class ExclusionConstraintModule(ConstraintTypeModule):
         initialized.
     """
 
-    NODE_TYPE = 'exclusion_constraint'
-    COLLECTION_LABEL = _("Exclusion Constraints")
+    _NODE_TYPE = 'exclusion_constraint'
+    _COLLECTION_LABEL = _("Exclusion Constraints")
 
     def __init__(self, *args, **kwargs):
         """
@@ -92,7 +92,7 @@ class ExclusionConstraintModule(ConstraintTypeModule):
 
         Returns: node type of the server module.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -336,7 +336,7 @@ class ExclusionConstraintView(PGChildNodeView):
         self.table = table
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               did=did,
                               tid=tid)
         status, res = self.conn.execute_dict(SQL)
@@ -365,7 +365,7 @@ class ExclusionConstraintView(PGChildNodeView):
         """
 
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid,
                               exid=exid)
         status, rset = self.conn.execute_2darray(SQL)
@@ -403,7 +403,7 @@ class ExclusionConstraintView(PGChildNodeView):
         """
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid)
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -448,7 +448,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']),
+                                        self._NODES_SQL]),
                               tid=tid)
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -520,7 +520,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
             # The below SQL will execute CREATE DDL only
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn
             )
             status, res = self.conn.execute_scalar(SQL)
@@ -545,7 +545,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
             else:
                 sql = render_template(
-                    "/".join([self.template_path, 'get_oid.sql']),
+                    "/".join([self.template_path, self._OID_SQL]),
                     name=data['name']
                 )
                 status, res = self.conn.execute_dict(sql)
@@ -605,7 +605,7 @@ class ExclusionConstraintView(PGChildNodeView):
                 return internal_server_error(errormsg=res)
 
             sql = render_template(
-                "/".join([self.template_path, 'get_oid.sql']),
+                "/".join([self.template_path, self._OID_SQL]),
                 name=data['name']
             )
             status, res = self.conn.execute_dict(sql)
@@ -680,7 +680,7 @@ class ExclusionConstraintView(PGChildNodeView):
                 data['table'] = self.table
 
                 sql = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       data=data,
                                       cascade=cascade)
                 status, res = self.conn.execute_scalar(sql)
@@ -761,7 +761,7 @@ class ExclusionConstraintView(PGChildNodeView):
         """
         try:
             SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 did=did, tid=tid, conn=self.conn, cid=exid)
             status, result = self.conn.execute_dict(SQL)
             if not status:
@@ -818,12 +818,12 @@ class ExclusionConstraintView(PGChildNodeView):
                 data['amname'] = 'btree'
 
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']), data=data)
+                "/".join([self.template_path, self._CREATE_SQL]), data=data)
 
             sql_header = u"-- Constraint: {0}\n\n-- ".format(data['name'])
 
             sql_header += render_template(
-                "/".join([self.template_path, 'delete.sql']),
+                "/".join([self.template_path, self._DELETE_SQL]),
                 data=data)
             sql_header += "\n"
 
@@ -863,7 +863,7 @@ class ExclusionConstraintView(PGChildNodeView):
         if is_pgstattuple:
             # Fetch index details only if extended stats available
             SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 did=did, tid=tid, conn=self.conn, cid=exid)
             status, result = self.conn.execute_dict(SQL)
             if not status:

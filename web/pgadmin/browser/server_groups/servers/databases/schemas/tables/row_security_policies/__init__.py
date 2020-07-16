@@ -52,8 +52,8 @@ class RowSecurityModule(CollectionNodeModule):
         initialized.
     """
 
-    NODE_TYPE = 'row_security_policy'
-    COLLECTION_LABEL = gettext('RLS Policies')
+    _NODE_TYPE = 'row_security_policy'
+    _COLLECTION_LABEL = gettext('RLS Policies')
 
     def __init__(self, *args, **kwargs):
         super(RowSecurityModule, self).__init__(*args, **kwargs)
@@ -84,7 +84,7 @@ class RowSecurityModule(CollectionNodeModule):
         Load the module script for policy, when any of the database node is
         initialized.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -226,7 +226,7 @@ class RowSecurityView(PGChildNodeView):
 
         # fetch schema name by schema id
         sql = render_template("/".join(
-            [self.template_path, 'properties.sql']), schema=self.schema,
+            [self.template_path, self._PROPERTIES_SQL]), schema=self.schema,
             tid=tid)
         status, res = self.conn.execute_dict(sql)
 
@@ -243,7 +243,7 @@ class RowSecurityView(PGChildNodeView):
         return single node
         """
         sql = render_template("/".join(
-            [self.template_path, 'nodes.sql']), plid=plid)
+            [self.template_path, self._NODES_SQL]), plid=plid)
 
         status, rset = self.conn.execute_2darray(sql)
         if not status:
@@ -271,7 +271,7 @@ class RowSecurityView(PGChildNodeView):
         """
         res = []
         sql = render_template("/".join(
-            [self.template_path, 'nodes.sql']), tid=tid)
+            [self.template_path, self._NODES_SQL]), tid=tid)
 
         status, rset = self.conn.execute_2darray(sql)
         if not status:
@@ -314,7 +314,7 @@ class RowSecurityView(PGChildNodeView):
         :return:
         """
         sql = render_template("/".join(
-            [self.template_path, 'properties.sql']
+            [self.template_path, self._PROPERTIES_SQL]
         ), plid=plid, scid=scid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(sql)
 
@@ -370,7 +370,8 @@ class RowSecurityView(PGChildNodeView):
                     ).format(arg)
                 )
         try:
-            sql = render_template("/".join([self.template_path, 'create.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            self._CREATE_SQL]),
                                   data=data,
                                   conn=self.conn,
                                   )
@@ -493,7 +494,7 @@ class RowSecurityView(PGChildNodeView):
                 result['schema'] = self.schema
                 result['table'] = self.table
                 sql = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       policy_name=result['name'],
                                       cascade=cascade,
                                       result=result
@@ -652,7 +653,7 @@ class RowSecurityView(PGChildNodeView):
 
         if not oid:
             SQL = render_template("/".join([self.template_path,
-                                            'nodes.sql']), tid=tid)
+                                            self._NODES_SQL]), tid=tid)
             status, policies = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(policies)

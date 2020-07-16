@@ -49,8 +49,8 @@ class SynonymModule(SchemaChildModule):
         initialized.
     """
 
-    NODE_TYPE = 'synonym'
-    COLLECTION_LABEL = gettext("Synonyms")
+    _NODE_TYPE = 'synonym'
+    _COLLECTION_LABEL = gettext("Synonyms")
 
     def __init__(self, *args, **kwargs):
         """
@@ -78,7 +78,7 @@ class SynonymModule(SchemaChildModule):
         Load the module script for database, when any of the database node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def node_inode(self):
@@ -233,7 +233,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), scid=scid)
+                                        self._PROPERTIES_SQL]), scid=scid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -262,7 +262,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
 
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), scid=scid)
+                                        self._NODES_SQL]), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -295,7 +295,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             syid=syid, scid=scid
         )
         status, rset = self.conn.execute_2darray(sql)
@@ -409,7 +409,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         try:
             SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   scid=scid, syid=syid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -458,7 +458,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
 
         try:
             SQL = render_template("/".join([self.template_path,
-                                            'create.sql']),
+                                            self._CREATE_SQL]),
                                   data=data, conn=self.conn, comment=False)
 
             status, res = self.conn.execute_scalar(SQL)
@@ -512,7 +512,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             for syid in data['ids']:
                 SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
+                                                self._PROPERTIES_SQL]),
                                       scid=scid, syid=syid)
 
                 status, res = self.conn.execute_dict(SQL)
@@ -528,7 +528,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                     )
 
                 SQL = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       data=data,
                                       conn=self.conn)
                 if only_sql:
@@ -622,7 +622,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         name = None
         if syid is not None:
             SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   scid=scid, syid=syid)
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -641,7 +641,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 data['synobjname'] = old_data['synobjname']
 
             SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data, conn=self.conn
             )
         else:
@@ -655,7 +655,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
 
             name = data['name']
             SQL = render_template("/".join([self.template_path,
-                                            'create.sql']), comment=False,
+                                            self._CREATE_SQL]), comment=False,
                                   data=data, conn=self.conn)
         return SQL.strip('\n'), name
 
@@ -677,7 +677,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         json_resp = kwargs.get('json_resp', True)
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               scid=scid, syid=syid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -694,7 +694,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             data['schema'] = diff_schema
 
         SQL = render_template("/".join([self.template_path,
-                                        'create.sql']),
+                                        self._CREATE_SQL]),
                               data=data, conn=self.conn, comment=True)
         if not json_resp:
             return SQL
@@ -757,7 +757,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             return res
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']), scid=scid)
+                                        self._PROPERTIES_SQL]), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

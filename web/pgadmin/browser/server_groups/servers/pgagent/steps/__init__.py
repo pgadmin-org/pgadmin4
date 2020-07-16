@@ -39,8 +39,8 @@ class JobStepModule(CollectionNodeModule):
       - Method is overridden from its base class to make the node as leaf node.
     """
 
-    NODE_TYPE = 'pga_jobstep'
-    COLLECTION_LABEL = gettext("Steps")
+    _NODE_TYPE = 'pga_jobstep'
+    _COLLECTION_LABEL = gettext("Steps")
 
     def get_nodes(self, gid, sid, jid):
         """
@@ -226,7 +226,7 @@ SELECT EXISTS(
             jid: Job ID
         """
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             jid=jid,
             has_connstr=self.manager.db_info['pgAgent']['has_connstr']
         )
@@ -254,7 +254,7 @@ SELECT EXISTS(
         """
         res = []
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             jstid=jstid,
             jid=jid
         )
@@ -311,7 +311,7 @@ SELECT EXISTS(
             jstid: JobStep ID
         """
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             jstid=jstid,
             jid=jid,
             has_connstr=self.manager.db_info['pgAgent']['has_connstr']
@@ -352,7 +352,7 @@ SELECT EXISTS(
             data = json.loads(request.data.decode())
 
         sql = render_template(
-            "/".join([self.template_path, 'create.sql']),
+            "/".join([self.template_path, self._CREATE_SQL]),
             jid=jid,
             data=data,
             has_connstr=self.manager.db_info['pgAgent']['has_connstr']
@@ -364,7 +364,7 @@ SELECT EXISTS(
             return internal_server_error(errormsg=res)
 
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             jstid=res,
             jid=jid
         )
@@ -411,7 +411,7 @@ SELECT EXISTS(
             ('jstdbname' in data or 'jstconnstr' in data)
         ):
             sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 jstid=jstid,
                 jid=jid,
                 has_connstr=self.manager.db_info['pgAgent']['has_connstr']
@@ -438,7 +438,7 @@ SELECT EXISTS(
                     data['jstconnstr'] = row['jstconnstr']
 
         sql = render_template(
-            "/".join([self.template_path, 'update.sql']),
+            "/".join([self.template_path, self._UPDATE_SQL]),
             jid=jid,
             jstid=jstid,
             data=data,
@@ -451,7 +451,7 @@ SELECT EXISTS(
             return internal_server_error(errormsg=res)
 
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             jstid=jstid,
             jid=jid
         )
@@ -491,7 +491,7 @@ SELECT EXISTS(
         for jstid in data['ids']:
             status, res = self.conn.execute_void(
                 render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.template_path, self._DELETE_SQL]),
                     jid=jid, jstid=jstid, conn=self.conn
                 )
             )
@@ -524,7 +524,7 @@ SELECT EXISTS(
 
         if jstid is None:
             sql = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 jid=jid,
                 data=data,
                 has_connstr=self.manager.db_info['pgAgent']['has_connstr']
@@ -536,7 +536,7 @@ SELECT EXISTS(
                 ('jstdbname' in data or 'jstconnstr' in data)
             ):
                 sql = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
                     jstid=jstid,
                     jid=jid,
                     has_connstr=self.manager.db_info['pgAgent']['has_connstr']
@@ -563,7 +563,7 @@ SELECT EXISTS(
                         data['jstconnstr'] = row['jstconnstr']
 
             sql = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 jid=jid,
                 jstid=jstid,
                 data=data,

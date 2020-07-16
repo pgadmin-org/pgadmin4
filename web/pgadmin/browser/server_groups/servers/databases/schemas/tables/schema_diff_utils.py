@@ -71,7 +71,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     source_dict=source_tables,
                                     target_dict=target_tables,
                                     node=self.node_type,
-                                    node_label=self.blueprint.COLLECTION_LABEL,
+                                    node_label=self.blueprint.collection_label,
                                     ignore_whitespaces=ignore_whitespaces,
                                     ignore_keys=self.keys_to_ignore)
 
@@ -265,11 +265,11 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
         # Iterate through all the sub modules of the table
         for module in self.blueprint.submodules:
-            if module.NODE_TYPE not in ignore_sub_modules:
+            if module.node_type not in ignore_sub_modules:
                 module_view = \
-                    SchemaDiffRegistry.get_node_view(module.NODE_TYPE)
+                    SchemaDiffRegistry.get_node_view(module.node_type)
 
-                if module.NODE_TYPE == 'partition' and \
+                if module.node_type == 'partition' and \
                     ('is_partitioned' in source and source['is_partitioned'])\
                         and ('is_partitioned' in target and
                              target['is_partitioned']):
@@ -280,9 +280,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                     )
 
                     diff += '\n' + target_ddl
-                elif module.NODE_TYPE != 'partition':
-                    dict1 = copy.deepcopy(source[module.NODE_TYPE])
-                    dict2 = copy.deepcopy(target[module.NODE_TYPE])
+                elif module.node_type != 'partition':
+                    dict1 = copy.deepcopy(source[module.node_type])
+                    dict2 = copy.deepcopy(target[module.node_type])
 
                     # Find the duplicate keys in both the dictionaries
                     dict1_keys = set(dict1.keys())

@@ -65,8 +65,8 @@ class SchemaModule(CollectionNodeModule):
       - Load the module script for schema, when any of the server node is
         initialized.
     """
-    NODE_TYPE = 'schema'
-    COLLECTION_LABEL = gettext("Schemas")
+    _NODE_TYPE = 'schema'
+    _COLLECTION_LABEL = gettext("Schemas")
 
     def __init__(self, *args, **kwargs):
         """
@@ -93,7 +93,7 @@ class SchemaModule(CollectionNodeModule):
         Load the module script for schema, when any of the server node is
         initialized.
         """
-        return servers.ServerModule.NODE_TYPE
+        return servers.ServerModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -111,8 +111,8 @@ class CatalogModule(SchemaModule):
         A module class for the catalog schema node derived from SchemaModule.
     """
 
-    NODE_TYPE = 'catalog'
-    COLLECTION_LABEL = gettext("Catalogs")
+    _NODE_TYPE = 'catalog'
+    _COLLECTION_LABEL = gettext("Catalogs")
 
 
 schema_blueprint = SchemaModule(__name__)

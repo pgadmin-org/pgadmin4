@@ -49,8 +49,8 @@ class FtsTemplateModule(SchemaChildModule):
       - Load the module script for FTS Template, when any of the schema node is
         initialized.
     """
-    NODE_TYPE = 'fts_template'
-    COLLECTION_LABEL = gettext('FTS Templates')
+    _NODE_TYPE = 'fts_template'
+    _COLLECTION_LABEL = gettext('FTS Templates')
 
     def __init__(self, *args, **kwargs):
         self.min_ver = None
@@ -81,7 +81,7 @@ class FtsTemplateModule(SchemaChildModule):
         Load the module script for fts template, when any of the schema node is
         initialized.
         """
-        return DatabaseModule.NODE_TYPE
+        return DatabaseModule.node_type
 
 
 blueprint = FtsTemplateModule(__name__)
@@ -221,7 +221,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def list(self, gid, sid, did, scid):
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid
         )
         status, res = self.conn.execute_dict(sql)
@@ -238,7 +238,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
     def nodes(self, gid, sid, did, scid):
         res = []
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             scid=scid
         )
         status, rset = self.conn.execute_2darray(sql)
@@ -262,7 +262,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def node(self, gid, sid, did, scid, tid):
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             tid=tid
         )
         status, rset = self.conn.execute_2darray(sql)
@@ -312,7 +312,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
             tid=tid
         )
@@ -358,7 +358,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                     ).format(arg)
                 )
         # Fetch schema name from schema oid
-        sql = render_template("/".join([self.template_path, 'schema.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._SCHEMA_SQL]),
                               data=data,
                               conn=self.conn,
                               )
@@ -371,7 +372,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         # to generate proper sql query
         new_data = data.copy()
         new_data['schema'] = schema
-        sql = render_template("/".join([self.template_path, 'create.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._CREATE_SQL]),
                               data=new_data,
                               conn=self.conn,
                               )
@@ -382,7 +384,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         # we need fts_template id to to add object in tree at browser,
         # below sql will give the same
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             name=data['name'],
             scid=data['schema'] if 'schema' in data else scid
         )
@@ -424,7 +426,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=res)
 
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             tid=tid
         )
         status, rset = self.conn.execute_2darray(sql)
@@ -469,7 +471,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
 
         for tid in data['ids']:
             # Get name for template from tid
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            self._DELETE_SQL]),
                                   tid=tid)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -488,7 +491,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # Drop fts template
             result = res['rows'][0]
-            sql = render_template("/".join([self.template_path, 'delete.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            self._DELETE_SQL]),
                                   name=result['name'],
                                   schema=result['schema'],
                                   cascade=cascade
@@ -556,7 +560,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # Fetch old schema name using old schema oid
         sql = render_template(
-            "/".join([self.template_path, 'schema.sql']),
+            "/".join([self.template_path, self._SCHEMA_SQL]),
             data=old_data)
 
         status, old_schema = self.conn.execute_scalar(sql)
@@ -584,7 +588,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             'schema' in new_data
         ):
             sql = render_template("/".join([self.template_path,
-                                            'create.sql']),
+                                            self._CREATE_SQL]),
                                   data=new_data,
                                   conn=self.conn
                                   )
@@ -606,7 +610,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         # Fetch sql for update
         if tid is not None:
             sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 tid=tid,
                 scid=scid
             )
@@ -627,7 +631,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             # using its oid otherwise fetch old schema name using
             # fts template oid
             sql = render_template(
-                "/".join([self.template_path, 'schema.sql']),
+                "/".join([self.template_path, self._SCHEMA_SQL]),
                 data=data)
 
             status, new_schema = self.conn.execute_scalar(sql)
@@ -644,7 +648,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=errmsg)
 
             sql = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=new_data, o_data=old_data
             )
 
@@ -654,7 +658,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             return sql.strip('\n'), old_data['name']
         else:
             # Fetch schema name from schema oid
-            sql = render_template("/".join([self.template_path, 'schema.sql']),
+            sql = render_template("/".join([self.template_path,
+                                            self._SCHEMA_SQL]),
                                   data=data)
 
             status, schema = self.conn.execute_scalar(sql)
@@ -762,7 +767,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             data = {'schema': scid}
             # Fetch schema name from schema oid
             sql = render_template("/".join([self.template_path,
-                                            'schema.sql']),
+                                            self._SCHEMA_SQL]),
                                   data=data,
                                   conn=self.conn,
                                   )
@@ -829,7 +834,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        'nodes.sql']), scid=scid)
+                                        self._NODES_SQL]), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

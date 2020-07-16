@@ -47,8 +47,8 @@ class ConstraintsModule(CollectionNodeModule):
       node is initialized.
     """
 
-    NODE_TYPE = 'constraints'
-    COLLECTION_LABEL = gettext("Constraints")
+    _NODE_TYPE = 'constraints'
+    _COLLECTION_LABEL = gettext("Constraints")
 
     def __init__(self, *args, **kwargs):
         self.min_ver = None
@@ -73,7 +73,7 @@ class ConstraintsModule(CollectionNodeModule):
         Load the module script for constraints, when any of the table node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def module_use_template_javascript(self):

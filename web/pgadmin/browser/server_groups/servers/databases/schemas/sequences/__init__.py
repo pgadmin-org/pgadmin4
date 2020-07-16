@@ -52,8 +52,8 @@ class SequenceModule(SchemaChildModule):
 
     """
 
-    NODE_TYPE = 'sequence'
-    COLLECTION_LABEL = _("Sequences")
+    _NODE_TYPE = 'sequence'
+    _COLLECTION_LABEL = _("Sequences")
 
     def __init__(self, *args, **kwargs):
         super(SequenceModule, self).__init__(*args, **kwargs)
@@ -73,7 +73,7 @@ class SequenceModule(SchemaChildModule):
         Load the module script for database, when any of the database node is
         initialized.
         """
-        return database.DatabaseModule.NODE_TYPE
+        return database.DatabaseModule.node_type
 
     @property
     def node_inode(self):
@@ -167,7 +167,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid
         )
         status, res = self.conn.execute_dict(SQL)
@@ -198,7 +198,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             scid=scid,
             seid=seid
         )
@@ -295,7 +295,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid, seid=seid
         )
         status, res = self.conn.execute_dict(sql)
@@ -329,7 +329,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             self._add_securities_to_row(row)
 
         sql = render_template(
-            "/".join([self.template_path, 'acl.sql']),
+            "/".join([self.template_path, self._ACL_SQL]),
             scid=scid, seid=seid
         )
         status, dataclres = self.conn.execute_dict(sql)
@@ -394,7 +394,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             # The SQL below will execute CREATE DDL only
             sql = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn
             )
         except Exception as e:
@@ -410,7 +410,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         # The SQL below will execute rest DMLs because we cannot execute
         # CREATE with any other
         sql = render_template(
-            "/".join([self.template_path, 'grant.sql']),
+            "/".join([self.template_path, self._GRANT_SQL]),
             data=data, conn=self.conn
         )
         sql = sql.strip('\n').strip(' ')
@@ -421,7 +421,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # We need oid of newly created sequence.
         sql = render_template(
-            "/".join([self.template_path, 'get_oid.sql']),
+            "/".join([self.template_path, self._OID_SQL]),
             name=data['name'],
             schema=data['schema']
         )
@@ -474,7 +474,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             for seid in data['ids']:
                 sql = render_template(
-                    "/".join([self.template_path, 'properties.sql']),
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
                     scid=scid, seid=seid
                 )
                 status, res = self.conn.execute_dict(sql)
@@ -493,7 +493,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     )
 
                 sql = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.template_path, self._DELETE_SQL]),
                     data=res['rows'][0], cascade=cascade
                 )
 
@@ -542,7 +542,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=res)
 
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             seid=seid
         )
         status, rset = self.conn.execute_2darray(sql)
@@ -631,7 +631,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if seid is not None:
             sql = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 scid=scid, seid=seid
             )
             status, res = self.conn.execute_dict(sql)
@@ -652,7 +652,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 if arg not in data:
                     data[arg] = old_data[arg]
             sql = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data, conn=self.conn
             )
             return sql, data['name'] if 'name' in data else old_data['name']
@@ -662,11 +662,11 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
             sql = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn
             )
             sql += render_template(
-                "/".join([self.template_path, 'grant.sql']),
+                "/".join([self.template_path, self._GRANT_SQL]),
                 data=data, conn=self.conn
             )
             return sql, data['name']
@@ -706,7 +706,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         json_resp = kwargs.get('json_resp', True)
 
         sql = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid, seid=seid
         )
         status, res = self.conn.execute_dict(sql)
@@ -780,7 +780,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             data['securities'] = seclabels
 
         # We need to parse & convert ACL coming from database to json format
-        sql = render_template("/".join([self.template_path, 'acl.sql']),
+        sql = render_template("/".join([self.template_path, self._ACL_SQL]),
                               scid=scid, seid=seid)
         status, acl = self.conn.execute_dict(sql)
         if not status:
@@ -928,7 +928,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         sql = render_template("/".join([self.template_path,
-                                        'nodes.sql']), scid=scid)
+                                        self._NODES_SQL]), scid=scid)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=res)

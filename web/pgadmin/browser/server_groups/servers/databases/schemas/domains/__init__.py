@@ -49,8 +49,8 @@ class DomainModule(SchemaChildModule):
         initialized.
     """
 
-    NODE_TYPE = 'domain'
-    COLLECTION_LABEL = gettext("Domains")
+    _NODE_TYPE = 'domain'
+    _COLLECTION_LABEL = gettext("Domains")
 
     def __init__(self, *args, **kwargs):
         super(DomainModule, self).__init__(*args, **kwargs)
@@ -70,7 +70,7 @@ class DomainModule(SchemaChildModule):
         Load the module script for domain, when schema node is
         initialized.
         """
-        return databases.DatabaseModule.NODE_TYPE
+        return databases.DatabaseModule.node_type
 
 
 blueprint = DomainModule(__name__)
@@ -288,7 +288,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             scid: Schema Id
         """
 
-        SQL = render_template("/".join([self.template_path, 'node.sql']),
+        SQL = render_template("/".join([self.template_path, self._NODE_SQL]),
                               scid=scid)
         status, res = self.conn.execute_dict(SQL)
 
@@ -312,7 +312,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
 
         res = []
-        SQL = render_template("/".join([self.template_path, 'node.sql']),
+        SQL = render_template("/".join([self.template_path, self._NODE_SQL]),
                               scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -345,7 +345,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             doid: Domain Id
         """
 
-        SQL = render_template("/".join([self.template_path, 'node.sql']),
+        SQL = render_template("/".join([self.template_path, self._NODE_SQL]),
                               doid=doid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -393,7 +393,8 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :param doid:
         :return:
         """
-        SQL = render_template("/".join([self.template_path, 'properties.sql']),
+        SQL = render_template("/".join([self.template_path,
+                                        self._PROPERTIES_SQL]),
                               scid=scid, doid=doid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -559,7 +560,7 @@ AND relkind != 'c'))"""
         # We need oid to to add object in tree at browser, below sql will
         # gives the same
         SQL = render_template("/".join([self.template_path,
-                                        'get_oid.sql']),
+                                        self._OID_SQL]),
                               basensp=data['basensp'],
                               name=data['name'])
         status, doid = self.conn.execute_scalar(SQL)
@@ -568,7 +569,7 @@ AND relkind != 'c'))"""
 
         # Get updated schema oid
         SQL = render_template("/".join([self.template_path,
-                                        'get_oid.sql']),
+                                        self._OID_SQL]),
                               doid=doid)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
@@ -611,7 +612,7 @@ AND relkind != 'c'))"""
 
         for doid in data['ids']:
             SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
+                                            self._DELETE_SQL]),
                                   scid=scid, doid=doid)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
@@ -633,7 +634,7 @@ AND relkind != 'c'))"""
             basensp = res['rows'][0]['basensp']
 
             SQL = render_template("/".join([self.template_path,
-                                            'delete.sql']),
+                                            self._DELETE_SQL]),
                                   name=name, basensp=basensp, cascade=cascade)
 
             # Used for schema diff tool
@@ -674,7 +675,7 @@ AND relkind != 'c'))"""
 
         # Get Schema Id
         SQL = render_template("/".join([self.template_path,
-                                        'get_oid.sql']),
+                                        self._OID_SQL]),
                               doid=doid)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
@@ -707,7 +708,7 @@ AND relkind != 'c'))"""
         json_resp = kwargs.get('json_resp', True)
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               scid=scid, doid=doid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -740,7 +741,7 @@ AND relkind != 'c'))"""
             data.update(parse_sec_labels_from_db(data['seclabels']))
 
         SQL = render_template("/".join([self.template_path,
-                                        'create.sql']), data=data)
+                                        self._CREATE_SQL]), data=data)
 
         sql_header = u"""-- DOMAIN: {0}.{1}\n\n""".format(
             data['basensp'], data['name'])
@@ -807,7 +808,7 @@ AND relkind != 'c'))"""
 
         if doid is not None:
             SQL = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   scid=scid, doid=doid)
             status, res = self.conn.execute_dict(SQL)
 
@@ -845,13 +846,13 @@ AND relkind != 'c'))"""
                     data['is_schema_diff'] = True
 
                 SQL = render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.template_path, self._UPDATE_SQL]),
                     data=data, o_data=old_data)
             return SQL.strip('\n'), data['name'] if 'name' in data else \
                 old_data['name']
         else:
             SQL = render_template("/".join([self.template_path,
-                                            'create.sql']),
+                                            self._CREATE_SQL]),
                                   data=data)
             return SQL.strip('\n'), data['name']
 
@@ -906,7 +907,7 @@ AND relkind != 'c'))"""
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        'node.sql']), scid=scid)
+                                        self._NODE_SQL]), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

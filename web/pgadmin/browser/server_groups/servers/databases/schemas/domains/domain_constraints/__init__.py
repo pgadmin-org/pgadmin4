@@ -47,8 +47,8 @@ class DomainConstraintModule(CollectionNodeModule):
       - Load the module script for the Domain Constraint, when any of the
         Domain node is initialized.
     """
-    NODE_TYPE = 'domain_constraints'
-    COLLECTION_LABEL = gettext("Domain Constraints")
+    _NODE_TYPE = 'domain_constraints'
+    _COLLECTION_LABEL = gettext("Domain Constraints")
 
     def __init__(self, *args, **kwargs):
         super(DomainConstraintModule, self).__init__(*args, **kwargs)
@@ -74,7 +74,7 @@ class DomainConstraintModule(CollectionNodeModule):
         Load the module script for the Domain Constraint, when any of the
         Domain node is initialized.
         """
-        return domains.DomainModule.NODE_TYPE
+        return domains.DomainModule.node_type
 
     @property
     def csssnippets(self):
@@ -272,7 +272,7 @@ class DomainConstraintView(PGChildNodeView):
             doid: Domain Id
         """
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               doid=doid)
         status, res = self.conn.execute_dict(SQL)
 
@@ -297,7 +297,7 @@ class DomainConstraintView(PGChildNodeView):
         """
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               doid=doid)
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -338,7 +338,7 @@ class DomainConstraintView(PGChildNodeView):
             coid: Domain Constraint Id
         """
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               coid=coid)
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -381,7 +381,7 @@ class DomainConstraintView(PGChildNodeView):
         """
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               doid=doid, coid=coid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -430,7 +430,7 @@ class DomainConstraintView(PGChildNodeView):
 
             # Get the recently added constraints oid
             SQL = render_template("/".join([self.template_path,
-                                            'get_oid.sql']),
+                                            self._OID_SQL]),
                                   doid=doid, name=data['name'])
             status, coid = self.conn.execute_scalar(SQL)
             if not status:
@@ -479,7 +479,7 @@ class DomainConstraintView(PGChildNodeView):
         try:
             for coid in data['ids']:
                 SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
+                                                self._PROPERTIES_SQL]),
                                       doid=doid, coid=coid)
                 status, res = self.conn.execute_dict(SQL)
 
@@ -502,7 +502,7 @@ class DomainConstraintView(PGChildNodeView):
                 data = res['rows'][0]
 
                 SQL = render_template("/".join([self.template_path,
-                                                'delete.sql']),
+                                                self._DELETE_SQL]),
                                       data=data)
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
@@ -591,7 +591,7 @@ class DomainConstraintView(PGChildNodeView):
         schema, domain = self._get_domain(doid)
 
         SQL = render_template("/".join([self.template_path,
-                                        'properties.sql']),
+                                        self._PROPERTIES_SQL]),
                               doid=doid, coid=coid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -605,7 +605,7 @@ class DomainConstraintView(PGChildNodeView):
         data = res['rows'][0]
 
         SQL = render_template("/".join([self.template_path,
-                                        'create.sql']),
+                                        self._CREATE_SQL]),
                               data=data, domain=domain, schema=schema)
 
         sql_header = u"""-- CHECK: {1}.{0}
@@ -662,7 +662,7 @@ class DomainConstraintView(PGChildNodeView):
         try:
             if coid is not None:
                 SQL = render_template("/".join([self.template_path,
-                                                'properties.sql']),
+                                                self._PROPERTIES_SQL]),
                                       doid=doid, coid=coid)
                 status, res = self.conn.execute_dict(SQL)
 
@@ -677,14 +677,14 @@ class DomainConstraintView(PGChildNodeView):
                 old_data = res['rows'][0]
 
                 SQL = render_template(
-                    "/".join([self.template_path, 'update.sql']),
+                    "/".join([self.template_path, self._UPDATE_SQL]),
                     data=data, o_data=old_data, conn=self.conn
                 )
             else:
                 schema, domain = self._get_domain(doid)
 
                 SQL = render_template("/".join([self.template_path,
-                                                'create.sql']),
+                                                self._CREATE_SQL]),
                                       data=data, domain=domain, schema=schema)
             if 'name' in data:
                 return True, SQL.strip('\n'), data['name']

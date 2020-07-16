@@ -119,7 +119,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
 
     @property
     def node_type(self):
-        return '%s' % (self.NODE_TYPE)
+        return '%s' % (self._NODE_TYPE)
 
     @property
     def csssnippets(self):
@@ -147,13 +147,13 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
     def collection_label(self):
         """
         Label to be shown for the collection node, do not forget to set the
-        class level variable COLLECTION_LABEL.
+        class level variable _COLLECTION_LABEL.
         """
-        return gettext(self.COLLECTION_LABEL)
+        return gettext(self._COLLECTION_LABEL)
 
     @property
     def label(self):
-        return gettext(self.COLLECTION_LABEL)
+        return gettext(self._COLLECTION_LABEL)
 
     @property
     def collection_icon(self):

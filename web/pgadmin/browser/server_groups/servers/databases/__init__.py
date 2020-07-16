@@ -36,8 +36,8 @@ from pgadmin.model import db, Server, Database
 
 
 class DatabaseModule(CollectionNodeModule):
-    NODE_TYPE = 'database'
-    COLLECTION_LABEL = _("Databases")
+    _NODE_TYPE = 'database'
+    _COLLECTION_LABEL = _("Databases")
 
     def __init__(self, *args, **kwargs):
         self.min_ver = None
@@ -58,7 +58,7 @@ class DatabaseModule(CollectionNodeModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return servers.ServerModule.NODE_TYPE
+        return servers.ServerModule.node_type
 
     @property
     def csssnippets(self):
@@ -218,7 +218,7 @@ class DatabaseView(PGChildNodeView):
             params = tuple(self.manager.db_res.split(','))
 
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             conn=self.conn,
             last_system_oid=last_system_oid,
             db_restrictions=db_disp_res
@@ -265,7 +265,7 @@ class DatabaseView(PGChildNodeView):
             )
             params = tuple(server_node_res.db_res.split(','))
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             last_system_oid=last_system_oid,
             db_restrictions=db_disp_res
         )
@@ -323,7 +323,7 @@ class DatabaseView(PGChildNodeView):
         """
         res = []
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             last_system_oid=0,
         )
         status, rset = self.conn.execute_dict(SQL)
@@ -342,7 +342,7 @@ class DatabaseView(PGChildNodeView):
     @check_precondition(action="node")
     def node(self, gid, sid, did):
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             did=did, conn=self.conn, last_system_oid=0
         )
         status, rset = self.conn.execute_2darray(SQL)
@@ -380,7 +380,7 @@ class DatabaseView(PGChildNodeView):
     def properties(self, gid, sid, did):
 
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, conn=self.conn, last_system_oid=0
         )
         status, res = self.conn.execute_dict(SQL)
@@ -394,7 +394,7 @@ class DatabaseView(PGChildNodeView):
             )
 
         SQL = render_template(
-            "/".join([self.template_path, 'acl.sql']),
+            "/".join([self.template_path, self._ACL_SQL]),
             did=did, conn=self.conn
         )
         status, dataclres = self.conn.execute_dict(SQL)
@@ -582,7 +582,7 @@ class DatabaseView(PGChildNodeView):
                 )
         # The below SQL will execute CREATE DDL only
         SQL = render_template(
-            "/".join([self.template_path, 'create.sql']),
+            "/".join([self.template_path, self._CREATE_SQL]),
             data=data, conn=self.conn
         )
         status, msg = self.conn.execute_scalar(SQL)
@@ -595,7 +595,7 @@ class DatabaseView(PGChildNodeView):
         # The below SQL will execute rest DMLs because we cannot execute
         # CREATE with any other
         SQL = render_template(
-            "/".join([self.template_path, 'grant.sql']),
+            "/".join([self.template_path, self._GRANT_SQL]),
             data=data, conn=self.conn
         )
         SQL = SQL.strip('\n').strip(' ')
@@ -606,7 +606,7 @@ class DatabaseView(PGChildNodeView):
 
         # We need oid of newly created database
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             name=data['name'], conn=self.conn, last_system_oid=0
         )
         SQL = SQL.strip('\n').strip(' ')
@@ -682,7 +682,7 @@ class DatabaseView(PGChildNodeView):
             # Fetch the name of database for comparison
             status, rset = self.conn.execute_dict(
                 render_template(
-                    "/".join([self.template_path, 'nodes.sql']),
+                    "/".join([self.template_path, self._NODES_SQL]),
                     did=did, conn=self.conn, last_system_oid=0
                 )
             )
@@ -786,7 +786,7 @@ class DatabaseView(PGChildNodeView):
         # generation
         status, rset = self.conn.execute_dict(
             render_template(
-                "/".join([self.template_path, 'nodes.sql']),
+                "/".join([self.template_path, self._NODES_SQL]),
                 did=did, conn=self.conn, last_system_oid=0
             )
         )
@@ -843,7 +843,7 @@ class DatabaseView(PGChildNodeView):
         for did in data['ids']:
             default_conn = self.manager.connection()
             SQL = render_template(
-                "/".join([self.template_path, 'delete.sql']),
+                "/".join([self.template_path, self._DELETE_SQL]),
                 did=did, conn=self.conn
             )
             status, res = default_conn.execute_scalar(SQL)
@@ -866,7 +866,7 @@ class DatabaseView(PGChildNodeView):
                 status = self.manager.release(did=did)
 
                 SQL = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.template_path, self._DELETE_SQL]),
                     datname=res, conn=self.conn
                 )
 
@@ -917,7 +917,7 @@ class DatabaseView(PGChildNodeView):
             conn = self.manager.connection()
             status, rset = conn.execute_dict(
                 render_template(
-                    "/".join([self.template_path, 'nodes.sql']),
+                    "/".join([self.template_path, self._NODES_SQL]),
                     did=did, conn=conn, last_system_oid=0
                 )
             )
@@ -974,13 +974,13 @@ class DatabaseView(PGChildNodeView):
                 )
 
         sql_acl = render_template(
-            "/".join([self.template_path, 'grant.sql']),
+            "/".join([self.template_path, self._GRANT_SQL]),
             data=data,
             conn=self.conn
         )
 
         SQL = render_template(
-            "/".join([self.template_path, 'create.sql']),
+            "/".join([self.template_path, self._CREATE_SQL]),
             data=data, conn=self.conn
         )
         SQL += "\n"
@@ -1087,7 +1087,7 @@ class DatabaseView(PGChildNodeView):
 
         conn = self.manager.connection()
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, conn=conn, last_system_oid=0
         )
         status, res = conn.execute_dict(SQL)
@@ -1101,7 +1101,7 @@ class DatabaseView(PGChildNodeView):
             )
 
         SQL = render_template(
-            "/".join([self.template_path, 'acl.sql']),
+            "/".join([self.template_path, self._ACL_SQL]),
             did=did, conn=self.conn
         )
         status, dataclres = self.conn.execute_dict(SQL)
@@ -1142,7 +1142,7 @@ class DatabaseView(PGChildNodeView):
         sql_header = u"-- Database: {0}\n\n-- ".format(result['name'])
 
         sql_header += render_template(
-            "/".join([self.template_path, 'delete.sql']),
+            "/".join([self.template_path, self._DELETE_SQL]),
             datname=result['name'], conn=conn
         )
 

@@ -25,8 +25,8 @@ from config import PG_DEFAULT_DRIVER
 
 
 class TablespaceModule(CollectionNodeModule):
-    NODE_TYPE = 'tablespace'
-    COLLECTION_LABEL = gettext("Tablespaces")
+    _NODE_TYPE = 'tablespace'
+    _COLLECTION_LABEL = gettext("Tablespaces")
 
     def __init__(self, import_name, **kwargs):
         super(TablespaceModule, self).__init__(import_name, **kwargs)
@@ -44,7 +44,7 @@ class TablespaceModule(CollectionNodeModule):
         Load the module script for server, when any of the server-group node is
         initialized.
         """
-        return servers.ServerModule.NODE_TYPE
+        return servers.ServerModule.node_type
 
     @property
     def module_use_template_javascript(self):
@@ -139,7 +139,7 @@ class TablespaceView(PGChildNodeView):
     @check_precondition
     def list(self, gid, sid):
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             conn=self.conn
         )
         status, res = self.conn.execute_dict(SQL)
@@ -154,7 +154,7 @@ class TablespaceView(PGChildNodeView):
     @check_precondition
     def node(self, gid, sid, tsid):
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             tsid=tsid, conn=self.conn
         )
         status, rset = self.conn.execute_2darray(SQL)
@@ -180,7 +180,7 @@ class TablespaceView(PGChildNodeView):
     def nodes(self, gid, sid, tsid=None):
         res = []
         SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             tsid=tsid, conn=self.conn
         )
         status, rset = self.conn.execute_2darray(SQL)
@@ -230,7 +230,7 @@ class TablespaceView(PGChildNodeView):
 
         # We need to parse & convert ACL coming from database to json format
         SQL = render_template(
-            "/".join([self.template_path, 'acl.sql']),
+            "/".join([self.template_path, self._ACL_SQL]),
             tsid=tsid, conn=self.conn
         )
         status, acl = self.conn.execute_dict(SQL)
@@ -253,7 +253,7 @@ class TablespaceView(PGChildNodeView):
     @check_precondition
     def properties(self, gid, sid, tsid):
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             tsid=tsid, conn=self.conn
         )
         status, res = self.conn.execute_dict(SQL)
@@ -307,7 +307,7 @@ class TablespaceView(PGChildNodeView):
 
         try:
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn
             )
 
@@ -398,7 +398,7 @@ class TablespaceView(PGChildNodeView):
                 # Get name for tablespace from tsid
                 status, rset = self.conn.execute_dict(
                     render_template(
-                        "/".join([self.template_path, 'nodes.sql']),
+                        "/".join([self.template_path, self._NODES_SQL]),
                         tsid=tsid, conn=self.conn
                     )
                 )
@@ -419,7 +419,7 @@ class TablespaceView(PGChildNodeView):
 
                 # drop tablespace
                 SQL = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
+                    "/".join([self.template_path, self._DELETE_SQL]),
                     tsname=(rset['rows'][0])['name'], conn=self.conn
                 )
 
@@ -477,7 +477,7 @@ class TablespaceView(PGChildNodeView):
 
         if tsid is not None:
             SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 tsid=tsid, conn=self.conn
             )
             status, res = self.conn.execute_dict(SQL)
@@ -516,7 +516,7 @@ class TablespaceView(PGChildNodeView):
                     data[arg] = old_data[arg]
 
             SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data
             )
         else:
@@ -525,7 +525,7 @@ class TablespaceView(PGChildNodeView):
                 data['spcacl'] = parse_priv_to_db(data['spcacl'], self.acl)
             # If the request for new object which do not have tsid
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=data
             )
             SQL += "\n"
@@ -542,7 +542,7 @@ class TablespaceView(PGChildNodeView):
         This function will generate sql for sql panel
         """
         SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
+            "/".join([self.template_path, self._PROPERTIES_SQL]),
             tsid=tsid, conn=self.conn
         )
         status, res = self.conn.execute_dict(SQL)
@@ -566,7 +566,7 @@ class TablespaceView(PGChildNodeView):
         # We are not showing create sql for system tablespace
         if not old_data['name'].startswith('pg_'):
             SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
+                "/".join([self.template_path, self._CREATE_SQL]),
                 data=old_data
             )
             SQL += "\n"
