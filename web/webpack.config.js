@@ -242,13 +242,13 @@ var themeCssRules = function(theme_name) {
       {
         loader: 'sass-resources-loader',
         options: {
-          resources: function(theme_name){
+          resources: function(_theme_name){
             let ret_res = [
-              './pgadmin/static/scss/resources/' + theme_name + '/_theme.variables.scss',
+              './pgadmin/static/scss/resources/' + _theme_name + '/_theme.variables.scss',
               './pgadmin/static/scss/resources/pgadmin.resources.scss',
             ];
-            if(theme_name!='standard') {
-              ret_res.unshift('./pgadmin/static/scss/resources/' + theme_name + '/_theme.variables.scss');
+            if(_theme_name!='standard') {
+              ret_res.unshift('./pgadmin/static/scss/resources/' + _theme_name + '/_theme.variables.scss');
             }
             return ret_res;
           }(theme_name),

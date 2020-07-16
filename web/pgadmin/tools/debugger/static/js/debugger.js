@@ -488,37 +488,37 @@ define([
           // Initialize the target and create asynchronous connection and unique transaction ID
           // If there is no arguments to the functions then we should not ask for for function arguments and
           // Directly open the panel
-            var t = pgBrowser.tree,
-              i = t.selected(),
-              d = i && i.length == 1 ? t.itemData(i) : undefined,
-              node = d && pgBrowser.Nodes[d._type];
+            var _t = pgBrowser.tree,
+              _i = _t.selected(),
+              _d = _i && _i.length == 1 ? _t.itemData(_i) : undefined,
+              _node = _d && pgBrowser.Nodes[_d._type];
 
-            if (!d)
+            if (!_d)
               return;
 
-            var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]),
+            var newTreeInfo = _node.getTreeNodeHierarchy.apply(_node, [_i]),
               baseUrl;
 
-            if (d._type == 'function' || d._type == 'edbfunc') {
+            if (_d._type == 'function' || _d._type == 'edbfunc') {
               baseUrl = url_for(
                 'debugger.initialize_target_for_function', {
                   'debug_type': 'direct',
                   'trans_id': trans_id,
-                  'sid': treeInfo.server._id,
-                  'did': treeInfo.database._id,
-                  'scid': treeInfo.schema._id,
-                  'func_id': debuggerUtils.getFunctionId(treeInfo),
+                  'sid': newTreeInfo.server._id,
+                  'did': newTreeInfo.database._id,
+                  'scid': newTreeInfo.schema._id,
+                  'func_id': debuggerUtils.getFunctionId(newTreeInfo),
                 }
               );
-            } else if(d._type == 'procedure' || d._type == 'edbproc') {
+            } else if(_d._type == 'procedure' || _d._type == 'edbproc') {
               baseUrl = url_for(
                 'debugger.initialize_target_for_function', {
                   'debug_type': 'direct',
                   'trans_id': trans_id,
-                  'sid': treeInfo.server._id,
-                  'did': treeInfo.database._id,
-                  'scid': treeInfo.schema._id,
-                  'func_id': debuggerUtils.getProcedureId(treeInfo),
+                  'sid': newTreeInfo.server._id,
+                  'did': newTreeInfo.database._id,
+                  'scid': newTreeInfo.schema._id,
+                  'func_id': debuggerUtils.getProcedureId(newTreeInfo),
                 }
               );
             }

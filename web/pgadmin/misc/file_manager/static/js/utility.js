@@ -21,13 +21,13 @@ define([
   'jquery', 'underscore', 'pgadmin.alertifyjs',
   'sources/gettext', 'sources/url_for', 'dropzone', 'sources/pgadmin',
   'sources/csrf', 'tablesorter', 'tablesorter-metric',
-], function($, _, Alertify, gettext, url_for, Dropzone, pgAdmin, csrfToken) {
+], function($, _, Alertify, gettext, url_for, Dropzone, pgAdmin, csrf) {
 
   /*---------------------------------------------------------
     Define functions used for various operations
   ---------------------------------------------------------*/
   // Set the CSRF Token
-  csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
+  csrf.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
 
   // Return file extension
   var getFileExtension = function(name) {

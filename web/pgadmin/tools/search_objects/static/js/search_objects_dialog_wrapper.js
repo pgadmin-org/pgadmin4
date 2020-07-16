@@ -281,9 +281,9 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
           treeMenu.selectNode(treeItem.domNode, true);
           this.showMessage(null);
         })
-        .catch((args)=>{
+        .catch((error)=>{
           this.showMessage(gettext('Unable to locate this object in the browser.'), true);
-          console.warn(args, rowData.id_path);
+          console.warn(error, rowData.id_path);
         });
     });
 

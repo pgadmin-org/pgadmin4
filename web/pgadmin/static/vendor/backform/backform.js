@@ -19,10 +19,10 @@
 
   // Set up Backform appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'jquery', 'backbone'], function(_, $, Backbone) {
+    define(['underscore', 'jquery', 'backbone'], function(underscore, $, Backbone) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backform.
-      return factory(root, _, $, Backbone);
+      return factory(root, underscore, $, Backbone);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.

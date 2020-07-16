@@ -677,13 +677,13 @@ export default class SchemaDiffUI {
           placeholder: gettext('Select database...'),
         },
         disabled: function(m) {
-          let self = this;
+          let self_local = this;
           if (!_.isUndefined(m.get('target_sid')) && !_.isNull(m.get('target_sid'))
               && m.get('target_sid') !== '') {
             setTimeout(function() {
-              for (var i = 0; i < self.options.length; i++) {
-                if (self.options[i].is_maintenance_db) {
-                  m.set('target_did', self.options[i].value);
+              for (var i = 0; i < self_local.options.length; i++) {
+                if (self_local.options[i].is_maintenance_db) {
+                  m.set('target_did', self_local.options[i].value);
                 }
               }
             }, 10);
@@ -713,12 +713,12 @@ export default class SchemaDiffUI {
           placeholder: gettext('Select schema...'),
         },
         disabled: function(m) {
-          let self = this;
+          let self_local = this;
           if (!_.isUndefined(m.get('target_did')) && !_.isNull(m.get('target_did'))
               && m.get('target_did') !== '') {
             setTimeout(function() {
-              if (self.options.length > 0) {
-                m.set('target_scid', self.options[0].value);
+              if (self_local.options.length > 0) {
+                m.set('target_scid', self_local.options[0].value);
               }
             }, 10);
             return false;
@@ -801,23 +801,23 @@ export default class SchemaDiffUI {
 
   connect_server(server_id, callback) {
     var  onFailure = function(
-        xhr, status, error, server_id, callback
+        xhr, status, error, sid, err_callback
       ) {
         Alertify.pgNotifier('error', xhr, error, function(msg) {
           setTimeout(function() {
             Alertify.dlgServerPass(
               gettext('Connect to Server'),
               msg,
-              server_id,
-              callback
+              sid,
+              err_callback
             ).resizeTo();
           }, 100);
         });
       },
-      onSuccess = function(res, callback) {
+      onSuccess = function(res, suc_callback) {
         if (res && res.data) {
           // We're not reconnecting
-          callback(res.data);
+          suc_callback(res.data);
         }
       };
 
@@ -827,11 +827,11 @@ export default class SchemaDiffUI {
       Alertify.dialog('dlgServerPass', function factory() {
         return {
           main: function(
-            title, message, server_id, success_callback, _onSuccess, _onFailure, _onCancel
+            title, message, sid, success_callback, _onSuccess, _onFailure, _onCancel
           ) {
             this.set('title', title);
             this.message = message;
-            this.server_id = server_id;
+            this.server_id = sid;
             this.success_callback = success_callback;
             this.onSuccess = _onSuccess || onSuccess;
             this.onFailure = _onFailure || onFailure;

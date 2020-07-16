@@ -13,7 +13,7 @@
  * @namespace Slick
  */
 
-import JSONBigNumber from 'json-bignumber';
+import JSONBigNumberLib from 'json-bignumber';
 import gettext from 'sources/gettext';
 
 (function($, JSONBigNumber) {
@@ -975,4 +975,4 @@ import gettext from 'sources/gettext';
     this.init();
   }
 
-})(window.jQuery, JSONBigNumber);
+})(window.jQuery, JSONBigNumberLib);

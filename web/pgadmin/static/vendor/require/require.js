@@ -449,8 +449,8 @@ var requirejs, require, define;
                 if (prefix) {
                     if (pluginModule && pluginModule.normalize) {
                         //Plugin is loaded, use its normalize method.
-                        normalizedName = pluginModule.normalize(name, function (name) {
-                            return normalize(name, parentName, applyMap);
+                        normalizedName = pluginModule.normalize(name, function (_name) {
+                            return normalize(_name, parentName, applyMap);
                         });
                     } else {
                         // If nested plugin references, then do not try to
@@ -962,8 +962,8 @@ var requirejs, require, define;
                     if (this.map.unnormalized) {
                         //Normalize the ID if the plugin allows it.
                         if (plugin.normalize) {
-                            name = plugin.normalize(name, function (name) {
-                                return normalize(name, parentName, true);
+                            name = plugin.normalize(name, function (_name) {
+                                return normalize(_name, parentName, true);
                             }) || '';
                         }
 
@@ -1267,11 +1267,11 @@ var requirejs, require, define;
              * Set a configuration for the context.
              * @param {Object} cfg config object to integrate.
              */
-            configure: function (cfg) {
+            configure: function (_cfg) {
                 //Make sure the baseUrl ends in a slash.
-                if (cfg.baseUrl) {
-                    if (cfg.baseUrl.charAt(cfg.baseUrl.length - 1) !== '/') {
-                        cfg.baseUrl += '/';
+                if (_cfg.baseUrl) {
+                    if (_cfg.baseUrl.charAt(_cfg.baseUrl.length - 1) !== '/') {
+                        _cfg.baseUrl += '/';
                     }
                 }
 
@@ -1285,7 +1285,7 @@ var requirejs, require, define;
                         map: true
                     };
 
-                eachProp(cfg, function (value, prop) {
+                eachProp(_cfg, function (value, prop) {
                     if (objs[prop]) {
                         if (!config[prop]) {
                             config[prop] = {};
@@ -1297,8 +1297,8 @@ var requirejs, require, define;
                 });
 
                 //Reverse map the bundles
-                if (cfg.bundles) {
-                    eachProp(cfg.bundles, function (value, prop) {
+                if (_cfg.bundles) {
+                    eachProp(_cfg.bundles, function (value, prop) {
                         each(value, function (v) {
                             if (v !== prop) {
                                 bundlesMap[v] = prop;
@@ -1308,8 +1308,8 @@ var requirejs, require, define;
                 }
 
                 //Merge shim
-                if (cfg.shim) {
-                    eachProp(cfg.shim, function (value, id) {
+                if (_cfg.shim) {
+                    eachProp(_cfg.shim, function (value, id) {
                         //Normalize the structure
                         if (isArray(value)) {
                             value = {
@@ -1325,8 +1325,8 @@ var requirejs, require, define;
                 }
 
                 //Adjust packages if necessary.
-                if (cfg.packages) {
-                    each(cfg.packages, function (pkgObj) {
+                if (_cfg.packages) {
+                    each(_cfg.packages, function (pkgObj) {
                         var location, name;
 
                         pkgObj = typeof pkgObj === 'string' ? { name: pkgObj } : pkgObj;
@@ -1363,8 +1363,8 @@ var requirejs, require, define;
                 //If a deps array or a config callback is specified, then call
                 //require with those args. This is useful when require is defined as a
                 //config object before require.js is loaded.
-                if (cfg.deps || cfg.callback) {
-                    context.require(cfg.deps || [], cfg.callback);
+                if (_cfg.deps || _cfg.callback) {
+                    context.require(_cfg.deps || [], _cfg.callback);
                 }
             },
 
