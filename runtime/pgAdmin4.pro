@@ -120,7 +120,7 @@ ICON =                pgAdmin4.icns
 QMAKE_INFO_PLIST =    Info.plist
 
 RESOURCES +=          pgadmin4.qrc \
-                      breeze.qrc
+                      qdarkstyle/style.qrc
 
 macx {
     HEADERS +=            macos.h

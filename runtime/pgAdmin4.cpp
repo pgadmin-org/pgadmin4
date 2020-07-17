@@ -68,15 +68,13 @@ int main(int argc, char * argv[])
 
 #ifdef Q_OS_WIN32
     QSettings registry("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", QSettings::Registry64Format);
-    if (registry.value("AppsUseLightTheme", true).toBool())
-    {
-        qDebug( "Windows Light Mode...");
-        stylesheet.setFileName(":/light.qss");
-    }
-    else
+    if (!registry.value("AppsUseLightTheme", true).toBool())
     {
         qDebug( "Windows Dark Mode..." );
-        stylesheet.setFileName(":/dark.qss");
+        stylesheet.setFileName(":/qdarkstyle/style.qss");
+        stylesheet.open(QFile::ReadOnly | QFile::Text);
+        QTextStream stream(&stylesheet);
+        app.setStyleSheet(stream.readAll());
     }
 #endif
 
@@ -84,18 +82,12 @@ int main(int argc, char * argv[])
     if (IsDarkMode())
     {
         qDebug( "macOS Dark Mode...");
-        stylesheet.setFileName(":/dark.qss");
-    }
-    else
-    {
-        qDebug( "macOS Light Mode..." );
-        stylesheet.setFileName(":/light.qss");
+        stylesheet.setFileName(":/qdarkstyle/style.qss");
+        stylesheet.open(QFile::ReadOnly | QFile::Text);
+        QTextStream stream(&stylesheet);
+        app.setStyleSheet(stream.readAll());
     }
 #endif
-
-    stylesheet.open(QFile::ReadOnly | QFile::Text);
-    QTextStream stream(&stylesheet);
-    app.setStyleSheet(stream.readAll());
 #endif
 
     // Setup the settings management
