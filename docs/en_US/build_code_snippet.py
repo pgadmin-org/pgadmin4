@@ -59,7 +59,7 @@ def print_code(outstream, name, module, info=None):
 print_code(
     target, "PgAdminModule", PgAdminModule,
     """
-PgAdminModule is inherted from Flask.Blueprint module.
+PgAdminModule is inherited from Flask.Blueprint module.
 This module defines a set of methods, properties and attributes,
 that every module should implement.
 """)
