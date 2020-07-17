@@ -367,8 +367,12 @@ define([
             return;
           }
           attrs[k] = v;
+          const attrsDefined = self.origSessAttrs[k] && v;
           /* If the orig value was null and new one is empty string, then its a "no change" */
-          if (_.isEqual(self.origSessAttrs[k], v) || (self.origSessAttrs[k] === null && v === '')) {
+          /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
+          if (_.isEqual(self.origSessAttrs[k], v)
+            || (self.origSessAttrs[k] === null && v === '')
+            || (attrsDefined ? _.isEqual(self.origSessAttrs[k].toString(), v.toString()) : false)) {
             delete self.sessAttrs[k];
           } else {
             self.sessAttrs[k] = v;

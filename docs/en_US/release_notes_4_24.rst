@@ -28,6 +28,7 @@ Bug fixes
 | `Issue #3814 <https://redmine.postgresql.org/issues/3814>`_ -  Fixed issue of error message not getting displayed when filename is empty for backup, restore, and import/export.
 | `Issue #3851 <https://redmine.postgresql.org/issues/3851>`_ -  Add proper indentation to the code while generating functions, procedures, and trigger functions.
 | `Issue #4235 <https://redmine.postgresql.org/issues/4235>`_ -  Fixed tab indent issue on a selection of lines is deleting the content when 'use spaces == true' in the preferences.
+| `Issue #5137 <https://redmine.postgresql.org/issues/5137>`_ -  Fixed save button enable issue when focusing in and out of numeric input field.
 | `Issue #5287 <https://redmine.postgresql.org/issues/5287>`_ -  Fixed dark theme-related CSS and modify the color codes.
 | `Issue #5414 <https://redmine.postgresql.org/issues/5414>`_ -  Use QStandardPaths::AppLocalDataLocation in the runtime to determine where to store runtime logs.
 | `Issue #5463 <https://redmine.postgresql.org/issues/5463>`_ -  Fixed an issue where CSV download quotes numeric columns.
