@@ -189,7 +189,8 @@ def dump_cplusplus():
     print_title("C++ Dependencies")
     print_table_header()
     print_row("QT", "5+", "LGPL v2.1/3", "https://www.qt.io/")
-    print_row("QDarkStyleSheet", "2.8.1", "MIT (code), CC BY 4.0 (images)", "https://github.com/ColinDuquesnoy/QDarkStyleSheet")
+    print_row("QDarkStyleSheet", "2.8.1", "MIT (code), CC BY 4.0 (images)",
+              "https://github.com/ColinDuquesnoy/QDarkStyleSheet")
     print_row("Python", "3.4+", "PSF", "https://www.python.org/")
     print_summary(3)
 
