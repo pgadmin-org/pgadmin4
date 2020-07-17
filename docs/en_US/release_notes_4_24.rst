@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5235 <https://redmine.postgresql.org/issues/5235>`_ -  Support configuration files that are external to the application installation.
 | `Issue #5484 <https://redmine.postgresql.org/issues/5484>`_ -  Added support for LDAP authentication with different DN by setting the dedicated user for the LDAP connection.
 | `Issue #5583 <https://redmine.postgresql.org/issues/5583>`_ -  Added support for schema level restriction.
 | `Issue #5601 <https://redmine.postgresql.org/issues/5601>`_ -  Added RLS Policy support in Schema Diff.

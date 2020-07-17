@@ -29,9 +29,10 @@ Configuration
 
 The core application configuration is found in **config.py**. This file includes
 all configurable settings for the application, along with descriptions of their
-use. It is essential that various settings are configured prior to deployent on
-a web server; these can be overriden in **config_local.py** to avoid modifying
-the main configuration file.
+use. It is essential that various settings are configured prior to deployment on
+a web server; these can be overridden in **config_local.py** or
+**config_system.py** (see the :ref:`config.py <config_py>` documentation) to
+avoid modifying the main configuration file.
 
 User Settings
 =============
@@ -108,7 +109,7 @@ PgAdminModule class. This is responsible for providing hook points to integrate
 the module into the rest of the application - for example, a hook might tell
 the caller what CSS files need to be included on the rendered page, or what menu
 options to include and what they should do. Hook points need not exist if they
-are not required. It is the responsiblity of the caller to ensure they are
+are not required. It is the responsibility of the caller to ensure they are
 present before attempting to utilise them.
 
 Hooks currently implemented are:
@@ -210,6 +211,6 @@ bootstrap for UI look and feel, Backbone for data manipulation of a node,
 Backform for generating properties/create dialog for selected node. We have
 divided each module in small chunks as much as possible. Not all javascript
 modules are required to be loaded (i.e. loading a javascript module for
-database will make sense only when a server node is loaded competely.) Please
+database will make sense only when a server node is loaded completely.) Please
 look at the the javascript files node.js, browser.js, menu.js, panel.js, etc for
 better understanding of the code.

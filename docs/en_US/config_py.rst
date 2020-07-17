@@ -23,10 +23,21 @@ are as follows:
   and may be created by users in the same directory as ``config.py`` if
   needed.
 
-.. note:: If the SERVER_MODE setting is changed in ``config_distro.py`` or ``config_local.py``,
-     you will most likely need to re-set the LOG_FILE, SQLITE_PATH, SESSION_DB_PATH
-     and STORAGE_DIR values as well as they will have been set based on the default
-     configuration or overridden by the runtime.
+* ``config_system.py``: This file is read after ``config_local.py`` and is
+  intended for system administrators to include settings that are configured
+  system-wide from a secure location that users cannot normally modify and that
+  is outside of the pgAdmin installation. The location for this file varies
+  based on the platform, and only needs to be created if desired:
+
+  * Linux: ``/etc/pgadmin/config_system.py``
+  * macOS: ``/Library/Preferences/pgadmin/config_system.py``
+  * Windows: ``%CommonProgramFiles%\pgadmin\config_system.py``
+
+.. note:: If the SERVER_MODE setting is changed in ``config_distro.py``,
+     ``config_local.py``, or ``config_system.py`` you will most likely need to
+     re-set the LOG_FILE, SQLITE_PATH, SESSION_DB_PATH and STORAGE_DIR values
+     as well as they will have been set based on the default configuration or
+     overridden by the runtime.
 
 The default ``config.py`` file is shown below for reference:
 

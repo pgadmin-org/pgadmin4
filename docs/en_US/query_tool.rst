@@ -286,8 +286,10 @@ the *Clear* drop-down menu.
 Query History is maintained across sessions for each database on a per-user
 basis when running in Query Tool mode. In View/Edit Data mode, history is not
 retained. By default, the last 20 queries are stored for each database. This
-can be adjusted in `config_local.py` by overriding the `MAX_QUERY_HIST_STORED`
-value. See the :ref:`Deployment <deployment>` section for more information.
+can be adjusted in ``config_local.py`` or ``config_system.py`` (see the
+:ref:`config.py <config_py>` documentation) by overriding the
+`MAX_QUERY_HIST_STORED` value. See the :ref:`Deployment <deployment>` section
+for more information.
 
 Connection Status
 *****************

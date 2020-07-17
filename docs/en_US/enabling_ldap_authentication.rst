@@ -5,9 +5,10 @@
 **************************************************
 
 To enable LDAP authentication for pgAdmin, you must configure the LDAP
-settings in the *config_local.py* or *config_distro.py* file on the system where
-pgAdmin is installed in Server mode. You can copy these settings from *config.py*
-file and modify the values for the following parameters:
+settings in the *config_local.py* or *config_system.py* file (see the
+:ref:`config.py <config_py>` documentation) on the system where pgAdmin is
+installed in Server mode. You can copy these settings from *config.py* file
+and modify the values for the following parameters:
 
 .. csv-table::
    :header: "**Parameter**", "**Description**"
@@ -21,9 +22,12 @@ file and modify the values for the following parameters:
    * [‘ldap’]: pgAdmin will use only LDAP authentication.
 
    * [‘ldap’, ‘internal’]: pgAdmin will first try to authenticate the user through
-     LDAP. If that authentication fails, then internal user entries of pgAdmin will be used for authentication.
+     LDAP. If that authentication fails, then internal user entries of pgAdmin
+     will be used for authentication.
 
-   * [‘internal’, ‘ldap’]: pgAdmin will first try to authenticate the user through internal user entries. If that authentication fails, then LDAP authentication will be used."
+   * [‘internal’, ‘ldap’]: pgAdmin will first try to authenticate the user
+     through internal user entries. If that authentication fails, then LDAP
+     authentication will be used."
    "LDAP_AUTO_CREATE_USER", "Specifies if you want to automatically create a pgAdmin
    user corresponding to the LDAP user credentials. Please note that LDAP password
    is not stored in the pgAdmin database."

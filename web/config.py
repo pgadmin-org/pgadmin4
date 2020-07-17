@@ -16,7 +16,6 @@ import logging
 import os
 import sys
 
-
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
 root = os.path.dirname(os.path.realpath(__file__))
@@ -572,7 +571,23 @@ try:
 except ImportError:
     pass
 
-# Override DEFAULT_SERVE value from environment variable.
+# Load system config overrides. We do this last, so that the sysadmin can
+# override anything they want from a config file that's in a protected system
+# directory and away from pgAdmin to avoid invalidating signatures.
+system_config_dir = '/etc/pgadmin'
+if sys.platform.startswith('win32'):
+    system_config_dir = os.environ['CommonProgramFiles'] + '/pgadmin'
+elif sys.platform.startswith('darwin'):
+    system_config_dir = '/Library/Preferences/pgadmin'
+
+if os.path.exists(system_config_dir + '/config_system.py'):
+    try:
+        sys.path.insert(0, system_config_dir)
+        from config_system import *
+    except ImportError:
+        pass
+
+# Override DEFAULT_SERVER value from environment variable.
 if 'PGADMIN_CONFIG_DEFAULT_SERVER' in os.environ:
     DEFAULT_SERVER = os.environ['PGADMIN_CONFIG_DEFAULT_SERVER']
 
