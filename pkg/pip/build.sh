@@ -83,7 +83,7 @@ do
 done
 
 cd ../
-for FILE in LICENSE README libraries.txt
+for FILE in LICENSE DEPENDENCIES README
 do
     echo Adding ${FILE}
     # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents

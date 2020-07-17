@@ -37,6 +37,7 @@ Bug fixes
 | `Issue #5530 <https://redmine.postgresql.org/issues/5530>`_ -  Ensure that the referenced table should be displayed on foreign key constraints.
 | `Issue #5554 <https://redmine.postgresql.org/issues/5554>`_ -  Replace the runtime themes with ones that don't have sizing issues.
 | `Issue #5569 <https://redmine.postgresql.org/issues/5569>`_ -  Fixed reverse engineered SQL for partitions when storage parameters are specified.
+| `Issue #5577 <https://redmine.postgresql.org/issues/5577>`_ -  Include LICENSE and DEPENDENCIES [inventory] files in official packages.
 | `Issue #5621 <https://redmine.postgresql.org/issues/5621>`_ -  Remove extra brackets from reverse engineering SQL of RLS Policy.
 | `Issue #5629 <https://redmine.postgresql.org/issues/5629>`_ -  Fixed an issue where the user is able to edit properties when some of the collection nodes are selected.
 | `Issue #5630 <https://redmine.postgresql.org/issues/5630>`_ -  Fixed an issue where installation of pgadmin4 not working on 32-bit Windows.

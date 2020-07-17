@@ -218,7 +218,11 @@ REM Main build sequence Ends
     ECHO Removing any existing configurations...
     DEL /q "%BUILDROOT%\web\pgadmin4.db" 1> nul 2>&1
     DEL /q "%BUILDROOT%\web\config_local.py" 1> nul 2>&1
-    
+
+    ECHO Staging license files...
+    COPY "%WD%\LICENSE" "%BUILDROOT%\" > nul || EXIT /B 1
+    COPY "%WD%\DEPENDENCIES" "%BUILDROOT%\" > nul || EXIT /B 1
+
     ECHO Creating config_distro.py
     ECHO SERVER_MODE = False > "%BUILDROOT%\web\config_distro.py"
     ECHO HELP_PATH = '../../../docs/en_US/html/' >> "%BUILDROOT%\web\config_distro.py"

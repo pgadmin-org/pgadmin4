@@ -218,6 +218,10 @@ EOF
     echo "    'ppas': ''" >> config_distro.py
     echo "}" >> config_distro.py
 
+    # License files
+    cp -r ${SOURCE_DIR}/LICENCE "${BUNDLE_DIR}/Contents/"
+    cp -r ${SOURCE_DIR}/DEPENDENCIES "${BUNDLE_DIR}/Contents/"
+
     # Remove the .pyc files if any
     find "${BUNDLE_DIR}" -name "*.pyc" -print0 | xargs -0 rm -f
 }

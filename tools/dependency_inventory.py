@@ -9,7 +9,7 @@
 #
 ##########################################################################
 
-# This utility will generate a iist of all dependencies, their upstream
+# This utility will generate a list of all dependencies, their upstream
 # repos and licence information.
 
 import os
@@ -181,7 +181,7 @@ def dump_header():
         "pgAdmin 4 is built on C++, Python and Javascript, and is "
         "dependent on various third party libraries. These are "
         "automatically compiled from the system, requirements.txt."
-        "and packages.json and list below.",
+        "and packages.json and listed below.",
         width=79) + "\n")
 
 
@@ -189,8 +189,9 @@ def dump_cplusplus():
     print_title("C++ Dependencies")
     print_table_header()
     print_row("QT", "5+", "LGPL v2.1/3", "https://www.qt.io/")
+    print_row("QDarkStyleSheet", "2.8.1", "MIT (code), CC BY 4.0 (images)", "https://github.com/ColinDuquesnoy/QDarkStyleSheet")
     print_row("Python", "3.4+", "PSF", "https://www.python.org/")
-    print_summary(2)
+    print_summary(3)
 
 
 def dump_python():

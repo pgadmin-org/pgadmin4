@@ -146,6 +146,10 @@ COPY --from=app-builder /pgadmin4/web /pgadmin4
 COPY --from=docs-builder /pgadmin4/docs/en_US/_build/html/ /pgadmin4/docs
 COPY requirements.txt /pgadmin4/requirements.txt
 
+# License files
+COPY LICENSE /pgadmin4/LICENSE
+COPY DEPENDENCIES /pgadmin4/DEPENDENCIES
+
 # Install build-dependencies, build & install C extensions and purge deps in
 # one RUN step
 RUN apk add --no-cache --virtual \

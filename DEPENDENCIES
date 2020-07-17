@@ -3,7 +3,7 @@ pgAdmin 4 Dependency Inventory
 
 pgAdmin 4 is built on C++, Python and Javascript, and is dependent on various
 third party libraries. These are automatically compiled from the system,
-requirements.txt.and packages.json and list below.
+requirements.txt.and packages.json and listed below.
 
 C++ Dependencies
 ================
@@ -11,9 +11,10 @@ C++ Dependencies
 Name                                                             Version          Licence                              URL
 ----                                                             -------          -------                              ---
 QT                                                               5+               LGPL v2.1/3                          https://www.qt.io/
+QDarkStyleSheet                                                  2.8.1            MIT (code), CC BY 4.0 (images)       https://github.com/ColinDuquesnoy/QDarkStyleSheet
 Python                                                           3.4+             PSF                                  https://www.python.org/
 
-2 dependencies listed.
+3 dependencies listed.
 
 Python Dependencies
 ===================
@@ -34,16 +35,16 @@ Flask-Compress                                                   1.4.0          
 passlib                                                          1.7.2            BSD                                  https://bitbucket.org/ecollins/passlib
 pytz                                                             2018.9           MIT                                  http://pythonhosted.org/pytz
 simplejson                                                       3.16.0           MIT License                          https://github.com/simplejson/simplejson
-six                                                              1.14.0           MIT                                  https://github.com/benjaminp/six
+six                                                              1.15.0           MIT                                  https://github.com/benjaminp/six
 speaklater                                                       1.3              UNKNOWN                              http://github.com/mitsuhiko/speaklater
 sqlparse                                                         0.2.4            BSD                                  https://github.com/andialbrecht/sqlparse
 WTForms                                                          2.2.1            BSD                                  https://wtforms.readthedocs.io/
 Flask-Paranoid                                                   0.2.0            MIT                                  http://github.com/miguelgrinberg/flask-paranoid/
 psutil                                                           5.7.0            BSD                                  https://github.com/giampaolo/psutil
-psycopg2                                                         2.8.4            LGPL with exceptions or ZPL          http://initd.org/psycopg/
+psycopg2                                                         2.8.5            LGPL with exceptions                 https://psycopg.org/
 python-dateutil                                                  2.8.1            Dual License                         https://dateutil.readthedocs.io
-SQLAlchemy                                                       1.3.15           MIT                                  http://www.sqlalchemy.org
-Flask-Security-Too                                               3.4.0            MIT                                  https://github.com/jwag956/flask-security
+SQLAlchemy                                                       1.3.17           MIT                                  http://www.sqlalchemy.org
+Flask-Security-Too                                               3.4.3            MIT                                  https://github.com/Flask-Middleware/flask-security
 sshtunnel                                                        0.1.5            MIT                                  https://github.com/pahaz/sshtunnel
 ldap3                                                            2.7              LGPL v3                              https://github.com/cannatag/ldap3
 

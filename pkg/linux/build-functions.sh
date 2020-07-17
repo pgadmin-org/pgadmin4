@@ -158,6 +158,10 @@ _copy_code() {
     find . -name "feature_tests" -type d -print0 | xargs -0 rm -rf
     find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf
 
+    # License files
+    cp "${SOURCEDIR}/LICENSE" "${SERVERROOT}/usr/${APP_NAME}/"
+    cp "${SOURCEDIR}/DEPENDENCIES" "${SERVERROOT}/usr/${APP_NAME}/"
+
     # Web setup script
     mkdir -p "${WEBROOT}/usr/${APP_NAME}/bin/"
     cp "${SOURCEDIR}/pkg/linux/setup-web.sh" "${WEBROOT}/usr/${APP_NAME}/bin/"
