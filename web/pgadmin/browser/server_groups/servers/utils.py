@@ -36,6 +36,48 @@ def parse_priv_from_db(db_privileges):
     return acl
 
 
+def _check_privilege_type(priv):
+    if isinstance(priv['privileges'], dict) \
+            and 'changed' in priv['privileges']:
+        tmp = []
+        for p in priv['privileges']['changed']:
+            tmp_p = {'privilege_type': p['privilege_type'],
+                     'privilege': False,
+                     'with_grant': False}
+
+            if 'with_grant' in p:
+                tmp_p['privilege'] = True
+                tmp_p['with_grant'] = p['with_grant']
+
+            if 'privilege' in p:
+                tmp_p['privilege'] = p['privilege']
+
+            tmp.append(tmp_p)
+
+        priv['privileges'] = tmp
+
+
+def _parse_privileges(priv, db_privileges, allowed_acls, priv_with_grant,
+                      priv_without_grant):
+    _check_privilege_type(priv)
+    for privilege in priv['privileges']:
+
+        if privilege['privilege_type'] not in db_privileges:
+            continue
+
+        if privilege['privilege_type'] not in allowed_acls:
+            continue
+
+        if privilege['with_grant']:
+            priv_with_grant.append(
+                db_privileges[privilege['privilege_type']]
+            )
+        elif privilege['privilege']:
+            priv_without_grant.append(
+                db_privileges[privilege['privilege_type']]
+            )
+
+
 def parse_priv_to_db(str_privileges, allowed_acls=[]):
     """
     Common utility function to parse privileges before sending to database.
@@ -66,41 +108,9 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
         priv_with_grant = []
         priv_without_grant = []
 
-        if isinstance(priv['privileges'], dict) \
-                and 'changed' in priv['privileges']:
-            tmp = []
-            for p in priv['privileges']['changed']:
-                tmp_p = {'privilege_type': p['privilege_type'],
-                         'privilege': False,
-                         'with_grant': False}
+        _parse_privileges(priv, db_privileges, allowed_acls, priv_with_grant,
+                          priv_without_grant)
 
-                if 'with_grant' in p:
-                    tmp_p['privilege'] = True
-                    tmp_p['with_grant'] = p['with_grant']
-
-                if 'privilege' in p:
-                    tmp_p['privilege'] = p['privilege']
-
-                tmp.append(tmp_p)
-
-            priv['privileges'] = tmp
-
-        for privilege in priv['privileges']:
-
-            if privilege['privilege_type'] not in db_privileges:
-                continue
-
-            if privilege['privilege_type'] not in allowed_acls:
-                continue
-
-            if privilege['with_grant']:
-                priv_with_grant.append(
-                    db_privileges[privilege['privilege_type']]
-                )
-            elif privilege['privilege']:
-                priv_without_grant.append(
-                    db_privileges[privilege['privilege_type']]
-                )
         # If we have all acl then just return all
         if len(priv_with_grant) == allowed_acls_len > 1:
             priv_with_grant = ['ALL']
@@ -182,6 +192,20 @@ def validate_options(options, option_name, option_value):
     return is_valid_options, valid_options
 
 
+def _password_check(server, manager, old_key, new_key):
+    # Check if old password was stored in pgadmin4 sqlite database.
+    # If yes then update that password.
+    if server.password is not None:
+        password = decrypt(server.password, old_key)
+
+        if isinstance(password, bytes):
+            password = password.decode()
+
+        password = encrypt(password, new_key)
+        setattr(server, 'password', password)
+        manager.password = password
+
+
 def reencrpyt_server_passwords(user_id, old_key, new_key):
     """
     This function will decrypt the saved passwords in SQLite with old key
@@ -193,25 +217,7 @@ def reencrpyt_server_passwords(user_id, old_key, new_key):
     for server in Server.query.filter_by(user_id=user_id).all():
         manager = driver.connection_manager(server.id)
 
-        # Check if old password was stored in pgadmin4 sqlite database.
-        # If yes then update that password.
-        if server.password is not None:
-            password = decrypt(server.password, old_key)
-
-            if isinstance(password, bytes):
-                password = password.decode()
-
-            password = encrypt(password, new_key)
-            setattr(server, 'password', password)
-            manager.password = password
-        elif manager.password is not None:
-            password = decrypt(manager.password, old_key)
-
-            if isinstance(password, bytes):
-                password = password.decode()
-
-            password = encrypt(password, new_key)
-            manager.password = password
+        _password_check(server, manager, old_key, new_key)
 
         if server.tunnel_password is not None:
             tunnel_password = decrypt(server.tunnel_password, old_key)

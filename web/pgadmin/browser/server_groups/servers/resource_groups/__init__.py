@@ -344,6 +344,25 @@ class ResourceGroupView(NodeView):
             status=200
         )
 
+    @staticmethod
+    def _check_req_parameters(data, required_args):
+        """
+        This function is used to check the request parameter.
+        :param data:
+        :param required_args:
+        :return:
+        """
+        for arg in required_args:
+            if arg not in data:
+                return True, make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
+                )
+        return False, ''
+
     @check_precondition
     def create(self, gid, sid):
         """
@@ -360,15 +379,13 @@ class ResourceGroupView(NodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        for arg in required_args:
-            if arg not in data:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        "Could not find the required parameter ({})."
-                    ).format(arg)
-                )
+
+        is_error, errmsg = ResourceGroupView._check_req_parameters(
+            data, required_args)
+
+        if is_error:
+            return errmsg
+
         try:
             # Below logic will create new resource group
             sql = render_template(
@@ -416,6 +433,32 @@ class ResourceGroupView(NodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    def _check_cpu_and_dirty_rate_limit(self, data, old_data):
+        """
+        Below logic will update the cpu_rate_limit and dirty_rate_limit
+        for resource group we need to add this logic because in
+        resource group you can't run multiple commands in one
+        transaction.
+        :param data:
+        :param old_data:
+        :return:
+        """
+
+        # Below logic will update the cpu_rate_limit and dirty_rate_limit
+        # for resource group we need to add this logic because in
+        # resource group you can't run multiple commands in one
+        # transaction.
+        if data['cpu_rate_limit'] != old_data['cpu_rate_limit'] or \
+                data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
+            sql = render_template(
+                "/".join([self.sql_path, 'update.sql']),
+                data=data, conn=self.conn
+            )
+            if sql and sql.strip('\n') and sql.strip(' '):
+                status, res = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
+
     @check_precondition
     def update(self, gid, sid, rg_id):
         """
@@ -459,16 +502,7 @@ class ResourceGroupView(NodeView):
             # for resource group we need to add this logic because in
             # resource group you can't run multiple commands in one
             # transaction.
-            if data['cpu_rate_limit'] != old_data['cpu_rate_limit'] or \
-                    data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
-                sql = render_template(
-                    "/".join([self.sql_path, 'update.sql']),
-                    data=data, conn=self.conn
-                )
-                if sql and sql.strip('\n') and sql.strip(' '):
-                    status, res = self.conn.execute_scalar(sql)
-                    if not status:
-                        return internal_server_error(errormsg=res)
+            self._check_cpu_and_dirty_rate_limit(data, old_data)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
@@ -571,6 +605,50 @@ class ResourceGroupView(NodeView):
             status=200
         )
 
+    def _get_update_sql(self, rg_id, data, required_args):
+        """
+        This function is used to get the sql for resource group
+        :param rg_id:
+        :param data:
+        :param required_args:
+        :return:
+        """
+        sql = render_template(
+            "/".join([self.sql_path, 'properties.sql']), rgid=rg_id)
+        status, res = self.conn.execute_dict(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("The specified resource group could not be found.")
+            )
+        old_data = res['rows'][0]
+        for arg in required_args:
+            if arg not in data:
+                data[arg] = old_data[arg]
+
+        sql = ''
+        name_changed = False
+        if data['name'] != old_data['name']:
+            name_changed = True
+            sql = render_template(
+                "/".join([self.sql_path, 'update.sql']),
+                oldname=old_data['name'], newname=data['name'],
+                conn=self.conn
+            )
+        if data['cpu_rate_limit'] != old_data['cpu_rate_limit'] or \
+                data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
+            if name_changed:
+                sql += "\n-- Following query will be executed in a " \
+                       "separate transaction\n"
+            sql += render_template(
+                "/".join([self.sql_path, 'update.sql']),
+                data=data, conn=self.conn
+            )
+
+        return sql, old_data['name']
+
     def get_sql(self, data, rg_id=None):
         """
         This function will generate sql from model data
@@ -582,40 +660,11 @@ class ResourceGroupView(NodeView):
         required_args = [
             'name', 'cpu_rate_limit', 'dirty_rate_limit'
         ]
+
+        old_name = ''
         if rg_id is not None:
-            sql = render_template(
-                "/".join([self.sql_path, 'properties.sql']), rgid=rg_id)
-            status, res = self.conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if len(res['rows']) == 0:
-                return gone(
-                    gettext("The specified resource group could not be found.")
-                )
-            old_data = res['rows'][0]
-            for arg in required_args:
-                if arg not in data:
-                    data[arg] = old_data[arg]
-
-            sql = ''
-            name_changed = False
-            if data['name'] != old_data['name']:
-                name_changed = True
-                sql = render_template(
-                    "/".join([self.sql_path, 'update.sql']),
-                    oldname=old_data['name'], newname=data['name'],
-                    conn=self.conn
-                )
-            if data['cpu_rate_limit'] != old_data['cpu_rate_limit'] or \
-                    data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
-                if name_changed:
-                    sql += "\n-- Following query will be executed in a " \
-                           "separate transaction\n"
-                sql += render_template(
-                    "/".join([self.sql_path, 'update.sql']),
-                    data=data, conn=self.conn
-                )
+            # Get sql for Resource group by ID.
+            sql, old_name = self._get_update_sql(rg_id, data, required_args)
         else:
             sql = render_template(
                 "/".join([self.sql_path, 'create.sql']),
@@ -638,7 +687,7 @@ class ResourceGroupView(NodeView):
                     data=data, conn=self.conn
                 )
 
-        return sql, data['name'] if 'name' in data else old_data['name']
+        return sql, data['name'] if 'name' in data else old_name
 
     @check_precondition
     def sql(self, gid, sid, rg_id):

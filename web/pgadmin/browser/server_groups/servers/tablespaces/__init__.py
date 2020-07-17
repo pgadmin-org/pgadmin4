@@ -467,6 +467,22 @@ class TablespaceView(PGChildNodeView):
             status=200
         )
 
+    def _format_privilege_data(self, data):
+        for key in ['spcacl']:
+            if key in data and data[key] is not None:
+                if 'added' in data[key]:
+                    data[key]['added'] = parse_priv_to_db(
+                        data[key]['added'], self.acl
+                    )
+                if 'changed' in data[key]:
+                    data[key]['changed'] = parse_priv_to_db(
+                        data[key]['changed'], self.acl
+                    )
+                if 'deleted' in data[key]:
+                    data[key]['deleted'] = parse_priv_to_db(
+                        data[key]['deleted'], self.acl
+                    )
+
     def get_sql(self, gid, sid, data, tsid=None):
         """
         This function will genrate sql from model/properties data
@@ -494,20 +510,7 @@ class TablespaceView(PGChildNodeView):
             old_data = self._formatter(old_data, tsid)
 
             # To format privileges data coming from client
-            for key in ['spcacl']:
-                if key in data and data[key] is not None:
-                    if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(
-                            data[key]['added'], self.acl
-                        )
-                    if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(
-                            data[key]['changed'], self.acl
-                        )
-                    if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(
-                            data[key]['deleted'], self.acl
-                        )
+            self._format_privilege_data(data)
 
             # If name is not present with in update data then copy it
             # from old data
@@ -669,6 +672,61 @@ class TablespaceView(PGChildNodeView):
             status=200
         )
 
+    def _handel_dependents_type(self, types, type_str, row, rel_name):
+        type_name = ''
+        if types[type_str[0]] is None:
+            if type_str[0] == 'i':
+                type_name = 'index'
+                rel_name = row['indname'] + ' ON ' + rel_name
+            elif type_str[0] == 'o':
+                type_name = 'operator'
+                rel_name = row['relname']
+        else:
+            type_name = types[type_str[0]]
+        return type_name, rel_name
+
+    def _check_dependents_type(self, types, dependents, db_row, result):
+        for row in result['rows']:
+            rel_name = row['nspname']
+            if rel_name is not None:
+                rel_name += '.'
+
+            if rel_name is None:
+                rel_name = row['relname']
+            else:
+                rel_name += row['relname']
+
+            type_str = row['relkind']
+            # Fetch the type name from the dictionary
+            # if type is not present in the types dictionary then
+            # we will continue and not going to add it.
+            if type_str[0] in types:
+                # if type is present in the types dictionary, but it's
+                # value is None then it requires special handling.
+                type_name, rel_name = self._handel_dependents_type(types,
+                                                                   type_str,
+                                                                   row,
+                                                                   rel_name)
+            else:
+                continue
+
+            dependents.append(
+                {
+                    'type': type_name,
+                    'name': rel_name,
+                    'field': db_row['datname']
+                }
+            )
+
+    def _create_dependents_data(self, types, result, dependents, db_row,
+                                is_connected, manager):
+
+        self._check_dependents_type(types, dependents, db_row, result)
+
+        # Release only those connections which we have created above.
+        if not is_connected:
+            manager.release(db_row['datname'])
+
     def get_dependents(self, conn, sid, tsid):
         """
         This function is used to fetch the dependents for the selected node.
@@ -746,48 +804,8 @@ class TablespaceView(PGChildNodeView):
                 if not status:
                     current_app.logger.error(result)
 
-                for row in result['rows']:
-                    rel_name = row['nspname']
-                    if rel_name is not None:
-                        rel_name += '.'
-
-                    if rel_name is None:
-                        rel_name = row['relname']
-                    else:
-                        rel_name += row['relname']
-
-                    type_name = ''
-                    type_str = row['relkind']
-                    # Fetch the type name from the dictionary
-                    # if type is not present in the types dictionary then
-                    # we will continue and not going to add it.
-                    if type_str[0] in types:
-
-                        # if type is present in the types dictionary, but it's
-                        # value is None then it requires special handling.
-                        if types[type_str[0]] is None:
-                            if type_str[0] == 'i':
-                                type_name = 'index'
-                                rel_name = row['indname'] + ' ON ' + rel_name
-                            elif type_str[0] == 'o':
-                                type_name = 'operator'
-                                rel_name = row['relname']
-                        else:
-                            type_name = types[type_str[0]]
-                    else:
-                        continue
-
-                    dependents.append(
-                        {
-                            'type': type_name,
-                            'name': rel_name,
-                            'field': db_row['datname']
-                        }
-                    )
-
-                # Release only those connections which we have created above.
-                if not is_connected:
-                    manager.release(db_row['datname'])
+                self._create_dependents_data(types, result, dependents, db_row,
+                                             is_connected, manager)
 
         return dependents
 
