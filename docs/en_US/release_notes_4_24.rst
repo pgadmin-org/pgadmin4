@@ -42,3 +42,4 @@ Bug fixes
 | `Issue #5647 <https://redmine.postgresql.org/issues/5647>`_ -  Fixed an issue where difference DDL is showing the wrong SQL when changing the policy owner.
 | `Issue #5662 <https://redmine.postgresql.org/issues/5662>`_ -  Fixed accessibility issue where few dialogs are not rendering properly when we zoomed in browser window 200% and screen resolution is low.
 | `Issue #5673 <https://redmine.postgresql.org/issues/5673>`_ -  Fixed an issue where fetching the schema throws an error if the database is not connected in Schema Diff.
+| `Issue #5675 <https://redmine.postgresql.org/issues/5675>`_ -  Fixed CSRF errors when pgAdmin opened in an iframe on safari browser.

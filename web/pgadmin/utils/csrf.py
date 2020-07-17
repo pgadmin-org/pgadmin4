@@ -36,6 +36,7 @@ class _PGCSRFProtect(CSRFProtect):
             'pgadmin.tools.debugger.direct_new',
             'pgadmin.tools.schema_diff.panel',
             'pgadmin.tools.schema_diff.ddl_compare',
+            'pgadmin.authenticate.login'
         ]
 
         for exempt in exempt_views:
