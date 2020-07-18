@@ -219,7 +219,7 @@ EOF
     echo "}" >> config_distro.py
 
     # License files
-    cp -r ${SOURCE_DIR}/LICENCE "${BUNDLE_DIR}/Contents/"
+    cp -r ${SOURCE_DIR}/LICENSE "${BUNDLE_DIR}/Contents/"
     cp -r ${SOURCE_DIR}/DEPENDENCIES "${BUNDLE_DIR}/Contents/"
 
     # Remove the .pyc files if any
