@@ -1494,3 +1494,88 @@ def quit_webdriver(driver):
         print("Some Other exception occurred.")
         traceback.print_exc(file=sys.stderr)
         print(str(e))
+
+
+def delete_server(tester, server_information=None):
+    """ This function use to delete test server """
+    try:
+        parent_node_dict = regression.parent_node_dict
+        test_servers = parent_node_dict["server"]
+        test_databases = parent_node_dict["database"]
+        test_roles = regression.node_info_dict["lrid"]
+        test_table_spaces = regression.node_info_dict["tsid"]
+        for server in test_servers:
+            if server["server_id"] == server_information['server_id']:
+                srv_id = server["server_id"]
+                servers_dict = server["server"]
+
+                deleted_db = []
+                for database in test_databases:
+                    if database['server_id'] == srv_id:
+                        connection = get_db_connection(
+                            servers_dict['db'],
+                            servers_dict['username'],
+                            servers_dict['db_password'],
+                            servers_dict['host'],
+                            servers_dict['port'],
+                            servers_dict['sslmode']
+                        )
+                        # Drop database
+                        drop_database(connection, database["db_name"])
+                        deleted_db.append(database)
+
+                if len(deleted_db) > 0:
+                    print("Deleted DB  {0}".format(deleted_db),
+                          file=sys.stderr)
+                    for ele in deleted_db:
+                        regression.parent_node_dict["database"].remove(ele)
+
+                deleted_roles = []
+                for role in test_roles:
+                    if role['server_id'] == srv_id:
+                        connection = get_db_connection(
+                            servers_dict['db'],
+                            servers_dict['username'],
+                            servers_dict['db_password'],
+                            servers_dict['host'],
+                            servers_dict['port'],
+                            servers_dict['sslmode']
+                        )
+                        # Delete role
+                        regression.roles_utils.delete_role(
+                            connection, role["role_name"]
+                        )
+                        deleted_roles.append(role)
+
+                if len(deleted_roles) > 0:
+                    print("Deleted Roles  {0}".format(deleted_roles),
+                          file=sys.stderr)
+                    for ele in deleted_roles:
+                        regression.node_info_dict["lrid"].remove(ele)
+
+                for tablespace in test_table_spaces:
+                    if tablespace['server_id'] == srv_id:
+                        connection = get_db_connection(
+                            servers_dict['db'],
+                            servers_dict['username'],
+                            servers_dict['db_password'],
+                            servers_dict['host'],
+                            servers_dict['port'],
+                            servers_dict['sslmode']
+                        )
+                        # Delete tablespace
+                        regression.tablespace_utils.delete_tablespace(
+                            connection, tablespace["tablespace_name"]
+                        )
+                        print(
+                            "Deleted Tablepace  {0}".format(
+                                tablespace["tablespace_name"]),
+                            file=sys.stderr)
+
+                # Delete server
+                delete_server_with_api(tester, srv_id)
+                print("Deleted Database, Roles, Tablespace for {0}".format(
+                    servers_dict['name']), file=sys.stderr)
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+        raise

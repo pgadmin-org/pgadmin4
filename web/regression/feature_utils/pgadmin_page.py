@@ -963,9 +963,10 @@ class PgadminPage:
                 codemirror_ele.click()
                 retry = 0
             except WebDriverException as e:
-                print("Exception in filling code mirror {0} ".format(retry))
+                print("Exception in filling code mirror {0} ".format(retry),
+                      file=sys.stderr)
                 print(str(e))
-                if retry == 0:
+                if retry == 1:
                     raise e
                 retry -= 1
 

@@ -78,7 +78,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                 self._check_xss_in_dependents_tab()
                 retry = 0
             except WebDriverException as e:
-                print("Exception in dependent check {0}".format(retry))
+                print("Exception in dependent check {0}".format(retry),
+                      file=sys.stderr)
                 if retry == 1:
                     raise e
                 retry -= 1
@@ -166,9 +167,11 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                                             "td[2]").get_attribute('innerHTML')
                 retry = 0
             except WebDriverException as e:
-                print("Exception in dependent tab {0}".format(retry))
+                print("Exception in dependent tab {0}".format(retry),
+                      file=sys.stderr)
                 self.page.click_tab("Dependencies")
                 if retry == 1:
+                    self.page.click_tab("Dependents")
                     raise e
                 retry -= 1
 

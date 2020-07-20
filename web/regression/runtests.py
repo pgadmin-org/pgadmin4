@@ -500,7 +500,8 @@ def execute_test(test_module_list_passed, server_passed, driver_passed):
             test_utils.drop_database(connection, test_db_name)
             connection.close()
         # Delete test server
-        test_utils.delete_test_server(test_client)
+        # test_utils.delete_test_server(test_client)
+        test_utils.delete_server(test_client, server_information)
     except Exception as exc:
         traceback.print_exc(file=sys.stderr)
         print(str(exc))
