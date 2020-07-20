@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-17 18:01+0530\n"
-"PO-Revision-Date: 2020-06-20 16:24+0900\n"
+"PO-Revision-Date: 2020-07-18 16:16+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -2065,6 +2065,8 @@ msgid ""
 "Could not find the schema in the database.\n"
 "                    It may have been removed by another user."
 msgstr ""
+"データベースのスキーマが見つかりませんでした。\n"
+"                    他のユーザによって削除された可能性があります"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:513
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:1022
@@ -2101,6 +2103,8 @@ msgid ""
 "Could not find the schema in the database.\n"
 "                It may have been removed by another user."
 msgstr ""
+"データベースのスキーマが見つかりませんでした。\n"
+"                他のユーザによって削除された可能性があります"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/__init__.py:47
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/static/js/catalog_object.js:19
@@ -4238,7 +4242,7 @@ msgstr "参照先"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:61
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:910
 msgid "Referenced Table"
-msgstr ""
+msgstr "参照先のテーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:156
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:264
@@ -5004,15 +5008,15 @@ msgstr "USING"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:119
 msgid "With check"
-msgstr ""
+msgstr "WITH CHECK"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:125
 msgid "RLS policy expression"
-msgstr ""
+msgstr "RLS ポリシーの式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:129
 msgid "Using: "
-msgstr ""
+msgstr "USING： "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:130
 msgid ""
@@ -5023,10 +5027,14 @@ msgid ""
 "for modification (in an UPDATE or DELETE). Such rows are silently "
 "suppressed; no error is reported."
 msgstr ""
+"行単位セキュリティが有効な場合、そのテーブルを参照しようとするクエリに対し、この式を追加します。"
+"この式が TRUE を返すと、対象の行は可視化され、SELECT の結果にも表示されますし、UPDATE "
+"と DELETE で変更もできます。しかし、式が FALSE や NULL を返すと、それらの行は暗黙的に"
+"無視され、表示も変更もできなくなります"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:132
 msgid "With check: "
-msgstr ""
+msgstr "WITH CHECK： "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:133
 msgid ""
@@ -5036,14 +5044,17 @@ msgid ""
 "the expression evaluates to false or null for any of the records inserted"
 " or any of the records that result from the update."
 msgstr ""
+"行単位セキュリティが有効な場合、そのテーブルに発行される INSERT/UPDATE クエリに対し、この式"
+"を追加します。この式が TRUE に評価される行のみ、挿入と更新が行えます。しかし、式が FALSE "
+"や NULL に評価されると、挿入も更新もエラーとして拒否されます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:190
 msgid "\"USING\" can not be empty once the value is set"
-msgstr ""
+msgstr "いったん値を設定した「USING」は解除できません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:195
 msgid "\"Withcheck\" can not be empty once the value is set"
-msgstr ""
+msgstr "いったん値を設定した「WITH CHECK」は解除できません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:45
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:27
@@ -5282,6 +5293,8 @@ msgid ""
 "default-deny policy is used, meaning that no rows are visible or can be "
 "modified by other users"
 msgstr ""
+"何らかのポリシーが、テーブルに存在しているかどうかを確認してください。存在しない場合、拒否を既定"
+"とするポリシーを使用します。これにより、すべての行が不可視となり、誰にも変更できなくなります"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/columns/sql/default/stats.sql:2
 msgid "Null fraction"
@@ -6291,19 +6304,21 @@ msgstr "デフォルトの権限"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:463
 msgid "Schema restriction"
-msgstr ""
+msgstr "スキーマ制限"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:484
 msgid ""
 "Please refresh the Schemas node to make changes to the schema restriction"
 " take effect."
-msgstr ""
+msgstr "スキーマ制限の変更を適用するには、スキーマノードを再読み込みしてください"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:494
 msgid ""
 "Note: Changes to the schema restriction will require the Schemas node in "
 "the browser to be refreshed before they will be shown."
 msgstr ""
+"注： スキーマ制限の変更を正確に反映させるため、スキーマノードがすでにブラウザ内に表示されて"
+"いないことを確認してください"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:547
 msgid "Connect to database"
@@ -7350,6 +7365,14 @@ msgid ""
 "            ...\n"
 "        ]"
 msgstr ""
+"\n"
+"        ロールのメンバシップ情報は、以下の形式の JSON オブジェクトを配列にして渡してください\n"
+"        rolmembership:[{\n"
+"            role: [ロール名],\n"
+"            admin: True/False\n"
+"            },\n"
+"            ...\n"
+"        ]"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:292
 msgid "Date format is invalid."
@@ -8005,7 +8028,7 @@ msgstr "いますぐ接続"
 msgid ""
 "To apply changes to the connection configuration, please disconnect from "
 "the server and then reconnect."
-msgstr ""
+msgstr "接続設定の変更を適用するには、いったんサーバから切断し、再接続してください"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:857
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1029
