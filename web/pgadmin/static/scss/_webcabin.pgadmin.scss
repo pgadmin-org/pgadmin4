@@ -38,7 +38,7 @@
 
 /* darken % taken from bootstrap - button_variant */
 .wcFrameButton:hover, .wcFrameButtonHover,  .wcFrameButton:focus {
-  background-color: $btn-secondary-hover-bg;
+  background-color: $btn-frame-close-bg;
 }
 
 .wcFrameButton.disabled {
@@ -74,7 +74,7 @@
 }
 
 .wcPanelTab, .wcFrameTitle{
-  color: $color-fg;
+  color: $panel-color-fg;
   padding: $tabs-padding;
   margin: 0px;
 }

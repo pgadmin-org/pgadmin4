@@ -168,7 +168,7 @@
 }
 
 .CodeMirror .CodeMirror-selected {
-  background: $color-primary-light !important;
+  background: $sql-editor-selection-bg !important;
 }
 
 .CodeMirror-activeline-background {
@@ -199,4 +199,8 @@
             background-color: $scrollbar-base-color;
         }
     }
+}
+
+.bg-gray-lighter {
+  background-color: $sql-editor-disable-bg !important;
 }

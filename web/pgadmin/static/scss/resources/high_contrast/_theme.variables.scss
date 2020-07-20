@@ -1,0 +1,201 @@
+$white: #FFFFFF;
+$color-bg: #010B15;
+$color-fg: $white;
+
+$color-primary: #84D6FF;
+$color-primary-fg: $color-bg;
+$color-primary-light: #84D6FF;
+$color-primary-light-fg: $color-bg;
+$color-secondary: #6B6B6B;
+
+$color-ternary: #c9d0d7;
+$color-ternary-fg: $color-bg;
+
+$color-danger: #EE7A55;
+$color-danger-icon-fg: $color-bg;
+$color-danger-fg: $color-bg;
+$color-danger-light: #EE7A55;
+$color-danger-lighter: #EE7A55;
+
+$color-success: #45D48A;
+$color-success-fg: $color-bg;
+$color-success-light: #45D48A;
+
+$color-success-disabled-fg: $color-fg;
+$color-success-disabled-bg: $color-bg;
+$color-success-hover-fg: #010B15;
+
+$color-warning: #F4D35E;
+$color-warning-fg: $color-bg;
+$color-warning-light: #F4D35E;
+
+
+$color-gray-dark: #010B15;
+$color-gray: #1F2932;
+$color-gray-light: #2D3A48;
+$color-gray-lighter: #8B9CAD;
+
+$sql-gutters-bg: $color-gray-light;
+$sql-title-bg: #1F2932;
+$sql-title-fg: $color-fg;
+$sql-editor-disable-bg: $color-gray;
+$sql-editor-selection-bg: $color-gray;
+$sql-history-detail-bg: $color-gray;
+$sql-history-success-fg: #010B15;
+
+$color-brand: $color-primary;
+
+$border-color: #A6B7C8;
+
+// $shadow-base-color: #C9D0D7;
+$shadow-base-color: transparent;
+
+$text-muted: #8b9cad;
+
+$header-bg: $color-bg;
+$card-cap-bg: $color-bg;
+$badge-header-bg: $color-bg;
+
+$alert-primary-bg: $color-primary;
+$alert-primary-color: $color-bg;
+$alert-danger-bg: $color-danger;
+$alert-danger-color: $color-bg !important;
+$alert-success-bg̰: $color-success;
+$alert-success-color: $color-bg;
+
+$alert-color-fg: $color-bg;
+
+$negative-bg: $color-bg;
+
+$popover-bg: $color-gray-dark;
+$popover-body-color: $color-fg;
+
+$table-hover-color: $color-bg;
+$table-hover-bg: $color-fg !important;
+$table-hover-bg-color: $color-primary-light;
+
+$input-bg: $color-bg;
+$input-color: $color-fg;
+$input-border-color: $border-color;
+$input-disabled-bg: $color-gray;
+$input-focus-border-color: $color-primary;
+$input-btn-focus-shadow-color: none;
+
+$color-editor-fg: $white;
+$color-editor-keyword: #F8845F;
+$color-editor-number: #45D48A;
+$color-editor-string: #EAEA43;
+$color-editor-variable: #7DC9F1;
+$color-editor-variable-2: #7DC9F1;
+$color-editor-builtin: #B394FC;
+$color-editor-comment: #FFAD65;
+$color-editor-bracket: #D6AAAA;
+$color-editor-operator: $color-fg;
+$color-editor-foldmarker: #FFFFFF;
+$color-editor-activeline: #50B0F0;
+
+$active-color: $color-fg;
+$active-border: 3px solid $color-primary;
+
+$table-bg: $color-bg;
+
+$explain-sev-2-bg: #EAEA43;
+$explain-sev-3-bg: #FFAD65;
+$explain-sev-4-bg: #EE7A55;
+$explain-sev-3-color: #010B15;
+$explain-sev-4-color: #010B15;
+$explain-sev-2-color: #010B15;
+
+$btn-ternary-border: $color-ternary;
+$btn-ternary-hover-bg: #a6b7c8;
+$btn-ternary-disabled-bg: $color-bg;
+$btn-ternary-disabled-fg: $color-fg;
+$btn-ternary-disabled-border-color: $btn-ternary-disabled-fg;
+
+$scrollbar-base-color: #C9D0D7;
+
+$loader-icon : url("data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='utf-8'?%3e%3csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 38 38' style='enable-background:new 0 0 38 38;' xml:space='preserve'%3e%3cstyle type='text/css'%3e .st0%7bfill:none;stroke:%23ebeef3;stroke-width:2;%7d .st1%7bfill:none;stroke:%23326690;stroke-width:2;%7d %3c/style%3e%3cg%3e%3cg transform='translate(1 1)'%3e%3ccircle class='st0' cx='18' cy='18' r='18'/%3e%3cpath class='st1' d='M36,18c0-9.9-8.1-18-18-18 '%3e%3canimateTransform accumulate='none' additive='replace' attributeName='transform' calcMode='linear' dur='0.7s' fill='remove' from='0 18 18' repeatCount='indefinite' restart='always' to='360 18 18' type='rotate'%3e%3c/animateTransform%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/svg%3e ");
+$loader-icon-small: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Generator: Adobe Illustrator 23.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0) --%3E%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 38 38' style='enable-background:new 0 0 38 38;' xml:space='preserve'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:none;stroke:%23EBEEF3;stroke-width:5;%7D .st1%7Bfill:none;stroke:%23326690;stroke-width:5;%7D%0A%3C/style%3E%3Cg%3E%3Cg transform='translate(1 1)'%3E%3Ccircle class='st0' cx='18' cy='18' r='16'/%3E%3Cpath class='st1' d='M34,18c0-8.8-7.2-16-16-16 '%3E%3CanimateTransform accumulate='none' additive='replace' attributeName='transform' calcMode='linear' dur='0.7s' fill='remove' from='0 18 18' repeatCount='indefinite' restart='always' to='360 18 18' type='rotate'%3E%3C/animateTransform%3E%3C/path%3E%3C/g%3E%3C/g%3E%3C/svg%3E%0A");
+
+$schemadiff-diff-row-color: #CFC56E;
+$schemadiff-source-row-color: #EE97A5;
+$schemadiff-target-row-color: #FFAD65;
+$schema-diff-color-fg: #010B15;
+
+$tree-text-fg: $color-fg;
+$tree-text-hover-fg: $color-bg;
+$tree-fg-hover: $color-bg;
+$tree-bg-hover: $color-fg;
+$tree-fg-selected: $color-fg;
+$tree-bg-selected: $color-primary-light;
+
+$select2-container-hover-bg: $color-primary;
+$select2-container-hover-fg: $color-bg;
+$select2-container-bg-selected: $color-fg;
+$select2-container-fg-selected: $color-bg;
+
+$sql-hint-active-fg: $color-bg;
+
+$btn-primary-hover-bg: $color-fg;
+$btn-primary-border-hover-bg: $color-fg;
+$btn-primary-disabled-bg: $color-gray-lighter;
+
+$btn-secondary-hover-bg: transparent;
+$btn-secondary-border-hover-bg: $color-fg;
+$btn-secondary-bg: transparent;
+$btn-secondary-fg: $color-primary;
+$btn-secondary-hover-fg: $color-fg;
+$btn-secondary-border: $color-primary;
+$btn-secondary-disabled-bg: $color-gray-lighter;
+$btn-secondary-disabled-fg: $color-gray-lighter;
+
+$btn-frame-close-bg: $color-gray-light;
+// $dialog-box-shadow: 0rem 0rem transparent !important;
+
+$navbar-bg: #062F57;
+$navbar-dark-color: $color-fg;
+$navbar-dark-active-color: $color-fg;
+// $navbar-dark-disabled-color: $color-gray !important;
+
+$alert-header-bg: #062F57 !important;
+$alert-header-fg: $color-fg;
+$alert-action-bg: $alert-header-fg;
+$alert-action-hover-bg: $color-fg;
+$alert-dialog-body-bg: $color-gray;
+
+$datagrid-bg: $color-bg;
+$datagrid-selected-color : $color-primary-fg;
+
+$card-header-bg: #062F57 !important;
+$card-header-fg: $color-fg !important;
+$card-header-border-color: $card-header-bg;
+$card-border-color: transparent;
+$card-bg: $color-gray;
+
+
+$custom-forms-transition: none;
+$custom-control-indicator-focus-border-color: #FFFFFF !important;
+$custom-control-indicator-border-color: $color-gray-lighter;
+
+$panel-color-fg: $color-ternary;
+$panel-border-color: $color-gray;
+
+$btn-primary-icon-bg: $color-bg;
+$btn-primary-icon-border-color: $color-fg;
+$btn-primary-icon-border-disable-bg: $color-gray-lighter;
+$btn-primary-icon-fg: $color-fg;
+$btn-primary-icon-hover-bg: $color-fg;
+$btn-primary-icon-hover-fg: $color-bg;
+$btn-primary-icon-disable-fg: $color-gray-lighter;
+$btn-primary-icon-disable-bg: $color-gray;
+
+$dropdown-link-remove-color: $color-bg;
+
+$editor-toolbar-bg: $color-bg;
+
+$grid-hover-bg-color: $white;
+$grid-hover-fg-color: #010B15;
+
+$btn-copied-color-fg: #010B15;
+
+

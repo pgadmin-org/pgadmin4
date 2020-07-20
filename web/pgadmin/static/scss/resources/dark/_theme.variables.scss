@@ -20,6 +20,9 @@ $color-success: #26852B;
 $color-success-fg: $black;
 $color-success-light: #2B472C;
 
+$color-success-disabled-fg: $color-fg;
+$color-success-disabled-bg: $color-success;
+
 $color-warning: #eea236;
 $color-warning-fg: $black;
 $color-warning-light: #b18d5a;
@@ -56,6 +59,7 @@ $alert-danger-bg: $color-bg;
 $alert-danger-color: $color-danger;
 $alert-success-bg: $color-bg;
 $alert-success-color: $color-success;
+$alert-header-fg: $color-fg;
 
 $table-bg: $color-gray-lighter;
 
@@ -77,6 +81,7 @@ $explain-sev-3-bg: #c2812b;
 $explain-sev-4-bg: #880000;
 $explain-sev-3-color: $color-fg;
 $explain-sev-4-color: $color-fg;
+$explain-sev-2-color: $black;
 
 $negative-bg: $color-bg;
 
@@ -88,3 +93,24 @@ $loader-icon-small: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='ut
 $schemadiff-diff-row-color: #807a48 !default;
 $schemadiff-source-row-color: #402025 !default;
 $schemadiff-target-row-color: #6b5438 !default;
+
+$btn-secondary-fg: $white;
+$btn-secondary-border-hover-bg: $color-gray-light;
+$btn-secondary-hover-fg: $white;
+
+$card-header-bg: $color-gray-lighter;
+$card-header-fg: $color-fg;
+$card-header-border-color: $border-color;
+
+
+$btn-primary-icon-bg: $color-secondary;
+$btn-primary-icon-fg: $white;
+$btn-primary-icon-hover-fg: $white;
+$btn-primary-icon-hover-bg: $color-gray-light;
+$btn-primary-icon-border-color: $color-gray;
+$btn-primary-icon-border-disable-bg: $color-gray;
+$btn-primary-icon-disable-fg: $white;
+$btn-primary-icon-disable-bg: $color-secondary;
+
+$btn-ternary-disabled-fg: $color-fg;
+$color-success-hover-fg: $color-fg;

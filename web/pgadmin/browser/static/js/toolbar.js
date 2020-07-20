@@ -24,7 +24,7 @@ let _defaultToolBarButtons = [
     text: '',
     toggled: false,
     toggleClass: '',
-    parentClass: 'pg-toolbar-btn btn-secondary',
+    parentClass: 'pg-toolbar-btn btn-primary-icon',
     enabled: false,
   },
   {
@@ -34,7 +34,7 @@ let _defaultToolBarButtons = [
     text: '',
     toggled: false,
     toggleClass: '',
-    parentClass: 'pg-toolbar-btn btn-secondary',
+    parentClass: 'pg-toolbar-btn btn-primary-icon',
     enabled: false,
   },
   {
@@ -44,7 +44,7 @@ let _defaultToolBarButtons = [
     text: '',
     toggled: false,
     toggleClass: '',
-    parentClass: 'pg-toolbar-btn btn-secondary',
+    parentClass: 'pg-toolbar-btn btn-primary-icon',
     enabled: false,
   },
   {
@@ -54,7 +54,7 @@ let _defaultToolBarButtons = [
     text: '',
     toggled: false,
     toggleClass: '',
-    parentClass: 'pg-toolbar-btn btn-secondary',
+    parentClass: 'pg-toolbar-btn btn-primary-icon',
     enabled: false,
   },
 ];

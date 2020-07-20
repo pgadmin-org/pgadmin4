@@ -270,7 +270,7 @@ define([
               return {
                 buttons: [{
                   text: '',
-                  className: 'btn btn-secondary pull-left fa fa-info pg-alertify-icon-button',
+                  className: 'btn btn-primary-icon pull-left fa fa-info pg-alertify-icon-button',
                   attrs: {
                     name: 'object_help',
                     type: 'button',
@@ -281,7 +281,7 @@ define([
                 }, {
                   text: '',
                   key: 112,
-                  className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
+                  className: 'btn btn-primary-icon pull-left fa fa-question pg-alertify-icon-button',
                   attrs: {
                     name: 'dialog_help',
                     type: 'button',

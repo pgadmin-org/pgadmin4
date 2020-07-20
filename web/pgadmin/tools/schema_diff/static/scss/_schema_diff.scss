@@ -24,7 +24,7 @@
   font-size: $tree-font-size;
   .ui-widget-content {
     background-color: $input-bg;
-    color: $input-color;
+    color: $schema-diff-color-fg;
   }
 
   .ui-state-default {
@@ -113,4 +113,16 @@
   content: "\f078";
   font-size: 0.7rem;
   margin-left: 0rem;
+}
+
+.slick-group {
+  color: $input-color !important;
+}
+
+.slick-group:hover {
+  color: $schema-diff-color-fg !important;
+}
+
+.slick-group.active {
+  color: $schema-diff-color-fg !important;
 }

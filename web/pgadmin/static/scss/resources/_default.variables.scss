@@ -18,6 +18,7 @@ $color-ternary: #5b6d7c !default;
 $color-ternary-fg: $white !default;
 
 $color-danger: #e53935 !default;
+$color-danger-icon-fg: $color-danger !default;
 $color-danger-fg: $white !default;
 $color-danger-light: #F39999 !default;
 $color-danger-lighter: #FAECEC !default;
@@ -25,6 +26,10 @@ $color-danger-lighter: #FAECEC !default;
 $color-success: #26852B !default;
 $color-success-fg: $black !default;
 $color-success-light: #D9ECDA !default;
+
+$color-success-disabled-fg: $color-bg !default;
+$color-success-disabled-bg: $color-success !default;
+$color-success-hover-fg: $white !default;
 
 $color-warning: #eea236 !default;
 $color-warning-fg: $black !default;
@@ -61,6 +66,7 @@ $border-radius: 0.25rem;
 
 $text-muted: #667185 !default;
 $header-bg: $color-bg !default;
+$badge-header-bg: $header-bg !default;
 
 $tree-font-size: 0.815rem;
 
@@ -71,14 +77,14 @@ $alert-danger-color: $color-danger !default;
 $alert-success-bg: $color-success-light !default;
 $alert-success-color: $color-success !default;
 
-$navbar-bg: $color-primary;
+$navbar-bg: $color-primary !default;
 $navbar-font-size: 0.925rem;
 $navbar-height: 32px;
 $navbar-dropdown-top: 100%;
-$navbar-dark-color: $color-primary-fg;
+$navbar-dark-color: $color-primary-fg !default;
 $navbar-dark-hover-color: $color-primary-fg;
-$navbar-dark-active-color: $color-primary-fg;
-$navbar-dark-disabled-color: $color-gray;
+$navbar-dark-active-color: $color-primary-fg !default;
+$navbar-dark-disabled-color: $color-gray !default;
 
 $navbar-toggler-padding-y: 0.25rem; //no-change
 
@@ -92,6 +98,7 @@ $dropdown-color: $color-fg;
 $dropdown-link-color: $color-fg;
 $dropdown-link-hover-color: $color-primary-fg;
 $dropdown-link-hover-bg: $color-primary;
+$dropdown-link-remove-color: $color-primary !default;
 $dropdown-border-color: $border-color;
 $dropdown-box-shadow: 0 0.125rem 0.5rem rgba($shadow-base-color, .275);
 $dropdown-divider-bg: $dropdown-border-color;
@@ -113,9 +120,9 @@ $btn-transition: color .05s ease-in-out, background-color .05s ease-in-out, bord
 $card-spacer-y: 0rem;
 $card-spacer-x: 0rem;
 $card-border-radius: $border-radius;
-$card-border-color: $border-color;
-$card-cap-bg: $header-bg;
-$card-bg: $color-bg;
+$card-border-color: $border-color !default;
+$card-cap-bg: $header-bg !default;
+$card-bg: $color-bg !default;
 
 $navbar-padding-y: 0rem;
 $navbar-padding-x: 0rem;
@@ -135,9 +142,9 @@ $nav-tabs-link-active-border-color: none;
 
 $table-cell-padding: 0.25rem;
 $table-header-cell-padding: 0.75rem;
-$table-hover-bg: none; //we will use our own classes
+$table-hover-bg: none !default; //we will use our own classes
 $table-hover-color: #000 !default;
-$table-active-bg: $color-primary-light;
+$table-active-bg: $color-primary-light !default;
 $table-border-width: $border-width;
 $table-border-color: $border-color;
 $table-head-bg: $color-primary;
@@ -162,9 +169,10 @@ $btn-danger-color: $color-danger-fg;
 $component-active-bg: $color-primary;
 $input-btn-focus-width: .2rem;
 $input-btn-focus-color: rgba($component-active-bg, .25);
-$input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
+$input-btn-focus-shadow-color: $input-btn-focus-color !default;
+$input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-shadow-color;
 $input-focus-bg: $input-bg;
-$input-focus-border-color: lighten($component-active-bg, 25%);
+$input-focus-border-color: lighten($component-active-bg, 25%) !default;
 $input-focus-color: $input-color;
 $input-focus-width: $input-btn-focus-width;
 $input-focus-box-shadow: $input-btn-focus-box-shadow;
@@ -186,12 +194,13 @@ $color-editor-foldmarker: #0000FF !default;
 $color-editor-activeline: #50B0F0 !default;
 
 $active-color: $color-primary !default;
-$active-border: 3px solid $active-color;
+$active-border: 3px solid $active-color !default;
 $panel-border-width: $border-width;
-$panel-border-color: $border-color;
+$panel-border-color: $border-color !default;
 $panel-border-radius: $border-radius;
 $panel-border: $panel-border-width solid $panel-border-color !important;
 $panel-border-dark: $panel-border-width solid $border-color-dark !important;
+$panel-color-fg: $color-fg !default;
 $tabs-padding: 5px 10px 2px;
 $title-height: ($line-height-base*16px) + 5px + 2px + $border-width;
 $footer-padding: 0.5rem;
@@ -207,13 +216,16 @@ $table-bg: $color-bg !default;
 $table-bg-selected: $color-primary-light;
 $table-hover-border-color: $color-primary;
 $table-hover-border: $panel-border-width solid $color-primary !important;
-$table-hover-bg-color: $color-primary-light;
-$datagrid-bg: $color-gray-light;
+$table-hover-bg-color: $color-primary-light !default;
+$datagrid-bg: $color-gray-light !default;
+$datagrid-selected-color : $color-primary-fg !default;
 
-$tree-fg-hover: $color-fg;
-$tree-bg-hover: $color-gray-light;
-$tree-fg-selected: $color-fg;
-$tree-bg-selected: $color-primary-light;
+$tree-text-fg: $color-fg !default;
+$tree-text-hover-fg: $color-fg !default;
+$tree-fg-hover: $color-fg !default;
+$tree-bg-hover: $color-gray-light !default;
+$tree-fg-selected: $color-fg !default;
+$tree-bg-selected: $color-primary-light !default;
 
 $sql-grid-data-cell-fg: $input-color;
 $sql-grid-data-cell-bg: $input-bg;
@@ -221,19 +233,21 @@ $sql-grid-title-cell-fg: $input-color;
 $sql-grid-title-cell-bg: $input-bg;
 
 $sql-title-padding: 3px;
-$sql-title-bg: $color-ternary;
-$sql-title-fg: $color-ternary-fg;
+$sql-title-bg: $color-ternary !default;
+$sql-title-fg: $color-ternary-fg !default;
 // Toolbar + editor title heights + title bottom border
 $sql-editor-panel-top: $title-height + $text-height-calc*16px + $sql-title-padding*2 + $panel-border-width - 0.5px;
-$sql-gutters-bg: $datagrid-bg;
-$sql-history-detail-bg: $color-gray-lighter;
+$sql-editor-disable-bg: $color-gray-lighter !default;
+$sql-editor-selection-bg: $color-primary-light !default;
+$sql-gutters-bg: $datagrid-bg !default;
+$sql-history-detail-bg: $color-gray-lighter !default;
 $sql-history-success-bg: $color-primary-light;
-$sql-history-success-fg: $active-color;
+$sql-history-success-fg: $active-color !default;
 $sql-history-error-bg: $color-danger-lighter;
 $sql-history-error-fg: $color-danger;
 $sql-hint-bg: $color-bg;
 $sql-hint-active-bg: $color-primary;
-$sql-hint-active-fg: $white;
+$sql-hint-active-fg: $white !default;
 $sql-bracket-match-fg: #5b6d7c;
 $sql-bracket-match-bg: #f5d2af;
 
@@ -243,19 +257,45 @@ $explain-sev-3-bg: #EE8800 !default;
 $explain-sev-4-bg: #880000 !default;
 $explain-sev-3-color: #FFFFFF !default;
 $explain-sev-4-color: #FFFFFF !default;
+$explain-sev-2-color: $black !default;
 
 $dialog-box-shadow: 0 0.5rem 3rem $shadow-base-color;
 
 $alert-icon-color: $white;
+$alert-header-bg: $color-primary !default;
+$alert-header-fg: $white !default;
+$alert-action-bg: $color-secondary !default;
+$alert-action-hover-bg: $color-gray-light !default;
 $alertify-borderremove-margin: $panel-border-width;
+$alert-color-fg: $color-fg !default;
+$alert-dialog-body-bg: $color-bg !default;
 
-$btn-secondary-border: $color-gray;
-$btn-secondary-hover-bg: $color-gray-light;
+$btn-primary-hover-bg: darken($color-primary, 7.5%) !default;
+$btn-primary-border-hover-bg: darken($color-primary, 7.5%) !default;
+$btn-primary-disabled-bg: $color-primary !default;
+
+$btn-secondary-bg: $color-secondary !default;
+$btn-secondary-border-hover-bg: $color-gray !default;
+$btn-secondary-fg: $color-fg !default;
+$btn-secondary-hover-fg: $color-fg !default;
+$btn-secondary-border: $color-gray !default;
+$btn-secondary-hover-bg: $color-gray-light !default;
+$btn-secondary-disabled-bg: $color-gray !default;
+$btn-secondary-disabled-fg: $color-fg !default;
+
+$btn-frame-close-bg:$btn-secondary-hover-bg !default;
 
 $btn-ternary-border: $color-ternary !default;
 $btn-ternary-hover-bg: darken($color-ternary, 7.5%) !default;
 
+$btn-ternary-disabled-bg: $color-ternary !default;
+$btn-ternary-disabled-fg: $color-bg !default;
+$btn-ternary-disabled-border-color: $btn-ternary-disabled-bg !default;
+
 $card-header-padding : 0.25rem 0.5rem;
+$card-header-bg: $color-bg !default;
+$card-header-fg: $color-fg !default;
+$card-header-border-color: $border-color !default;
 $no-border-radius: 0px !important;
 
 $btn-checkbox-padding: $input-btn-padding-y $input-btn-padding-x;
@@ -278,8 +318,30 @@ $loader-icon-small: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='ut
 $schemadiff-diff-row-color: #fff9c4 !default;
 $schemadiff-source-row-color: #ffebee !default;
 $schemadiff-target-row-color: #fbe3bf !default;
+$schema-diff-color-fg: $input-color !default;
 
 /* Custom controls bootstrap changes */
-$custom-forms-transition: none;
-$custom-control-indicator-focus-border-color: $input-focus-border-color;
-$custom-control-indicator-border-color: $input-border-color;
+$custom-forms-transition: none !default;
+$custom-control-indicator-focus-border-color: $input-focus-border-color !default;
+$custom-control-indicator-border-color: $input-border-color !default;
+
+$select2-container-hover-bg: $tree-bg-hover !default;
+$select2-container-hover-fg: $tree-fg-hover !default;
+$select2-container-bg-selected: $tree-bg-selected !default;
+$select2-container-fg-selected: $tree-fg-selected !default;
+
+$btn-primary-icon-bg: $color-bg !default;
+$btn-primary-icon-fg: $color-fg !default;
+$btn-primary-icon-hover-fg: $color-fg !default;
+$btn-primary-icon-hover-bg: $color-gray-light !default;
+$btn-primary-icon-border-color: $color-gray !default;
+$btn-primary-icon-border-disable-bg: $color-gray !default;
+$btn-primary-icon-disable-fg: $color-fg !default;
+$btn-primary-icon-disable-bg: $color-bg !default;
+
+$editor-toolbar-bg: $sql-gutters-bg !default;
+$grid-hover-bg-color: $table-hover-bg-color !default;
+$grid-hover-fg-color: $color-fg !default;
+
+$btn-copied-color-fg: $active-color !default;
+

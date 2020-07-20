@@ -38,6 +38,16 @@ and modify the values for the following parameters:
    want to connect to. For example, 'ldap://172.16.209.35:389' is a valid
    LDAP_SERVER_URI where ldap is the connection protocol, 172.16.209.35 is the IP
    address and 389 is the port. Port 636 is used for the ldaps communication protocol."
+   "LDAP_BIND_USER", "The account of the user to log in for simple bind.
+   Set this parameter to allow the connection to bind using a dedicated user.
+   After the connection is made, the pgadmin login user will be further
+   authenticated by the username and password provided at the login screen.
+
+   This is an optional parameter. If you do not specify any value for LDAP_BIND_USER,
+   LDAP connection and authentication will be done by the username and password provided
+   at the login screen."
+   "LDAP_BIND_PASSWORD", "Password for simple bind.
+   Specify the value if you have set the LDAP_BIND_USER parameter."
    "LDAP_BASE_DN","Specifies the base DN from where a server will start the search
    for users. For example, an LDAP search for any user will be performed by the server
    starting at the base DN (dc=example,dc=com). When the base DN matches, the full

@@ -100,16 +100,83 @@ legend {
  * Refer file : bootstrap/scss/mixins/_buttons.scss
  */
 .btn-secondary {
-	@include button-variant($color-secondary, $btn-secondary-border, $btn-secondary-hover-bg);
+	@include button-variant($btn-secondary-bg, $btn-secondary-border, $btn-secondary-hover-bg, $hover-border: $btn-secondary-border-hover-bg);
+	@include hover() {
+	  color: $btn-secondary-hover-fg !important;
+	} &.disabled, &:disabled {
+	  color: $btn-secondary-disabled-fg !important;
+	  border-color: $btn-secondary-disabled-bg !important;
+	}
+	color: $btn-secondary-fg !important;
+
 }
 
-/** Overriding secondary button of bootstrap **/
+/** Overriding ternary button of bootstrap **/
 /* Used Bootstrap 4 Mixin button-variant
  * Refer file : bootstrap/scss/mixins/_buttons.scss
  */
-.btn-ternary {
-	@include button-variant($color-ternary, $btn-ternary-border, $btn-ternary-hover-bg);
+ .btn-ternary {
+    @include button-variant($color-ternary, $color-fg);
+    border-color: $color-ternary;
+ }
+
+.btn-ternary[disabled] {
+  background-color: $btn-ternary-disabled-bg !important;
+  color: $btn-ternary-disabled-fg !important;
+  border-color: btn-ternary-disabled-border-color !important;
+
+  label {
+    background-color: $btn-ternary-disabled-bg !important;
+    color: $btn-ternary-disabled-fg !important;
+    border-color: btn-ternary-disabled-border-color !important;
+  }
+
 }
+
+.btn-primary {
+  @include button-variant($color-primary, $color-primary, $hover-background: $btn-primary-hover-bg, $hover-border: $btn-primary-border-hover-bg);
+  & .disabled,
+  &:disabled {
+    background-color: $btn-primary-disabled-bg;
+    border-color: $btn-primary-disabled-bg;
+  }
+}
+
+.btn-primary-icon {
+  @include button-variant($btn-primary-icon-bg, $btn-primary-icon-border-color);
+  @include hover() {
+	  background-color: $btn-primary-icon-hover-bg;
+	  color: $btn-primary-icon-hover-fg;
+	} &.disabled, &:disabled {
+	  color: $btn-primary-icon-disable-fg !important;
+	  border-color: $btn-primary-icon-border-disable-bg !important;
+	  background-color: $btn-primary-icon-disable-bg;
+	}
+
+	border-color: $btn-primary-icon-border-color;
+}
+
+.btn-success {
+  @include button-variant($color-success, $color-fg);
+  border-color: $color-success;
+  @include hover() {
+    color: $color-success-hover-fg !important;
+    border-color: $color-success !important;
+  }
+}
+
+.btn-success[disabled] {
+    background-color: $color-success-disabled-bg !important;
+    border-color: $color-success-disabled-bg !important;
+    color: $color-success-disabled-fg !important;
+
+    label {
+      background-color: $color-success-disabled-bg !important;
+      border-color: $color-success-disabled-bg !important;
+      color: $color-success-disabled-fg !important;
+    }
+}
+
 
 .form-group fieldset {
 	background-color: $color-gray-lighter;
@@ -167,6 +234,9 @@ legend {
 .card-header {
 	padding: $card-header-padding;
 	font-weight: bold;
+	background-color: $card-header-bg;
+	color: $card-header-fg;
+	border-color: $card-header-border-color;
 }
 
 .table {
@@ -228,6 +298,7 @@ legend {
 	& > tbody {
 		& > tr:not(.nohover):not(.empty):hover, tr.selected {
 			background-color: $table-hover-bg-color;
+			color: $grid-hover-fg-color;
 			& > td {
 				border-top: $table-hover-border;
 				border-bottom: $table-hover-border;
@@ -236,6 +307,7 @@ legend {
 
 		& > tr.nohover {
 			background-color: transparent;
+			color: $input-color;
 		}
 	}
 }
@@ -328,6 +400,10 @@ td.switch-cell > div.toggle {
 /* Bootstrap custom controls */
 .custom-control-input {
   &:focus:checked ~ .custom-control-label::before {
+    border-color: $custom-control-indicator-focus-border-color;
+  }
+
+  &:hover {
     border-color: $custom-control-indicator-focus-border-color;
   }
 }

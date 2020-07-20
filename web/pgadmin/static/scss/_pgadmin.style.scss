@@ -368,7 +368,7 @@
   display: block;
   text-align: left;
   cursor: pointer;
-  background-color: $header-bg;
+  background-color: $badge-header-bg;
   padding: 7px;
   font-size: inherit;
   border-bottom: $panel-border;
@@ -866,7 +866,7 @@ body {
 }
 
 .editor-toolbar {
-  background: $sql-gutters-bg;
+  background: $editor-toolbar-bg;
   padding: 0.05rem 0.25rem;
 }
 

@@ -10,7 +10,7 @@
 
 .aciTree, .aciTree.aciTreeFullRow {
     & .aciTreeButton, & .aciTreePush, & .aciTreeItem, & .aciTreeIcon, & .aciTreeText, & .aciTreeColumn {
-        color: $color-fg;
+        color: $tree-text-fg;
     }
 
     .aciTreeLi {
@@ -53,6 +53,15 @@
             border-radius: none !important;
             color: $tree-fg-selected;
         }
+
+        & .aciTreeText {
+          color: $tree-text-hover-fg;
+        }
+
+        & .aciTreePush {
+          color: $tree-text-hover-fg;
+        }
+
     }
 
     .aciTreeItem {
@@ -77,6 +86,15 @@
             border-radius: none !important;
             color: $tree-fg-hover;
         }
+
+        & .aciTreeText {
+          color: $tree-text-hover-fg;
+        }
+
+        & .aciTreePush {
+          color: $tree-text-hover-fg;
+        }
+
     }
 
     &.aciTreeFocus {

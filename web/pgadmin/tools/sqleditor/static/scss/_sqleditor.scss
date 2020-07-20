@@ -149,7 +149,7 @@ li.CodeMirror-hint-active {
 
 #datagrid .slick-header .slick-header-column.selected {
   background-color: $color-primary;
-  color: $color-primary-fg;
+  color: $datagrid-selected-color;
 }
 .slick-row .slick-cell {
   border-bottom: $panel-border;
@@ -211,6 +211,7 @@ li.CodeMirror-hint-active {
 /* Override selected row color */
 #datagrid .slick-row .slick-cell.selected {
     background-color: $table-bg-selected;
+    color: $datagrid-selected-color;
 }
 
 /* color the first column */

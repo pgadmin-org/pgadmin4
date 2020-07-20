@@ -246,7 +246,7 @@ define([
           label: '',
           type: 'delete',
           tooltip: gettext('Delete/Drop'),
-          extraClasses: ['btn-secondary m-1', 'delete_multiple'],
+          extraClasses: ['btn-primary-icon m-1', 'delete_multiple'],
           icon: 'fa fa-lg fa-trash-o',
           disabled:  (_.isFunction(that.canDrop)) ? !(that.canDrop.apply(self, [data, item])) : (!that.canDrop),
           register: function(btn) {
@@ -260,7 +260,7 @@ define([
           label: '',
           type: 'delete',
           tooltip: gettext('Drop Cascade'),
-          extraClasses: ['btn-secondary m-1', 'delete_multiple_cascade'],
+          extraClasses: ['btn-primary-icon m-1', 'delete_multiple_cascade'],
           icon: 'pg-font-icon icon-drop-cascade',
           disabled: (_.isFunction(that.canDropCascade)) ? !(that.canDropCascade.apply(self, [data, item])) : (!that.canDropCascade),
           register: function(btn) {

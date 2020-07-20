@@ -603,7 +603,7 @@ define('pgadmin.browser', [
               return {
                 buttons:[{
                   text: '',
-                  className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
+                  className: 'btn btn-primary-icon pull-left fa fa-question pg-alertify-icon-button',
                   attrs: {
                     name: 'dialog_help',
                     type: 'button',

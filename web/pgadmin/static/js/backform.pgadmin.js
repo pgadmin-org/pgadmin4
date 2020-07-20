@@ -1298,7 +1298,7 @@ define([
         gridHeader = _.template([
           '<div class="subnode-header">',
           '  <span  class="control-label pg-el-sm-10" id="<%=cId%>"><%-label%></span>',
-          '  <button aria-label="' + gettext('Add new row') + '" class="btn btn-sm-sq btn-secondary add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + gettext('Add new row') + '"><%-add_label%></button>',
+          '  <button aria-label="' + gettext('Add new row') + '" class="btn btn-sm-sq btn-primary-icon add fa fa-plus" <%=canAdd ? "" : "disabled=\'disabled\'"%> title="' + gettext('Add new row') + '"><%-add_label%></button>',
           '</div>',
         ].join('\n')),
         gridBody = $('<div class="pgadmin-control-group backgrid form-group pg-el-12 object subnode "></div>').append(
@@ -1585,7 +1585,7 @@ define([
       var self = this,
         gridHeader = ['<div class=\'subnode-header\'>',
           '  <span class=\'control-label pg-el-sm-10\'>' + data.label + '</span>',
-          '  <button aria-label="' + gettext('Add') + '" class=\'btn btn-sm-sq btn-secondary add fa fa-plus\' title=\'' + gettext('Add new row') + '\'></button>',
+          '  <button aria-label="' + gettext('Add') + '" class=\'btn btn-sm-sq btn-primary-icon add fa fa-plus\' title=\'' + gettext('Add new row') + '\'></button>',
           '</div>',
         ].join('\n'),
         gridBody = $('<div class=\'pgadmin-control-group backgrid form-group pg-el-12 object subnode\'></div>').append(gridHeader);
@@ -2728,7 +2728,7 @@ define([
       '<div class="input-group">',
       '<input type="<%=type%>" id="<%=cId%>" class="form-control <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> />',
       '<div class="input-group-append">',
-      '<button class="btn btn-secondary fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%> aria-hidden="true" aria-label="' + gettext('Select file') + '" title="' + gettext('Select file') + '"></button>',
+      '<button class="btn btn-primary-icon fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%> <%=readonly ? "disabled" : ""%> aria-hidden="true" aria-label="' + gettext('Select file') + '" title="' + gettext('Select file') + '"></button>',
       '</div>',
       '</div>',
       '<% if (helpMessage && helpMessage.length) { %>',

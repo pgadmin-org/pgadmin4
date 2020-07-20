@@ -442,7 +442,7 @@ define([
         <div class="pr-2">
           <i class="fa fa-check" aria-hidden="true"></i>
         </div>
-        <div class="text-body" role="status">${message}</div>
+        <div class="alert-text-body" role="status">${message}</div>
       </div>`;
       return alertify.orig_success(alertMessage, timeout, callback);
     },
@@ -452,7 +452,7 @@ define([
         <div class="pr-2">
           <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
         </div>
-        <div class="text-body" role="status">${message}</div>
+        <div class="alert-text-body" role="status">${message}</div>
       </div>`;
       return alertify.orig_error(alertMessage, timeout, callback);
     },
@@ -462,7 +462,7 @@ define([
         <div class="mr-3">
           <i class="fa fa-info-circle" aria-hidden="true"></i>
         </div>
-        <div class="text-body" role="status">${message}</div>
+        <div class="alert-text-body" role="status">${message}</div>
       </div>`;
       var alert = alertify.notify(alertMessage, timeout);
       return alert;

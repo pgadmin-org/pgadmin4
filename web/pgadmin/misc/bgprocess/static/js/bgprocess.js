@@ -38,21 +38,21 @@ define('misc.bgprocess', [
         <div class="pr-2">
           <i class="fa fa-check fa-lg text-success pg-bg-status-icon" aria-hidden="true" role="img"></i>
         </div>
-        <div class="text-body mx-auto pg-bg-status-text"><%-status_text%></div>
+        <div class="mx-auto pg-bg-status-text alert-text-body"><%-status_text%></div>
       </div>`),
       failed_status_tpl: _.template(`
       <div class="d-flex px-2 py-1 bg-danger-lighter border border-danger rounded">
         <div class="pr-2">
           <i class="fa fa-close fa-lg text-danger pg-bg-status-icon" aria-hidden="true" role="img"></i>
         </div>
-        <div class="text-body mx-auto pg-bg-status-text"><%-status_text%></div>
+        <div class="mx-auto pg-bg-status-text alert-text-body"><%-status_text%></div>
       </div>`),
       other_status_tpl: _.template(`
       <div class="d-flex px-2 py-1 bg-primary-light border border-primary rounded">
         <div class="pr-2">
           <i class="fa fa-info fa-lg text-primary pg-bg-status-icon" aria-hidden="true" role="img"></i>
         </div>
-        <div class="text-body mx-auto pg-bg-status-text"><%-status_text%></div>
+        <div class="mx-auto pg-bg-status-text alert-text-body"><%-status_text%></div>
       </div>`),
       initialize: function(info, notify) {
         _.extend(this, {

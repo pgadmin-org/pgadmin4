@@ -129,7 +129,7 @@ define([
       '        <div class="wizard-buttons d-flex">' +
       '          <div>' +
       '            <button tabindex="0" aria-label="' + gettext('Help') + '" title = "' + gettext('Help for this dialog.') + '"' +
-      '              class="btn btn-secondary pull-left wizard-help" <%=this.options.wizard_help ? "" : "disabled" %>>' +
+      '              class="btn btn-primary-icon pull-left wizard-help" <%=this.options.wizard_help ? "" : "disabled" %>>' +
       '              <span class="fa fa-lg fa-question" role="img"></span></button>' +
       '          </div>' +
       '          <div class="ml-auto">' +

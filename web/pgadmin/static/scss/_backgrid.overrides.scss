@@ -169,6 +169,12 @@ table.backgrid {
   font-weight: normal;
 }
 
+.backgrid tr:hover {
+  .label {
+    color: $grid-hover-fg-color;
+  }
+}
+
 .subnode {
   border: $panel-border;
   background: $color-bg;

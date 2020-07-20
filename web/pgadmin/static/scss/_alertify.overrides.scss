@@ -5,10 +5,10 @@
     //margin is calculated with -$alertify-borderremove-margin, adjust the header
     min-height: $title-height + $alertify-borderremove-margin !important;
     max-height: $title-height + $alertify-borderremove-margin !important;
-    background-color: $color-primary;
+    background-color: $alert-header-bg;
     font-size: $font-size-base;
     font-weight: bold;
-    color: $color-primary-fg;
+    color: $alert-header-fg;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -19,12 +19,12 @@
     margin: -24px - $alertify-borderremove-margin; //-24px is default by alertify
     margin-bottom: 0px;
     &:hover {
-      background-color: $color-primary;
+      background-color: $alert-header-bg;
     }
   }
 
   .ajs-body {
-    background-color: $color-bg !important;
+    background-color: $alert-dialog-body-bg !important;
     color: $color-fg !important;
   }
 
@@ -123,7 +123,7 @@
     border: $panel-border;
     border-radius: $panel-border-radius;
     box-shadow: $dialog-box-shadow;
-    background-color: $color-bg !important;
+    background-color: $alert-dialog-body-bg !important;
     color: $color-fg !important;
   }
   .ajs-content {
@@ -146,7 +146,7 @@
   width: 20px;
   height: 20px;
   border: $input-btn-border-width solid $btn-secondary-border !important;
-  background-color: $color-secondary !important;
+  background-color: $alert-action-bg !important;
   font-size: 12px;
   border-radius: $btn-border-radius;
   position: relative;
@@ -157,7 +157,7 @@
 }
 
 .ajs-pin:hover, .ajs-maximize:hover, .ajs-close:hover {
-  background-color: $btn-secondary-hover-bg !important;
+  background-color: $alert-action-hover-bg !important;
 }
 
 .alertify.ajs-modeless.ajs-pinnable .ajs-commands button.ajs-pin {
@@ -280,6 +280,9 @@
   }
 }
 
+.alert-text-body {
+  color: $alert-color-fg;
+}
 
 .ajs-commands, .ajs-close {
   button {

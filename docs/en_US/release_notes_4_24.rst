@@ -14,6 +14,7 @@ New features
 | `Issue #5583 <https://redmine.postgresql.org/issues/5583>`_ -  Added support for schema level restriction.
 | `Issue #5601 <https://redmine.postgresql.org/issues/5601>`_ -  Added RLS Policy support in Schema Diff.
 | `Issue #5622 <https://redmine.postgresql.org/issues/5622>`_ -  Added support for permissive/restricted policy type while creating RLS Policy.
+| `Issue #5653 <https://redmine.postgresql.org/issues/5653>`_ -  Added High Contrast theme support.
 
 Housekeeping
 ************
@@ -21,7 +22,6 @@ Housekeeping
 | `Issue #5323 <https://redmine.postgresql.org/issues/5323>`_ -  Improve code coverage and API test cases for Foreign Data Wrapper.
 | `Issue #5326 <https://redmine.postgresql.org/issues/5326>`_ -  Improve code coverage and API test cases for Domain and Domain Constraints.
 | `Issue #5329 <https://redmine.postgresql.org/issues/5329>`_ -  Improve code coverage and API test cases for FTS Configuration, FTS Parser, FTS Dictionaries, and FTS Template.
-| `Issue #5666 <https://redmine.postgresql.org/issues/5666>`_ -  Added missing dependencies/dependent and corrected some wrongly identified.
 
 Bug fixes
 *********
@@ -45,5 +45,7 @@ Bug fixes
 | `Issue #5633 <https://redmine.postgresql.org/issues/5633>`_ -  Ensure that create RLS Policy menu should not be visible for catalog objects.
 | `Issue #5647 <https://redmine.postgresql.org/issues/5647>`_ -  Fixed an issue where difference DDL is showing the wrong SQL when changing the policy owner.
 | `Issue #5662 <https://redmine.postgresql.org/issues/5662>`_ -  Fixed accessibility issue where few dialogs are not rendering properly when we zoomed in browser window 200% and screen resolution is low.
+| `Issue #5666 <https://redmine.postgresql.org/issues/5666>`_ -  Added missing dependencies/dependent and corrected some wrongly identified.
 | `Issue #5673 <https://redmine.postgresql.org/issues/5673>`_ -  Fixed an issue where fetching the schema throws an error if the database is not connected in Schema Diff.
 | `Issue #5675 <https://redmine.postgresql.org/issues/5675>`_ -  Fixed CSRF errors when pgAdmin opened in an iframe on safari browser.
+| `Issue #5677 <https://redmine.postgresql.org/issues/5677>`_ -  Fixed text color issue in explain analyze for the Dark theme.

@@ -167,9 +167,16 @@ fs.readdirSync(all_themes_dir).map(function(curr_dir) {
   if(stats.isDirectory()) {
     /* Theme directory found */
     let cssfile = 'pgadmin.theme.'+curr_dir;
+
+    let disp_name = curr_dir;
+
+    if(curr_dir == 'high_contrast') {
+      disp_name = curr_dir + ' (Beta)';
+    }
+
     pgadminThemes[curr_dir] = {
       /* For now lets keep it as beta release */
-      disp_name: curr_dir,
+      disp_name: disp_name,
       cssfile: cssfile,
       preview_img: curr_dir + '_preview.png',
     };
