@@ -167,12 +167,12 @@ legend {
 
 .btn-success[disabled] {
     background-color: $color-success-disabled-bg !important;
-    border-color: $color-success-disabled-bg !important;
+    border-color: $color-success-disabled-border-color !important;
     color: $color-success-disabled-fg !important;
 
     label {
       background-color: $color-success-disabled-bg !important;
-      border-color: $color-success-disabled-bg !important;
+      border-color: $color-success-disabled-border-color !important;
       color: $color-success-disabled-fg !important;
     }
 }
@@ -413,4 +413,8 @@ td.switch-cell > div.toggle {
     max-height: 99vh;
     overflow-y: auto;
   }
+}
+
+td.pga-ex-exclusive-2, td.pga-ex-inclusive-2 {
+  color: color-yiq($explain-sev-2-bg);
 }

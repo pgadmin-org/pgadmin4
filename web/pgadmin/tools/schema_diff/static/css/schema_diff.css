@@ -4,17 +4,16 @@
 }
 
 .icon-schema-diff-white {
-  display: inline-block;
-  align-content: center;
-  vertical-align: middle;
-  height: 18px;
-  width: 18px;
-  background-size: 20px !important;
-  background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: center;
-  background-image: url('../img/compare-white.svg') !important;
-}
+ display: inline-block;
+ align-content: center;
+ vertical-align: sub;
+ height: 18px;
+ width: 18px;
+ background-size: 20px !important;
+ background-repeat: no-repeat;
+ background-position-x: center;
+ background-position-y: center;
+ }
 
 .icon-script {
   display: inline-block;

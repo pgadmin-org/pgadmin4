@@ -29,6 +29,7 @@ $color-success-light: #D9ECDA !default;
 
 $color-success-disabled-fg: $color-bg !default;
 $color-success-disabled-bg: $color-success !default;
+$color-success-disabled-border-color: $color-success !default;
 $color-success-hover-fg: $white !default;
 
 $color-warning: #eea236 !default;
@@ -257,7 +258,6 @@ $explain-sev-3-bg: #EE8800 !default;
 $explain-sev-4-bg: #880000 !default;
 $explain-sev-3-color: #FFFFFF !default;
 $explain-sev-4-color: #FFFFFF !default;
-$explain-sev-2-color: $black !default;
 
 $dialog-box-shadow: 0 0.5rem 3rem $shadow-base-color;
 

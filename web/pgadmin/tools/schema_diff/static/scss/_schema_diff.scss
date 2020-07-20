@@ -24,7 +24,7 @@
   font-size: $tree-font-size;
   .ui-widget-content {
     background-color: $input-bg;
-    color: $schema-diff-color-fg;
+    color: $input-color;
   }
 
   .ui-state-default {
@@ -67,16 +67,20 @@
 
 #schema-diff-grid .different {
   background-color: $schemadiff-diff-row-color !important;
+  color: $schema-diff-color-fg;
 }
 #schema-diff-grid .source {
   background-color: $schemadiff-source-row-color;
+  color: $schema-diff-color-fg;
 }
 #schema-diff-grid .target {
   background-color: $schemadiff-target-row-color !important;
+  color: $schema-diff-color-fg;
 }
 
 #schema-diff-grid .slick-row.active {
     background-color: $table-bg-selected !important;
+    color: $schema-diff-color-fg;
 }
 
 #schema-diff-ddl-comp {

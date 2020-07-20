@@ -23,6 +23,7 @@ $color-success-light: #45D48A;
 
 $color-success-disabled-fg: $color-fg;
 $color-success-disabled-bg: $color-bg;
+$color-success-disabled-border-color: $color-fg;
 $color-success-hover-fg: #010B15;
 
 $color-warning: #F4D35E;
@@ -104,7 +105,6 @@ $explain-sev-3-bg: #FFAD65;
 $explain-sev-4-bg: #EE7A55;
 $explain-sev-3-color: #010B15;
 $explain-sev-4-color: #010B15;
-$explain-sev-2-color: #010B15;
 
 $btn-ternary-border: $color-ternary;
 $btn-ternary-hover-bg: #a6b7c8;
