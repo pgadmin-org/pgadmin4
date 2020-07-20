@@ -32,6 +32,9 @@ class LDAPLoginTestCase(BaseTestGenerator):
         ('LDAP With Dedicated User Authentication', dict(
             config_key_param='ldap_with_dedicated_user',
             is_gravtar_image_check=False)),
+        ('LDAP With Anonymous Binding', dict(
+            config_key_param='ldap_with_anonymous_bind',
+            is_gravtar_image_check=False)),
     ]
 
     @classmethod
@@ -66,6 +69,10 @@ class LDAPLoginTestCase(BaseTestGenerator):
                     ldap_config['bind_password'] != "":
                 app_config.LDAP_BIND_USER = ldap_config['bind_user']
                 app_config.LDAP_BIND_PASSWORD = ldap_config['bind_password']
+            if ldap_config['anonymous_bind'] != "" and\
+                    ldap_config['anonymous_bind']:
+                app_config.LDAP_ANONYMOUS_BIND = True
+
         else:
             self.skipTest(
                 "LDAP config not set."

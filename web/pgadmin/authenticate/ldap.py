@@ -11,7 +11,8 @@
 
 import ssl
 import config
-from ldap3 import Connection, Server, Tls, ALL, ALL_ATTRIBUTES
+from ldap3 import Connection, Server, Tls, ALL, ALL_ATTRIBUTES, ANONYMOUS,\
+    SIMPLE
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError,\
     LDAPInvalidScopeError, LDAPAttributeError, LDAPInvalidFilterError,\
     LDAPStartTLSError, LDAPSSLConfigurationError
@@ -36,19 +37,24 @@ class LDAPAuthentication(BaseAuthentication):
     def authenticate(self, form):
         self.username = form.data['email']
         self.password = form.data['password']
+        self.dedicated_user = True
+        self.start_tls = False
         user_email = None
-        dedicated_user = True
 
         # Check the dedicated ldap user
         self.bind_user = getattr(config, 'LDAP_BIND_USER', None)
         self.bind_pass = getattr(config, 'LDAP_BIND_PASSWORD', None)
+
+        # Check for the anonymous binding
+        self.anonymous_bind = getattr(config, 'LDAP_ANONYMOUS_BIND', False)
 
         if self.bind_user and not self.bind_pass:
             return False, "LDAP configuration error: Set the bind password."
 
         # if no dedicated ldap user is configured then use the login
         # username and password
-        if not self.bind_user or not self.bind_pass:
+        if not self.bind_user and not self.bind_pass and\
+                self.anonymous_bind is False:
             user_dn = "{0}={1},{2}".format(config.LDAP_USERNAME_ATTRIBUTE,
                                            self.username,
                                            config.LDAP_BASE_DN
@@ -56,7 +62,7 @@ class LDAPAuthentication(BaseAuthentication):
 
             self.bind_user = user_dn
             self.bind_pass = self.password
-            dedicated_user = False
+            self.dedicated_user = False
 
         # Connect ldap server
         status, msg = self.connect()
@@ -70,10 +76,11 @@ class LDAPAuthentication(BaseAuthentication):
             return status, ldap_user
 
         # If dedicated user is configured
-        if dedicated_user:
+        if self.dedicated_user:
             # Get the user DN from the user ldap entry
             self.bind_user = ldap_user.entry_dn
             self.bind_pass = self.password
+            self.anonymous_bind = False
             status, msg = self.connect()
 
             if not status:
@@ -87,61 +94,25 @@ class LDAPAuthentication(BaseAuthentication):
     def connect(self):
         """Setup the connection to the LDAP server and authenticate the user.
         """
+        status, server = self._configure_server()
 
-        # Parse the server URI
-        uri = getattr(config, 'LDAP_SERVER_URI', None)
-
-        if uri:
-            uri = urlparse(uri)
-
-        # Create the TLS configuration object if required
-        tls = None
-
-        if type(uri) == str:
-            return False, "LDAP configuration error: Set the proper LDAP URI."
-
-        if uri.scheme == 'ldaps' or config.LDAP_USE_STARTTLS:
-
-            ca_cert_file = getattr(config, 'LDAP_CA_CERT_FILE', None)
-            cert_file = getattr(config, 'LDAP_CERT_FILE', None)
-            key_file = getattr(config, 'LDAP_KEY_FILE', None)
-            cert_validate = ssl.CERT_NONE
-
-            if ca_cert_file and cert_file and key_file:
-                cert_validate = ssl.CERT_REQUIRED
-
-            try:
-                tls = Tls(
-                    local_private_key_file=key_file,
-                    local_certificate_file=cert_file,
-                    validate=cert_validate,
-                    version=ssl.PROTOCOL_TLSv1_2,
-                    ca_certs_file=ca_cert_file)
-            except LDAPSSLConfigurationError as e:
-                current_app.logger.exception(
-                    "LDAP configuration error: {}\n".format(e))
-                return False, "LDAP configuration error: {}\n".format(
-                    e.args[0])
-
-        try:
-            # Create the server object
-            server = Server(uri.hostname,
-                            port=uri.port,
-                            use_ssl=(uri.scheme == 'ldaps'),
-                            get_info=ALL,
-                            tls=tls,
-                            connect_timeout=config.LDAP_CONNECTION_TIMEOUT)
-        except ValueError as e:
-            return False, "LDAP configuration error: {}.".format(e)
+        if not status:
+            return status, server
 
         # Create the connection
         try:
-
-            self.conn = Connection(server,
-                                   user=self.bind_user,
-                                   password=self.bind_pass,
-                                   auto_bind=True
-                                   )
+            if self.anonymous_bind:
+                self.conn = Connection(server,
+                                       auto_bind=True,
+                                       authentication=ANONYMOUS
+                                       )
+            else:
+                self.conn = Connection(server,
+                                       user=self.bind_user,
+                                       password=self.bind_pass,
+                                       auto_bind=True,
+                                       authentication=SIMPLE
+                                       )
 
         except LDAPSocketOpenError as e:
             current_app.logger.exception(
@@ -159,7 +130,7 @@ class LDAPAuthentication(BaseAuthentication):
                           " {}\n".format(e.args[0])
 
         # Enable TLS if STARTTLS is configured
-        if not uri.scheme == 'ldaps' and config.LDAP_USE_STARTTLS:
+        if self.start_tls:
             try:
                 self.conn.start_tls()
             except LDAPStartTLSError as e:
@@ -185,14 +156,75 @@ class LDAPAuthentication(BaseAuthentication):
 
         return True, None
 
+    def __configure_tls(self):
+        ca_cert_file = getattr(config, 'LDAP_CA_CERT_FILE', None)
+        cert_file = getattr(config, 'LDAP_CERT_FILE', None)
+        key_file = getattr(config, 'LDAP_KEY_FILE', None)
+        cert_validate = ssl.CERT_NONE
+
+        if ca_cert_file and cert_file and key_file:
+            cert_validate = ssl.CERT_REQUIRED
+
+        try:
+            tls = Tls(
+                local_private_key_file=key_file,
+                local_certificate_file=cert_file,
+                validate=cert_validate,
+                version=ssl.PROTOCOL_TLSv1_2,
+                ca_certs_file=ca_cert_file)
+        except LDAPSSLConfigurationError as e:
+            current_app.logger.exception(
+                "LDAP configuration error: {}\n".format(e))
+            return False, "LDAP configuration error: {}\n".format(
+                e.args[0])
+        return True, tls
+
+    def _configure_server(self):
+        # Parse the server URI
+        uri = getattr(config, 'LDAP_SERVER_URI', None)
+
+        if uri:
+            uri = urlparse(uri)
+
+        # Create the TLS configuration object if required
+        tls = None
+
+        if type(uri) == str:
+            return False, "LDAP configuration error: Set the proper LDAP URI."
+
+        if uri.scheme == 'ldaps' or config.LDAP_USE_STARTTLS:
+            status, tls = self.__configure_tls()
+            if not status:
+                return status, tls
+
+        if uri.scheme != 'ldaps' and config.LDAP_USE_STARTTLS:
+            self.start_tls = True
+
+        try:
+            # Create the server object
+            server = Server(uri.hostname,
+                            port=uri.port,
+                            use_ssl=(uri.scheme == 'ldaps'),
+                            get_info=ALL,
+                            tls=tls,
+                            connect_timeout=config.LDAP_CONNECTION_TIMEOUT)
+        except ValueError as e:
+            return False, "LDAP configuration error: {}.".format(e)
+
+        return True, server
+
     def search_ldap_user(self):
         """Get a list of users from the LDAP server based on config
          search criteria."""
         try:
             search_base_dn = config.LDAP_SEARCH_BASE_DN
-            if search_base_dn is None or search_base_dn == '' or\
-                    search_base_dn == '<Search-Base-DN>':
+            if (not search_base_dn or search_base_dn == '<Search-Base-DN>')\
+                    and (self.anonymous_bind or self.dedicated_user):
+                return False, "LDAP configuration error:" \
+                              " Set the Search Domain."
+            elif not search_base_dn or search_base_dn == '<Search-Base-DN>':
                 search_base_dn = config.LDAP_BASE_DN
+
             self.conn.search(search_base=search_base_dn,
                              search_filter=config.LDAP_SEARCH_FILTER,
                              search_scope=config.LDAP_SEARCH_SCOPE,

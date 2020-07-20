@@ -14,6 +14,7 @@ New features
 | `Issue #5583 <https://redmine.postgresql.org/issues/5583>`_ -  Added support for schema level restriction.
 | `Issue #5601 <https://redmine.postgresql.org/issues/5601>`_ -  Added RLS Policy support in Schema Diff.
 | `Issue #5622 <https://redmine.postgresql.org/issues/5622>`_ -  Added support for permissive/restricted policy type while creating RLS Policy.
+| `Issue #5650 <https://redmine.postgresql.org/issues/5650>`_ -  Added support for LDAP anonymous binding.
 | `Issue #5653 <https://redmine.postgresql.org/issues/5653>`_ -  Added High Contrast theme support.
 
 Housekeeping

@@ -20,6 +20,7 @@
     "ldap": {
       "name": "Ldap scenario name",
       "uri": "ldap://IP-ADDRESS/HOSTNAME:389",
+      "anonymous_bind": false,
       "bind_user": "",
       "bind_password": "",
       "base_dn": "BASE-DN",
@@ -34,6 +35,7 @@
     "ldap_with_ssl": {
       "name": "Ldap scenario name",
       "uri": "ldaps://IP-ADDRESS/HOSTNAME:636",
+      "anonymous_bind": false,
       "bind_user": "",
       "bind_password": "",
       "base_dn": "BASE-DN",
@@ -48,9 +50,10 @@
     "ldap_with_tls": {
       "name": "Ldap scenario name",
       "uri": "ldap://IP-ADDRESS/HOSTNAME:389",
+      "anonymous_bind": false,
       "bind_user": "",
       "bind_password": "",
-      "base_dn": "BASE-DN",
+      "base_dn": "",
       "search_base_dn": "SEARCH-BASE-DN",
       "username_atr": "UID",
       "search_filter": "(objectclass=*)",
@@ -62,9 +65,10 @@
     "ldap_with_dedicated_user": {
       "name": "Ldap scenario name",
       "uri": "ldap://IP-ADDRESS/HOSTNAME:389",
+      "anonymous_bind": true,
       "bind_user": "",
       "bind_password": "",
-      "base_dn": "BASE-DN",
+      "base_dn": "",
       "search_base_dn": "SEARCH-BASE-DN",
       "username_atr": "UID",
       "search_filter": "(objectclass=*)",
