@@ -118,17 +118,19 @@ legend {
  .btn-ternary {
     @include button-variant($color-ternary, $color-fg);
     border-color: $color-ternary;
+
+
  }
 
 .btn-ternary[disabled] {
-  background-color: $btn-ternary-disabled-bg !important;
+  background-color: $btn-ternary-disabled-bg;
   color: $btn-ternary-disabled-fg !important;
-  border-color: btn-ternary-disabled-border-color !important;
+  border-color: $btn-ternary-disabled-border-color;
 
   label {
-    background-color: $btn-ternary-disabled-bg !important;
+    background-color: $btn-ternary-disabled-bg;
     color: $btn-ternary-disabled-fg !important;
-    border-color: btn-ternary-disabled-border-color !important;
+    border-color: $btn-ternary-disabled-border-color;
   }
 
 }
@@ -417,4 +419,12 @@ td.switch-cell > div.toggle {
 
 td.pga-ex-exclusive-2, td.pga-ex-inclusive-2 {
   color: color-yiq($explain-sev-2-bg);
+}
+
+#datagrid .slick-header .slick-header-column.selected {
+  color: color-yiq($color-primary)
+}
+
+.editor-text {
+  color: color-yiq($color-bg);
 }
