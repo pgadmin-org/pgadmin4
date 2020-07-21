@@ -50,3 +50,4 @@ Bug fixes
 | `Issue #5673 <https://redmine.postgresql.org/issues/5673>`_ -  Fixed an issue where fetching the schema throws an error if the database is not connected in Schema Diff.
 | `Issue #5675 <https://redmine.postgresql.org/issues/5675>`_ -  Fixed CSRF errors when pgAdmin opened in an iframe on safari browser.
 | `Issue #5677 <https://redmine.postgresql.org/issues/5677>`_ -  Fixed text color issue in explain analyze for the Dark theme.
+| `Issue #5686 <https://redmine.postgresql.org/issues/5686>`_ -  Fixed issue where the user was not able to update policy if the policy is created with space.

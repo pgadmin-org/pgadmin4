@@ -2,7 +2,7 @@
 {## Change policy owner ##}
 {#####################################################}
 {% if data.policyowner and o_data.policyowner != data.policyowner %}
-ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
+ALTER POLICY {{ conn|qtIdent(o_data.name) }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
     TO {{ conn|qtTypeIdent(data.policyowner) }};
 {% endif %}
 
@@ -10,7 +10,7 @@ ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
 {## Change policy using condition ##}
 {#####################################################}
 {% if data.using and o_data.using != data.using %}
-ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
+ALTER POLICY {{ conn|qtIdent(o_data.name) }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
     USING ({{ data.using }});
 {% endif %}
 
@@ -18,7 +18,7 @@ ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
 {## Change policy with check condition ##}
 {#####################################################}
 {% if data.withcheck and o_data.withcheck != data.withcheck %}
-ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
+ALTER POLICY {{ conn|qtIdent(o_data.name) }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
     WITH CHECK ({{ data.withcheck }});
 {% endif %}
 
@@ -26,7 +26,7 @@ ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
 {## Change policy name ##}
 {#####################################################}
 {% if data.name and o_data.name != data.name %}
-ALTER POLICY {{ o_data.name }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
+ALTER POLICY {{ conn|qtIdent(o_data.name) }} ON {{conn|qtIdent(o_data.schema, o_data.table)}}
     RENAME TO {{ conn|qtIdent(data.name) }};
 {% endif %}
 
