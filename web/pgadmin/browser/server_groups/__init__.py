@@ -91,7 +91,7 @@ blueprint = ServerGroupModule(__name__)
 
 
 class ServerGroupView(NodeView):
-    node_type = ServerGroupModule.node_type
+    node_type = ServerGroupModule._NODE_TYPE
     parent_ids = []
     ids = [{'type': 'int', 'id': 'gid'}]
 
