@@ -144,7 +144,8 @@ def check_and_download_vnc_browser_image(browser_name, browser_version):
             except Exception:
                 traceback.print_exc(file=sys.stderr)
                 print(
-                    '{0}} Image found but could not download.'.format(command))
+                    '{0} Image found but could not be downloaded.'.
+                    format(command))
                 sys.exit(1)
             break
         elif idx == len(version_tag):
