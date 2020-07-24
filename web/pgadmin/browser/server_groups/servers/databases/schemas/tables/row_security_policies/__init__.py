@@ -61,15 +61,14 @@ class RowSecurityModule(CollectionNodeModule):
         self.min_ver = 90500
         self.max_ver = None
 
-    def get_nodes(self, gid, sid, did, scid, **kwargs):
+    def get_nodes(self, **kwargs):
         """
         Generate the collection node
-        :param gid: group id
-        :param sid: server id
-        :param did: database id
-        :param scid: Schema ID
         """
-        yield self.generate_browser_collection_node(did)
+        assert ('tid' in kwargs or 'vid' in kwargs)
+        yield self.generate_browser_collection_node(
+            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+        )
 
     @property
     def node_inode(self):

@@ -1,4 +1,4 @@
-{% import 'catalog/pg/macros/catalogs.sql' as CATALOGS %}
+{% import 'catalog/ppas/macros/catalogs.sql' as CATALOGS %}
 {% set all_obj = false %}
 {% if obj_type == 'all' or obj_type is none %}
 {% set all_obj = true %}
@@ -12,9 +12,10 @@ SELECT obj_type, obj_name,
         ELSE 'N'
     END AS catalog_level
 FROM (
-{% if all_obj or obj_type in ['sequence', 'view', 'mview'] %}
+{% if all_obj or obj_type in ['table', 'sequence', 'view', 'mview'] %}
     SELECT
     CASE
+        WHEN c.relkind in ('r', 't') THEN 'table'
         WHEN c.relkind = 'S' THEN 'sequence'
         WHEN c.relkind = 'v' THEN 'view'
         WHEN c.relkind = 'm' THEN 'mview'
@@ -22,12 +23,14 @@ FROM (
     END::text AS obj_type, c.relname AS obj_name,
     ':schema.'|| n.oid || ':/' || n.nspname || '/' ||
     CASE
+        WHEN c.relkind in ('r', 't') THEN ':table.'
         WHEN c.relkind = 'S' THEN ':sequence.'
         WHEN c.relkind = 'v' THEN ':view.'
         WHEN c.relkind = 'm' THEN ':mview.'
         ELSE 'should not happen'
     END || c.oid ||':/' || c.relname AS obj_path, n.nspname AS schema_name,
     CASE
+        WHEN c.relkind in ('r', 't') THEN {{ show_node_prefs['table'] }}
         WHEN c.relkind = 'S' THEN {{ show_node_prefs['sequence'] }}
         WHEN c.relkind = 'v' THEN {{ show_node_prefs['view'] }}
         WHEN c.relkind = 'm' THEN {{ show_node_prefs['mview'] }}
@@ -36,7 +39,9 @@ FROM (
     FROM pg_class c
     LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
     {% if all_obj %}
-    WHERE c.relkind in ('S','v','m')
+    WHERE c.relkind in ('r','t','S','v','m')
+    {% elif obj_type == 'table' %}
+    WHERE c.relkind in ('r', 't')
     {% elif obj_type == 'sequence' %}
     WHERE c.relkind  = 'S'
     {% elif obj_type == 'view' %}
@@ -49,61 +54,9 @@ FROM (
 {% if all_obj %}
     UNION
 {% endif %}
-{% if all_obj or obj_type in ['table', 'partition'] %}
-    SELECT CASE WHEN c.relispartition THEN 'partition' ELSE 'table' END::text AS obj_type, c.relname AS obj_name,
-    ':schema.'|| n.oid || ':/' || n.nspname || '/' || (
-		WITH RECURSIVE table_path_data as (
-			select c.oid as oid, 0 as height, c.relkind,
-				CASE c.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || c.oid || ':/' || c.relname as path
-			union
-			select rel.oid, pt.height+1 as height, rel.relkind,
-				CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
-				|| rel.oid || ':/' || rel.relname || '/' || pt.path as path
-			from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-			join pg_inherits inh ON inh.inhparent = rel.oid
-			join table_path_data pt ON inh.inhrelid = pt.oid
-		)
-		select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || c.oid || ':/' || c.relname END AS path
-		from table_path_data order by height desc limit 1
-	) obj_path, n.nspname AS schema_name,
-	CASE WHEN c.relispartition THEN {{ show_node_prefs['partition'] }}
-	    ELSE {{ show_node_prefs['table'] }} END AS show_node,
-    NULL AS other_info
-    FROM pg_class c
-    LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
-    WHERE c.relkind in ('p','r','t')
-    {% if obj_type == 'table' %}
-    AND NOT c.relispartition
-    {% elif obj_type == 'partition' %}
-    AND c.relispartition
-    {% endif %}
-    AND CASE WHEN c.relispartition THEN {{ CATALOGS.DB_SUPPORT('n') }} ELSE true END
-{% endif %}
-{% if all_obj %}
-    UNION
-{% endif %}
 {% if all_obj or obj_type in ['index'] %}
-    SELECT 'index'::text AS obj_type, cls.relname AS obj_name, ':schema.'|| n.oid || ':/' || n.nspname || '/' ||
-        case
-            when tab.relkind = 'm' then ':mview.' || tab.oid || ':' || '/' || tab.relname
-            WHEN tab.relkind in ('r', 't', 'p') THEN
-                (
-                    WITH RECURSIVE table_path_data as (
-                        select tab.oid as oid, 0 as height, tab.relkind,
-                            CASE tab.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || tab.oid || ':/' || tab.relname as path
-                        union
-                        select rel.oid, pt.height+1 as height, rel.relkind,
-                            CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
-                            || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                        from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-                        join pg_inherits inh ON inh.inhparent = rel.oid
-                        join table_path_data pt ON inh.inhrelid = pt.oid
-                    )
-                    select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || tab.oid || ':/' || tab.relname END AS path
-                    from table_path_data order by height desc limit 1
-               )
-        end
-        || '/:index.'|| cls.oid ||':/' || cls.relname AS obj_path, n.nspname AS schema_name,
+    SELECT 'index'::text AS obj_type, cls.relname AS obj_name,
+    ':schema.'|| n.oid || ':/' || n.nspname || '/:table.'|| tab.oid ||':/' || tab.relname || '/:index.'|| cls.oid ||':/' || cls.relname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['index'] }} AS show_node, NULL AS other_info
     FROM pg_index idx
     JOIN pg_class cls ON cls.oid=indexrelid
@@ -119,35 +72,56 @@ FROM (
 {% if all_obj %}
     UNION
 {% endif %}
-{% if all_obj or obj_type in ['trigger_function', 'function', 'procedure'] %}
-    SELECT
+{% if all_obj or obj_type in ['trigger_function', 'function', 'procedure', 'edbfunc', 'edbproc'] %}
+    SELECT fd.obj_type, fd.obj_name,
         CASE
+            WHEN fd.obj_type = 'function' THEN
+                ':schema.'|| fd.schema_oid || ':/' || fd.schema_name || '/:function.' || fd.obj_oid ||':/' || fd.obj_name
+            WHEN fd.obj_type = 'procedure' THEN
+                ':schema.'|| fd.schema_oid || ':/' || fd.schema_name || '/:procedure.' || fd.obj_oid ||':/' || fd.obj_name
+            WHEN fd.obj_type = 'trigger_function' THEN
+                ':schema.'|| fd.schema_oid || ':/' || fd.schema_name || '/:trigger_function.' || fd.obj_oid ||':/' || fd.obj_name
+            WHEN fd.obj_type = 'edbfunc' THEN
+                ':schema.'|| fd.next_schema_oid || ':/' || fd.next_schema_name || '/:package.'|| fd.schema_oid || ':/' || fd.schema_name || '/:edbfunc.' || fd.obj_oid ||':/' || fd.obj_name
+            WHEN fd.obj_type = 'edbproc' THEN
+                ':schema.'|| fd.next_schema_oid || ':/' || fd.next_schema_name || '/:package.'|| fd.schema_oid || ':/' || fd.schema_name || '/:edbproc.' || fd.obj_oid ||':/' || fd.obj_name
+            ELSE NULL
+        END AS obj_path,
+        CASE
+            WHEN fd.obj_type IN ('function', 'procedure', 'trigger_function') THEN fd.schema_name
+            WHEN fd.obj_type IN ('edbfunc', 'edbproc') THEN fd.next_schema_name
+            ELSE NULL
+        END AS schema_name,
+        CASE
+            WHEN fd.obj_type = 'function' THEN {{ show_node_prefs['function'] }}
+            WHEN fd.obj_type = 'procedure' THEN {{ show_node_prefs['procedure'] }}
+            WHEN fd.obj_type = 'trigger_function' THEN {{ show_node_prefs['trigger_function'] }}
+            WHEN fd.obj_type = 'edbfunc' THEN {{ show_node_prefs['edbfunc'] }}
+            WHEN fd.obj_type = 'edbproc' THEN {{ show_node_prefs['edbproc'] }}
+            ELSE NULL
+        END AS show_node, other_info
+    FROM (
+        SELECT
+            CASE
             WHEN t.typname IN ('trigger', 'event_trigger') THEN 'trigger_function'
-            WHEN p.prokind = 'p' THEN 'procedure'
-            ELSE 'function'
-        END::text AS obj_type, p.proname AS obj_name,
-        ':schema.'|| n.oid || ':/' || n.nspname || '/' ||
-        CASE
-            WHEN t.typname IN ('trigger', 'event_trigger') THEN ':trigger_function.'
-            WHEN p.prokind = 'p' THEN ':procedure.'
-            ELSE ':function.'
-        END || p.oid ||':/' || p.proname AS obj_path, n.nspname AS schema_name,
-        CASE
-            WHEN t.typname IN ('trigger', 'event_trigger') THEN {{ show_node_prefs['trigger_function'] }}
-            WHEN p.prokind = 'p' THEN {{ show_node_prefs['procedure'] }}
-            ELSE {{ show_node_prefs['function'] }}
-        END AS show_node,
-        pg_catalog.pg_get_function_identity_arguments(p.oid) AS other_info
-    from pg_proc p join pg_namespace n
-    on p.pronamespace = n.oid join pg_type t
-    on p.prorettype = t.oid join pg_language lng
-    ON lng.oid=p.prolang
-    WHERE p.prokind IN ('f', 'w', 'p')
-    AND CASE
-        WHEN t.typname IN ('trigger', 'event_trigger') THEN lng.lanname NOT IN ('edbspl', 'sql', 'internal')
-        ELSE true
-        END
-    AND ({{ CATALOGS.DB_SUPPORT('n') }})
+            WHEN pr.protype = '0'::char THEN
+                CASE WHEN np.oid IS NOT NULL THEN 'edbfunc' ELSE 'function' END
+            WHEN pr.protype = '1'::char THEN
+                CASE WHEN np.oid IS NOT NULL THEN 'edbproc' ELSE 'procedure' END
+            ELSE null
+            END::text AS obj_type, pr.proname AS obj_name, pr.oid AS obj_oid, n.oid AS schema_oid, n.nspname AS schema_name, np.oid next_schema_oid, np.nspname next_schema_name,
+            pg_catalog.pg_get_function_identity_arguments(pr.oid) AS other_info
+        FROM pg_proc pr left join pg_namespace n
+        ON pr.pronamespace = n.oid left JOIN pg_namespace np
+        ON np.oid=n.nspparent left JOIN pg_type t
+        ON t.oid = pr.prorettype left JOIN pg_language l
+        ON l.oid = pr.prolang
+        WHERE NOT (t.typname = 'trigger' AND l.lanname = 'edbspl')
+        AND ({{ CATALOGS.DB_SUPPORT('n') }} AND {{ CATALOGS.DB_SUPPORT('np') }})
+    ) fd
+    {% if not all_obj %}
+    WHERE fd.obj_type = '{{ obj_type }}'
+    {% endif %}
 {% endif %}
 {% if all_obj %}
     UNION
@@ -163,7 +137,8 @@ FROM (
     select 'schema'::text AS obj_type, n.nspname AS obj_name,
     ':schema.'||n.oid||':/' || n.nspname as obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['schema'] }} AS show_node, NULL AS other_info from pg_namespace n
-    where {{ CATALOGS.DB_SUPPORT('n') }}
+    where n.nspparent = 0
+    AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
@@ -172,16 +147,15 @@ FROM (
     select 'column'::text AS obj_type, a.attname AS obj_name,
     ':schema.'||n.oid||':/' || n.nspname || '/' ||
     case
-        WHEN t.relkind in ('r', 't', 'p') THEN ':table.'
+        WHEN t.relkind in ('r', 't') THEN ':table.'
         WHEN t.relkind = 'v' THEN ':view.'
         WHEN t.relkind = 'm' THEN ':mview.'
         else 'should not happen'
     end || t.oid || ':/' || t.relname || '/:column.'|| a.attnum ||':/' || a.attname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['column'] }} AS show_node, NULL AS other_info
     from pg_attribute a
-    inner join pg_class t on a.attrelid = t.oid and t.relkind in ('r','t','p','v','m')
+    inner join pg_class t on a.attrelid = t.oid and t.relkind in ('r', 't','v','m')
     left join pg_namespace n on t.relnamespace = n.oid where a.attnum > 0
-    and not t.relispartition
 {% endif %}
 {% if all_obj %}
     UNION
@@ -196,22 +170,7 @@ FROM (
         WHEN c.contype = 'x' THEN  'exclusion_constraint'
     END::text AS obj_type,
     case when tf.relname is null then c.conname else c.conname || ' -> ' || tf.relname end AS obj_name,
-    ':schema.'||n.oid||':/' || n.nspname||'/'||
-    (
-		WITH RECURSIVE table_path_data as (
-			select t.oid as oid, 0 as height, t.relkind,
-				CASE t.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || t.oid || ':/' || t.relname as path
-			union
-			select rel.oid, pt.height+1 as height, rel.relkind,
-				CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
-				|| rel.oid || ':/' || rel.relname || '/' || pt.path as path
-			from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-			join pg_inherits inh ON inh.inhparent = rel.oid
-			join table_path_data pt ON inh.inhrelid = pt.oid
-		)
-		select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
-		from table_path_data order by height desc limit 1
-	) ||
+    ':schema.'||n.oid||':/' || n.nspname||'/:table.'|| t.oid || ':/'||t.relname||
     CASE
         WHEN c.contype = 'c' THEN  '/:check_constraint.' ||c.oid
         WHEN c.contype = 'f' THEN  '/:foreign_key.' ||c.oid
@@ -244,31 +203,16 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['rule'] %}
-    select 'rule'::text AS obj_type, r.rulename AS obj_name, ':schema.'||n.oid||':/' || n.nspname|| '/' ||
+    select 'rule'::text AS obj_type, r.rulename AS obj_name, ':schema.'||n.oid||':/' || n.nspname||
             case
-                when t.relkind = 'v' then ':view.' || t.oid || ':' || '/' || t.relname
-                WHEN t.relkind in ('r', 't', 'p') THEN
-                    (
-                        WITH RECURSIVE table_path_data as (
-                            select t.oid as oid, 0 as height, t.relkind,
-                                CASE t.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || t.oid || ':/' || t.relname as path
-                            union
-                            select rel.oid, pt.height+1 as height, rel.relkind,
-                                CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
-                                || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                            from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-                            join pg_inherits inh ON inh.inhparent = rel.oid
-                            join table_path_data pt ON inh.inhrelid = pt.oid
-                        )
-                        select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
-                        from table_path_data order by height desc limit 1
-                    )
-            end
-            ||'/:rule.'||r.oid||':/'|| r.rulename AS obj_path,
+                WHEN t.relkind in ('r', 't') THEN '/:table.'
+                when t.relkind = 'v' then '/:view.'
+                else 'should not happen'
+            end || t.oid || ':/' || t.relname ||'/:rule.'||r.oid||':/'|| r.rulename AS obj_path,
             n.nspname AS schema_name,
             {{ show_node_prefs['rule'] }} AS show_node, NULL AS other_info
             from pg_rewrite r
-    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r','t','p','v')
+    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r', 't','v')
     left join pg_namespace n on t.relnamespace = n.oid
     where {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
@@ -276,29 +220,15 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['trigger'] %}
-    select 'trigger'::text AS obj_type, tr.tgname AS obj_name, ':schema.'||n.oid||':/' || n.nspname|| '/' ||
-        case
-            when t.relkind = 'v' then ':view.' || t.oid || ':' || '/' || t.relname
-            WHEN t.relkind in ('r', 't', 'p') THEN
-            (
-                WITH RECURSIVE table_path_data as (
-                    select t.oid as oid, 0 as height, t.relkind,
-                        CASE t.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || t.oid || ':/' || t.relname as path
-                    union
-                    select rel.oid, pt.height+1 as height, rel.relkind,
-                        CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
-                        || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                    from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-                    join pg_inherits inh ON inh.inhparent = rel.oid
-                    join table_path_data pt ON inh.inhrelid = pt.oid
-                )
-                select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
-                from table_path_data order by height desc limit 1
-            )
-        end || '/:trigger.'|| tr.oid || ':/' || tr.tgname AS obj_path, n.nspname AS schema_name,
-        {{ show_node_prefs['trigger'] }} AS show_node, NULL AS other_info
-        from pg_trigger tr
-    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 't', 'p', 'v')
+    select 'trigger'::text AS obj_type, tr.tgname AS obj_name, ':schema.'||n.oid||':/' || n.nspname||
+            case
+                WHEN t.relkind in ('r', 't') THEN '/:table.'
+                when t.relkind = 'v' then '/:view.'
+                else 'should not happen'
+            end || t.oid || ':/' || t.relname || '/:trigger.'|| tr.oid || ':/' || tr.tgname AS obj_path, n.nspname AS schema_name,
+            {{ show_node_prefs['trigger'] }} AS show_node, NULL AS other_info
+            from pg_trigger tr
+    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 't', 'v')
     left join pg_namespace n on t.relnamespace = n.oid
     where tr.tgisinternal = false
     and {{ CATALOGS.DB_SUPPORT('n') }}
@@ -318,6 +248,7 @@ FROM (
     {% if not show_system_objects %}
         AND ct.oid is NULL
     {% endif %}
+    AND n.nspparent = 0
     AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
@@ -357,7 +288,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['fts_dictionary'] %}
-    SELECT 'fts_dictionary' AS obj_type, dict.dictname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_dictionary.'||dict.oid||':/' || dict.dictname AS obj_path, ns.nspname AS schema_name,
+    SELECT 'fts_dictionary'::text AS obj_type, dict.dictname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_dictionary.'||dict.oid||':/' || dict.dictname AS obj_path, ns.nspname AS schema_name,
     {{ show_node_prefs['fts_dictionary'] }} AS show_node, NULL AS other_info
     FROM pg_ts_dict dict
     left join pg_namespace ns on dict.dictnamespace = ns.oid
@@ -367,7 +298,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['fts_parser'] %}
-    SELECT 'fts_parser' AS obj_type, prs.prsname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_parser.'||prs.oid||':/' || prs.prsname AS obj_path, ns.nspname AS schema_name,
+    SELECT 'fts_parser'::text AS obj_type, prs.prsname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_parser.'||prs.oid||':/' || prs.prsname AS obj_path, ns.nspname AS schema_name,
     {{ show_node_prefs['fts_parser'] }} AS show_node, NULL AS other_info
     FROM pg_ts_parser prs
     left join pg_namespace ns on prs.prsnamespace = ns.oid
@@ -377,7 +308,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['fts_template'] %}
-    SELECT 'fts_template' AS obj_type, tmpl.tmplname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_template.'||tmpl.oid||':/' || tmpl.tmplname AS obj_path, ns.nspname AS schema_name,
+    SELECT 'fts_template'::text AS obj_type, tmpl.tmplname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_template.'||tmpl.oid||':/' || tmpl.tmplname AS obj_path, ns.nspname AS schema_name,
     {{ show_node_prefs['fts_template'] }} AS show_node, NULL AS other_info
     FROM pg_ts_template tmpl
     left join pg_namespace ns on tmpl.tmplnamespace = ns.oid
@@ -387,18 +318,19 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['domain'] %}
-    select 'domain' AS obj_type, t.typname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:domain.'||t.oid||':/' || t.typname AS obj_path, n.nspname AS schema_name,
+    select 'domain'::text AS obj_type, t.typname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:domain.'||t.oid||':/' || t.typname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['domain'] }} AS show_node, NULL AS other_info
     from pg_type t
     inner join pg_namespace n on t.typnamespace = n.oid
     where t.typtype = 'd'
+    AND n.nspparent = 0
     AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['domain_constraints'] %}
-    SELECT 'domain_constraints' AS obj_type,
+    SELECT 'domain_constraints'::text AS obj_type,
         c.conname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:domain.'||t.oid||':/' || t.typname || '/:domain_constraints.'||c.oid||':/' || c.conname AS obj_path,
         n.nspname AS schema_name,
         {{ show_node_prefs['domain_constraints'] }} AS show_node, NULL AS other_info
@@ -406,13 +338,14 @@ FROM (
     ON t.oid=contypid JOIN pg_namespace n
     ON n.oid=t.typnamespace
     WHERE t.typtype = 'd'
+    AND n.nspparent = 0
     AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['foreign_data_wrapper'] %}
-    select 'foreign_data_wrapper' AS obj_type, fdwname AS obj_name, ':foreign_data_wrapper.'||oid||':/' || fdwname AS obj_path, ''::text AS schema_name,
+    select 'foreign_data_wrapper'::text AS obj_type, fdwname AS obj_name, ':foreign_data_wrapper.'||oid||':/' || fdwname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['foreign_data_wrapper'] }} AS show_node, NULL AS other_info
     from pg_foreign_data_wrapper
 {% endif %}
@@ -420,7 +353,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['foreign_server'] %}
-    select 'foreign_server' AS obj_type, sr.srvname AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname AS obj_path, ''::text AS schema_name,
+    select 'foreign_server'::text AS obj_type, sr.srvname AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['foreign_server'] }} AS show_node, NULL AS other_info
     from pg_foreign_server sr
     inner join pg_foreign_data_wrapper fdw on sr.srvfdw = fdw.oid
@@ -429,7 +362,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['user_mapping'] %}
-    select 'user_mapping' AS obj_type, um.usename AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname || '/:user_mapping.'||um.umid||':/' || um.usename AS obj_path, ''::text AS schema_name,
+    select 'user_mapping'::text AS obj_type, um.usename AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname || '/:user_mapping.'||um.umid||':/' || um.usename AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['user_mapping'] }} AS show_node, NULL AS other_info
     from pg_user_mappings um
     inner join pg_foreign_server sr on um.srvid = sr.oid
@@ -439,7 +372,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['foreign_table'] %}
-    select 'foreign_table' AS obj_type, c.relname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:foreign_table.'||c.oid||':/' || c.relname AS obj_path, ns.nspname AS schema_name,
+    select 'foreign_table'::text AS obj_type, c.relname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:foreign_table.'||c.oid||':/' || c.relname AS obj_path, ns.nspname AS schema_name,
     {{ show_node_prefs['foreign_table'] }} AS show_node, NULL AS other_info
     from pg_foreign_table ft
     inner join pg_class c on ft.ftrelid = c.oid
@@ -450,7 +383,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['extension'] %}
-    select 'extension' AS obj_type, x.extname AS obj_name, ':extension.'||x.oid||':/' || x.extname AS obj_path, ''::text AS schema_name,
+    select 'extension'::text AS obj_type, x.extname AS obj_name, ':extension.'||x.oid||':/' || x.extname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['extension'] }} AS show_node, NULL AS other_info
     FROM pg_extension x
     JOIN pg_namespace n on x.extnamespace=n.oid
@@ -460,7 +393,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['collation'] %}
-    SELECT 'collation' AS obj_type, c.collname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:collation.'||c.oid||':/' || c.collname AS obj_path, n.nspname AS schema_name,
+    SELECT 'collation'::text AS obj_type, c.collname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:collation.'||c.oid||':/' || c.collname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['collation'] }} AS show_node, NULL AS other_info
     FROM pg_collation c
     JOIN pg_namespace n ON n.oid=c.collnamespace
@@ -469,29 +402,44 @@ FROM (
 {% if all_obj %}
     UNION
 {% endif %}
+{% if all_obj or obj_type in ['synonym'] %}
+    SELECT 'synonym'::text AS obj_type, s.synname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:synonym.'||s.oid||':/' || s.synname AS obj_path, n.nspname AS schema_name,
+    {{ show_node_prefs['synonym'] }} AS show_node, NULL AS other_info
+    FROM pg_synonym s
+    JOIN pg_namespace n ON n.oid=s.synnamespace
+    WHERE {{ CATALOGS.DB_SUPPORT('n') }}
+{% endif %}
+{% if all_obj %}
+    UNION
+{% endif %}
+{% if all_obj or obj_type in ['package'] %}
+    SELECT 'package'::text AS obj_type, p.nspname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:package.'||p.oid||':/' || p.nspname AS obj_path, n.nspname AS schema_name,
+    {{ show_node_prefs['package'] }} AS show_node, NULL AS other_info
+    FROM pg_namespace p
+    JOIN pg_namespace n ON n.oid=p.nspparent
+    WHERE {{ CATALOGS.DB_SUPPORT('n') }}
+{% endif %}
+{% if all_obj %}
+    UNION
+{% endif %}
+{% if all_obj or obj_type in ['edbvar'] %}
+    SELECT 'edbvar'::text AS obj_type, v.varname AS obj_name,
+    ':schema.'||n.oid||':/' || n.nspname || '/:package.'||p.oid||':/' || p.nspname || '/:edbvar.'||v.oid||':/' || v.varname AS obj_path, n.nspname AS schema_name,
+    {{ show_node_prefs['edbvar'] }} AS show_node, NULL AS other_info
+    FROM edb_variable v JOIN pg_namespace p
+    ON v.varpackage = p.oid JOIN pg_namespace n
+    ON p.nspparent = n.oid
+    WHERE {{ CATALOGS.DB_SUPPORT('p') }}
+    AND {{ CATALOGS.DB_SUPPORT('n') }}
+{% endif %}
+{% if all_obj %}
+    UNION
+{% endif %}
 {% if all_obj or obj_type in ['row_security_policy'] %}
-    select 'row_security_policy'::text AS obj_type, pl.polname AS obj_name, ':schema.'||n.oid||':/' || n.nspname|| '/' ||
-            case
-                WHEN t.relkind in ('r', 't', 'p') THEN
-                    (
-                        WITH RECURSIVE table_path_data as (
-                            select t.oid as oid, 0 as height, t.relkind,
-                                CASE t.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || t.oid || ':/' || t.relname as path
-                            union
-                            select rel.oid, pt.height+1 as height, rel.relkind,
-                                CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
-                                || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                            from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-                            join pg_inherits inh ON inh.inhparent = rel.oid
-                            join table_path_data pt ON inh.inhrelid = pt.oid
-                        )
-                        select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
-                        from table_path_data order by height desc limit 1
-                    )
-            end
-            ||'/:row_security_policy.'|| pl.oid ||':/'|| pl.polname AS obj_path, n.nspname AS schema_name,
-            {{ show_node_prefs['row_security_policy'] }} AS show_node, NULL AS other_info
-            FROM pg_policy pl
+    select 'row_security_policy'::text AS obj_type, pl.polname AS obj_name, ':schema.'|| n.oid || ':/' || n.nspname ||
+        '/:table.'|| t.oid ||':/' || t.relname || '/:row_security_policy.'|| pl.oid ||':/' || pl.polname AS obj_path, n.nspname AS schema_name,
+        {{ show_node_prefs['row_security_policy'] }} AS show_node, NULL AS other_info
+        FROM pg_policy pl
     JOIN pg_class t on pl.polrelid = t.oid and t.relkind in ('r','t','p')
     JOIN pg_policies rw ON (pl.polname=rw.policyname AND t.relname=rw.tablename)
     JOIN pg_namespace n on t.relnamespace = n.oid

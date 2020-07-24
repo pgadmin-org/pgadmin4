@@ -534,6 +534,38 @@ FROM (
     AND {{ CATALOGS.DB_SUPPORT('p') }}
     AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
+{% if all_obj %}
+    UNION
+{% endif %}
+{% if all_obj or obj_type in ['row_security_policy'] %}
+    select 'row_security_policy'::text AS obj_type, pl.polname AS obj_name, ':schema.'||n.oid||':/' || n.nspname|| '/' ||
+            case
+                WHEN t.relkind in ('r', 't', 'p') THEN
+                    (
+                        WITH RECURSIVE table_path_data as (
+                            select t.oid as oid, 0 as height, t.relkind,
+                                CASE t.relispartition WHEN true THEN ':partition.' ELSE ':table.' END || t.oid || ':/' || t.relname as path
+                            union
+                            select rel.oid, pt.height+1 as height, rel.relkind,
+                                CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
+                                || rel.oid || ':/' || rel.relname || '/' || pt.path as path
+                            from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
+                            join pg_inherits inh ON inh.inhparent = rel.oid
+                            join table_path_data pt ON inh.inhrelid = pt.oid
+                        )
+                        select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
+                        from table_path_data order by height desc limit 1
+                    )
+            end
+            ||'/:row_security_policy.'|| pl.oid ||':/'|| pl.polname AS obj_path, n.nspname AS schema_name,
+            {{ show_node_prefs['row_security_policy'] }} AS show_node, NULL AS other_info
+            FROM pg_policy pl
+    JOIN pg_class t on pl.polrelid = t.oid and t.relkind in ('r','t','p')
+    JOIN pg_policies rw ON (pl.polname=rw.policyname AND t.relname=rw.tablename)
+    JOIN pg_namespace n on t.relnamespace = n.oid
+    where {{ CATALOGS.DB_SUPPORT('n') }}
+{% endif %}
+
 ) sn
 where lower(sn.obj_name) like '%{{ search_text }}%'
 {% if not show_system_objects %}
