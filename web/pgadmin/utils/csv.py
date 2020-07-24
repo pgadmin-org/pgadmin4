@@ -485,7 +485,7 @@ def register_dialect(name, dialect='excel', **fmtparams):
 
     try:
         Dialect.validate(dialect)
-    except Exception as e:
+    except Exception:
         raise TypeError('dialect is invalid')
 
     assert name not in _dialect_registry

@@ -314,7 +314,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                     )
                 ).perform()
                 break
-            except Exception as e:
+            except Exception:
                 if idx != 2:
                     continue
                 else:

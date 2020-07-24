@@ -88,7 +88,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
                            "contains(@class,'ajs-header')]")
             ))
 
-        except TimeoutException as e:
+        except TimeoutException:
             is_error = None
 
         # If debugger plugin is not found

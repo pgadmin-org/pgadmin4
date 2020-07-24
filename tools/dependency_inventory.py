@@ -65,7 +65,7 @@ def get_python_deps():
 
         try:
             distribution = pkg_resources.get_distribution(pkg)
-        except IndexError as e:
+        except IndexError:
             # The package probably isn't required on this version of Python,
             # thus we have no info about it.
             have_unknowns = True

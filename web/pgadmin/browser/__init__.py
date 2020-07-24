@@ -718,7 +718,7 @@ def utils():
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
         pg_libpq_version = driver.libpq_version()
-    except Exception as e:
+    except Exception:
         pg_libpq_version = 0
 
     for submodule in current_blueprint.submodules:

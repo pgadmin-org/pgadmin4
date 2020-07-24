@@ -61,11 +61,11 @@ def get_chrome_version(args):
         def _read_registry(root, key, value):
             try:
                 hkey = winreg.OpenKey(root, key)
-            except Exception as e:
+            except Exception:
                 return None
             try:
                 (val, typ) = winreg.QueryValueEx(hkey, value)
-            except Exception as e:
+            except Exception:
                 winreg.CloseKey(hkey)
                 return None
 

@@ -104,7 +104,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                     lambda driver: driver.find_element_by_name(
                         NavMenuLocators.backup_filename_txt_box_name)):
                     click = False
-            except Exception as e:
+            except Exception:
                 pass
 
         # Wait for the backup status alertfier

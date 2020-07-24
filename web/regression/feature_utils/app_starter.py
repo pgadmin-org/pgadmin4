@@ -49,7 +49,7 @@ class AppStarter:
                     random_server_port
                 )
 
-            except WebDriverException as e:
+            except WebDriverException:
                 # In case of WebDriverException sleep for 1 second and retry
                 # again. Retry 10 times and if still app will not start then
                 # raise exception.

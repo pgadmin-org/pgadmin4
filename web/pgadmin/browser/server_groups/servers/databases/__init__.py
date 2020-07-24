@@ -232,7 +232,6 @@ class DatabaseView(PGChildNodeView):
             if self.manager.db == row['name']:
                 row['canDrop'] = False
             else:
-                conn = self.manager.connection(row['name'], did=row['did'])
                 row['canDrop'] = True
 
         return ajax_response(

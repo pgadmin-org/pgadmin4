@@ -1331,6 +1331,7 @@ def launch_url_in_browser(driver_instance, url, title='pgAdmin 4', timeout=50):
             time.sleep(6)
             count -= 1
             if count == 0:
+                print(str(e))
                 exception_msg = 'Web-page title did not match to {0}. ' \
                                 'Please check url {1} accessible on ' \
                                 'internet.'.format(title, url)
@@ -1475,7 +1476,7 @@ def get_selenium_grid_status_json(selenoid_url):
         selenoid_status = json.load(selenoid_status)
         if isinstance(selenoid_status, dict):
             return selenoid_status
-    except Exception as e:
+    except Exception:
         print("Unable to find Selenoid Status.Kindly check url passed -'{0}'."
               "Check parsing errors in test_config.json".format(selenoid_url))
         return None

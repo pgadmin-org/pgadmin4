@@ -428,7 +428,7 @@ class PGChildNodeView(NodeView):
                     return internal_server_error(errormsg=msg)
         except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
             raise
-        except Exception as e:
+        except Exception:
             return precondition_required(
                 gettext(
                     "Connection to the server has been lost."

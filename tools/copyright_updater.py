@@ -72,7 +72,7 @@ def find_replace(directory, find, replace):
                     print("Done")
                 else:
                     print("N/A")
-            except Exception as e:
+            except Exception:
                 failed.append(current_file)
                 print("FAILED")
 
