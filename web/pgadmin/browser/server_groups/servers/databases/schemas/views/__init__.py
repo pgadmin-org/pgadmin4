@@ -1082,7 +1082,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                return True, internal_server_error(errormsg=res), ''
 
             if len(res['rows']) == 0:
                 continue
@@ -1103,8 +1103,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 status, rset = self.conn.execute_2darray(SQL)
                 if not status:
                     return True, internal_server_error(errormsg=rset), ''
-                # 'tgattr' contains list of columns from table
-                # used in trigger
                 columns = []
 
                 for col_row in rset['rows']:
@@ -1121,7 +1119,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             sql_data += '\n'
             sql_data += SQL
 
-            return False, '', sql_data
+        return False, '', sql_data
 
     def get_compound_trigger_sql(self, vid, display_comments=True):
         """
@@ -1145,8 +1143,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=data)
 
-            is_error, errmsg, sql_data = self._generate_and_return_trigger_sql(
-                vid, data, display_comments, sql_data)
+            is_error, errmsg, sql_data = \
+                self._generate_and_return_trigger_sql(
+                    vid, data, display_comments, sql_data)
 
             if is_error:
                 return errmsg
