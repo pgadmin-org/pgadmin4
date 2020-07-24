@@ -1086,6 +1086,14 @@ define('tools.querytool', [
         }
       });
 
+      // Handles blur event for slick grid cell
+      $('.slick-viewport').on('blur', 'input.editor-text', function () {
+        window.setTimeout(function() {
+          if (Slick.GlobalEditorLock.isActive())
+            Slick.GlobalEditorLock.commitCurrentEdit();
+        });
+      });
+
       // Listener function which will be called when user updates existing rows
       grid.onCellChange.subscribe(function(e, args) {
         // self.handler.data_store.updated will holds all the updated data
