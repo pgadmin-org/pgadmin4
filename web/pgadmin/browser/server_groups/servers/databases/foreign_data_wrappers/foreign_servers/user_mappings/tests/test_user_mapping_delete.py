@@ -23,15 +23,14 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as um_utils
+from unittest.mock import patch
 
 
 class UserMappingDeleteTestCase(BaseTestGenerator):
     """This class will delete user mapping under foreign server node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for user mapping node.
-        ('Check user mapping Node', dict(url='/browser/user_mapping/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('user_mapping_delete',
+                                         um_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -49,6 +48,18 @@ class UserMappingDeleteTestCase(BaseTestGenerator):
                                               self.fsrv_name, self.fdw_name)
         self.um_id = um_utils.create_user_mapping(self.server, self.db_name,
                                                   self.fsrv_name)
+
+    def delete_user_mapping(self):
+        """
+        This function returns the user mapping delete response
+        :return: user mapping delete response
+        """
+        return self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/' + str(self.fdw_id) + '/' +
+            str(self.fsrv_id) + '/' + str(self.um_id),
+            follow_redirects=True)
 
     def runTest(self):
         """This function will delete user mapping present under test
@@ -71,13 +82,31 @@ class UserMappingDeleteTestCase(BaseTestGenerator):
                                                    self.fsrv_name)
         if not um_response:
             raise Exception("Could not find user mapping.")
-        delete_response = self.tester.delete(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.fdw_id) + '/' +
-            str(self.fsrv_id) + '/' + str(self.um_id),
-            follow_redirects=True)
-        self.assertEquals(delete_response.status_code, 200)
+        if self.is_positive_test:
+            delete_response = self.delete_user_mapping()
+        else:
+            if hasattr(self, "internal_server_error"):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    delete_response = self.delete_user_mapping()
+
+            if hasattr(self, "error_in_db"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    delete_response = self.delete_user_mapping()
+
+            if hasattr(self, "wrong_foreign_server_id"):
+                self.fsrv_id = 99999
+                delete_response = self.delete_user_mapping()
+
+            if hasattr(self, "wrong_user_mapping_id"):
+                self.um_id = 99999
+                delete_response = self.delete_user_mapping()
+
+        actual_response_code = delete_response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop

@@ -9,10 +9,33 @@
 
 from __future__ import print_function
 
+import os
 import sys
 import traceback
+import json
 
 from regression.python_test_utils.test_utils import get_db_connection
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/user_mapping_test_data.json") as data_file:
+    test_cases = json.load(data_file)
+
+
+def get_um_data(db_user, server):
+
+    data = {"name": db_user,
+            "um_options": [],
+            "umoptions": [
+                {
+                    "umoption": "user",
+                    "umvalue": server["username"]
+                },
+                {
+                    "umoption": "password",
+                    "umvalue": server["db_password"]
+                }
+            ]}
+    return data
 
 
 def create_user_mapping(server, db_name, fsrv_name):

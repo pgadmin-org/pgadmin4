@@ -21,15 +21,14 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as fsrv_utils
+from unittest.mock import patch
 
 
 class ForeignServerGetTestCase(BaseTestGenerator):
-    """This class will add foreign server under FDW node."""
+    """This class will get foreign server properties under FDW node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for foreign server node.
-        ('Check FSRV Node', dict(url='/browser/foreign_server/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('foreign_server_get',
+                                         fsrv_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -49,8 +48,31 @@ class ForeignServerGetTestCase(BaseTestGenerator):
         self.fsrv_id = fsrv_utils.create_fsrv(self.server, self.db_name,
                                               self.fsrv_name, self.fdw_name)
 
+    def get_foreign_server(self):
+        """
+        This function returns the foreign server get response
+        :return: foreign server get response
+        """
+        return self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
+                               str(self.server_id) + '/' +
+                               str(self.db_id) + '/' +
+                               str(self.fdw_id) + '/' +
+                               str(self.fsrv_id),
+                               content_type='html/json')
+
+    def get_foreign_server_list(self):
+        """
+        This functions returns the foreign server list
+        :return: foreign server list
+        """
+        return self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
+                               str(self.server_id) + '/' +
+                               str(self.db_id) + '/' +
+                               str(self.fdw_id) + "/",
+                               content_type='html/json')
+
     def runTest(self):
-        """This function will fetch foreign server present under test
+        """This function will get foreign server properties present under test
         database."""
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
@@ -62,12 +84,28 @@ class ForeignServerGetTestCase(BaseTestGenerator):
                                             self.fdw_name)
         if not fdw_response:
             raise Exception("Could not find FDW.")
-        fsrv_response = self.tester.get(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.fdw_id) + '/' + str(self.fsrv_id),
-            content_type='html/json')
-        self.assertEquals(fsrv_response.status_code, 200)
+
+        if self.is_positive_test:
+            if hasattr(self, "foreign_server_list"):
+                fsrv_response = self.get_foreign_server_list()
+            else:
+                fsrv_response = self.get_foreign_server()
+        else:
+            if hasattr(self, "error_fetching_fsrv"):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    if hasattr(self, "foreign_server_list"):
+                        fsrv_response = self.get_foreign_server_list()
+                    else:
+                        fsrv_response = self.get_foreign_server()
+
+            if hasattr(self, "wrong_fsrv_id"):
+                self.fsrv_id = 99999
+                fsrv_response = self.get_foreign_server()
+
+        actual_response_code = fsrv_response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop added extension

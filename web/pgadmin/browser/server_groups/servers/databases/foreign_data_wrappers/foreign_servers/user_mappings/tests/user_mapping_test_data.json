@@ -1,0 +1,388 @@
+{
+  "user_mapping_create": [
+    {
+      "name": "Create user mapping: With valid data.",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error creating user mapping: Internal server error.",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": false,
+      "internal_server_error": true,
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while creating a user mapping')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error creating user mapping - wrong fsrv_id",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": false,
+      "error_fsrv_id": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error while creating user mapping: With insufficient data.",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": false,
+      "missing_parameter": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error creating user mapping: Internal server error 2.",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": false,
+      "error_in_db": true,
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+         "return_value": "(False, 'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "user_mapping_delete": [
+    {
+      "name": "delete user mapping",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while deleting a user mapping - Internal server error 1",
+      "url": "/browser/user_mapping/obj/",
+      "internal_server_error": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+         "return_value": "(False, 'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while deleting a user mapping - wrong foreign server id",
+      "url": "/browser/user_mapping/obj/",
+      "wrong_foreign_server_id": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error while deleting a user mapping - wrong user mapping id",
+      "url": "/browser/user_mapping/obj/",
+      "wrong_user_mapping_id": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error creating user mapping: Error in db.",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": false,
+      "error_in_db": true,
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while deleting a user mapping')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "user_mapping_multiple_delete": [
+   {
+      "name": "Delete multiple user mapping",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "user_mapping_dependent_dependency": [
+    {
+      "name": "Get user mapping dependents",
+      "url": "/browser/user_mapping/dependent/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get user mapping dependencies",
+      "url": "/browser/user_mapping/dependency/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "user_mapping_get_nodes": [
+   {
+      "name": "Get user mapping nodes",
+      "url": "/browser/user_mapping/nodes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+   {
+      "name": "Error fetching user mapping nodes",
+      "url": "/browser/user_mapping/nodes/",
+      "is_positive_test": false,
+      "internal_server_error": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching user mapping nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+   {
+      "name": "Get user mapping node",
+      "url": "/browser/user_mapping/nodes/",
+      "is_positive_test": true,
+      "node": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+   {
+      "name": "Error fetching user mapping node",
+      "url": "/browser/user_mapping/nodes/",
+      "is_positive_test": false,
+      "node": true,
+      "internal_server_error": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching user mapping nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "user_mapping_update": [
+    {
+      "name": "Update user mapping",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {
+            "umoptions":
+                {
+                    "changed":
+                        [
+                            {"umoption": "user",
+                             "umvalue": "public"
+                             }
+                        ]
+                },
+            "id": "PLACE_HOLDER"
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while updating a user mapping - Internal server error",
+      "url": "/browser/user_mapping/obj/",
+      "error_in_db": true,
+      "test_data": {
+            "umoptions":
+                {
+                    "changed":
+                        [
+                            {"umoption": "user",
+                             "umvalue": "public"
+                             }
+                        ]
+                },
+            "id": "PLACE_HOLDER"
+      },
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error while fetching a user mapping')]"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "user_mapping_get": [
+    {
+      "name": "Get user mapping properties",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching a user mapping properties",
+      "url": "/browser/user_mapping/obj/",
+      "error_fetching_um": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a user mapping')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error - Fetching user mapping with wrong ID",
+      "url": "/browser/user_mapping/obj/",
+      "wrong_um_id": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Get user mapping list",
+      "url": "/browser/user_mapping/obj/",
+      "is_positive_test": true,
+      "um_list": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching a user mapping list",
+      "url": "/browser/user_mapping/obj/",
+      "error_fetching_um": true,
+      "is_positive_test": false,
+      "um_list": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a user mapping')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "user_mapping_get_sql": [
+    {
+      "name": "Get user mapping SQL",
+      "url": "/browser/user_mapping/sql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error - Get user mapping SQL - Internal server error",
+      "url": "/browser/user_mapping/sql/",
+      "is_positive_test": false,
+      "internal_server_error": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a user mapping')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error - Get user mapping SQL using wrong um id",
+      "url": "/browser/user_mapping/sql/",
+      "wrong_um_id": true,
+      "is_positive_test": false,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "user_mapping_get_msql": [
+    {
+      "name": "Get user mapping msql",
+      "is_positive_test": true,
+       "url": "/browser/user_mapping/msql/",
+      "test_data": {
+        "name": "modifying name",
+        "comment": "Comments to test update"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ]
+}

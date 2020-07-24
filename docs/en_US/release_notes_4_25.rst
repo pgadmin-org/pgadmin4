@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5324 <https://redmine.postgresql.org/issues/5324>`_ -  Improve code coverage and API test cases for Foreign Servers and User Mappings.
 
 Bug fixes
 *********

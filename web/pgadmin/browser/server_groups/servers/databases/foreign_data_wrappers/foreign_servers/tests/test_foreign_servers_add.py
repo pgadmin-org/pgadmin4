@@ -21,6 +21,8 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as fsrv_utils
+from unittest.mock import patch
 
 
 class ForeignServerAddTestCase(BaseTestGenerator):
@@ -28,10 +30,8 @@ class ForeignServerAddTestCase(BaseTestGenerator):
     This class will add foreign server under database node.
     """
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for foreign server node.
-        ('Check FSRV Node', dict(url='/browser/foreign_server/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('foreign_server_create',
+                                         fsrv_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -48,6 +48,19 @@ class ForeignServerAddTestCase(BaseTestGenerator):
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
 
+    def create_foreign_server(self):
+        """
+        This function create a foreign server and returns the created
+        foreign server response
+        :return: created foreign server response
+        """
+        return self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/' + str(self.fdw_id) + '/',
+            data=json.dumps(self.data),
+            content_type='html/json')
+
     def runTest(self):
         """This function will fetch foreign data wrapper present under test
          database."""
@@ -62,45 +75,34 @@ class ForeignServerAddTestCase(BaseTestGenerator):
         if not fdw_response:
             raise Exception("Could not find FDW.")
         db_user = self.server["username"]
-        data = {
-            "fsrvacl": [
-                {
-                    "grantee": db_user,
-                    "grantor": db_user,
-                    "privileges":
-                        [
-                            {
-                                "privilege_type": "U",
-                                "privilege": "true",
-                                "with_grant": "false"
-                            }
-                        ]
-                }
-            ],
-            "fsrvoptions": [
-                {
-                    "fsrvoption": "host",
-                    "fsrvvalue": self.server['host']
-                },
-                {
-                    "fsrvoption": "port",
-                    "fsrvvalue": str(self.server['port'])
-                },
-                {
-                    "fsrvoption": "dbname",
-                    "fsrvvalue": self.db_name
-                }
-            ],
-            "fsrvowner": db_user,
-            "name": "test_fsrv_add_%s" % (str(uuid.uuid4())[1:8])
-        }
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.fdw_id) + '/',
-            data=json.dumps(data),
-            content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.data = fsrv_utils.get_fs_data(db_user, self.server, self.db_name)
+
+        if self.is_positive_test:
+            response = self.create_foreign_server()
+        else:
+            if hasattr(self, "error_fdw_id"):
+                self.fdw_id = 99999
+                response = self.create_foreign_server()
+
+            if hasattr(self, "missing_parameter"):
+                del self.data['name']
+                response = self.create_foreign_server()
+
+            if hasattr(self, "internal_server_error"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.create_foreign_server()
+
+            if hasattr(self, "error_in_db"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.create_foreign_server()
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop added foreign

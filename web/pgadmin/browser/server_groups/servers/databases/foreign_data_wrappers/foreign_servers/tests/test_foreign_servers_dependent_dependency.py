@@ -10,12 +10,7 @@
 from __future__ import print_function
 
 import uuid
-import json
 
-from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
-    utils as extension_utils
-from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
-    foreign_servers.tests import utils as fsrv_utils
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers.\
     tests import utils as fdw_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
@@ -23,50 +18,48 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from . import utils as um_utils
+from . import utils as fsrv_utils
 
 
-class UserMappingDeleteMultipleTestCase(BaseTestGenerator):
-    """This class will delete user mappings under foreign server node."""
+class ForeignServerDependentsAndDependencyTestCase(BaseTestGenerator):
+    """ This class will fetch added foreign server dependency and dependent
+        under test database. """
     skip_on_database = ['gpdb']
-    scenarios = utils.generate_scenarios('user_mapping_multiple_delete',
-                                         um_utils.test_cases)
+    scenarios = utils.generate_scenarios('foreign_server_dependent_dependency',
+                                         fsrv_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
-        super(UserMappingDeleteMultipleTestCase, self).setUp()
+        super(ForeignServerDependentsAndDependencyTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
-        self.fdw_name = "fdw_%s" % (str(uuid.uuid4())[1:8])
-        self.fsrv_name = "fsrv_%s" % (str(uuid.uuid4())[1:8])
+        self.fdw_name = "test_fdw_%s" % (str(uuid.uuid4())[1:8])
+        self.fsrv_name = "test_fsrv_%s" % (str(uuid.uuid4())[1:8])
+
         self.fdw_id = fdw_utils.create_fdw(self.server, self.db_name,
                                            self.fdw_name)
         self.fsrv_id = fsrv_utils.create_fsrv(self.server, self.db_name,
                                               self.fsrv_name, self.fdw_name)
-        self.um_id = um_utils.create_user_mapping(self.server, self.db_name,
-                                                  self.fsrv_name)
 
-    def delete_multiple(self):
+    def dependents_foreign_server(self):
         """
-        This function returns multiple user mapping delete response
-        :param data: user mapping ids to delete
-        :return: user mapping delete response
+        This function returns the foreign server dependents response
+        :return: foreign server dependents response
         """
-        return self.tester.delete(
+        return self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.fdw_id) + '/' +
-            str(self.fsrv_id) + "/",
-            follow_redirects=True,
-            data=json.dumps(self.data),
-            content_type='html/json')
+            str(self.server_id) + '/' +
+            str(self.db_id) + '/' +
+            str(self.fdw_id) + '/' +
+            str(self.fsrv_id),
+            follow_redirects=True)
 
     def runTest(self):
-        """This function will delete user mapping present under test
-         database. """
+        """This function will fetch foreign server dependents and dependency
+         present under test database."""
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
@@ -81,21 +74,18 @@ class UserMappingDeleteMultipleTestCase(BaseTestGenerator):
                                                self.fsrv_name)
         if not fsrv_response:
             raise Exception("Could not find FSRV.")
-        um_response = um_utils.verify_user_mapping(self.server, self.db_name,
-                                                   self.fsrv_name)
-        if not um_response:
-            raise Exception("Could not find user mapping.")
-        self.data = {'ids': [self.um_id]}
-        if self.is_positive_test:
-            delete_response = self.delete_multiple()
 
-        actual_response_code = delete_response.status_code
+        if self.is_positive_test:
+            response = self.dependents_foreign_server()
+
+        actual_response_code = response.status_code
         expected_response_code = self.expected_data['status_code']
         self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop
-         foreign data wrapper and dependant objects."""
-        fdw_utils.delete_fdw(self.server, self.db_name, self.fdw_name)
+         added foreign data server and dependant objects."""
+        fdw_utils.delete_fdw(self.server, self.db_name,
+                             self.fdw_name)
         database_utils.disconnect_database(self, self.server_id,
                                            self.db_id)

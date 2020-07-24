@@ -11,10 +11,51 @@ from __future__ import print_function
 
 import os
 import sys
+import uuid
+import json
 
 from regression.python_test_utils.test_utils import get_db_connection
 
 file_name = os.path.basename(__file__)
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/foreign_servers_test_data.json") as data_file:
+    test_cases = json.load(data_file)
+
+
+def get_fs_data(db_user, server, db_name):
+    data = {
+        "fsrvacl": [
+            {
+                "grantee": db_user,
+                "grantor": db_user,
+                "privileges":
+                    [
+                        {
+                            "privilege_type": "U",
+                            "privilege": "true",
+                            "with_grant": "false"
+                        }
+                    ]
+            }
+        ],
+        "fsrvoptions": [
+            {
+                "fsrvoption": "host",
+                "fsrvvalue": server['host']
+            },
+            {
+                "fsrvoption": "port",
+                "fsrvvalue": str(server['port'])
+            },
+            {
+                "fsrvoption": "dbname",
+                "fsrvvalue": db_name
+            }
+        ],
+        "fsrvowner": db_user,
+        "name": "test_fsrv_add_%s" % (str(uuid.uuid4())[1:8])
+    }
+    return data
 
 
 def create_fsrv(server, db_name, fsrv_name, fdw_name):

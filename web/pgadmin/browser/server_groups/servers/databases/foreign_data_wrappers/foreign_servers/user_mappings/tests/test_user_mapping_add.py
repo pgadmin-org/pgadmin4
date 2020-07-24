@@ -23,16 +23,15 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as user_utils
+from unittest.mock import patch
 
 
 class UserMappingAddTestCase(BaseTestGenerator):
     """This class will add user mapping under foreign server node."""
     skip_on_database = ['gpdb']
-
-    scenarios = [
-        # Fetching default URL for user mapping node.
-        ('Check user mapping Node', dict(url='/browser/user_mapping/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('user_mapping_create',
+                                         user_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -52,9 +51,23 @@ class UserMappingAddTestCase(BaseTestGenerator):
         self.fsrv_id = fsrv_utils.create_fsrv(self.server, self.db_name,
                                               self.fsrv_name, self.fdw_name)
 
+    def create_user_mapping(self):
+        """
+        This function create a user mapping and returns the created
+        user mapping response
+        :return: created user mapping response
+        """
+        return self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(
+                self.db_id) +
+            '/' + str(self.fdw_id) + '/' + str(self.fsrv_id) + '/',
+            data=json.dumps(self.data),
+            content_type='html/json')
+
     def runTest(self):
-        """This function will update foreign server present under test
-        database. """
+        """This function will fetch foreign server and add user mappping
+         present under test database. """
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
@@ -70,26 +83,34 @@ class UserMappingAddTestCase(BaseTestGenerator):
         if not fsrv_response:
             raise Exception("Could not find FSRV.")
         db_user = self.server["username"]
-        data = {"name": db_user,
-                "um_options": [],
-                "umoptions": [
-                    {
-                        "umoption": "user",
-                        "umvalue": self.server["username"]
-                    },
-                    {
-                        "umoption": "password",
-                        "umvalue": self.server["db_password"]
-                    }
-                ]}
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(
-                self.db_id) +
-            '/' + str(self.fdw_id) + '/' + str(self.fsrv_id) + '/',
-            data=json.dumps(data),
-            content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.data = user_utils.get_um_data(db_user, self.server)
+        if self.is_positive_test:
+            response = self.create_user_mapping()
+
+        else:
+            if hasattr(self, "error_fsrv_id"):
+                self.fsrv_id = 99999
+                response = self.create_user_mapping()
+
+            if hasattr(self, "internal_server_error"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.create_user_mapping()
+
+            if hasattr(self, "missing_parameter"):
+                del self.data['name']
+                response = self.create_user_mapping()
+
+            if hasattr(self, "error_in_db"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.create_user_mapping()
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop added extension

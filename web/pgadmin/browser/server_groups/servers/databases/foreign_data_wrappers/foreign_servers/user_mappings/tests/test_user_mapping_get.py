@@ -23,15 +23,14 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as um_utils
+from unittest.mock import patch
 
 
 class UserMappingGetTestCase(BaseTestGenerator):
     """This class will add user mapping under foreign server node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for user mapping node.
-        ('Check user mapping Node', dict(url='/browser/user_mapping/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('user_mapping_get',
+                                         um_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -53,6 +52,31 @@ class UserMappingGetTestCase(BaseTestGenerator):
         self.um_id = um_utils.create_user_mapping(self.server, self.db_name,
                                                   self.fsrv_name)
 
+    def get_user_mapping(self):
+        """
+        This function returns the user mapping get response
+        :return: user mapping get response
+        """
+        return self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
+                               str(self.server_id) + '/' +
+                               str(self.db_id) + '/' +
+                               str(self.fdw_id) + '/' +
+                               str(self.fsrv_id) + '/' +
+                               str(self.um_id),
+                               content_type='html/json')
+
+    def get_user_mapping_list(self):
+        """
+        This functions returns the user mapping list
+        :return: user mapping list
+        """
+        return self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
+                               str(self.server_id) + '/' +
+                               str(self.db_id) + '/' +
+                               str(self.fdw_id) + "/" +
+                               str(self.fsrv_id) + '/',
+                               content_type='html/json')
+
     def runTest(self):
         """This function will update foreign server present under test
         database."""
@@ -70,12 +94,29 @@ class UserMappingGetTestCase(BaseTestGenerator):
                                                self.fsrv_name)
         if not fsrv_response:
             raise Exception("Could not find FSRV.")
-        response = self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
-                                   str(self.server_id) + '/' + str(
-            self.db_id) + '/' + str(self.fdw_id) + '/' + str(
-            self.fsrv_id) + '/' + str(
-            self.um_id), content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+
+        if self.is_positive_test:
+            if hasattr(self, "um_list"):
+                response = self.get_user_mapping_list()
+            else:
+                response = self.get_user_mapping()
+
+        else:
+            if hasattr(self, "error_fetching_um"):
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    if hasattr(self, "um_list"):
+                        response = self.get_user_mapping_list()
+                    else:
+                        response = self.get_user_mapping()
+
+            if hasattr(self, "wrong_um_id"):
+                self.um_id = 99999
+                response = self.get_user_mapping()
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop added extension

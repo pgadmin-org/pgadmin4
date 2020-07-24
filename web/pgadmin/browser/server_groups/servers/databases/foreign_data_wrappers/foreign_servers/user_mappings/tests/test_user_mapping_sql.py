@@ -9,7 +9,6 @@
 
 from __future__ import print_function
 
-import json
 import uuid
 
 from pgadmin.browser.server_groups.servers.databases.extensions.tests import \
@@ -27,15 +26,15 @@ from . import utils as um_utils
 from unittest.mock import patch
 
 
-class UserMappingPutTestCase(BaseTestGenerator):
-    """This class will update user mapping under foreign server node."""
+class UserMappingGetSQLTestCase(BaseTestGenerator):
+    """This class will add user mapping under foreign server node."""
     skip_on_database = ['gpdb']
-    scenarios = utils.generate_scenarios('user_mapping_update',
+    scenarios = utils.generate_scenarios('user_mapping_get_sql',
                                          um_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
-        super(UserMappingPutTestCase, self).setUp()
+        super(UserMappingGetSQLTestCase, self).setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
@@ -53,21 +52,20 @@ class UserMappingPutTestCase(BaseTestGenerator):
         self.um_id = um_utils.create_user_mapping(self.server, self.db_name,
                                                   self.fsrv_name)
 
-    def update_user_mapping(self):
+    def sql_user_mapping(self):
         """
-        This functions update user mapping
-        :return: user mapping update request details
+        This function returns the user mapping sql response
+        :return: user mapping sql response
         """
-        return self.tester.put(
+        return self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id) + '/' + str(self.db_id) +
             '/' + str(self.fdw_id) + '/' +
             str(self.fsrv_id) + '/' + str(self.um_id),
-            data=json.dumps(self.test_data),
             follow_redirects=True)
 
     def runTest(self):
-        """This function will update user mapping present under test
+        """This function will fetch user mapping present under test
         database"""
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
@@ -88,18 +86,21 @@ class UserMappingPutTestCase(BaseTestGenerator):
                                                    self.fsrv_name)
         if not um_response:
             raise Exception("Could not find user mapping.")
-        self.test_data["id"] = self.um_id
 
         if self.is_positive_test:
-            put_response = self.update_user_mapping()
-
+            response = self.sql_user_mapping()
         else:
-            if hasattr(self, "error_in_db"):
+            if hasattr(self, "internal_server_error"):
+                return_value_object = eval(self.mock_data["return_value"])
                 with patch(self.mock_data["function_name"],
-                           side_effect=eval(self.mock_data["return_value"])):
-                    put_response = self.update_user_mapping()
+                           side_effect=[return_value_object]):
+                    response = self.sql_user_mapping()
 
-        actual_response_code = put_response.status_code
+            if hasattr(self, "wrong_um_id"):
+                self.um_id = 99999
+                response = self.sql_user_mapping()
+
+        actual_response_code = response.status_code
         expected_response_code = self.expected_data['status_code']
         self.assertEquals(actual_response_code, expected_response_code)
 

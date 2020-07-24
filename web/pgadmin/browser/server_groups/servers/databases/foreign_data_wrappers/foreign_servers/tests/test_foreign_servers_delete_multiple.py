@@ -23,12 +23,10 @@ from . import utils as fsrv_utils
 
 
 class ForeignServerDeleteMultipleTestCase(BaseTestGenerator):
-    """This class will add foreign server under FDW node."""
+    """This class will delete foreign server under FDW node."""
     skip_on_database = ['gpdb']
-    scenarios = [
-        # Fetching default URL for foreign server node.
-        ('Check FSRV Node', dict(url='/browser/foreign_server/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('foreign_server_multiple_delete',
+                                         fsrv_utils.test_cases)
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
@@ -51,8 +49,22 @@ class ForeignServerDeleteMultipleTestCase(BaseTestGenerator):
                                                 self.fsrv_names[1],
                                                 self.fdw_name)]
 
+    def delete_multiple(self, data):
+        """
+        This function returns multiple foreign server delete response
+        :param data: foreign server ids to delete
+        :return: foreign server delete response
+        """
+        return self.tester.delete(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/' + str(self.fdw_id) + "/",
+            data=json.dumps(data),
+            content_type='html/json',
+            follow_redirects=True)
+
     def runTest(self):
-        """This function will fetch foreign server present under test
+        """This function will delete foreign server present under test
          database."""
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
@@ -73,14 +85,13 @@ class ForeignServerDeleteMultipleTestCase(BaseTestGenerator):
         if not fsrv_response:
             raise Exception("Could not find FSRV.")
         data = {'ids': self.fsrv_ids}
-        delete_response = self.tester.delete(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.fdw_id) + "/",
-            data=json.dumps(data),
-            content_type='html/json',
-            follow_redirects=True)
-        self.assertEquals(delete_response.status_code, 200)
+
+        if self.is_positive_test:
+            delete_response = self.delete_multiple(data)
+
+        actual_response_code = delete_response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop added
