@@ -165,8 +165,7 @@ def get_sql(conn, **kwargs):
         status, res = conn.execute_dict(sql)
         if not status:
             raise Exception(res)
-
-        if len(res['rows']) == 0:
+        elif len(res['rows']) == 0:
             raise ObjectGone(_('Could not find the trigger in the table.'))
 
         old_data = dict(res['rows'][0])
@@ -175,47 +174,21 @@ def get_sql(conn, **kwargs):
         if 'name' not in data:
             name = data['name'] = old_data['name']
 
-        drop_sql = ''
-        if is_schema_diff:
-            if 'table' not in data:
-                data['table'] = old_data['relname']
-            if 'schema' not in data:
-                data['schema'] = old_data['nspname']
-
-            # If any of the below key is present in data then we need to drop
-            # trigger and re-create it.
-            key_array = ['prosrc', 'is_row_trigger', 'evnt_insert',
-                         'evnt_delete', 'evnt_update', 'fires', 'tgdeferrable',
-                         'whenclause', 'tfunction', 'tgargs', 'columns',
-                         'is_constraint_trigger', 'tginitdeferred']
-
-            is_drop_trigger = False
-            for key in key_array:
-                if key in data:
-                    is_drop_trigger = True
-                    break
-
-            if is_drop_trigger:
-                tmp_data = dict()
-                tmp_data['name'] = data['name']
-                tmp_data['nspname'] = old_data['nspname']
-                tmp_data['relname'] = old_data['relname']
-                drop_sql = render_template("/".join([template_path,
-                                                     'delete.sql']),
-                                           data=tmp_data, conn=conn)
+        drop_sql = _check_schema_diff_sql(is_schema_diff, data, old_data,
+                                          template_path, conn)
 
         old_data = get_trigger_function_and_columns(
             conn, old_data, tid, show_system_objects)
 
         old_data = trigger_definition(old_data)
 
-        SQL = render_template(
+        sql = render_template(
             "/".join([template_path, 'update.sql']),
             data=data, o_data=old_data, conn=conn
         )
 
         if is_schema_diff:
-            SQL = drop_sql + '\n' + SQL
+            sql = drop_sql + '\n' + sql
     else:
         required_args = {
             'name': 'Name',
@@ -227,9 +200,51 @@ def get_sql(conn, **kwargs):
                 return _('-- definition incomplete')
 
         # If the request for new object which do not have did
-        SQL = render_template("/".join([template_path, 'create.sql']),
+        sql = render_template("/".join([template_path, 'create.sql']),
                               data=data, conn=conn)
-    return SQL, name
+    return sql, name
+
+
+def _check_schema_diff_sql(is_schema_diff, data, old_data, template_path,
+                           conn):
+    """
+    Check for schema diff and perform required actions.
+    is_schema_diff: flag for check req for schema diff.
+    data: Data.
+    old_data: properties sql data.
+    template_path: template path for get correct template location.
+    conn: Connection.
+    return: return deleted sql statement if any.
+    """
+    drop_sql = ''
+    if is_schema_diff:
+        if 'table' not in data:
+            data['table'] = old_data['relname']
+        if 'schema' not in data:
+            data['schema'] = old_data['nspname']
+
+        # If any of the below key is present in data then we need to drop
+        # trigger and re-create it.
+        key_array = ['prosrc', 'is_row_trigger', 'evnt_insert',
+                     'evnt_delete', 'evnt_update', 'fires', 'tgdeferrable',
+                     'whenclause', 'tfunction', 'tgargs', 'columns',
+                     'is_constraint_trigger', 'tginitdeferred']
+
+        is_drop_trigger = False
+        for key in key_array:
+            if key in data:
+                is_drop_trigger = True
+                break
+
+        if is_drop_trigger:
+            tmp_data = dict()
+            tmp_data['name'] = data['name']
+            tmp_data['nspname'] = old_data['nspname']
+            tmp_data['relname'] = old_data['relname']
+            drop_sql = render_template("/".join([template_path,
+                                                 'delete.sql']),
+                                       data=tmp_data, conn=conn)
+    return drop_sql
 
 
 @get_template_path

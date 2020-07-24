@@ -71,20 +71,37 @@ def parse_variables_from_db(db_variables):
             if 'setconfig' in row and row['setconfig'] is not None:
                 for d in row['setconfig']:
                     var_name, var_value = d.split("=")
-                    # Because we save as boolean string in db so it needs
-                    # conversion
-                    if var_value == 'false' or var_value == 'off':
-                        var_value = False
-
-                    var_dict = {
-                        'name': var_name,
-                        'value': var_value
-                    }
-                    if 'user_name' in row:
-                        var_dict['role'] = row['user_name']
-                    if 'db_name' in row:
-                        var_dict['database'] = row['db_name']
-
+                    var_dict = _check_var_type(var_value, var_name, row)
                     variables_lst.append(var_dict)
 
     return {"variables": variables_lst}
+
+
+def _check_var_type(var_value, var_name, row):
+    """
+    Function for check variable type and return dictionary in the format
+    {
+        "name": String,
+        "value": String
+    }
+    var_value: Input variable value
+    var_name: Input variable name
+    row: data
+    return: Variable dictionary.
+    """
+
+    # Because we save as boolean string in db so it needs
+    # conversion
+    if var_value == 'false' or var_value == 'off':
+        var_value = False
+
+    var_dict = {
+        'name': var_name,
+        'value': var_value
+    }
+    if 'user_name' in row:
+        var_dict['role'] = row['user_name']
+    if 'db_name' in row:
+        var_dict['database'] = row['db_name']
+
+    return var_dict

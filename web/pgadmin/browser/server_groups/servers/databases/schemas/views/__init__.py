@@ -743,17 +743,46 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             status=200
         )
 
+    @staticmethod
+    def _parse_privilege_data(acls, data):
+        """
+        Check and parse privilege data.
+        acls: allowed privileges
+        data: data on which we check for having privilege or not.
+        """
+        for aclcol in acls:
+            if aclcol in data:
+                allowedacl = acls[aclcol]
+
+                for key in ['added', 'changed', 'deleted']:
+                    if key in data[aclcol]:
+                        data[aclcol][key] = parse_priv_to_db(
+                            data[aclcol][key], allowedacl['acl']
+                        )
+
+    @staticmethod
+    def _get_info_from_data(data, res):
+        """
+        Get name and schema data
+        data: sql data.
+        res: properties sql response.
+        """
+        if 'name' not in data:
+            data['name'] = res['rows'][0]['name']
+        if 'schema' not in data:
+            data['schema'] = res['rows'][0]['schema']
+
     def getSQL(self, gid, sid, did, data, vid=None):
         """
         This function will generate sql from model data
         """
         if vid is not None:
-            SQL = render_template("/".join(
+            sql = render_template("/".join(
                 [self.template_path, 'sql/properties.sql']),
                 vid=vid,
                 datlastsysoid=self.datlastsysoid
             )
-            status, res = self.conn.execute_dict(SQL)
+            status, res = self.conn.execute_dict(sql)
             if not status:
                 return None, internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
@@ -762,10 +791,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 )
             old_data = res['rows'][0]
 
-            if 'name' not in data:
-                data['name'] = res['rows'][0]['name']
-            if 'schema' not in data:
-                data['schema'] = res['rows'][0]['schema']
+            ViewNode._get_info_from_data(data, res)
 
             try:
                 acls = render_template(
@@ -776,59 +802,18 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 current_app.logger.exception(e)
 
             # Privileges
-            for aclcol in acls:
-                if aclcol in data:
-                    allowedacl = acls[aclcol]
+            ViewNode._parse_privilege_data(acls, data)
 
-                    for key in ['added', 'changed', 'deleted']:
-                        if key in data[aclcol]:
-                            data[aclcol][key] = parse_priv_to_db(
-                                data[aclcol][key], allowedacl['acl']
-                            )
             data['del_sql'] = False
             old_data['acl_sql'] = ''
 
-            if 'definition' in data and self.manager.server_type == 'pg':
-                new_def = re.sub(r"\W", "", data['definition']).split('FROM')
-                old_def = re.sub(r"\W", "", res['rows'][0]['definition']
-                                 ).split('FROM')
-                if 'definition' in data and (
-                        len(old_def) > 1 or len(new_def) > 1
-                ) and (
-                        old_def[0] != new_def[0] and
-                        old_def[0] not in new_def[0]
-                ):
-                    data['del_sql'] = True
-
-                    # If we drop and recreate the view, the
-                    # privileges must be restored
-
-                    # Fetch all privileges for view
-                    sql_acl = render_template("/".join(
-                        [self.template_path, 'sql/acl.sql']), vid=vid)
-                    status, dataclres = self.conn.execute_dict(sql_acl)
-                    if not status:
-                        return internal_server_error(errormsg=res)
-
-                    for row in dataclres['rows']:
-                        priv = parse_priv_from_db(row)
-                        res['rows'][0].setdefault(row['deftype'], []
-                                                  ).append(priv)
-
-                    old_data.update(res['rows'][0])
-
-                    # Privileges
-                    for aclcol in acls:
-                        if aclcol in old_data:
-                            allowedacl = acls[aclcol]
-                            old_data[aclcol] = parse_priv_to_db(
-                                old_data[aclcol], allowedacl['acl'])
-
-                    old_data['acl_sql'] = render_template("/".join(
-                        [self.template_path, 'sql/grant.sql']), data=old_data)
+            is_error, errmsg = self._get_definition_data(vid, data, old_data,
+                                                         res, acls)
+            if is_error:
+                return None, errmsg
 
             try:
-                SQL = render_template("/".join(
+                sql = render_template("/".join(
                     [self.template_path, 'sql/update.sql']), data=data,
                     o_data=old_data, conn=self.conn)
 
@@ -836,47 +821,126 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 current_app.logger.exception(e)
                 return None, internal_server_error(errormsg=str(e))
         else:
-            required_args = [
-                'name',
-                'schema',
-                'definition'
-            ]
-            for arg in required_args:
-                if arg not in data:
-                    return None, make_json_response(
-                        data=gettext(" -- definition incomplete"),
-                        status=200
-                    )
+            is_error, errmsg, sql = self._get_create_view_sql(data)
+            if is_error:
+                return None, errmsg
 
-            # Get Schema Name from its OID.
-            if 'schema' in data and isinstance(data['schema'], int):
-                data['schema'] = self._get_schema(data['schema'])
+        return sql, data['name'] if 'name' in data else old_data['name']
 
-            acls = []
-            try:
-                acls = render_template(
-                    "/".join([self.template_path, 'sql/allowed_privs.json'])
-                )
-                acls = json.loads(acls, encoding='utf-8')
-            except Exception as e:
-                current_app.logger.exception(e)
+    def _get_create_view_sql(self, data):
+        """
+        Get create view sql with it's privileges.
+        data: Source data for sql generation
+        return: created sql for create view.
+        """
+        required_args = [
+            'name',
+            'schema',
+            'definition'
+        ]
+        for arg in required_args:
+            if arg not in data:
+                return True, make_json_response(
+                    data=gettext(" -- definition incomplete"),
+                    status=200
+                ), ''
 
-            # Privileges
-            for aclcol in acls:
-                if aclcol in data:
-                    allowedacl = acls[aclcol]
-                    data[aclcol] = parse_priv_to_db(
-                        data[aclcol], allowedacl['acl']
-                    )
+        # Get Schema Name from its OID.
+        if 'schema' in data and isinstance(data['schema'], int):
+            data['schema'] = self._get_schema(data['schema'])
 
-            SQL = render_template("/".join(
-                [self.template_path, 'sql/create.sql']), data=data)
-            if data['definition']:
-                SQL += "\n"
-                SQL += render_template("/".join(
-                    [self.template_path, 'sql/grant.sql']), data=data)
+        acls = []
+        try:
+            acls = render_template(
+                "/".join([self.template_path, 'sql/allowed_privs.json'])
+            )
+            acls = json.loads(acls, encoding='utf-8')
+        except Exception as e:
+            current_app.logger.exception(e)
 
-        return SQL, data['name'] if 'name' in data else old_data['name']
+        # Privileges
+        ViewNode._parse_priv_data(acls, data)
+
+        sql = render_template("/".join(
+            [self.template_path, 'sql/create.sql']), data=data)
+        if data['definition']:
+            sql += "\n"
+            sql += render_template("/".join(
+                [self.template_path, 'sql/grant.sql']), data=data)
+
+        return False, '', sql
+
+    def _get_definition_data(self, vid, data, old_data, res, acls):
+        """
+        Check and process definition data.
+        vid: View Id.
+        data: sql data.
+        old_data: properties sql data.
+        res: Response data from properties sql.
+        acls: allowed privileges.
+
+        return: If any error it will return True with error msg,
+        if not retun False with error msg empty('')
+        """
+        if 'definition' in data and self.manager.server_type == 'pg':
+            new_def = re.sub(r"\W", "", data['definition']).split('FROM')
+            old_def = re.sub(r"\W", "", res['rows'][0]['definition']
+                             ).split('FROM')
+            if 'definition' in data and (
+                len(old_def) > 1 or len(new_def) > 1
+            ) and (
+                old_def[0] != new_def[0] and
+                old_def[0] not in new_def[0]
+            ):
+                data['del_sql'] = True
+
+                # If we drop and recreate the view, the
+                # privileges must be restored
+
+                # Fetch all privileges for view
+                is_error, errmsg = self._fetch_all_view_priv(vid, res)
+                if is_error:
+                    return True, errmsg
+
+                old_data.update(res['rows'][0])
+
+                # Privileges
+                ViewNode._parse_priv_data(acls, old_data)
+
+                old_data['acl_sql'] = render_template("/".join(
+                    [self.template_path, 'sql/grant.sql']), data=old_data)
+        return False, ''
+
+    def _fetch_all_view_priv(self, vid, res):
+        """
+        This is for fetch all privileges for the view.
+        vid: View ID
+        res: response data from property sql
+        """
+        sql_acl = render_template("/".join(
+            [self.template_path, 'sql/acl.sql']), vid=vid)
+        status, dataclres = self.conn.execute_dict(sql_acl)
+        if not status:
+            return True, internal_server_error(errormsg=res)
+
+        for row in dataclres['rows']:
+            priv = parse_priv_from_db(row)
+            res['rows'][0].setdefault(row['deftype'], []
+                                      ).append(priv)
+        return False, ''
+
+    @staticmethod
+    def _parse_priv_data(acls, data):
+        """
+        Iterate privilege data and send it for parsing before send it to db.
+        acls: allowed privileges
+        data: data on which we check for privilege check.
+        """
+        for aclcol in acls:
+            if aclcol in data:
+                allowedacl = acls[aclcol]
+                data[aclcol] = parse_priv_to_db(
+                    data[aclcol], allowedacl['acl'])
 
     def get_index_column_details(self, idx, data):
         """
@@ -993,6 +1057,72 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 sql_data += SQL
         return sql_data
 
+    def _generate_and_return_trigger_sql(self, vid, data, display_comments,
+                                         sql_data):
+        """
+        Iterate trigger data and generate sql for different tabs of trigger.
+        vid: View ID
+        data: Trigger data for iteration.
+        display_comments: comments for sql
+        sql_data: Sql queries
+        return: Check if any error then return error, else return sql data.
+        """
+
+        from pgadmin.browser.server_groups.servers.databases.schemas.utils \
+            import trigger_definition
+
+        for trigger in data['rows']:
+            SQL = render_template("/".join(
+                [self.ct_trigger_temp_path,
+                 'sql/{0}/#{1}#/properties.sql'.format(
+                     self.manager.server_type, self.manager.version)]),
+                tid=vid,
+                trid=trigger['oid']
+            )
+
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if len(res['rows']) == 0:
+                continue
+            res_rows = dict(res['rows'][0])
+            res_rows['table'] = res_rows['relname']
+            res_rows['schema'] = self.view_schema
+
+            if len(res_rows['tgattr']) > 1:
+                columns = ', '.join(res_rows['tgattr'].split(' '))
+                SQL = render_template("/".join(
+                    [self.ct_trigger_temp_path,
+                     'sql/{0}/#{1}#/get_columns.sql'.format(
+                         self.manager.server_type,
+                         self.manager.version)]),
+                    tid=trigger['oid'],
+                    clist=columns)
+
+                status, rset = self.conn.execute_2darray(SQL)
+                if not status:
+                    return True, internal_server_error(errormsg=rset), ''
+                # 'tgattr' contains list of columns from table
+                # used in trigger
+                columns = []
+
+                for col_row in rset['rows']:
+                    columns.append(col_row['name'])
+
+                res_rows['columns'] = columns
+
+            res_rows = trigger_definition(res_rows)
+            SQL = render_template("/".join(
+                [self.ct_trigger_temp_path,
+                 'sql/{0}/#{1}#/create.sql'.format(
+                     self.manager.server_type, self.manager.version)]),
+                data=res_rows, display_comments=display_comments)
+            sql_data += '\n'
+            sql_data += SQL
+
+            return False, '', sql_data
+
     def get_compound_trigger_sql(self, vid, display_comments=True):
         """
         Get all compound trigger nodes associated with view node,
@@ -1001,9 +1131,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         sql_data = ''
         if self.manager.server_type == 'ppas' \
                 and self.manager.version >= 120000:
-
-            from pgadmin.browser.server_groups.servers.databases.schemas.utils\
-                import trigger_definition
 
             # Define template path
             self.ct_trigger_temp_path = 'compound_triggers'
@@ -1018,55 +1145,11 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=data)
 
-            for trigger in data['rows']:
-                SQL = render_template("/".join(
-                    [self.ct_trigger_temp_path,
-                     'sql/{0}/#{1}#/properties.sql'.format(
-                         self.manager.server_type, self.manager.version)]),
-                    tid=vid,
-                    trid=trigger['oid']
-                )
+            is_error, errmsg, sql_data = self._generate_and_return_trigger_sql(
+                vid, data, display_comments, sql_data)
 
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                if len(res['rows']) == 0:
-                    continue
-                res_rows = dict(res['rows'][0])
-                res_rows['table'] = res_rows['relname']
-                res_rows['schema'] = self.view_schema
-
-                if len(res_rows['tgattr']) > 1:
-                    columns = ', '.join(res_rows['tgattr'].split(' '))
-                    SQL = render_template("/".join(
-                        [self.ct_trigger_temp_path,
-                         'sql/{0}/#{1}#/get_columns.sql'.format(
-                             self.manager.server_type,
-                             self.manager.version)]),
-                        tid=trigger['oid'],
-                        clist=columns)
-
-                    status, rset = self.conn.execute_2darray(SQL)
-                    if not status:
-                        return internal_server_error(errormsg=rset)
-                    # 'tgattr' contains list of columns from table
-                    # used in trigger
-                    columns = []
-
-                    for col_row in rset['rows']:
-                        columns.append(col_row['name'])
-
-                    res_rows['columns'] = columns
-
-                res_rows = trigger_definition(res_rows)
-                SQL = render_template("/".join(
-                    [self.ct_trigger_temp_path,
-                     'sql/{0}/#{1}#/create.sql'.format(
-                         self.manager.server_type, self.manager.version)]),
-                    data=res_rows, display_comments=display_comments)
-                sql_data += '\n'
-                sql_data += SQL
+            if is_error:
+                return errmsg
 
         return sql_data
 
