@@ -43,5 +43,7 @@ def upgrade():
         """
     )
 
+
 def downgrade():
+    # pgAdmin only upgrades, downgrade not implemented.
     pass

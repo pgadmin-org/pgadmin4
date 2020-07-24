@@ -501,9 +501,6 @@ class VacuumSettings:
     """
     vacuum_settings = dict()
 
-    def __init__(self):
-        pass
-
     def fetch_default_vacuum_settings(self, conn, sid, setting_type):
         """
         This function is used to fetch and cached the default vacuum settings
@@ -583,16 +580,11 @@ class VacuumSettings:
             row_name = row['name']
             if type == 'toast':
                 row_name = 'toast_{0}'.format(row['name'])
-            if row_name in result and result[row_name] is not None:
-                if row['column_type'] == 'number':
-                    value = float(result[row_name])
-                    value = int(value) if value % 1 == 0 else value
-                else:
-                    value = int(result[row_name])
-                row['value'] = value
+            if result.get(row_name, None) is not None:
+                value = float(result[row_name])
+                row['value'] = int(value) if value % 1 == 0 else value
             else:
-                if 'value' in row:
-                    row.pop('value')
+                row.pop('value', None)
 
         return vacuum_settings_tmp
 

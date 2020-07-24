@@ -410,6 +410,7 @@ class StreamToLogger(object):
             self.logger.log(self.log_level, line.rstrip())
 
     def flush(self):
+        # Function required to be implemented for logger
         pass
 
 

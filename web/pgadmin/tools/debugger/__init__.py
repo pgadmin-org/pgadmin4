@@ -607,6 +607,87 @@ def direct_new(trans_id):
     )
 
 
+def get_debugger_version(conn):
+    """
+    Function returns the debugger version.
+    :param conn:
+    :return:
+    """
+    debugger_version = 0
+    status, rid = conn.execute_scalar(
+        "SELECT COUNT(*) FROM pg_catalog.pg_proc p"
+        " LEFT JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid"
+        " WHERE n.nspname = ANY(current_schemas(false)) AND"
+        " p.proname = 'pldbg_get_proxy_info';"
+    )
+
+    if not status:
+        return False, internal_server_error(errormsg=rid)
+
+    if rid == 0:
+        debugger_version = 1
+
+    status, rid = conn.execute_scalar(
+        "SELECT proxyapiver FROM pldbg_get_proxy_info();")
+
+    if status and rid in (2, 3):
+        debugger_version = rid
+
+    return True, debugger_version
+
+
+def validate_debug(conn, debug_type, is_superuser):
+    """
+    This function is used to validate the options required for debugger.
+    :param conn:
+    :param debug_type:
+    :param is_superuser:
+    :return:
+    """
+    if debug_type == 'indirect' and not is_superuser:
+        # If user is super user then we should check debugger library is
+        # loaded or not
+        msg = gettext("You must be a superuser to set a global breakpoint"
+                      " and perform indirect debugging.")
+        return False, internal_server_error(errormsg=msg)
+
+    status, rid_pre = conn.execute_scalar(
+        "SHOW shared_preload_libraries"
+    )
+    if not status:
+        return False, internal_server_error(
+            gettext("Could not fetch debugger plugin information.")
+        )
+
+    # Need to check if plugin is really loaded or not with
+    # "plugin_debugger" string
+    if debug_type == 'indirect' and "plugin_debugger" not in rid_pre:
+        msg = gettext(
+            "The debugger plugin is not enabled. "
+            "Please add the plugin to the shared_preload_libraries "
+            "setting in the postgresql.conf file and restart the "
+            "database server for indirect debugging."
+        )
+        current_app.logger.debug(msg)
+        return False, internal_server_error(msg)
+
+    # Check debugger extension version for EPAS 11 and above.
+    # If it is 1.0 then return error to upgrade the extension.
+    status, ext_version = conn.execute_scalar(
+        "SELECT installed_version FROM pg_catalog.pg_available_extensions "
+        "WHERE name = 'pldbgapi'"
+    )
+    if not status:
+        return False, internal_server_error(errormsg=ext_version)
+    if conn.manager.server_type == 'ppas' and conn.manager.sversion >= 110000 \
+            and float(ext_version) < 1.1:
+        return False, internal_server_error(
+            errormsg=gettext("Please upgrade the pldbgapi extension "
+                             "to 1.1 or above and try again."))
+
+    return True, None
+
+
 @blueprint.route(
     '/initialize_target/<debug_type>/<int:trans_id>/<int:sid>/<int:did>/'
     '<int:scid>/<int:func_id>',
@@ -644,11 +725,8 @@ def initialize_target(debug_type, trans_id, sid, did,
 
     # Create asynchronous connection using random connection id.
     conn_id = str(random.randint(1, 9999999))
-    try:
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        conn = manager.connection(did=did, conn_id=conn_id)
-    except Exception as e:
-        return internal_server_error(errormsg=str(e))
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+    conn = manager.connection(did=did, conn_id=conn_id)
 
     # Connect the Server
     status, msg = conn.connect()
@@ -656,49 +734,9 @@ def initialize_target(debug_type, trans_id, sid, did,
         return internal_server_error(errormsg=str(msg))
 
     user = manager.user_info
-    if debug_type == 'indirect':
-        # If user is super user then we should check debugger library is
-        # loaded or not
-        if not user['is_superuser']:
-            msg = gettext("You must be a superuser to set a global breakpoint"
-                          " and perform indirect debugging.")
-            return internal_server_error(errormsg=msg)
-        else:
-            status_in, rid_pre = conn.execute_scalar(
-                "SHOW shared_preload_libraries"
-            )
-            if not status_in:
-                return internal_server_error(
-                    gettext("Could not fetch debugger plugin information.")
-                )
-
-            # Need to check if plugin is really loaded or not with
-            # "plugin_debugger" string
-            if "plugin_debugger" not in rid_pre:
-                msg = gettext(
-                    "The debugger plugin is not enabled. "
-                    "Please add the plugin to the shared_preload_libraries "
-                    "setting in the postgresql.conf file and restart the "
-                    "database server for indirect debugging."
-                )
-                current_app.logger.debug(msg)
-                return internal_server_error(msg)
-
-    # Check debugger extension version for EPAS 11 and above.
-    # If it is 1.0 then return error to upgrade the extension.
-    if manager.server_type == 'ppas' and manager.sversion >= 110000:
-        status, ext_version = conn.execute_scalar(
-            "SELECT installed_version FROM pg_catalog.pg_available_extensions "
-            "WHERE name = 'pldbgapi'"
-        )
-
-        if not status:
-            return internal_server_error(errormsg=ext_version)
-        else:
-            if float(ext_version) < 1.1:
-                return internal_server_error(
-                    errormsg=gettext("Please upgrade the pldbgapi extension "
-                                     "to 1.1 or above and try again."))
+    status, error = validate_debug(conn, debug_type, user['is_superuser'])
+    if not status:
+        return error
 
     # Set the template path required to read the sql files
     template_path = 'debugger/sql'
@@ -718,30 +756,10 @@ def initialize_target(debug_type, trans_id, sid, did,
 
         func_id = tr_set['rows'][0]['tgfoid']
 
-    status = True
-
     # Find out the debugger version and store it in session variables
-    status, rid = conn.execute_scalar(
-        "SELECT COUNT(*) FROM pg_catalog.pg_proc p"
-        " LEFT JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid"
-        " WHERE n.nspname = ANY(current_schemas(false)) AND"
-        " p.proname = 'pldbg_get_proxy_info';"
-    )
-
+    status, debugger_version = get_debugger_version(conn)
     if not status:
-        return internal_server_error(errormsg=rid)
-    else:
-        if rid == 0:
-            debugger_version = 1
-
-        status, rid = conn.execute_scalar(
-            "SELECT proxyapiver FROM pldbg_get_proxy_info();")
-
-        if status:
-            if rid == 2 or rid == 3:
-                debugger_version = rid
-            else:
-                status = False
+        return debugger_version
 
     # Add the debugger version information to pgadmin4 log file
     current_app.logger.debug("Debugger version is: %d", debugger_version)
@@ -753,9 +771,8 @@ def initialize_target(debug_type, trans_id, sid, did,
     # provide the data from another session so below condition will
     # be be required
     if request.method == 'POST':
-        data = json.loads(request.values['data'], encoding='utf-8')
-        if data:
-            de_inst.function_data['args_value'] = data
+        de_inst.function_data['args_value'] = \
+            json.loads(request.values['data'], encoding='utf-8')
 
     # Update the debugger data session variable
     # Here frame_id is required when user debug the multilevel function.
@@ -1143,51 +1160,43 @@ def execute_debugger_query(trans_id, query_type):
         conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    dbg_version = de_inst.debugger_data['debugger_version']
-    if dbg_version <= 2:
-        template_path = 'debugger/sql/v1'
-    else:
-        template_path = 'debugger/sql/v2'
+    template_path = 'debugger/sql/v1' \
+        if de_inst.debugger_data['debugger_version'] <= 2 \
+        else 'debugger/sql/v2'
 
-    if conn.connected():
-        sql = render_template(
-            "/".join([template_path, query_type + ".sql"]),
-            session_id=de_inst.debugger_data['session_id']
-        )
-        # As the query type is continue or step_into or step_over then we
-        # may get result after some time so poll the result.
-        # We need to update the frame id variable when user move the next
-        # step for debugging.
-        if query_type == 'continue' or query_type == 'step_into' or \
-                query_type == 'step_over':
-            # We should set the frame_id to 0 when execution starts.
-            if de_inst.debugger_data['frame_id'] != 0:
-                de_inst.debugger_data['frame_id'] = 0
-                de_inst.update_session()
-
-            status, result = conn.execute_async(sql)
-            if not status:
-                internal_server_error(errormsg=result)
-            return make_json_response(
-                data={'status': status, 'result': result}
-            )
-        elif query_type == 'abort_target':
-            status, result = conn.execute_dict(sql)
-            if not status:
-                return internal_server_error(errormsg=result)
-            else:
-                return make_json_response(
-                    info=gettext('Debugging aborted successfully.'),
-                    data={'status': 'Success', 'result': result}
-                )
-        else:
-            status, result = conn.execute_dict(sql)
-        if not status:
-            return internal_server_error(errormsg=result)
-    else:
+    if not conn.connected():
         result = gettext('Not connected to server or connection '
                          'with the server has been closed.')
         return internal_server_error(errormsg=result)
+
+    sql = render_template(
+        "/".join([template_path, query_type + ".sql"]),
+        session_id=de_inst.debugger_data['session_id']
+    )
+    # As the query type is continue or step_into or step_over then we
+    # may get result after some time so poll the result.
+    # We need to update the frame id variable when user move the next
+    # step for debugging.
+    if query_type in ('continue', 'step_into', 'step_over'):
+        # We should set the frame_id to 0 when execution starts.
+        de_inst.debugger_data['frame_id'] = 0
+        de_inst.update_session()
+
+        status, result = conn.execute_async(sql)
+        if not status:
+            return internal_server_error(errormsg=result)
+        return make_json_response(
+            data={'status': status, 'result': result}
+        )
+
+    status, result = conn.execute_dict(sql)
+    if not status:
+        return internal_server_error(errormsg=result)
+    if query_type == 'abort_target':
+        return make_json_response(
+            info=gettext('Debugging aborted successfully.'),
+            data={'status': 'Success', 'result': result}
+        )
 
     return make_json_response(
         data={'status': 'Success', 'result': result['rows']}
@@ -1230,7 +1239,8 @@ def messages(trans_id):
     port_number = ''
 
     if conn.connected():
-        status, result = conn.poll()
+        status = 'Busy'
+        _, result = conn.poll()
         notify = conn.messages()
         if notify:
             # In notice message we need to find "PLDBGBREAK" string to find
@@ -1240,19 +1250,12 @@ def messages(trans_id):
             # From the above message we need to find out port number
             # as "7" so below logic will find 7 as port number
             # and attach listened to that port number
-            port_found = False
             tmp_list = list(filter(lambda x: 'PLDBGBREAK' in x, notify))
             if len(tmp_list) > 0:
                 port_number = re.search(r'\d+', tmp_list[0])
                 if port_number is not None:
                     status = 'Success'
                     port_number = port_number.group(0)
-                    port_found = True
-
-            if not port_found:
-                status = 'Busy'
-        else:
-            status = 'Busy'
 
         return make_json_response(
             data={'status': status, 'result': port_number}

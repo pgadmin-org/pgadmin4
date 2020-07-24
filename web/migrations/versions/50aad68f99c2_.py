@@ -78,5 +78,7 @@ def upgrade():
             'ALTER TABLE server ADD COLUMN service TEXT'
         )
 
+
 def downgrade():
+    # pgAdmin only upgrades, downgrade not implemented.
     pass

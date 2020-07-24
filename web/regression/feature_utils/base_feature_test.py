@@ -48,12 +48,15 @@ class BaseFeatureTest(BaseTestGenerator):
             raise
 
     def runTest(self):
+        # To be implemented by child classes
         pass
 
     def before(self):
+        # To be implemented by child classes
         pass
 
     def after(self):
+        # To be implemented by child classes
         pass
 
     def tearDown(self):

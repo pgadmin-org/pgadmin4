@@ -86,5 +86,7 @@ def upgrade():
     # Remove old data
     db.engine.execute("DROP TABLE server_old")
 
+
 def downgrade():
+    # pgAdmin only upgrades, downgrade not implemented.
     pass

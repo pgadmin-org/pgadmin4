@@ -52,6 +52,7 @@ class PgAdminModule(Blueprint):
         self.before_app_first_request(create_module_preference)
 
     def register_preferences(self):
+        # To be implemented by child classes
         pass
 
     def register(self, app, options, first_registration=False):

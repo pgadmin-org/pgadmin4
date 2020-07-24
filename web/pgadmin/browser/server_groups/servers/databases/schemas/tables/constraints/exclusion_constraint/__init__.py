@@ -462,6 +462,41 @@ class ExclusionConstraintView(PGChildNodeView):
                 ))
         return res
 
+    @staticmethod
+    def parse_input_data(data):
+        """
+        This function is used to parse the input data.
+        :param data:
+        :return:
+        """
+        for k, v in data.items():
+            try:
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('comment',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v, encoding='utf-8')
+            except (ValueError, TypeError, KeyError):
+                data[k] = v
+
+        return data
+
+    @staticmethod
+    def check_required_args(data, required_args):
+        """
+        This function is used to check the required arguments.
+        :param data:
+        :param required_args:
+        :return:
+        """
+        for arg in required_args:
+            if arg not in data or \
+                    (isinstance(data[arg], list) and len(data[arg]) < 1):
+                return arg
+
+        return None
+
     @check_precondition
     def create(self, gid, sid, did, scid, tid, exid=None):
         """
@@ -480,36 +515,22 @@ class ExclusionConstraintView(PGChildNodeView):
         """
         required_args = ['columns']
 
-        data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
-        )
-
-        for k, v in data.items():
-            try:
-                # comments should be taken as is because if user enters a
-                # json comment it is parsed by loads which should not happen
-                if k in ('comment',):
-                    data[k] = v
-                else:
-                    data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data[k] = v
-
-        for arg in required_args:
-            if arg not in data or \
-                    (isinstance(data[arg], list) and len(data[arg]) < 1):
-                return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=_(
-                        "Could not find required parameter ({})."
-                    ).format(arg)
-                )
+        data = json.loads(request.data, encoding='utf-8')
+        data = self.parse_input_data(data)
+        arg_missing = self.check_required_args(data, required_args)
+        if arg_missing is not None:
+            return make_json_response(
+                status=400,
+                success=0,
+                errormsg=_(
+                    "Could not find required parameter ({})."
+                ).format(arg_missing)
+            )
 
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            if 'name' not in data or data['name'] == "":
+            if data.get('name', '') == "":
                 SQL = render_template(
                     "/".join([self.template_path, 'begin.sql']))
                 # Start transaction.
@@ -528,7 +549,7 @@ class ExclusionConstraintView(PGChildNodeView):
                 self.end_transaction()
                 return internal_server_error(errormsg=res)
 
-            if 'name' not in data or data['name'] == "":
+            if data.get('name', '') == "":
                 sql = render_template(
                     "/".join([self.template_path,
                               'get_oid_with_transaction.sql']),
@@ -784,13 +805,8 @@ class ExclusionConstraintView(PGChildNodeView):
 
             columns = []
             for row in res['rows']:
-                if row['options'] & 1:
-                    order = False
-                    nulls_order = True if (row['options'] & 2) else False
-                else:
-                    order = True
-                    nulls_order = True if (row['options'] & 2) else False
-
+                nulls_order = True if (row['options'] & 2) else False
+                order = False if row['options'] & 1 else True
                 columns.append({"column": row['coldef'].strip('"'),
                                 "oper_class": row['opcname'],
                                 "order": order,
@@ -814,7 +830,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
                 data['include'] = [col['colname'] for col in res['rows']]
 
-            if not data['amname'] or data['amname'] == '':
+            if data.get('amname', '') == "":
                 data['amname'] = 'btree'
 
             SQL = render_template(

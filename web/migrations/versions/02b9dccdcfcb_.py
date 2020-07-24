@@ -31,5 +31,7 @@ def upgrade():
         'ALTER TABLE server ADD COLUMN fgcolor TEXT(10)'
     )
 
+
 def downgrade():
+    # pgAdmin only upgrades, downgrade not implemented.
     pass

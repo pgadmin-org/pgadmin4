@@ -19,7 +19,7 @@ from urllib.parse import unquote
 from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
-    make_json_response, internal_server_error
+    make_json_response, internal_server_error, bad_request
 from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
@@ -144,7 +144,9 @@ def check_precondition(f):
 @blueprint.route("/")
 @login_required
 def index():
-    pass
+    return bad_request(
+        errormsg=gettext("This URL cannot be called directly.")
+    )
 
 
 @blueprint.route("/grant_wizard.js")
