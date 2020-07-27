@@ -164,6 +164,9 @@ class ResourceGroupView(NodeView):
     """
 
     node_type = blueprint.node_type
+    _PROPERTIES_SQL = 'properties.sql'
+    _CREATE_SQL = 'create.sql'
+    _UPDATE_SQL = 'update.sql'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -243,7 +246,7 @@ class ResourceGroupView(NodeView):
             gid: Server Group ID
             sid: Server ID
         """
-        sql = render_template("/".join([self.sql_path, 'properties.sql']))
+        sql = render_template("/".join([self.sql_path, ]))
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -327,7 +330,7 @@ class ResourceGroupView(NodeView):
             rg_id: Resource Group ID
         """
         sql = render_template(
-            "/".join([self.sql_path, 'properties.sql']), rgid=rg_id)
+            "/".join([self.sql_path, self._PROPERTIES_SQL]), rgid=rg_id)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -389,7 +392,7 @@ class ResourceGroupView(NodeView):
         try:
             # Below logic will create new resource group
             sql = render_template(
-                "/".join([self.sql_path, 'create.sql']),
+                "/".join([self.sql_path, self._CREATE_SQL]),
                 rgname=data['name'], conn=self.conn
             )
             if sql and sql.strip('\n') and sql.strip(' '):
@@ -401,7 +404,7 @@ class ResourceGroupView(NodeView):
             # resource group you can't run multiple commands in one
             # transaction.
             sql = render_template(
-                "/".join([self.sql_path, 'update.sql']),
+                "/".join([self.sql_path, self._UPDATE_SQL]),
                 data=data, conn=self.conn
             )
             # Checking if we are not executing empty query
@@ -451,7 +454,7 @@ class ResourceGroupView(NodeView):
         if data['cpu_rate_limit'] != old_data['cpu_rate_limit'] or \
                 data['dirty_rate_limit'] != old_data['dirty_rate_limit']:
             sql = render_template(
-                "/".join([self.sql_path, 'update.sql']),
+                "/".join([self.sql_path, self._UPDATE_SQL]),
                 data=data, conn=self.conn
             )
             if sql and sql.strip('\n') and sql.strip(' '):
@@ -478,7 +481,7 @@ class ResourceGroupView(NodeView):
 
         try:
             sql = render_template(
-                "/".join([self.sql_path, 'properties.sql']), rgid=rg_id)
+                "/".join([self.sql_path, self._PROPERTIES_SQL]), rgid=rg_id)
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -489,7 +492,7 @@ class ResourceGroupView(NodeView):
 
             if data['name'] != old_data['name']:
                 sql = render_template(
-                    "/".join([self.sql_path, 'update.sql']),
+                    "/".join([self.sql_path, self._UPDATE_SQL]),
                     oldname=old_data['name'], newname=data['name'],
                     conn=self.conn
                 )
@@ -614,7 +617,7 @@ class ResourceGroupView(NodeView):
         :return:
         """
         sql = render_template(
-            "/".join([self.sql_path, 'properties.sql']), rgid=rg_id)
+            "/".join([self.sql_path, self._PROPERTIES_SQL]), rgid=rg_id)
         status, res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
@@ -633,7 +636,7 @@ class ResourceGroupView(NodeView):
         if data['name'] != old_data['name']:
             name_changed = True
             sql = render_template(
-                "/".join([self.sql_path, 'update.sql']),
+                "/".join([self.sql_path, self._UPDATE_SQL]),
                 oldname=old_data['name'], newname=data['name'],
                 conn=self.conn
             )
@@ -643,7 +646,7 @@ class ResourceGroupView(NodeView):
                 sql += "\n-- Following query will be executed in a " \
                        "separate transaction\n"
             sql += render_template(
-                "/".join([self.sql_path, 'update.sql']),
+                "/".join([self.sql_path, self._UPDATE_SQL]),
                 data=data, conn=self.conn
             )
 
@@ -667,7 +670,7 @@ class ResourceGroupView(NodeView):
             sql, old_name = self._get_update_sql(rg_id, data, required_args)
         else:
             sql = render_template(
-                "/".join([self.sql_path, 'create.sql']),
+                "/".join([self.sql_path, self._CREATE_SQL]),
                 rgname=data['name'], conn=self.conn
             )
 
@@ -683,7 +686,7 @@ class ResourceGroupView(NodeView):
                 sql += "\n-- Following query will be executed in a " \
                        "separate transaction\n"
                 sql += render_template(
-                    "/".join([self.sql_path, 'update.sql']),
+                    "/".join([self.sql_path, self._UPDATE_SQL]),
                     data=data, conn=self.conn
                 )
 
@@ -700,7 +703,7 @@ class ResourceGroupView(NodeView):
             rg_id: Resource Group ID
         """
         sql = render_template(
-            "/".join([self.sql_path, 'properties.sql']), rgid=rg_id
+            "/".join([self.sql_path, self._PROPERTIES_SQL]), rgid=rg_id
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -714,13 +717,13 @@ class ResourceGroupView(NodeView):
         old_data = dict(res['rows'][0])
 
         sql = render_template(
-            "/".join([self.sql_path, 'create.sql']),
+            "/".join([self.sql_path, self._CREATE_SQL]),
             display_comments=True,
             rgname=old_data['name'], conn=self.conn
         )
         sql += "\n"
         sql += render_template(
-            "/".join([self.sql_path, 'update.sql']),
+            "/".join([self.sql_path, self._UPDATE_SQL]),
             data=old_data, conn=self.conn
         )
 

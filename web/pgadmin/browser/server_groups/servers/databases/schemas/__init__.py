@@ -207,6 +207,7 @@ class SchemaView(PGChildNodeView):
         pane for the selected schema node.
     """
     node_type = schema_blueprint.node_type
+    _SQL_PREFIX = 'sql/'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -396,7 +397,8 @@ class SchemaView(PGChildNodeView):
                 param = schema_res % (tuple(schema_restrictions.split(',')))
 
         SQL = render_template(
-            "/".join([self.template_path, 'sql/properties.sql']),
+            "/".join([self.template_path,
+                      self._SQL_PREFIX + self._PROPERTIES_SQL]),
             _=gettext,
             show_sysobj=self.blueprint.show_system_objects,
             schema_restrictions=param
@@ -436,7 +438,7 @@ class SchemaView(PGChildNodeView):
                 param = schema_res % (tuple(schema_restrictions.split(',')))
 
         SQL = render_template(
-            "/".join([self.template_path, 'sql/nodes.sql']),
+            "/".join([self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
             show_sysobj=self.blueprint.show_system_objects,
             _=gettext,
             scid=scid,
@@ -499,7 +501,7 @@ class SchemaView(PGChildNodeView):
             JSON of given schema child node
         """
         SQL = render_template(
-            "/".join([self.template_path, 'sql/nodes.sql']),
+            "/".join([self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
             show_sysobj=self.blueprint.show_system_objects,
             _=gettext,
             scid=scid
@@ -545,7 +547,8 @@ It may have been removed by another user.
             JSON of selected schema node
         """
         SQL = render_template(
-            "/".join([self.template_path, 'sql/properties.sql']),
+            "/".join([self.template_path,
+                      self._SQL_PREFIX + self._PROPERTIES_SQL]),
             scid=scid,
             _=gettext,
             show_sysobj=self.blueprint.show_system_objects
@@ -603,7 +606,8 @@ It may have been removed by another user.
         try:
             self.format_request_acls(data)
             SQL = render_template(
-                "/".join([self.template_path, 'sql/create.sql']),
+                "/".join([self.template_path,
+                          self._SQL_PREFIX + self._CREATE_SQL]),
                 data=data, conn=self.conn, _=gettext
             )
             status, res = self.conn.execute_scalar(SQL)
@@ -718,7 +722,8 @@ It may have been removed by another user.
 
                 # drop schema
                 SQL = render_template(
-                    "/".join([self.template_path, 'sql/delete.sql']),
+                    "/".join([self.template_path,
+                              self._SQL_PREFIX + self._DELETE_SQL]),
                     _=gettext, name=name, conn=self.conn,
                     cascade=True if self.cmd == 'delete' else False
                 )
@@ -776,7 +781,8 @@ It may have been removed by another user.
         """
         if scid is not None:
             SQL = render_template(
-                "/".join([self.template_path, 'sql/properties.sql']),
+                "/".join([self.template_path,
+                          self._SQL_PREFIX + self._PROPERTIES_SQL]),
                 _=gettext, scid=scid,
                 show_sysobj=self.blueprint.show_system_objects
             )
@@ -796,7 +802,8 @@ It may have been removed by another user.
             self.format_request_acls(data, True)
 
             SQL = render_template(
-                "/".join([self.template_path, 'sql/update.sql']),
+                "/".join([self.template_path,
+                          self._SQL_PREFIX + self._UPDATE_SQL]),
                 _=gettext, data=data, o_data=old_data, conn=self.conn
             )
             return SQL, data['name'] if 'name' in data else old_data['nam']
@@ -811,7 +818,8 @@ It may have been removed by another user.
             self.format_request_acls(data)
 
             SQL = render_template(
-                "/".join([self.template_path, 'sql/create.sql']),
+                "/".join([self.template_path,
+                          self._SQL_PREFIX + self._CREATE_SQL]),
                 data=data, conn=self.conn, _=gettext
             )
 
@@ -830,7 +838,8 @@ It may have been removed by another user.
            scid: Schema ID
         """
         SQL = render_template(
-            "/".join([self.template_path, 'sql/properties.sql']),
+            "/".join([self.template_path,
+                      self._SQL_PREFIX + self._PROPERTIES_SQL]),
             scid=scid, _=gettext
         )
 
@@ -852,7 +861,8 @@ It may have been removed by another user.
         # Render sql from create & alter sql using properties & acl data
         SQL = ''
         SQL = render_template(
-            "/".join([self.template_path, 'sql/create.sql']),
+            "/".join([self.template_path,
+                      self._SQL_PREFIX + self._CREATE_SQL]),
             _=gettext, data=data, conn=self.conn
         )
 
@@ -860,7 +870,8 @@ It may have been removed by another user.
 
         # drop schema
         sql_header += render_template(
-            "/".join([self.template_path, 'sql/delete.sql']),
+            "/".join([self.template_path,
+                      self._SQL_PREFIX + self._DELETE_SQL]),
             _=gettext, name=data['name'], conn=self.conn, cascade=False)
 
         SQL = sql_header + '\n\n' + SQL
@@ -1010,7 +1021,8 @@ class CatalogView(SchemaView):
            scid: Schema ID
         """
         SQL = render_template(
-            "/".join([self.template_path, 'sql/properties.sql']),
+            "/".join([self.template_path,
+                      self._SQL_PREFIX + self._PROPERTIES_SQL]),
             scid=scid, _=gettext
         )
 
@@ -1033,7 +1045,8 @@ It may have been removed by another user.
         # Render sql from create & alter sql using properties & acl data
         SQL = ''
         SQL = render_template(
-            "/".join([self.template_path, 'sql/create.sql']),
+            "/".join([self.template_path,
+                      self._SQL_PREFIX + self._CREATE_SQL]),
             _=gettext, data=old_data, conn=self.conn
         )
 

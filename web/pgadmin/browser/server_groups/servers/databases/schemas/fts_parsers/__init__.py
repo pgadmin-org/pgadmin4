@@ -708,7 +708,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param did: database id
         :param scid: schema id
         """
-        sql = render_template("/".join([self.template_path, 'functions.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._FUNCTIONS_SQL]),
                               start=True)
         status, rset = self.conn.execute_dict(sql)
 
@@ -735,7 +736,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param did: database id
         :param scid: schema id
         """
-        sql = render_template("/".join([self.template_path, 'functions.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._FUNCTIONS_SQL]),
                               token=True)
         status, rset = self.conn.execute_dict(sql)
 
@@ -762,7 +764,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param did: database id
         :param scid: schema id
         """
-        sql = render_template("/".join([self.template_path, 'functions.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._FUNCTIONS_SQL]),
                               end=True)
         status, rset = self.conn.execute_dict(sql)
 
@@ -789,7 +792,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param did: database id
         :param scid: schema id
         """
-        sql = render_template("/".join([self.template_path, 'functions.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._FUNCTIONS_SQL]),
                               lextype=True)
         status, rset = self.conn.execute_dict(sql)
 
@@ -816,7 +820,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param did: database id
         :param scid: schema id
         """
-        sql = render_template("/".join([self.template_path, 'functions.sql']),
+        sql = render_template("/".join([self.template_path,
+                                        self._FUNCTIONS_SQL]),
                               headline=True)
         status, rset = self.conn.execute_dict(sql)
 

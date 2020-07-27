@@ -9,7 +9,6 @@
 
 """Implements View and Materialized View Node"""
 
-import copy
 import re
 from functools import wraps
 
@@ -311,6 +310,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         different schemas.
     """
     node_type = view_blueprint.node_type
+    _SQL_PREFIX = 'sql/'
+    _ALLOWED_PRIVS_JSON = 'sql/allowed_privs.json'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -390,7 +391,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         Fetches all views properties and render into properties tab
         """
         SQL = render_template("/".join(
-            [self.template_path, 'sql/properties.sql']), did=did, scid=scid)
+            [self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL]),
+            did=did, scid=scid)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -406,7 +408,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         Lists all views under the Views Collection node
         """
         SQL = render_template("/".join(
-            [self.template_path, 'sql/nodes.sql']),
+            [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
             vid=vid, datlastsysoid=self.datlastsysoid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -435,7 +437,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template("/".join(
-            [self.template_path, 'sql/nodes.sql']), scid=scid)
+            [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
+            scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -478,7 +481,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         :return:
         """
         SQL = render_template("/".join(
-            [self.template_path, 'sql/properties.sql']
+            [self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL]
         ), vid=vid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -488,7 +491,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             return False, gone(gettext("""Could not find the view."""))
 
         SQL = render_template("/".join(
-            [self.template_path, 'sql/acl.sql']), vid=vid)
+            [self.template_path, self._SQL_PREFIX + self._ACL_SQL]), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return False, internal_server_error(errormsg=res)
@@ -564,16 +567,16 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
             # Get updated schema oid
             SQL = render_template("/".join(
-                [self.template_path, 'sql/get_oid.sql']), vid=view_id)
-            status, scid = self.conn.execute_scalar(SQL)
-
+                [self.template_path, self._SQL_PREFIX + self._OID_SQL]),
+                vid=view_id)
+            status, new_scid = self.conn.execute_scalar(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                return internal_server_error(errormsg=new_scid)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     view_id,
-                    scid,
+                    new_scid,
                     data['name'],
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
@@ -611,15 +614,16 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
             # Get updated schema oid
             SQL = render_template("/".join(
-                [self.template_path, 'sql/get_oid.sql']), vid=view_id)
-            status, scid = self.conn.execute_scalar(SQL)
+                [self.template_path, self._SQL_PREFIX + self._OID_SQL]),
+                vid=view_id)
+            status, new_scid = self.conn.execute_scalar(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                return internal_server_error(errormsg=new_scid)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     view_id,
-                    scid,
+                    new_scid,
                     new_view_name,
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
@@ -648,9 +652,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             for vid in data['ids']:
                 # Get name for view from vid
                 SQL = render_template(
-                    "/".join([
-                        self.template_path, 'sql/properties.sql'
-                    ]),
+                    "/".join([self.template_path,
+                              self._SQL_PREFIX + self._PROPERTIES_SQL]),
                     did=did,
                     vid=vid,
                     datlastsysoid=self.datlastsysoid
@@ -672,9 +675,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
                 # drop view
                 SQL = render_template(
-                    "/".join([
-                        self.template_path, 'sql/delete.sql'
-                    ]),
+                    "/".join([self.template_path,
+                              self._SQL_PREFIX + self._DELETE_SQL]),
                     nspname=res_data['rows'][0]['schema'],
                     name=res_data['rows'][0]['name'], cascade=cascade
                 )
@@ -778,7 +780,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         if vid is not None:
             sql = render_template("/".join(
-                [self.template_path, 'sql/properties.sql']),
+                [self.template_path,
+                 self._SQL_PREFIX + self._PROPERTIES_SQL]),
                 vid=vid,
                 datlastsysoid=self.datlastsysoid
             )
@@ -795,7 +798,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
             try:
                 acls = render_template(
-                    "/".join([self.template_path, 'sql/allowed_privs.json'])
+                    "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
                 )
                 acls = json.loads(acls, encoding='utf-8')
             except Exception as e:
@@ -814,7 +817,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
             try:
                 sql = render_template("/".join(
-                    [self.template_path, 'sql/update.sql']), data=data,
+                    [self.template_path,
+                     self._SQL_PREFIX + self._UPDATE_SQL]), data=data,
                     o_data=old_data, conn=self.conn)
 
             except Exception as e:
@@ -852,7 +856,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         acls = []
         try:
             acls = render_template(
-                "/".join([self.template_path, 'sql/allowed_privs.json'])
+                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
             )
             acls = json.loads(acls, encoding='utf-8')
         except Exception as e:
@@ -862,11 +866,13 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         ViewNode._parse_priv_data(acls, data)
 
         sql = render_template("/".join(
-            [self.template_path, 'sql/create.sql']), data=data)
+            [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
+            data=data)
         if data['definition']:
             sql += "\n"
             sql += render_template("/".join(
-                [self.template_path, 'sql/grant.sql']), data=data)
+                [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
+                data=data)
 
         return False, '', sql
 
@@ -908,7 +914,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 ViewNode._parse_priv_data(acls, old_data)
 
                 old_data['acl_sql'] = render_template("/".join(
-                    [self.template_path, 'sql/grant.sql']), data=old_data)
+                    [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
+                    data=old_data)
         return False, ''
 
     def _fetch_all_view_priv(self, vid, res):
@@ -918,7 +925,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         res: response data from property sql
         """
         sql_acl = render_template("/".join(
-            [self.template_path, 'sql/acl.sql']), vid=vid)
+            [self.template_path, self._SQL_PREFIX + self._ACL_SQL]), vid=vid)
         status, dataclres = self.conn.execute_dict(sql_acl)
         if not status:
             return True, internal_server_error(errormsg=res)
@@ -1010,7 +1017,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         self.trigger_temp_path = 'schemas/triggers'
         SQL = render_template("/".join([self.trigger_temp_path,
-                                        'get_columns.sql']),
+                                        self._GET_COLUMNS_SQL]),
                               tid=tid, clist=clist)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -1033,7 +1040,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         self.rule_temp_path = 'rules'
         sql_data = ''
         SQL = render_template("/".join(
-            [self.rule_temp_path, 'sql/properties.sql']), tid=vid)
+            [self.rule_temp_path, self._SQL_PREFIX + self._PROPERTIES_SQL]),
+            tid=vid)
 
         status, data = self.conn.execute_dict(SQL)
         if not status:
@@ -1045,13 +1053,15 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if rule['name'] != '_RETURN':
                 res = []
                 SQL = render_template("/".join(
-                    [self.rule_temp_path, 'sql/properties.sql']),
+                    [self.rule_temp_path,
+                     self._SQL_PREFIX + self._PROPERTIES_SQL]),
                     rid=rule['oid']
                 )
                 status, res = self.conn.execute_dict(SQL)
                 res = parse_rule_definition(res)
                 SQL = render_template("/".join(
-                    [self.rule_temp_path, 'sql/create.sql']),
+                    [self.rule_temp_path,
+                     self._SQL_PREFIX + self._CREATE_SQL]),
                     data=res, display_comments=display_comments)
                 sql_data += '\n'
                 sql_data += SQL
@@ -1305,7 +1315,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         sql_data = ''
         SQL = render_template("/".join(
-            [self.template_path, 'sql/properties.sql']),
+            [self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL]),
             vid=vid,
             datlastsysoid=self.datlastsysoid
         )
@@ -1334,7 +1344,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         # Fetch all privileges for view
         SQL = render_template("/".join(
-            [self.template_path, 'sql/acl.sql']), vid=vid)
+            [self.template_path, self._SQL_PREFIX + self._ACL_SQL]), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -1348,7 +1358,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         acls = []
         try:
             acls = render_template(
-                "/".join([self.template_path, 'sql/allowed_privs.json'])
+                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
             )
             acls = json.loads(acls, encoding='utf-8')
         except Exception as e:
@@ -1363,14 +1373,15 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 )
 
         SQL = render_template("/".join(
-            [self.template_path, 'sql/create.sql']),
+            [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
             data=result,
             conn=self.conn,
             display_comments=display_comments
         )
         SQL += "\n"
         SQL += render_template("/".join(
-            [self.template_path, 'sql/grant.sql']), data=result)
+            [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
+            data=result)
 
         sql_data += SQL
         sql_data += self.get_rule_sql(vid, display_comments)
@@ -1463,7 +1474,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         SQL = render_template(
             "/".join([
-                self.template_path, 'sql/properties.sql'
+                self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL
             ]),
             scid=scid, vid=vid, did=did,
             datlastsysoid=self.datlastsysoid
@@ -1524,7 +1535,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         SQL = render_template(
             "/".join([
-                self.template_path, 'sql/properties.sql'
+                self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL
             ]),
             scid=scid, vid=vid, did=did,
             datlastsysoid=self.datlastsysoid
@@ -1587,9 +1598,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         res = dict()
 
         if not oid:
-            SQL = render_template("/".join([self.template_path,
-                                            'sql/nodes.sql']), did=did,
-                                  scid=scid, datlastsysoid=self.datlastsysoid)
+            SQL = render_template("/".join(
+                [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
+                did=did, scid=scid, datlastsysoid=self.datlastsysoid)
             status, views = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(views)
@@ -1709,146 +1720,165 @@ class MViewNode(ViewNode, VacuumSettings):
             '9.3_plus'
         )
 
+    @staticmethod
+    def merge_to_vacuum_data(old_data, data, vacuum_key):
+        """
+        Used by getSQL method to merge vacuum data
+        """
+        if vacuum_key not in data:
+            return
+
+        if 'changed' not in data[vacuum_key]:
+            return
+
+        for item in data[vacuum_key]['changed']:
+            old_data_item_key = item['name']
+            if vacuum_key == 'vacuum_toast':
+                old_data_item_key = 'toast_' + item['name']
+                item['name'] = 'toast.' + item['name']
+
+            if 'value' not in item.keys():
+                continue
+            if item['value'] is None:
+                if old_data[old_data_item_key] != item['value']:
+                    data['vacuum_data']['reset'].append(item)
+            elif old_data[old_data_item_key] is None or \
+                float(old_data[old_data_item_key]) != \
+                    float(item['value']):
+                data['vacuum_data']['changed'].append(item)
+
+    def _getSQL_existing(self, did, data, vid):
+        """
+        Used by getSQL to get SQL for existing mview.
+        """
+        status, res = self._fetch_mview_properties(did, None, vid)
+
+        if not status:
+            return res
+
+        old_data = res
+
+        if 'name' not in data:
+            data['name'] = res['name']
+        if 'schema' not in data:
+            data['schema'] = res['schema']
+
+        # merge vacuum lists into one
+        data['vacuum_data'] = {}
+        data['vacuum_data']['changed'] = []
+        data['vacuum_data']['reset'] = []
+
+        # table vacuum: separate list of changed and reset data for
+        self.merge_to_vacuum_data(old_data, data, 'vacuum_table')
+        # table vacuum toast: separate list of changed and reset data for
+        self.merge_to_vacuum_data(old_data, data, 'vacuum_toast')
+
+        acls = []
+        try:
+            acls = render_template(
+                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
+            )
+            acls = json.loads(acls, encoding='utf-8')
+        except Exception as e:
+            current_app.logger.exception(e)
+
+        # Privileges
+        for aclcol in acls:
+            if aclcol in data:
+                allowedacl = acls[aclcol]
+
+                for key in ['added', 'changed', 'deleted']:
+                    if key in data[aclcol]:
+                        data[aclcol][key] = parse_priv_to_db(
+                            data[aclcol][key], allowedacl['acl']
+                        )
+
+        try:
+            SQL = render_template("/".join(
+                [self.template_path,
+                 self._SQL_PREFIX + self._UPDATE_SQL]), data=data,
+                o_data=old_data, conn=self.conn)
+        except Exception as e:
+            current_app.logger.exception(e)
+            return None, internal_server_error(errormsg=str(e))
+
+        return SQL, old_data['name']
+
+    def _getSQL_new(self, data):
+        """
+        Used by getSQL to get SQL for new mview.
+        """
+        required_args = [
+            'name',
+            'schema',
+            'definition'
+        ]
+        for arg in required_args:
+            if arg not in data:
+                return None, make_json_response(
+                    data=gettext(" -- definition incomplete"),
+                    status=200
+                )
+
+        # Get Schema Name from its OID.
+        if 'schema' in data and isinstance(data['schema'], int):
+            data['schema'] = self._get_schema(data['schema'])
+
+        # merge vacuum lists into one
+        vacuum_table = [item for item in data.get('vacuum_table', [])
+                        if 'value' in item.keys() and
+                        item['value'] is not None]
+        vacuum_toast = [
+            {'name': 'toast.' + item['name'], 'value': item['value']}
+            for item in data.get('vacuum_toast', [])
+            if 'value' in item.keys() and item['value'] is not None]
+
+        # add vacuum_toast dict to vacuum_data
+        data['vacuum_data'] = []
+        if data.get('autovacuum_custom', False):
+            data['vacuum_data'] = vacuum_table
+
+        if data.get('toast_autovacuum', False):
+            data['vacuum_data'] += vacuum_toast
+
+        acls = []
+        try:
+            acls = render_template(
+                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
+            )
+            acls = json.loads(acls, encoding='utf-8')
+        except Exception as e:
+            current_app.logger.exception(e)
+
+        # Privileges
+        for aclcol in acls:
+            if aclcol in data:
+                allowedacl = acls[aclcol]
+                data[aclcol] = parse_priv_to_db(
+                    data[aclcol], allowedacl['acl']
+                )
+
+        SQL = render_template("/".join(
+            [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
+            data=data)
+        if data['definition']:
+            SQL += "\n"
+            SQL += render_template("/".join(
+                [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
+                data=data)
+
+        return SQL, data.get('name', None)
+
     def getSQL(self, gid, sid, did, data, vid=None):
         """
         This function will generate sql from model data
         """
         if vid is not None:
-            status, res = self._fetch_properties(did, None, vid)
-
-            if not status:
-                return res
-
-            old_data = res
-
-            if 'name' not in data:
-                data['name'] = res['name']
-            if 'schema' not in data:
-                data['schema'] = res['schema']
-
-            # merge vacuum lists into one
-            data['vacuum_data'] = {}
-            data['vacuum_data']['changed'] = []
-            data['vacuum_data']['reset'] = []
-
-            # table vacuum: separate list of changed and reset data for
-            if 'vacuum_table' in data and 'changed' in data['vacuum_table']:
-                for item in data['vacuum_table']['changed']:
-                    if 'value' in item.keys():
-                        if item['value'] is None:
-                            if old_data[item['name']] != item['value']:
-                                data['vacuum_data']['reset'].append(item)
-                        else:
-                            if (old_data[item['name']] is None or
-                                (float(old_data[item['name']]) != float(
-                                    item['value']))):
-                                data['vacuum_data']['changed'].append(item)
-
-            # toast autovacuum: separate list of changed and reset data
-            if 'vacuum_toast' in data and 'changed' in data['vacuum_toast']:
-                for item in data['vacuum_toast']['changed']:
-                    if 'value' in item.keys():
-                        toast_key = 'toast_' + item['name']
-                        item['name'] = 'toast.' + item['name']
-                        if item['value'] is None:
-                            if old_data[toast_key] != item['value']:
-                                data['vacuum_data']['reset'].append(item)
-                        else:
-                            if (old_data[toast_key] is None or
-                                (float(old_data[toast_key]) != float(
-                                    item['value']))):
-                                data['vacuum_data']['changed'].append(item)
-
-            acls = []
-            try:
-                acls = render_template(
-                    "/".join([self.template_path, 'sql/allowed_privs.json'])
-                )
-                acls = json.loads(acls, encoding='utf-8')
-            except Exception as e:
-                current_app.logger.exception(e)
-
-            # Privileges
-            for aclcol in acls:
-                if aclcol in data:
-                    allowedacl = acls[aclcol]
-
-                    for key in ['added', 'changed', 'deleted']:
-                        if key in data[aclcol]:
-                            data[aclcol][key] = parse_priv_to_db(
-                                data[aclcol][key], allowedacl['acl']
-                            )
-
-            try:
-                SQL = render_template("/".join(
-                    [self.template_path, 'sql/update.sql']), data=data,
-                    o_data=old_data, conn=self.conn)
-            except Exception as e:
-                current_app.logger.exception(e)
-                return None, internal_server_error(errormsg=str(e))
+            SQL, data_name = self._getSQL_existing(did, data, vid)
         else:
-            required_args = [
-                'name',
-                'schema',
-                'definition'
-            ]
-            for arg in required_args:
-                if arg not in data:
-                    return None, make_json_response(
-                        data=gettext(" -- definition incomplete"),
-                        status=200
-                    )
+            SQL, data_name = self._getSQL_new(data)
 
-            # Get Schema Name from its OID.
-            if 'schema' in data and isinstance(data['schema'], int):
-                data['schema'] = self._get_schema(data['schema'])
-
-            # merge vacuum lists into one
-            vacuum_table = [item for item in data.get('vacuum_table', [])
-                            if 'value' in item.keys() and
-                            item['value'] is not None]
-            vacuum_toast = [
-                {'name': 'toast.' + item['name'], 'value': item['value']}
-                for item in data.get('vacuum_toast', [])
-                if 'value' in item.keys() and item['value'] is not None]
-
-            # add vacuum_toast dict to vacuum_data
-            data['vacuum_data'] = []
-            if (
-                'autovacuum_custom' in data and
-                data['autovacuum_custom'] is True
-            ):
-                data['vacuum_data'] = vacuum_table
-            if (
-                'toast_autovacuum' in data and
-                data['toast_autovacuum'] is True
-            ):
-                data['vacuum_data'] += vacuum_toast
-
-            acls = []
-            try:
-                acls = render_template(
-                    "/".join([self.template_path, 'sql/allowed_privs.json'])
-                )
-                acls = json.loads(acls, encoding='utf-8')
-            except Exception as e:
-                current_app.logger.exception(e)
-
-            # Privileges
-            for aclcol in acls:
-                if aclcol in data:
-                    allowedacl = acls[aclcol]
-                    data[aclcol] = parse_priv_to_db(
-                        data[aclcol], allowedacl['acl']
-                    )
-
-            SQL = render_template("/".join(
-                [self.template_path, 'sql/create.sql']), data=data)
-            if data['definition']:
-                SQL += "\n"
-                SQL += render_template("/".join(
-                    [self.template_path, 'sql/grant.sql']), data=data)
-        return SQL, data['name'] if 'name' in data else old_data['name']
+        return SQL, data_name
 
     @check_precondition
     def sql(self, gid, sid, did, scid, vid, **kwargs):
@@ -1864,7 +1894,7 @@ class MViewNode(ViewNode, VacuumSettings):
             display_comments = False
 
         sql_data = ''
-        status, result = self._fetch_properties(did, scid, vid)
+        status, result = self._fetch_mview_properties(did, scid, vid)
 
         if not status:
             return result
@@ -1889,7 +1919,7 @@ class MViewNode(ViewNode, VacuumSettings):
         acls = []
         try:
             acls = render_template(
-                "/".join([self.template_path, 'sql/allowed_privs.json'])
+                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
             )
             acls = json.loads(acls, encoding='utf-8')
         except Exception as e:
@@ -1904,14 +1934,15 @@ class MViewNode(ViewNode, VacuumSettings):
                 )
 
         SQL = render_template("/".join(
-            [self.template_path, 'sql/create.sql']),
+            [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
             data=result,
             conn=self.conn,
             display_comments=display_comments
         )
         SQL += "\n"
         SQL += render_template("/".join(
-            [self.template_path, 'sql/grant.sql']), data=result)
+            [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
+            data=result)
 
         sql_data += SQL
         sql_data += self.get_rule_sql(vid, display_comments)
@@ -1963,7 +1994,7 @@ class MViewNode(ViewNode, VacuumSettings):
         Fetches the properties of an individual view
         and render in the properties tab
         """
-        status, res = self._fetch_properties(did, scid, vid)
+        status, res = self._fetch_mview_properties(did, scid, vid)
 
         if not status:
             return res
@@ -1973,7 +2004,7 @@ class MViewNode(ViewNode, VacuumSettings):
             status=200
         )
 
-    def _fetch_properties(self, did, scid, vid):
+    def _fetch_mview_properties(self, did, scid, vid):
         """
         This function is used to fetch the properties of the specified object
         :param did:
@@ -1982,7 +2013,7 @@ class MViewNode(ViewNode, VacuumSettings):
         :return:
         """
         SQL = render_template("/".join(
-            [self.template_path, 'sql/properties.sql']
+            [self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL]
         ), did=did, vid=vid, datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -2046,7 +2077,7 @@ class MViewNode(ViewNode, VacuumSettings):
         ].replace('=', ' = ')
 
         SQL = render_template("/".join(
-            [self.template_path, 'sql/acl.sql']), vid=vid)
+            [self.template_path, self._SQL_PREFIX + self._ACL_SQL]), vid=vid)
         status, dataclres = self.conn.execute_dict(SQL)
         if not status:
             return False, internal_server_error(errormsg=res)
@@ -2208,15 +2239,15 @@ class MViewNode(ViewNode, VacuumSettings):
         :return:
         """
         res = dict()
-        SQL = render_template("/".join([self.template_path,
-                                        'sql/nodes.sql']), did=did,
-                              scid=scid, datlastsysoid=self.datlastsysoid)
+        SQL = render_template("/".join(
+            [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
+            did=did, scid=scid, datlastsysoid=self.datlastsysoid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)
 
         for row in rset['rows']:
-            status, data = self._fetch_properties(did, scid, row['oid'])
+            status, data = self._fetch_mview_properties(did, scid, row['oid'])
             if status:
                 res[row['name']] = data
 

@@ -316,7 +316,7 @@ class TablespaceView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
             SQL = render_template(
-                "/".join([self.template_path, 'alter.sql']),
+                "/".join([self.template_path, self._ALTER_SQL]),
                 data=data, conn=self.conn
             )
 
@@ -328,7 +328,7 @@ class TablespaceView(PGChildNodeView):
 
             # To fetch the oid of newly created tablespace
             SQL = render_template(
-                "/".join([self.template_path, 'alter.sql']),
+                "/".join([self.template_path, self._ALTER_SQL]),
                 tablespace=data['name'], conn=self.conn
             )
 
@@ -533,7 +533,7 @@ class TablespaceView(PGChildNodeView):
             )
             SQL += "\n"
             SQL += render_template(
-                "/".join([self.template_path, 'alter.sql']),
+                "/".join([self.template_path, self._ALTER_SQL]),
                 data=data, conn=self.conn
             )
         SQL = re.sub('\n{2,}', '\n\n', SQL)
@@ -574,7 +574,7 @@ class TablespaceView(PGChildNodeView):
             )
             SQL += "\n"
         SQL += render_template(
-            "/".join([self.template_path, 'alter.sql']),
+            "/".join([self.template_path, self._ALTER_SQL]),
             data=old_data, conn=self.conn
         )
 

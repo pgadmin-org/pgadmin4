@@ -680,7 +680,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         :param tid: fts tempate id
         """
         sql = render_template(
-            "/".join([self.template_path, 'functions.sql']), lexize=True
+            "/".join([self.template_path, self._FUNCTIONS_SQL]), lexize=True
         )
         status, rset = self.conn.execute_dict(sql)
 
@@ -709,7 +709,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         :param tid: fts tempate id
         """
         sql = render_template(
-            "/".join([self.template_path, 'functions.sql']), init=True
+            "/".join([self.template_path, self._FUNCTIONS_SQL]), init=True
         )
         status, rset = self.conn.execute_dict(sql)
 

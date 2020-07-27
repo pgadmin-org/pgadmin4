@@ -292,7 +292,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                                 # as we need Table names to generate the SQL.
                                 SQL = render_template(
                                     "/".join([self.template_path,
-                                              'get_tables.sql']),
+                                              self._GET_TABLES_SQL]),
                                     attrelid=inherits)
                                 status, res = self.conn.execute_dict(SQL)
 
@@ -578,7 +578,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         res = []
         try:
             SQL = render_template("/".join(
-                [self.template_path, 'get_tables.sql']),
+                [self.template_path, self._GET_TABLES_SQL]),
                 foid=foid, server_type=self.manager.server_type,
                 show_sys_objects=self.blueprint.show_system_objects)
             status, rset = self.conn.execute_dict(SQL)
@@ -1135,7 +1135,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             data.update(self._parse_variables_from_db(data['ftoptions']))
 
         SQL = render_template("/".join([self.template_path,
-                                        'get_constraints.sql']), foid=foid)
+                                        self._GET_CONSTRAINTS_SQL]), foid=foid)
         status, cons = self.conn.execute_dict(SQL)
         if not status:
             return False, internal_server_error(errormsg=cons)
@@ -1144,7 +1144,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             data['constraints'] = cons['rows']
 
         SQL = render_template("/".join([self.template_path,
-                                        'get_columns.sql']), foid=foid)
+                                        self._GET_COLUMNS_SQL]), foid=foid)
         status, cols = self.conn.execute_dict(SQL)
         if not status:
             return False, internal_server_error(errormsg=cols)
@@ -1178,7 +1178,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 inherits = "(" + str(inherits[0]) + ")"
 
             SQL = render_template("/".join([self.template_path,
-                                            'get_tables.sql']),
+                                            self._GET_TABLES_SQL]),
                                   attrelid=inherits)
             status, res = self.conn.execute_dict(SQL)
 

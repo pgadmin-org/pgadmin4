@@ -520,19 +520,11 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
            coid: Collation ID
            only_sql: Return only sql if True
         """
-        if coid is None:
-            data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
-            )
-        else:
-            data = {'ids': [coid]}
+        data = json.loads(request.data, encoding='utf-8') if coid is None \
+            else {'ids': [coid]}
 
         # Below will decide if it's simple drop or drop with cascade call
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        cascade = True if self.cmd == 'delete' else False
 
         try:
             for coid in data['ids']:

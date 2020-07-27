@@ -1296,7 +1296,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 return internal_server_error(errormsg=rest)
 
             sql = render_template("/".join([self.table_template_path,
-                                  'get_schema_oid.sql']), tid=tid)
+                                  self._GET_SCHEMA_OID_SQL]), tid=tid)
             status, rest = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=rest)
@@ -1343,7 +1343,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         render_template(
                             "/".join([
                                 self.table_template_path,
-                                'get_schema_oid.sql'
+                                self._GET_SCHEMA_OID_SQL
                             ]),
                             tid=row['oid']
                         )
@@ -1376,7 +1376,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         render_template(
                             "/".join([
                                 self.table_template_path,
-                                'get_schema_oid.sql'
+                                self._GET_SCHEMA_OID_SQL
                             ]),
                             tid=row['partition_name']
                         )
@@ -1721,7 +1721,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         # Get schema oid
         status, scid = self.conn.execute_scalar(
             render_template("/".join([self.table_template_path,
-                                      'get_schema_oid.sql']), tid=tid))
+                                      self._GET_SCHEMA_OID_SQL]), tid=tid))
         if not status:
             return internal_server_error(errormsg=scid)
         if scid is None:

@@ -1124,7 +1124,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             self._get_schema_name_from_oid(resp_data)
 
             sql = render_template("/".join([self.sql_template_path,
-                                            'get_definition.sql']
+                                            self._GET_DEFINITION_SQL]
                                            ), data=resp_data,
                                   fnid=fnid, scid=scid)
 
@@ -1163,7 +1163,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             self._parse_privilege_data(resp_data)
 
             sql = render_template("/".join([self.sql_template_path,
-                                            'get_definition.sql']
+                                            self._GET_DEFINITION_SQL]
                                            ), data=resp_data,
                                   fnid=fnid, scid=scid)
 
@@ -1687,7 +1687,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         # Fetch the function definition.
         sql = render_template("/".join([self.sql_template_path,
-                                        'get_definition.sql']), fnid=fnid,
+                                        self._GET_DEFINITION_SQL]), fnid=fnid,
                               scid=scid)
         status, res = self.conn.execute_2darray(sql)
         if not status:

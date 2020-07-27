@@ -620,7 +620,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             # If user chooses concurrent index then we cannot run it along
             # with other alter statements so we will separate alter index part
             SQL = render_template(
-                "/".join([self.template_path, 'alter.sql']),
+                "/".join([self.template_path, self._ALTER_SQL]),
                 data=data, conn=self.conn
             )
             SQL = SQL.strip('\n').strip(' ')

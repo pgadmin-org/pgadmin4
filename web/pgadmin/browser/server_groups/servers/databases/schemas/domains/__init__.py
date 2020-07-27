@@ -413,7 +413,7 @@ It may have been removed by another user or moved to another schema.
 
         # Get Domain Constraints
         SQL = render_template("/".join([self.template_path,
-                                        'get_constraints.sql']),
+                                        self._GET_CONSTRAINTS_SQL]),
                               doid=doid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -728,7 +728,7 @@ AND relkind != 'c'))"""
 
         # Get Domain Constraints
         SQL = render_template("/".join([self.template_path,
-                                        'get_constraints.sql']),
+                                        self._GET_CONSTRAINTS_SQL]),
                               doid=doid)
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -823,7 +823,7 @@ AND relkind != 'c'))"""
 
             # Get Domain Constraints
             SQL = render_template("/".join([self.template_path,
-                                            'get_constraints.sql']),
+                                            self._GET_CONSTRAINTS_SQL]),
                                   doid=doid)
             status, res = self.conn.execute_dict(SQL)
             if not status:

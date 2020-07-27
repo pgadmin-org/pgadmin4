@@ -696,9 +696,10 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             status, res = self.conn.execute_dict(sql)
             if not status:
-                return internal_server_error(errormsg=res)
+                return internal_server_error(errormsg=res), ''
             elif len(res['rows']) == 0:
-                return gone(_("Could not find the FTS Configuration node."))
+                return \
+                    gone(_("Could not find the FTS Configuration node.")), ''
 
             old_data = res['rows'][0]
             if 'schema' not in data:
@@ -712,7 +713,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             status, new_schema = self.conn.execute_scalar(sql)
             if not status:
-                return internal_server_error(errormsg=new_schema)
+                return internal_server_error(errormsg=new_schema), ''
 
             new_data = data.copy()
             # Replace schema oid with schema name
@@ -726,7 +727,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             status, old_schema = self.conn.execute_scalar(sql)
             if not status:
-                return internal_server_error(errormsg=old_schema)
+                return internal_server_error(errormsg=old_schema), ''
 
             # Replace old schema oid with old schema name
             old_data['schema'] = old_schema
@@ -749,7 +750,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             status, schema = self.conn.execute_scalar(sql)
             if not status:
-                return internal_server_error(errormsg=schema)
+                return internal_server_error(errormsg=schema), ''
 
             sql = self._get_sql_for_create(data, schema)
             return sql.strip('\n'), data['name']

@@ -36,6 +36,9 @@ MODULE_NAME = 'debugger'
 
 # Constants
 ASYNC_OK = 1
+DEBUGGER_SQL_PATH = 'debugger/sql'
+DEBUGGER_SQL_V1_PATH = 'debugger/sql/v1'
+DEBUGGER_SQL_V2_PATH = 'debugger/sql/v2'
 
 
 class DebuggerModule(PgAdminModule):
@@ -353,13 +356,10 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     else:
         is_proc_supported = True if manager.version >= 110000 else False
 
-    # Set the template path required to read the sql files
-    template_path = 'debugger/sql'
-
     if node_type == 'trigger':
         # Find trigger function id from trigger id
         sql = render_template(
-            "/".join([template_path, 'get_trigger_function_info.sql']),
+            "/".join([DEBUGGER_SQL_PATH, 'get_trigger_function_info.sql']),
             table_id=fid, trigger_id=trid
         )
 
@@ -378,7 +378,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
     sql = ''
     sql = render_template(
-        "/".join([template_path, 'get_function_debug_info.sql']),
+        "/".join([DEBUGGER_SQL_PATH, 'get_function_debug_info.sql']),
         is_ppas_database=ppas_server,
         hasFeatureFunctionDefaults=True,
         fid=fid,
@@ -738,13 +738,10 @@ def initialize_target(debug_type, trans_id, sid, did,
     if not status:
         return error
 
-    # Set the template path required to read the sql files
-    template_path = 'debugger/sql'
-
     if tri_id is not None:
         # Find trigger function id from trigger id
         sql = render_template(
-            "/".join([template_path, 'get_trigger_function_info.sql']),
+            "/".join([DEBUGGER_SQL_PATH, 'get_trigger_function_info.sql']),
             table_id=func_id, trigger_id=tri_id
         )
 
@@ -928,9 +925,9 @@ def start_debugger_listener(trans_id):
     # find the debugger version and execute the query accordingly
     dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
-        template_path = 'debugger/sql/v1'
+        template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = 'debugger/sql/v2'
+        template_path = DEBUGGER_SQL_V2_PATH
 
     # If user again start the same debug function with different arguments
     # then we need to save that values to session variable and database.
@@ -1016,7 +1013,7 @@ def start_debugger_listener(trans_id):
             # Below are two different template to execute and start executer
             if manager.server_type != 'pg' and manager.version < 90300:
                 str_query = render_template(
-                    "/".join(['debugger/sql', 'execute_edbspl.sql']),
+                    "/".join([DEBUGGER_SQL_PATH, 'execute_edbspl.sql']),
                     func_name=func_name,
                     is_func=de_inst.function_data['is_func'],
                     lan_name=de_inst.function_data['language'],
@@ -1027,7 +1024,7 @@ def start_debugger_listener(trans_id):
                 )
             else:
                 str_query = render_template(
-                    "/".join(['debugger/sql', 'execute_plpgsql.sql']),
+                    "/".join([DEBUGGER_SQL_PATH, 'execute_plpgsql.sql']),
                     func_name=func_name,
                     is_func=de_inst.function_data['is_func'],
                     ret_type=de_inst.function_data['return_type'],
@@ -1160,9 +1157,9 @@ def execute_debugger_query(trans_id, query_type):
         conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    template_path = 'debugger/sql/v1' \
+    template_path = DEBUGGER_SQL_V1_PATH \
         if de_inst.debugger_data['debugger_version'] <= 2 \
-        else 'debugger/sql/v2'
+        else DEBUGGER_SQL_V2_PATH
 
     if not conn.connected():
         result = gettext('Not connected to server or connection '
@@ -1319,9 +1316,9 @@ def start_execution(trans_id, port_num):
     # find the debugger version and execute the query accordingly
     dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
-        template_path = 'debugger/sql/v1'
+        template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = 'debugger/sql/v2'
+        template_path = DEBUGGER_SQL_V2_PATH
 
     # connect to port and store the session ID in the session variables
     sql = render_template(
@@ -1388,9 +1385,9 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     # find the debugger version and execute the query accordingly
     dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
-        template_path = 'debugger/sql/v1'
+        template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = 'debugger/sql/v2'
+        template_path = DEBUGGER_SQL_V2_PATH
 
     query_type = ''
 
@@ -1475,9 +1472,9 @@ def clear_all_breakpoint(trans_id):
     # find the debugger version and execute the query accordingly
     dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
-        template_path = 'debugger/sql/v1'
+        template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = 'debugger/sql/v2'
+        template_path = DEBUGGER_SQL_V2_PATH
 
     if conn.connected():
         # get the data sent through post from client
@@ -1541,9 +1538,9 @@ def deposit_parameter_value(trans_id):
     # find the debugger version and execute the query accordingly
     dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
-        template_path = 'debugger/sql/v1'
+        template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = 'debugger/sql/v2'
+        template_path = DEBUGGER_SQL_V2_PATH
 
     if conn.connected():
         # get the data sent through post from client
@@ -1622,9 +1619,9 @@ def select_frame(trans_id, frame_id):
     # find the debugger version and execute the query accordingly
     dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
-        template_path = 'debugger/sql/v1'
+        template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = 'debugger/sql/v2'
+        template_path = DEBUGGER_SQL_V2_PATH
 
     de_inst.debugger_data['frame_id'] = frame_id
     de_inst.update_session()

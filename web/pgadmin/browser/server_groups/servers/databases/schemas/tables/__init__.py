@@ -1014,7 +1014,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
             # Get updated schema oid
             sql = render_template(
-                "/".join([self.table_template_path, 'get_schema_oid.sql']),
+                "/".join([self.table_template_path, self._GET_SCHEMA_OID_SQL]),
                 tname=data['name']
             )
 

@@ -570,7 +570,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         # Get schema oid of partition
         status, pscid = self.conn.execute_scalar(
             render_template("/".join([self.table_template_path,
-                                      'get_schema_oid.sql']), tid=ptid))
+                                      self._GET_SCHEMA_OID_SQL]), tid=ptid))
         if not status:
             return internal_server_error(errormsg=scid)
 
