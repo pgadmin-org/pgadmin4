@@ -366,13 +366,6 @@ class Driver(BaseDriver):
 
             if len(val) == 0:
                 continue
-            if hasattr(str, 'decode') and not isinstance(val, unicode):
-                # Handling for python2
-                try:
-                    val = str(val).encode('utf-8')
-                except UnicodeDecodeError:
-                    # If already unicode, most likely coming from db
-                    val = str(val).decode('utf-8')
             value = val
 
             if Driver.needsQuoting(val, True):
@@ -397,14 +390,6 @@ class Driver(BaseDriver):
             # DataType doesn't have len function then convert it to string
             if not hasattr(val, '__len__'):
                 val = str(val)
-
-            if hasattr(str, 'decode') and not isinstance(val, unicode):
-                # Handling for python2
-                try:
-                    val = str(val).encode('utf-8')
-                except UnicodeDecodeError:
-                    # If already unicode, most likely coming from db
-                    val = str(val).decode('utf-8')
 
             if len(val) == 0:
                 continue

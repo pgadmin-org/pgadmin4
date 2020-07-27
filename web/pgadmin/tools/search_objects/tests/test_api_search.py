@@ -7,20 +7,15 @@
 #
 ##########################################################################
 
-from __future__ import print_function
 import sys
 import json
+from urllib.parse import urlencode
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from regression.python_test_utils import test_utils as utils
-
-try:
-    from urllib import urlencode
-except Exception as e:
-    from urllib.parse import urlencode
 
 
 class SearchObjectsApiSearch(BaseTestGenerator):

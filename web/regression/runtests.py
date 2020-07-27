@@ -9,7 +9,6 @@
 
 """ This file collect all modules/files present in tests directory and add
 them to TestSuite. """
-from __future__ import print_function
 
 import argparse
 import atexit

@@ -58,8 +58,6 @@ Agreement.
 # quote it.
 ############################################################################
 
-from __future__ import unicode_literals, absolute_import
-
 __all__ = ["QUOTE_MINIMAL", "QUOTE_ALL", "QUOTE_NONNUMERIC", "QUOTE_NONE",
            "Error", "Dialect", "__doc__", "Excel", "ExcelTab",
            "field_size_limit", "Reader", "Writer", "register_dialect",
@@ -73,12 +71,6 @@ from csv import (
     QUOTE_MINIMAL, QUOTE_ALL, QUOTE_NONNUMERIC, QUOTE_NONE,
     __version__, __doc__, Error, field_size_limit,
 )
-
-# Stuff needed from six
-string_types = str
-text_type = str
-binary_type = bytes
-unichr = chr
 
 
 class QuoteStrategy(object):
@@ -123,7 +115,7 @@ class QuoteStrategy(object):
         return self.dialect.escapechar
 
     def prepare(self, raw_field, only=None):
-        field = text_type(raw_field if raw_field is not None else '')
+        field = str(raw_field if raw_field is not None else '')
         quoted = self.quoted(field=field, raw_field=raw_field, only=only)
 
         escape_re = self.escape_re(quoted=quoted)
@@ -229,7 +221,7 @@ class Writer(object):
 
         self.fileobj = fileobj
 
-        if isinstance(dialect, text_type):
+        if isinstance(dialect, str):
             dialect = get_dialect(dialect)
 
         try:
@@ -276,7 +268,7 @@ class Reader(object):
     def __init__(self, fileobj, dialect='excel', **fmtparams):
         self.input_iter = iter(fileobj)
 
-        if isinstance(dialect, text_type):
+        if isinstance(dialect, str):
             dialect = get_dialect(dialect)
 
         try:
@@ -449,7 +441,7 @@ class Reader(object):
                     break
                 raise
 
-            if not isinstance(lineobj, text_type):
+            if not isinstance(lineobj, str):
                 typ = type(lineobj)
                 typ_name = 'bytes' if typ == bytes else typ.__name__
                 err_str = ('iterator should return strings, not {0}'
@@ -478,7 +470,7 @@ _dialect_registry = {}
 
 
 def register_dialect(name, dialect='excel', **fmtparams):
-    if not isinstance(name, text_type):
+    if not isinstance(name, str):
         raise TypeError('"name" must be a string')
 
     dialect = Dialect.extend(dialect, fmtparams)
@@ -546,7 +538,7 @@ class Dialect(object):
 
         if dialect.lineterminator is None:
             raise Error('lineterminator must be set')
-        if not isinstance(dialect.lineterminator, text_type):
+        if not isinstance(dialect.lineterminator, str):
             raise Error('"lineterminator" must be a string')
 
         if dialect.quoting not in [
@@ -562,7 +554,7 @@ class Dialect(object):
     @staticmethod
     def validate_text(dialect, attr):
         val = getattr(dialect, attr)
-        if not isinstance(val, text_type):
+        if not isinstance(val, str):
             if type(val) == bytes:
                 raise Error('"{0}" must be string, not bytes'.format(attr))
             raise Error('"{0}" must be string, not {1}'.format(
@@ -587,7 +579,7 @@ class Dialect(object):
 
     @classmethod
     def extend(cls, dialect, fmtparams=None):
-        if isinstance(dialect, string_types):
+        if isinstance(dialect, str):
             dialect = get_dialect(dialect)
 
         if fmtparams is None:

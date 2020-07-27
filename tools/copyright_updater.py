@@ -12,7 +12,6 @@
 # This utility will allow us to change the copyright year information from
 # all the files present in FILE_EXTENSIONS variable at once
 
-from __future__ import print_function
 import os
 import sys
 import re

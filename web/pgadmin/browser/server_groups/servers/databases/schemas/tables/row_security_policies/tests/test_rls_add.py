@@ -10,6 +10,8 @@
 import json
 import uuid
 import sys
+from unittest.mock import patch
+
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -22,11 +24,6 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as policy_utils
 from pgadmin.browser.server_groups.servers.roles.tests import \
     utils as roles_utils
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
 
 
 class RulesAddTestCase(BaseTestGenerator):

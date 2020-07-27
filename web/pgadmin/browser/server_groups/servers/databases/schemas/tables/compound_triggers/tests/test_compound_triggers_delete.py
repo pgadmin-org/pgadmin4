@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+from unittest.mock import patch
 
 from pgadmin.utils import server_utils as server_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
@@ -21,11 +22,6 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as compound_triggers_utils
 import sys
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
 
 
 class CompoundTriggersDeleteTestCase(BaseTestGenerator):

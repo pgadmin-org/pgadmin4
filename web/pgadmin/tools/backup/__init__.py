@@ -9,7 +9,6 @@
 
 """Implements Backup Utility"""
 
-from __future__ import unicode_literals
 import simplejson as json
 import os
 

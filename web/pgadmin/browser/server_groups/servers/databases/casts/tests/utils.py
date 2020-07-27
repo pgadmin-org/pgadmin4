@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-from __future__ import print_function
 from regression.python_test_utils.test_utils import *
 import os
 import json

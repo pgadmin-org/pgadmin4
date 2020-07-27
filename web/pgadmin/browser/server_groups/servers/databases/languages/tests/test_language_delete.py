@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-from __future__ import print_function
 import uuid
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils

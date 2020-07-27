@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-from __future__ import print_function
 import random
 
 from selenium.webdriver import ActionChains

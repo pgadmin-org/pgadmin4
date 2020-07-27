@@ -175,9 +175,6 @@ class ServerManager(object):
             async_=None, use_binary_placeholder=False, array_to_string=False
     ):
         if database is not None:
-            if hasattr(str, 'decode') and \
-                    not isinstance(database, unicode):
-                database = database.decode('utf-8')
             if did is not None and did in self.db_info:
                 self.db_info[did]['datname'] = database
         else:

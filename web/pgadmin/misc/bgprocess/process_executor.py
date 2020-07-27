@@ -29,7 +29,6 @@ It also depends on the following environment variable for proper execution.
 PROCID - Process-id
 OUTDIR - Output directory
 """
-from __future__ import print_function
 
 # To make print function compatible with python2 & python3
 import sys

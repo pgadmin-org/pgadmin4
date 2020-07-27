@@ -17,12 +17,8 @@ import os
 import platform
 import subprocess
 import sys
-try:
-    from urllib.request import urlopen, urlretrieve
-    from urllib.error import URLError
-except Exception:
-    from urllib import urlopen, urlretrieve
-    URLError = Exception
+from urllib.request import urlopen, urlretrieve
+from urllib.error import URLError
 import zipfile
 
 

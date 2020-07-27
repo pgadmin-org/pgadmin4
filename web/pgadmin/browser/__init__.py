@@ -15,6 +15,7 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
     SMTPServerDisconnected, SMTPDataError, SMTPHeloError, SMTPException, \
     SMTPAuthenticationError, SMTPSenderRefused, SMTPRecipientsRefused
 from socket import error as SOCKETErrorException
+import urllib.request as urlopen
 
 import six
 from flask import current_app, render_template, url_for, make_response, \
@@ -46,11 +47,6 @@ from pgadmin.utils.master_password import validate_master_password, \
     set_masterpass_check_text, cleanup_master_password, get_crypt_key, \
     set_crypt_key, process_masterpass_disabled
 from pgadmin.model import User
-
-try:
-    import urllib.request as urlreq
-except ImportError as e:
-    import urllib2 as urlreq
 
 try:
     from flask_security.views import default_render_json
@@ -608,9 +604,9 @@ def index():
             # It stuck on rendering the browser.html, while working in the
             # broken network.
             if os.path.exists(config.CA_FILE):
-                response = urlreq.urlopen(url, data, 5, cafile=config.CA_FILE)
+                response = urlopen(url, data, 5, cafile=config.CA_FILE)
             else:
-                response = urlreq.urlopen(url, data, 5)
+                response = urlopen(url, data, 5)
             current_app.logger.debug(
                 'Version check HTTP response code: %d' % response.getcode()
             )

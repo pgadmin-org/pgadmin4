@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys
 import re
 import sqlparse
@@ -8,9 +7,6 @@ from .parseutils.utils import (
     last_word, find_prev_keyword, parse_partial_identifier)
 from .parseutils.tables import extract_tables
 from .parseutils.ctes import isolate_query_ctes
-
-string_types = str
-
 
 Special = namedtuple('Special', [])
 Database = namedtuple('Database', [])
@@ -223,7 +219,7 @@ def _split_multiple_statements(full_text, text_before_cursor, parsed):
 
 def suggest_based_on_last_token(token, stmt):
 
-    if isinstance(token, string_types):
+    if isinstance(token, str):
         token_v = token.lower()
     elif isinstance(token, Comparison):
         # If 'token' is a Comparison type such as

@@ -294,8 +294,7 @@ class BatchProcess(object):
             # anyway be the redundant value in paths.
             if not current_app.PGADMIN_RUNTIME:
                 paths.insert(0, os.path.join(u_encode(sys.prefix), u'bin'))
-            python_binary_name = 'python{0}'.format(sys.version_info[0]) \
-                if sys.version_info[0] >= 3 else 'python'
+            python_binary_name = 'python{0}'.format(sys.version_info[0])
             interpreter = which(u_encode(python_binary_name), paths)
 
         p = None

@@ -9,6 +9,7 @@
 
 import json
 import uuid
+from urllib.parse import urlencode
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
@@ -20,11 +21,6 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as columns_utils
-
-try:
-    from urllib.parse import urlencode
-except ImportError as e:
-    from urllib import urlencode
 
 
 class ColumnMsqlTestCase(BaseTestGenerator):

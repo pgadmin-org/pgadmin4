@@ -6,11 +6,11 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-from __future__ import print_function
 import json
 import os
 import re
 import traceback
+from urllib.parse import urlencode
 from flask import url_for
 import regression
 from regression import parent_node_dict
@@ -20,17 +20,6 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
-
-# import urlencode from urlib for python2.x and python3.x
-try:
-    from urllib import urlencode
-except Exception as e:
-    from urllib.parse import urlencode
-
-try:
-    basestring
-except NameError:
-    basestring = str
 
 
 def create_resql_module_list(all_modules, exclude_pkgs, for_modules):
@@ -728,7 +717,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         :return:
         """
 
-        if isinstance(value, basestring) and \
+        if isinstance(value, str) and \
                 value.startswith('<') and value.endswith('>'):
             # Remove < and > from the string
             temp_value = value[1:-1]

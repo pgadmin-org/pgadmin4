@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-from __future__ import print_function
 
 import fileinput
 import traceback
@@ -24,7 +23,7 @@ from testtools.testcase import clone_test_with_new_id
 import re
 import time
 from selenium.common.exceptions import WebDriverException
-import urllib.request as urllib
+from urllib.request import urlopen
 import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -1470,7 +1469,7 @@ def get_selenium_grid_status_json(selenoid_url):
     :return:
     """
     try:
-        selenoid_status = urllib.urlopen(
+        selenoid_status = urlopen(
             "http://" + re.split('/', (re.split('//', selenoid_url, 1)[1]))[
                 0] + "/status", timeout=10)
         selenoid_status = json.load(selenoid_status)

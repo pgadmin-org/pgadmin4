@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-from __future__ import print_function
 import random
 
 from regression.feature_utils.base_feature_test import BaseFeatureTest

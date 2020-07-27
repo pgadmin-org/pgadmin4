@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sqlparse
 from collections import namedtuple
 from sqlparse.sql import IdentifierList, Identifier, Function

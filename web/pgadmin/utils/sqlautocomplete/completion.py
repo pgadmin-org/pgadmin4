@@ -4,8 +4,6 @@ Using Completion class from
             blob/master/prompt_toolkit/completion.py
 """
 
-from __future__ import unicode_literals
-
 __all__ = (
     'Completion'
 )

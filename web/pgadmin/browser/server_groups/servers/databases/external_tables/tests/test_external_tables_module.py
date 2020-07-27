@@ -7,8 +7,6 @@
 #
 ##########################################################################
 
-import six
-
 from pgadmin.browser.server_groups.servers\
     .databases.external_tables import ExternalTablesModule
 from pgadmin.utils.route import BaseTestGenerator
@@ -90,7 +88,7 @@ class TestExternalTablesModule(BaseTestGenerator):
         module.generate_browser_collection_node = Mock()
 
         result = module.get_nodes(**self.function_parameters)
-        six.next(result)
+        next(result)
 
         module.generate_browser_collection_node.assert_called_with(
             self.expected_generate_browser_collection_node_called_with

@@ -13,7 +13,6 @@
 # pgsql keywords from the code git paths mentioned in PG_CODES_URLS
 # Note that, PG_CODES_URLS may need to be changed manually per version change
 
-from __future__ import print_function
 import re
 import requests
 import argparse

@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-from __future__ import print_function
 import json
 
 from pgadmin.browser.server_groups.servers.databases.tests import \

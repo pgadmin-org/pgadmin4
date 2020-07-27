@@ -9,13 +9,9 @@
 
 """This File Provides Cryptography."""
 
-from __future__ import division
-
 import base64
 import hashlib
 import os
-
-import six
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher
@@ -41,7 +37,7 @@ def encrypt(plaintext, key):
 
     # If user has entered non ascii password (Python2)
     # we have to encode it first
-    if isinstance(plaintext, six.text_type):
+    if isinstance(plaintext, str):
         plaintext = plaintext.encode()
 
     return base64.b64encode(iv + encryptor.update(plaintext) +
@@ -68,7 +64,7 @@ def decrypt(ciphertext, key):
 def pad(key):
     """Add padding to the key."""
 
-    if isinstance(key, six.text_type):
+    if isinstance(key, str):
         key = key.encode()
 
     # Key must be maximum 32 bytes long, so take first 32 bytes

@@ -15,6 +15,7 @@ import random
 import string
 import sys
 import time
+from urllib.parse import unquote
 from sys import platform as _platform
 import config
 import codecs
@@ -38,18 +39,6 @@ if _platform == "win32":
     SEM_NOOPENFILEERRORBOX = 0x8000
     SEM_FAIL = SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS
     file_root = ""
-
-# uppercase supported in py2, ascii_uppercase supported in py3
-try:
-    letters = string.uppercase
-except Exception:
-    letters = string.ascii_uppercase
-
-# import unquote from urlib for python2.x and python3.x
-try:
-    from urllib import unquote
-except Exception as e:
-    from urllib.parse import unquote
 
 MODULE_NAME = 'file_manager'
 global transid
@@ -517,7 +506,7 @@ class Filemanager(object):
             try:
                 drives = []
                 bitmask = ctypes.windll.kernel32.GetLogicalDrives()
-                for letter in letters:
+                for letter in string.ascii_uppercase:
                     if bitmask & 1:
                         drives.append(letter)
                     bitmask >>= 1

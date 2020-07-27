@@ -9,6 +9,7 @@
 
 import json
 import uuid
+from unittest.mock import patch
 
 from pgadmin.utils import server_utils as server_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
@@ -25,11 +26,6 @@ from pgadmin.browser.server_groups.servers.databases.schemas.views.tests \
 from . import utils as compound_trigger_utils
 
 import sys
-
-if sys.version_info < (3, 3):
-    from mock import patch
-else:
-    from unittest.mock import patch
 
 
 class CompoundTriggersAddTestCase(BaseTestGenerator):
