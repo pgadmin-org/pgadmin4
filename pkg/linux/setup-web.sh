@@ -9,10 +9,22 @@ if [ "$EUID" -ne 0 ]
   exit 1
 fi
 
+if [[ "$#" -ne 0 ]] && ([[ "$#" -eq 1 ]] && [[ "$1" != "--yes" ]]); then
+    echo "Usage: $0 [--yes]"
+    exit 1
+fi
+
 # Get the distro
 IS_REDHAT=0
 IS_DEBIAN=0
 UNAME=$(uname -a)
+
+# Is this an automated install?
+AUTOMATED=0
+if [ "$#" -eq 1 ]; then
+    AUTOMATED=1
+    echo "Running in non-interactive mode..."
+fi
 
 if [ -f /etc/redhat-release ]; then
     IS_REDHAT=1
@@ -57,7 +69,12 @@ fi
 
 # Setup Apache on Debian/Ubuntu
 if [ ${IS_DEBIAN} == 1 ]; then
-    read -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
+    if [ ${AUTOMATED} == 1 ]; then
+	RESPONSE=Y
+    else
+        read -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
+    fi
+
     case ${RESPONSE} in
         y|Y )
             a2enmod wsgi 1> /dev/null
@@ -70,7 +87,12 @@ fi
 
 APACHE_STATUS=`ps cax | grep ${APACHE}`
 if [ $? -eq 0 ]; then
-    read -p "The Apache web server is running and must be restarted for the pgAdmin 4 installation to complete. Continue (y/n)? " RESPONSE
+    if [ ${AUTOMATED} == 1 ]; then
+        RESPONSE=Y
+    else
+        read -p "The Apache web server is running and must be restarted for the pgAdmin 4 installation to complete. Continue (y/n)? " RESPONSE
+    fi
+
     case ${RESPONSE} in
         y|Y )
 	    systemctl restart ${APACHE}
@@ -83,7 +105,12 @@ if [ $? -eq 0 ]; then
             exit 1;;
     esac
 else
-    read -p "The Apache web server is not running. We can enable and start the web server for you to finish pgAdmin 4 installation. Continue (y/n)? " RESPONSE
+    if [ ${AUTOMATED} == 1 ]; then
+        RESPONSE=Y
+    else
+        read -p "The Apache web server is not running. We can enable and start the web server for you to finish pgAdmin 4 installation. Continue (y/n)? " RESPONSE
+    fi
+
     case ${RESPONSE} in
         y|Y )
             systemctl enable ${APACHE}

@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5610 <https://redmine.postgresql.org/issues/5610>`_ - Add a --yes command line option to setup-web.sh to allow non-interactive use.
 
 Housekeeping
 ************
