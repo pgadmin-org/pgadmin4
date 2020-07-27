@@ -15,7 +15,7 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
     SMTPServerDisconnected, SMTPDataError, SMTPHeloError, SMTPException, \
     SMTPAuthenticationError, SMTPSenderRefused, SMTPRecipientsRefused
 from socket import error as SOCKETErrorException
-import urllib.request as urlopen
+from urllib.request import urlopen
 
 import six
 from flask import current_app, render_template, url_for, make_response, \
