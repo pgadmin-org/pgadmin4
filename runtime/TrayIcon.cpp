@@ -9,12 +9,16 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-// App headers
+#include "pgAdmin4.h"
 #include "TrayIcon.h"
+
+#include <QMenu>
+
 
 TrayIcon::TrayIcon()
 {
 }
+
 
 void TrayIcon::Init()
 {
@@ -23,6 +27,7 @@ void TrayIcon::Init()
     if (m_trayIcon)
         m_trayIcon->show();
 }
+
 
 // Create the tray icon
 void TrayIcon::createTrayIcon()
@@ -60,19 +65,24 @@ void TrayIcon::createTrayIcon()
     setWindowIcon(icon);
 }
 
+
 // Create the menu actions
 void TrayIcon::createActions()
 {
-    m_newAction = new QAction(QString(tr("&New %1 window...")).arg(PGA_APP_NAME), this);
+    m_newAction = new QAction(tr("&New pgAdmin 4 window..."), this);
+    m_newAction->setEnabled(false);
     connect(m_newAction, SIGNAL(triggered()), m_menuActions, SLOT(onNew()));
 
     m_copyUrlAction = new QAction(tr("&Copy server URL"), this);
+    m_copyUrlAction->setEnabled(false);
     connect(m_copyUrlAction, SIGNAL(triggered()), m_menuActions, SLOT(onCopyUrl()));
 
     m_configAction = new QAction(tr("&Configure..."), this);
+    m_configAction->setEnabled(true);
     connect(m_configAction, SIGNAL(triggered()), m_menuActions, SLOT(onConfig()));
 
     m_logAction = new QAction(tr("&View log..."), this);
+    m_logAction->setEnabled(true);
     connect(m_logAction, SIGNAL(triggered()), m_menuActions, SLOT(onLog()));
 
     m_quitAction = new QAction(tr("&Shut down server"), this);
@@ -80,12 +90,23 @@ void TrayIcon::createActions()
     connect(m_quitAction, SIGNAL(triggered()), m_menuActions, SLOT(onQuit()));
 }
 
-void TrayIcon::enableShutdownMenu()
+
+void TrayIcon::enablePostStartOptions()
 {
+    if (m_newAction != Q_NULLPTR)
+        m_newAction->setEnabled(true);
+
+    if (m_copyUrlAction != Q_NULLPTR)
+        m_copyUrlAction->setEnabled(true);
+
+    if (m_configAction != Q_NULLPTR)
+        m_configAction->setEnabled(true);
+
+    if (m_logAction != Q_NULLPTR)
+        m_logAction->setEnabled(true);
+
     if (m_quitAction != Q_NULLPTR)
-    {
         m_quitAction->setEnabled(true);
-    }
 }
 
 void TrayIcon::setMenuActions(MenuActions * menuActions)

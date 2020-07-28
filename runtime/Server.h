@@ -12,18 +12,17 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "pgAdmin4.h"
+#include "Runtime.h"
 
-// QT headers
 #include <QThread>
-#include <QMessageBox>
+#include <QUrl>
 
 class Server : public QThread
 {
     Q_OBJECT
 
 public:
-    Server(quint16 port, QString key, QString logFileName);
+    Server(Runtime *runtime, quint16 port, QString key, QString logFileName);
     ~Server();
 
     bool Init();
@@ -41,7 +40,8 @@ private:
     QString m_appfile;
     QString m_error;
 
-    quint16  m_port;
+    Runtime *m_runtime;
+    quint16 m_port;
     QString m_key;
     QString m_logFileName;
 

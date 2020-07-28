@@ -8,15 +8,15 @@ message(==================================)
 message(Configuring the pgAdmin 4 runtime.)
 message(==================================)
 
-# Configure QT modules for the appropriate version of QT
-greaterThan(QT_MAJOR_VERSION, 4) {
-    message(Qt version:     5)
-    QT += network widgets
-} else { 
-    message(Qt version:     4)
-    QT += network
-    DEFINES += Q_NULLPTR=NULL
+# Check for a suitable Qt version
+!versionAtLeast(QT_VERSION, 5.0.0) {
+    error("pgAdmin 4 cannot be built with Qt $${QT_VERSION}. Use Qt 5.0 or newer.")
 }
+message(Qt version: $${QT_VERSION})
+
+# Configure QT modules for the appropriate version of QT
+QT += network widgets
+
 win32 {
   RC_ICONS += pgAdmin4.ico
 }
@@ -94,6 +94,7 @@ else {
 
 # Source code
 HEADERS =             Server.h \
+                      Runtime.h \
                       pgAdmin4.h \
                       ConfigWindow.h \
                       TrayIcon.h \
@@ -103,6 +104,7 @@ HEADERS =             Server.h \
                       Logger.h
 
 SOURCES =             pgAdmin4.cpp \
+                      Runtime.cpp \
                       Server.cpp \
                       ConfigWindow.cpp \
                       TrayIcon.cpp \

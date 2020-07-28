@@ -10,9 +10,10 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "pgAdmin4.h"
-
 #include "ConfigWindow.h"
 #include "ui_ConfigWindow.h"
+
+#include <QSettings>
 
 ConfigWindow::ConfigWindow(QWidget *parent) :
     QDialog(parent)
@@ -22,33 +23,12 @@ ConfigWindow::ConfigWindow(QWidget *parent) :
 
 void ConfigWindow::initConfigWindow()
 {
-    ui = new Ui::ConfigWindow;
-    ui->setupUi(this);
-}
-
-void ConfigWindow::on_buttonBox_accepted()
-{
-    this->close();
-}
-
-void ConfigWindow::on_buttonBox_rejected()
-{
-    this->close();
-}
-
-void ConfigWindow::on_chkFixedPort_stateChanged(int state)
-{
-    if (state == Qt::Checked)
-        ui->spinPortNumber->setEnabled(true);
-    else
-        ui->spinPortNumber->setEnabled(false);
-}
-
-void ConfigWindow::LoadSettings()
-{
     QSettings settings;
 
-    setWindowTitle(QString(tr("%1 Configuration")).arg(PGA_APP_NAME));
+    ui = new Ui::ConfigWindow;
+    ui->setupUi(this);
+
+    m_needRestart = false;
 
     ui->browserCommandLineEdit->setText(settings.value("BrowserCommand").toString());
 
@@ -78,7 +58,7 @@ void ConfigWindow::LoadSettings()
     ui->applicationPathLineEdit->setText(settings.value("ApplicationPath").toString());
 }
 
-bool ConfigWindow::SaveSettings()
+void ConfigWindow::on_buttonBox_accepted()
 {
     QSettings settings;
 
@@ -90,10 +70,10 @@ bool ConfigWindow::SaveSettings()
     QString pythonpath = ui->pythonPathLineEdit->text();
     QString applicationpath = ui->applicationPathLineEdit->text();
 
-    bool needRestart = (settings.value("FixedPort").toBool() != fixedport ||
-                        settings.value("PortNumber").toInt() != portnumber ||
-                        settings.value("PythonPath").toString() != pythonpath ||
-                        settings.value("ApplicationPath").toString() != applicationpath);
+    m_needRestart = (settings.value("FixedPort").toBool() != fixedport ||
+                     settings.value("PortNumber").toInt() != portnumber ||
+                     settings.value("PythonPath").toString() != pythonpath ||
+                     settings.value("ApplicationPath").toString() != applicationpath);
 
     settings.setValue("BrowserCommand", browsercommand);
     settings.setValue("FixedPort", fixedport);
@@ -104,6 +84,23 @@ bool ConfigWindow::SaveSettings()
 
     settings.sync();
 
-    return needRestart;
+    emit accepted(m_needRestart);
+    emit closing(true);
+
+    this->close();
+}
+
+void ConfigWindow::on_buttonBox_rejected()
+{
+    emit closing(false);
+    this->close();
+}
+
+void ConfigWindow::on_chkFixedPort_stateChanged(int state)
+{
+    if (state == Qt::Checked)
+        ui->spinPortNumber->setEnabled(true);
+    else
+        ui->spinPortNumber->setEnabled(false);
 }
 

@@ -13,13 +13,13 @@
 #include "LogWindow.h"
 #include "ui_LogWindow.h"
 
+#include <QStandardPaths>
 #include <QTime>
 
 #include <stdio.h>
 
-LogWindow::LogWindow(QWidget *parent, QString serverLogFile) :
-    QDialog(parent),
-    m_serverLogFile(serverLogFile)
+LogWindow::LogWindow(QWidget *parent) :
+    QDialog(parent)
 {
     initLogWindow();
 }
@@ -35,15 +35,13 @@ void LogWindow::LoadLog()
     int startupLines;
     int serverLines;
 
-    QString startup_log = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + (QString("/.%1.startup.log").arg(PGA_APP_NAME)).remove(" ");
-
     ui->lblStatus->setText(tr("Loading logfiles..."));
 
-    ui->lblStartupLog->setText(tr("Startup Log (%1):").arg(startup_log));
-    ui->lblServerLog->setText(tr("Server Log (%1):").arg(m_serverLogFile));
+    ui->lblStartupLog->setText(tr("Startup Log (%1):").arg(getStartupLogFile()));
+    ui->lblServerLog->setText(tr("Server Log (%1):").arg(getServerLogFile()));
 
-    startupLines = this->readLog(startup_log, ui->textStartupLog);
-    serverLines = this->readLog(m_serverLogFile, ui->textServerLog);
+    startupLines = this->readLog(getStartupLogFile(), ui->textStartupLog);
+    serverLines = this->readLog(getServerLogFile(), ui->textServerLog);
 
     ui->lblStatus->setText(QString(tr("Loaded startup log (%1 lines) and server log (%2 lines).")).arg(startupLines).arg(serverLines));
 }
@@ -75,7 +73,7 @@ int LogWindow::readLog(QString logFile, QPlainTextEdit *logWidget)
     log = fopen(logFile.toUtf8().data(), "r");
     if (log == Q_NULLPTR)
     {
-            logWidget->setPlainText(QString(tr("The log file (%1) could not be opened.")).arg(m_serverLogFile));
+            logWidget->setPlainText(QString(tr("The log file (%1) could not be opened.")).arg(getServerLogFile()));
             this->setDisabled(false);
             QApplication::restoreOverrideCursor();
             return 0;

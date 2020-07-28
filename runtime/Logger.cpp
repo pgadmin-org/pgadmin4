@@ -11,8 +11,12 @@
 
 #include "pgAdmin4.h"
 #include "Logger.h"
+
+#include <QDateTime>
+#include <QTextStream>
+#include <QStandardPaths>
+
 Logger* Logger::m_pThis = Q_NULLPTR;
-QString Logger::m_sFileName = "";
 QFile* Logger::m_Logfile = Q_NULLPTR;
 
 Logger::Logger()
@@ -28,9 +32,8 @@ Logger* Logger::GetLogger()
     if (m_pThis == Q_NULLPTR)
     {
         m_pThis = new Logger();
-        m_sFileName = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + (QString("/.%1.startup.log").arg(PGA_APP_NAME)).remove(" ");
         m_Logfile = new QFile;
-        m_Logfile->setFileName(m_sFileName);
+        m_Logfile->setFileName(getStartupLogFile());
         m_Logfile->open(QIODevice::WriteOnly | QIODevice::Text);
         m_Logfile->setPermissions(QFile::ReadOwner|QFile::WriteOwner);
     }

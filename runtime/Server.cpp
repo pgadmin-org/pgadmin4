@@ -10,19 +10,21 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "pgAdmin4.h"
-#include "Logger.h"
 
 // Must be before QT
 #include <Python.h>
 
+#include "Server.h"
+#include "Logger.h"
+
 // QT headers
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
+#include <QSettings>
 
-// App headers
-#include "Server.h"
 
 static void add_to_path(QString &python_path, QString path, bool prepend=false)
 {
@@ -55,7 +57,8 @@ static void add_to_path(QString &python_path, QString path, bool prepend=false)
     }
 }
 
-Server::Server(quint16 port, QString key, QString logFileName):
+Server::Server(Runtime *runtime, quint16 port, QString key, QString logFileName):
+    m_runtime(runtime),
     m_port(port),
     m_key(key),
     m_logFileName(logFileName)
@@ -65,7 +68,7 @@ Server::Server(quint16 port, QString key, QString logFileName):
     Py_NoUserSiteDirectory=1;
     Py_DontWriteBytecodeFlag=1;
 
-    PGA_APP_NAME_UTF8 = PGA_APP_NAME.toUtf8();
+    PGA_APP_NAME_UTF8 = QString("pgAdmin 4").toUtf8();
 
     // Python3 requires conversion of char  * to wchar_t *, so...
     const char *appName = PGA_APP_NAME_UTF8.data();
@@ -349,7 +352,7 @@ void Server::run()
 
 void Server::shutdown(QUrl url)
 {
-    if (!shutdownServer(url))
+    if (!m_runtime->shutdownServer(url))
         setError(tr("Failed to shut down application server thread."));
 
     QThread::quit();
@@ -357,7 +360,7 @@ void Server::shutdown(QUrl url)
     while(!this->isFinished())
     {
         Logger::GetLogger()->Log("Waiting for server to shut down.");
-        delay(250);
+        m_runtime->delay(250);
     }
 }
 

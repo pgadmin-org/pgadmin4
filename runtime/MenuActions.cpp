@@ -9,11 +9,16 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#include "pgAdmin4.h"
 #include "MenuActions.h"
 
-// QT headers
+#include <QApplication>
 #include <QClipboard>
+#include <QDesktopServices>
+#include <QEventLoop>
 #include <QMessageBox>
+#include <QProcess>
+#include <QSettings>
 
 MenuActions::MenuActions()
 {
@@ -24,10 +29,6 @@ void MenuActions::setAppServerUrl(QString appServerUrl)
     m_appServerUrl = appServerUrl;
 }
 
-void MenuActions::setLogFile(QString logFile)
-{
-    m_logFile = logFile;
-}
 
 // Create a new application browser window on user request
 void MenuActions::onNew()
@@ -64,18 +65,24 @@ void MenuActions::onCopyUrl()
 // Show the config dialogue
 void MenuActions::onConfig()
 {
-    bool ok;
+    if (!m_configWindow)
+        m_configWindow = new ConfigWindow();
 
-    ConfigWindow *dlg = new ConfigWindow();
-    dlg->LoadSettings();
-    dlg->setModal(true);
-    ok = dlg->exec();
+    m_configWindow->show();
+    m_configWindow->raise();
+    m_configWindow->activateWindow();
+    connect(m_configWindow, SIGNAL(accepted(bool)), this, SLOT(onConfigDone(bool)));
+}
 
-    if (ok)
+
+void MenuActions::onConfigDone(bool needRestart)
+{
+    if (needRestart)
     {
-        bool needRestart = dlg->SaveSettings();
-
-        if (needRestart && QMessageBox::Yes == QMessageBox::question(Q_NULLPTR, tr("Shut down server?"), QString(tr("The %1 server must be restarted for changes to take effect. Do you want to shut down the server now?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
+        if (QMessageBox::Yes == QMessageBox::question(Q_NULLPTR,
+                                                      tr("Shut down server?"),
+                                                      tr("The pgAdmin 4 server must be restarted for changes to take effect. Do you want to shut down the server now?"),
+                                                      QMessageBox::Yes | QMessageBox::No))
             exit(0);
     }
 }
@@ -87,16 +94,13 @@ void MenuActions::onLog()
     QSettings settings;
 
     if (!m_logWindow)
-    {
-        m_logWindow = new LogWindow(Q_NULLPTR, m_logFile);
-        m_logWindow->setWindowTitle(QString(tr("%1 Log")).arg(PGA_APP_NAME));
-    }
+        m_logWindow = new LogWindow();
 
     m_logWindow->show();
     m_logWindow->raise();
     m_logWindow->activateWindow();
 
-    QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 
     m_logWindow->LoadLog();
 }
@@ -105,10 +109,10 @@ void MenuActions::onLog()
 // Exit
 void MenuActions::onQuit()
 {
-    if (QMessageBox::Yes == QMessageBox::question(Q_NULLPTR, tr("Shut down server?"), QString(tr("Are you sure you want to shut down the %1 server?")).arg(PGA_APP_NAME), QMessageBox::Yes | QMessageBox::No))
+    if (QMessageBox::Yes == QMessageBox::question(Q_NULLPTR, tr("Shut down server?"), tr("Are you sure you want to shut down the pgAdmin 4 server?"), QMessageBox::Yes | QMessageBox::No))
     {
         // Emit the signal to shut down the python server.
         emit shutdownSignal(m_appServerUrl);
-        exit(0);
+        QApplication::quit();
     }
 }
