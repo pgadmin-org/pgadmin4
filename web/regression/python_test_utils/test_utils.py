@@ -565,8 +565,7 @@ def create_server(server):
         conn.commit()
         conn.close()
 
-        type = get_server_type(server)
-        server['type'] = type
+        server['type'] = get_server_type(server)
         # Add server info to parent_node_dict
         regression.parent_node_dict["server"].append(
             {

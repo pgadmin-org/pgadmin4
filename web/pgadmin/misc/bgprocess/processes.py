@@ -129,11 +129,11 @@ class BatchProcess(object):
 
         created = False
         size = 0
-        id = ctime
+        uid = ctime
         while not created:
             try:
-                id += random_number(size)
-                log_dir = os.path.join(log_dir, id)
+                uid += random_number(size)
+                log_dir = os.path.join(log_dir, uid)
                 size += 1
                 if not os.path.exists(log_dir):
                     os.makedirs(log_dir, int('700', 8))
@@ -178,7 +178,7 @@ class BatchProcess(object):
         tmp_desc = dumps(self.desc)
 
         j = Process(
-            pid=int(id),
+            pid=int(uid),
             command=_cmd,
             arguments=args_val,
             logdir=log_dir,

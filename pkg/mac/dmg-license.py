@@ -45,7 +45,7 @@ def mktemp(dir=None, suffix=''):
 
 
 def main(options, args):
-    dmg_file, license = args
+    dmg_file, license_file = args
     with mktemp('.') as tmp_file:
         with open(tmp_file, 'w') as f:
             f.write("""data 'TMPL' (128, "LPic") {
@@ -90,8 +90,9 @@ data 'STR#' (5002, "English") {
         $"2C20 7072 6573 7320 2244 6973 6167 7265"
         $"6522 2E"
 };\n\n""")
-            with open(license, 'r') as lines:
-                kind = 'RTF ' if license.lower().endswith('.rtf') else 'TEXT'
+            with open(license_file, 'r') as lines:
+                kind = 'RTF ' if license_file.lower().endswith('.rtf') \
+                    else 'TEXT'
                 f.write('data \'%s\' (5000, "English") {\n' % kind)
 
                 def escape(s):
