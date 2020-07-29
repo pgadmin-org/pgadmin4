@@ -599,10 +599,8 @@ define('pgadmin.node.column', [
           visible: 'isTypeIdentity',
         },{
           id: 'seqstart', label: gettext('Start'), type: 'int',
-          mode: ['properties', 'create'], group: gettext('Constraints'),
+          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
           disabled: function(m) {
-            if (!m.isNew())
-              return true;
             let isIdentity = m.get('attidentity');
             if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
               return false;

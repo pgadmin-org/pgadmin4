@@ -47,6 +47,7 @@ class ColumnPutTestCase(BaseTestGenerator):
                 'seqmin': 1,
                 'seqmax': 10,
                 'seqcache': 1,
+                'colconstype': 'i',
                 'seqcycle': True
             })),
         ('Edit column to Identity column as Default', dict(
@@ -63,6 +64,7 @@ class ColumnPutTestCase(BaseTestGenerator):
                 'seqmin': 2,
                 'seqmax': 2000,
                 'seqcache': 1,
+                'colconstype': 'i',
                 'seqcycle': True
             })),
         ('Edit column Drop Identity by changing constraint type to NONE',

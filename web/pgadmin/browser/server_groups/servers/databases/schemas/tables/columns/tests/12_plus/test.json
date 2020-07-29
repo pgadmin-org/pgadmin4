@@ -448,7 +448,78 @@
       "data": {
         "name": "new_col_9_$%{}[]()&*^!@\"'`\\/#"
       }
+    },
+    {
+      "type": "create",
+      "name": "Create Column with identity (BY DEFAULT) for combination of identity options & initiate START",
+      "endpoint": "NODE-column.obj",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql",
+      "data": {
+        "name": "col_6_$%{}[]()&*^!@\"'`\\/#",
+        "cltype": "bigint",
+        "attacl": [],
+        "description": "demo comments",
+        "is_primary_key": false,
+        "attnotnull": true,
+        "attlen": null,
+        "attprecision": null,
+        "attidentity": "d",
+        "seqincrement": "1",
+        "seqstart": "1",
+        "seqmin": "1",
+        "seqmax": "10",
+        "seqcache": "1",
+        "seqcycle": true,
+        "colconstype": "i",
+        "attoptions": [],
+        "seclabels": []
+      },
+      "expected_sql_file": "create_column_identity_for_restart_seq.sql",
+      "expected_msql_file": "create_column_identity_for_restart_seq.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter identity Column (BY DEFAULT) to ALWAYS & Update START",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "data": {
+        "attnotnull": true,
+        "attidentity": "a",
+        "seqstart": 2,
+        "seqcycle": false
+      },
+      "expected_sql_file": "alter_column_identity_for_restart_seq.sql",
+      "expected_msql_file": "alter_column_identity_for_restart_seq.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter identity Column (ALWAYS) for combination of identity options & Update START",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "msql_endpoint": "NODE-column.msql_id",
+      "data": {
+        "attnum": 9,
+        "attidentity": "a",
+        "seqincrement": "3",
+        "seqstart": "3",
+        "seqmin": "3",
+        "seqmax": "30",
+        "seqcache": "3",
+        "seqcycle": true
+      },
+      "expected_sql_file": "alter_column_identity_for_comb_start_seq.sql",
+      "expected_msql_file": "alter_column_identity_for_comb_start_seq.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Column with identity (ALWAYS)",
+      "endpoint": "NODE-column.obj_id",
+      "sql_endpoint": "NODE-column.sql_id",
+      "data": {
+        "name": "col_6_$%{}[]()&*^!@\"'`\\/#"
+      }
     }
-
   ]
 }

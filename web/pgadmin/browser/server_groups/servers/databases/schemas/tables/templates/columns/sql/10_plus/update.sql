@@ -38,6 +38,9 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} {% if data.attnotnull %}SET{% else %}DROP{% endif %} NOT NULL;
 
 {% endif %}
+{% if data.seqincrement or (data.seqcycle or (data.seqcycle == False and data.seqcycle != o_data.seqcycle)) or data.seqincrement or data.seqstart or data.seqmin or data.seqmax or data.seqcache %}
+{% set attidentity_params = true %}{% else %}
+{% set attidentity_params = false %}{% endif %}
 {###  Alter column - add identity ###}
 {% if data.colconstype == 'i' and 'attidentity' in data and o_data.attidentity == '' and data.attidentity != o_data.attidentity %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
@@ -51,24 +54,22 @@ MINVALUE {{data.seqmin|int}} {% endif %}{% if data.seqmax is defined and data.se
 MAXVALUE {{data.seqmax|int}} {% endif %}{% if data.seqcache is defined and data.seqcache|int(-1) > -1%}
 CACHE {{data.seqcache|int}} {% endif %}
 {% if data.seqincrement or data.seqcycle or data.seqincrement or data.seqstart or data.seqmin or data.seqmax or data.seqcache %}){% endif %};
-{% endif %}
-{###  Alter column - change identity ###}
+
+{###  Alter column - change identity - sequence options ###}
+{% elif 'attidentity' in data or attidentity_params %}
 {% if 'attidentity' in data and data.attidentity != '' and o_data.attidentity != '' and data.attidentity != o_data.attidentity %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET GENERATED {% if data.attidentity == 'a' %}ALWAYS{% else%}BY DEFAULT{% endif %};
-
-{% endif %}
-{###  Alter column - change identity - sequence options ###}
-{% if 'attidentity' not in data and (data.seqincrement or data.seqcycle or data.seqincrement or data.seqstart or data.seqmin or data.seqmax or data.seqcache) %}
+    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET GENERATED {% if data.attidentity == 'a' %}ALWAYS{% else%}BY DEFAULT{% endif %}{% if attidentity_params is false %};{% else %}{% endif %}
+{% else %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}} {% else %}{{conn|qtTypeIdent(o_data.name)}} {% endif %}
-{% if data.seqcycle %}
-SET CYCLE {% endif %}{% if data.seqincrement is defined and data.seqincrement|int(-1) > -1 %}
-SET INCREMENT {{data.seqincrement|int}} {% endif %}{% if data.seqstart is defined and data.seqstart|int(-1) > -1%}
-SET START {{data.seqstart|int}} {% endif %}{% if data.seqmin is defined and data.seqmin|int(-1) > -1%}
-SET MINVALUE {{data.seqmin|int}} {% endif %}{% if data.seqmax is defined and data.seqmax|int(-1) > -1%}
-SET MAXVALUE {{data.seqmax|int}} {% endif %}{% if data.seqcache is defined and data.seqcache|int(-1) > -1%}
-SET CACHE {{data.seqcache|int}} {% endif %};
+    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %}{% endif %}
+{% if data.seqcycle %} SET CYCLE{% elif (data.seqcycle == False and o_data.seqcycle and data.seqcycle != o_data.seqcycle) %} SET NO CYCLE{% endif %}
+{% if data.seqincrement is defined and data.seqincrement|int(-1) > -1 %} SET INCREMENT {{data.seqincrement|int}}{% endif %}
+{% if data.seqstart is defined and data.seqstart|int(-1) > -1%} RESTART SET START {{data.seqstart|int}}{% endif %}
+{% if data.seqmin is defined and data.seqmin|int(-1) > -1%} SET MINVALUE {{data.seqmin|int}}{% endif %}
+{% if data.seqmax is defined and data.seqmax|int(-1) > -1%} SET MAXVALUE {{data.seqmax|int}}{% endif %}
+{% if data.seqcache is defined and data.seqcache|int(-1) > -1%} SET CACHE {{data.seqcache|int}}{% endif %}{% if attidentity_params is true %};{% endif %}
+
 
 {% endif %}
 {###  Alter column - drop identity when column constraint is changed###}

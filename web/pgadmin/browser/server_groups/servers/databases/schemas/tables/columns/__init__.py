@@ -604,6 +604,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     gettext("Could not find the column on the server.")
                 )
             old_data = dict(res['rows'][0])
+            if 'seqcycle' in old_data and old_data['seqcycle'] is False:
+                old_data['seqcycle'] = None
             # We will add table & schema as well
             old_data = column_utils.column_formatter(
                 self.conn, tid, clid, old_data)
