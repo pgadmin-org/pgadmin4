@@ -490,6 +490,64 @@ class IndexConstraintView(PGChildNodeView):
                 ))
         return res
 
+    @staticmethod
+    def _get_req_data():
+        """
+        Get data from request.
+        return: data.
+        """
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+
+        for k, v in data.items():
+            try:
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('comment',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v, encoding='utf-8')
+            except (ValueError, TypeError, KeyError):
+                data[k] = v
+
+        return data
+
+    @staticmethod
+    def _check_required_args(data):
+        required_args = [
+            [u'columns', u'index']  # Either of one should be there.
+        ]
+
+        def is_key_list(key, data):
+            return isinstance(data[key], list) and len(data[param]) > 0
+
+        for arg in required_args:
+            if isinstance(arg, list):
+                for param in arg:
+                    if param in data and (param != 'columns' or
+                                          is_key_list(param, data)):
+                        break
+                else:
+                    return True, make_json_response(
+                        status=400,
+                        success=0,
+                        errormsg=_(
+                            "Could not find at least one required "
+                            "parameter ({}).".format(str(param)))
+                    )
+
+            elif arg not in data:
+                return True, make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=_(
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
+                )
+
+        return False, ''
+
     @check_precondition
     def create(self, gid, sid, did, scid, tid, cid=None):
         """
@@ -506,76 +564,36 @@ class IndexConstraintView(PGChildNodeView):
         Returns:
 
         """
-        required_args = [
-            [u'columns', u'index']  # Either of one should be there.
-        ]
+        data = IndexConstraintView._get_req_data()
 
-        data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
-        )
+        is_error, errmsg = IndexConstraintView._check_required_args(data)
 
-        for k, v in data.items():
-            try:
-                # comments should be taken as is because if user enters a
-                # json comment it is parsed by loads which should not happen
-                if k in ('comment',):
-                    data[k] = v
-                else:
-                    data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data[k] = v
-
-        def is_key_list(key, data):
-            return isinstance(data[key], list) and len(data[param]) > 0
-
-        for arg in required_args:
-            if isinstance(arg, list):
-                for param in arg:
-                    if param in data and (param != 'columns' or
-                                          is_key_list(param, data)):
-                        break
-                else:
-                    return make_json_response(
-                        status=400,
-                        success=0,
-                        errormsg=_(
-                            "Could not find at least one required "
-                            "parameter ({}).".format(str(param)))
-                    )
-
-            elif arg not in data:
-                return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=_(
-                        "Could not find the required parameter ({})."
-                    ).format(arg)
-                )
+        if is_error:
+            return errmsg
 
         data['schema'] = self.schema
         data['table'] = self.table
         try:
             if 'name' not in data or data['name'] == "":
-                SQL = render_template(
+                sql = render_template(
                     "/".join([self.template_path, 'begin.sql']))
                 # Start transaction.
-                status, res = self.conn.execute_scalar(SQL)
+                status, res = self.conn.execute_scalar(sql)
                 if not status:
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
             # The below SQL will execute CREATE DDL only
-            SQL = render_template(
+            sql = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn,
                 constraint_name=self.constraint_name
             )
-            status, msg = self.conn.execute_scalar(SQL)
+            status, msg = self.conn.execute_scalar(sql)
             if not status:
                 self.end_transaction()
                 return internal_server_error(errormsg=msg)
-
-            if 'name' not in data or data['name'] == "":
+            elif 'name' not in data or data['name'] == "":
                 sql = render_template(
                     "/".join([self.template_path,
                               'get_oid_with_transaction.sql'],

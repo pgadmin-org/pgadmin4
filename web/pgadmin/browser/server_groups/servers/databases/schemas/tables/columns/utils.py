@@ -63,6 +63,51 @@ def get_parent(conn, tid, template_path=None):
     return schema, table
 
 
+def _check_primary_column(data):
+    """
+    To check if column is primary key
+    :param data: Data.
+    """
+    if 'attnum' in data and 'indkey' in data:
+        # Current column
+        attnum = str(data['attnum'])
+
+        # Single/List of primary key column(s)
+        indkey = str(data['indkey'])
+
+        # We will check if column is in primary column(s)
+        if attnum in indkey.split(" "):
+            data['is_pk'] = True
+            data['is_primary_key'] = True
+        else:
+            data['is_pk'] = False
+            data['is_primary_key'] = False
+
+
+def _fetch_inherited_tables(tid, data, fetch_inherited_tables, template_path,
+                            conn):
+    """
+    This function will check for fetch inherited tables, and return inherited
+    tables.
+    :param tid: Table Id.
+    :param data: Data.
+    :param fetch_inherited_tables: flag to fetch inherited tables.
+    :param template_path: Template path.
+    :param conn: Connection.
+    """
+    if fetch_inherited_tables:
+        SQL = render_template("/".join(
+            [template_path, 'get_inherited_tables.sql']), tid=tid)
+        status, inh_res = conn.execute_dict(SQL)
+        if not status:
+            return True, internal_server_error(errormsg=inh_res)
+        for row in inh_res['rows']:
+            if row['attrname'] == data['name']:
+                data['is_inherited'] = True
+                data['tbls_inherited'] = row['inhrelname']
+    return False, ''
+
+
 @get_template_path
 def column_formatter(conn, tid, clid, data, edit_types_list=None,
                      fetch_inherited_tables=True, template_path=None):
@@ -80,35 +125,17 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
     """
 
     # To check if column is primary key
-    if 'attnum' in data and 'indkey' in data:
-        # Current column
-        attnum = str(data['attnum'])
-
-        # Single/List of primary key column(s)
-        indkey = str(data['indkey'])
-
-        # We will check if column is in primary column(s)
-        if attnum in indkey.split(" "):
-            data['is_pk'] = True
-            data['is_primary_key'] = True
-        else:
-            data['is_pk'] = False
-            data['is_primary_key'] = False
+    _check_primary_column(data)
 
     # Fetch length and precision
     data = fetch_length_precision(data)
 
     # We need to fetch inherited tables for each table
-    if fetch_inherited_tables:
-        SQL = render_template("/".join(
-            [template_path, 'get_inherited_tables.sql']), tid=tid)
-        status, inh_res = conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=inh_res)
-        for row in inh_res['rows']:
-            if row['attrname'] == data['name']:
-                data['is_inherited'] = True
-                data['tbls_inherited'] = row['inhrelname']
+    is_error, errmsg = _fetch_inherited_tables(
+        tid, data, fetch_inherited_tables, template_path, conn)
+
+    if is_error:
+        return errmsg
 
     # We need to format variables according to client js collection
     if 'attoptions' in data and data['attoptions'] is not None:

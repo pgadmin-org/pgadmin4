@@ -479,6 +479,45 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 ))
         return res
 
+    @staticmethod
+    def _get_reqes_data():
+        """
+        Get data from request.
+        return: Data.
+        """
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+
+        for k, v in data.items():
+            try:
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('comment',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v, encoding='utf-8')
+            except (ValueError, TypeError, KeyError):
+                data[k] = v
+
+        return data
+
+    @staticmethod
+    def _check_for_req_data(data):
+        required_args = ['columns']
+        for arg in required_args:
+            if arg not in data or \
+                    (isinstance(data[arg], list) and len(data[arg]) < 1):
+                return True, make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=gettext(
+                        "Could not find required parameter ({})."
+                    ).format(arg)
+                )
+
+        return False, ''
+
     @check_precondition
     def create(self, gid, sid, did, scid, tid, fkid=None):
         """
@@ -495,33 +534,12 @@ class ForeignKeyConstraintView(PGChildNodeView):
         Returns:
 
         """
-        required_args = ['columns']
+        data = ForeignKeyConstraintView._get_reqes_data()
 
-        data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
-        )
-
-        for k, v in data.items():
-            try:
-                # comments should be taken as is because if user enters a
-                # json comment it is parsed by loads which should not happen
-                if k in ('comment',):
-                    data[k] = v
-                else:
-                    data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data[k] = v
-
-        for arg in required_args:
-            if arg not in data or \
-                    (isinstance(data[arg], list) and len(data[arg]) < 1):
-                return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=gettext(
-                        "Could not find required parameter ({})."
-                    ).format(arg)
-                )
+        is_arg_error, errmsg = ForeignKeyConstraintView._check_for_req_data(
+            data)
+        if is_arg_error:
+            return errmsg
 
         data['schema'] = self.schema
         data['table'] = self.table
@@ -533,25 +551,25 @@ class ForeignKeyConstraintView(PGChildNodeView):
             data['remote_table'] = table
 
             if 'name' not in data or data['name'] == "":
-                SQL = render_template(
+                sql = render_template(
                     "/".join([self.template_path, 'begin.sql']))
                 # Start transaction.
-                status, res = self.conn.execute_scalar(SQL)
+                status, res = self.conn.execute_scalar(sql)
                 if not status:
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
             # The below SQL will execute CREATE DDL only
-            SQL = render_template(
+            sql = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn
             )
-            status, res = self.conn.execute_scalar(SQL)
+            status, res = self.conn.execute_scalar(sql)
+
             if not status:
                 self.end_transaction()
                 return internal_server_error(errormsg=res)
-
-            if 'name' not in data or data['name'] == "":
+            elif 'name' not in data or data['name'] == "":
                 sql = render_template(
                     "/".join([self.template_path,
                               'get_oid_with_transaction.sql']),
@@ -576,24 +594,9 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
-            if res['rows'][0]["convalidated"]:
-                icon = "icon-foreign_key_no_validate"
-                valid = False
-            else:
-                icon = "icon-foreign_key"
-                valid = True
-
-            if data['autoindex']:
-                sql = render_template(
-                    "/".join([self.template_path, 'create_index.sql']),
-                    data=data, conn=self.conn)
-                sql = sql.strip('\n').strip(' ')
-
-                if sql != '':
-                    status, idx_res = self.conn.execute_scalar(sql)
-                    if not status:
-                        self.end_transaction()
-                        return internal_server_error(errormsg=idx_res)
+            is_error, errmsg, icon, valid = self._create_index(data, res)
+            if is_error:
+                return errmsg
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
@@ -612,6 +615,36 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 success=0,
                 errormsg=e
             )
+
+    def _create_index(self, data, res):
+        """
+        Create index for foreign key.
+        data: Data.
+        res: Response form transaction.
+        Return: if error in create index return error, else return icon
+        and valid status
+        """
+        if res['rows'][0]["convalidated"]:
+            icon = "icon-foreign_key_no_validate"
+            valid = False
+        else:
+            icon = "icon-foreign_key"
+            valid = True
+
+        if data['autoindex']:
+            sql = render_template(
+                "/".join([self.template_path, 'create_index.sql']),
+                data=data, conn=self.conn)
+            sql = sql.strip('\n').strip(' ')
+
+            if sql != '':
+                status, idx_res = self.conn.execute_scalar(sql)
+                if not status:
+                    self.end_transaction()
+                    return True, internal_server_error(
+                        errormsg=idx_res), icon, valid
+
+        return False, '', icon, valid
 
     @check_precondition
     def update(self, gid, sid, did, scid, tid, fkid=None):

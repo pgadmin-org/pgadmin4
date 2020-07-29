@@ -81,6 +81,29 @@ def get_check_constraints(conn, tid, cid=None, template_path=None):
     return True, result['rows']
 
 
+def _check_delete_constraint(constraint, data, template_path, conn, sql):
+    """
+    This function if user deleted any constraint.
+    :param constraint: Constraint list in data.
+    :param data: Data.
+    :param template_path: sql template path for delete.
+    :param conn: connection.
+    :param sql: list for append delete constraint sql.
+    """
+    if 'deleted' in constraint:
+        for c in constraint['deleted']:
+            c['schema'] = data['schema']
+            c['nspname'] = data['schema']
+            c['table'] = data['name']
+
+            # Sql for drop
+            sql.append(
+                render_template("/".join(
+                    [template_path, 'delete.sql']),
+                    data=c, conn=conn).strip("\n")
+            )
+
+
 @get_template_path
 def get_check_constraint_sql(conn, tid, data, template_path=None):
     """
@@ -98,18 +121,7 @@ def get_check_constraint_sql(conn, tid, data, template_path=None):
     if 'check_constraint' in data:
         constraint = data['check_constraint']
         # If constraint(s) is/are deleted
-        if 'deleted' in constraint:
-            for c in constraint['deleted']:
-                c['schema'] = data['schema']
-                c['nspname'] = data['schema']
-                c['table'] = data['name']
-
-                # Sql for drop
-                sql.append(
-                    render_template("/".join(
-                        [template_path, 'delete.sql']),
-                        data=c, conn=conn).strip("\n")
-                )
+        _check_delete_constraint(constraint, data, template_path, conn, sql)
 
         if 'changed' in constraint:
             for c in constraint['changed']:

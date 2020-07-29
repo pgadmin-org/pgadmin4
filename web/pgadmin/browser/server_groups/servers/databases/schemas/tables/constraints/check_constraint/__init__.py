@@ -446,6 +446,56 @@ class CheckConstraintView(PGChildNodeView):
             status=200
         )
 
+    @staticmethod
+    def _get_req_data():
+        """
+        Get all required data from request data attribute.
+        :return: Request data and Error if any.
+        """
+
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
+        for k, v in data.items():
+            try:
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('comment',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v, encoding='utf-8')
+            except (ValueError, TypeError, KeyError):
+                data[k] = v
+
+        required_args = ['consrc']
+
+        for arg in required_args:
+            if arg not in data or data[arg] == '':
+                return True, make_json_response(
+                    status=400,
+                    success=0,
+                    errormsg=_(
+                        "Could not find the required parameter ({})."
+                    ).format(arg),
+                ), data
+        return False, '', data
+
+    @staticmethod
+    def _check_valid_icon(res):
+        """
+        Check and return icon value and is valid value.
+        :param res: Response data.
+        :return: icon value and valid flag.
+        """
+        if "convalidated" in res['rows'][0] and res['rows'][0]["convalidated"]:
+            icon = "icon-check_constraint_bad"
+            valid = False
+        else:
+            icon = "icon-check_constraint"
+            valid = True
+
+        return icon, valid
+
     @check_precondition
     def create(self, gid, sid, did, scid, tid, cid=None):
         """
@@ -462,32 +512,9 @@ class CheckConstraintView(PGChildNodeView):
         Returns:
 
         """
-        required_args = ['consrc']
-
-        data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
-        )
-
-        for k, v in data.items():
-            try:
-                # comments should be taken as is because if user enters a
-                # json comment it is parsed by loads which should not happen
-                if k in ('comment',):
-                    data[k] = v
-                else:
-                    data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data[k] = v
-
-        for arg in required_args:
-            if arg not in data or data[arg] == '':
-                return make_json_response(
-                    status=400,
-                    success=0,
-                    errormsg=_(
-                        "Could not find the required parameter ({})."
-                    ).format(arg)
-                )
+        is_error, errmsg, data = CheckConstraintView._get_req_data()
+        if is_error:
+            return errmsg
 
         data['schema'] = self.schema
         data['table'] = self.table
@@ -497,20 +524,20 @@ class CheckConstraintView(PGChildNodeView):
 
         try:
             if 'name' not in data or data['name'] == "":
-                SQL = "BEGIN;"
+                sql = "BEGIN;"
                 # Start transaction.
-                status, res = self.conn.execute_scalar(SQL)
+                status, res = self.conn.execute_scalar(sql)
                 if not status:
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
             # The below SQL will execute CREATE DDL only
-            SQL = render_template(
+            sql = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
                 data=data
             )
 
-            status, msg = self.conn.execute_scalar(SQL)
+            status, msg = self.conn.execute_scalar(sql)
             if not status:
                 self.end_transaction()
                 return internal_server_error(errormsg=msg)
@@ -542,13 +569,7 @@ class CheckConstraintView(PGChildNodeView):
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
-            if "convalidated" in res['rows'][0] and \
-                    res['rows'][0]["convalidated"]:
-                icon = "icon-check_constraint_bad"
-                valid = False
-            else:
-                icon = "icon-check_constraint"
-                valid = True
+            icon, valid = CheckConstraintView._check_valid_icon(res)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(

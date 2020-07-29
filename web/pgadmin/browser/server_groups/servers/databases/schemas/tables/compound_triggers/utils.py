@@ -106,8 +106,7 @@ def get_sql(conn, data, tid, trid, datlastsysoid, template_path=None):
         status, res = conn.execute_dict(sql)
         if not status:
             raise Exception(res)
-
-        if len(res['rows']) == 0:
+        elif len(res['rows']) == 0:
             raise ObjectGone(
                 _('Could not find the compound trigger in the table.'))
 

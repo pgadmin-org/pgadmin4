@@ -736,8 +736,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 status, res = self.conn.execute_2darray(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
-
-                if not res['rows']:
+                elif not res['rows']:
                     return make_json_response(
                         success=0,
                         errormsg=gettext(
