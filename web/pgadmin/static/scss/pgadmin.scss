@@ -7,6 +7,7 @@ $theme-colors: (
 
 /* Certain variables are required in JS directly */
 :root {
+  --color-fg: #{$color-fg};
   --border-color: #{$border-color};
 }
 

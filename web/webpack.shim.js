@@ -82,9 +82,6 @@ var webpackShimConfig = {
       'deps': ['jquery', 'jquery.ui', 'jquery.event.drag'],
       'exports': 'Slick',
     },
-    'flotr2': {
-      deps: ['bean'],
-    },
     'alertify': {
       'exports': 'alertify',
     },
@@ -141,8 +138,6 @@ var webpackShimConfig = {
     'moment': path.join(__dirname, './node_modules/moment/moment'),
     'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.3.0'),
     'jquery.ui': path.join(__dirname, './node_modules/slickgrid/lib/jquery-ui-1.11.3'),
-    'flotr2': path.join(__dirname, './node_modules/flotr2/flotr2.amd'),
-    'bean': path.join(__dirname, './node_modules/flotr2/lib/bean'),
     'jqueryui.position': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.ui.position'),
     'jquery.contextmenu': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.contextMenu'),
     'dropzone': path.join(__dirname, './node_modules/dropzone/dist/dropzone'),

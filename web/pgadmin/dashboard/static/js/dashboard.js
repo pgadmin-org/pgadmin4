@@ -9,12 +9,12 @@
 
 define('pgadmin.dashboard', [
   'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
-  'sources/pgadmin', 'backbone', 'backgrid', './charting',
+  'sources/pgadmin', 'backbone', 'backgrid',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'sources/nodes/dashboard',
-  'sources/utils', 'sources/window', 'pgadmin.browser', 'bootstrap', 'wcdocker',
+  'sources/window', './ChartsDOM', 'pgadmin.browser', 'bootstrap', 'wcdocker',
 ], function(
-  url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid, charting,
-  Alertify, Backform, NodesDashboard, commonUtils, pgWindow
+  url_for, gettext, r, $, _, pgAdmin, Backbone, Backgrid,
+  Alertify, Backform, NodesDashboard, pgWindow, ChartsDOM
 ) {
 
   pgAdmin.Browser = pgAdmin.Browser || {};
@@ -203,6 +203,7 @@ define('pgadmin.dashboard', [
         return;
 
       this.initialized = true;
+      this.chartsDomObj = null;
 
       this.sid = this.did = -1;
       this.version = -1;
@@ -220,10 +221,6 @@ define('pgadmin.dashboard', [
 
       // Load the default welcome dashboard
       var url = url_for('dashboard.index');
-
-      /* Store the chart objects, refresh freq and next refresh time */
-      this.chart_store = {};
-      this.charts_poller_int_id = -1;
 
       var dashboardPanel = pgBrowser.panels['dashboard'].panel;
       if (dashboardPanel) {
@@ -283,18 +280,7 @@ define('pgadmin.dashboard', [
     object_selected: function(item, itemData, node) {
       let self = this;
 
-      if (dashboardVisible === false) {
-        /*
-         * Clear all the interval functions, even when dashboard is not
-         * visible (in case of connection of the object got disconnected).
-         */
-        if (
-          !_.isUndefined(itemData.connected) &&
-            itemData.connected !== true
-        ) {
-          self.clearChartFromStore();
-        }
-      } else if (itemData && itemData._type) {
+      if (dashboardVisible && itemData && itemData._type) {
         var treeHierarchy = node.getTreeNodeHierarchy(item),
           url = NodesDashboard.url(itemData, item, treeHierarchy);
 
@@ -355,10 +341,8 @@ define('pgadmin.dashboard', [
                   $(dashboardPanel).data('server_status') == false
                 )
               ) {
+                this.chartsDomObj && this.chartsDomObj.unmount();
                 $(div).empty();
-
-                /* Clear all the charts previous dashboards */
-                self.clearChartFromStore();
 
                 let ajaxHook = function() {
                   $.ajax({
@@ -393,14 +377,8 @@ define('pgadmin.dashboard', [
                 $(dashboardPanel).data('server_status', true);
               }
             } else {
+              this.chartsDomObj && this.chartsDomObj.unmount();
               $(div).empty();
-              if (
-                !_.isUndefined(itemData.connected) &&
-                  itemData.connected !== true
-              ) {
-                /* Clear all the charts previous dashboards */
-                self.clearChartFromStore();
-              }
               $(div).html(
                 '<div class="pg-panel-message" role="alert">' + gettext('Please connect to the selected server to view the dashboard.') + '</div>'
               );
@@ -411,218 +389,6 @@ define('pgadmin.dashboard', [
           }
         }
       }
-    },
-
-    // Render the charts
-    renderCharts: function(charts_config) {
-
-      let self = this,
-        tooltipFormatter = function(refresh, currVal) {
-          return(`Seconds ago: ${parseInt(currVal.x * refresh)}</br>
-                  Value: ${currVal.y}`);
-        },
-        curr_epoch=commonUtils.getEpoch();
-
-      self.stopChartsPoller();
-
-      charts_config.map((chart_config) => {
-        if(self.chart_store[chart_config.chart_name]
-          && self.old_preferences[chart_config.refresh_pref_name] !=
-            self.preferences[chart_config.refresh_pref_name]) {
-          self.clearChartFromStore(chart_config.chart_name);
-        }
-
-        if(self.chart_store[chart_config.chart_name]) {
-          let chart_obj = self.chart_store[chart_config.chart_name].chart_obj;
-          chart_obj.setOptions(chart_config.options, false);
-          chart_obj.setTooltipFormatter(
-            tooltipFormatter.bind(null, self.preferences[chart_config.refresh_pref_name])
-          );
-        }
-
-        if(!self.chart_store[chart_config.chart_name]) {
-          let chart_obj = new charting.Chart(chart_config.container, chart_config.options);
-
-          chart_obj.setTooltipFormatter(
-            tooltipFormatter.bind(null, self.preferences[chart_config.refresh_pref_name])
-          );
-
-          chart_obj.setOtherData('counter', chart_config.counter);
-
-          self.chart_store[chart_config.chart_name] = {
-            'chart_obj' : chart_obj,
-            'refresh_on': curr_epoch,
-            'refresh_rate': self.preferences[chart_config.refresh_pref_name],
-          };
-        }
-      });
-
-      self.startChartsPoller(self.chart_store, self.sid, self.did);
-    },
-
-    getStatsUrl: function(sid=-1, did=-1, chart_names=[]) {
-      let base_url = url_for('dashboard.dashboard_stats');
-      base_url += '/' + sid;
-      base_url += (did > 0) ? ('/' + did) : '';
-      base_url += '?chart_names=' + chart_names.join(',');
-      return base_url;
-    },
-
-    updateChart: function(chart_obj, new_data){
-      // Dataset format:
-      // [
-      //     { data: [[0, y0], [1, y1]...], label: 'Label 1', [options] },
-      //     { data: [[0, y0], [1, y1]...], label: 'Label 2', [options] },
-      //     { data: [[0, y0], [1, y1]...], label: 'Label 3', [options] }
-      // ]
-      let dataset = chart_obj.getOtherData('dataset') || [],
-        counter_prev_data = chart_obj.getOtherData('counter_prev_data') || new_data,
-        counter = chart_obj.getOtherData('counter') || false;
-
-      if (dataset.length == 0) {
-        // Create the initial data structure
-        for (let label in new_data) {
-          dataset.push({
-            'data': [
-              [0, counter ? (new_data[label] - counter_prev_data[label]) : new_data[label]],
-            ],
-            'label': label,
-          });
-        }
-      } else {
-        Object.keys(new_data).forEach((label, label_ind) => {
-          // Push new values onto the existing data structure
-          // If this is a counter stat, we need to subtract the previous value
-          if (!counter) {
-            dataset[label_ind]['data'].unshift([0, new_data[label]]);
-          } else {
-            // Store the current value, minus the previous one we stashed.
-            // It's possible the tab has been reloaded, in which case out previous values are gone
-            if (_.isUndefined(counter_prev_data))
-              return;
-
-            dataset[label_ind]['data'].unshift([0, new_data[label] - counter_prev_data[label]]);
-          }
-
-          // Reset the time index to get a proper scrolling display
-          for (var time_ind = 0; time_ind < dataset[label_ind]['data'].length; time_ind++) {
-            dataset[label_ind]['data'][time_ind][0] = time_ind;
-          }
-        });
-        counter_prev_data = new_data;
-      }
-
-      // Remove old data points
-      for (let label_ind = 0; label_ind < dataset.length; label_ind++) {
-        if (dataset[label_ind]['data'].length > 101) {
-          dataset[label_ind]['data'].pop();
-        }
-      }
-
-      chart_obj.setOtherData('dataset', dataset);
-      chart_obj.setOtherData('counter_prev_data', counter_prev_data);
-
-      if (chart_obj.isInPage()) {
-        if (chart_obj.isVisible()) {
-          chart_obj.draw(dataset);
-        }
-      } else {
-        return;
-      }
-    },
-
-    stopChartsPoller: function() {
-      clearInterval(this.charts_poller_int_id);
-    },
-
-    startChartsPoller: function(chart_store, sid, did) {
-      let self = this;
-      /* polling will the greatest common divisor of the refresh rates*/
-      let poll_interval = commonUtils.getGCD(
-        Object.values(chart_store).map(item => item.refresh_rate)
-      );
-      const WAIT_COUNTER = 3;
-      let last_poll_wait_counter = 0;
-      let resp_not_received_counter = 0;
-
-      /* Stop if running, only one poller lives */
-      self.stopChartsPoller();
-
-      var thePollingFunc = function() {
-        let curr_epoch = commonUtils.getEpoch();
-        let chart_names_to_get = [];
-
-        for(let chart_name in chart_store) {
-          /* when its time to get the data */
-          if(chart_store[chart_name].refresh_on <= curr_epoch) {
-            /* set the next trigger point */
-            chart_store[chart_name].refresh_on = curr_epoch + chart_store[chart_name].refresh_rate;
-            chart_names_to_get.push(chart_name);
-          }
-        }
-
-        /* If none of the chart wants data, don't trouble
-         * If response not received from prev poll, don't trouble !!
-         */
-        if(chart_names_to_get.length == 0 || last_poll_wait_counter > 0 || resp_not_received_counter >= WAIT_COUNTER) {
-          /* reduce the number of tries, request should be sent if last_poll_wait_counter
-           * completes WAIT_COUNTER times.*/
-          last_poll_wait_counter--;
-          return;
-        }
-
-        var path = self.getStatsUrl(sid, did, chart_names_to_get);
-        resp_not_received_counter++;
-        $.ajax({
-          url: path,
-          type: 'GET',
-        })
-          .done(function(resp) {
-            for(let chart_name in resp) {
-              let chart_obj = chart_store[chart_name].chart_obj;
-              $(chart_obj.getContainer()).removeClass('graph-error');
-              self.updateChart(chart_obj, resp[chart_name]);
-            }
-          })
-          .fail(function(xhr) {
-            let err = '';
-            let msg = '';
-            let cls = 'info';
-
-            if (xhr.readyState === 0) {
-              msg = gettext('Not connected to the server or the connection to the server has been closed.');
-            } else {
-              err = JSON.parse(xhr.responseText);
-              msg = err.errormsg;
-
-              // If we get a 428, it means the server isn't connected
-              if (xhr.status === 428) {
-                if (_.isUndefined(msg) || _.isNull(msg)) {
-                  msg = gettext('Please connect to the selected server to view the graph.');
-                }
-              } else {
-                msg = gettext('An error occurred whilst rendering the graph.');
-                cls = 'error';
-              }
-            }
-
-            for(let chart_name in chart_store) {
-              let chart_obj = chart_store[chart_name].chart_obj;
-              $(chart_obj.getContainer()).addClass('graph-error');
-              $(chart_obj.getContainer()).html(
-                '<div class="pg-panel-' + cls + ' pg-panel-message" role="alert">' + msg + '</div>'
-              );
-            }
-          })
-          .always(function() {
-            last_poll_wait_counter = 0;
-            resp_not_received_counter--;
-          });
-        last_poll_wait_counter = WAIT_COUNTER;
-      };
-      /* Execute once for the first time as setInterval will not do */
-      thePollingFunc();
-      self.charts_poller_int_id = setInterval(thePollingFunc, poll_interval * 1000);
     },
 
     // Handler function to support the "Add Server" link
@@ -759,22 +525,17 @@ define('pgadmin.dashboard', [
       });
     },
 
-    clearChartFromStore: function(chartName) {
-      var self = this;
-      if(!chartName){
-        self.stopChartsPoller();
-        _.each(self.chart_store, function(chart, key) {
-          delete self.chart_store[key];
-        });
-      }
-      else {
-        delete self.chart_store[chartName];
-      }
-    },
-
     // Rock n' roll on the dashboard
     init_dashboard: function() {
       let self = this;
+
+      this.chartsDomObj = new ChartsDOM.default(
+        document.getElementById('dashboard-graphs'),
+        self.preferences,
+        self.sid,
+        self.did,
+        $('.dashboard-container')[0].clientHeight <=0 ? false : true
+      );
 
       /* Cache may take time to load for the first time
        * Keep trying till available
@@ -796,81 +557,14 @@ define('pgadmin.dashboard', [
       pgBrowser.onPreferencesChange('dashboards', function() {
         self.reflectPreferences();
       });
-
     },
 
     reflectPreferences: function() {
       var self = this;
-      var tickColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color');
-
-      /* We will use old preferences for selective graph updates on preference change */
-      if(self.preferences) {
-        self.old_preferences = self.preferences;
-        self.preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('dashboards');
-      }
-      else {
-        self.preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('dashboards');
-        self.old_preferences = self.preferences;
-      }
+      self.preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('dashboards');
+      this.chartsDomObj.reflectPreferences(self.preferences);
 
       if(is_server_dashboard || is_database_dashboard) {
-        /* Common things can come here */
-        var div_sessions = $('.dashboard-container').find('#graph-sessions')[0];
-        var div_tps = $('.dashboard-container').find('#graph-tps')[0];
-        var div_ti = $('.dashboard-container').find('#graph-ti')[0];
-        var div_to = $('.dashboard-container').find('#graph-to')[0];
-        var div_bio = $('.dashboard-container').find('#graph-bio')[0];
-        var options_line = {
-          parseFloat: false,
-          xaxis: {
-            min: 100,
-            max: 0,
-            autoscale: 0,
-          },
-          yaxis: {
-            autoscale: 1,
-          },
-          grid: {
-            color: 'transparent',
-            tickColor: tickColor,
-          },
-        };
-
-        if(self.preferences.graph_data_points) {
-          /* Merge data points related options */
-          options_line = {
-            ...options_line,
-            ...{
-              points: {
-                show:true,
-                radius: 1,
-                hitRadius: 3,
-              },
-            },
-          };
-        }
-
-        if(self.preferences.graph_mouse_track) {
-          /* Merge mouse track related options */
-          options_line = {
-            ...options_line,
-            ...{
-              mouse: {
-                track:true,
-                position: 'sw',
-              },
-            },
-          };
-        }
-
-        if(self.preferences.show_graphs && $('#dashboard-graphs').hasClass('dashboard-hidden')) {
-          $('#dashboard-graphs').removeClass('dashboard-hidden');
-        }
-        else if(!self.preferences.show_graphs) {
-          $('#dashboard-graphs').addClass('dashboard-hidden');
-          self.clearChartFromStore();
-        }
-
         if (self.preferences.show_activity && $('#dashboard-activity').hasClass('dashboard-hidden')) {
           $('#dashboard-activity').removeClass('dashboard-hidden');
         }
@@ -878,46 +572,11 @@ define('pgadmin.dashboard', [
           $('#dashboard-activity').addClass('dashboard-hidden');
         }
 
-        if(self.preferences.show_graphs) {
-          // Render the graphs
-          pgAdmin.Dashboard.renderCharts([{
-            chart_name: 'session_stats',
-            container: div_sessions,
-            options: options_line,
-            counter: false,
-            refresh_pref_name: 'session_stats_refresh',
-          }, {
-            chart_name: 'tps_stats',
-            container: div_tps,
-            options: options_line,
-            counter: true,
-            refresh_pref_name: 'tps_stats_refresh',
-          }, {
-            chart_name: 'ti_stats',
-            container: div_ti,
-            options: options_line,
-            counter: true,
-            refresh_pref_name: 'ti_stats_refresh',
-          }, {
-            chart_name: 'to_stats',
-            container: div_to,
-            options: options_line,
-            counter: true,
-            refresh_pref_name: 'to_stats_refresh',
-          }, {
-            chart_name: 'bio_stats',
-            container: div_bio,
-            options: options_line,
-            counter: true,
-            refresh_pref_name: 'bio_stats_refresh',
-          }]);
+        if (self.preferences.show_activity && $('#dashboard-activity').hasClass('dashboard-hidden')) {
+          $('#dashboard-activity').removeClass('dashboard-hidden');
         }
-
-        if(!self.preferences.show_graphs && !self.preferences.show_activity) {
-          $('#dashboard-none-show').removeClass('dashboard-hidden');
-        }
-        else {
-          $('#dashboard-none-show').addClass('dashboard-hidden');
+        else if(!self.preferences.show_activity) {
+          $('#dashboard-activity').addClass('dashboard-hidden');
         }
 
         /* Dashboard specific preferences can be updated in the
@@ -1440,7 +1099,9 @@ define('pgadmin.dashboard', [
     toggleVisibility: function(visible, closed=false) {
       dashboardVisible = visible;
       if(closed) {
-        this.clearChartFromStore();
+        this.chartsDomObj && this.chartsDomObj.unmount();
+      } else {
+        this.chartsDomObj && this.chartsDomObj.setPageVisible(dashboardVisible);
       }
     },
     can_take_action: function(m) {

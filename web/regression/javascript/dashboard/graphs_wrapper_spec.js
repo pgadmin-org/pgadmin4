@@ -1,0 +1,90 @@
+import jasmineEnzyme from 'jasmine-enzyme';
+import React from 'react';
+import {mount} from 'enzyme';
+import '../helper/enzyme.helper';
+
+import {GraphsWrapper, X_AXIS_LENGTH, POINT_SIZE} from '../../../pgadmin/dashboard/static/js/Graphs';
+
+describe('<GraphsWrapper /> component', ()=>{
+  let graphComp = null;
+  let defaultStats = {
+    labels: [...Array(X_AXIS_LENGTH).keys()],
+    datasets: [{
+      label: 'Label1',
+      data: [],
+      borderColor: '#00BCD4',
+      backgroundColor: '#00BCD4',
+      pointHitRadius: POINT_SIZE,
+    },{
+      label: 'Label2',
+      data: [],
+      borderColor: '#9CCC65',
+      backgroundColor: '#9CCC65',
+      pointHitRadius: POINT_SIZE,
+    }],
+    refreshRate: 1,
+  };
+  beforeEach(()=>{
+    jasmineEnzyme();
+    graphComp = mount(<GraphsWrapper sessionStats={defaultStats}
+      tpsStats={defaultStats}
+      tiStats={defaultStats}
+      toStats={defaultStats}
+      bioStats={defaultStats}
+      errorMsg={null}
+      showTooltip={true}
+      showDataPoints={true}
+      isDatabase={false} />);
+  });
+
+  it('graph containers are rendered', (done)=>{
+    let found = graphComp.find('.card.dashboard-graph');
+    expect(found.length).toBe(5);
+    done();
+  });
+
+  it('graph headers are correct', (done)=>{
+    let found = graphComp.find('.card.dashboard-graph');
+    expect(found.at(0)).toIncludeText('Server sessions');
+    expect(found.at(1)).toIncludeText('Transactions per second');
+    expect(found.at(2)).toIncludeText('Tuples in');
+    expect(found.at(3)).toIncludeText('Tuples out');
+    expect(found.at(4)).toIncludeText('Block I/O');
+    done();
+  });
+
+  it('graph headers when database', (done)=>{
+    let found = graphComp.find('.card.dashboard-graph');
+    graphComp.setProps({isDatabase: true});
+    expect(found.at(0)).toIncludeText('Database sessions');
+    done();
+  });
+
+  it('graph body has the canvas', (done)=>{
+    let found = graphComp.find('.card.dashboard-graph .dashboard-graph-body canvas');
+    expect(found.at(0).length).toBe(1);
+    expect(found.at(1).length).toBe(1);
+    expect(found.at(2).length).toBe(1);
+    expect(found.at(3).length).toBe(1);
+    expect(found.at(4).length).toBe(1);
+    done();
+  });
+
+  it('graph body shows the error', (done)=>{
+    graphComp.setProps({errorMsg: 'Some error occurred'});
+    let found = graphComp.find('.card.dashboard-graph .dashboard-graph-body .chart-wrapper');
+    expect(found.at(0)).toHaveClassName('d-none');
+    expect(found.at(1)).toHaveClassName('d-none');
+    expect(found.at(2)).toHaveClassName('d-none');
+    expect(found.at(3)).toHaveClassName('d-none');
+    expect(found.at(4)).toHaveClassName('d-none');
+
+    found = graphComp.find('.card.dashboard-graph .dashboard-graph-body .pg-panel-error.pg-panel-message');
+    expect(found.at(0)).toIncludeText('Some error occurred');
+    expect(found.at(1)).toIncludeText('Some error occurred');
+    expect(found.at(2)).toIncludeText('Some error occurred');
+    expect(found.at(3)).toIncludeText('Some error occurred');
+    expect(found.at(4)).toIncludeText('Some error occurred');
+    done();
+  });
+});

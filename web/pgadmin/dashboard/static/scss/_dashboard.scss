@@ -35,8 +35,22 @@
     color: $color-fg;
 }
 
+.dashboard-graph {
+    & .legend {
+        font-size: $tree-font-size;
+        & .legend-value {
+            font-weight: normal;
+            margin-left: 0.25rem;
+            & .legend-label {
+                margin-left: 0.25rem;
+            }
+        }
+    }
+}
+
 .dashboard-graph-body {
     padding: 0.25rem 0.5rem;
+    height: 175px;
 
     & .flotr-labels {
         color: $color-fg !important;

@@ -21,5 +21,6 @@ define(function () {
     'datagrid.panel': '/panel/<int:trans_id>',
     'search_objects.types': '/search_objects/types/<int:sid>/<int:did>',
     'search_objects.search': '/search_objects/search/<int:sid>/<int:did>',
+    'dashboard.dashboard_stats': '/dashboard/dashboard_stats',
   };
 });

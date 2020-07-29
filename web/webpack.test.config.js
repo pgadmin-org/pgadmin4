@@ -31,12 +31,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         exclude: [/node_modules/, /vendor/],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}]],
+            presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react'],
+            plugins: ['@babel/plugin-proposal-class-properties'],
             sourceMap: 'inline',
           },
         },
@@ -68,7 +69,7 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.js', '.jsx'],
     alias: {
       'top': path.join(__dirname, './pgadmin'),
       'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
@@ -90,8 +91,6 @@ module.exports = {
       'slickgrid': nodeModulesDir + '/slickgrid/',
       'slickgrid.plugins': nodeModulesDir + '/slickgrid/plugins/',
       'slickgrid.grid': nodeModulesDir + '/slickgrid/slick.grid',
-      'bean': path.join(__dirname, './node_modules/flotr2/lib/bean'),
-      'flotr2': path.join(__dirname, './node_modules/flotr2/flotr2.amd'),
       'moment': path.join(__dirname, './node_modules/moment/moment'),
       'browser': path.resolve(__dirname, 'pgadmin/browser/static/js'),
       'pgadmin': sourcesDir + '/js/pgadmin',

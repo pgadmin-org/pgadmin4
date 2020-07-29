@@ -309,11 +309,6 @@ var getThemeWebpackConfig = function(theme_name) {
       // Module and Rules: https://webpack.js.org/configuration/module/
       // Loaders: https://webpack.js.org/loaders/
       //
-      // imports-loader: it adds dependent modules(use:imports-loader?module1)
-      // at the beginning of module it is dependency of like:
-      // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
-      // It solves number of problems
-      // Ref: http:/github.com/webpack-contrib/imports-loader/
       rules: themeCssRules(theme_name),
     },
     resolve: {
@@ -393,12 +388,13 @@ module.exports = [{
     // It solves number of problems
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
-      test: /\.js$/,
+      test: /\.jsx?$/,
       exclude: [/node_modules/, /vendor/],
       use: {
         loader: 'babel-loader',
         options: {
-          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}]],
+          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react'],
+          plugins: ['@babel/plugin-proposal-class-properties'],
         },
       },
     }, {
@@ -420,6 +416,11 @@ module.exports = [{
       query: webpackShimConfig,
       include: path.join(__dirname, '/pgadmin/browser'),
     }, {
+      // imports-loader: it adds dependent modules(use:imports-loader?module1)
+      // at the beginning of module it is dependency of like:
+      // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
+      // It solves number of problems
+      // Ref: http:/github.com/webpack-contrib/imports-loader/
       test: require.resolve('./pgadmin/tools/datagrid/static/js/datagrid'),
       use: {
         loader: 'imports-loader?' +
@@ -517,7 +518,7 @@ module.exports = [{
   resolve: {
     alias: webpackShimConfig.resolveAlias,
     modules: ['node_modules', '.'],
-    extensions: ['.js'],
+    extensions: ['.js', '.jsx'],
     unsafeCache: true,
   },
   // Watch mode Configuration: After initial build, webpack will watch for

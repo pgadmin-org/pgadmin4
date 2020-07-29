@@ -24,11 +24,6 @@
     line-height: 30px;
 }
 
-.graph-container {
-    margin-top: 10px;
-    height: 150px;
-}
-
 .icon-postgres:before {
     height: 43px;
     margin-top: 13px;
