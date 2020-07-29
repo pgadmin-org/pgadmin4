@@ -20,7 +20,7 @@ class Logger : public QObject
 public:
     static Logger* GetLogger();
     static void ReleaseLogger();
-    void Log(const QString& sMessage);
+    void Log(const QString& sMessage) const;
 
 private:
     Logger();

@@ -44,8 +44,8 @@ private:
     QSharedMemory *m_shmem;
     bool m_configDone;
 
-    void setupStyling(QApplication *app);
-    void configureProxy();
+    void setupStyling(QApplication *app) const;
+    void configureProxy() const;
     QSplashScreen *displaySplash(QApplication *app);
     quint16 getPort() const;
     TrayIcon *createTrayIcon(QSplashScreen *splash, MenuActions *menuActions);

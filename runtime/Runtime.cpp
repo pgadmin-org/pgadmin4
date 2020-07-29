@@ -91,7 +91,7 @@ bool Runtime::go(int argc, char *argv[])
         floatingWindow = createFloatingWindow(splash, menuActions);
 
     // Fire up the app server
-    Server *server = startServerLoop(splash, floatingWindow, trayIcon, port, key);
+    const Server *server = startServerLoop(splash, floatingWindow, trayIcon, port, key);
 
     // Ensure we'll cleanup
     QObject::connect(server, SIGNAL(finished()), server, SLOT(deleteLater()));
@@ -136,7 +136,7 @@ bool Runtime::go(int argc, char *argv[])
 
 
 // Setup the styling
-void Runtime::setupStyling(QApplication *app)
+void Runtime::setupStyling(QApplication *app) const
 {
     // Setup the styling
 #ifndef Q_OS_LINUX
@@ -222,7 +222,7 @@ bool Runtime::alreadyRunning()
 }
 
 
-void Runtime::configureProxy()
+void Runtime::configureProxy() const
 {
     // In windows and linux, it is required to set application level proxy
     // because socket bind logic to find free port gives socket creation error

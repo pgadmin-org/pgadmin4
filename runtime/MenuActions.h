@@ -22,7 +22,7 @@ public:
     MenuActions();
 
     void setAppServerUrl(QString appServerUrl);
-    QString getAppServerUrl() { return m_appServerUrl; }
+    QString getAppServerUrl() const { return m_appServerUrl; }
 
 private:
     QString m_appServerUrl = "";
@@ -33,8 +33,8 @@ public slots:
     void onConfigDone(bool needRestart) const;
 
 protected slots:
-    void onNew();
-    void onCopyUrl();
+    void onNew() const;
+    void onCopyUrl() const;
     void onConfig();
     void onLog();
     void onQuit();

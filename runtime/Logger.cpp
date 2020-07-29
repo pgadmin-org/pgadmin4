@@ -41,7 +41,7 @@ Logger* Logger::GetLogger()
     return m_pThis;
 }
 
-void Logger::Log(const QString& sMessage)
+void Logger::Log(const QString& sMessage) const
 {
     QString text = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss: ") + sMessage + "\n";
     if (m_Logfile != Q_NULLPTR)

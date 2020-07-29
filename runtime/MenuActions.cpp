@@ -31,7 +31,7 @@ void MenuActions::setAppServerUrl(QString appServerUrl)
 
 
 // Create a new application browser window on user request
-void MenuActions::onNew()
+void MenuActions::onNew() const
 {
     QSettings settings;
     QString cmd = settings.value("BrowserCommand").toString();
@@ -55,7 +55,7 @@ void MenuActions::onNew()
 
 
 // Copy the application server URL to the clipboard
-void MenuActions::onCopyUrl()
+void MenuActions::onCopyUrl() const
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(m_appServerUrl);

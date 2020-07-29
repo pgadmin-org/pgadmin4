@@ -26,7 +26,7 @@ public:
     ~Server();
 
     bool Init();
-    QString getError() { return m_error; }
+    QString getError() const { return m_error; }
 
 public slots:
     void shutdown(QUrl url);
