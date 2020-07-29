@@ -9,7 +9,7 @@ message(Configuring the pgAdmin 4 runtime.)
 message(==================================)
 
 # Check for a suitable Qt version
-!versionAtLeast(QT_VERSION, 5.0.0) {
+!greaterThan(QT_MAJOR_VERSION, 4) {
     error("pgAdmin 4 cannot be built with Qt $${QT_VERSION}. Use Qt 5.0 or newer.")
 }
 message(Qt version: $${QT_VERSION})
