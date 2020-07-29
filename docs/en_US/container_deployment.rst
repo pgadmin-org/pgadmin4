@@ -51,7 +51,7 @@ connections.
 
 When TLS is enabled, a certificate and key must be provided. Typically these
 should be stored on the host file system and mounted from the container. The
-expected paths are /certs/server.crt and /certs/server.key
+expected paths are /certs/server.cert and /certs/server.key
 
 **PGADMIN_LISTEN_ADDRESS**
 
@@ -318,7 +318,7 @@ adjusted as appropriate to the specific deployment:
         listen 443;
         server_name _;
 
-        ssl_certificate /etc/nginx/server.crt;
+        ssl_certificate /etc/nginx/server.cert;
         ssl_certificate_key /etc/nginx/server.key;
 
         ssl on;

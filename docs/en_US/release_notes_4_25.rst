@@ -23,3 +23,4 @@ Bug fixes
 | `Issue #4810 <https://redmine.postgresql.org/issues/4810>`_ -  Fixed an issue where the user is not able to save the new row if the table is empty.
 | `Issue #5490 <https://redmine.postgresql.org/issues/5490>`_ -  Make the runtime configuration dialog non-modal.
 | `Issue #5646 <https://redmine.postgresql.org/issues/5646>`_ -  Ensure that RLS Policy node should be searchable using search object.
+| `Issue #5708 <https://redmine.postgresql.org/issues/5708>`_ -  Correct TLS certificate filename in the container deployment docs.
