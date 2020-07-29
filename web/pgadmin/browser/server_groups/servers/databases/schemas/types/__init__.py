@@ -1108,6 +1108,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
                 if not res['rows']:
                     return make_json_response(
+                        status=410,
                         success=0,
                         errormsg=gettext(
                             'Error: Object not found.'

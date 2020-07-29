@@ -17,13 +17,14 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as types_utils
+from unittest.mock import patch
 
 
 class TypesAddTestCase(BaseTestGenerator):
     """ This class will add type under schema node. """
-    scenarios = [
-        ('Add type under schema node', dict(url='/browser/type/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('types_create',
+                                         types_utils.test_cases)
 
     def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -42,27 +43,45 @@ class TypesAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add a type.")
 
+    def create_types(self):
+        """
+        This function create a type and returns the created type response
+        :return: created types response
+        """
+        return self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/' + str(self.schema_id) + '/',
+            data=json.dumps(self.data),
+            content_type='html/json')
+
     def runTest(self):
         """ This function will add type under schema node. """
         db_user = self.server["username"]
         self.type_name = "test_type_add_%s" % (str(uuid.uuid4())[1:8])
-        data = {"name": self.type_name,
-                "is_sys_type": False,
-                "typtype": "c",
-                "typeowner": db_user,
-                "schema": self.schema_name,
-                "composite": [{"member_name": "one", "type": "bigint",
-                               "is_tlength": False, "is_precision": False},
-                              {"member_name": "two", "type": "\"char\"[]",
-                               "is_tlength": False, "is_precision": False}],
-                "enum": [], "typacl": [], "seclabels": []}
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.schema_id) + '/',
-            data=json.dumps(data),
-            content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.data = types_utils.get_types_data(self.type_name,
+                                               self.schema_name, db_user)
+        if self.is_positive_test:
+            response = self.create_types()
+        else:
+            if hasattr(self, "missing_parameter"):
+                del self.data['name']
+                response = self.create_types()
+
+            if hasattr(self, "internal_server_error"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.create_types()
+
+            if hasattr(self, "error_in_db"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.create_types()
+
+        self.assertEquals(response.status_code,
+                          self.expected_data['status_code'])
 
     def tearDown(self):
         # Disconnect the database

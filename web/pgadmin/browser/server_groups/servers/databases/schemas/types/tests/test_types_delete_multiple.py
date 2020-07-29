@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+import json
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
@@ -20,9 +21,9 @@ from . import utils as types_utils
 from unittest.mock import patch
 
 
-class TypesDeleteTestCase(BaseTestGenerator):
+class TypesDeleteMultipleTestCase(BaseTestGenerator):
     """ This class will delete type under schema node. """
-    scenarios = utils.generate_scenarios('types_delete',
+    scenarios = utils.generate_scenarios('types_delete_multiple',
                                          types_utils.test_cases)
 
     def setUp(self):
@@ -41,50 +42,44 @@ class TypesDeleteTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to delete a type.")
-        self.type_name = "test_type_delete_%s" % (str(uuid.uuid4())[1:8])
-        self.type_id = types_utils.create_type(self.server, self.db_name,
-                                               self.schema_name, self.type_name
-                                               )
+        self.type_names = ["test_type_{0}".format(str(uuid.uuid4())[1:8]),
+                           "test_type_{0}".format(str(uuid.uuid4())[1:8])]
+        self.type_ids = [types_utils.create_type(self.server, self.db_name,
+                                                 self.schema_name,
+                                                 self.type_names[0]),
+                         types_utils.create_type(self.server, self.db_name,
+                                                 self.schema_name,
+                                                 self.type_names[1])]
 
-    def delete_type(self):
+    def delete_multiple(self, data):
         """
-        This function deletes type
-        :return: type delete
+        This function returns multiple type delete response
+        :param data: type ids to delete
+        :return: type delete response
         """
-        return self.tester.delete(
-            "{0}{1}/{2}/{3}/{4}/{5}".format(self.url, utils.SERVER_GROUP,
-                                            self.server_id, self.db_id,
-                                            self.schema_id, self.type_id
-                                            ),
-            follow_redirects=True
-        )
+        return self.tester.delete(self.url + str(utils.SERVER_GROUP) +
+                                  '/' + str(self.server_id) +
+                                  '/' + str(self.db_id) + '/' +
+                                  str(self.schema_id) + '/',
+                                  follow_redirects=True,
+                                  data=json.dumps(data),
+                                  content_type='html/json')
 
     def runTest(self):
         """ This function will delete type under schema node. """
         type_response = types_utils.verify_type(self.server, self.db_name,
-                                                self.type_name)
+                                                self.type_names[0])
+        if not type_response:
+            raise Exception("Could not find the type to delete.")
+        type_response = types_utils.verify_type(self.server, self.db_name,
+                                                self.type_names[1])
         if not type_response:
             raise Exception("Could not find the type to delete.")
 
+        data = {'ids': self.type_ids}
+
         if self.is_positive_test:
-            response = self.delete_type()
-
-        else:
-            if hasattr(self, "internal_server_error"):
-                return_value_object = eval(self.mock_data["return_value"])
-                with patch(self.mock_data["function_name"],
-                           side_effect=[return_value_object]):
-                    response = self.delete_type()
-
-            if hasattr(self, "error_in_db"):
-                return_value_object = eval(self.mock_data["return_value"])
-                with patch(self.mock_data["function_name"],
-                           side_effect=[return_value_object]):
-                    response = self.delete_type()
-
-            if hasattr(self, "wrong_type_id"):
-                self.type_id = 99999
-                response = self.delete_type()
+            response = self.delete_multiple(data)
 
         self.assertEquals(response.status_code,
                           self.expected_data['status_code'])

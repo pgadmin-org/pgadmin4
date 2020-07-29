@@ -20,9 +20,9 @@ from . import utils as types_utils
 from unittest.mock import patch
 
 
-class TypesGetTestCase(BaseTestGenerator):
-    """ This class will get the type under schema node. """
-    scenarios = utils.generate_scenarios('types_get',
+class TypesGetCollationsTestCase(BaseTestGenerator):
+    """ This class will get type collations under schema node. """
+    scenarios = utils.generate_scenarios('types_get_collations',
                                          types_utils.test_cases)
 
     def setUp(self):
@@ -33,23 +33,23 @@ class TypesGetTestCase(BaseTestGenerator):
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to get a type.")
+            raise Exception("Could not connect to database.")
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
         schema_response = schema_utils.verify_schemas(self.server,
                                                       self.db_name,
                                                       self.schema_name)
         if not schema_response:
-            raise Exception("Could not find the schema to get a type.")
-        self.type_name = "test_type_get_%s" % (str(uuid.uuid4())[1:8])
+            raise Exception("Could not find the schema.")
+        self.type_name = "test_type_%s" % (str(uuid.uuid4())[1:8])
         self.type_id = types_utils.create_type(self.server, self.db_name,
                                                self.schema_name, self.type_name
                                                )
 
-    def get_type(self):
+    def get_collations(self):
         """
-        This functions returns the type properties
-        :return: type properties
+        This function returns collations
+        :return: collations
         """
         return self.tester.get(
             "{0}{1}/{2}/{3}/{4}/{5}".format(self.url, utils.SERVER_GROUP,
@@ -59,47 +59,24 @@ class TypesGetTestCase(BaseTestGenerator):
             follow_redirects=True
         )
 
-    def get_type_list(self):
-        """
-        This functions returns the list all types
-        :return: list all types
-        """
-        return self.tester.get(
-            "{0}{1}/{2}/{3}/{4}/".format(self.url, utils.SERVER_GROUP,
-                                         self.server_id, self.db_id,
-                                         self.schema_id),
-            follow_redirects=True
-        )
-
     def runTest(self):
-        """ This function will get a type under schema node. """
-        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
-                                                 self.server_id, self.db_id)
-        if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to get a type.")
+        """ This function will check type-collation under schema node. """
+        type_response = types_utils.verify_type(self.server, self.db_name,
+                                                self.type_name)
+        if not type_response:
+            raise Exception("Could not find the type.")
 
         if self.is_positive_test:
-            if hasattr(self, "type_list"):
-                response = self.get_type_list()
-            else:
-                response = self.get_type()
+            response = self.get_collations()
 
         else:
-            if hasattr(self, "error_fetching_type"):
+            if hasattr(self, "internal_server_error"):
                 with patch(self.mock_data["function_name"],
                            return_value=eval(self.mock_data["return_value"])):
-                    if hasattr(self, "type_list"):
-                        response = self.get_type_list()
-                    else:
-                        response = self.get_type()
+                    response = self.get_collations()
 
-            if hasattr(self, "wrong_type_id"):
-                self.type_id = 99999
-                response = self.get_type()
-
-        actual_response_code = response.status_code
-        expected_response_code = self.expected_data['status_code']
-        self.assertEquals(actual_response_code, expected_response_code)
+        self.assertEquals(response.status_code,
+                          self.expected_data['status_code'])
 
     def tearDown(self):
         # Disconnect the database

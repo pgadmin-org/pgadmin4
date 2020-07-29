@@ -18,13 +18,13 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as types_utils
+from unittest.mock import patch
 
 
 class TypesUpdateTestCase(BaseTestGenerator):
     """ This class will update type under schema node. """
-    scenarios = [
-        ('Update type under schema node', dict(url='/browser/type/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('types_update',
+                                         types_utils.test_cases)
 
     def setUp(self):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -47,22 +47,40 @@ class TypesUpdateTestCase(BaseTestGenerator):
                                                self.schema_name, self.type_name
                                                )
 
+    def update_type(self):
+        """
+        This function returns the type update response
+        :return: type update response
+        """
+        return self.tester.put(
+            "{0}{1}/{2}/{3}/{4}/{5}".format(self.url, utils.SERVER_GROUP,
+                                            self.server_id, self.db_id,
+                                            self.schema_id, self.type_id
+                                            ),
+            data=json.dumps(self.test_data),
+            follow_redirects=True)
+
     def runTest(self):
         """ This function will update type under schema node. """
         type_response = types_utils.verify_type(self.server, self.db_name,
                                                 self.type_name)
         if not type_response:
             raise Exception("Could not find the type to update.")
-        data = {"id": self.type_id,
-                "description": "this is test comment."}
-        response = self.tester.put(
-            "{0}{1}/{2}/{3}/{4}/{5}".format(self.url, utils.SERVER_GROUP,
-                                            self.server_id, self.db_id,
-                                            self.schema_id, self.type_id
-                                            ),
-            data=json.dumps(data),
-            follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+
+        self.test_data['id'] = self.type_id
+
+        if self.is_positive_test:
+            response = self.update_type()
+
+        else:
+            if hasattr(self, "internal_server_error"):
+                return_value_object = eval(self.mock_data["return_value"])
+                with patch(self.mock_data["function_name"],
+                           side_effect=[return_value_object]):
+                    response = self.update_type()
+
+        self.assertEquals(response.status_code,
+                          self.expected_data['status_code'])
 
     def tearDown(self):
         # Disconnect the database
