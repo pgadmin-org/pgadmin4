@@ -25,8 +25,6 @@ class ConfigWindow : public QDialog
 public:
     explicit ConfigWindow(QWidget *parent = Q_NULLPTR);
 
-    bool NeedRestart() { return m_needRestart; };
-
 signals:
     void accepted(bool needRestart);
     void closing(bool accepted);

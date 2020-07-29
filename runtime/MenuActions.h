@@ -30,7 +30,7 @@ private:
     ConfigWindow *m_configWindow = Q_NULLPTR;
 
 public slots:
-    void onConfigDone(bool needRestart);
+    void onConfigDone(bool needRestart) const;
 
 protected slots:
     void onNew();

@@ -208,7 +208,7 @@ bool Runtime::alreadyRunning()
 
     if (is_running)
     {
-        QFile addressFile(getAddressFile());
+        QFile addressFile(g_addressFile);
         addressFile.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&addressFile);
         QString url = in.readLine();
@@ -273,7 +273,7 @@ QSplashScreen * Runtime::displaySplash(QApplication *app)
 
 
 // Get the port number we're going to use
-quint16 Runtime::getPort()
+quint16 Runtime::getPort() const
 {
     quint16 port = 0L;
 
@@ -347,7 +347,7 @@ FloatingWindow * Runtime::createFloatingWindow(QSplashScreen *splash, MenuAction
 
 
 // Server startup loop
-Server * Runtime::startServerLoop(QSplashScreen *splash, FloatingWindow *floatingWindow, TrayIcon *trayIcon, int port, QString key)
+Server * Runtime::startServerLoop(QSplashScreen *splash, FloatingWindow *floatingWindow, TrayIcon *trayIcon, quint16 port, QString key)
 {
     bool done = false;
     Server *server;
@@ -374,6 +374,12 @@ Server * Runtime::startServerLoop(QSplashScreen *splash, FloatingWindow *floatin
 
             delete server;
 
+            // Enable the View Log option for diagnostics
+            if (floatingWindow)
+                floatingWindow->enableViewLogOption();
+            if (trayIcon)
+                trayIcon->enableViewLogOption();
+
             // Allow the user to tweak the Python Path if needed
             m_configDone = false;
 
@@ -387,6 +393,12 @@ Server * Runtime::startServerLoop(QSplashScreen *splash, FloatingWindow *floatin
             // Wait for configuration to be completed
             while (!m_configDone)
                 delay(100);
+
+            // Disable the View Log option again
+            if (floatingWindow)
+                floatingWindow->disableViewLogOption();
+            if (trayIcon)
+                trayIcon->disableViewLogOption();
         }
         else
         {
@@ -410,16 +422,16 @@ void Runtime::onConfigDone(bool accepted)
 
 
 // Start the server
-Server * Runtime::startServer(QSplashScreen *splash, int port, QString key)
+Server * Runtime::startServer(QSplashScreen *splash, quint16 port, QString key)
 {
     Server *server;
 
     splash->showMessage(QString(QWidget::tr("Starting pgAdmin4 server...")), Qt::AlignBottom | Qt::AlignCenter);
     Logger::GetLogger()->Log("Starting pgAdmin4 server...");
 
-    QString msg = QString(QWidget::tr("Creating server object, port:%1, key:%2, logfile:%3")).arg(port).arg(key).arg(getServerLogFile());
+    QString msg = QString(QWidget::tr("Creating server object, port:%1, key:%2, logfile:%3")).arg(port).arg(key).arg(g_serverLogFile);
     Logger::GetLogger()->Log(msg);
-    server = new Server(this, port, key, getServerLogFile());
+    server = new Server(this, port, key, g_serverLogFile);
 
     Logger::GetLogger()->Log("Initializing server...");
     if (!server->Init())
@@ -504,9 +516,9 @@ void Runtime::checkServer(QSplashScreen *splash, QString url)
 
 
 // Create the address file
-void Runtime::createAddressFile(QString url)
+void Runtime::createAddressFile(QString url) const
 {
-    QFile addressFile(getAddressFile());
+    QFile addressFile(g_addressFile);
     if (addressFile.open(QIODevice::WriteOnly))
     {
         addressFile.setPermissions(QFile::ReadOwner|QFile::WriteOwner);
@@ -517,7 +529,7 @@ void Runtime::createAddressFile(QString url)
 
 
 // Open a browser tab
-void Runtime::openBrowserTab(QString url)
+void Runtime::openBrowserTab(QString url) const
 {
     QString cmd = m_settings.value("BrowserCommand").toString();
 
@@ -594,7 +606,7 @@ bool Runtime::shutdownServer(QUrl url)
 }
 
 
-void Runtime::delay(int milliseconds)
+void Runtime::delay(int milliseconds) const
 {
     QTime endTime = QTime::currentTime().addMSecs(milliseconds);
     while(QTime::currentTime() < endTime)

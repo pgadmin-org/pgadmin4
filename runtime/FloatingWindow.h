@@ -29,6 +29,8 @@ public:
 
     bool Init();
     void enablePostStartOptions();
+    void enableViewLogOption();
+    void disableViewLogOption();
     void setMenuActions(MenuActions * menuActions);
 
 private:

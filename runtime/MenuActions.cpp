@@ -75,15 +75,14 @@ void MenuActions::onConfig()
 }
 
 
-void MenuActions::onConfigDone(bool needRestart)
+void MenuActions::onConfigDone(bool needRestart) const
 {
-    if (needRestart)
+    if (needRestart && QMessageBox::Yes == QMessageBox::question(Q_NULLPTR,
+                                                                 tr("Shut down server?"),
+                                                                 tr("The pgAdmin 4 server must be restarted for changes to take effect. Do you want to shut down the server now?"),
+                                                                 QMessageBox::Yes | QMessageBox::No))
     {
-        if (QMessageBox::Yes == QMessageBox::question(Q_NULLPTR,
-                                                      tr("Shut down server?"),
-                                                      tr("The pgAdmin 4 server must be restarted for changes to take effect. Do you want to shut down the server now?"),
-                                                      QMessageBox::Yes | QMessageBox::No))
-            exit(0);
+        exit(0);
     }
 }
 

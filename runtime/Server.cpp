@@ -68,10 +68,8 @@ Server::Server(Runtime *runtime, quint16 port, QString key, QString logFileName)
     Py_NoUserSiteDirectory=1;
     Py_DontWriteBytecodeFlag=1;
 
-    PGA_APP_NAME_UTF8 = QString("pgAdmin 4").toUtf8();
-
     // Python3 requires conversion of char  * to wchar_t *, so...
-    const char *appName = PGA_APP_NAME_UTF8.data();
+    const char *appName = QString("pgAdmin 4").toUtf8();
     const size_t cSize = strlen(appName)+1;
     m_wcAppName = new wchar_t[cSize];
     mbstowcs (m_wcAppName, appName, cSize);
@@ -177,8 +175,7 @@ Server::Server(Runtime *runtime, quint16 port, QString key, QString logFileName)
 
     if (!pythonHome.isEmpty())
     {
-        pythonHome_utf8 = pythonHome.toUtf8();
-        const char *python_home = pythonHome_utf8.data();
+        const char *python_home = pythonHome.toUtf8().data();
         const size_t home_size = strlen(python_home) + 1;
         m_wcPythonHome = new wchar_t[home_size];
         mbstowcs (m_wcPythonHome, python_home, home_size);

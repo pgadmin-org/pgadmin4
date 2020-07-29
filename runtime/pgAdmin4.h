@@ -18,9 +18,10 @@
 // Global function prototypes
 int main(int argc, char * argv[]);
 
-QString getStartupLogFile();
-QString getServerLogFile();
-QString getAddressFile();
+extern const QString g_startupLogFile;
+extern const QString g_serverLogFile;
+extern const QString g_addressFile;
+
 QString getExeHash();
 
 void cleanup();

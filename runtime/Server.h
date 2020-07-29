@@ -47,11 +47,9 @@ private:
 
     // Application name in UTF-8 for Python
     wchar_t *m_wcAppName = Q_NULLPTR;
-    QByteArray PGA_APP_NAME_UTF8;
 
     // PythonHome for Python
     wchar_t *m_wcPythonHome = Q_NULLPTR;
-    QByteArray pythonHome_utf8;
 };
 
 #endif // SERVER_H

@@ -33,7 +33,7 @@ Logger* Logger::GetLogger()
     {
         m_pThis = new Logger();
         m_Logfile = new QFile;
-        m_Logfile->setFileName(getStartupLogFile());
+        m_Logfile->setFileName(g_startupLogFile);
         m_Logfile->open(QIODevice::WriteOnly | QIODevice::Text);
         m_Logfile->setPermissions(QFile::ReadOwner|QFile::WriteOwner);
     }

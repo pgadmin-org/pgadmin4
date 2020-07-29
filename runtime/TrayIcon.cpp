@@ -78,11 +78,11 @@ void TrayIcon::createActions()
     connect(m_copyUrlAction, SIGNAL(triggered()), m_menuActions, SLOT(onCopyUrl()));
 
     m_configAction = new QAction(tr("&Configure..."), this);
-    m_configAction->setEnabled(true);
+    m_configAction->setEnabled(false);
     connect(m_configAction, SIGNAL(triggered()), m_menuActions, SLOT(onConfig()));
 
     m_logAction = new QAction(tr("&View log..."), this);
-    m_logAction->setEnabled(true);
+    m_logAction->setEnabled(false);
     connect(m_logAction, SIGNAL(triggered()), m_menuActions, SLOT(onLog()));
 
     m_quitAction = new QAction(tr("&Shut down server"), this);
@@ -107,6 +107,21 @@ void TrayIcon::enablePostStartOptions()
 
     if (m_quitAction != Q_NULLPTR)
         m_quitAction->setEnabled(true);
+}
+
+// Enable the View Log option
+void TrayIcon::enableViewLogOption()
+{
+    if (m_logAction != Q_NULLPTR)
+        m_logAction->setEnabled(true);
+}
+
+
+// Disable the View Log option
+void TrayIcon::disableViewLogOption()
+{
+    if (m_logAction != Q_NULLPTR)
+        m_logAction->setEnabled(false);
 }
 
 void TrayIcon::setMenuActions(MenuActions * menuActions)

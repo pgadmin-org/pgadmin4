@@ -36,7 +36,7 @@ public:
 
     bool alreadyRunning();
     bool go(int argc, char *argv[]);
-    void delay(int milliseconds);
+    void delay(int milliseconds) const;
     bool shutdownServer(QUrl url);
 
 private:
@@ -47,14 +47,14 @@ private:
     void setupStyling(QApplication *app);
     void configureProxy();
     QSplashScreen *displaySplash(QApplication *app);
-    quint16 getPort();
+    quint16 getPort() const;
     TrayIcon *createTrayIcon(QSplashScreen *splash, MenuActions *menuActions);
     FloatingWindow *createFloatingWindow(QSplashScreen *splash, MenuActions *menuActions);
-    Server *startServerLoop(QSplashScreen *splash, FloatingWindow *floatingWindow, TrayIcon *trayIcon, int port, QString key);
-    Server *startServer(QSplashScreen *splash, int port, QString key);
+    Server *startServerLoop(QSplashScreen *splash, FloatingWindow *floatingWindow, TrayIcon *trayIcon, quint16 port, QString key);
+    Server *startServer(QSplashScreen *splash, quint16 port, QString key);
     void checkServer(QSplashScreen *splash, QString url);
-    void createAddressFile(QString url);
-    void openBrowserTab(QString url);
+    void createAddressFile(QString url) const;
+    void openBrowserTab(QString url) const;
     QString serverRequest(QUrl url, QString path);
     bool pingServer(QUrl url);
 

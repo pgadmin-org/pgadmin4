@@ -37,11 +37,11 @@ void LogWindow::LoadLog()
 
     ui->lblStatus->setText(tr("Loading logfiles..."));
 
-    ui->lblStartupLog->setText(tr("Startup Log (%1):").arg(getStartupLogFile()));
-    ui->lblServerLog->setText(tr("Server Log (%1):").arg(getServerLogFile()));
+    ui->lblStartupLog->setText(tr("Startup Log (%1):").arg(g_startupLogFile));
+    ui->lblServerLog->setText(tr("Server Log (%1):").arg(g_serverLogFile));
 
-    startupLines = this->readLog(getStartupLogFile(), ui->textStartupLog);
-    serverLines = this->readLog(getServerLogFile(), ui->textServerLog);
+    startupLines = this->readLog(g_startupLogFile, ui->textStartupLog);
+    serverLines = this->readLog(g_serverLogFile, ui->textServerLog);
 
     ui->lblStatus->setText(QString(tr("Loaded startup log (%1 lines) and server log (%2 lines).")).arg(startupLines).arg(serverLines));
 }
@@ -73,7 +73,7 @@ int LogWindow::readLog(QString logFile, QPlainTextEdit *logWidget)
     log = fopen(logFile.toUtf8().data(), "r");
     if (log == Q_NULLPTR)
     {
-            logWidget->setPlainText(QString(tr("The log file (%1) could not be opened.")).arg(getServerLogFile()));
+            logWidget->setPlainText(QString(tr("The log file (%1) could not be opened.")).arg(g_serverLogFile));
             this->setDisabled(false);
             QApplication::restoreOverrideCursor();
             return 0;
