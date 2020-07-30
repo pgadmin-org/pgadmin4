@@ -27,3 +27,4 @@ Bug fixes
 | `Issue #5632 <https://redmine.postgresql.org/issues/5632>`_ -  Ensure that the user will be able to modify the start value of the Identity column.
 | `Issue #5646 <https://redmine.postgresql.org/issues/5646>`_ -  Ensure that RLS Policy node should be searchable using search object.
 | `Issue #5708 <https://redmine.postgresql.org/issues/5708>`_ -  Correct TLS certificate filename in the container deployment docs.
+| `Issue #5710 <https://redmine.postgresql.org/issues/5710>`_ -  Fixed an issue when comparing the table with a trigger throwing error in schema diff.
