@@ -27,13 +27,13 @@ class AuthSourceRegistry(ABCMeta):
     registry = None
     auth_sources = dict()
 
-    def __init__(cls, name, bases, d):
+    def __init__(self, name, bases, d):
 
         # Register this type of auth_sources, based on the module name
         # Avoid registering the BaseAuthentication itself
 
-        AuthSourceRegistry.registry[_decorate_cls_name(d['__module__'])] = cls
-        ABCMeta.__init__(cls, name, bases, d)
+        AuthSourceRegistry.registry[_decorate_cls_name(d['__module__'])] = self
+        ABCMeta.__init__(self, name, bases, d)
 
     @classmethod
     def create(cls, name, **kwargs):

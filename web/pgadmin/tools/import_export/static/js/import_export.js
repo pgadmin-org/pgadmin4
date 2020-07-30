@@ -136,7 +136,6 @@ define([
               }
             } catch (e) {
               // Do nothing
-              options = [];
               console.warn(e.stack || e);
             }
           } else {

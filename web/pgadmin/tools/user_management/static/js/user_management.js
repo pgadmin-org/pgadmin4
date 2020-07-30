@@ -953,28 +953,31 @@ define([
               this.$content.find('button.add').first().on('click',(e) => {
                 e.preventDefault();
                 // There should be only one empty row.
+                let anyNew = false;
                 for(const [idx, model] of userCollection.models.entries()) {
                   if(model.isNew()) {
                     let row = view.body.rows[idx].$el;
                     row.addClass('new');
                     $(row).pgMakeVisible('backgrid');
                     $(row).find('.email').trigger('click');
-                    return false;
+                    anyNew = true;
                   }
                 }
 
-                $(view.body.$el.find($('tr.new'))).removeClass('new');
-                var m = new(UserModel)(null, {
-                  handler: userCollection,
-                  top: userCollection,
-                  collection: userCollection,
-                });
-                userCollection.add(m);
+                if(!anyNew) {
+                  $(view.body.$el.find($('tr.new'))).removeClass('new');
+                  var m = new(UserModel)(null, {
+                    handler: userCollection,
+                    top: userCollection,
+                    collection: userCollection,
+                  });
+                  userCollection.add(m);
 
-                var newRow = view.body.rows[userCollection.indexOf(m)].$el;
-                newRow.addClass('new');
-                $(newRow).pgMakeVisible('backgrid');
-                $(newRow).find('.email').trigger('click');
+                  var newRow = view.body.rows[userCollection.indexOf(m)].$el;
+                  newRow.addClass('new');
+                  $(newRow).pgMakeVisible('backgrid');
+                  $(newRow).find('.email').trigger('click');
+                }
                 return false;
               });
 

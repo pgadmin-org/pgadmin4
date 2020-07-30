@@ -177,20 +177,19 @@ define('pgadmin.node.pga_job', [
           i = input.item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-        if (!d)
-          return false;
-
-        $.ajax({
-          url: obj.generate_url(i, 'run_now', d, true),
-          method:'PUT',
-        })
-        // 'pgagent.pga_job' table updated with current time to run the job
-        // now.
-          .done(function() { t.unload(i); })
-          .fail(function(xhr, status, error) {
-            alertify.pgRespErrorNotify(xhr, error);
-            t.unload(i);
-          });
+        if (d) {
+          $.ajax({
+            url: obj.generate_url(i, 'run_now', d, true),
+            method:'PUT',
+          })
+          // 'pgagent.pga_job' table updated with current time to run the job
+          // now.
+            .done(function() { t.unload(i); })
+            .fail(function(xhr, status, error) {
+              alertify.pgRespErrorNotify(xhr, error);
+              t.unload(i);
+            });
+        }
 
         return false;
       },

@@ -45,15 +45,15 @@ class ObjectRegistry(ABCMeta):
 
     registry = dict()
 
-    def __init__(cls, name, bases, d):
+    def __init__(self, name, bases, d):
         """
         This method is used to register the objects based on object type.
         """
 
         if d and 'object_type' in d:
-            ObjectRegistry.registry[d['object_type']] = cls
+            ObjectRegistry.registry[d['object_type']] = self
 
-        ABCMeta.__init__(cls, name, bases, d)
+        ABCMeta.__init__(self, name, bases, d)
 
     @classmethod
     def get_object(cls, name, **kwargs):

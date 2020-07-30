@@ -50,15 +50,15 @@ class DriverRegistry(ABCMeta):
     registry = None
     drivers = dict()
 
-    def __init__(cls, name, bases, d):
+    def __init__(self, name, bases, d):
 
         # Register this type of driver, based on the module name
         # Avoid registering the BaseDriver itself
 
         if name != 'BaseDriver':
-            DriverRegistry.registry[_decorate_cls_name(d['__module__'])] = cls
+            DriverRegistry.registry[_decorate_cls_name(d['__module__'])] = self
 
-        ABCMeta.__init__(cls, name, bases, d)
+        ABCMeta.__init__(self, name, bases, d)
 
     @classmethod
     def create(cls, name, **kwargs):

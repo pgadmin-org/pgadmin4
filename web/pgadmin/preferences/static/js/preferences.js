@@ -320,7 +320,7 @@ define('pgadmin.preferences', [
             switch (eventName) {
             case 'selected':
               if (!d)
-                return true;
+                break;
 
               if (d.preferences) {
                 /*
@@ -330,14 +330,14 @@ define('pgadmin.preferences', [
 
                 renderPreferencePanel(d.preferences);
 
-                return true;
+                break;
               } else {
                 selectFirstCategory(api, item);
               }
               break;
             case 'added':
               if (!d)
-                return true;
+                break;
 
               // We will add the preferences in to the preferences data
               // collection.

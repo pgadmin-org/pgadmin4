@@ -333,42 +333,39 @@ define('pgadmin.node.fts_configuration', [
         var self = this,
           token = self.headerData.get('token');
 
-        if (!token || token == '') {
-          return false;
-        }
+        if (token && token != '') {
+          var coll = self.model.get(self.field.get('name')),
+            m = new (self.field.get('model'))(
+              self.headerData.toJSON(), {
+                silent: true, top: self.model.top,
+                collection: coll, handler: coll,
+              }),
+            checkVars = ['token'],
+            idx = -1;
 
-        var coll = self.model.get(self.field.get('name')),
-          m = new (self.field.get('model'))(
-            self.headerData.toJSON(), {
-              silent: true, top: self.model.top,
-              collection: coll, handler: coll,
-            }),
-          checkVars = ['token'],
-          idx = -1;
-
-        // Find if token exists in grid
-        self.collection.each(function(local_model) {
-          _.each(checkVars, function(v) {
-            var val = local_model.get(v);
-            if(val == token) {
-              idx = coll.indexOf(local_model);
-            }
+          // Find if token exists in grid
+          self.collection.each(function(local_model) {
+            _.each(checkVars, function(v) {
+              var val = local_model.get(v);
+              if(val == token) {
+                idx = coll.indexOf(local_model);
+              }
+            });
           });
-        });
 
 
 
-        // remove 'm' if duplicate value found.
-        if (idx == -1) {
-          coll.add(m);
-          idx = coll.indexOf(m);
+          // remove 'm' if duplicate value found.
+          if (idx == -1) {
+            coll.add(m);
+            idx = coll.indexOf(m);
+          }
+          self.$grid.find('.new').removeClass('new');
+          var newRow = self.grid.body.rows[idx].$el;
+          newRow.addClass('new');
+          //$(newRow).pgMakeVisible('table-bordered');
+          $(newRow).pgMakeVisible('backform-tab');
         }
-        self.$grid.find('.new').removeClass('new');
-        var newRow = self.grid.body.rows[idx].$el;
-        newRow.addClass('new');
-        //$(newRow).pgMakeVisible('table-bordered');
-        $(newRow).pgMakeVisible('backform-tab');
-
 
         return false;
       },

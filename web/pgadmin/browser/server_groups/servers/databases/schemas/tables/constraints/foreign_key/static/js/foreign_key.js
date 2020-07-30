@@ -27,7 +27,7 @@ define('pgadmin.node.foreign_key', [
         return opt.text;
       } else {
         return $(
-          '<span><span class="wcTabIcon ' + optimage + '"/>' + opt.text + '</span>'
+          '<span><span class="wcTabIcon ' + optimage + '"/></span><span>' + opt.text + '</span></span>'
         );
       }
     },
@@ -487,32 +487,28 @@ define('pgadmin.node.foreign_key', [
           local_column = self.headerData.get('local_column'),
           referenced = self.headerData.get('referenced');
 
-        if (!local_column || local_column == '' ||
-          !referenced || referenced  =='') {
-          return false;
+        if (local_column && local_column != '' && referenced && referenced != '') {
+          var m = new (self.field.get('model'))(
+              self.headerData.toJSON()),
+            coll = self.model.get(self.field.get('name'));
+
+          coll.add(m);
+
+          var idx = coll.indexOf(m);
+
+          // idx may not be always > -1 because our UniqueColCollection may
+          // remove 'm' if duplicate value found.
+          if (idx > -1) {
+            self.$grid.find('.new').removeClass('new');
+
+            var newRow = self.grid.body.rows[idx].$el;
+
+            newRow.addClass('new');
+            $(newRow).pgMakeVisible('backform-tab');
+          } else {
+            //delete m;
+          }
         }
-
-        var m = new (self.field.get('model'))(
-            self.headerData.toJSON()),
-          coll = self.model.get(self.field.get('name'));
-
-        coll.add(m);
-
-        var idx = coll.indexOf(m);
-
-        // idx may not be always > -1 because our UniqueColCollection may
-        // remove 'm' if duplicate value found.
-        if (idx > -1) {
-          self.$grid.find('.new').removeClass('new');
-
-          var newRow = self.grid.body.rows[idx].$el;
-
-          newRow.addClass('new');
-          $(newRow).pgMakeVisible('backform-tab');
-        } else {
-          //delete m;
-        }
-
         return false;
       },
 
@@ -663,30 +659,28 @@ define('pgadmin.node.foreign_key', [
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-          if (!d) {
-            return false;
-          }
-          var data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'validate', d, true),
-            type:'GET',
-          })
-            .done(function(res) {
-              if (res.success == 1) {
-                Alertify.success(res.info);
-                t.removeIcon(i);
-                data.valid = true;
-                data.icon = 'icon-foreign_key';
-                t.addIcon(i, {icon: data.icon});
-                setTimeout(function() {t.deselect(i);}, 10);
-                setTimeout(function() {t.select(i);}, 100);
-              }
+          if (d) {
+            var data = d;
+            $.ajax({
+              url: obj.generate_url(i, 'validate', d, true),
+              type:'GET',
             })
-            .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
-            });
-
+              .done(function(res) {
+                if (res.success == 1) {
+                  Alertify.success(res.info);
+                  t.removeIcon(i);
+                  data.valid = true;
+                  data.icon = 'icon-foreign_key';
+                  t.addIcon(i, {icon: data.icon});
+                  setTimeout(function() {t.deselect(i);}, 10);
+                  setTimeout(function() {t.select(i);}, 100);
+                }
+              })
+              .fail(function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
+                t.unload(i);
+              });
+          }
           return false;
         },
       },

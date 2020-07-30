@@ -199,10 +199,9 @@ define('pgadmin.node.server', [
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-          if (!d)
-            return false;
-
-          connect_to_server(obj, d, t, i, false);
+          if (d) {
+            connect_to_server(obj, d, t, i, false);
+          }
           return false;
         },
         /* Disconnect the server */
@@ -213,59 +212,58 @@ define('pgadmin.node.server', [
             i = 'item' in input ? input.item : t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-          if (!d)
-            return false;
+          if (d) {
+            notify = notify || _.isUndefined(notify) || _.isNull(notify);
 
-          notify = notify || _.isUndefined(notify) || _.isNull(notify);
-
-          var disconnect = function() {
-            $.ajax({
-              url: obj.generate_url(i, 'connect', d, true),
-              type:'DELETE',
-            })
-              .done(function(res) {
-                if (res.success == 1) {
-                  Alertify.success(res.info);
-                  d = t.itemData(i);
-                  t.removeIcon(i);
-                  d.connected = false;
-                  d.icon = 'icon-server-not-connected';
-                  t.addIcon(i, {icon: d.icon});
-                  obj.callbacks.refresh.apply(obj, [null, i]);
-                  if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
-                    delete pgBrowser.serverInfo[d._id];
-                  }
-                  pgBrowser.enable_disable_menus(i);
-                  // Trigger server disconnect event
-                  pgBrowser.Events.trigger(
-                    'pgadmin:server:disconnect',
-                    {item: i, data: d}, false
-                  );
-                }
-                else {
-                  try {
-                    Alertify.error(res.errormsg);
-                  } catch (e) {
-                    console.warn(e.stack || e);
-                  }
-                  t.unload(i);
-                }
+            var disconnect = function() {
+              $.ajax({
+                url: obj.generate_url(i, 'connect', d, true),
+                type:'DELETE',
               })
-              .fail(function(xhr, status, error) {
-                Alertify.pgRespErrorNotify(xhr, error);
-                t.unload(i);
-              });
-          };
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Alertify.success(res.info);
+                    d = t.itemData(i);
+                    t.removeIcon(i);
+                    d.connected = false;
+                    d.icon = 'icon-server-not-connected';
+                    t.addIcon(i, {icon: d.icon});
+                    obj.callbacks.refresh.apply(obj, [null, i]);
+                    if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
+                      delete pgBrowser.serverInfo[d._id];
+                    }
+                    pgBrowser.enable_disable_menus(i);
+                    // Trigger server disconnect event
+                    pgBrowser.Events.trigger(
+                      'pgadmin:server:disconnect',
+                      {item: i, data: d}, false
+                    );
+                  }
+                  else {
+                    try {
+                      Alertify.error(res.errormsg);
+                    } catch (e) {
+                      console.warn(e.stack || e);
+                    }
+                    t.unload(i);
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Alertify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
+                });
+            };
 
-          if (notify) {
-            Alertify.confirm(
-              gettext('Disconnect server'),
-              gettext('Are you sure you want to disconnect the server %s?', d.label),
-              function() { disconnect(); },
-              function() { return true;}
-            );
-          } else {
-            disconnect();
+            if (notify) {
+              Alertify.confirm(
+                gettext('Disconnect server'),
+                gettext('Are you sure you want to disconnect the server %s?', d.label),
+                function() { disconnect(); },
+                function() { return true;}
+              );
+            } else {
+              disconnect();
+            }
           }
 
           return false;
@@ -306,32 +304,31 @@ define('pgadmin.node.server', [
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-          if (!d)
-            return false;
-
-          Alertify.confirm(
-            gettext('Reload server configuration'),
-            gettext('Are you sure you want to reload the server configuration on %s?', d.label),
-            function() {
-              $.ajax({
-                url: obj.generate_url(i, 'reload', d, true),
-                method:'GET',
-              })
-                .done(function(res) {
-                  if (res.data.status) {
-                    Alertify.success(res.data.result);
-                  }
-                  else {
-                    Alertify.error(res.data.result);
-                  }
+          if (d) {
+            Alertify.confirm(
+              gettext('Reload server configuration'),
+              gettext('Are you sure you want to reload the server configuration on %s?', d.label),
+              function() {
+                $.ajax({
+                  url: obj.generate_url(i, 'reload', d, true),
+                  method:'GET',
                 })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                  t.unload(i);
-                });
-            },
-            function() { return true; }
-          );
+                  .done(function(res) {
+                    if (res.data.status) {
+                      Alertify.success(res.data.result);
+                    }
+                    else {
+                      Alertify.error(res.data.result);
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
+                    t.unload(i);
+                  });
+              },
+              function() { return true; }
+            );
+          }
 
           return false;
         },
@@ -387,174 +384,173 @@ define('pgadmin.node.server', [
             is_pgpass_file_used = false,
             check_pgpass_url = obj.generate_url(i, 'check_pgpass', d, true);
 
-          if (!d)
-            return false;
-
-          if(!Alertify.changeServerPassword) {
-            var newPasswordModel = Backbone.Model.extend({
-                defaults: {
-                  user_name: undefined,
-                  password: undefined,
-                  newPassword: undefined,
-                  confirmPassword: undefined,
-                },
-                validate: function() {
-                  return null;
-                },
-              }),
-              passwordChangeFields = [{
-                name: 'user_name', label: gettext('User'),
-                type: 'text', readonly: true, control: 'input',
-              },{
-                name: 'password', label: gettext('Current Password'),
-                type: 'password', disabled: function() { return is_pgpass_file_used; },
-                control: 'input', required: true,
-              },{
-                name: 'newPassword', label: gettext('New Password'),
-                type: 'password', disabled: false, control: 'input',
-                required: true,
-              },{
-                name: 'confirmPassword', label: gettext('Confirm Password'),
-                type: 'password', disabled: false, control: 'input',
-                required: true,
-              }];
+          if (d) {
+            if(!Alertify.changeServerPassword) {
+              var newPasswordModel = Backbone.Model.extend({
+                  defaults: {
+                    user_name: undefined,
+                    password: undefined,
+                    newPassword: undefined,
+                    confirmPassword: undefined,
+                  },
+                  validate: function() {
+                    return null;
+                  },
+                }),
+                passwordChangeFields = [{
+                  name: 'user_name', label: gettext('User'),
+                  type: 'text', readonly: true, control: 'input',
+                },{
+                  name: 'password', label: gettext('Current Password'),
+                  type: 'password', disabled: function() { return is_pgpass_file_used; },
+                  control: 'input', required: true,
+                },{
+                  name: 'newPassword', label: gettext('New Password'),
+                  type: 'password', disabled: false, control: 'input',
+                  required: true,
+                },{
+                  name: 'confirmPassword', label: gettext('Confirm Password'),
+                  type: 'password', disabled: false, control: 'input',
+                  required: true,
+                }];
 
 
-            Alertify.dialog('changeServerPassword' ,function factory() {
-              return {
-                main: function(params) {
-                  var title = gettext('Change Password');
-                  this.set('title', title);
-                  this.user_name = params.user.name;
-                },
-                setup:function() {
-                  return {
-                    buttons: [{
-                      text: gettext('Cancel'), key: 27,
-                      className: 'btn btn-secondary fa fa-times pg-alertify-button', attrs: {name: 'cancel'},
-                    },{
-                      text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
-                      attrs: {name:'submit'},
-                    }],
-                    // Set options for dialog
-                    options: {
-                      padding : !1,
-                      overflow: !1,
-                      modal:false,
-                      resizable: true,
-                      maximizable: true,
-                      pinnable: false,
-                      closableByDimmer: false,
+              Alertify.dialog('changeServerPassword' ,function factory() {
+                return {
+                  main: function(params) {
+                    var title = gettext('Change Password');
+                    this.set('title', title);
+                    this.user_name = params.user.name;
+                  },
+                  setup:function() {
+                    return {
+                      buttons: [{
+                        text: gettext('Cancel'), key: 27,
+                        className: 'btn btn-secondary fa fa-times pg-alertify-button', attrs: {name: 'cancel'},
+                      },{
+                        text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
+                        attrs: {name:'submit'},
+                      }],
+                      // Set options for dialog
+                      options: {
+                        padding : !1,
+                        overflow: !1,
+                        modal:false,
+                        resizable: true,
+                        maximizable: true,
+                        pinnable: false,
+                        closableByDimmer: false,
+                      },
+                    };
+                  },
+                  hooks: {
+                    // triggered when the dialog is closed
+                    onclose: function() {
+                      if (this.view) {
+                        this.view.remove({data: true, internal: true, silent: true});
+                      }
                     },
-                  };
-                },
-                hooks: {
-                  // triggered when the dialog is closed
-                  onclose: function() {
-                    if (this.view) {
-                      this.view.remove({data: true, internal: true, silent: true});
+                  },
+                  prepare: function() {
+                    var self = this;
+                    // Disable Ok button until user provides input
+                    this.__internal.buttons[1].element.disabled = true;
+
+                    var $container = $('<div class=\'change_password\'></div>'),
+                      newpasswordmodel = new newPasswordModel(
+                        {'user_name': self.user_name}
+                      ),
+                      view = this.view = new Backform.Form({
+                        el: $container,
+                        model: newpasswordmodel,
+                        fields: passwordChangeFields,
+                      });
+
+                    view.render();
+
+                    this.elements.content.appendChild($container.get(0));
+
+                    // Listen to model & if filename is provided then enable Backup button
+                    this.view.model.on('change', function() {
+                      var that = this,
+                        password = this.get('password'),
+                        newPassword = this.get('newPassword'),
+                        confirmPassword = this.get('confirmPassword');
+
+                      // Only check password field if pgpass file is not available
+                      if ((!is_pgpass_file_used &&
+                        (_.isUndefined(password) || _.isNull(password) || password == '')) ||
+                          _.isUndefined(newPassword) || _.isNull(newPassword) || newPassword == '' ||
+                          _.isUndefined(confirmPassword) || _.isNull(confirmPassword) || confirmPassword == '') {
+                        self.__internal.buttons[1].element.disabled = true;
+                      } else if (newPassword != confirmPassword) {
+                        self.__internal.buttons[1].element.disabled = true;
+
+                        this.errorTimeout && clearTimeout(this.errorTimeout);
+                        this.errorTimeout = setTimeout(function() {
+                          that.errorModel.set('confirmPassword', gettext('Passwords do not match.'));
+                        } ,400);
+                      }else {
+                        that.errorModel.clear();
+                        self.__internal.buttons[1].element.disabled = false;
+                      }
+                    });
+                  },
+                  // Callback functions when click on the buttons of the Alertify dialogs
+                  callback: function(e) {
+                    if (e.button.element.name == 'submit') {
+                      var self = this,
+                        alertArgs =  this.view.model.toJSON();
+
+                      e.cancel = true;
+
+                      $.ajax({
+                        url: url,
+                        method:'POST',
+                        data:{'data': JSON.stringify(alertArgs) },
+                      })
+                        .done(function(res) {
+                          if (res.success) {
+                          // Notify user to update pgpass file
+                            if(is_pgpass_file_used) {
+                              Alertify.alert(
+                                gettext('Change Password'),
+                                gettext('Please make sure to disconnect the server'
+                                + ' and update the new password in the pgpass file'
+                                  + ' before performing any other operation')
+                              );
+                            }
+
+                            Alertify.success(res.info);
+                            self.close();
+                          } else {
+                            Alertify.error(res.errormsg);
+                          }
+                        })
+                        .fail(function(xhr, status, error) {
+                          Alertify.pgRespErrorNotify(xhr, error);
+                        });
                     }
                   },
-                },
-                prepare: function() {
-                  var self = this;
-                  // Disable Ok button until user provides input
-                  this.__internal.buttons[1].element.disabled = true;
+                };
+              });
+            }
 
-                  var $container = $('<div class=\'change_password\'></div>'),
-                    newpasswordmodel = new newPasswordModel(
-                      {'user_name': self.user_name}
-                    ),
-                    view = this.view = new Backform.Form({
-                      el: $container,
-                      model: newpasswordmodel,
-                      fields: passwordChangeFields,
-                    });
-
-                  view.render();
-
-                  this.elements.content.appendChild($container.get(0));
-
-                  // Listen to model & if filename is provided then enable Backup button
-                  this.view.model.on('change', function() {
-                    var that = this,
-                      password = this.get('password'),
-                      newPassword = this.get('newPassword'),
-                      confirmPassword = this.get('confirmPassword');
-
-                    // Only check password field if pgpass file is not available
-                    if ((!is_pgpass_file_used &&
-                      (_.isUndefined(password) || _.isNull(password) || password == '')) ||
-                        _.isUndefined(newPassword) || _.isNull(newPassword) || newPassword == '' ||
-                        _.isUndefined(confirmPassword) || _.isNull(confirmPassword) || confirmPassword == '') {
-                      self.__internal.buttons[1].element.disabled = true;
-                    } else if (newPassword != confirmPassword) {
-                      self.__internal.buttons[1].element.disabled = true;
-
-                      this.errorTimeout && clearTimeout(this.errorTimeout);
-                      this.errorTimeout = setTimeout(function() {
-                        that.errorModel.set('confirmPassword', gettext('Passwords do not match.'));
-                      } ,400);
-                    }else {
-                      that.errorModel.clear();
-                      self.__internal.buttons[1].element.disabled = false;
-                    }
-                  });
-                },
-                // Callback functions when click on the buttons of the Alertify dialogs
-                callback: function(e) {
-                  if (e.button.element.name == 'submit') {
-                    var self = this,
-                      alertArgs =  this.view.model.toJSON();
-
-                    e.cancel = true;
-
-                    $.ajax({
-                      url: url,
-                      method:'POST',
-                      data:{'data': JSON.stringify(alertArgs) },
-                    })
-                      .done(function(res) {
-                        if (res.success) {
-                        // Notify user to update pgpass file
-                          if(is_pgpass_file_used) {
-                            Alertify.alert(
-                              gettext('Change Password'),
-                              gettext('Please make sure to disconnect the server'
-                              + ' and update the new password in the pgpass file'
-                                + ' before performing any other operation')
-                            );
-                          }
-
-                          Alertify.success(res.info);
-                          self.close();
-                        } else {
-                          Alertify.error(res.errormsg);
-                        }
-                      })
-                      .fail(function(xhr, status, error) {
-                        Alertify.pgRespErrorNotify(xhr, error);
-                      });
-                  }
-                },
-              };
-            });
-          }
-
-          // Call to check if server is using pgpass file or not
-          $.ajax({
-            url: check_pgpass_url,
-            method:'GET',
-          })
-            .done(function(res) {
-              if (res.success && res.data.is_pgpass) {
-                is_pgpass_file_used = true;
-              }
-              Alertify.changeServerPassword(d).resizeTo('40%','52%');
+            // Call to check if server is using pgpass file or not
+            $.ajax({
+              url: check_pgpass_url,
+              method:'GET',
             })
-            .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
-            });
+              .done(function(res) {
+                if (res.success && res.data.is_pgpass) {
+                  is_pgpass_file_used = true;
+                }
+                Alertify.changeServerPassword(d).resizeTo('40%','52%');
+              })
+              .fail(function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
+              });
+          }
 
           return false;
         },
@@ -637,32 +633,31 @@ define('pgadmin.node.server', [
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-          if (!d)
-            return false;
-
-          Alertify.confirm(
-            gettext('Clear saved password'),
-            gettext('Are you sure you want to clear the saved password for server %s?', d.label),
-            function() {
-              $.ajax({
-                url: obj.generate_url(i, 'clear_saved_password', d, true),
-                method:'PUT',
-              })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    Alertify.success(res.info);
-                    t.itemData(i).is_password_saved=res.data.is_password_saved;
-                  }
-                  else {
-                    Alertify.error(res.info);
-                  }
+          if (d) {
+            Alertify.confirm(
+              gettext('Clear saved password'),
+              gettext('Are you sure you want to clear the saved password for server %s?', d.label),
+              function() {
+                $.ajax({
+                  url: obj.generate_url(i, 'clear_saved_password', d, true),
+                  method:'PUT',
                 })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                });
-            },
-            function() { return true; }
-          );
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      Alertify.success(res.info);
+                      t.itemData(i).is_password_saved=res.data.is_password_saved;
+                    }
+                    else {
+                      Alertify.error(res.info);
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
+                  });
+              },
+              function() { return true; }
+            );
+          }
 
           return false;
         },
@@ -675,32 +670,31 @@ define('pgadmin.node.server', [
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-          if (!d)
-            return false;
-
-          Alertify.confirm(
-            gettext('Clear SSH Tunnel password'),
-            gettext('Are you sure you want to clear the saved password of SSH Tunnel for server %s?', d.label),
-            function() {
-              $.ajax({
-                url: obj.generate_url(i, 'clear_sshtunnel_password', d, true),
-                method:'PUT',
-              })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    Alertify.success(res.info);
-                    t.itemData(i).is_tunnel_password_saved=res.data.is_tunnel_password_saved;
-                  }
-                  else {
-                    Alertify.error(res.info);
-                  }
+          if (d) {
+            Alertify.confirm(
+              gettext('Clear SSH Tunnel password'),
+              gettext('Are you sure you want to clear the saved password of SSH Tunnel for server %s?', d.label),
+              function() {
+                $.ajax({
+                  url: obj.generate_url(i, 'clear_sshtunnel_password', d, true),
+                  method:'PUT',
                 })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                });
-            },
-            function() { return true; }
-          );
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      Alertify.success(res.info);
+                      t.itemData(i).is_tunnel_password_saved=res.data.is_tunnel_password_saved;
+                    }
+                    else {
+                      Alertify.error(res.info);
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
+                  });
+              },
+              function() { return true; }
+            );
+          }
 
           return false;
         },

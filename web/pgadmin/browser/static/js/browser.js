@@ -31,7 +31,6 @@ define('pgadmin.browser', [
   // Generally the one, which do no have AMD support.
   var wcDocker = window.wcDocker;
   $ = $ || window.jQuery || window.$;
-  Bootstrap = Bootstrap || window.Bootstrap;
   var CodeMirror = codemirror.default;
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};

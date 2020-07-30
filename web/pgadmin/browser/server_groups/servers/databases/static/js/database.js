@@ -172,10 +172,9 @@ define('pgadmin.node.database', [
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-          if (!d || d.label == 'template0')
-            return false;
-
-          connect_to_database(obj, d, t, i, true);
+          if (d && d.label != 'template0') {
+            connect_to_database(obj, d, t, i, true);
+          }
           return false;
         },
         /* Disconnect the database */
@@ -186,54 +185,53 @@ define('pgadmin.node.database', [
             i = input.item || t.selected(),
             d = i && i.length == 1 ? t.itemData(i) : undefined;
 
-          if (!d)
-            return false;
-
-          Alertify.confirm(
-            gettext('Disconnect the database'),
-            gettext('Are you sure you want to disconnect the database - %s?', d.label),
-            function() {
-              var data = d;
-              $.ajax({
-                url: obj.generate_url(i, 'connect', d, true),
-                type:'DELETE',
-              })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    var prv_i = t.parent(i);
-                    if(res.data.info_prefix) {
-                      res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
-                    }
-                    Alertify.success(res.info);
-                    t.removeIcon(i);
-                    data.connected = false;
-                    data.icon = 'icon-database-not-connected';
-                    t.addIcon(i, {icon: data.icon});
-                    t.unload(i);
-                    t.setInode(i);
-                    setTimeout(function() {
-                      t.select(prv_i);
-                    }, 10);
-
-                  } else {
-                    try {
-                      Alertify.error(res.errormsg);
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
-                    t.unload(i);
-                  }
+          if (d) {
+            Alertify.confirm(
+              gettext('Disconnect the database'),
+              gettext('Are you sure you want to disconnect the database - %s?', d.label),
+              function() {
+                var data = d;
+                $.ajax({
+                  url: obj.generate_url(i, 'connect', d, true),
+                  type:'DELETE',
                 })
-                .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
-                  t.unload(i);
-                });
-            },
-            function() { return true; }
-          ).set('labels', {
-            ok: gettext('Yes'),
-            cancel: gettext('No'),
-          });
+                  .done(function(res) {
+                    if (res.success == 1) {
+                      var prv_i = t.parent(i);
+                      if(res.data.info_prefix) {
+                        res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
+                      }
+                      Alertify.success(res.info);
+                      t.removeIcon(i);
+                      data.connected = false;
+                      data.icon = 'icon-database-not-connected';
+                      t.addIcon(i, {icon: data.icon});
+                      t.unload(i);
+                      t.setInode(i);
+                      setTimeout(function() {
+                        t.select(prv_i);
+                      }, 10);
+
+                    } else {
+                      try {
+                        Alertify.error(res.errormsg);
+                      } catch (e) {
+                        console.warn(e.stack || e);
+                      }
+                      t.unload(i);
+                    }
+                  })
+                  .fail(function(xhr, status, error) {
+                    Alertify.pgRespErrorNotify(xhr, error);
+                    t.unload(i);
+                  });
+              },
+              function() { return true; }
+            ).set('labels', {
+              ok: gettext('Yes'),
+              cancel: gettext('No'),
+            });
+          }
 
           return false;
         },

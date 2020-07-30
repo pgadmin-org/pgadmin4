@@ -541,41 +541,39 @@ define('pgadmin.node.exclusion_constraint', [
         var self = this,
           column = self.headerData.get('column');
 
-        if (!column || column == '') {
-          return false;
-        }
+        if (column && column != '') {
+          var coll = self.model.get(self.field.get('name')),
+            m = new (self.field.get('model'))(
+              self.headerData.toJSON(), {
+                silent: true, top: self.model.top,
+                collection: coll, handler: coll,
+              }),
+            col_types =self.field.get('col_types') || [];
 
-        var coll = self.model.get(self.field.get('name')),
-          m = new (self.field.get('model'))(
-            self.headerData.toJSON(), {
-              silent: true, top: self.model.top,
-              collection: coll, handler: coll,
-            }),
-          col_types =self.field.get('col_types') || [];
-
-        for(var i=0; i < col_types.length; i++) {
-          var col_type = col_types[i];
-          if (col_type['name'] ==  m.get('column')) {
-            m.set({'col_type':col_type['type']});
-            break;
+          for(var i=0; i < col_types.length; i++) {
+            var col_type = col_types[i];
+            if (col_type['name'] ==  m.get('column')) {
+              m.set({'col_type':col_type['type']});
+              break;
+            }
           }
-        }
 
-        coll.add(m);
+          coll.add(m);
 
-        var idx = coll.indexOf(m);
+          var idx = coll.indexOf(m);
 
-        // idx may not be always > -1 because our UniqueColCollection may
-        // remove 'm' if duplicate value found.
-        if (idx > -1) {
-          self.$grid.find('.new').removeClass('new');
+          // idx may not be always > -1 because our UniqueColCollection may
+          // remove 'm' if duplicate value found.
+          if (idx > -1) {
+            self.$grid.find('.new').removeClass('new');
 
-          var newRow = self.grid.body.rows[idx].$el;
+            var newRow = self.grid.body.rows[idx].$el;
 
-          newRow.addClass('new');
-          $(newRow).pgMakeVisible('backform-tab');
-        } else {
-          //delete m;
+            newRow.addClass('new');
+            $(newRow).pgMakeVisible('backform-tab');
+          } else {
+            //delete m;
+          }
         }
 
         return false;

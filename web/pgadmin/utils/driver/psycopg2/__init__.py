@@ -120,7 +120,7 @@ class Driver(BaseDriver):
 
         return managers[str(sid)]
 
-    def version(cls):
+    def version(self):
         """
         version(...)
 
@@ -135,7 +135,7 @@ class Driver(BaseDriver):
             "Driver Version information for psycopg2 is not available!"
         )
 
-    def libpq_version(cls):
+    def libpq_version(self):
         """
         Returns the loaded libpq version
         """

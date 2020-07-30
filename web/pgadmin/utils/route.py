@@ -42,7 +42,7 @@ class TestsGeneratorRegistry(ABCMeta):
 
     registry = dict()
 
-    def __init__(cls, name, bases, d):
+    def __init__(self, name, bases, d):
 
         # Register this type of module, based on the module name
         # Avoid registering the BaseDriver itself
@@ -51,11 +51,11 @@ class TestsGeneratorRegistry(ABCMeta):
             # Store/append test classes in 'registry' if test modules has
             # multiple classes
             if d['__module__'] in TestsGeneratorRegistry.registry:
-                TestsGeneratorRegistry.registry[d['__module__']].append(cls)
+                TestsGeneratorRegistry.registry[d['__module__']].append(self)
             else:
-                TestsGeneratorRegistry.registry[d['__module__']] = [cls]
+                TestsGeneratorRegistry.registry[d['__module__']] = [self]
 
-        ABCMeta.__init__(cls, name, bases, d)
+        ABCMeta.__init__(self, name, bases, d)
 
     @classmethod
     def load_generators(cls, pkg_root, exclude_pkgs, for_modules=[],
