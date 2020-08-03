@@ -85,6 +85,22 @@ blueprint = UserManagementModule(
 )
 
 
+def validate_password(data, new_data):
+    """
+    Check password new and confirm password match. If both passwords are not
+    match raise exception.
+    :param data: Data.
+    :param new_data: new data dict.
+    """
+    if ('newPassword' in data and data['newPassword'] != "" and
+            'confirmPassword' in data and data['confirmPassword'] != ""):
+
+        if data['newPassword'] == data['confirmPassword']:
+            new_data['password'] = encrypt_password(data['newPassword'])
+        else:
+            raise Exception(_("Passwords do not match."))
+
+
 def validate_user(data):
     new_data = dict()
     email_filter = re.compile(
@@ -93,13 +109,7 @@ def validate_user(data):
         "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
     )
 
-    if ('newPassword' in data and data['newPassword'] != "" and
-            'confirmPassword' in data and data['confirmPassword'] != ""):
-
-        if data['newPassword'] == data['confirmPassword']:
-            new_data['password'] = encrypt_password(data['newPassword'])
-        else:
-            raise Exception(_("Passwords do not match."))
+    validate_password(data, new_data)
 
     if 'email' in data and data['email'] and data['email'] != "":
         if email_filter.match(data['email']):
@@ -240,6 +250,36 @@ def create():
     )
 
 
+def _create_new_user(new_data):
+    """
+    Create new user.
+    :param new_data: Data from user creation.
+    :return: Return new created user.
+    """
+    auth_source = new_data['auth_source'] if 'auth_source' in new_data \
+        else current_app.PGADMIN_DEFAULT_AUTH_SOURCE
+    username = new_data['username'] if \
+        'username' in new_data and auth_source != \
+        current_app.PGADMIN_DEFAULT_AUTH_SOURCE else new_data['email']
+    email = new_data['email'] if 'email' in new_data else None
+    password = new_data['password'] if 'password' in new_data else None
+
+    usr = User(username=username,
+               email=email,
+               roles=new_data['roles'],
+               active=new_data['active'],
+               password=password,
+               auth_source=auth_source)
+    db.session.add(usr)
+    db.session.commit()
+    # Add default server group for new user.
+    server_group = ServerGroup(user_id=usr.id, name="Servers")
+    db.session.add(server_group)
+    db.session.commit()
+
+    return usr
+
+
 def create_user(data):
     if 'auth_source' in data and data['auth_source'] != \
             current_app.PGADMIN_DEFAULT_AUTH_SOURCE:
@@ -264,27 +304,7 @@ def create_user(data):
         return False, str(e)
 
     try:
-
-        auth_source = new_data['auth_source'] if 'auth_source' in new_data \
-            else current_app.PGADMIN_DEFAULT_AUTH_SOURCE
-        username = new_data['username'] if \
-            'username' in new_data and auth_source !=\
-            current_app.PGADMIN_DEFAULT_AUTH_SOURCE else new_data['email']
-        email = new_data['email'] if 'email' in new_data else None
-        password = new_data['password'] if 'password' in new_data else None
-
-        usr = User(username=username,
-                   email=email,
-                   roles=new_data['roles'],
-                   active=new_data['active'],
-                   password=password,
-                   auth_source=auth_source)
-        db.session.add(usr)
-        db.session.commit()
-        # Add default server group for new user.
-        server_group = ServerGroup(user_id=usr.id, name="Servers")
-        db.session.add(server_group)
-        db.session.commit()
+        usr = _create_new_user(new_data)
     except Exception as e:
         return False, str(e)
 

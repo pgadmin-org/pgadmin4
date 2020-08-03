@@ -94,16 +94,26 @@ class TestsGeneratorRegistry(ABCMeta):
                 traceback.print_exc(file=sys.stderr)
         else:
             # Check for SERVER mode
-            for module_name in all_modules:
-                try:
-                    if "tests." in str(module_name) and not any(
-                        str(module_name).startswith(
-                            'pgadmin.' + str(exclude_pkg)
-                        ) for exclude_pkg in exclude_pkgs
-                    ):
-                        import_module(module_name)
-                except ImportError:
-                    traceback.print_exc(file=sys.stderr)
+            TestsGeneratorRegistry._check_server_mode(all_modules,
+                                                      exclude_pkgs)
+
+    @staticmethod
+    def _check_server_mode(all_modules, exclude_pkgs):
+        """
+        This function check for server mode test cases.
+        :param all_modules: all modules.
+        :param exclude_pkgs: exclude package list.
+        """
+        for module_name in all_modules:
+            try:
+                if "tests." in str(module_name) and not any(
+                    str(module_name).startswith(
+                        'pgadmin.' + str(exclude_pkg)
+                    ) for exclude_pkg in exclude_pkgs
+                ):
+                    import_module(module_name)
+            except ImportError:
+                traceback.print_exc(file=sys.stderr)
 
 
 @six.add_metaclass(TestsGeneratorRegistry)

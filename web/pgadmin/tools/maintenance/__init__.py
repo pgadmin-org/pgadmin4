@@ -97,10 +97,12 @@ class Message(IProcessDesc):
     def type_desc(self):
         return _("Maintenance")
 
-    def details(self, cmd, args):
-
+    def _check_for_vacuum(self):
+        """
+        Check for VACUUM in data and return format response.
+        :return: response.
+        """
         res = None
-
         if self.data['op'] == "VACUUM":
             res = _('VACUUM ({0})')
 
@@ -113,6 +115,10 @@ class Message(IProcessDesc):
                 opts.append(_('VERBOSE'))
 
             res = res.format(', '.join(str(x) for x in opts))
+        return res
+
+    def details(self, cmd, args):
+        res = self._check_for_vacuum()
 
         if self.data['op'] == "ANALYZE":
             res = _('ANALYZE')
@@ -162,6 +168,23 @@ def script():
     )
 
 
+def get_index_name(data):
+    """
+    Check and get index name from constraints.
+    :param data: Data.
+    :return: index_name.
+    """
+    index_name = None
+    if 'primary_key' in data and data['primary_key']:
+        index_name = data['primary_key']
+    elif 'unique_constraint' in data and data['unique_constraint']:
+        index_name = data['unique_constraint']
+    elif 'index' in data and data['index']:
+        index_name = data['index']
+
+    return index_name
+
+
 @blueprint.route(
     '/job/<int:sid>/<int:did>', methods=['POST'], endpoint='create_job'
 )
@@ -182,14 +205,7 @@ def create_maintenance_job(sid, did):
     else:
         data = json.loads(request.data, encoding='utf-8')
 
-    index_name = None
-
-    if 'primary_key' in data and data['primary_key']:
-        index_name = data['primary_key']
-    elif 'unique_constraint' in data and data['unique_constraint']:
-        index_name = data['unique_constraint']
-    elif 'index' in data and data['index']:
-        index_name = data['index']
+    index_name = get_index_name(data)
 
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(

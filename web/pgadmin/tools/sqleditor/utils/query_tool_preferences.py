@@ -137,7 +137,7 @@ def register_query_tool_preferences(self):
         gettext("Plain text mode?"), 'boolean', False,
         category_label=gettext('Editor'),
         help_str=gettext(
-            'When set to True, keywords won''t be highlighted and code '
+            'When set to True, keywords won\'t be highlighted and code '
             'folding will be disabled. Plain text mode will improve editor '
             'performance with large files.'
         )
