@@ -137,10 +137,7 @@ class StartRunningQuery:
 
         # Execute sql asynchronously with params is None
         # and formatted_error is True.
-        try:
-            status, result = conn.execute_async(sql)
-        except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
-            raise
+        status, result = conn.execute_async(sql)
 
         # If the transaction aborted for some reason and
         # Auto RollBack is True then issue a rollback to cleanup.

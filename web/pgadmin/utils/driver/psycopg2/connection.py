@@ -198,12 +198,7 @@ class Connection(BaseConnection):
         )
 
     def __str__(self):
-        return "PG Connection: {0} ({1}) -> {2} (ajax:{3})".format(
-            self.conn_id, self.db,
-            'Connected' if self.conn and not self.conn.closed else
-            "Disconnected",
-            self.async_
-        )
+        return self.__repr__()
 
     def connect(self, **kwargs):
         if self.conn:
@@ -713,27 +708,6 @@ WHERE
         if cur.description is None:
             return False, \
                 gettext('The query executed did not return any data.')
-
-        def convert_keys_to_unicode(results, conn_encoding):
-            """
-            [ This is only for Python2.x]
-            We need to convert all keys to unicode as psycopg2
-            sends them as string
-
-            Args:
-                res: Query result set from psycopg2
-                conn_encoding: Connection encoding
-
-            Returns:
-                Result set (With all the keys converted to unicode)
-            """
-            new_results = []
-            for row in results:
-                new_results.append(
-                    dict([(k.decode(conn_encoding), v)
-                          for k, v in row.items()])
-                )
-            return new_results
 
         def handle_null_values(results, replace_nulls_with):
             """
@@ -1279,9 +1253,14 @@ WHERE
             )
 
         except psycopg2.Error as e:
-            msg = e.pgerror if e.pgerror else e.message \
-                if e.message else e.diag.message_detail \
-                if e.diag.message_detail else str(e)
+            if e.pgerror:
+                msg = e.pgerror
+            elif e.message:
+                msg = e.message
+            elif e.diag.message_detail:
+                msg = e.diag.message_detail
+            else:
+                msg = str(e)
 
             current_app.logger.error(
                 gettext(

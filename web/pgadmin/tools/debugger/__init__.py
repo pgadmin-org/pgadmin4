@@ -492,7 +492,6 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
             for pr_arg_mode in pro_arg_modes:
                 if pr_arg_mode == 'o' or pr_arg_mode == 't':
                     data['require_input'] = False
-                    continue
                 else:
                     data['require_input'] = True
                     break
@@ -2124,7 +2123,8 @@ def close_debugger_session(_trans_id, close_all=False):
                                 dbg_obj['exe_conn_id'],
                                 dbg_obj['database_id'])
                         manager.release(conn_id=dbg_obj['exe_conn_id'])
-        except Exception:
-            raise
-        finally:
+
             de_inst.clear()
+        except Exception:
+            de_inst.clear()
+            raise

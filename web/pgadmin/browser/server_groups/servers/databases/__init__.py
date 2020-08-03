@@ -862,8 +862,6 @@ class DatabaseView(PGChildNodeView):
                 )
             else:
 
-                status = self.manager.release(did=did)
-
                 SQL = render_template(
                     "/".join([self.template_path, self._DELETE_SQL]),
                     datname=res, conn=self.conn

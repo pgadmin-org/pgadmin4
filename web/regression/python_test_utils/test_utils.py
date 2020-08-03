@@ -1129,9 +1129,9 @@ def check_binary_path_or_skip_test(cls, utility_name):
             cls.server['default_binary_paths'][cls.server['type']],
             utility_name
         )
-        ret_val = does_utility_exist(binary_path)
-        if ret_val is not None:
-            cls.skipTest(ret_val)
+        retVal = does_utility_exist(binary_path)
+        if retVal is not None:
+            cls.skipTest(retVal)
 
 
 def get_watcher_dialogue_status(self):

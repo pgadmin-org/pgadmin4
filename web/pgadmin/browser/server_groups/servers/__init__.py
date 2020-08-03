@@ -1016,9 +1016,11 @@ class ServerNode(PGChildNodeView):
         else:
             return unauthorized(gettext("Unauthorized request."))
 
-        data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
-        ) if request.data else {}
+        data = {}
+        if request.form:
+            data = request.form
+        elif request.data:
+            data = json.loads(request.data, encoding='utf-8')
 
         password = None
         passfile = None

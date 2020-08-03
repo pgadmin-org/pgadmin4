@@ -305,9 +305,12 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                                     data[key] = []
 
                     elif key == 'typnotnull':
-                        data[key] = True if (req[key] == 'true' or req[key]
-                                             is True) else False if \
-                            (req[key] == 'false' or req[key]) is False else ''
+                        if req[key] == 'true' or req[key] is True:
+                            data[key] = True
+                        elif req[key] == 'false' or req[key] is False:
+                            data[key] = False
+                        else:
+                            data[key] = ''
                     else:
                         data[key] = req[key]
 

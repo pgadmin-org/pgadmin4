@@ -103,11 +103,11 @@ class SessionManager(object):
 
 
 class CachingSessionManager(SessionManager):
-    def __init__(self, parent, num_to_store, skip_paths=[]):
+    def __init__(self, parent, num_to_store, skip_paths=None):
         self.parent = parent
         self.num_to_store = num_to_store
         self._cache = OrderedDict()
-        self.skip_paths = skip_paths
+        self.skip_paths = [] if skip_paths is None else skip_paths
 
     def _normalize(self):
         if len(self._cache) > self.num_to_store:
@@ -187,13 +187,13 @@ class CachingSessionManager(SessionManager):
 
 class FileBackedSessionManager(SessionManager):
 
-    def __init__(self, path, secret, disk_write_delay, skip_paths=[]):
+    def __init__(self, path, secret, disk_write_delay, skip_paths=None):
         self.path = path
         self.secret = secret
         self.disk_write_delay = disk_write_delay
         if not os.path.exists(self.path):
             os.makedirs(self.path)
-        self.skip_paths = skip_paths
+        self.skip_paths = [] if skip_paths is None else skip_paths
 
     def exists(self, sid):
         fname = os.path.join(self.path, sid)

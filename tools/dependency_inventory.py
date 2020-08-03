@@ -165,7 +165,6 @@ def get_js_deps():
         if module[2] != "":
             licence = module[2]
 
-        url = "Unknown"
         if module[3] != "":
             url = module[3]
 

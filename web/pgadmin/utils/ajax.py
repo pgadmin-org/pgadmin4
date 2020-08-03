@@ -31,7 +31,7 @@ class DataTypeJSONEncoder(json.JSONEncoder):
 
 
 class ColParamsJSONDecoder(json.JSONDecoder):
-    def decode(self, obj):
+    def decode(self, obj, **kwargs):
         retval = obj
         try:
             retval = json.JSONDecoder.decode(self, obj)

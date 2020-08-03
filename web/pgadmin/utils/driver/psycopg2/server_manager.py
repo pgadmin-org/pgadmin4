@@ -372,8 +372,11 @@ WHERE db.oid = {0}""".format(did))
             else:
                 return False
 
-        my_id = (u'CONN:{0}'.format(conn_id)) if conn_id is not None else \
-            (u'DB:{0}'.format(database)) if database is not None else None
+        my_id = None
+        if conn_id is not None:
+            my_id = u'CONN:{0}'.format(conn_id)
+        elif database is not None:
+            my_id = u'DB:{0}'.format(database)
 
         if my_id is not None:
             if my_id in self.connections:

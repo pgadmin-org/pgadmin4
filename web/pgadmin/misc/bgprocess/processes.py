@@ -202,25 +202,6 @@ class BatchProcess(object):
                     return file_quote(exe_file)
             return None
 
-        def convert_environment_variables(env):
-            """
-            This function is use to convert environment variable to string
-            because environment variable must be string in popen
-            :param env: Dict of environment variable
-            :return: Encoded environment variable as string
-            """
-            encoding = sys.getdefaultencoding()
-            if encoding is None or encoding == 'ascii':
-                encoding = 'utf-8'
-            temp_env = dict()
-            for key, value in env.items():
-                if not isinstance(key, str):
-                    key = key.encode(encoding)
-                if not isinstance(value, str):
-                    value = value.encode(encoding)
-                temp_env[key] = value
-            return temp_env
-
         if self.stime is not None:
             if self.etime is None:
                 raise Exception(_('The process has already been started.'))
@@ -409,7 +390,7 @@ class BatchProcess(object):
         out_completed = err_completed = False
         process_output = (out != -1 and err != -1)
         enc = sys.getdefaultencoding()
-        if enc is None or enc == 'ascii':
+        if enc == 'ascii':
             enc = 'utf-8'
 
         def read_log(logfile, log, pos, ctime, ecode=None):

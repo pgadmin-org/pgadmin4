@@ -473,15 +473,15 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
                 # If we have length & precision both
                 if is_tlength and is_precision:
-                    matchObj = re.search(r'(\d+),(\d+)', row['fulltype'])
-                    if matchObj:
-                        t_len = matchObj.group(1)
-                        t_prec = matchObj.group(2)
+                    match_obj = re.search(r'(\d+),(\d+)', row['fulltype'])
+                    if match_obj:
+                        t_len = match_obj.group(1)
+                        t_prec = match_obj.group(2)
                 elif is_tlength:
                     # If we have length only
-                    matchObj = re.search(r'(\d+)', row['fulltype'])
-                    if matchObj:
-                        t_len = matchObj.group(1)
+                    match_obj = re.search(r'(\d+)', row['fulltype'])
+                    if match_obj:
+                        t_len = match_obj.group(1)
                         t_prec = None
 
                 type_name = DataTypeReader.parse_type_name(row['typname'])

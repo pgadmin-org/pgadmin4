@@ -721,7 +721,7 @@ class DictWriter(object):
             raise ValueError("extrasaction (%s) must be 'raise' or 'ignore'"
                              % self.extrasaction)
         dialect = kwds.get('dialect', "excel")
-        self.Writer = Writer(f, dialect, *args, **kwds)
+        self.writer = Writer(f, dialect, *args, **kwds)
 
     def writeheader(self):
         header = dict(zip(self.fieldnames, self.fieldnames))
@@ -736,7 +736,7 @@ class DictWriter(object):
         return (rowdict.get(key, self.restval) for key in self.fieldnames)
 
     def writerow(self, rowdict):
-        return self.Writer.writerow(self._dict_to_list(rowdict))
+        return self.writer.writerow(self._dict_to_list(rowdict))
 
     def writerows(self, rowdicts):
-        return self.Writer.writerows(map(self._dict_to_list, rowdicts))
+        return self.writer.writerows(map(self._dict_to_list, rowdicts))

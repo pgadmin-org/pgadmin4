@@ -259,10 +259,7 @@ def start_view_data(trans_id):
         update_session_grid_transaction(trans_id, session_obj)
 
         # Execute sql asynchronously
-        try:
-            status, result = conn.execute_async(sql)
-        except (ConnectionLost, SSHTunnelConnectionLost) as e:
-            raise
+        status, result = conn.execute_async(sql)
     else:
         status = False
         result = error_msg

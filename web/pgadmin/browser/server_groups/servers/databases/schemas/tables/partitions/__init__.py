@@ -450,7 +450,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
                 )
                 res[row['name']] = data
 
-            return res
+        return res
 
     @BaseTableView.check_precondition
     def sql(self, gid, sid, did, scid, tid, ptid):
