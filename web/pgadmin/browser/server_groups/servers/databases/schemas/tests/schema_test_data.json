@@ -1,0 +1,296 @@
+{
+  "schema_create": [
+    {
+      "name": "Create schema: With valid data",
+      "url": "/browser/schema/obj/",
+      "is_positive_test": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error Creating schema: missing parameter",
+      "url": "/browser/schema/obj/",
+      "is_positive_test": false,
+      "missing_param": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error Creating schema: invalid data",
+      "url": "/browser/schema/obj/",
+      "is_positive_test": false,
+      "error_db_id": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "schema_delete": [
+    {
+      "name": "Delete schema",
+      "url": "/browser/schema/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while deleting a schema - Internal server error",
+      "url": "/browser/schema/obj/",
+      "error_deleting_schema": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error while deleting a schema')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Delete schema using wrong schema id",
+      "url": "/browser/schema/obj/",
+      "wrong_schema_id": true,
+      "is_positive_test": false,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "schema_multiple_delete" :[
+    {
+      "name": "Delete multiple schema",
+      "url": "/browser/schema/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "schema_dependent_dependency": [
+    {
+      "name": "Get schema dependents",
+      "url": "/browser/schema/dependent/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get schema dependencies",
+      "url": "/browser/schema/dependency/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "schema_get_nodes": [
+    {
+      "name": "Get schema nodes",
+      "url": "/browser/schema/nodes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching schema nodes",
+      "url": "/browser/schema/nodes/",
+      "error_fetching_schema": true,
+      "is_positive_test": false,
+      "invalid": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching schema nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error - Fetching schema using wrong schema id",
+      "url": "/browser/schema/nodes/",
+      "wrong_schema_id": true,
+      "is_positive_test": false,
+      "invalid": false,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "schema_update": [
+    {
+      "name": "Update schema",
+      "url": "/browser/schema/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while updating a schema - Internal server error",
+      "url": "/browser/schema/obj/",
+      "error_in_db": true,
+      "test_data": {},
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error while updating a schema')]"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "schema_get_sql": [
+    {
+      "name": "Get Schema SQL",
+      "url": "/browser/schema/sql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error - Get schema SQL - Internal server error",
+      "url": "/browser/schema/sql/",
+      "is_positive_test": false,
+      "internal_server_error": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a schema')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error - Get schema SQL using wrong schema id",
+      "url": "/browser/schema/sql/",
+      "wrong_schema_id": true,
+      "is_positive_test": false,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "schema_get": [
+    {
+      "name": "Get Schema Properties",
+      "url": "/browser/schema/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching Schema Properties",
+      "url": "/browser/schema/obj/",
+      "error_fetching_schema": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching schema properties')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Get schema list",
+      "url": "/browser/schema/obj/",
+      "is_positive_test": true,
+      "schema_list": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching Schema list",
+      "url": "/browser/schema/obj/",
+      "error_fetching_schema": true,
+      "is_positive_test": false,
+      "schema_list": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching schema list')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "schema_get_children": [
+    {
+      "name": "Get Schema Children",
+      "url": "/browser/schema/children/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching Schema children",
+      "url": "/browser/schema/children/",
+      "error_in_db": true,
+      "is_positive_test": false,
+      "schema_list": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching schema children')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ]
+}

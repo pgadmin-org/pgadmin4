@@ -15,29 +15,45 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
+from . import utils as schema_utils
+from unittest.mock import patch
 
 
 class SchemaAddTestCase(BaseTestGenerator):
     """ This class will add new schema under database node. """
-    scenarios = [
-        # Fetching default URL for schema node.
-        ('Check Schema Node URL', dict(url='/browser/schema/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('schema_create',
+                                         schema_utils.test_cases)
+
+    def setUp(self):
+        database_info = parent_node_dict["database"][-1]
+        self.server_id = database_info["server_id"]
+        self.db_id = database_info["db_id"]
+
+    def create_schema(self, db_id):
+        """
+        This function create a schema and returns it
+        :return: created schema response
+        """
+        is_nice = True
+        state = "nice" if is_nice else "not nice"
+
+        db_id = db_id or self.db_id
+        return self.tester.post(self.url + str(utils.SERVER_GROUP) + '/' +
+                                str(self.server_id) + '/' +
+                                str(db_id) + '/',
+                                data=json.dumps(self.data),
+                                content_type='html/json')
 
     def runTest(self):
         """ This function will add schema under database node. """
-        database_info = parent_node_dict["database"][-1]
-        server_id = database_info["server_id"]
-
-        db_id = database_info["db_id"]
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
-                                                 server_id,
-                                                 db_id)
+                                                 self.server_id,
+                                                 self.db_id)
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database to add the schema.")
         db_user = self.server["username"]
-        data = {
+        self.data = {
             "deffuncacl": [],
             "defseqacl": [],
             "deftblacl": [],
@@ -65,8 +81,22 @@ class SchemaAddTestCase(BaseTestGenerator):
             ],
             "seclabels": []
         }
-        response = self.tester.post(self.url + str(utils.SERVER_GROUP) + '/' +
-                                    str(server_id) + '/' + str(db_id) +
-                                    '/', data=json.dumps(data),
-                                    content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+
+        if self.is_positive_test:
+            response = self.create_schema("")
+        else:
+            if hasattr(self, "error_db_id"):
+                wrong_db_id = 99999
+                response = self.create_schema(wrong_db_id)
+
+            if hasattr(self, "missing_param"):
+                del self.data['name']
+                response = self.create_schema("")
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
+
+    def tearDown(self):
+        # Disconnect the database
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

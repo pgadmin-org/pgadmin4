@@ -439,10 +439,7 @@
         "comment": "Comments to test update"
       },
       "mocking_required": true,
-      "mock_data": {
-         "function_name": "pgadmin.browser.server_groups.servers.databases.schemas.domains.domain_constraints.DomainConstraintView.get_sql",
-         "return_value": "('', 'Mocked get_sql function', '')"
-      },
+      "mock_data": {},
       "expected_data": {
         "status_code": 200
       }

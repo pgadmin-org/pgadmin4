@@ -18,10 +18,10 @@ from . import utils as schema_utils
 from unittest.mock import patch
 
 
-class SchemaDeleteTestCase(BaseTestGenerator):
+class SchemaSQLTestCase(BaseTestGenerator):
     """ This class will add new schema under database node. """
 
-    scenarios = utils.generate_scenarios('schema_delete',
+    scenarios = utils.generate_scenarios('schema_get_sql',
                                          schema_utils.test_cases)
 
     def setUp(self):
@@ -37,25 +37,25 @@ class SchemaDeleteTestCase(BaseTestGenerator):
         self.schema_details = schema_utils.create_schema(connection,
                                                          self.schema_name)
 
-    def delete_schema(self):
+    def get_sql_node_schema(self):
         """
-        This function returns the schema delete response
-        :return: schema delete response
+        This function returns the schema sql response
+        :return: schema sql response
         """
-        return self.tester.delete(
+        return self.tester.get(
             self.url + str(utils.SERVER_GROUP) + '/' + str(self.server_id) +
             '/' + str(self.db_id) + '/' + str(self.schema_id),
             follow_redirects=True)
 
     def runTest(self):
-        """ This function will delete schema under database node. """
+        """ This function will check sql
+         of schema under database node. """
         self.server_id = self.database_info["server_id"]
         self.db_id = self.database_info["db_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to delete the"
-                            " schema.")
+            raise Exception("Could not connect to database.")
 
         self.schema_id = self.schema_details[0]
         schema_name = self.schema_details[1]
@@ -63,19 +63,21 @@ class SchemaDeleteTestCase(BaseTestGenerator):
                                                       self.db_name,
                                                       schema_name)
         if not schema_response:
-            raise Exception("Could not find the schema to delete.")
+            raise Exception("Could not find the schema.")
 
         if self.is_positive_test:
-            response = self.delete_schema()
+            response = self.get_sql_node_schema()
+
         else:
-            if hasattr(self, "error_deleting_schema"):
+            if hasattr(self, "internal_server_error"):
+                return_value_object = eval(self.mock_data["return_value"])
                 with patch(self.mock_data["function_name"],
-                           return_value=eval(self.mock_data["return_value"])):
-                    response = self.delete_schema()
+                           side_effect=[return_value_object]):
+                    response = self.get_sql_node_schema()
 
             if hasattr(self, "wrong_schema_id"):
                 self.schema_id = 99999
-                response = self.delete_schema()
+                response = self.get_sql_node_schema()
 
         actual_response_code = response.status_code
         expected_response_code = self.expected_data['status_code']

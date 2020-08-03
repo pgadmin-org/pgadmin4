@@ -21,10 +21,8 @@ from . import utils as schema_utils
 class SchemaDeleteMultipleTestCase(BaseTestGenerator):
     """ This class will add new schema under database node. """
 
-    scenarios = [
-        # Fetching default URL for extension node.
-        ('Check Schema Node URL', dict(url='/browser/schema/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('schema_multiple_delete',
+                                         schema_utils.test_cases)
 
     def setUp(self):
         self.database_info = parent_node_dict["database"][-1]
@@ -51,10 +49,10 @@ class SchemaDeleteMultipleTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will delete schema under database node. """
-        server_id = self.database_info["server_id"]
-        db_id = self.database_info["db_id"]
+        self.server_id = self.database_info["server_id"]
+        self.db_id = self.database_info["db_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
-                                                 server_id, db_id)
+                                                 self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to delete the"
                             " schema.")
@@ -75,12 +73,16 @@ class SchemaDeleteMultipleTestCase(BaseTestGenerator):
 
         data = {'ids': [self.schema_details[0], self.schema_details_1[0]]}
         response = self.tester.delete(self.url + str(utils.SERVER_GROUP) +
-                                      '/' + str(server_id) + '/' +
-                                      str(db_id) + '/',
+                                      '/' + str(self.server_id) + '/' +
+                                      str(self.db_id) + '/',
                                       follow_redirects=True,
                                       data=json.dumps(data),
                                       content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+
+        actual_response_code = response.status_code
+        expected_response_code = self.expected_data['status_code']
+        self.assertEquals(actual_response_code, expected_response_code)
 
     def tearDown(self):
-        pass
+        # Disconnect the database
+        database_utils.disconnect_database(self, self.server_id, self.db_id)

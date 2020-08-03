@@ -16,6 +16,7 @@ Housekeeping
 ************
 
 | `Issue #5324 <https://redmine.postgresql.org/issues/5324>`_ -  Improve code coverage and API test cases for Foreign Servers and User Mappings.
+| `Issue #5327 <https://redmine.postgresql.org/issues/5327>`_ -  Improve code coverage and API test cases for Schemas.
 | `Issue #5336 <https://redmine.postgresql.org/issues/5336>`_ -  Improve code coverage and API test cases for Types.
 | `Issue #5700 <https://redmine.postgresql.org/issues/5700>`_ -  Remove old Python 2 compatibility code.
 
