@@ -59,7 +59,7 @@ CACHE {{data.seqcache|int}} {% endif %}
 {% elif 'attidentity' in data or attidentity_params %}
 {% if 'attidentity' in data and data.attidentity != '' and o_data.attidentity != '' and data.attidentity != o_data.attidentity %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET GENERATED {% if data.attidentity == 'a' %}ALWAYS{% else%}BY DEFAULT{% endif %}{% if attidentity_params is false %};{% else %}{% endif %}
+    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET GENERATED {% if data.attidentity == 'a' %}ALWAYS{% else%}BY DEFAULT{% endif %}{% if attidentity_params == false %};{% endif %}
 {% else %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %}{% endif %}
@@ -68,7 +68,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {% if data.seqstart is defined and data.seqstart|int(-1) > -1%} RESTART SET START {{data.seqstart|int}}{% endif %}
 {% if data.seqmin is defined and data.seqmin|int(-1) > -1%} SET MINVALUE {{data.seqmin|int}}{% endif %}
 {% if data.seqmax is defined and data.seqmax|int(-1) > -1%} SET MAXVALUE {{data.seqmax|int}}{% endif %}
-{% if data.seqcache is defined and data.seqcache|int(-1) > -1%} SET CACHE {{data.seqcache|int}}{% endif %}{% if attidentity_params is true %};{% endif %}
+{% if data.seqcache is defined and data.seqcache|int(-1) > -1%} SET CACHE {{data.seqcache|int}}{% endif %}{% if attidentity_params == true %};{% endif %}
 
 
 {% endif %}
