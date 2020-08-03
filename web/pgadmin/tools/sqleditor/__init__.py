@@ -1250,10 +1250,20 @@ def save_file():
             file_path.lstrip('/').lstrip('\\')
         )
 
+    # Get value for encoding if file is already loaded to SQL editor
+    def get_file_encoding_of_loaded_file(file_name):
+        encoding = 'utf-8'
+        for ele in Filemanager.loaded_file_encoding_list:
+            if file_name in ele:
+                encoding = ele[file_name]
+        return encoding
+
+    enc = get_file_encoding_of_loaded_file(os.path.basename(file_path))
+
     if hasattr(str, 'decode'):
         file_content = file_data['file_content']
     else:
-        file_content = file_data['file_content'].encode()
+        file_content = file_data['file_content'].encode(enc)
 
     # write to file
     try:

@@ -313,6 +313,9 @@ def save_show_hidden_file_option(trans_id):
 class Filemanager(object):
     """FileManager Class."""
 
+    # Stores list of dict for filename & its encoding
+    loaded_file_encoding_list = []
+
     def __init__(self, trans_id):
         self.trans_id = trans_id
         self.patherror = encode_json(
@@ -1087,6 +1090,10 @@ class Filemanager(object):
             if not is_startswith_bom:
                 # Check if string is binary
                 is_binary = is_binary_string(file_data)
+
+            # Store encoding for future use
+            Filemanager.loaded_file_encoding_list.\
+                append({os.path.basename(filename): enc})
 
         except IOError as ex:
             status = False
