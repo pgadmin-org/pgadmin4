@@ -34,6 +34,7 @@ define('pgadmin.node.fts_configuration', [
       id: 'dictname', label: gettext('Dictionaries'), type: 'text', group:null,
       cellHeaderClasses:'width_percent_50', editable: true,
       cell:Backgrid.Extension.MultiSelectAjaxCell, url: 'dictionaries',
+      cache_level:'fts_configuration', cache_node:'fts_configuration',
     }],
     // Validation for token and dictionary list
     validate: function() {
@@ -107,6 +108,9 @@ define('pgadmin.node.fts_configuration', [
                   cache_node = (cache_node &&
                                     pgAdmin.Browser.Nodes[cache_node])
                                || node;
+
+                  // Clear the cache to get the latest dictionaries and parsers.
+                  cache_node.clear_cache(this);
 
                   /*
                    * We needs to check, if we have already cached data
