@@ -12,7 +12,7 @@
 from flask import render_template
 from flask_babelex import gettext as _
 from pgadmin.utils.ajax import internal_server_error
-from pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
 
 
@@ -110,7 +110,7 @@ def search_coveringindex(conn, tid, cols, template_path=None):
                           tid=tid)
     status, constraints = conn.execute_dict(SQL)
     if not status:
-        raise Exception(constraints)
+        raise ExecuteError(constraints)
 
     for constraint in constraints['rows']:
         sql = render_template(
@@ -120,7 +120,7 @@ def search_coveringindex(conn, tid, cols, template_path=None):
         status, rest = conn.execute_dict(sql)
 
         if not status:
-            raise Exception(rest)
+            raise ExecuteError(rest)
 
         index_cols = set()
         for r in rest['rows']:
@@ -146,7 +146,7 @@ def get_parent(conn, tid, template_path=None):
                                     'get_parent.sql']), tid=tid)
     status, rset = conn.execute_2darray(SQL)
     if not status:
-        raise Exception(rset)
+        raise ExecuteError(rset)
 
     schema = ''
     table = ''
@@ -254,7 +254,7 @@ def get_sql(conn, data, tid, fkid=None, template_path=None):
 
             status, res = conn.execute_dict(col_sql)
             if not status:
-                raise Exception(res)
+                raise ExecuteError(res)
 
             columns = []
             for row in res['rows']:
@@ -290,7 +290,7 @@ def _get_properties_for_fk_const(tid, fkid, data, template_path, conn):
                           tid=tid, cid=fkid)
     status, res = conn.execute_dict(sql)
     if not status:
-        raise Exception(res)
+        raise ExecuteError(res)
 
     if len(res['rows']) == 0:
         raise ObjectGone(

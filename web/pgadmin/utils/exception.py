@@ -12,7 +12,7 @@ from werkzeug.http import HTTP_STATUS_CODES
 from flask_babelex import gettext as _
 from flask import request
 
-from pgadmin.utils.ajax import service_unavailable, gone
+from pgadmin.utils.ajax import service_unavailable, gone, internal_server_error
 
 
 class ConnectionLost(HTTPException):
@@ -122,6 +122,29 @@ class ObjectGone(HTTPException):
 
     def get_response(self, environ=None):
         return gone(self.error_msg)
+
+    def __str__(self):
+        return self.error_msg
+
+    def __repr__(self):
+        return self.error_msg
+
+
+class ExecuteError(HTTPException):
+    """
+    ExecuteError
+    """
+
+    def __init__(self, error_msg):
+        self.error_msg = error_msg
+        HTTPException.__init__(self)
+
+    @property
+    def name(self):
+        return HTTP_STATUS_CODES.get(500, 'Internal server error')
+
+    def get_response(self, environ=None):
+        return internal_server_error(self.error_msg)
 
     def __str__(self):
         return self.error_msg

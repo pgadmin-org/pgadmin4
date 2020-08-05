@@ -21,7 +21,7 @@ from pgadmin.tools.sqleditor.utils.is_query_resultset_updatable \
 from pgadmin.tools.sqleditor.utils.save_changed_data import save_changed_data
 from pgadmin.tools.sqleditor.utils.get_column_types import get_columns_types
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.exception import ObjectGone, ExecuteError
 
 from config import PG_DEFAULT_DRIVER
 
@@ -187,7 +187,7 @@ class SQLFilter(object):
 
             status, result = conn.execute_dict(query)
             if not status:
-                raise Exception(result)
+                raise ExecuteError(result)
             if len(result['rows']) == 0:
                 raise ObjectGone(
                     gettext("The specified object could not be found."))
@@ -401,7 +401,7 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
             )
             status, result = conn.execute_dict(query)
             if not status:
-                raise Exception(result)
+                raise ExecuteError(result)
 
             for row in result['rows']:
                 all_columns.append(row['attname'])
@@ -542,7 +542,7 @@ class TableCommand(GridCommand):
 
             status, result = conn.execute_dict(query)
             if not status:
-                raise Exception(result)
+                raise ExecuteError(result)
 
             for row in result['rows']:
                 pk_names += driver.qtIdent(conn, row['attname']) + ','
@@ -590,7 +590,7 @@ class TableCommand(GridCommand):
         status, result = conn.execute_dict(query)
 
         if not status:
-            raise Exception(result)
+            raise ExecuteError(result)
 
         for row in result['rows']:
             all_columns.append(row['attname'])
@@ -602,7 +602,7 @@ class TableCommand(GridCommand):
         )
         status, result = conn.execute_dict(query)
         if not status:
-            raise Exception(result)
+            raise ExecuteError(result)
 
         for row in result['rows']:
             # Only append if not already present in the list
@@ -646,7 +646,7 @@ class TableCommand(GridCommand):
 
             status, has_oids = conn.execute_scalar(query)
             if not status:
-                raise Exception(has_oids)
+                raise ExecuteError(has_oids)
 
         else:
             raise Exception(
@@ -996,7 +996,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
 
             status, result = conn.execute_dict(query)
             if not status:
-                raise Exception(result)
+                raise ExecuteError(result)
 
             self.nsp_name = result['rows'][0]['nspname']
             self.object_name = result['rows'][0]['relname']

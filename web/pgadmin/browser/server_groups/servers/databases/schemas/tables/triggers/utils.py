@@ -12,7 +12,7 @@
 from flask import render_template
 from flask_babelex import gettext as _
 from pgadmin.utils.ajax import internal_server_error
-from pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.exception import ObjectGone, ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import trigger_definition
 from config import PG_DEFAULT_DRIVER
@@ -52,7 +52,7 @@ def get_parent(conn, tid, template_path=None):
                                     'get_parent.sql']), tid=tid)
     status, rset = conn.execute_2darray(SQL)
     if not status:
-        raise Exception(rset)
+        raise ExecuteError(rset)
 
     schema = ''
     table = ''
@@ -164,7 +164,7 @@ def get_sql(conn, **kwargs):
 
         status, res = conn.execute_dict(sql)
         if not status:
-            raise Exception(res)
+            raise ExecuteError(res)
         elif len(res['rows']) == 0:
             raise ObjectGone(_('Could not find the trigger in the table.'))
 
@@ -271,7 +271,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
 
     status, res = conn.execute_dict(SQL)
     if not status:
-        raise Exception(res)
+        raise ExecuteError(res)
 
     if len(res['rows']) == 0:
         raise ObjectGone(_('Could not find the trigger in the table.'))

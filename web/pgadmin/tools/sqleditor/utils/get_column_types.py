@@ -12,6 +12,7 @@
 """
 
 from flask import render_template
+from pgadmin.utils.exception import ExecuteError
 
 
 def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
@@ -24,7 +25,7 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
 
     colst, rset = conn.execute_2darray(query)
     if not colst:
-        raise Exception(rset)
+        raise ExecuteError(rset)
 
     column_types = dict()
     for key, col in enumerate(columns_info):

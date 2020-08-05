@@ -12,7 +12,7 @@
 from flask import render_template
 from flask_babelex import gettext as _
 from pgadmin.utils.ajax import internal_server_error
-from pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.exception import ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -52,7 +52,7 @@ def get_parent(conn, tid, template_path=None):
                                     'get_parent.sql']), tid=tid)
     status, rset = conn.execute_2darray(SQL)
     if not status:
-        raise Exception(rset)
+        raise ExecuteError(rset)
 
     schema = ''
     table = ''
@@ -211,7 +211,7 @@ def get_formatted_columns(conn, tid, data, other_columns,
 
     status, res = conn.execute_dict(SQL)
     if not status:
-        raise Exception(res)
+        raise ExecuteError(res)
 
     all_columns = res['rows']
     edit_types = {}

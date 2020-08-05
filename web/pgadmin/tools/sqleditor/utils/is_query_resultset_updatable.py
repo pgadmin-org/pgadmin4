@@ -26,6 +26,7 @@ from flask_babelex import gettext
 from collections import OrderedDict
 
 from pgadmin.tools.sqleditor.utils.get_column_types import get_columns_types
+from pgadmin.utils.exception import ExecuteError
 
 
 def is_query_resultset_updatable(conn, sql_path):
@@ -135,7 +136,7 @@ def _check_oids(conn, sql_path, table_oid, columns_info):
 
     status, has_oids = conn.execute_scalar(query)
     if not status:
-        raise Exception(has_oids)
+        raise ExecuteError(has_oids)
 
     # Check that the oid column is selected in results columns
     oid_column_selected = False
@@ -192,7 +193,7 @@ def _get_primary_keys(sql_path, table_oid, conn):
     )
     status, result = conn.execute_dict(query)
     if not status:
-        raise Exception(result)
+        raise ExecuteError(result)
 
     primary_keys_columns = []
     primary_keys = OrderedDict()
@@ -216,7 +217,7 @@ def _get_table_columns(sql_path, table_oid, conn):
     )
     status, result = conn.execute_dict(query)
     if not status:
-        raise Exception(result)
+        raise ExecuteError(result)
 
     columns = {}
     for row in result['rows']:
