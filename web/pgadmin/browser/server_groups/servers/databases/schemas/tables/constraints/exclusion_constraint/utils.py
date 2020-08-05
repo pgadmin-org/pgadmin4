@@ -59,6 +59,31 @@ def get_parent(conn, tid, template_path=None):
     return schema, table
 
 
+def _get_columns(res):
+    """
+    Get columns form response and return in required format.
+    :param res: response form constraints.
+    :return: column list.
+    """
+    columns = []
+    for row in res['rows']:
+        if row['options'] & 1:
+            order = False
+            nulls_order = True if (row['options'] & 2) else False
+        else:
+            order = True
+            nulls_order = True if (row['options'] & 2) else False
+
+        columns.append({"column": row['coldef'].strip('"'),
+                        "oper_class": row['opcname'],
+                        "order": order,
+                        "nulls_order": nulls_order,
+                        "operator": row['oprname'],
+                        "col_type": row['datatype']
+                        })
+    return columns
+
+
 @get_template_path
 def get_exclusion_constraints(conn, did, tid, exid=None, template_path=None):
     """
@@ -87,22 +112,7 @@ def get_exclusion_constraints(conn, did, tid, exid=None, template_path=None):
         if not status:
             return status, internal_server_error(errormsg=res)
 
-        columns = []
-        for row in res['rows']:
-            if row['options'] & 1:
-                order = False
-                nulls_order = True if (row['options'] & 2) else False
-            else:
-                order = True
-                nulls_order = True if (row['options'] & 2) else False
-
-            columns.append({"column": row['coldef'].strip('"'),
-                            "oper_class": row['opcname'],
-                            "order": order,
-                            "nulls_order": nulls_order,
-                            "operator": row['oprname'],
-                            "col_type": row['datatype']
-                            })
+        columns = _get_columns(res)
 
         ex['columns'] = columns
 
@@ -118,6 +128,28 @@ def get_exclusion_constraints(conn, did, tid, exid=None, template_path=None):
             ex['include'] = [col['colname'] for col in res['rows']]
 
     return True, result['rows']
+
+
+def _get_delete_constraint(data, constraint, sql, template_path, conn):
+    """
+    Check for delete constraints and return sql for it.
+    :param data: Data req.
+    :param constraint: Constraint list for check.
+    :param sql: sql list to append delete constraint sql.
+    :param template_path: Template path to fetch sql for delete constraint.
+    :param conn: Connection.
+    """
+    if 'deleted' in constraint:
+        for c in constraint['deleted']:
+            c['schema'] = data['schema']
+            c['table'] = data['name']
+
+            # Sql for drop
+            sql.append(
+                render_template("/".join(
+                    [template_path, 'delete.sql']),
+                    data=c, conn=conn).strip("\n")
+            )
 
 
 @get_template_path
@@ -138,17 +170,7 @@ def get_exclusion_constraint_sql(conn, did, tid, data, template_path=None):
     if 'exclude_constraint' in data:
         constraint = data['exclude_constraint']
         # If constraint(s) is/are deleted
-        if 'deleted' in constraint:
-            for c in constraint['deleted']:
-                c['schema'] = data['schema']
-                c['table'] = data['name']
-
-                # Sql for drop
-                sql.append(
-                    render_template("/".join(
-                        [template_path, 'delete.sql']),
-                        data=c, conn=conn).strip("\n")
-                )
+        _get_delete_constraint(data, constraint, sql, template_path, conn)
 
         if 'changed' in constraint:
             for c in constraint['changed']:

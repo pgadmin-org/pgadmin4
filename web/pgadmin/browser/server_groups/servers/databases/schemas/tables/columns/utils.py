@@ -241,6 +241,53 @@ def get_formatted_columns(conn, tid, data, other_columns,
     return data
 
 
+def _parse_column_actions(final_columns, column_acl):
+    """
+    Check action and access for it.
+    :param final_columns: final column list
+    :param column_acl: Column access.
+    """
+    for c in final_columns:
+        if 'attacl' in c:
+            if 'added' in c['attacl']:
+                c['attacl']['added'] = parse_priv_to_db(
+                    c['attacl']['added'], column_acl
+                )
+            elif 'changed' in c['attacl']:
+                c['attacl']['changed'] = parse_priv_to_db(
+                    c['attacl']['changed'], column_acl
+                )
+            elif 'deleted' in c['attacl']:
+                c['attacl']['deleted'] = parse_priv_to_db(
+                    c['attacl']['deleted'], column_acl
+                )
+        if 'cltype' in c:
+            # check type for '[]' in it
+            c['cltype'], c['hasSqrBracket'] = \
+                type_formatter(c['cltype'])
+
+        c = convert_length_precision_to_string(c)
+
+
+def _parse_format_col_for_edit(data, columns, column_acl):
+    """
+    This function parser columns for edit mode.
+    :param data: Data from req.
+    :param columns: Columns list from data
+    :param column_acl: Column access.
+    """
+    for action in ['added', 'changed']:
+        if action in columns:
+            final_columns = []
+            for c in columns[action]:
+                if 'inheritedfrom' not in c:
+                    final_columns.append(c)
+
+            _parse_column_actions(final_columns, column_acl)
+
+            data['columns'][action] = final_columns
+
+
 def parse_format_columns(data, mode=None):
     """
     This function will parse and return formatted list of columns
@@ -254,35 +301,7 @@ def parse_format_columns(data, mode=None):
     columns = data['columns']
     # 'EDIT' mode
     if mode is not None:
-        for action in ['added', 'changed']:
-            if action in columns:
-                final_columns = []
-                for c in columns[action]:
-                    if 'inheritedfrom' not in c:
-                        final_columns.append(c)
-
-                for c in final_columns:
-                    if 'attacl' in c:
-                        if 'added' in c['attacl']:
-                            c['attacl']['added'] = parse_priv_to_db(
-                                c['attacl']['added'], column_acl
-                            )
-                        elif 'changed' in c['attacl']:
-                            c['attacl']['changed'] = parse_priv_to_db(
-                                c['attacl']['changed'], column_acl
-                            )
-                        elif 'deleted' in c['attacl']:
-                            c['attacl']['deleted'] = parse_priv_to_db(
-                                c['attacl']['deleted'], column_acl
-                            )
-                    if 'cltype' in c:
-                        # check type for '[]' in it
-                        c['cltype'], c['hasSqrBracket'] = \
-                            type_formatter(c['cltype'])
-
-                    c = convert_length_precision_to_string(c)
-
-                data['columns'][action] = final_columns
+        _parse_format_col_for_edit(data, columns, column_acl)
     else:
         # We need to exclude all the columns which are inherited from other
         # tables 'CREATE' mode

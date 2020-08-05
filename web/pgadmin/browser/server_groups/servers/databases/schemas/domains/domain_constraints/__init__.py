@@ -179,6 +179,35 @@ class DomainConstraintView(PGChildNodeView):
         'dependent': [{'get': 'dependents'}]
     })
 
+    @staticmethod
+    def _get_req_data(kwargs):
+        """
+        Get data from request.
+        :param kwargs: kwargs for request.
+        :return: if any error return error with error msg else return req data
+        """
+        if request.data:
+            req = json.loads(request.data, encoding='utf-8')
+        else:
+            req = request.args or request.form
+
+        if 'coid' not in kwargs:
+            required_args = [
+                'name',
+                'consrc'
+            ]
+
+            for arg in required_args:
+                if arg not in req or req[arg] == '':
+                    return True, make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=gettext(
+                            "Could not find the required parameter ({})."
+                        ).format(arg)
+                    ), req
+        return False, '', req
+
     def validate_request(f):
         """
         Works as a decorator.
@@ -195,26 +224,9 @@ class DomainConstraintView(PGChildNodeView):
         def wrap(self, **kwargs):
 
             data = {}
-            if request.data:
-                req = json.loads(request.data, encoding='utf-8')
-            else:
-                req = request.args or request.form
-
-            if 'coid' not in kwargs:
-                required_args = [
-                    'name',
-                    'consrc'
-                ]
-
-                for arg in required_args:
-                    if arg not in req or req[arg] == '':
-                        return make_json_response(
-                            status=410,
-                            success=0,
-                            errormsg=gettext(
-                                "Could not find the required parameter ({})."
-                            ).format(arg)
-                        )
+            is_error, errmsg, req = DomainConstraintView._get_req_data(kwargs)
+            if is_error:
+                return errmsg
 
             try:
                 for key in req:

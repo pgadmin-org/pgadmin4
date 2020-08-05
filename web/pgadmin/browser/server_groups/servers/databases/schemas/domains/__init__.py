@@ -176,6 +176,65 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     keys_to_ignore = ['oid', 'basensp', 'conoid', 'nspname', 'oid-2']
 
+    @staticmethod
+    def _get_req_data(kwargs):
+        """
+        Get req data from request.
+        :param kwargs: kwargs.
+        :return: if any error return error, else return req.
+        """
+        if request.data:
+            req = json.loads(request.data, encoding='utf-8')
+        else:
+            req = request.args or request.form
+
+        if 'doid' not in kwargs:
+            required_args = [
+                'name',
+                'basetype'
+            ]
+
+            for arg in required_args:
+                if arg not in req or req[arg] == '':
+                    return req, True, make_json_response(
+                        status=410,
+                        success=0,
+                        errormsg=gettext(
+                            "Could not find the required parameter ({})."
+                        ).format(arg),
+                    )
+        return req, False, ''
+
+    @staticmethod
+    def _get_data(req):
+        """
+        Get data from request and update required values.
+        :param req: request object.
+        :return: data.
+        """
+        data = {}
+        list_params = []
+        if request.method == 'GET':
+            list_params = ['constraints', 'seclabels']
+
+        for key in req:
+            if (
+                key in list_params and req[key] != '' and
+                req[key] is not None
+            ):
+                # Coverts string into python list as expected.
+                data[key] = json.loads(req[key], encoding='utf-8')
+            elif key == 'typnotnull':
+                if req[key] == 'true' or req[key] is True:
+                    data[key] = True
+                elif req[key] == 'false' or req[key] is False:
+                    data[key] = False
+                else:
+                    data[key] = ''
+            else:
+                data[key] = req[key]
+        return data
+
     def validate_request(f):
         """
         Works as a decorator.
@@ -193,49 +252,12 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         @wraps(f)
         def wrap(self, **kwargs):
 
-            data = {}
-            if request.data:
-                req = json.loads(request.data, encoding='utf-8')
-            else:
-                req = request.args or request.form
-
-            if 'doid' not in kwargs:
-                required_args = [
-                    'name',
-                    'basetype'
-                ]
-
-                for arg in required_args:
-                    if arg not in req or req[arg] == '':
-                        return make_json_response(
-                            status=410,
-                            success=0,
-                            errormsg=gettext(
-                                "Could not find the required parameter ({})."
-                            ).format(arg)
-                        )
+            req, is_error, errmsg = DomainView._get_req_data(kwargs)
+            if is_error:
+                return errmsg
 
             try:
-                list_params = []
-                if request.method == 'GET':
-                    list_params = ['constraints', 'seclabels']
-
-                for key in req:
-                    if (
-                        key in list_params and req[key] != '' and
-                        req[key] is not None
-                    ):
-                        # Coverts string into python list as expected.
-                        data[key] = json.loads(req[key], encoding='utf-8')
-                    elif key == 'typnotnull':
-                        if req[key] == 'true' or req[key] is True:
-                            data[key] = True
-                        elif req[key] == 'false' or req[key] is False:
-                            data[key] = False
-                        else:
-                            data[key] = ''
-                    else:
-                        data[key] = req[key]
+                data = DomainView._get_data(req)
 
             except Exception as e:
                 return internal_server_error(errormsg=str(e))
