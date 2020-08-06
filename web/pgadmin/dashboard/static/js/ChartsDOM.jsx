@@ -19,7 +19,7 @@ export default class ChartsDOM {
     this.pageVisible = pageVisible;
   }
 
-  mount() {
+  render() {
     if(this.container && this.preferences.show_graphs) {
       ReactDOM.render(<Graphs sid={this.sid} did={this.did} preferences={this.preferences} pageVisible={this.pageVisible}/>, this.container);
     }
@@ -32,13 +32,13 @@ export default class ChartsDOM {
   setSidDid(sid, did) {
     this.sid = sid;
     this.did = did;
-    this.mount();
+    this.render();
   }
 
   reflectPreferences(preferences) {
     this.preferences = preferences;
     if(preferences.show_graphs) {
-      this.mount();
+      this.render();
     } else {
       this.unmount();
     }
@@ -46,6 +46,6 @@ export default class ChartsDOM {
 
   setPageVisible(visible) {
     this.pageVisible = visible;
-    this.mount();
+    this.render();
   }
 }

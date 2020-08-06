@@ -280,7 +280,7 @@ define('pgadmin.dashboard', [
     object_selected: function(item, itemData, node) {
       let self = this;
 
-      if (dashboardVisible && itemData && itemData._type) {
+      if (itemData && itemData._type) {
         var treeHierarchy = node.getTreeNodeHierarchy(item),
           url = NodesDashboard.url(itemData, item, treeHierarchy);
 
@@ -378,7 +378,6 @@ define('pgadmin.dashboard', [
               }
             } else {
               this.chartsDomObj && this.chartsDomObj.unmount();
-              $(div).empty();
               $(div).html(
                 '<div class="pg-panel-message" role="alert">' + gettext('Please connect to the selected server to view the dashboard.') + '</div>'
               );
