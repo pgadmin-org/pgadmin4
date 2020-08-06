@@ -138,6 +138,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     "/".join([command_obj.sql_path, 'select.sql']),
                     object_name=command_obj.object_name,
                     nsp_name=command_obj.nsp_name,
+                    pgadmin_alias=pgadmin_alias,
                     primary_keys=primary_keys,
                     has_oids=command_obj.has_oids()
                 )
@@ -279,8 +280,12 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
 
                 # Select added row from the table
                 if 'select_sql' in item:
+                    params = {
+                        pgadmin_alias[k] if k in pgadmin_alias else k: v
+                        for k, v in res['rows'][0].items()
+                    }
                     status, sel_res = conn.execute_dict(
-                        item['select_sql'], res['rows'][0])
+                        item['select_sql'], params)
 
                     if not status:
                         return failure_handle(sel_res, item.get('row_id', 0))

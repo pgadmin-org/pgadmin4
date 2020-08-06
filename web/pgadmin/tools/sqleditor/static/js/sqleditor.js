@@ -786,7 +786,7 @@ define('tools.querytool', [
         c.column_type = _.escape(c.column_type);
 
         var options = {
-          id: c.name,
+          id:  _.escape(c.name),
           pos: c.pos,
           field: c.name,
           name: c.label,

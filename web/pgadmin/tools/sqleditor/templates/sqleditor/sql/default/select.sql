@@ -5,5 +5,5 @@ WHERE
   oid = %(oid)s
 {% elif primary_keys|length > 0 %}
   {% for pk in primary_keys %}
-    {% if not loop.first %} AND {% endif %}{{ conn|qtIdent(pk) }} = %({{ pk }})s{% endfor %}
+    {% if not loop.first %} AND {% endif %}{{ conn|qtIdent(pk) }} = %({{ pgadmin_alias[pk] }})s{% endfor %}
 {% endif %};

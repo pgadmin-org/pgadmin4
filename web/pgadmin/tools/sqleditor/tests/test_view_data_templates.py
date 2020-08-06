@@ -54,6 +54,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                 select_template_path='sqleditor/sql/default/select.sql',
                 select_parameters=dict(
                     object_name='test_table',
+                    pgadmin_alias=pgadmin_alias,
                     nsp_name='test_schema',
                     primary_keys=OrderedDict([('id', 'int4')]),
                     has_oids=False
@@ -87,6 +88,7 @@ class TestViewDataTemplates(BaseTestGenerator):
                 select_parameters=dict(
                     object_name='test_table',
                     nsp_name='test_schema',
+                    pgadmin_alias=pgadmin_alias,
                     primary_keys=OrderedDict([('id', 'int4'),
                                               ('text', 'text')]),
                     has_oids=False
