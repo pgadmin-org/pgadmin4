@@ -1101,10 +1101,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         Returns:
 
         """
-        SQL = render_template("/".join([self.template_path,
+        sql = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
                               scid=scid, foid=foid)
-        status, res = self.conn.execute_dict(SQL)
+        status, res = self.conn.execute_dict(sql)
         if not status:
             return False, internal_server_error(errormsg=res)
 
@@ -1117,10 +1117,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         if self.manager.version >= 90200:
             # Fetch privileges
-            SQL = render_template("/".join([self.template_path,
+            sql = render_template("/".join([self.template_path,
                                             self._ACL_SQL]),
                                   foid=foid)
-            status, aclres = self.conn.execute_dict(SQL)
+            status, aclres = self.conn.execute_dict(sql)
             if not status:
                 return False, internal_server_error(errormsg=aclres)
 
@@ -1136,24 +1136,40 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             data.update({'strftoptions': data['ftoptions']})
             data.update(self._parse_variables_from_db(data['ftoptions']))
 
-        SQL = render_template("/".join([self.template_path,
+        sql = render_template("/".join([self.template_path,
                                         self._GET_CONSTRAINTS_SQL]), foid=foid)
-        status, cons = self.conn.execute_dict(SQL)
+        status, cons = self.conn.execute_dict(sql)
         if not status:
             return False, internal_server_error(errormsg=cons)
 
         if cons and 'rows' in cons:
             data['constraints'] = cons['rows']
 
-        SQL = render_template("/".join([self.template_path,
+        sql = render_template("/".join([self.template_path,
                                         self._GET_COLUMNS_SQL]), foid=foid)
-        status, cols = self.conn.execute_dict(SQL)
+        status, cols = self.conn.execute_dict(sql)
         if not status:
             return False, internal_server_error(errormsg=cols)
 
-        # The Length and the precision of the Datatype should be separated.
-        # The Format we getting from database is: numeric(1,1)
-        # So, we need to separate it as Length: 1, Precision: 1
+        self._get_datatype_precision(cols)
+
+        if cols and 'rows' in cols:
+            data['columns'] = cols['rows']
+
+        # Get Inherited table names from their OID
+        is_error, errmsg = self._get_inherited_table_name(data, inherits)
+        if is_error:
+            return False, internal_server_error(errormsg=errmsg)
+
+        return True, data
+
+    def _get_datatype_precision(self, cols):
+        """
+        The Length and the precision of the Datatype should be separated.
+        The Format we getting from database is: numeric(1,1)
+        So, we need to separate it as Length: 1, Precision: 1
+        :param cols: list of columns.
+        """
         for c in cols['rows']:
             if c['fulltype'] != '' and c['fulltype'].find("(") > 0:
                 substr = self.extract_type_length_precision(c)
@@ -1170,27 +1186,30 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 att_opt = self._parse_variables_from_db(c['attfdwoptions'])
                 c['coloptions'] = att_opt['ftoptions']
 
-        if cols and 'rows' in cols:
-            data['columns'] = cols['rows']
-
-        # Get Inherited table names from their OID
+    def _get_inherited_table_name(self, data, inherits):
+        """
+        Get inherited table name.
+        :param data: Data.
+        :param inherits: flag which is used If True then inherited table
+        will be fetched from database.
+        """
         if inherits and 'inherits' in data and data['inherits']:
             inherits = tuple([int(x) for x in data['inherits']])
             if len(inherits) == 1:
                 inherits = "(" + str(inherits[0]) + ")"
 
-            SQL = render_template("/".join([self.template_path,
+            sql = render_template("/".join([self.template_path,
                                             self._GET_TABLES_SQL]),
                                   attrelid=inherits)
-            status, res = self.conn.execute_dict(SQL)
+            status, res = self.conn.execute_dict(sql)
 
             if not status:
-                return False, internal_server_error(errormsg=res)
+                return True, res
 
             if 'inherits' in res['rows'][0]:
                 data['inherits'] = res['rows'][0]['inherits']
 
-        return True, data
+        return False, ''
 
     @staticmethod
     def convert_precision_to_int(typlen):
@@ -1424,6 +1443,18 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         return ajax_response(response=sql)
 
+    @staticmethod
+    def _check_const_for_obj_compare(data):
+        """
+        Check for constraint in fetched objects for compare.
+        :param data: Data.
+        """
+        if 'constraints' in data and data['constraints'] is not None \
+                and len(data['constraints']) > 0:
+            for item in data['constraints']:
+                if 'conoid' in item:
+                    item.pop('conoid')
+
     @check_precondition
     def fetch_objects_to_compare(self, sid, did, scid):
         """
@@ -1446,12 +1477,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             status, data = self._fetch_properties(0, sid, did, scid,
                                                   row['oid'])
             if status:
-                if 'constraints' in data and data['constraints'] is not None \
-                        and len(data['constraints']) > 0:
-                    for item in data['constraints']:
-                        if 'conoid' in item:
-                            item.pop('conoid')
-
+                ForeignTableView._check_const_for_obj_compare(data)
                 res[row['name']] = data
 
         return res
@@ -1489,6 +1515,57 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                                json_resp=False)
         return sql
 
+    @staticmethod
+    def _modify_column_data(data, tmp_columns):
+        """
+        Modifies data for column.
+        :param data: Data for columns.
+        :param tmp_columns: tmp_columns list.
+        """
+        if 'added' in data['columns']:
+            for item in data['columns']['added']:
+                tmp_columns.append(item)
+        if 'changed' in data['columns']:
+            for item in data['columns']['changed']:
+                tmp_columns.append(item)
+        if 'deleted' in data['columns']:
+            for item in data['columns']['deleted']:
+                tmp_columns.remove(item)
+
+    @staticmethod
+    def _modify_constraints_data(data):
+        """
+        Modifies data for constraints.
+        :param data: Data for constraints.
+        :return: tmp_constraints list.
+        """
+        tmp_constraints = []
+        if 'added' in data['constraints']:
+            for item in data['constraints']['added']:
+                tmp_constraints.append(item)
+        if 'changed' in data['constraints']:
+            for item in data['constraints']['changed']:
+                tmp_constraints.append(item)
+
+        return tmp_constraints
+
+    @staticmethod
+    def _modify_options_data(data, tmp_ftoptions):
+        """
+        Modifies data for options.
+        :param data: Data for options.
+        :param tmp_ftoptions: tmp_ftoptions list.
+        """
+        if 'added' in data['ftoptions']:
+            for item in data['ftoptions']['added']:
+                tmp_ftoptions.append(item)
+        if 'changed' in data['ftoptions']:
+            for item in data['ftoptions']['changed']:
+                tmp_ftoptions.append(item)
+        if 'deleted' in data['ftoptions']:
+            for item in data['ftoptions']['deleted']:
+                tmp_ftoptions.remove(item)
+
     def modify_data_for_schema_diff(self, data, old_data):
         """
         This function modifies the data for columns, constraints, options
@@ -1499,41 +1576,22 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         tmp_columns = []
         if 'columns_for_schema_diff' in old_data:
             tmp_columns = old_data['columns_for_schema_diff']
+
         if 'columns' in data:
-            if 'added' in data['columns']:
-                for item in data['columns']['added']:
-                    tmp_columns.append(item)
-            if 'changed' in data['columns']:
-                for item in data['columns']['changed']:
-                    tmp_columns.append(item)
-            if 'deleted' in data['columns']:
-                for item in data['columns']['deleted']:
-                    tmp_columns.remove(item)
+            ForeignTableView._modify_column_data(data, tmp_columns)
+
         data['columns'] = tmp_columns
 
-        tmp_constraints = []
         if 'constraints' in data:
-            if 'added' in data['constraints']:
-                for item in data['constraints']['added']:
-                    tmp_constraints.append(item)
-            if 'changed' in data['constraints']:
-                for item in data['constraints']['changed']:
-                    tmp_constraints.append(item)
+            tmp_constraints = ForeignTableView._modify_constraints_data(data)
             data['constraints'] = tmp_constraints
 
         tmp_ftoptions = []
         if 'ftoptions' in old_data:
             tmp_ftoptions = old_data['ftoptions']
         if 'ftoptions' in data:
-            if 'added' in data['ftoptions']:
-                for item in data['ftoptions']['added']:
-                    tmp_ftoptions.append(item)
-            if 'changed' in data['ftoptions']:
-                for item in data['ftoptions']['changed']:
-                    tmp_ftoptions.append(item)
-            if 'deleted' in data['ftoptions']:
-                for item in data['ftoptions']['deleted']:
-                    tmp_ftoptions.remove(item)
+            ForeignTableView._modify_options_data(data, tmp_ftoptions)
+
         data['ftoptions'] = tmp_ftoptions
 
 

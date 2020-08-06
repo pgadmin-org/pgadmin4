@@ -587,6 +587,78 @@ class ForeignDataWrapperView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    def _get_create_sql(self, data):
+        """
+        Get sql for create foreign data wrapper.
+        :param data: Data.
+        :return: Create sql statement for foreign data wrapper.
+        """
+        for key in ['fdwacl']:
+            if key in data and data[key] is not None:
+                data[key] = parse_priv_to_db(data[key], ['U'])
+
+        # Allow user to set the blank value in
+        # fdwvalue field in option model
+        is_valid_options = False
+        if 'fdwoptions' in data:
+            is_valid_options, data['fdwoptions'] = validate_options(
+                data['fdwoptions'], 'fdwoption', 'fdwvalue'
+            )
+
+        sql = render_template("/".join([self.template_path,
+                                        self._CREATE_SQL]),
+                              data=data, conn=self.conn,
+                              is_valid_options=is_valid_options
+                              )
+        return sql
+
+    def _check_and_parse_priv_to_db(self, data):
+        """
+        Check foreign data wrapper privilege and parse privileges before
+        sending to database.
+        :param data: Data.
+        """
+        for key in ['fdwacl']:
+            if key in data and data[key] is not None:
+                if 'added' in data[key]:
+                    data[key]['added'] = parse_priv_to_db(
+                        data[key]['added'],
+                        ['U']
+                    )
+                if 'changed' in data[key]:
+                    data[key]['changed'] = parse_priv_to_db(
+                        data[key]['changed'],
+                        ['U']
+                    )
+                if 'deleted' in data[key]:
+                    data[key]['deleted'] = parse_priv_to_db(
+                        data[key]['deleted'],
+                        ['U']
+                    )
+
+    def _check_validate_options(self, data):
+        """
+        Check option in foreign data wrapper Data and This will call
+        validated options function to set flag for option valid or not in sql.
+        :param data: Data.
+        """
+        is_valid_added_options = is_valid_changed_options = False
+
+        if 'fdwoptions' in data and 'added' in data['fdwoptions']:
+            is_valid_added_options, data['fdwoptions']['added'] = \
+                validate_options(
+                    data['fdwoptions']['added'],
+                    'fdwoption',
+                    'fdwvalue')
+        if 'fdwoptions' in data and 'changed' in data['fdwoptions']:
+            is_valid_changed_options, data['fdwoptions']['changed'] = \
+                validate_options(
+                    data['fdwoptions']['changed'],
+                    'fdwoption',
+                    'fdwvalue')
+
+        return is_valid_added_options, is_valid_changed_options
+
     def get_sql(self, gid, sid, data, did, fid=None):
         """
         This function will generate sql from model data.
@@ -625,23 +697,7 @@ class ForeignDataWrapperView(PGChildNodeView):
                     'fdwoption', 'fdwvalue'
                 )
 
-            for key in ['fdwacl']:
-                if key in data and data[key] is not None:
-                    if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(
-                            data[key]['added'],
-                            ['U']
-                        )
-                    if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(
-                            data[key]['changed'],
-                            ['U']
-                        )
-                    if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(
-                            data[key]['deleted'],
-                            ['U']
-                        )
+            self._check_and_parse_priv_to_db(data)
 
             old_data = res['rows'][0]
             for arg in required_args:
@@ -650,19 +706,8 @@ class ForeignDataWrapperView(PGChildNodeView):
 
             # Allow user to set the blank value in fdwvalue
             # field in option model
-            is_valid_added_options = is_valid_changed_options = False
-            if 'fdwoptions' in data and 'added' in data['fdwoptions']:
-                is_valid_added_options, data['fdwoptions']['added'] = \
-                    validate_options(
-                        data['fdwoptions']['added'],
-                        'fdwoption',
-                        'fdwvalue')
-            if 'fdwoptions' in data and 'changed' in data['fdwoptions']:
-                is_valid_changed_options, data['fdwoptions']['changed'] = \
-                    validate_options(
-                        data['fdwoptions']['changed'],
-                        'fdwoption',
-                        'fdwvalue')
+            is_valid_added_options, \
+                is_valid_changed_options = self._check_validate_options(data)
 
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
@@ -674,23 +719,7 @@ class ForeignDataWrapperView(PGChildNodeView):
             )
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
-            for key in ['fdwacl']:
-                if key in data and data[key] is not None:
-                    data[key] = parse_priv_to_db(data[key], ['U'])
-
-            # Allow user to set the blank value in
-            # fdwvalue field in option model
-            is_valid_options = False
-            if 'fdwoptions' in data:
-                is_valid_options, data['fdwoptions'] = validate_options(
-                    data['fdwoptions'], 'fdwoption', 'fdwvalue'
-                )
-
-            sql = render_template("/".join([self.template_path,
-                                            self._CREATE_SQL]),
-                                  data=data, conn=self.conn,
-                                  is_valid_options=is_valid_options
-                                  )
+            sql = self._get_create_sql(data)
 
         return sql, data['name']
 
