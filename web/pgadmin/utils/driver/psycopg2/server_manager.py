@@ -508,7 +508,8 @@ WHERE db.oid = {0}""".format(did))
                     ssh_password=tunnel_password,
                     remote_bind_address=(self.host, self.port)
                 )
-
+            # flag tunnel threads in daemon mode to fix hang issue.
+            self.tunnel_object.daemon_forward_servers = True
             self.tunnel_object.start()
             self.tunnel_created = True
         except BaseSSHTunnelForwarderError as e:
