@@ -115,18 +115,19 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             NavMenuLocators.maximize_pref_dialogue_css)
         maximize_button.click()
 
+        specified_preference_tree_node_name = 'Query Tool'
         sql_editor = self.page.find_by_xpath(
             NavMenuLocators.specified_preference_tree_node.
-            format('Query Tool'))
+            format(specified_preference_tree_node_name))
         if self.page.find_by_xpath(
             NavMenuLocators.specified_pref_node_exp_status.
-                format('Query Tool')).\
+                format(specified_preference_tree_node_name)).\
                 get_attribute('aria-expanded') == 'false':
             ActionChains(self.driver).double_click(sql_editor).perform()
 
         option_node = self.page.find_by_xpath(
             NavMenuLocators.specified_sub_node_of_pref_tree_node.format(
-                'Query Tool', 'Editor'))
+                specified_preference_tree_node_name, 'Editor'))
         option_node.click()
 
         self.page.set_switch_box_status(

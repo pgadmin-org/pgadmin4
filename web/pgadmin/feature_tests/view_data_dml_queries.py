@@ -346,6 +346,7 @@ CREATE TABLE public.nonintpkey
 
         xpath = "//*[contains(@class, 'ui-widget-content') and " \
                 "contains(@style, 'top:" + str(row_height) + "px')]"
+        scroll_on_arg_for_js = "arguments[0].scrollIntoView(false)"
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
@@ -362,7 +363,7 @@ CREATE TABLE public.nonintpkey
                     element = \
                         result_row.find_element_by_class_name("r" + str(idx))
                     self.page.driver.execute_script(
-                        "arguments[0].scrollIntoView(false)", element)
+                        scroll_on_arg_for_js, element)
                     break
                 except Exception:
                     print("stale reference exception at id:", idx)
@@ -380,4 +381,4 @@ CREATE TABLE public.nonintpkey
             time.sleep(0.4)
             element = result_row.find_element_by_class_name("r" + str(idx))
             self.page.driver.execute_script(
-                "arguments[0].scrollIntoView(false)", element)
+                scroll_on_arg_for_js, element)

@@ -32,6 +32,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
     test_editable_table_name = ""
     invalid_table_name = ""
 
+    select_query = "SELECT * FROM %s"
+    query_history_tab_name = "Query History"
+    query_editor_tab_name = "Query Editor"
+
     def before(self):
         self.test_table_name = "test_table" + str(random.randint(1000, 3000))
         self.invalid_table_name = \
@@ -148,12 +152,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
         editor_input = self.page.find_by_css_selector(
             QueryToolLocators.query_editor_panel)
         self.page.click_element(editor_input)
-        self.page.execute_query("SELECT * FROM %s" % self.invalid_table_name)
+        self.page.execute_query(self.select_query % self.invalid_table_name)
 
-        self.page.click_tab("Query History")
+        self.page.click_tab(self.query_history_tab_name)
         selected_history_entry = self.page.find_by_css_selector(
             QueryToolLocators.query_history_selected)
-        self.assertIn("SELECT * FROM %s" % self.invalid_table_name,
+        self.assertIn(self.select_query % self.invalid_table_name,
                       selected_history_entry.text)
 
         failed_history_detail_pane = self.page.find_by_css_selector(
@@ -187,10 +191,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
         invalid_history_entry = self.page.find_by_css_selector(
             QueryToolLocators.invalid_query_history_entry_css)
 
-        self.assertIn("SELECT * FROM %s" % self.invalid_table_name,
+        self.assertIn(self.select_query % self.invalid_table_name,
                       invalid_history_entry.text)
 
-        self.page.click_tab("Query Editor")
+        self.page.click_tab(self.query_editor_tab_name)
         self.page.clear_query_tool()
         self.page.click_element(editor_input)
 
@@ -202,7 +206,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
                 QueryToolLocators.btn_execute_query_css).click()
             self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab("Query History")
+        self.page.click_tab(self.query_history_tab_name)
 
         query_list = self.page.wait_for_elements(
             lambda driver: driver.find_elements_by_css_selector(
@@ -216,10 +220,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._test_toggle_generated_queries()
 
     def _test_history_query_sources(self):
-        self.page.click_tab("Query Editor")
+        self.page.click_tab(self.query_editor_tab_name)
         self._execute_sources_test_queries()
 
-        self.page.click_tab("Query History")
+        self.page.click_tab(self.query_history_tab_name)
 
         history_entries_icons = [
             QueryToolLocators.commit_icon,
@@ -235,9 +239,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
             "UPDATE public.%s SET normal_column = '10'::numeric "
             "WHERE pk_column = '1';" % self.test_editable_table_name,
             "BEGIN;",
-            "SELECT * FROM %s" % self.test_editable_table_name,
-            "SELECT * FROM %s" % self.test_editable_table_name,
-            "SELECT * FROM %s" % self.test_editable_table_name
+            self.select_query % self.test_editable_table_name,
+            self.select_query % self.test_editable_table_name,
+            self.select_query % self.test_editable_table_name
         ]
 
         self._check_history_queries_and_icons(history_entries_queries,
@@ -256,7 +260,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _test_updatable_resultset(self):
         if self.driver_version < 2.8:
             return
-        self.page.click_tab("Query Editor")
+        self.page.click_tab(self.query_editor_tab_name)
 
         # Select all data
         # (contains the primary key -> all columns should be editable)
@@ -286,7 +290,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _test_is_editable_columns_icons(self):
         if self.driver_version < 2.8:
             return
-        self.page.click_tab("Query Editor")
+        self.page.click_tab(self.query_editor_tab_name)
 
         self.page.clear_query_tool()
         query = "SELECT pk_column FROM %s" % self.test_editable_table_name
@@ -310,15 +314,15 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.clear_query_tool()
 
         self._explain_query(
-            "SELECT * FROM %s;"
+            self.select_query
             % self.test_editable_table_name
         )
         self._explain_analyze_query(
-            "SELECT * FROM %s;"
+            self.select_query
             % self.test_editable_table_name
         )
         self.page.execute_query(
-            "SELECT * FROM %s;"
+            self.select_query
             % self.test_editable_table_name
         )
 
@@ -376,12 +380,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
         """
             Updates a numeric cell in the first row of the resultset
         """
-        self.page.check_if_element_exist_by_xpath(
-            "//div[contains(@style, 'top:0px')]//div[contains(@class, "
-            "'l{0} r{1}')]".format(cell_index, cell_index))
-        cell_el = self.page.find_by_xpath(
-            "//div[contains(@style, 'top:0px')]//div[contains(@class, "
-            "'l{0} r{1}')]".format(cell_index, cell_index))
+        cell_xpath = "//div[contains(@style, 'top:0px')]//" \
+                     "div[contains(@class,'l{0} r{1}')]". \
+            format(cell_index, cell_index)
+
+        self.page.check_if_element_exist_by_xpath(cell_xpath)
+        cell_el = self.page.find_by_xpath(cell_xpath)
         ActionChains(self.driver).double_click(cell_el).perform()
         ActionChains(self.driver).send_keys(value). \
             send_keys(Keys.ENTER).perform()
@@ -389,7 +393,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
             QueryToolLocators.btn_save_data).click()
 
     def _insert_data_into_test_editable_table(self):
-        self.page.click_tab("Query Editor")
+        self.page.click_tab(self.query_editor_tab_name)
         self.page.clear_query_tool()
         self.page.execute_query(
             "INSERT INTO %s VALUES (1, 1), (2, 2);"

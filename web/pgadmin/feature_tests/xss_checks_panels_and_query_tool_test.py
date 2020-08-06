@@ -38,6 +38,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         ("Test XSS check for panels and query tool", dict())
     ]
     test_type_name = '"<script>alert(1)</script>"'
+    check_xss_chars = '&lt;h1&gt;X'
+    check_xss_chars_set2 = '&lt;script&gt;alert(1)&lt;/script&gt;'
 
     def before(self):
         self.test_table_name = "<h1>X" + str(random.randint(1000, 3000))
@@ -126,7 +128,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         self._check_escaped_characters(
             source_code,
-            "&lt;h1&gt;X",
+            self.check_xss_chars,
             "Browser tree"
         )
 
@@ -144,7 +146,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         self._check_escaped_characters(
             source_code,
-            "&lt;h1&gt;X",
+            self.check_xss_chars,
             "SQL tab (Code Mirror)"
         )
 
@@ -229,7 +231,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         self._check_escaped_characters(
             source_code,
-            '&lt;script&gt;alert(1)&lt;/script&gt;',
+            self.check_xss_chars_set2,
             "Query tool (History Entry)"
         )
 
@@ -246,7 +248,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         self._check_escaped_characters(
             source_code,
-            '&lt;script&gt;alert(1)&lt;/script&gt;',
+            self.check_xss_chars_set2,
             "Query tool (History Details-Message)"
         )
 
@@ -264,7 +266,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         self._check_escaped_characters(
             source_code,
-            '&lt;script&gt;alert(1)&lt;/script&gt;',
+            self.check_xss_chars_set2,
             "Query tool (History Details-Error)"
         )
 
@@ -286,7 +288,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         self._check_escaped_characters(
             source_code,
-            '&lt;script&gt;alert(1)&lt;/script&gt;',
+            self.check_xss_chars_set2,
             "View Data (SlickGrid)"
         )
 
@@ -329,7 +331,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         self._check_escaped_characters(
             source_code,
-            "&lt;h1&gt;X",
+            self.check_xss_chars,
             "Explain tab (Graphical explain plan)"
         )
 

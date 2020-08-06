@@ -64,6 +64,7 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
 
     def runTest(self):
         # Test case for keywords
+        select_keyword = "SELECT * FROM public."
         print("\nAuto complete ALTER keyword... ", file=sys.stderr, end="")
         self._auto_complete("A", "ALTER")
         print("OK.", file=sys.stderr)
@@ -116,29 +117,29 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
 
         print("Auto complete first table in public schema ... ",
               file=sys.stderr, end="")
-        self._auto_complete("SELECT * FROM public.", self.first_table_name)
+        self._auto_complete(select_keyword, self.first_table_name)
         print("OK.", file=sys.stderr)
         self.page.clear_query_tool()
 
         print("Auto complete second table in public schema ... ",
               file=sys.stderr, end="")
-        self._auto_complete("SELECT * FROM public.", self.second_table_name)
+        self._auto_complete(select_keyword, self.second_table_name)
         print("OK.", file=sys.stderr)
         self.page.clear_query_tool()
 
         print("Auto complete JOIN second table with after schema name ... ",
               file=sys.stderr, end="")
-        query = "SELECT * FROM public." + self.first_table_name + \
-                " JOIN public."
+        query = select_keyword + self.first_table_name + \
+            " JOIN public."
         self._auto_complete(query, self.second_table_name)
         print("OK.", file=sys.stderr)
         self.page.clear_query_tool()
 
         print("Auto complete JOIN ON some columns ... ",
               file=sys.stderr, end="")
-        query = "SELECT * FROM public." + self.first_table_name + \
-                " JOIN public." + self.second_table_name + " ON " + \
-                self.second_table_name + "."
+        query = select_keyword + self.first_table_name + \
+            " JOIN public." + self.second_table_name + " ON " + \
+            self.second_table_name + "."
         expected_string = "some_column = " + self.first_table_name + \
                           ".some_column"
         self._auto_complete(query, expected_string)
@@ -147,8 +148,8 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
 
         print("Auto complete JOIN ON some columns using table alias ... ",
               file=sys.stderr, end="")
-        query = "SELECT * FROM public." + self.first_table_name + \
-                " t1 JOIN public." + self.second_table_name + " t2 ON t2."
+        query = select_keyword + self.first_table_name + \
+            " t1 JOIN public." + self.second_table_name + " t2 ON t2."
         self._auto_complete(query, "some_column = t1.some_column")
         print("OK.", file=sys.stderr)
         self.page.clear_query_tool()

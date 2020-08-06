@@ -30,6 +30,8 @@ class QueryToolFeatureTest(BaseFeatureTest):
     scenarios = [
         ("Query tool feature test", dict())
     ]
+    data_output_tab_name = 'Data Output'
+    table_creation_fail_error = '"CREATE TABLE message does not displayed"'
 
     def before(self):
         self.page.wait_for_spinner_to_disappear()
@@ -46,6 +48,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # on demand result set on scrolling.
         print("\nOn demand query result... ",
               file=sys.stderr, end="")
+        skip_warning = "Skipped."
         self._on_demand_result()
         self.page.clear_query_tool()
 
@@ -57,7 +60,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
             print("OK.", file=sys.stderr)
             self.page.clear_query_tool()
         else:
-            print("Skipped.", file=sys.stderr)
+            print(skip_warning, file=sys.stderr)
 
         # explain analyze query with buffers and timing
         print("Explain analyze query with buffers and timing... ",
@@ -67,7 +70,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
             print("OK.", file=sys.stderr)
             self.page.clear_query_tool()
         else:
-            print("Skipped.", file=sys.stderr)
+            print(skip_warning, file=sys.stderr)
 
         # auto commit disabled.
         print("Auto commit disabled... ", file=sys.stderr, end="")
@@ -106,7 +109,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
             print("OK.", file=sys.stderr)
             self.page.clear_query_tool()
         else:
-            print("Skipped.", file=sys.stderr)
+            print(skip_warning, file=sys.stderr)
 
     def after(self):
         self.page.remove_server(self.server)
@@ -276,7 +279,7 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab('Data Output')
+        self.page.click_tab(self.data_output_tab_name)
 
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css))
@@ -310,7 +313,7 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab('Data Output')
+        self.page.click_tab(self.data_output_tab_name)
 
         self.wait.until(EC.presence_of_element_located(
             (By.XPATH, QueryToolLocators.output_cell_xpath.format(1, 1)))
@@ -351,7 +354,7 @@ CREATE TABLE public.{}();""".format(table_name)
 
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
-            "CREATE TABLE message does not displayed")
+            self.table_creation_fail_error)
 
         # do the ROLLBACK and check if the table is present or not
         self.page.clear_query_tool()
@@ -375,7 +378,7 @@ SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
 
         self.page.execute_query(query)
-        self.page.click_tab('Data Output')
+        self.page.click_tab(self.data_output_tab_name)
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
@@ -432,7 +435,7 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
-            "CREATE TABLE message does not displayed")
+            self.table_creation_fail_error)
 
         self.page.clear_query_tool()
         query = """-- 1. (Done) END any open transaction if any.
@@ -459,7 +462,7 @@ SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
 
         self.page.execute_query(query)
-        self.page.click_tab('Data Output')
+        self.page.click_tab(self.data_output_tab_name)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         canvas = self.wait.until(EC.presence_of_element_located(
@@ -510,7 +513,7 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
-            "CREATE TABLE message does not displayed")
+            self.table_creation_fail_error)
         self.page.clear_query_tool()
 
         query = """-- 1. (Done) END any open transaction.
@@ -554,7 +557,7 @@ SELECT relname FROM pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('Data Output')
+        self.page.click_tab(self.data_output_tab_name)
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
@@ -710,7 +713,7 @@ SELECT 1, pg_sleep(300)"""
             QueryToolLocators.btn_explain_analyze).click()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('Data Output')
+        self.page.click_tab(self.data_output_tab_name)
 
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css))
