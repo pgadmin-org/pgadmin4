@@ -8,6 +8,15 @@ pgAdmin may be deployed as a web application by configuring the app to run in
 server mode and then deploying it either behind a webserver running as a reverse
 proxy, or using the WSGI interface.
 
+When deployed in server mode, there are two notable differences for users:
+
+* Users must login before they can use pgAdmin. An initial superuser account
+  is created when server mode is initialised, and this user can add additional
+  superusers and non-superusers as required.
+* File storage is restricted to a virtual root directory for each individual
+  user under the directory configured using the ``STORAGE_DIR`` configuration
+  parameter. Users do not have access to the complete filesystem of the server.
+
 The following instructions demonstrate how pgAdmin may be run as a WSGI 
 application under ``Apache HTTPD``, using ``mod_wsgi``, standalone using ``uWSGI``
 or ``Gunicorn``, or under ``NGINX`` using using ``uWSGI`` or ``Gunicorn``.
