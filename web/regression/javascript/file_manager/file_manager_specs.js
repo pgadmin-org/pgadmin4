@@ -23,16 +23,22 @@ describe('fileSelectDialog', function () {
       md: 700,
       lg: 900,
       default: 500,
-      calc: () => {
+      calc: (passed_width) => {
         let iw = window.innerWidth;
-        if (iw > pgAdmin.Browser.stdW.lg)
-          return pgAdmin.Browser.stdW.lg;
-        else if (iw > pgAdmin.Browser.stdW.md)
-          return pgAdmin.Browser.stdW.md;
-        else if (iw > pgAdmin.Browser.stdW.sm)
-          return pgAdmin.Browser.stdW.sm;
-        else
-          return iw;
+        if(iw > passed_width){
+          return passed_width;
+        }else{
+          if (iw > pgAdmin.Browser.stdW.lg)
+            return pgAdmin.Browser.stdW.lg;
+          else if (iw > pgAdmin.Browser.stdW.md)
+            return pgAdmin.Browser.stdW.md;
+          else if (iw > pgAdmin.Browser.stdW.sm)
+            return pgAdmin.Browser.stdW.sm;
+          else
+            // if avilable screen resolution is still
+            // less then return the width value as it
+            return iw;
+        }
       },
     },
     stdH: {
@@ -40,14 +46,21 @@ describe('fileSelectDialog', function () {
       md: 400,
       lg: 550,
       default: 550,
-      calc: () => {
+      calc: (passed_height) => {
+        // We are excluding sm as it is too small for dialog
         let ih = window.innerHeight;
-        if (ih > pgAdmin.Browser.stdH.lg)
-          return pgAdmin.Browser.stdH.lg;
-        else if (ih > pgAdmin.Browser.stdH.md)
-          return pgAdmin.Browser.stdH.md;
-        else
-          return ih;
+        if (ih > passed_height){
+          return passed_height;
+        }else{
+          if (ih > pgAdmin.Browser.stdH.lg)
+            return pgAdmin.Browser.stdH.lg;
+          else if (ih > pgAdmin.Browser.stdH.md)
+            return pgAdmin.Browser.stdH.md;
+          else
+            // if avilable screen resolution is still
+            // less then return the height value as it
+            return ih;
+        }
       },
     },
   };

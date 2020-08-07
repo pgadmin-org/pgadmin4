@@ -114,6 +114,9 @@ export class BackupDialogWrapper extends DialogWrapper {
       '        <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i> ' +
       '      </div> ' +
       '      <div class="alert-text" role="alert"></div> ' +
+      '       <div class="ml-auto close-error-bar"> ' +
+      '          <a aria-label="' + gettext('Close error bar') + '" class="close-error fa fa-times text-danger"></a> ' +
+      '        </div> ' +
       '    </div> ' +
       '  </div> ' +
       '</div>').appendTo($container);
@@ -253,6 +256,10 @@ export class BackupDialogWrapper extends DialogWrapper {
         ctx.errorModel.set(errorField, errormsg);
         statusBar.removeClass('d-none');
         statusBar.find('.alert-text').html(errormsg);
+        self.elements.dialog.querySelector('.close-error').addEventListener('click', ()=>{
+          statusBar.addClass('d-none');
+          ctx.errorModel.set(errorField, errormsg);
+        });
       };
 
       if (!_.isUndefined(this.get('file')) && this.get('file') !== '') {

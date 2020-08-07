@@ -650,7 +650,7 @@ define([
         alertify,
         BackupModel
       );
-      dialog.draw(action, item, {'globals': true}, pgBrowser.stdW.calc(), pgBrowser.stdH.calc());
+      dialog.draw(action, item, {'globals': true}, pgBrowser.stdW.calc(pgBrowser.stdW.md), pgBrowser.stdH.calc(pgBrowser.stdH.md));
     },
     start_backup_server: function(action, item) {
       let dialog = new globalBackupDialog.BackupDialog(
@@ -659,7 +659,7 @@ define([
         alertify,
         BackupObjectModel
       );
-      dialog.draw(action, item, {'server': true}, pgBrowser.stdW.calc(), pgBrowser.stdH.calc());
+      dialog.draw(action, item, {'server': true}, pgBrowser.stdW.calc(pgBrowser.stdW.md), pgBrowser.stdH.calc(pgBrowser.stdH.md));
     },
     // Callback to draw Backup Dialog for objects
     backup_objects: function(action, treeItem) {
@@ -669,7 +669,7 @@ define([
         alertify,
         BackupObjectModel
       );
-      dialog.draw(action, treeItem, null, pgBrowser.stdW.calc(), pgBrowser.stdH.calc());
+      dialog.draw(action, treeItem, null, pgBrowser.stdW.calc(pgBrowser.stdW.md), pgBrowser.stdH.calc(pgBrowser.stdH.md));
     },
   };
   return pgBrowser.Backup;

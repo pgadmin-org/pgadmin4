@@ -37,8 +37,8 @@ define('misc.file_manager', [
     },
     // Call dialogs subject to dialog_type param
     show_dialog: function(params) {
-      let dialogWidth = pgAdmin.Browser.stdW.calc();
-      let dialogHeight = pgAdmin.Browser.stdH.calc();
+      let dialogWidth = pgAdmin.Browser.stdW.calc(pgAdmin.Browser.stdW.md);
+      let dialogHeight = pgAdmin.Browser.stdH.calc(pgAdmin.Browser.stdH.lg);
       if (params.dialog_type == 'create_file') {
         Alertify.createModeDlg(params).resizeTo(dialogWidth, dialogHeight);
       } else {
