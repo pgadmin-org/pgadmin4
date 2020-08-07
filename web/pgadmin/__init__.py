@@ -340,7 +340,8 @@ def create_app(app_name=None):
                     raise FileNotFoundError(
                         'SQLite database file "' + SQLITE_PATH +
                         '" does not exists.')
-                raise Exception('Specified SQLite database file is not valid.')
+                raise RuntimeError('Specified SQLite database file '
+                                   'is not valid.')
         else:
             schema_version = get_version()
 

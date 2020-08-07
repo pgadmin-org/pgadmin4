@@ -17,6 +17,7 @@ from flask import render_template, request, \
 from flask_babelex import gettext as _
 from flask_security import login_required, roles_required, current_user
 from flask_security.utils import encrypt_password
+from werkzeug.exceptions import InternalServerError
 
 import config
 from pgadmin.utils import PgAdminModule
@@ -98,7 +99,7 @@ def validate_password(data, new_data):
         if data['newPassword'] == data['confirmPassword']:
             new_data['password'] = encrypt_password(data['newPassword'])
         else:
-            raise Exception(_("Passwords do not match."))
+            raise InternalServerError(_("Passwords do not match."))
 
 
 def validate_user(data):
@@ -115,7 +116,7 @@ def validate_user(data):
         if email_filter.match(data['email']):
             new_data['email'] = data['email']
         else:
-            raise Exception(_("Invalid email address."))
+            raise InternalServerError(_("Invalid email address."))
 
     if 'role' in data and data['role'] != "":
         new_data['roles'] = int(data['role'])

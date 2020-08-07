@@ -190,5 +190,5 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
                 print("Single entry..........")
                 if expected_string not in code_mirror_text:
                     print("single entry exception.........")
-                    raise Exception("Required String %s is not "
-                                    "present" % expected_string)
+                    raise RuntimeError("Required String %s is not "
+                                       "present" % expected_string)

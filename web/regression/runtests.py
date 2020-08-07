@@ -25,7 +25,7 @@ import time
 import unittest
 
 if sys.version_info < (3, 4):
-    raise Exception('The test suite must be run under Python 3.4 or later.')
+    raise RuntimeError('The test suite must be run under Python 3.4 or later.')
 
 import builtins
 

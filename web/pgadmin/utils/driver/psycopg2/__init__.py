@@ -16,6 +16,7 @@ object.
 import datetime
 from flask import session
 from flask_login import current_user
+from werkzeug.exceptions import InternalServerError
 import psycopg2
 from psycopg2.extensions import adapt
 from threading import Lock
@@ -131,7 +132,7 @@ class Driver(BaseDriver):
         if _version:
             return _version
 
-        raise Exception(
+        raise InternalServerError(
             "Driver Version information for psycopg2 is not available!"
         )
 
@@ -143,7 +144,7 @@ class Driver(BaseDriver):
         if version:
             return version
 
-        raise Exception(
+        raise InternalServerError(
             "libpq version information is not available!"
         )
 

@@ -17,6 +17,7 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
 import config
+from werkzeug.exceptions import InternalServerError
 
 MODULE_NAME = 'misc'
 

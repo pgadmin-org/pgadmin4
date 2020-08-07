@@ -58,8 +58,8 @@ class AppStarter:
                     retry_count = retry_count + 1
                     launch_browser(retry_count)
                 else:
-                    raise Exception('Unable to start python server even after '
-                                    'retrying 60 times.')
+                    raise RuntimeError('Unable to start python server even '
+                                       'after retrying 60 times.')
 
         if self.driver is not None:
             launch_browser(0)

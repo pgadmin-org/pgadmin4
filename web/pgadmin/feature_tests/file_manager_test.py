@@ -150,8 +150,8 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
              "#contents th[data-column='0'].tablesorter-headerAsc"))
 
         if not success:
-            raise Exception("Unable to sort in ascending order while clicked "
-                            "on 'Name' column")
+            raise RuntimeError("Unable to sort in ascending order while "
+                               "clicked on 'Name' column")
         # Added time.sleep so that the element to be clicked.
         time.sleep(0.05)
 
@@ -165,7 +165,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
              "#contents th[data-column='0'].tablesorter-headerDesc"))
 
         if not success:
-            raise Exception("Unable to sort in descending order while clicked "
-                            "on 'Name' column")
+            raise RuntimeError("Unable to sort in descending order while "
+                               "clicked on 'Name' column")
 
         self.page.click_modal('Cancel')

@@ -204,8 +204,8 @@ class BatchProcess(object):
 
         if self.stime is not None:
             if self.etime is None:
-                raise Exception(_('The process has already been started.'))
-            raise Exception(
+                raise RuntimeError(_('The process has already been started.'))
+            raise RuntimeError(
                 _('The process has already finished and cannot be restarted.')
             )
 

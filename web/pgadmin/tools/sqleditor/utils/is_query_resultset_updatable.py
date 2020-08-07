@@ -24,6 +24,7 @@
 from flask import render_template
 from flask_babelex import gettext
 from collections import OrderedDict
+from werkzeug.exceptions import InternalServerError
 
 from pgadmin.tools.sqleditor.utils.get_column_types import get_columns_types
 from pgadmin.utils.exception import ExecuteError
@@ -85,7 +86,7 @@ def is_query_resultset_updatable(conn, sql_path):
             _set_all_columns_not_editable(columns_info=columns_info)
             return return_not_updatable()
     else:
-        raise Exception(
+        raise InternalServerError(
             gettext('Not connected to server or connection with the '
                     'server has been closed.')
         )

@@ -19,6 +19,7 @@ from urllib.parse import unquote
 from sys import platform as _platform
 import config
 import codecs
+from werkzeug.exceptions import InternalServerError
 
 import simplejson as json
 from flask import render_template, Response, session, request as req, \
@@ -694,7 +695,7 @@ class Filemanager(object):
             # Do not allow user to access outside his storage dir
             # in server mode.
             if not orig_path.startswith(in_dir):
-                raise Exception(
+                raise InternalServerError(
                     gettext(u"Access denied ({0})").format(path))
         return True
 

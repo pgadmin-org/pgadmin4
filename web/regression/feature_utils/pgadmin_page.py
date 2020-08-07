@@ -323,7 +323,7 @@ class PgadminPage:
                 attempts -= 1
                 time.sleep(.4)
                 if attempts == 0:
-                    raise Exception(e)
+                    raise e
 
     def click_a_tree_node(self, element_name, list_of_element):
         """It will click a tree node eg. server, schema, table name etc
@@ -892,7 +892,7 @@ class PgadminPage:
         except Exception as e:
             time.sleep(.2)
             if attempt == 2:
-                raise Exception(e)
+                raise e
         # Use send keys if input_keys true, else use javascript to set content
         if input_keys:
             backspaces = [Keys.BACKSPACE] * len(field.get_attribute('value'))

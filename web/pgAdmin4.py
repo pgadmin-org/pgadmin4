@@ -15,7 +15,8 @@ to start a web server."""
 import sys
 
 if sys.version_info < (3, 4):
-    raise Exception('This application must be run under Python 3.4 or later.')
+    raise RuntimeError('This application must be run under Python 3.4 '
+                       'or later.')
 
 import builtins
 import os
@@ -163,7 +164,7 @@ def main():
                 "To run the app ensure that yarn install command runs "
                 "successfully"
             )
-            raise Exception("No generated javascript, aborting")
+            raise RuntimeError("No generated javascript, aborting")
 
     # Output a startup message if we're not under the runtime and startup.
     # If we're under WSGI, we don't need to worry about this

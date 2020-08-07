@@ -14,6 +14,7 @@ from collections import OrderedDict
 import six
 from flask import render_template
 from flask_babelex import gettext
+from werkzeug.exceptions import InternalServerError
 from pgadmin.utils.ajax import forbidden
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.sqleditor.utils.is_query_resultset_updatable \
@@ -195,7 +196,7 @@ class SQLFilter(object):
             self.nsp_name = result['rows'][0]['nspname']
             self.object_name = result['rows'][0]['relname']
         else:
-            raise Exception(gettext(
+            raise InternalServerError(gettext(
                 'Not connected to server or connection with the server '
                 'has been closed.')
             )
@@ -406,7 +407,7 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
             for row in result['rows']:
                 all_columns.append(row['attname'])
         else:
-            raise Exception(
+            raise InternalServerError(
                 gettext('Not connected to server or connection with the '
                         'server has been closed.')
             )
@@ -552,7 +553,7 @@ class TableCommand(GridCommand):
                 # Remove last character from the string
                 pk_names = pk_names[:-1]
         else:
-            raise Exception(
+            raise InternalServerError(
                 gettext('Not connected to server or connection with the '
                         'server has been closed.')
             )
@@ -649,7 +650,7 @@ class TableCommand(GridCommand):
                 raise ExecuteError(has_oids)
 
         else:
-            raise Exception(
+            raise InternalServerError(
                 gettext('Not connected to server or connection with the '
                         'server has been closed.')
             )
@@ -1001,7 +1002,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
             self.nsp_name = result['rows'][0]['nspname']
             self.object_name = result['rows'][0]['relname']
         else:
-            raise Exception(gettext(
+            raise InternalServerError(gettext(
                 'Not connected to server or connection with the server '
                 'has been closed.')
             )

@@ -16,6 +16,7 @@ import config
 from flask import current_app, session
 from flask_security import current_user
 from flask_babelex import gettext
+from werkzeug.exceptions import InternalServerError
 
 from pgadmin.utils import get_complete_file_path
 from pgadmin.utils.crypto import decrypt
@@ -38,6 +39,7 @@ class ServerManager(object):
     This class contains the information about the given server.
     And, acts as connection manager for that particular session.
     """
+    _INFORMATION_MSG = gettext("Information is not available.")
 
     def __init__(self, server):
         self.connections = dict()
@@ -158,17 +160,17 @@ class ServerManager(object):
     def major_version(self):
         if self.sversion is not None:
             return int(self.sversion / 10000)
-        raise Exception(gettext("Information is not available."))
+        raise InternalServerError(self._INFORMATION_MSG)
 
     def minor_version(self):
         if self.sversion:
             return int(int(self.sversion / 100) % 100)
-        raise Exception(gettext("Information is not available."))
+        raise InternalServerError(self._INFORMATION_MSG)
 
     def patch_version(self):
         if self.sversion:
             return int(int(self.sversion / 100) / 100)
-        raise Exception(gettext("Information is not available."))
+        raise InternalServerError(self._INFORMATION_MSG)
 
     def connection(
             self, database=None, conn_id=None, auto_reconnect=True, did=None,
