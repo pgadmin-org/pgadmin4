@@ -28,7 +28,7 @@ FROM
         AS is_grantable, (d).privilege_type AS privilege_type FROM (SELECT aclexplode(nspacl) as d FROM pg_namespace
         WHERE nspparent = {{scid}}::oid
         AND oid = {{pkgid}}::oid
-  AND nspobjecttype = 0) a) d
+  AND nspobjecttype = 0) a ORDER BY privilege_type) d
     ) d
   LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)
   LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)

@@ -39,7 +39,7 @@ FROM
           LEFT JOIN pg_type typ ON rel.reloftype=typ.oid
         WHERE rel.relkind IN ('r','s','t') AND rel.relnamespace = {{ scid }}::oid
             AND rel.oid = {{ tid }}::oid
-        ) a) d
+        ) a ORDER BY privilege_type) d
     ) d
   LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)
   LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)

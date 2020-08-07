@@ -26,7 +26,7 @@ FROM
     (SELECT (d).grantee AS grantee, (d).grantor AS grantor, (d).is_grantable
         AS is_grantable, (d).privilege_type AS privilege_type FROM (SELECT aclexplode(nspacl) as d FROM pg_namespace
         WHERE nspparent = {{scid}}::oid
-        AND oid = {{pkgid}}::oid) a) d
+        AND oid = {{pkgid}}::oid) a ORDER BY privilege_type) d
     ) d
   LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)
   LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)
