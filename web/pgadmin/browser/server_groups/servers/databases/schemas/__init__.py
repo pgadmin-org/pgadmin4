@@ -1053,7 +1053,7 @@ It may have been removed by another user.
         sql_header = u"""
 -- CATALOG: {0}
 
--- DROP SCHEMA {0};(
+-- DROP SCHEMA {0};
 
 """.format(old_data['name'])
 
