@@ -65,7 +65,17 @@ module.exports = {
         ',jquery.event.drag' +
         '!exports-loader?' +
         'Slick',
-      }],
+      },
+      {
+        test: /\.js$|\.jsx$/,
+        use: {
+          loader: 'istanbul-instrumenter-loader',
+          options: { esModules: true },
+        },
+        enforce: 'post',
+        exclude: /node_modules|slickgrid|plugins|bundle|generated|regression|[Tt]est.js|[Ss]pecs.js|[Ss]pec.js|\.spec\.js$/,
+      },
+    ],
   },
 
   resolve: {

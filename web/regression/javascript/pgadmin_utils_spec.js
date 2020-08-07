@@ -15,7 +15,7 @@ describe('getEpoch', function () {
   });
 
   it('should return epoch for a date passed', function () {
-    let someDate = new Date('Feb 01 2019 10:20:30 GMT0000'),
+    let someDate = new Date('Feb 01 2019 10:20:30 GMT'),
       someDateEpoch = 1549016430;
 
     expect(getEpoch(new Date(someDate))).toEqual(someDateEpoch);

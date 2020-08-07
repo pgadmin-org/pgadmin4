@@ -23,6 +23,7 @@ module.exports = function (config) {
       'karma-jasmine-html-reporter',
       'karma-source-map-support',
       'karma-sourcemap-loader',
+      'karma-coverage',
       new webpack.SourceMapDevToolPlugin({
         /*
          * filename: null, // if no value is provided the sourcemap is inlined
@@ -50,6 +51,17 @@ module.exports = function (config) {
       'pgadmin/**/js/**/*.js?': ['sourcemap'],
       'regression/javascript/**/*.js': ['webpack', 'sourcemap'],
       'pgadmin/static/bundle/slickgrid.js': ['webpack', 'sourcemap'],
+    },
+
+    // optionally, configure the reporter
+    coverageReporter: {
+      reporters: [
+        // reporters not supporting the `file` property
+        { type: 'html', subdir: 'report-html' },
+        { type: 'lcovonly', subdir: 'report-lcov' },
+      ],
+      dir : 'coverage/',
+      includeAllSources: true,
     },
 
     webpack: webpackConfig,

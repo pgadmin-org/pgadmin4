@@ -51,3 +51,4 @@ auditjs.html
 auditpy.txt
 /venv/
 .scannerwork/
+web/coverage/
