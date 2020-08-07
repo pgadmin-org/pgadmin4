@@ -82,6 +82,9 @@ check-feature: install-node bundle
 check-js: install-node linter
 	cd web && yarn run karma start --single-run
 
+check-js-coverage:
+    cd web && yarn run test:karma-coverage
+
 runtime-debug:
 	cd runtime && qmake CONFIG+=debug && make
 
