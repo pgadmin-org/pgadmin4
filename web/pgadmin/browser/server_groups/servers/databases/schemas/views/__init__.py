@@ -9,6 +9,7 @@
 
 """Implements View and Materialized View Node"""
 
+import copy
 import re
 from functools import wraps
 
@@ -815,11 +816,16 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if is_error:
                 return None, errmsg
 
+            self.view_schema = old_data['schema']
+
             try:
                 sql = render_template("/".join(
                     [self.template_path,
                      self._SQL_PREFIX + self._UPDATE_SQL]), data=data,
                     o_data=old_data, conn=self.conn)
+
+                if 'definition' in data and data['definition']:
+                    sql += self.get_columns_sql(did, vid)
 
             except Exception as e:
                 current_app.logger.exception(e)
@@ -1300,6 +1306,51 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             sql_data += SQL
         return sql_data
 
+    def get_columns_sql(self, did, vid):
+        """
+        Get all column associated with view node,
+        generate their sql and render
+        into sql tab
+        """
+
+        sql_data = ''
+        SQL = render_template("/".join(
+            [self.column_template_path,
+                self._PROPERTIES_SQL.format(self.manager.version)]),
+            did=did,
+            tid=vid)
+        status, data = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=data)
+
+        for rows in data['rows']:
+
+            res = {
+                'name': rows['name'],
+                'atttypid': rows['atttypid'],
+                'attlen': rows['attlen'],
+                'typnspname': rows['typnspname'],
+                'defval': None,
+                'table': rows['relname'],
+                'schema': self.view_schema
+            }
+
+            o_data = copy.deepcopy(rows)
+
+            # Generate alter statement for default value
+            if 'defval' in rows and rows['defval'] is not None:
+                res['defval'] = rows['defval']
+                o_data['defval'] = None
+            else:
+                continue
+
+            SQL = render_template("/".join(
+                [self.column_template_path,
+                    self._UPDATE_SQL.format(self.manager.version)]),
+                o_data=o_data, data=res, is_view_only=True)
+            sql_data += SQL
+        return sql_data
+
     @check_precondition
     def sql(self, gid, sid, did, scid, vid, **kwargs):
         """
@@ -1376,11 +1427,16 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
             data=result)
 
+        if ('seclabels' in result and len(result['seclabels']) > 0)\
+                or ('datacl' in result and len(result['datacl']) > 0):
+            SQL += "\n"
+
         sql_data += SQL
         sql_data += self.get_rule_sql(vid, display_comments)
         sql_data += self.get_trigger_sql(vid, display_comments)
         sql_data += self.get_compound_trigger_sql(vid, display_comments)
         sql_data += self.get_index_sql(did, vid, display_comments)
+        sql_data += self.get_columns_sql(did, vid)
 
         if not json_resp:
             return sql_data

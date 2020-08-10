@@ -14,7 +14,8 @@ SELECT att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
 	ELSE '' END AS collspcname,
 	EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid=att.attrelid AND contype='f' AND att.attnum=ANY(conkey)) As is_fk,
 	(SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=att.attrelid AND sl1.objsubid=att.attnum) AS seclabels,
-	(CASE WHEN (att.attnum < 1) THEN true ElSE false END) AS is_sys_column
+	(CASE WHEN (att.attnum < 1) THEN true ElSE false END) AS is_sys_column, tab.relname as relname,
+	(CASE WHEN tab.relkind = 'v' THEN true ELSE false END) AS is_view_only
 FROM pg_attribute att
   JOIN pg_type ty ON ty.oid=atttypid
   LEFT OUTER JOIN pg_attrdef def ON adrelid=att.attrelid AND adnum=att.attnum
@@ -23,6 +24,7 @@ FROM pg_attribute att
   LEFT OUTER JOIN pg_index pi ON pi.indrelid=att.attrelid AND indisprimary
   LEFT OUTER JOIN pg_collation coll ON att.attcollation=coll.oid
   LEFT OUTER JOIN pg_namespace nspc ON coll.collnamespace=nspc.oid
+  LEFT OUTER JOIN pg_class tab on tab.oid = att.attrelid
 WHERE att.attrelid = {{tid}}::oid
 {% if clid %}
     AND att.attnum = {{clid}}::int

@@ -17,7 +17,8 @@ SELECT att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
 	(SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=att.attrelid AND sl1.objsubid=att.attnum) AS seclabels,
 	(CASE WHEN (att.attnum < 1) THEN true ElSE false END) AS is_sys_column,
 	(CASE WHEN (att.attidentity in ('a', 'd')) THEN 'i' WHEN (att.attgenerated in ('s')) THEN 'g' ELSE 'n' END) AS colconstype,
-	(CASE WHEN (att.attgenerated in ('s')) THEN pg_catalog.pg_get_expr(def.adbin, def.adrelid) END) AS genexpr,
+	(CASE WHEN (att.attgenerated in ('s')) THEN pg_catalog.pg_get_expr(def.adbin, def.adrelid) END) AS genexpr, tab.relname as relname,
+	(CASE WHEN tab.relkind = 'v' THEN true ELSE false END) AS is_view_only,
 	seq.*
 FROM pg_attribute att
   JOIN pg_type ty ON ty.oid=atttypid
@@ -28,6 +29,7 @@ FROM pg_attribute att
   LEFT OUTER JOIN pg_collation coll ON att.attcollation=coll.oid
   LEFT OUTER JOIN pg_namespace nspc ON coll.collnamespace=nspc.oid
   LEFT OUTER JOIN pg_sequence seq ON cs.oid=seq.seqrelid
+  LEFT OUTER JOIN pg_class tab on tab.oid = att.attrelid
 WHERE att.attrelid = {{tid}}::oid
 {% if clid %}
     AND att.attnum = {{clid}}::int

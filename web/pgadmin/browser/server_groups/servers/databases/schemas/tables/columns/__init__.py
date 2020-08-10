@@ -683,6 +683,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     gettext("Could not find the column on the server.")
                 )
             old_data = dict(res['rows'][0])
+
+            is_view_only = True if 'is_view_only' in old_data and old_data[
+                'is_view_only'] else False
+
             if 'seqcycle' in old_data and old_data['seqcycle'] is False:
                 old_data['seqcycle'] = None
             # We will add table & schema as well
@@ -694,7 +698,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data, o_data=old_data, conn=self.conn
+                data=data, o_data=old_data, conn=self.conn,
+                is_view_only=is_view_only
             )
         else:
             is_error, errmsg, sql = self._get_sql_for_create(data, is_sql)
