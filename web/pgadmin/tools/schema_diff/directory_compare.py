@@ -16,7 +16,8 @@ from pgadmin.tools.schema_diff.model import SchemaDiffModel
 count = 1
 
 list_keys_array = ['name', 'colname', 'argid', 'token', 'option', 'conname',
-                   'member_name', 'label', 'attname']
+                   'member_name', 'label', 'attname', 'fdwoption',
+                   'fsrvoption', 'umoption']
 
 
 def compare_dictionaries(**kwargs):
@@ -29,7 +30,7 @@ def compare_dictionaries(**kwargs):
     view_object = kwargs.get('view_object')
     source_params = kwargs.get('source_params')
     target_params = kwargs.get('target_params')
-    target_schema = kwargs.get('target_schema')
+    group_name = kwargs.get('group_name')
     source_dict = kwargs.get('source_dict')
     target_dict = kwargs.get('target_dict')
     node = kwargs.get('node')
@@ -50,6 +51,7 @@ def compare_dictionaries(**kwargs):
 
     # Keys that are available in source and missing in target.
     source_only = []
+    source_dependencies = []
     added = dict1_keys - dict2_keys
     global count
     for item in added:
@@ -63,18 +65,25 @@ def compare_dictionaries(**kwargs):
             temp_src_params['json_resp'] = False
             source_ddl = \
                 view_object.get_sql_from_table_diff(**temp_src_params)
-            temp_src_params.update({
-                'diff_schema': target_schema
-            })
             diff_ddl = view_object.get_sql_from_table_diff(**temp_src_params)
+            source_dependencies = \
+                view_object.get_table_submodules_dependencies(
+                    **temp_src_params)
         else:
             temp_src_params = copy.deepcopy(source_params)
             temp_src_params['oid'] = source_object_id
+            # Provide Foreign Data Wrapper ID
+            if 'fdwid' in source_dict[item]:
+                temp_src_params['fdwid'] = source_dict[item]['fdwid']
+            # Provide Foreign Server ID
+            if 'fsid' in source_dict[item]:
+                temp_src_params['fsid'] = source_dict[item]['fsid']
+
             source_ddl = view_object.get_sql_from_diff(**temp_src_params)
-            temp_src_params.update({
-                'diff_schema': target_schema
-            })
             diff_ddl = view_object.get_sql_from_diff(**temp_src_params)
+            source_dependencies = view_object.get_dependencies(
+                view_object.conn, source_object_id, where=None,
+                show_system_objects=None, is_schema_diff=True)
 
         source_only.append({
             'id': count,
@@ -85,7 +94,9 @@ def compare_dictionaries(**kwargs):
             'status': SchemaDiffModel.COMPARISON_STATUS['source_only'],
             'source_ddl': source_ddl,
             'target_ddl': '',
-            'diff_ddl': diff_ddl
+            'diff_ddl': diff_ddl,
+            'group_name': group_name,
+            'dependencies': source_dependencies
         })
         count += 1
 
@@ -110,6 +121,13 @@ def compare_dictionaries(**kwargs):
         else:
             temp_tgt_params = copy.deepcopy(target_params)
             temp_tgt_params['oid'] = target_object_id
+            # Provide Foreign Data Wrapper ID
+            if 'fdwid' in target_dict[item]:
+                temp_tgt_params['fdwid'] = target_dict[item]['fdwid']
+            # Provide Foreign Server ID
+            if 'fsid' in target_dict[item]:
+                temp_tgt_params['fsid'] = target_dict[item]['fsid']
+
             target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
             temp_tgt_params.update(
                 {'drop_sql': True})
@@ -124,13 +142,16 @@ def compare_dictionaries(**kwargs):
             'status': SchemaDiffModel.COMPARISON_STATUS['target_only'],
             'source_ddl': '',
             'target_ddl': target_ddl,
-            'diff_ddl': diff_ddl
+            'diff_ddl': diff_ddl,
+            'group_name': group_name,
+            'dependencies': []
         })
         count += 1
 
     # Compare the values of duplicates keys.
     identical = []
     different = []
+    diff_dependencies = []
     for key in intersect_keys:
         source_object_id = None
         target_object_id = None
@@ -149,7 +170,13 @@ def compare_dictionaries(**kwargs):
                 'oid': source_object_id,
                 'source_oid': source_object_id,
                 'target_oid': target_object_id,
-                'status': SchemaDiffModel.COMPARISON_STATUS['identical']
+                'status': SchemaDiffModel.COMPARISON_STATUS['identical'],
+                'group_name': group_name,
+                'dependencies': [],
+                'source_scid': source_params['scid']
+                if 'scid' in source_params else 0,
+                'target_scid': target_params['scid']
+                if 'scid' in target_params else 0,
             })
         else:
             if node == 'table':
@@ -174,12 +201,14 @@ def compare_dictionaries(**kwargs):
 
                 source_ddl = \
                     view_object.get_sql_from_table_diff(**temp_src_params)
+                diff_dependencies = \
+                    view_object.get_table_submodules_dependencies(
+                        **temp_src_params)
                 target_ddl = \
                     view_object.get_sql_from_table_diff(**temp_tgt_params)
                 diff_ddl = view_object.get_sql_from_submodule_diff(
                     source_params=temp_src_params,
                     target_params=temp_tgt_params,
-                    target_schema=target_schema,
                     source=dict1[key], target=dict2[key], diff_dict=diff_dict,
                     ignore_whitespaces=ignore_whitespaces)
             else:
@@ -193,7 +222,19 @@ def compare_dictionaries(**kwargs):
 
                 temp_src_params['oid'] = source_object_id
                 temp_tgt_params['oid'] = target_object_id
+                # Provide Foreign Data Wrapper ID
+                if 'fdwid' in source_dict[key]:
+                    temp_src_params['fdwid'] = source_dict[key]['fdwid']
+                    temp_tgt_params['fdwid'] = target_dict[key]['fdwid']
+                # Provide Foreign Server ID
+                if 'fsid' in source_dict[key]:
+                    temp_src_params['fsid'] = source_dict[key]['fsid']
+                    temp_tgt_params['fsid'] = target_dict[key]['fsid']
+
                 source_ddl = view_object.get_sql_from_diff(**temp_src_params)
+                diff_dependencies = view_object.get_dependencies(
+                    view_object.conn, source_object_id, where=None,
+                    show_system_objects=None, is_schema_diff=True)
                 target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
                 temp_tgt_params.update(
                     {'data': diff_dict})
@@ -210,7 +251,9 @@ def compare_dictionaries(**kwargs):
                 'status': SchemaDiffModel.COMPARISON_STATUS['different'],
                 'source_ddl': source_ddl,
                 'target_ddl': target_ddl,
-                'diff_ddl': diff_ddl
+                'diff_ddl': diff_ddl,
+                'group_name': group_name,
+                'dependencies': diff_dependencies
             })
         count += 1
 
@@ -498,13 +541,13 @@ def sort_list(source, target):
     :return:
     """
     # Check the above keys are exist in the dictionary
-    if len(source) > 0 and type(source[0]) == dict:
+    if source is not None and len(source) > 0 and type(source[0]) == dict:
         tmp_key = is_key_exists(list_keys_array, source[0])
         if tmp_key is not None:
             source = sorted(source, key=lambda k: k[tmp_key])
 
     # Check the above keys are exist in the dictionary
-    if len(target) > 0 and type(target[0]) == dict:
+    if target is not None and len(target) > 0 and type(target[0]) == dict:
         tmp_key = is_key_exists(list_keys_array, target[0])
         if tmp_key is not None:
             target = sorted(target, key=lambda k: k[tmp_key])

@@ -701,10 +701,8 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
            did: Database ID
            scid: Schema ID
            coid: Collation ID
-           diff_schema: Target Schema for schema diff
            json_resp: True then return json response
         """
-        diff_schema = kwargs.get('diff_schema', None)
         json_resp = kwargs.get('json_resp', True)
 
         SQL = render_template("/".join([self.template_path,
@@ -719,9 +717,6 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         data = res['rows'][0]
-
-        if diff_schema:
-            data['schema'] = diff_schema
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
@@ -821,21 +816,15 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         scid = kwargs.get('scid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if diff_schema:
-                data['schema'] = diff_schema
             sql, name = self.get_sql(gid=gid, sid=sid, data=data, scid=scid,
                                      coid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, coid=oid, only_sql=True)
-            elif diff_schema:
-                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, coid=oid,
-                               diff_schema=diff_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, coid=oid,
                                json_resp=False)

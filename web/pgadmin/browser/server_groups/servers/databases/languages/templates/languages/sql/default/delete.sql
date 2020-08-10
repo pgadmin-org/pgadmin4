@@ -4,5 +4,5 @@
 {% endif %}
 {# ============= Drop the language ============= #}
 {% if lname %}
-    DROP LANGUAGE {{ conn|qtIdent(lname) }} {% if cascade %}CASCADE{% endif%};
+DROP LANGUAGE {{ conn|qtIdent(lname) }}{% if cascade %} CASCADE{% endif%};
 {% endif %}

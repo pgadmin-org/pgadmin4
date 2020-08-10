@@ -699,10 +699,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             did: Database ID
             scid: Schema ID
             seid: Sequence ID
-            diff_schema:  Schema diff target schema name
             json_resp: json response or plain text response
         """
-        diff_schema = kwargs.get('diff_schema', None)
         json_resp = kwargs.get('json_resp', True)
 
         sql = render_template(
@@ -733,9 +731,6 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             row['cycled'] = rset1['rows'][0]['is_cycled']
 
         result = res['rows'][0]
-
-        if diff_schema:
-            result['schema'] = diff_schema
 
         result = self._formatter(result, scid, seid)
         sql, name = self.get_SQL(gid, sid, did, result, scid)
@@ -952,20 +947,14 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         scid = kwargs.get('scid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if diff_schema:
-                data['schema'] = diff_schema
             sql, name = self.get_SQL(gid, sid, did, data, scid, oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, seid=oid, only_sql=True)
-            elif diff_schema:
-                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, seid=oid,
-                               diff_schema=diff_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, seid=oid,
                                json_resp=False)

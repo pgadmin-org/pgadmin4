@@ -670,10 +670,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
            did: Database ID
            scid: Schema ID
            syid: Synonym ID
-           diff_schema:
            json_resp:
         """
-        diff_schema = kwargs.get('diff_schema', None)
         json_resp = kwargs.get('json_resp', True)
 
         SQL = render_template("/".join([self.template_path,
@@ -689,9 +687,6 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             return gone(
                 gettext('The specified synonym could not be found.')
             )
-
-        if diff_schema:
-            data['schema'] = diff_schema
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
@@ -781,21 +776,14 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         scid = kwargs.get('scid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if diff_schema:
-                data['schema'] = diff_schema
             sql, name = self.get_sql(gid, sid, data, scid, oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, syid=oid, only_sql=True)
-
-            elif diff_schema:
-                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, syid=oid,
-                               diff_schema=diff_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, syid=oid,
                                json_resp=False)

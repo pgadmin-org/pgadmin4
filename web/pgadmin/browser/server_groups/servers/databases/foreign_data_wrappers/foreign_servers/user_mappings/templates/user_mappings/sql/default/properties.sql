@@ -4,10 +4,15 @@ SELECT srv.oid as fsrvid, srvname as name
 FROM pg_foreign_server srv
     LEFT OUTER JOIN pg_description des ON (des.objoid=srv.oid AND des.objsubid=0 AND des.classoid='pg_foreign_server'::regclass)
 WHERE srv.oid = {{fserid}}::oid
-{% endif %}
-{% if fsid or umid %}
-SELECT u.umid AS um_oid, u.usename as name, array_to_string(u.umoptions, ',') AS umoptions
+{% elif fsid or umid %}
+SELECT u.umid AS oid, u.usename AS name, u.srvid AS fsid, array_to_string(u.umoptions, ',') AS umoptions, fs.srvfdw AS fdwid
 FROM pg_user_mappings u
+LEFT JOIN pg_foreign_server fs ON fs.oid = u.srvid
 {% if fsid %} WHERE u.srvid = {{fsid}}::oid {% endif %} {% if umid %} WHERE u.umid= {{umid}}::oid {% endif %}
+ORDER BY 2;
+{% else %}
+SELECT u.umid AS oid, u.usename AS name, u.srvid AS fsid, array_to_string(u.umoptions, ',') AS umoptions, fs.srvfdw AS fdwid
+FROM pg_user_mappings u
+LEFT JOIN pg_foreign_server fs ON fs.oid = u.srvid
 ORDER BY 2;
 {% endif %}

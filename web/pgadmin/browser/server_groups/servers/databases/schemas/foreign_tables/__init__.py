@@ -832,10 +832,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             did: Database Id
             scid: Schema Id
             foid: Foreign Table Id
-            diff_schema: Target Schema for schema diff
             json_resp: True then return json response
         """
-        diff_schema = kwargs.get('diff_schema', None)
         json_resp = kwargs.get('json_resp', True)
 
         status, data = self._fetch_properties(gid, sid, did, scid, foid,
@@ -845,9 +843,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not data:
             return gone(
                 gettext("The specified foreign table could not be found."))
-
-        if diff_schema:
-            data['basensp'] = diff_schema
 
         col_data = []
         for c in data['columns']:
@@ -1494,12 +1489,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         scid = kwargs.get('scid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if diff_schema:
-                data['schema'] = diff_schema
             sql, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
                                      data=data, foid=oid,
                                      is_schema_diff=True)
@@ -1507,9 +1499,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, foid=oid, only_sql=True)
-            elif diff_schema:
-                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, foid=oid,
-                               diff_schema=diff_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, foid=oid,
                                json_resp=False)

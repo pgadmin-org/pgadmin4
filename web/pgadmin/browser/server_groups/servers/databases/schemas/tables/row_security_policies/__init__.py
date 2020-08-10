@@ -606,7 +606,6 @@ class RowSecurityView(PGChildNodeView):
         tid = kwargs.get('tid')
         oid = kwargs.get('plid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_req = kwargs.get('drop_req', False)
 
         sql = ''
@@ -619,11 +618,9 @@ class RowSecurityView(PGChildNodeView):
 
             sql = sql.strip('\n').strip(' ')
 
-        elif diff_schema:
-            schema = diff_schema
-
+        else:
             sql = row_security_policies_utils.get_reverse_engineered_sql(
-                self.conn, schema=schema, table=self.table, scid=scid,
+                self.conn, schema=self.schema, table=self.table, scid=scid,
                 plid=oid, datlastsysoid=self.datlastsysoid, with_header=False)
 
         drop_sql = ''
@@ -684,7 +681,6 @@ class RowSecurityView(PGChildNodeView):
         tgt_params = kwargs.get('target_params')
         source = kwargs.get('source')
         target = kwargs.get('target')
-        target_schema = kwargs.get('target_schema')
         comp_status = kwargs.get('comp_status')
 
         diff = ''
@@ -694,8 +690,7 @@ class RowSecurityView(PGChildNodeView):
                                           did=src_params['did'],
                                           scid=src_params['scid'],
                                           tid=src_params['tid'],
-                                          plid=source['oid'],
-                                          diff_schema=target_schema)
+                                          plid=source['oid'])
         elif comp_status == 'target_only':
             diff = self.delete(gid=1,
                                sid=tgt_params['sid'],
@@ -722,8 +717,7 @@ class RowSecurityView(PGChildNodeView):
                                               did=src_params['did'],
                                               scid=src_params['scid'],
                                               tid=src_params['tid'],
-                                              plid=source['oid'],
-                                              diff_schema=target_schema)
+                                              plid=source['oid'])
                 return delete_sql + diff
 
             diff = self.get_sql_from_diff(gid=tgt_params['gid'],

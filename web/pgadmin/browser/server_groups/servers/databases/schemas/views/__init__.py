@@ -1305,9 +1305,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         This function will generate sql to render into the sql panel
         """
-        diff_schema = kwargs.get('diff_schema', None)
         json_resp = kwargs.get('json_resp', True)
-
         display_comments = True
 
         if not json_resp:
@@ -1329,11 +1327,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             )
 
         result = res['rows'][0]
-        if diff_schema:
-            result['definition'] = result['definition'].replace(
-                result['schema'],
-                diff_schema)
-            result['schema'] = diff_schema
 
         # sending result to formtter
         frmtd_reslt = self.formatter(result)
@@ -1631,12 +1624,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         scid = kwargs.get('scid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if diff_schema:
-                data['schema'] = diff_schema
             sql, name_or_error = self.getSQL(gid, sid, did, data, oid)
             if sql.find('DROP VIEW') != -1:
                 sql = gettext("""
@@ -1649,9 +1639,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, vid=oid, only_sql=True)
-            elif diff_schema:
-                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, vid=oid,
-                               diff_schema=diff_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, vid=oid,
                                json_resp=False)
@@ -1885,7 +1872,6 @@ class MViewNode(ViewNode, VacuumSettings):
         """
         This function will generate sql to render into the sql panel
         """
-        diff_schema = kwargs.get('diff_schema', None)
         json_resp = kwargs.get('json_resp', True)
 
         display_comments = True
@@ -1898,12 +1884,6 @@ class MViewNode(ViewNode, VacuumSettings):
 
         if not status:
             return result
-
-        if diff_schema:
-            result['definition'] = result['definition'].replace(
-                result['schema'],
-                diff_schema)
-            result['schema'] = diff_schema
 
         # merge vacuum lists into one
         vacuum_table = [item for item in result['vacuum_table']

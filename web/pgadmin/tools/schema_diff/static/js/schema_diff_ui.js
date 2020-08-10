@@ -39,10 +39,8 @@ export default class SchemaDiffUI {
     this.model = new Backbone.Model({
       source_sid: undefined,
       source_did: undefined,
-      source_scid: undefined,
       target_sid: undefined,
       target_did: undefined,
-      target_scid: undefined,
       source_ddl: undefined,
       target_ddl: undefined,
       diff_ddl: undefined,
@@ -109,7 +107,6 @@ export default class SchemaDiffUI {
 
   }
 
-
   raise_error_on_fail(alert_title, xhr) {
     try {
       var err = JSON.parse(xhr.responseText);
@@ -146,11 +143,9 @@ export default class SchemaDiffUI {
       url_params = self.model.toJSON();
 
     if (url_params['source_sid'] == '' || _.isUndefined(url_params['source_sid']) ||
-      url_params['source_did'] == '' || _.isUndefined(url_params['source_did']) ||
-       url_params['source_scid'] == '' || _.isUndefined(url_params['source_scid']) ||
-       url_params['target_sid'] == '' || _.isUndefined(url_params['target_sid']) ||
-       url_params['target_did'] == '' || _.isUndefined(url_params['target_did']) ||
-       url_params['target_scid'] == '' || _.isUndefined(url_params['target_scid'])
+        url_params['source_did'] == '' || _.isUndefined(url_params['source_did']) ||
+        url_params['target_sid'] == '' || _.isUndefined(url_params['target_sid']) ||
+        url_params['target_did'] == '' || _.isUndefined(url_params['target_did'])
     ) {
       Alertify.alert(gettext('Selection Error'), gettext('Please select source and target.'));
       return false;
@@ -289,18 +284,18 @@ export default class SchemaDiffUI {
     // Format Schema object title with appropriate icon
     var formatColumnTitle = function (row, cell, value, columnDef, dataContext) {
       let icon = 'icon-' + dataContext.type;
-      return '<i class="ml-2 wcTabIcon '+ icon +'"></i><span>' + value + '</span>';
+      return '<i class="ml-3 wcTabIcon '+ icon +'"></i><span>' + value + '</span>';
     };
 
     // Grid Columns
     var grid_width =  (self.grid_width - 47) / 2 ;
     var columns = [
       checkboxSelector.getColumnDefinition(),
-      {id: 'title', name: gettext('Schema Objects'), field: 'title', minWidth: grid_width, formatter: formatColumnTitle},
+      {id: 'title', name: gettext('Objects'), field: 'title', minWidth: grid_width, formatter: formatColumnTitle},
       {id: 'status', name: gettext('Comparison Result'), field: 'status', minWidth: grid_width},
-      {id: 'label', name: gettext('Schema Objects'), field: 'label',  width: 0, minWidth: 0, maxWidth: 0,
+      {id: 'label', name: gettext('Objects'), field: 'label',  width: 0, minWidth: 0, maxWidth: 0,
         cssClass: 'really-hidden', headerCssClass: 'really-hidden'},
-      {id: 'type', name: gettext('Schema Objects'), field: 'type',  width: 0, minWidth: 0, maxWidth: 0,
+      {id: 'type', name: gettext('Objects'), field: 'type',  width: 0, minWidth: 0, maxWidth: 0,
         cssClass: 'really-hidden', headerCssClass: 'really-hidden'},
       {id: 'id', name: 'id', field: 'id', width: 0, minWidth: 0, maxWidth: 0,
         cssClass: 'really-hidden', headerCssClass: 'really-hidden' },
@@ -316,7 +311,18 @@ export default class SchemaDiffUI {
 
     // Grouping by Schema Object
     self.groupBySchemaObject = function() {
-      self.dataView.setGrouping({
+      self.dataView.setGrouping([{
+        getter: 'group_name',
+        formatter: function (g) {
+          let icon = 'icon-schema';
+          if (g.rows[0].group_name == 'Database Objects'){
+            icon = 'icon-coll-database';
+          }
+          return '<i class="wcTabIcon '+ icon +'"></i><span>' + g.rows[0].group_name;
+        },
+        aggregateCollapsed: true,
+        lazyTotalsCalculation: true,
+      }, {
         getter: 'type',
         formatter: function (g) {
           let icon = 'icon-coll-' + g.value;
@@ -330,8 +336,9 @@ export default class SchemaDiffUI {
           return '<i class="wcTabIcon '+ icon +'"></i><span>' + g.rows[0].label + ' - ' + gettext('Identical') + ': <strong>' + identical + '</strong>&nbsp;&nbsp;' + gettext('Different') + ': <strong>' + different + '</strong>&nbsp;&nbsp;' + gettext('Source Only') + ': <strong>' + source_only + '</strong>&nbsp;&nbsp;' + gettext('Target Only') + ': <strong>' + target_only + '</strong></span>';
         },
         aggregateCollapsed: true,
+        collapsed: true,
         lazyTotalsCalculation: true,
-      });
+      }]);
     };
 
     var groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider({ checkboxSelect: true,
@@ -503,6 +510,8 @@ export default class SchemaDiffUI {
       target_oid = data.target_oid;
 
       url_params['trans_id'] = self.trans_id;
+      url_params['source_scid'] = data.source_scid;
+      url_params['target_scid'] = data.target_scid;
       url_params['source_oid'] = source_oid;
       url_params['target_oid'] = target_oid;
       url_params['comp_status'] = data.status;
@@ -608,37 +617,6 @@ export default class SchemaDiffUI {
           self.connect_database(this.model.get('source_sid'), arguments[0], arguments[1]);
         },
       }, {
-        name: 'source_scid',
-        control: SchemaDiffSelect2Control,
-        group: 'source',
-        deps: ['source_sid', 'source_did'],
-        url: function() {
-          if (this.get('source_sid') && this.get('source_did'))
-            return url_for('schema_diff.schemas', {'sid': this.get('source_sid'), 'did': this.get('source_did')});
-          return false;
-        },
-        select2: {
-          allowClear: true,
-          placeholder: gettext('Select schema...'),
-        },
-        disabled: function(m) {
-          let self_local = this;
-          if (!_.isUndefined(m.get('source_did')) && !_.isNull(m.get('source_did'))
-              && m.get('source_did') !== '') {
-            setTimeout(function() {
-              if (self_local.options.length > 0) {
-                m.set('source_scid', self_local.options[0].value);
-              }
-            }, 10);
-            return false;
-          }
-
-          setTimeout(function() {
-            m.set('source_scid', undefined);
-          }, 10);
-          return true;
-        },
-      }, {
         name: 'target_sid', label: false,
         control: SchemaDiffSelect2Control,
         transform: function(data) {
@@ -698,37 +676,6 @@ export default class SchemaDiffUI {
         connect: function() {
           self.connect_database(this.model.get('target_sid'), arguments[0], arguments[1]);
         },
-      }, {
-        name: 'target_scid',
-        control: SchemaDiffSelect2Control,
-        group: 'target',
-        deps: ['target_sid', 'target_did'],
-        url: function() {
-          if (this.get('target_sid') && this.get('target_did'))
-            return url_for('schema_diff.schemas', {'sid': this.get('target_sid'), 'did': this.get('target_did')});
-          return false;
-        },
-        select2: {
-          allowClear: true,
-          placeholder: gettext('Select schema...'),
-        },
-        disabled: function(m) {
-          let self_local = this;
-          if (!_.isUndefined(m.get('target_did')) && !_.isNull(m.get('target_did'))
-              && m.get('target_did') !== '') {
-            setTimeout(function() {
-              if (self_local.options.length > 0) {
-                m.set('target_scid', self_local.options[0].value);
-              }
-            }, 10);
-            return false;
-          }
-
-          setTimeout(function() {
-            m.set('target_scid', undefined);
-          }, 10);
-          return true;
-        },
       }],
     });
 
@@ -760,7 +707,7 @@ export default class SchemaDiffUI {
 
     footer_panel.$container.find('#schema-diff-ddl-comp').append(self.footer.render().$el);
     header_panel.$container.find('#schema-diff-grid').append(`<div class='obj_properties container-fluid'>
-    <div class='pg-panel-message'>` + gettext('Select the server, database and schema for the source and target and click <strong>Compare</strong> to compare them.') + '</div></div>');
+    <div class='pg-panel-message'>` + gettext('Select the server and database for the source and target and click <strong>Compare</strong> to compare them.') + '</div></div>');
 
     self.grid_width = $('#schema-diff-grid').width();
     self.grid_height = this.panel_obj.height();

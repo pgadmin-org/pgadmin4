@@ -887,7 +887,6 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         tid = kwargs.get('tid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
@@ -927,22 +926,17 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     data['columns'] = self._column_details(tid, columns)
 
                 data = trigger_definition(data)
-
-                sql = self._check_and_add_compound_trigger(tid, data,
-                                                           diff_schema)
+                sql = self._check_and_add_compound_trigger(tid, data)
 
         return sql
 
-    def _check_and_add_compound_trigger(self, tid, data, diff_schema):
+    def _check_and_add_compound_trigger(self, tid, data):
         """
         This get compound trigger and check for disable.
         :param tid: Table Id.
         :param data: Data.
         :param diff_schema: schema diff check.
         """
-        if diff_schema:
-            data['schema'] = diff_schema
-
         sql, name = compound_trigger_utils.get_sql(self.conn,
                                                    data,
                                                    tid,
@@ -1007,7 +1001,6 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         tgt_params = kwargs.get('target_params')
         source = kwargs.get('source')
         target = kwargs.get('target')
-        target_schema = kwargs.get('target_schema')
         comp_status = kwargs.get('comp_status')
 
         diff = ''
@@ -1017,8 +1010,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                                           did=src_params['did'],
                                           scid=src_params['scid'],
                                           tid=src_params['tid'],
-                                          oid=source['oid'],
-                                          diff_schema=target_schema)
+                                          oid=source['oid'])
         elif comp_status == 'target_only':
             diff = self.get_sql_from_diff(gid=tgt_params['gid'],
                                           sid=tgt_params['sid'],

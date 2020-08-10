@@ -15,6 +15,8 @@ from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
 
+FKEY_PROPERTIES_SQL = 'properties.sql'
+
 
 def get_template_path(f):
     """
@@ -47,7 +49,7 @@ def get_foreign_keys(conn, tid, fkid=None, template_path=None):
     """
 
     sql = render_template("/".join(
-        [template_path, 'properties.sql']), tid=tid, cid=fkid)
+        [template_path, FKEY_PROPERTIES_SQL]), tid=tid, cid=fkid)
 
     status, result = conn.execute_dict(sql)
     if not status:
@@ -286,7 +288,7 @@ def _get_properties_for_fk_const(tid, fkid, data, template_path, conn):
     conn: Connection.
     """
     name = data['name'] if 'name' in data else None
-    sql = render_template("/".join([template_path, 'properties.sql']),
+    sql = render_template("/".join([template_path, FKEY_PROPERTIES_SQL]),
                           tid=tid, cid=fkid)
     status, res = conn.execute_dict(sql)
     if not status:
@@ -357,3 +359,29 @@ def _checks_for_schema_diff(table, schema, data):
 
     if 'remote_table' not in data:
         data['remote_table'] = None
+
+
+@get_template_path
+def get_fkey_dependencies(conn, tid, template_path=None):
+    """
+    This function is used to get the references table of all the foreign
+    keys of the given table.
+
+    :param conn:
+    :param tid:
+    :param template_path:
+    :return:
+    """
+    deps = []
+    sql = render_template("/".join(
+        [template_path, FKEY_PROPERTIES_SQL]), tid=tid)
+
+    status, result = conn.execute_dict(sql)
+    if not status:
+        return status, internal_server_error(errormsg=result)
+
+    for fk in result['rows']:
+        ref_name = fk['refnsp'] + '.' + fk['reftab']
+        deps.append({'type': 'table', 'name': ref_name})
+
+    return True, deps

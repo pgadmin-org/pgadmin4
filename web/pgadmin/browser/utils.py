@@ -451,7 +451,7 @@ class PGChildNodeView(NodeView):
         )
 
     def get_dependencies(self, conn, object_id, where=None,
-                         show_system_objects=None):
+                         show_system_objects=None, is_schema_diff=False):
         """
         This function is used to fetch the dependencies for the selected node.
 
@@ -459,6 +459,8 @@ class PGChildNodeView(NodeView):
             conn: Connection object
             object_id: Object Id of the selected node.
             where: where clause for the sql query (optional)
+            show_system_objects: System object status
+            is_schema_diff: True when function gets called from schema diff.
 
         Returns: Dictionary of dependencies for the selected node.
         """
@@ -473,10 +475,11 @@ class PGChildNodeView(NodeView):
             where_clause = where
 
         query = render_template("/".join([sql_path, 'dependencies.sql']),
-                                where_clause=where_clause)
+                                where_clause=where_clause,
+                                object_id=object_id)
         # fetch the dependency for the selected object
-        dependencies = self.__fetch_dependency(conn, query,
-                                               show_system_objects)
+        dependencies = self.__fetch_dependency(
+            conn, query, show_system_objects, is_schema_diff)
 
         # fetch role dependencies
         if where_clause.find('subid') < 0:
@@ -534,13 +537,16 @@ class PGChildNodeView(NodeView):
 
         return dependents
 
-    def __fetch_dependency(self, conn, query, show_system_objects=None):
+    def __fetch_dependency(self, conn, query, show_system_objects=None,
+                           is_schema_diff=False):
         """
         This function is used to fetch the dependency for the selected node.
 
         Args:
             conn: Connection object
             query: sql query to fetch dependencies/dependents
+            show_system_objects: System object status
+            is_schema_diff: True when function gets called from schema diff.
 
         Returns: Dictionary of dependency for the selected node.
         """
@@ -597,6 +603,9 @@ class PGChildNodeView(NodeView):
             type_str = row['type']
             dep_str = row['deptype']
             nsp_name = row['nspname']
+            object_id = None
+            if 'refobjid' in row:
+                object_id = row['refobjid']
 
             ref_name = ''
             if nsp_name is not None:
@@ -658,31 +667,43 @@ class PGChildNodeView(NodeView):
             if _ref_name is not None:
                 ref_name += _ref_name
 
-            dep_type = ''
-            if show_system_objects is None:
-                show_system_objects = self.blueprint.show_system_objects
-            if dep_str[0] in dep_types:
-                # if dep_type is present in the dep_types dictionary, but it's
-                # value is None then it requires special handling.
-                if dep_types[dep_str[0]] is None:
-                    if dep_str[0] == 'i':
-                        if show_system_objects:
-                            dep_type = 'internal'
-                        else:
-                            continue
-                    elif dep_str[0] == 'p':
-                        dep_type = 'pin'
-                        type_name = ''
-                else:
-                    dep_type = dep_types[dep_str[0]]
+            # If schema diff is set to True then we don't need to calculate
+            # field and also no need to add icon and field in the list.
+            if is_schema_diff and type_name != 'schema':
+                dependency.append(
+                    {
+                        'type': type_name,
+                        'name': ref_name,
+                        'oid': object_id
+                    }
+                )
+            elif not is_schema_diff:
+                dep_type = ''
+                if show_system_objects is None:
+                    show_system_objects = self.blueprint.show_system_objects
+                if dep_str[0] in dep_types:
+                    # if dep_type is present in the dep_types dictionary,
+                    # but it's value is None then it requires special
+                    # handling.
+                    if dep_types[dep_str[0]] is None:
+                        if dep_str[0] == 'i':
+                            if show_system_objects:
+                                dep_type = 'internal'
+                            else:
+                                continue
+                        elif dep_str[0] == 'p':
+                            dep_type = 'pin'
+                            type_name = ''
+                    else:
+                        dep_type = dep_types[dep_str[0]]
 
-            dependency.append(
-                {
-                    'type': type_name,
-                    'name': ref_name,
-                    'field': dep_type,
-                    'icon': icon,
-                }
-            )
+                dependency.append(
+                    {
+                        'type': type_name,
+                        'name': ref_name,
+                        'field': dep_type,
+                        'icon': icon,
+                    }
+                )
 
         return dependency

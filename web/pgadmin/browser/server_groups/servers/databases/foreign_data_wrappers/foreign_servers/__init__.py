@@ -23,6 +23,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 
 class ForeignServerModule(CollectionNodeModule):
@@ -98,7 +100,7 @@ class ForeignServerModule(CollectionNodeModule):
 blueprint = ForeignServerModule(__name__)
 
 
-class ForeignServerView(PGChildNodeView):
+class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     class ForeignServerView(PGChildNodeView)
 
@@ -187,6 +189,8 @@ class ForeignServerView(PGChildNodeView):
         'dependent': [{'get': 'dependents'}]
     })
 
+    keys_to_ignore = ['oid', 'oid-2', 'fdwid']
+
     def check_precondition(f):
         """
         This function will behave as a decorator which will checks
@@ -269,7 +273,7 @@ class ForeignServerView(PGChildNodeView):
         for row in r_set['rows']:
             res.append(
                 self.blueprint.generate_browser_node(
-                    row['fsrvid'],
+                    row['oid'],
                     fid,
                     row['name'],
                     icon="icon-foreign_server"
@@ -305,7 +309,7 @@ class ForeignServerView(PGChildNodeView):
 
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
-                    row['fsrvid'],
+                    row['oid'],
                     fid,
                     row['name'],
                     icon="icon-foreign_server"
@@ -328,22 +332,36 @@ class ForeignServerView(PGChildNodeView):
             fid: foreign data wrapper ID
             fsid: foreign server ID
         """
+        status, res = self._fetch_properties(fsid)
+        if not status:
+            return res
 
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, fsid):
+        """
+        This function fetch the properties of the Foreign server.
+        :param fsid:
+        :return:
+        """
         sql = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
                               fsid=fsid, conn=self.conn)
-        status, res = self.conn.execute_dict(sql)
 
+        status, res = self.conn.execute_dict(sql)
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
+            return False, gone(
                 gettext("Could not find the foreign server information.")
             )
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['fsrvid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid)
 
         if res['rows'][0]['fsrvoptions'] is not None:
             res['rows'][0]['fsrvoptions'] = tokenize_options(
@@ -354,9 +372,8 @@ class ForeignServerView(PGChildNodeView):
                               fsid=fsid
                               )
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
-
         if not status:
-            return internal_server_error(errormsg=fs_rv_acl_res)
+            return False, internal_server_error(errormsg=fs_rv_acl_res)
 
         for row in fs_rv_acl_res['rows']:
             privilege = parse_priv_from_db(row)
@@ -365,10 +382,7 @@ class ForeignServerView(PGChildNodeView):
             else:
                 res['rows'][0][row['deftype']] = [privilege]
 
-        return ajax_response(
-            response=res['rows'][0],
-            status=200
-        )
+        return True, res['rows'][0]
 
     @check_precondition
     def create(self, gid, sid, did, fid):
@@ -439,7 +453,7 @@ class ForeignServerView(PGChildNodeView):
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
-                    r_set['rows'][0]['fsrvid'],
+                    r_set['rows'][0]['oid'],
                     fid,
                     r_set['rows'][0]['name'],
                     icon="icon-foreign_server"
@@ -488,8 +502,31 @@ class ForeignServerView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    @staticmethod
+    def get_delete_data(cmd, fsid, request_object):
+        """
+        This function is used to get the data and cascade information.
+        :param cmd: Command
+        :param fsid: Object ID
+        :param request_object: request object
+        :return:
+        """
+        cascade = False
+        # Below will decide if it's simple drop or drop with cascade call
+        if cmd == 'delete':
+            # This is a cascade operation
+            cascade = True
+
+        if fsid is None:
+            data = request_object.form if request_object.form else \
+                json.loads(request_object.data, encoding='utf-8')
+        else:
+            data = {'ids': [fsid]}
+
+        return cascade, data
+
     @check_precondition
-    def delete(self, gid, sid, did, fid, fsid=None):
+    def delete(self, gid, sid, did, fid, fsid=None, only_sql=False):
         """
         This function will delete the selected foreign server node.
 
@@ -499,20 +536,10 @@ class ForeignServerView(PGChildNodeView):
             did: Database ID
             fid: foreign data wrapper ID
             fsid: foreign server ID
+            only_sql:
         """
-
-        if fsid is None:
-            data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
-            )
-        else:
-            data = {'ids': [fsid]}
-
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        # get the value of cascade and data
+        cascade, data = self.get_delete_data(self.cmd, fsid, request)
 
         try:
             for fsid in data['ids']:
@@ -542,6 +569,11 @@ class ForeignServerView(PGChildNodeView):
                                                 self._DELETE_SQL]),
                                       name=name, cascade=cascade,
                                       conn=self.conn)
+
+                # Used for schema diff tool
+                if only_sql:
+                    return sql.strip('\n')
+
                 status, res = self.conn.execute_scalar(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -674,7 +706,8 @@ class ForeignServerView(PGChildNodeView):
                 is_valid_changed_options=is_valid_changed_options,
                 conn=self.conn
             )
-            return sql, data['name'] if 'name' in data else old_data['name']
+            return sql.strip('\n'), \
+                data['name'] if 'name' in data else old_data['name']
         else:
             sql = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),
@@ -704,7 +737,7 @@ class ForeignServerView(PGChildNodeView):
         return sql, data['name']
 
     @check_precondition
-    def sql(self, gid, sid, did, fid, fsid):
+    def sql(self, gid, sid, did, fid, fsid, json_resp=True):
         """
         This function will generate sql to show it in sql pane for the
         selected foreign server node.
@@ -715,6 +748,7 @@ class ForeignServerView(PGChildNodeView):
             did: Database ID
             fid: Foreign data wrapper ID
             fsid: Foreign server ID
+            json_resp:
         """
 
         sql = render_template("/".join([self.template_path,
@@ -727,6 +761,9 @@ class ForeignServerView(PGChildNodeView):
             return gone(
                 gettext("Could not find the foreign server information.")
             )
+
+        if fid is None and 'fdwid' in res['rows'][0]:
+            fid = res['rows'][0]['fdwid']
 
         is_valid_options = False
         if res['rows'][0]['fsrvoptions'] is not None:
@@ -782,6 +819,9 @@ class ForeignServerView(PGChildNodeView):
 
         sql = sql_header + sql
 
+        if not json_resp:
+            return sql.strip('\n')
+
         return ajax_response(response=sql.strip('\n'))
 
     @check_precondition
@@ -836,5 +876,57 @@ class ForeignServerView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did):
+        """
+        This function will fetch the list of all the FDWs for
+        specified database id.
 
+        :param sid: Server Id
+        :param did: Database Id
+        :return:
+        """
+        res = dict()
+
+        sql = render_template("/".join([self.template_path,
+                                        'properties.sql']))
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
+
+    def get_sql_from_diff(self, **kwargs):
+        """
+        This function is used to get the DDL/DML statements.
+        :param kwargs
+        :return:
+        """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        fdw_id = kwargs.get('fdwid')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
+        if data:
+            sql, name = self.get_sql(gid=gid, sid=sid, did=did, data=data,
+                                     fid=fdw_id, fsid=oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did, fid=fdw_id,
+                                  fsid=oid, only_sql=True)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, fid=fdw_id,
+                               fsid=oid, json_resp=False)
+        return sql
+
+
+SchemaDiffRegistry(blueprint.node_type, ForeignServerView, 'Database')
 ForeignServerView.register_node_view(blueprint)

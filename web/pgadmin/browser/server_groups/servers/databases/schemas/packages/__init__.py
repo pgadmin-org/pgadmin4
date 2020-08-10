@@ -12,7 +12,7 @@ import re
 from functools import wraps
 
 import simplejson as json
-from flask import render_template, request, jsonify
+from flask import render_template, make_response, request, jsonify
 from flask_babelex import gettext as _
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -584,15 +584,10 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         data = kwargs.get('data')
         pkgid = kwargs.get('pkgid', None)
         sqltab = kwargs.get('sqltab', False)
-        diff_schema = kwargs.get('diff_schema', None)
-
-        if diff_schema:
-            data['schema'] = diff_schema
-        else:
-            data['schema'] = self.schema
+        is_schema_diff = kwargs.get('is_schema_diff', None)
 
         if pkgid is not None and not sqltab:
-            return self.get_sql_with_pkgid(scid, pkgid, data, diff_schema)
+            return self.get_sql_with_pkgid(scid, pkgid, data, is_schema_diff)
         else:
             # To format privileges coming from client
             if 'pkgacl' in data:
@@ -618,7 +613,15 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                     data[key]['deleted'] = parse_priv_to_db(
                         data[key]['deleted'], self.acl)
 
-    def get_sql_with_pkgid(self, scid, pkgid, data, diff_schema):
+    def get_sql_with_pkgid(self, scid, pkgid, data, is_schema_diff):
+        """
+
+        :param scid:
+        :param pkgid:
+        :param data:
+        :param is_schema_diff:
+        :return:
+        """
         required_args = [
             u'name'
         ]
@@ -666,7 +669,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template("/".join([self.template_path,
                                         self._UPDATE_SQL]),
                               data=data, o_data=old_data, conn=self.conn,
-                              is_schema_diff=diff_schema)
+                              is_schema_diff=is_schema_diff)
         return sql, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition(action="sql")
@@ -680,10 +683,10 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             did: Database ID
             scid: Schema ID
             pkgid: Package ID
-            diff_schema:  Schema diff target schema name
+            is_schema_diff:
             json_resp: json response or plain text response
         """
-        diff_schema = kwargs.get('diff_schema', None)
+        is_schema_diff = kwargs.get('is_schema_diff', None)
         json_resp = kwargs.get('json_resp', True)
 
         try:
@@ -717,8 +720,11 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
             result = res['rows'][0]
+
             sql, name = self.getSQL(data=result, scid=scid, pkgid=pkgid,
-                                    sqltab=True, diff_schema=diff_schema)
+                                    sqltab=True,
+                                    is_schema_diff=is_schema_diff)
+
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -841,23 +847,17 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         scid = kwargs.get('scid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if diff_schema:
-                data['schema'] = diff_schema
             sql, name = self.getSQL(data=data, scid=scid, pkgid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, pkgid=oid, only_sql=True)
-            elif diff_schema:
-                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, pkgid=oid,
-                               diff_schema=diff_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, pkgid=oid,
-                               json_resp=False)
+                               is_schema_diff=True, json_resp=False)
         return sql
 
 

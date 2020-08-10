@@ -21,6 +21,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 
 class CastModule(CollectionNodeModule):
@@ -88,7 +90,7 @@ class CastModule(CollectionNodeModule):
 blueprint = CastModule(__name__)
 
 
-class CastView(PGChildNodeView):
+class CastView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     class CastView(PGChildNodeView)
 
@@ -179,8 +181,11 @@ class CastView(PGChildNodeView):
         'get_functions': [
             {'post': 'get_functions'},
             {'post': 'get_functions'}
-        ]
+        ],
+        'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
+
+    keys_to_ignore = ['oid', 'id', 'oid-2']
 
     def _init_(self, **kwargs):
         self.conn = None
@@ -318,26 +323,41 @@ class CastView(PGChildNodeView):
         :param cid: cast id
         :return:
         """
+        status, res = self._fetch_properties(did, cid)
+        if not status:
+            return res
+
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, did, cid):
+        """
+        This function fetch the properties of the
+        :param did:
+        :param cid:
+        :return:
+        """
+        last_system_oid = 0 if self.blueprint.show_system_objects else \
+            self.datlastsysoid
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             cid=cid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=last_system_oid,
             showsysobj=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(sql)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
+            return False, gone(
                 gettext("Could not find the cast information.")
             )
 
-        return ajax_response(
-            response=res['rows'][0],
-            status=200
-        )
+        return True, res['rows'][0]
 
     @check_precondition
     def create(self, gid, sid, did):
@@ -436,29 +456,42 @@ class CastView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    @staticmethod
+    def get_delete_data(cmd, cid, request_object):
+        """
+        This function is used to get the data and cascade information.
+        :param cmd: Command
+        :param cid: Object ID
+        :param request_object: request object
+        :return:
+        """
+        cascade = False
+        # Below will decide if it's simple drop or drop with cascade call
+        if cmd == 'delete':
+            # This is a cascade operation
+            cascade = True
+
+        if cid is None:
+            data = request_object.form if request_object.form else \
+                json.loads(request_object.data, encoding='utf-8')
+        else:
+            data = {'ids': [cid]}
+
+        return cascade, data
+
     @check_precondition
-    def delete(self, gid, sid, did, cid=None):
+    def delete(self, gid, sid, did, cid=None, only_sql=False):
         """
         This function will drop the cast object
         :param cid: cast id
         :param did: database id
         :param sid: server id
         :param gid: group id
+        :param only_sql:
         :return:
         """
-        # Below will decide if it's simple drop or drop with cascade call
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
-
-        if cid is None:
-            data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
-            )
-        else:
-            data = {'ids': [cid]}
+        # get the value of cascade and data
+        cascade, data = self.get_delete_data(self.cmd, cid, request)
 
         for cid in data['ids']:
             try:
@@ -490,6 +523,11 @@ class CastView(PGChildNodeView):
                                       casttarget=result['casttarget'],
                                       cascade=cascade
                                       )
+
+                # Used for schema diff tool
+                if only_sql:
+                    return sql
+
                 status, res = self.conn.execute_scalar(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -638,13 +676,14 @@ class CastView(PGChildNodeView):
         )
 
     @check_precondition
-    def sql(self, gid, sid, did, cid):
+    def sql(self, gid, sid, did, cid, json_resp=True):
         """
         This function will generate sql for sql panel
         :param gid: group id
         :param sid: server id
         :param did: database id
         :param cid: cast id
+        :param json_resp:
         :return:
         """
         try:
@@ -653,6 +692,7 @@ class CastView(PGChildNodeView):
                 cid=cid,
                 conn=self.conn
             )
+
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(gettext(
@@ -664,6 +704,9 @@ class CastView(PGChildNodeView):
                     "Could not generate reversed engineered SQL for the "
                     "cast node."
                 ))
+
+            if not json_resp:
+                return res
 
             return ajax_response(response=res)
 
@@ -706,5 +749,63 @@ class CastView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did):
+        """
+        This function will fetch the list of all the casts for
+        specified database id.
 
+        :param sid: Server Id
+        :param did: Database Id
+        :return:
+        """
+        res = dict()
+
+        last_system_oid = 0
+        if self.manager.db_info is not None and did in self.manager.db_info:
+            last_system_oid = (self.manager.db_info[did])['datlastsysoid']
+
+        sql = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            datlastsysoid=last_system_oid,
+            showsysobj=self.blueprint.show_system_objects
+        )
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(did, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
+
+    def get_sql_from_diff(self, **kwargs):
+        """
+        This function is used to get the DDL/DML statements.
+        :param kwargs:
+        :return:
+        """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
+        if data:
+            sql, name = self.get_sql(gid=gid, sid=sid, did=did, data=data,
+                                     cid=oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  cid=oid, only_sql=True)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, cid=oid,
+                               json_resp=False)
+        return sql
+
+
+SchemaDiffRegistry(blueprint.node_type, CastView, 'Database')
 CastView.register_node_view(blueprint)

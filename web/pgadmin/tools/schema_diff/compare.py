@@ -9,20 +9,17 @@
 
 """Schema diff object comparison."""
 
-import copy
-
 from flask import render_template
 from flask_babelex import gettext
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.tools.schema_diff.directory_compare import compare_dictionaries
-from pgadmin.tools.schema_diff.model import SchemaDiffModel
 
 
 class SchemaDiffObjectCompare:
 
-    keys_to_ignore = ['oid', 'schema']
+    keys_to_ignore = ['oid', 'oid-2']
 
     @staticmethod
     def get_schema(sid, did, scid):
@@ -57,28 +54,28 @@ class SchemaDiffObjectCompare:
         :param kwargs:
         :return:
         """
-
         source_params = {'sid': kwargs.get('source_sid'),
-                         'did': kwargs.get('source_did'),
-                         'scid': kwargs.get('source_scid')
-                         }
-
+                         'did': kwargs.get('source_did')}
         target_params = {'sid': kwargs.get('target_sid'),
-                         'did': kwargs.get('target_did'),
-                         'scid': kwargs.get('target_scid')
-                         }
+                         'did': kwargs.get('target_did')}
 
+        group_name = kwargs.get('group_name')
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
-        status, target_schema = self.get_schema(kwargs.get('target_sid'),
-                                                kwargs.get('target_did'),
-                                                kwargs.get('target_scid')
-                                                )
-        if not status:
-            return internal_server_error(errormsg=target_schema)
+        source = {}
+        target = {}
 
-        source = self.fetch_objects_to_compare(**source_params)
+        if group_name == 'Database Objects':
+            source = self.fetch_objects_to_compare(**source_params)
+            target = self.fetch_objects_to_compare(**target_params)
+        else:
+            source_params['scid'] = kwargs.get('source_scid')
+            target_params['scid'] = kwargs.get('target_scid')
 
-        target = self.fetch_objects_to_compare(**target_params)
+            if 'scid' in source_params and source_params['scid'] is not None:
+                source = self.fetch_objects_to_compare(**source_params)
+
+            if 'scid' in target_params and target_params['scid'] is not None:
+                target = self.fetch_objects_to_compare(**target_params)
 
         # If both the dict have no items then return None.
         if not (source or target) or (
@@ -88,11 +85,11 @@ class SchemaDiffObjectCompare:
         return compare_dictionaries(view_object=self,
                                     source_params=source_params,
                                     target_params=target_params,
-                                    target_schema=target_schema,
                                     source_dict=source,
                                     target_dict=target,
                                     node=self.node_type,
                                     node_label=self.blueprint.collection_label,
+                                    group_name=group_name,
                                     ignore_whitespaces=ignore_whitespaces,
                                     ignore_keys=self.keys_to_ignore)
 
@@ -105,16 +102,22 @@ class SchemaDiffObjectCompare:
         source_params = {'gid': 1,
                          'sid': kwargs.get('source_sid'),
                          'did': kwargs.get('source_did'),
-                         'scid': kwargs.get('source_scid'),
                          'oid': kwargs.get('source_oid')
                          }
 
         target_params = {'gid': 1,
                          'sid': kwargs.get('target_sid'),
                          'did': kwargs.get('target_did'),
-                         'scid': kwargs.get('target_scid'),
                          'oid': kwargs.get('target_oid')
                          }
+
+        source_scid = kwargs.get('source_scid')
+        if source_scid is not None and source_scid != 0:
+            source_params['scid'] = source_scid
+
+        target_scid = kwargs.get('target_scid')
+        if target_scid is not None and target_scid != 0:
+            target_params['scid'] = target_scid
 
         source = self.get_sql_from_diff(**source_params)
         target = self.get_sql_from_diff(**target_params)

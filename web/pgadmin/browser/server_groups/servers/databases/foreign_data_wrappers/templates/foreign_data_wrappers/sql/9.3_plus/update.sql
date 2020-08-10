@@ -18,7 +18,7 @@ ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
     VALIDATOR {{ data.fdwvalue }};
 
 {% endif %}
-{% if data.fdwvalue == '' and data.fdwvalue != o_data.fdwvalue %}
+{% if (data.fdwvalue == '' or data.fdwvalue == None) and data.fdwvalue != o_data.fdwvalue %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
     NO VALIDATOR;
 
@@ -29,7 +29,7 @@ ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
     HANDLER {{ data.fdwhan }};
 
 {% endif %}
-{% if data.fdwhan == '' and data.fdwhan != o_data.fdwhan %}
+{% if (data.fdwhan == '' or data.fdwhan == None) and data.fdwhan != o_data.fdwhan %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
     NO HANDLER;
 

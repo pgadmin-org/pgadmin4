@@ -101,7 +101,7 @@ define('pgadmin.node.foreign_server', [
 
       // Defining model for foreign server node
       model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'fsrvid',
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           fsrvtype: undefined,
@@ -135,7 +135,7 @@ define('pgadmin.node.foreign_server', [
             );
           },
         },{
-          id: 'fsrvid', label: gettext('OID'), cell: 'string',
+          id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', mode: ['properties'],
         },{
           id: 'fsrvowner', label: gettext('Owner'), type: 'text',

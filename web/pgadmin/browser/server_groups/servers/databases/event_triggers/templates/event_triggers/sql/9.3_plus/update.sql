@@ -3,6 +3,9 @@
 {% if (data.eventfunname and data.eventfunname != o_data.eventfunname) or
   (data.eventname and data.eventname != o_data.eventname) or
   (data.when and data.when != o_data.when) %}
+-- WARNING:
+-- We have found the difference in either of Trigger Function, Event or WHEN
+-- so we need to drop the existing event trigger first and re-create it.
 DROP EVENT TRIGGER IF EXISTS {{ conn|qtIdent(o_data.name) }};
 
 CREATE EVENT TRIGGER {{ conn|qtIdent(data.name) if data.name else conn|qtIdent(o_data.name) }} ON {{ data.eventname if data.eventname else o_data.eventname }}

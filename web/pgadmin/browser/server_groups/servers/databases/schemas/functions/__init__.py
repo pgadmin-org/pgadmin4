@@ -221,7 +221,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     keys_to_ignore = ['oid', 'proowner', 'typnsp', 'xmin', 'prokind',
                       'proisagg', 'pronamespace', 'proargdefaults',
-                      'prorettype', 'proallargtypes', 'proacl', 'oid-2']
+                      'prorettype', 'proallargtypes', 'proacl', 'oid-2',
+                      'prolang']
 
     @property
     def required_args(self):
@@ -1085,8 +1086,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             did: Database Id
             scid: Schema Id
             fnid: Function Id
+            json_resp:
         """
-        diff_schema = kwargs.get('diff_schema', None)
         json_resp = kwargs.get('json_resp', True)
 
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
@@ -1131,8 +1132,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             status, res = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-            elif diff_schema:
-                res['rows'][0]['nspname'] = diff_schema
 
             # Add newline and tab before each argument to format
             name_with_default_args = self.qtIdent(
@@ -1170,9 +1169,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             status, res = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-            elif diff_schema:
-                res['rows'][0]['nspname'] = diff_schema
-                resp_data['pronamespace'] = diff_schema
 
             # Add newline and tab before each argument to format
             name_with_default_args = self.qtIdent(
@@ -1823,12 +1819,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         scid = kwargs.get('scid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if diff_schema:
-                data['schema'] = diff_schema
             status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
                                         data=data, fnid=oid, is_sql=False,
                                         is_schema_diff=True)
@@ -1842,9 +1835,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, fnid=oid, only_sql=True)
-            elif diff_schema:
-                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
-                               diff_schema=diff_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
                                json_resp=False)

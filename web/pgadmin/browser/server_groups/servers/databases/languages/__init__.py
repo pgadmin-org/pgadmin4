@@ -23,6 +23,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 
 class LanguageModule(CollectionNodeModule):
@@ -105,7 +107,7 @@ class LanguageModule(CollectionNodeModule):
 blueprint = LanguageModule(__name__)
 
 
-class LanguageView(PGChildNodeView):
+class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     class LanguageView(PGChildNodeView)
 
@@ -338,6 +340,22 @@ class LanguageView(PGChildNodeView):
             did: Database ID
             lid: Language ID
         """
+        status, res = self._fetch_properties(did, lid)
+        if not status:
+            return res
+
+        return ajax_response(
+            response=res,
+            status=200
+        )
+
+    def _fetch_properties(self, did, lid):
+        """
+        This function fetch the properties of the extension.
+        :param did:
+        :param lid:
+        :return:
+        """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             lid=lid
@@ -345,10 +363,10 @@ class LanguageView(PGChildNodeView):
         status, res = self.conn.execute_dict(sql)
 
         if not status:
-            return internal_server_error(errormsg=res)
+            return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
+            return False, gone(
                 gettext("Could not find the language information.")
             )
 
@@ -361,7 +379,7 @@ class LanguageView(PGChildNodeView):
         )
         status, result = self.conn.execute_dict(sql)
         if not status:
-            return internal_server_error(errormsg=result)
+            return False, internal_server_error(errormsg=result)
 
         # if no acl found then by default add public
         if res['rows'][0]['acl'] is None:
@@ -396,10 +414,7 @@ class LanguageView(PGChildNodeView):
 
         res['rows'][0]['seclabels'] = seclabels
 
-        return ajax_response(
-            response=res['rows'][0],
-            status=200
-        )
+        return True, res['rows'][0]
 
     @check_precondition
     def update(self, gid, sid, did, lid):
@@ -498,7 +513,7 @@ class LanguageView(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, lid=None):
+    def delete(self, gid, sid, did, lid=None, only_sql=False):
         """
         This function will drop the language object
 
@@ -507,6 +522,7 @@ class LanguageView(PGChildNodeView):
             sid: Server ID
             did: Database ID
             lid: Language ID
+            only_sql:
         """
         if lid is None:
             data = request.form if request.form else json.loads(
@@ -538,8 +554,12 @@ class LanguageView(PGChildNodeView):
                     "/".join([self.template_path, self._DELETE_SQL]),
                     lname=lname, cascade=cascade, conn=self.conn
                 )
-                status, res = self.conn.execute_scalar(sql)
 
+                # Used for schema diff tool
+                if only_sql:
+                    return sql
+
+                status, res = self.conn.execute_scalar(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
 
@@ -690,7 +710,7 @@ class LanguageView(PGChildNodeView):
         )
 
     @check_precondition
-    def sql(self, gid, sid, did, lid):
+    def sql(self, gid, sid, did, lid, json_resp=True):
         """
         This function will generate sql to show in the sql pane for the
         selected language node.
@@ -700,6 +720,7 @@ class LanguageView(PGChildNodeView):
             sid: Server ID
             did: Database ID
             lid: Language ID
+            json_resp:
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
@@ -755,6 +776,9 @@ class LanguageView(PGChildNodeView):
             data=old_data, conn=self.conn
         )
 
+        if not json_resp:
+            return sql.strip('\n')
+
         return ajax_response(response=sql.strip('\n'))
 
     @check_precondition
@@ -793,5 +817,54 @@ class LanguageView(PGChildNodeView):
             status=200
         )
 
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did):
+        """
+        This function will fetch the list of all the event triggers for
+        specified database id.
 
+        :param sid: Server Id
+        :param did: Database Id
+        :return:
+        """
+        res = dict()
+        sql = render_template("/".join([self.template_path,
+                                        'properties.sql']))
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(did, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
+
+    def get_sql_from_diff(self, **kwargs):
+        """
+        This function is used to get the DDL/DML statements.
+        :param kwargs:
+        :return:
+        """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
+        if data:
+            sql, name = self.get_sql(data=data, lid=oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  lid=oid, only_sql=True)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, lid=oid,
+                               json_resp=False)
+        return sql
+
+
+SchemaDiffRegistry(blueprint.node_type, LanguageView, 'Database')
 LanguageView.register_node_view(blueprint)

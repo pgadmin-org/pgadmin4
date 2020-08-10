@@ -1,6 +1,6 @@
 {#===================Fetch properties of each extension by name or oid===================#}
 SELECT
-    x.oid AS eid, pg_get_userbyid(extowner) AS owner,
+    x.oid, pg_get_userbyid(extowner) AS owner,
     x.extname AS name, n.nspname AS schema,
     x.extrelocatable AS relocatable, x.extversion AS version,
     e.comment

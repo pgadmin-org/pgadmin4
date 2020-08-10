@@ -23,7 +23,7 @@ from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
 
 
-class SchemaDiffTestCase(BaseTestGenerator):
+class SchemaDiffTestCase():
     """ This class will test the schema diff. """
     scenarios = [
         # Fetching default URL for database node.

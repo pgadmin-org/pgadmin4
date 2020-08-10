@@ -51,13 +51,16 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                          'did': kwargs.get('target_did'),
                          'scid': kwargs.get('target_scid')}
 
+        group_name = kwargs.get('group_name')
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
-        status, target_schema = self.get_schema(**target_params)
-        if not status:
-            return internal_server_error(errormsg=target_schema)
+        source_tables = {}
+        target_tables = {}
 
-        source_tables = self.fetch_tables(**source_params)
-        target_tables = self.fetch_tables(**target_params)
+        if 'scid' in source_params and source_params['scid'] is not None:
+            source_tables = self.fetch_tables(**source_params)
+
+        if 'scid' in target_params and target_params['scid'] is not None:
+            target_tables = self.fetch_tables(**target_params)
 
         # If both the dict have no items then return None.
         if not (source_tables or target_tables) or (
@@ -67,11 +70,11 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         return compare_dictionaries(view_object=self,
                                     source_params=source_params,
                                     target_params=target_params,
-                                    target_schema=target_schema,
                                     source_dict=source_tables,
                                     target_dict=target_tables,
                                     node=self.node_type,
                                     node_label=self.blueprint.collection_label,
+                                    group_name=group_name,
                                     ignore_whitespaces=ignore_whitespaces,
                                     ignore_keys=self.keys_to_ignore)
 
@@ -239,7 +242,6 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         """
         source_params = kwargs.get('source_params')
         target_params = kwargs.get('target_params')
-        target_schema = kwargs.get('target_schema')
         source = kwargs.get('source')
         target = kwargs.get('target')
         diff_dict = kwargs.get('diff_dict')
@@ -297,7 +299,6 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                             target_params=target_params,
                             source=dict1[item],
                             target=None,
-                            target_schema=target_schema,
                             comp_status='source_only'
                         )
 
@@ -311,7 +312,6 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                             target_params=target_params,
                             source=None,
                             target=dict2[item],
-                            target_schema=target_schema,
                             comp_status='target_only'
                         )
 
@@ -329,7 +329,6 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                 target_params=target_params,
                                 source=dict1[key],
                                 target=dict2[key],
-                                target_schema=target_schema,
                                 comp_status='different',
                                 parent_source_data=source,
                                 parent_target_data=target

@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #3904 <https://redmine.postgresql.org/issues/3904>`_ -  Replace charting library Flotr2 with ChartJS using React.
+| `Issue #5126 <https://redmine.postgresql.org/issues/5126>`_ -  Modified schema diff tool to compare two databases instead of two schemas.
 | `Issue #5610 <https://redmine.postgresql.org/issues/5610>`_ -  Add a --yes command line option to setup-web.sh to allow non-interactive use.
 
 Housekeeping

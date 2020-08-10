@@ -11,6 +11,7 @@
 import simplejson as json
 import pickle
 import random
+import copy
 
 from flask import Response, session, url_for, request
 from flask import render_template, current_app as app
@@ -61,7 +62,6 @@ class SchemaDiffModule(PgAdminModule):
             'schema_diff.panel',
             'schema_diff.servers',
             'schema_diff.databases',
-            'schema_diff.schemas',
             'schema_diff.compare',
             'schema_diff.poll',
             'schema_diff.ddl_compare',
@@ -398,45 +398,13 @@ def databases(sid):
 
 
 @blueprint.route(
-    '/schemas/<int:sid>/<int:did>',
-    methods=["GET"],
-    endpoint="schemas"
-)
-@login_required
-def schemas(sid, did):
-    """
-    This function will return the list of schemas for the specified
-    server id and database id.
-    """
-    res = []
-    try:
-        view = SchemaDiffRegistry.get_node_view('schema')
-        server = Server.query.filter_by(id=sid).first()
-        response = view.nodes(gid=server.servergroup_id, sid=sid, did=did)
-        if response.status_code == 200:
-            schemas = json.loads(response.data)['data']
-            for sch in schemas:
-                res.append({
-                    "value": sch['_id'],
-                    "label": sch['label'],
-                    "_id": sch['_id'],
-                    "image": sch['icon'],
-                })
-    except Exception as e:
-        app.logger.exception(e)
-
-    return make_json_response(data=res)
-
-
-@blueprint.route(
     '/compare/<int:trans_id>/<int:source_sid>/<int:source_did>/'
-    '<int:source_scid>/<int:target_sid>/<int:target_did>/<int:target_scid>',
+    '<int:target_sid>/<int:target_did>',
     methods=["GET"],
     endpoint="compare"
 )
 @login_required
-def compare(trans_id, source_sid, source_did, source_scid,
-            target_sid, target_did, target_scid):
+def compare(trans_id, source_sid, source_did, target_sid, target_did):
     """
     This function will compare the two schemas.
     """
@@ -463,33 +431,88 @@ def compare(trans_id, source_sid, source_did, source_scid,
         pref = Preferences.module('schema_diff')
         ignore_whitespaces = pref.preference('ignore_whitespaces').get()
 
-        all_registered_nodes = SchemaDiffRegistry.get_registered_nodes()
-        node_percent = round(100 / len(all_registered_nodes))
+        # Fetch all the schemas of source and target database
+        # Compare them and get the status.
+        schema_result = fetch_compare_schemas(source_sid, source_did,
+                                              target_sid, target_did)
+
+        total_schema = len(schema_result['source_only']) + len(
+            schema_result['target_only']) + len(
+            schema_result['in_both_database'])
+
+        node_percent = round(100 / (total_schema * len(
+            SchemaDiffRegistry.get_registered_nodes())))
         total_percent = 0
 
-        for node_name, node_view in all_registered_nodes.items():
-            view = SchemaDiffRegistry.get_node_view(node_name)
-            if hasattr(view, 'compare'):
-                msg = gettext('Comparing {0}').\
-                    format(gettext(view.blueprint.collection_label))
-                diff_model_obj.set_comparison_info(msg, total_percent)
-                # Update the message and total percentage in session object
-                update_session_diff_transaction(trans_id, session_obj,
-                                                diff_model_obj)
+        # Compare Database objects
+        comparison_schema_result, total_percent = \
+            compare_database_objects(
+                trans_id=trans_id, session_obj=session_obj,
+                source_sid=source_sid, source_did=source_did,
+                target_sid=target_sid, target_did=target_did,
+                diff_model_obj=diff_model_obj, total_percent=total_percent,
+                node_percent=node_percent,
+                ignore_whitespaces=ignore_whitespaces)
+        comparison_result = \
+            comparison_result + comparison_schema_result
 
-                res = view.compare(source_sid=source_sid,
-                                   source_did=source_did,
-                                   source_scid=source_scid,
-                                   target_sid=target_sid,
-                                   target_did=target_did,
-                                   target_scid=target_scid,
-                                   ignore_whitespaces=ignore_whitespaces)
+        # Compare Schema objects
+        if 'source_only' in schema_result and \
+                len(schema_result['source_only']) > 0:
+            for item in schema_result['source_only']:
+                comparison_schema_result, total_percent = \
+                    compare_schema_objects(
+                        trans_id=trans_id, session_obj=session_obj,
+                        source_sid=source_sid, source_did=source_did,
+                        source_scid=item['scid'], target_sid=target_sid,
+                        target_did=target_did, target_scid=None,
+                        schema_name=item['schema_name'],
+                        diff_model_obj=diff_model_obj,
+                        total_percent=total_percent,
+                        node_percent=node_percent,
+                        ignore_whitespaces=ignore_whitespaces)
 
-                if res is not None:
-                    comparison_result = comparison_result + res
-            total_percent = total_percent + node_percent
+                comparison_result = \
+                    comparison_result + comparison_schema_result
 
-        msg = gettext("Successfully compare the specified schemas.")
+        if 'target_only' in schema_result and \
+                len(schema_result['target_only']) > 0:
+            for item in schema_result['target_only']:
+                comparison_schema_result, total_percent = \
+                    compare_schema_objects(
+                        trans_id=trans_id, session_obj=session_obj,
+                        source_sid=source_sid, source_did=source_did,
+                        source_scid=None, target_sid=target_sid,
+                        target_did=target_did, target_scid=item['scid'],
+                        schema_name=item['schema_name'],
+                        diff_model_obj=diff_model_obj,
+                        total_percent=total_percent,
+                        node_percent=node_percent,
+                        ignore_whitespaces=ignore_whitespaces)
+
+                comparison_result = \
+                    comparison_result + comparison_schema_result
+
+        # Compare the two schema present in both the databases
+        if 'in_both_database' in schema_result and \
+                len(schema_result['in_both_database']) > 0:
+            for item in schema_result['in_both_database']:
+                comparison_schema_result, total_percent = \
+                    compare_schema_objects(
+                        trans_id=trans_id, session_obj=session_obj,
+                        source_sid=source_sid, source_did=source_did,
+                        source_scid=item['src_scid'], target_sid=target_sid,
+                        target_did=target_did, target_scid=item['tar_scid'],
+                        schema_name=item['schema_name'],
+                        diff_model_obj=diff_model_obj,
+                        total_percent=total_percent,
+                        node_percent=node_percent,
+                        ignore_whitespaces=ignore_whitespaces)
+
+                comparison_result = \
+                    comparison_result + comparison_schema_result
+
+        msg = gettext("Successfully compare the specified databases.")
         total_percent = 100
         diff_model_obj.set_comparison_info(msg, total_percent)
         # Update the message and total percentage done in session object
@@ -609,3 +632,169 @@ def check_version_compatibility(sid, tid):
 
     return False, gettext('Source and Target database server must be of '
                           'the same major version.')
+
+
+def get_schemas(sid, did):
+    """
+    This function will return the list of schemas for the specified
+    server id and database id.
+    """
+    try:
+        view = SchemaDiffRegistry.get_node_view('schema')
+        server = Server.query.filter_by(id=sid).first()
+        response = view.nodes(gid=server.servergroup_id, sid=sid, did=did)
+        schemas = json.loads(response.data)['data']
+        return schemas
+    except Exception as e:
+        app.logger.exception(e)
+
+    return None
+
+
+def compare_database_objects(**kwargs):
+    """
+    This function is used to compare the specified schema and their children.
+
+    :param kwargs:
+    :return:
+    """
+    trans_id = kwargs.get('trans_id')
+    session_obj = kwargs.get('session_obj')
+    source_sid = kwargs.get('source_sid')
+    source_did = kwargs.get('source_did')
+    target_sid = kwargs.get('target_sid')
+    target_did = kwargs.get('target_did')
+    diff_model_obj = kwargs.get('diff_model_obj')
+    total_percent = kwargs.get('total_percent')
+    node_percent = kwargs.get('node_percent')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
+    comparison_result = []
+
+    all_registered_nodes = SchemaDiffRegistry.get_registered_nodes(None,
+                                                                   'Database')
+    for node_name, node_view in all_registered_nodes.items():
+        view = SchemaDiffRegistry.get_node_view(node_name)
+        if hasattr(view, 'compare'):
+            msg = gettext('Comparing {0}'). \
+                format(gettext(view.blueprint.collection_label))
+            diff_model_obj.set_comparison_info(msg, total_percent)
+            # Update the message and total percentage in session object
+            update_session_diff_transaction(trans_id, session_obj,
+                                            diff_model_obj)
+
+            res = view.compare(source_sid=source_sid,
+                               source_did=source_did,
+                               target_sid=target_sid,
+                               target_did=target_did,
+                               group_name=gettext('Database Objects'),
+                               ignore_whitespaces=ignore_whitespaces)
+
+            if res is not None:
+                comparison_result = comparison_result + res
+        total_percent = total_percent + node_percent
+
+    return comparison_result, total_percent
+
+
+def compare_schema_objects(**kwargs):
+    """
+    This function is used to compare the specified schema and their children.
+
+    :param kwargs:
+    :return:
+    """
+    trans_id = kwargs.get('trans_id')
+    session_obj = kwargs.get('session_obj')
+    source_sid = kwargs.get('source_sid')
+    source_did = kwargs.get('source_did')
+    source_scid = kwargs.get('source_scid')
+    target_sid = kwargs.get('target_sid')
+    target_did = kwargs.get('target_did')
+    target_scid = kwargs.get('target_scid')
+    schema_name = kwargs.get('schema_name')
+    diff_model_obj = kwargs.get('diff_model_obj')
+    total_percent = kwargs.get('total_percent')
+    node_percent = kwargs.get('node_percent')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
+    comparison_result = []
+
+    all_registered_nodes = SchemaDiffRegistry.get_registered_nodes()
+    for node_name, node_view in all_registered_nodes.items():
+        view = SchemaDiffRegistry.get_node_view(node_name)
+        if hasattr(view, 'compare'):
+            msg = gettext('Comparing {0} of schema \'{1}\''). \
+                format(gettext(view.blueprint.collection_label),
+                       gettext(schema_name))
+            diff_model_obj.set_comparison_info(msg, total_percent)
+            # Update the message and total percentage in session object
+            update_session_diff_transaction(trans_id, session_obj,
+                                            diff_model_obj)
+
+            res = view.compare(source_sid=source_sid,
+                               source_did=source_did,
+                               source_scid=source_scid,
+                               target_sid=target_sid,
+                               target_did=target_did,
+                               target_scid=target_scid,
+                               group_name=gettext(schema_name),
+                               ignore_whitespaces=ignore_whitespaces)
+
+            if res is not None:
+                comparison_result = comparison_result + res
+        total_percent = total_percent + node_percent
+        # if total_percent is more then 100 then set it to less then 100
+        if total_percent >= 100:
+            total_percent = 96
+
+    return comparison_result, total_percent
+
+
+def fetch_compare_schemas(source_sid, source_did, target_sid, target_did):
+    """
+    This function is used to fetch all the schemas of source and target
+    database and compare them.
+
+    :param source_sid:
+    :param source_did:
+    :param target_sid:
+    :param target_did:
+    :return:
+    """
+    source_schemas = get_schemas(source_sid, source_did)
+    target_schemas = get_schemas(target_sid, target_did)
+
+    src_schema_dict = {item['label']: item['_id'] for item in source_schemas}
+    tar_schema_dict = {item['label']: item['_id'] for item in target_schemas}
+
+    dict1 = copy.deepcopy(src_schema_dict)
+    dict2 = copy.deepcopy(tar_schema_dict)
+
+    # Find the duplicate keys in both the dictionaries
+    dict1_keys = set(dict1.keys())
+    dict2_keys = set(dict2.keys())
+    intersect_keys = dict1_keys.intersection(dict2_keys)
+
+    # Keys that are available in source and missing in target.
+    source_only = []
+    added = dict1_keys - dict2_keys
+    for item in added:
+        source_only.append({'schema_name': item,
+                            'scid': src_schema_dict[item]})
+
+    target_only = []
+    # Keys that are available in target and missing in source.
+    removed = dict2_keys - dict1_keys
+    for item in removed:
+        target_only.append({'schema_name': item,
+                            'scid': tar_schema_dict[item]})
+
+    in_both_database = []
+    for item in intersect_keys:
+        in_both_database.append({'schema_name': item,
+                                 'src_scid': src_schema_dict[item],
+                                 'tar_scid': tar_schema_dict[item]})
+
+    schema_result = {'source_only': source_only, 'target_only': target_only,
+                     'in_both_database': in_both_database}
+
+    return schema_result

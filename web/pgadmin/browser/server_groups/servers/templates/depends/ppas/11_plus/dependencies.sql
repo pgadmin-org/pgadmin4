@@ -1,4 +1,4 @@
-SELECT DISTINCT dep.deptype, dep.refclassid, cl.relkind, ad.adbin, ad.adsrc,
+SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin, ad.adsrc,
     CASE WHEN cl.relkind IS NOT NULL THEN CASE WHEN cl.relkind = 'r' THEN cl.relkind || COALESCE(dep.refobjsubid::text, '') ELSE cl.relkind END
         WHEN tg.oid IS NOT NULL THEN 'Tr'::text
         WHEN ty.oid IS NOT NULL THEN CASE WHEN ty.typtype = 'd' THEN 'd'::text ELSE 'Ty'::text END
@@ -76,4 +76,18 @@ refclassid IN ( SELECT oid FROM pg_class WHERE relname IN
    'pg_trigger', 'pg_type', 'pg_attrdef', 'pg_event_trigger', 'pg_foreign_server', 'pg_foreign_data_wrapper',
    'pg_collation', 'pg_ts_config', 'pg_ts_dict', 'pg_ts_parser', 'pg_ts_template', 'pg_extension',
    'pg_synonym', 'pg_policy'))
-ORDER BY refclassid, cl.relkind
+UNION
+SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin, ad.adsrc,
+    CASE WHEN cl.relkind IS NOT NULL THEN CASE WHEN cl.relkind = 'r' THEN cl.relkind || COALESCE(dep.refobjsubid::text, '') ELSE cl.relkind END
+    ELSE '' END AS type,
+	NULL AS ownertable,
+	CASE WHEN cl.relname IS NOT NULL OR att.attname IS NOT NULL THEN cl.relname || COALESCE('.' || att.attname, '')
+    ELSE cl.relname END AS refname,
+    nsc.nspname AS nspname, '0' AS is_inherits, '0' AS is_inherited
+FROM pg_depend dep
+LEFT JOIN pg_class cl ON dep.refobjid=cl.oid
+LEFT JOIN pg_attribute att ON dep.refobjid=att.attrelid AND dep.refobjsubid=att.attnum
+LEFT JOIN pg_namespace nsc ON cl.relnamespace=nsc.oid
+LEFT JOIN pg_attrdef ad ON ad.adrelid=att.attrelid AND ad.adnum=att.attnum
+WHERE dep.objid IN (SELECT oid FROM pg_rewrite WHERE ev_class={{object_id}}) AND cl.relkind not in ('v', 'm')
+ORDER BY refclassid, relkind

@@ -1,6 +1,28 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/security.macros' as SECLABEL %}
 {% if data %}
+{# ============= Check for Schema Diff Tool ============= #}
+{% if (data.trusted and data.trusted != o_data.trusted) or (data.lanproc and data.lanproc != o_data.lanproc) or (data.laninl and data.laninl != o_data.laninl) or (data.lanval and data.lanval != o_data.lanval) %}
+-- WARNING:
+-- We have found the difference in either of TRUSTED, HANDLER, INLINE or VALIDATOR,
+-- so we need to drop the existing language first and re-create it.
+DROP LANGUAGE {{ conn|qtIdent(o_data.name) }} CASCADE;
+
+{% if data.trusted is defined %}{% set tmp_trusted = data.trusted %}{% else %}{% set tmp_trusted = o_data.trusted %}{% endif %}
+{% if data.lanproc is defined %}{% set tmp_lanproc = data.lanproc %}{% else %}{% set tmp_lanproc = o_data.lanproc %}{% endif %}
+{% if data.laninl is defined %}{% set tmp_laninl = data.laninl %}{% else %}{% set tmp_laninl = o_data.laninl %}{% endif %}
+{% if data.lanval is defined %}{% set tmp_lanval = data.lanval %}{% else %}{% set tmp_lanval = o_data.lanval %}{% endif %}
+CREATE{% if tmp_trusted %} TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIdent(o_data.name) }}
+{% if tmp_lanproc %}
+    HANDLER {{ conn|qtIdent(tmp_lanproc) }}
+{% endif %}
+{% if tmp_laninl %}
+    INLINE {{ conn|qtIdent(tmp_laninl) }}
+{% endif %}
+{% if tmp_lanval %}
+    VALIDATOR {{ conn|qtIdent(tmp_lanval) }}
+{% endif %};
+{% endif %}
 {# ============= Update language name ============= #}
 {% if data.name != o_data.name %}
 ALTER LANGUAGE {{ conn|qtIdent(o_data.name) }}

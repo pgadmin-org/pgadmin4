@@ -145,6 +145,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             # Supported ACL for columns
             self.column_acl = ['a', 'r', 'w', 'x']
 
+            # Submodule list for schema diff
+            self.tables_sub_modules = ['index', 'rule', 'trigger']
+            if server_type == 'ppas' and ver >= 120000:
+                self.tables_sub_modules.append('compound_trigger')
+            if ver >= 90500:
+                self.tables_sub_modules.append('row_security_policy')
+
             return f(*args, **kwargs)
 
         return wrap

@@ -201,6 +201,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                                {'get': 'headline_functions'}]
     })
 
+    keys_to_ignore = ['oid', 'oid-2', 'schema']
+
     def _init_(self, **kwargs):
         """
         Method is used to initialize the FtsParserView and it's base view.
@@ -848,10 +850,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param did: database id
         :param scid: schema id
         :param pid: fts tempate id
-        :param diff_schema: Target Schema for schema diff
         :param json_resp: True then return json response
         """
-        diff_schema = kwargs.get('diff_schema', None)
         json_resp = kwargs.get('json_resp', True)
 
         try:
@@ -877,22 +877,6 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                         "FTS Parser node."
                     )
                 )
-
-            # Used for schema diff tool
-            if diff_schema:
-                data = {'schema': scid}
-                # Fetch schema name from schema oid
-                sql = render_template("/".join([self.template_path,
-                                                self._SCHEMA_SQL]),
-                                      data=data,
-                                      conn=self.conn,
-                                      )
-
-                status, schema = self.conn.execute_scalar(sql)
-                if not status:
-                    return internal_server_error(errormsg=schema)
-
-                res = res.replace(schema, diff_schema)
 
             if not json_resp:
                 return res
@@ -978,21 +962,15 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         scid = kwargs.get('scid')
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
-        diff_schema = kwargs.get('diff_schema', None)
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if diff_schema:
-                data['schema'] = diff_schema
             sql, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
                                      data=data, pid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, pid=oid, only_sql=True)
-            elif diff_schema:
-                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, pid=oid,
-                               diff_schema=diff_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, pid=oid,
                                json_resp=False)

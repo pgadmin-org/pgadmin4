@@ -1249,8 +1249,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         tid = kwargs['tid']
         diff_data = kwargs['diff_data'] if 'diff_data' in kwargs else None
         json_resp = kwargs['json_resp'] if 'json_resp' in kwargs else True
-        diff_schema = kwargs['diff_schema'] if 'diff_schema' in kwargs else\
-            None
 
         if diff_data:
             return self._fetch_sql(did, scid, tid, diff_data, json_resp)
@@ -1272,9 +1270,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
             if status:
                 data = res['rows'][0]
-
-            if diff_schema:
-                data['schema'] = diff_schema
 
             sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
                 self, did=did, scid=scid, tid=tid, main_sql=main_sql,
@@ -1662,13 +1657,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         :param tid: Table Id
         :return: Table dataset
         """
-        sub_modules = ['index', 'rule', 'trigger']
-        if self.manager.server_type == 'ppas' and \
-                self.manager.version >= 120000:
-            sub_modules.append('compound_trigger')
-
-        if self.manager.version >= 90500:
-            sub_modules.append('row_security_policy')
 
         if tid:
             status, data = self._fetch_properties(did, scid, tid)
@@ -1704,16 +1692,15 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                     # Get sub module data of a specified table for object
                     # comparison
                     self._get_sub_module_data_for_compare(sid, did, scid, data,
-                                                          row, sub_modules)
+                                                          row)
                     res[row['name']] = data
 
             return res
 
-    def _get_sub_module_data_for_compare(self, sid, did, scid, data,
-                                         row, sub_modules):
+    def _get_sub_module_data_for_compare(self, sid, did, scid, data, row):
         # Get sub module data of a specified table for object
         # comparison
-        for module in sub_modules:
+        for module in self.tables_sub_modules:
             module_view = SchemaDiffRegistry.get_node_view(module)
             if module_view.blueprint.server_type is None or \
                 self.manager.server_type in \
@@ -1722,6 +1709,76 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                     sid=sid, did=did, scid=scid, tid=row['oid'],
                     oid=None)
                 data[module] = sub_data
+
+    def get_submodule_template_path(self, module_name):
+        """
+        This function is used to get the template path based on module name.
+        :param module_name:
+        :return:
+        """
+        template_path = None
+        if module_name == 'index':
+            template_path = self.index_template_path
+        elif module_name == 'trigger':
+            template_path = self.trigger_template_path
+        elif module_name == 'rule':
+            template_path = self.rules_template_path
+        elif module_name == 'compound_trigger':
+            template_path = self.compound_trigger_template_path
+        elif module_name == 'row_security_policy':
+            template_path = self.row_security_policies_template_path
+
+        return template_path
+
+    @BaseTableView.check_precondition
+    def get_table_submodules_dependencies(self, **kwargs):
+        """
+        This function is used to get the dependencies of table and it's
+        submodules.
+        :param kwargs:
+        :return:
+        """
+        tid = kwargs['tid']
+        table_dependencies = []
+        table_deps = self.get_dependencies(self.conn, tid, where=None,
+                                           show_system_objects=None,
+                                           is_schema_diff=True)
+        if len(table_deps) > 0:
+            table_dependencies.extend(table_deps)
+
+        # Fetch foreign key referenced table which is considered as
+        # dependency.
+        status, fkey_deps = fkey_utils.get_fkey_dependencies(self.conn, tid)
+        if not status:
+            return internal_server_error(errormsg=fkey_deps)
+
+        if len(fkey_deps) > 0:
+            table_dependencies.extend(fkey_deps)
+
+        # Iterate all the submodules of the table and fetch the dependencies.
+        for module in self.tables_sub_modules:
+            module_view = SchemaDiffRegistry.get_node_view(module)
+            template_path = self.get_submodule_template_path(module)
+
+            SQL = render_template("/".join([template_path,
+                                            'nodes.sql']), tid=tid)
+            status, rset = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=rset)
+
+            for row in rset['rows']:
+                result = module_view.get_dependencies(
+                    self.conn, row['oid'], where=None,
+                    show_system_objects=None, is_schema_diff=True)
+                if len(result) > 0:
+                    table_dependencies.extend(result)
+
+        # Remove the same table from the dependency list
+        for item in table_dependencies:
+            if 'oid' in item and item['oid'] == tid:
+                table_dependencies.remove(item)
+
+        return table_dependencies
 
 
 SchemaDiffRegistry(blueprint.node_type, TableView)
