@@ -8,9 +8,18 @@
 ##########################################################################
 
 """Server helper utilities"""
+from ipaddress import ip_address
+
 from pgadmin.utils.crypto import encrypt, decrypt
 import config
 from pgadmin.model import db, Server
+
+
+def is_valid_ipaddress(address):
+    try:
+        return bool(ip_address(address))
+    except ValueError:
+        return False
 
 
 def parse_priv_from_db(db_privileges):
