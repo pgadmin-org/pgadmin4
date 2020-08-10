@@ -663,13 +663,6 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res)
 
             for row in rset['rows']:
-                # Attaching properties for precession
-                # & length validation for current type
-                precision = False
-                length = False
-                min_val = 0
-                max_val = 0
-
                 # Check against PGOID for specific type
                 if row['elemoid']:
                     if row['elemoid'] in (1560, 1561, 1562, 1563, 1042, 1043,
@@ -684,19 +677,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                         typeval = ' '
 
                 # Logic to set precision & length/min/max values
-                if typeval == 'P':
-                    precision = True
-
-                if precision or typeval in ('L', 'D'):
-                    length = True
-                    min_val = 0 if typeval == 'D' else 1
-                    if precision:
-                        max_val = 1000
-                    elif min_val:
-                        # Max of integer value
-                        max_val = 2147483647
-                    else:
-                        max_val = 10
+                precision, length, min_val,\
+                    max_val = TypeView.set_precision_and_len_val(typeval)
 
                 res.append(
                     {'label': row['typname'], 'value': row['typname'],
@@ -712,6 +694,35 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
+
+    @staticmethod
+    def set_precision_and_len_val(typeval):
+        """
+        Logic to set precision & length/min/max values
+        :param typeval: type value to check precision, Length.
+        :return: precision, length, min val and max val.
+        """
+        # Attaching properties for precession
+        # & length validation for current type
+        precision = False
+        length = False
+        min_val = 0
+        max_val = 0
+
+        if typeval == 'P':
+            precision = True
+
+        if precision or typeval in ('L', 'D'):
+            length = True
+            min_val = 0 if typeval == 'D' else 1
+            if precision:
+                max_val = 1000
+            elif min_val:
+                # Max of integer value
+                max_val = 2147483647
+            else:
+                max_val = 10
+        return precision, length, min_val, max_val
 
     @check_precondition
     def get_subtypes(self, gid, sid, did, scid, tid=None):
@@ -866,11 +877,11 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         try:
             # The SQL generated below will populate Input/Output/Send/
             # Receive/Analyze/TypModeIN/TypModOUT combo box
-            SQL = render_template("/".join([self.template_path,
+            sql = render_template("/".join([self.template_path,
                                             'get_external_functions.sql']),
                                   extfunc=True)
-            if SQL:
-                status, rset = self.conn.execute_2darray(SQL)
+            if sql:
+                status, rset = self.conn.execute_2darray(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
 
@@ -880,11 +891,11 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                          'cbtype': 'all'})
 
             # The SQL generated below will populate TypModeIN combo box
-            SQL = render_template("/".join([self.template_path,
+            sql = render_template("/".join([self.template_path,
                                             'get_external_functions.sql']),
                                   typemodin=True)
-            if SQL:
-                status, rset = self.conn.execute_2darray(SQL)
+            if sql:
+                status, rset = self.conn.execute_2darray(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
 
@@ -894,18 +905,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                          'cbtype': 'typmodin'})
 
             # The SQL generated below will populate TypModeIN combo box
-            SQL = render_template("/".join([self.template_path,
-                                            'get_external_functions.sql']),
-                                  typemodout=True)
-            if SQL:
-                status, rset = self.conn.execute_2darray(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                for row in rset['rows']:
-                    res.append(
-                        {'label': row['func'], 'value': row['func'],
-                         'cbtype': 'typmodout'})
+            self._get_data_for_type_modein(res)
 
             return make_json_response(
                 data=res,
@@ -914,6 +914,68 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         except Exception as e:
             return internal_server_error(errormsg=str(e))
+
+    def _get_data_for_type_modein(self, res):
+        """
+        Data for TypModeIN combo box
+        :param res: response object.
+        :return:
+        """
+        sql = render_template("/".join([self.template_path,
+                                        'get_external_functions.sql']),
+                              typemodout=True)
+        if sql:
+            status, rset = self.conn.execute_2darray(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            for row in rset['rows']:
+                res.append(
+                    {'label': row['func'], 'value': row['func'],
+                     'cbtype': 'typmodout'})
+
+    @staticmethod
+    def _checks_for_create_type(data):
+        required_args = {
+            'name': 'Name',
+            'typtype': 'Type'
+        }
+        for arg in required_args:
+            if arg not in data:
+                return True, make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
+                )
+            # Additional checks goes here
+            # If type is range then check if subtype is defined or not
+            if data and data[arg] == 'r' and \
+                    ('typname' not in data or data['typname'] is None):
+                return True, make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        'Subtype must be defined for range types.'
+                    )
+                )
+            # If type is external then check if input/output
+            # conversion function is defined
+            if data and data[arg] == 'b' and (
+                    'typinput' not in data or
+                    'typoutput' not in data or
+                    data['typinput'] is None or
+                    data['typoutput'] is None):
+                return True, make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        'External types require both input and output '
+                        'conversion functions.'
+                    )
+                )
+        return False, ''
 
     @check_precondition
     def create(self, gid, sid, did, scid):
@@ -930,46 +992,10 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        required_args = {
-            'name': 'Name',
-            'typtype': 'Type'
-        }
 
-        for arg in required_args:
-            if arg not in data:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        "Could not find the required parameter ({})."
-                    ).format(arg)
-                )
-            # Additional checks goes here
-            # If type is range then check if subtype is defined or not
-            if data and data[arg] == 'r' and \
-                    ('typname' not in data or data['typname'] is None):
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        'Subtype must be defined for range types.'
-                    )
-                )
-            # If type is external then check if input/output
-            # conversion function is defined
-            if data and data[arg] == 'b' and (
-                    'typinput' not in data or
-                    'typoutput' not in data or
-                    data['typinput'] is None or
-                    data['typoutput'] is None):
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=gettext(
-                        'External types require both input and output '
-                        'conversion functions.'
-                    )
-                )
+        is_error, errmsg = TypeView._checks_for_create_type(data)
+        if is_error:
+            return errmsg
 
         # To format privileges coming from client
         if 'typacl' in data and data['typacl'] is not None:

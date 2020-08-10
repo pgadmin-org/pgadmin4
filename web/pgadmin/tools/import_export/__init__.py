@@ -200,6 +200,54 @@ def filename_with_file_manager_path(_file, _present=False):
     return fs_short_path(_file)
 
 
+def _get_ignored_column_list(data, driver, conn):
+    """
+    Get list of ignored columns for import/export.
+    :param data: Data.
+    :param driver: PG Driver.
+    :param conn: Connection.
+    :return: return ignored column list.
+    """
+    icols = None
+
+    if data['icolumns']:
+        ignore_cols = data['icolumns']
+
+        # format the ignore column list required as per copy command
+        # requirement
+        if ignore_cols and len(ignore_cols) > 0:
+            icols = ", ".join([
+                driver.qtIdent(conn, col)
+                for col in ignore_cols])
+    return icols
+
+
+def _get_required_column_list(data, driver, conn):
+    """
+    Get list of required columns for import/export.
+    :param data: Data.
+    :param driver: PG Driver.
+    :param conn: Connection.
+    :return: return required column list.
+    """
+    cols = None
+
+    # format the column import/export list required as per copy command
+    # requirement
+    if data['columns']:
+        columns = data['columns']
+        if columns and len(columns) > 0:
+            for col in columns:
+                if cols:
+                    cols += ', '
+                else:
+                    cols = '('
+                cols += driver.qtIdent(conn, col)
+            cols += ')'
+
+    return cols
+
+
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint="create_job")
 @login_required
 def create_import_export_job(sid):
@@ -263,31 +311,9 @@ def create_import_export_job(sid):
     else:
         return bad_request(errormsg=_('Please specify a valid file'))
 
-    cols = None
-    icols = None
-
-    if data['icolumns']:
-        ignore_cols = data['icolumns']
-
-        # format the ignore column list required as per copy command
-        # requirement
-        if ignore_cols and len(ignore_cols) > 0:
-            icols = ", ".join([
-                driver.qtIdent(conn, col)
-                for col in ignore_cols])
-
-    # format the column import/export list required as per copy command
-    # requirement
-    if data['columns']:
-        columns = data['columns']
-        if columns and len(columns) > 0:
-            for col in columns:
-                if cols:
-                    cols += ', '
-                else:
-                    cols = '('
-                cols += driver.qtIdent(conn, col)
-            cols += ')'
+    # Get required and ignored column list
+    icols = _get_ignored_column_list(data, driver, conn)
+    cols = _get_required_column_list(data, driver, conn)
 
     # Create the COPY FROM/TO  from template
     query = render_template(

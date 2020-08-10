@@ -581,16 +581,47 @@ def compare_list_by_ignoring_keys(source_list, target_list, added, updated,
             target_with_ignored_keys = copy.deepcopy(tmp_target)
 
             # Remove ignore keys from source and target before comparison
-            for ig_key in ignore_keys:
-                if ig_key in source_with_ignored_keys:
-                    del source_with_ignored_keys[ig_key]
-                if ig_key in target_with_ignored_keys:
-                    del target_with_ignored_keys[ig_key]
+            _remove_keys(ignore_keys, source_with_ignored_keys,
+                         target_with_ignored_keys)
 
-            if source_with_ignored_keys != target_with_ignored_keys:
-                updated.append(source_list)
-                target_list.remove(tmp_target)
-            elif source_with_ignored_keys == target_with_ignored_keys:
-                target_list.remove(tmp_target)
+            _compare_source_and_target(source_with_ignored_keys,
+                                       target_with_ignored_keys, source_list,
+                                       target_list, updated, tmp_target)
     else:
         added.append(source_list)
+
+
+def _remove_keys(ignore_keys, source_with_ignored_keys,
+                 target_with_ignored_keys):
+    """
+    Remove non required keys form both source and target object.
+    :param ignore_keys: ignore keys list.
+    :param source_with_ignored_keys: source keys list.
+    :param target_with_ignored_keys: target keys list.
+    :return: None
+    """
+    for ig_key in ignore_keys:
+        if ig_key in source_with_ignored_keys:
+            del source_with_ignored_keys[ig_key]
+        if ig_key in target_with_ignored_keys:
+            del target_with_ignored_keys[ig_key]
+
+
+def _compare_source_and_target(source_with_ignored_keys,
+                               target_with_ignored_keys, source_list,
+                               target_list, updated, tmp_target):
+    """
+    Compare source and target keys
+    :param source_with_ignored_keys:
+    :param target_with_ignored_keys:
+    :param source_list:
+    :param target_list:
+    :param updated:
+    :param tmp_target:
+    :return:
+    """
+    if source_with_ignored_keys != target_with_ignored_keys:
+        updated.append(source_list)
+        target_list.remove(tmp_target)
+    elif source_with_ignored_keys == target_with_ignored_keys:
+        target_list.remove(tmp_target)
