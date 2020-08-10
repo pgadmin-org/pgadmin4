@@ -7,7 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getEpoch, getGCD, getMod, quote_ident, parseFuncParams, getRandomInt, sprintf } from 'sources/utils';
+import { getEpoch, getGCD, getMod, quote_ident, parseFuncParams,
+  getRandomInt, sprintf, CSVToArray } from 'sources/utils';
 
 describe('getEpoch', function () {
   it('should return non zero', function () {
@@ -166,5 +167,27 @@ describe('sprintf', function () {
     ).toBe(
       'This is a number - 4321, text - replace, and not repalce - %s.'
     );
+  });
+});
+
+describe('CSVToArray', function() {
+  it('simple input single record', function() {
+    expect(CSVToArray('a,b')).toEqual([['a', 'b']]);
+  });
+
+  it('simple input delimeter change', function() {
+    expect(CSVToArray('"a";"b"', ';')).toEqual([['a', 'b']]);
+  });
+
+  it('simple input multi records', function() {
+    expect(CSVToArray('"a","b"\n"c","d"')).toEqual([['a', 'b'], ['c', 'd']]);
+  });
+
+  it('multiline input containing double quotes', function() {
+    expect(CSVToArray('"hello ""a\nb""","c"')).toEqual([['hello "a\nb"','c']]);
+  });
+
+  it('multiline input containing single quotes', function() {
+    expect(CSVToArray('\'hello \'\'a\nb\'\'\',\'c\'', ',', '\'')).toEqual([['hello \'a\nb\'','c']]);
   });
 });

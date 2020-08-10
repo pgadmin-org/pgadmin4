@@ -10,7 +10,7 @@
 define('tools.querytool', [
   'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
   'jqueryui.position', 'underscore', 'pgadmin.alertifyjs',
-  'sources/pgadmin', 'backbone', 'bundled_codemirror',
+  'sources/pgadmin', 'backbone', 'bundled_codemirror', 'sources/utils',
   'pgadmin.misc.explain',
   'sources/selection/grid_selector',
   'sources/selection/active_cell_capture',
@@ -48,7 +48,7 @@ define('tools.querytool', [
   'pgadmin.browser',
   'pgadmin.tools.user_management',
 ], function(
-  gettext, url_for, $, jqueryui, jqueryui_position, _, alertify, pgAdmin, Backbone, codemirror,
+  gettext, url_for, $, jqueryui, jqueryui_position, _, alertify, pgAdmin, Backbone, codemirror, pgadminUtils,
   pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
   XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
   GeometryViewer, historyColl, queryHist, querySources,
@@ -3739,23 +3739,18 @@ define('tools.querytool', [
 
       // This function will paste the selected row.
       _paste_row: function() {
-
         var self = this;
         let rowsText = clipboard.getTextFromClipboard();
-        let copied_rows = rowsText.split('\n');
+        let copied_rows = pgadminUtils.CSVToArray(rowsText, self.preferences.results_grid_field_separator, self.preferences.results_grid_quote_char);
         // Do not parse row if rows are copied with headers
         if(pgAdmin.SqlEditor.copiedInOtherSessionWithHeaders) {
           copied_rows = copied_rows.slice(1);
         }
-        copied_rows = copied_rows.reduce((partial, item) => {
+        copied_rows = copied_rows.reduce((partial, values) => {
           // split each row with field separator character
-          const values = item.split(self.preferences.results_grid_field_separator);
           let row = {};
           for (let col in self.columns) {
-            let v = null;
-            if (values.length > col) {
-              v = values[col].replace(new RegExp(`^\\${self.preferences.results_grid_quote_char}`), '').replace(new RegExp(`\\${self.preferences.results_grid_quote_char}$`), '');
-            }
+            let v = values[col];
 
             // set value to default or null depending on column metadata
             if(v === '') {

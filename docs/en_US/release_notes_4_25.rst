@@ -30,6 +30,7 @@ Bug fixes
 | `Issue #4810 <https://redmine.postgresql.org/issues/4810>`_ -  Fixed an issue where the user is not able to save the new row if the table is empty.
 | `Issue #5429 <https://redmine.postgresql.org/issues/5429>`_ -  Ensure that the Dictionaries drop-down shows all the dictionaries in the FTS configuration dialog.
 | `Issue #5490 <https://redmine.postgresql.org/issues/5490>`_ -  Make the runtime configuration dialog non-modal.
+| `Issue #5526 <https://redmine.postgresql.org/issues/5526>`_ -  Fixed an issue where copying and pasting a cell with multiple line data will result in multiple rows.
 | `Issue #5632 <https://redmine.postgresql.org/issues/5632>`_ -  Ensure that the user will be able to modify the start value of the Identity column.
 | `Issue #5646 <https://redmine.postgresql.org/issues/5646>`_ -  Ensure that RLS Policy node should be searchable using search object.
 | `Issue #5664 <https://redmine.postgresql.org/issues/5664>`_ -  Fixed an issue where 'ALTER VIEW' statement is missing when the user sets the default value of a column for View.

@@ -139,11 +139,16 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
           quoting = CSVOptions.quoting || 'strings',
           quote_char = CSVOptions.quote_char || '"';
 
+        const escape = (iStr) => {
+          return (quote_char == '"') ?
+            iStr.replace(/\"/g, '""') : iStr.replace(/\'/g, '\'\'');
+        };
+
         if (quoting == 'all') {
           if (val && _.isObject(val)) {
             val = quote_char + JSONBigNumber.stringify(val) + quote_char;
           } else if (val) {
-            val = quote_char + val.toString() + quote_char;
+            val = quote_char + escape(val.toString()) + quote_char;
           } else if (_.isNull(val) || _.isUndefined(val)) {
             val = '';
           }
@@ -152,7 +157,7 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
           if (val && _.isObject(val)) {
             val = quote_char + JSONBigNumber.stringify(val) + quote_char;
           } else if (val && cell_type != 'number' && cell_type != 'boolean') {
-            val = quote_char + val.toString() + quote_char;
+            val = quote_char + escape(val.toString()) + quote_char;
           } else if (_.isNull(val) || _.isUndefined(val)) {
             val = '';
           }
