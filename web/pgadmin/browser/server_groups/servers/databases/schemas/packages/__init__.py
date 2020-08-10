@@ -586,6 +586,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         sqltab = kwargs.get('sqltab', False)
         is_schema_diff = kwargs.get('is_schema_diff', None)
 
+        data['schema'] = self.schema
+
         if pkgid is not None and not sqltab:
             return self.get_sql_with_pkgid(scid, pkgid, data, is_schema_diff)
         else:
