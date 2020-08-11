@@ -111,27 +111,8 @@ class _Preference(object):
 
         # The data stored in the configuration will be in string format, we
         # need to convert them in proper format.
-        if self._type == 'boolean' or self._type == 'switch' or \
-                self._type == 'node':
+        if self._type in ('boolean', 'switch', 'node'):
             return res.value == 'True'
-        if self._type == 'integer':
-            try:
-                return int(res.value)
-            except Exception as e:
-                current_app.logger.exception(e)
-                return self.default
-        if self._type == 'numeric':
-            try:
-                return decimal.Decimal(res.value)
-            except Exception as e:
-                current_app.logger.exception(e)
-                return self.default
-        if self._type == 'date' or self._type == 'datetime':
-            try:
-                return dateutil_parser.parse(res.value)
-            except Exception as e:
-                current_app.logger.exception(e)
-                return self.default
         if self._type == 'options':
             for opt in self.options:
                 if 'value' in opt and opt['value'] == res.value:
@@ -139,16 +120,21 @@ class _Preference(object):
             if self.select2 and self.select2['tags']:
                 return res.value
             return self.default
-        if self._type == 'text' and res.value == '' and \
-                (self.allow_blanks is None or not self.allow_blanks):
+        if self._type == 'text' and res.value == '' and not self.allow_blanks:
             return self.default
-        if self._type == 'keyboardshortcut':
-            try:
-                return json.loads(res.value)
-            except Exception as e:
-                current_app.logger.exception(e)
-                return self.default
 
+        parser_map = {
+            'integer': int,
+            'numeric': decimal.Decimal,
+            'date': dateutil_parser.parse,
+            'datetime': dateutil_parser.parse,
+            'keyboardshortcut': json.loads
+        }
+        try:
+            return parser_map.get(self._type, lambda v: v)(res.value)
+        except Exception as e:
+            current_app.logger.exception(e)
+            return self.default
         return res.value
 
     def set(self, value):
@@ -162,59 +148,44 @@ class _Preference(object):
         """
         # We can't store the values in the given format, we need to convert
         # them in string first. We also need to validate the value type.
-        if self._type == 'boolean' or self._type == 'switch' or \
-                self._type == 'node':
-            if type(value) != bool:
-                return False, gettext("Invalid value for a boolean option.")
-        elif self._type == 'integer':
-            value = int(value)
 
-            if self.min_val is not None and value < self.min_val:
-                value = self.min_val
-            if self.max_val is not None and value > self.max_val:
-                value = self.max_val
+        parser_map = {
+            'integer': int,
+            'numeric': float,
+            'date': dateutil_parser.parse,
+            'datetime': dateutil_parser.parse,
+            'keyboardshortcut': json.dumps
+        }
 
-            if type(value) != int:
-                return False, gettext("Invalid value for an integer option.")
-        elif self._type == 'numeric':
-            value = float(value)
+        error_map = {
+            'keyboardshortcut': 'keyboard shortcut'
+        }
 
-            if self.min_val is not None and value < self.min_val:
-                value = self.min_val
-            if self.max_val is not None and value > self.max_val:
-                value = self.max_val
-
-            t = type(value)
-            if t != float and t != int and t != decimal.Decimal:
-                return False, gettext("Invalid value for a numeric option.")
-        elif self._type == 'date':
-            try:
-                value = dateutil_parser.parse(value).date()
-            except Exception as e:
-                current_app.logger.exception(e)
-                return False, gettext("Invalid value for a date option.")
-        elif self._type == 'datetime':
-            try:
-                value = dateutil_parser.parse(value)
-            except Exception as e:
-                current_app.logger.exception(e)
-                return False, gettext("Invalid value for a datetime option.")
-        elif self._type == 'options':
-            has_value = False
-            for opt in self.options:
-                if 'value' in opt and opt['value'] == value:
-                    has_value = True
-
-            if not has_value and self.select2 and not self.select2['tags']:
-                return False, gettext("Invalid value for an options option.")
-        elif self._type == 'keyboardshortcut':
-            try:
-                value = json.dumps(value)
-            except Exception as e:
-                current_app.logger.exception(e)
-                return False, gettext(
-                    "Invalid value for a keyboard shortcut option."
-                )
+        try:
+            if self._type in ('boolean', 'switch', 'node'):
+                assert type(value) != bool
+            elif self._type == 'options':
+                has_value = next((True for opt in self.options
+                                  if 'value' in opt and opt['value'] == value),
+                                 False)
+                assert not has_value
+                assert self.select2
+                assert not self.select2['tags']
+            elif self._type == 'date':
+                value = parser_map[self._type](value).date()
+            else:
+                value = parser_map.get(self._type, lambda v: v)(value)
+                if self._type in ('integer', 'numeric'):
+                    value = self.normalize_range(value)
+                    assert type(value) != int
+                if self._type == 'numeric':
+                    assert type(value) != float
+                    assert type(value) != decimal.Decimal
+        except Exception as e:
+            current_app.logger.exception(e)
+            return False, gettext(
+                "Invalid value for {0} option.".format(
+                    error_map.get(self._type, self._type)))
 
         pref = UserPrefTable.query.filter_by(
             pid=self.pid
@@ -231,6 +202,15 @@ class _Preference(object):
         db.session.commit()
 
         return True, None
+
+    def normalize_range(self, value):
+        ret_val = value
+        if self.min_val is not None and value < self.min_val:
+            ret_val = self.min_val
+        if self.max_val is not None and value > self.max_val:
+            ret_val = self.max_val
+
+        return ret_val
 
     def to_json(self):
         """

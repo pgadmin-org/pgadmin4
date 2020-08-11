@@ -431,11 +431,9 @@ SELECT EXISTS(
             data['jstconntype'] = row['jstconntype']
 
             if row['jstconntype']:
-                if not ('jstdbname' in data):
-                    data['jstdbname'] = row['jstdbname']
+                data['jstdbname'] = data.get('jstdbname', row['jstdbname'])
             else:
-                if not ('jstconnstr' in data):
-                    data['jstconnstr'] = row['jstconnstr']
+                data['jstconnstr'] = data.get('jstconnstr', row['jstconnstr'])
 
         sql = render_template(
             "/".join([self.template_path, self._UPDATE_SQL]),
@@ -516,9 +514,7 @@ SELECT EXISTS(
         sql = ''
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(
-                    v.decode('utf-8') if hasattr(v, 'decode') else v
-                )
+                data[k] = json.loads(v, 'utf-8')
             except ValueError:
                 data[k] = v
 
@@ -529,46 +525,49 @@ SELECT EXISTS(
                 data=data,
                 has_connstr=self.manager.db_info['pgAgent']['has_connstr']
             )
-        else:
-            if (
-                self.manager.db_info['pgAgent']['has_connstr'] and
-                'jstconntype' not in data and
-                ('jstdbname' in data or 'jstconnstr' in data)
-            ):
-                sql = render_template(
-                    "/".join([self.template_path, self._PROPERTIES_SQL]),
-                    jstid=jstid,
-                    jid=jid,
-                    has_connstr=self.manager.db_info['pgAgent']['has_connstr']
-                )
-                status, res = self.conn.execute_dict(sql)
 
-                if not status:
-                    return internal_server_error(errormsg=res)
+            return make_json_response(
+                data=sql,
+                status=200
+            )
 
-                if len(res['rows']) == 0:
-                    return gone(
-                        errormsg=gettext(
-                            "Could not find the specified job step."
-                        )
-                    )
-                row = res['rows'][0]
-                data['jstconntype'] = row['jstconntype']
-
-                if row['jstconntype']:
-                    if not ('jstdbname' in data):
-                        data['jstdbname'] = row['jstdbname']
-                else:
-                    if not ('jstconnstr' in data):
-                        data['jstconnstr'] = row['jstconnstr']
-
+        if (
+            self.manager.db_info['pgAgent']['has_connstr'] and
+            'jstconntype' not in data and
+            ('jstdbname' in data or 'jstconnstr' in data)
+        ):
             sql = render_template(
-                "/".join([self.template_path, self._UPDATE_SQL]),
-                jid=jid,
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
                 jstid=jstid,
-                data=data,
+                jid=jid,
                 has_connstr=self.manager.db_info['pgAgent']['has_connstr']
             )
+            status, res = self.conn.execute_dict(sql)
+
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if len(res['rows']) == 0:
+                return gone(
+                    errormsg=gettext(
+                        "Could not find the specified job step."
+                    )
+                )
+            row = res['rows'][0]
+            data['jstconntype'] = row['jstconntype']
+
+            if row['jstconntype']:
+                data['jstdbname'] = data.get('jstdbname', row['jstdbname'])
+            else:
+                data['jstconnstr'] = data.get('jstconnstr', row['jstconnstr'])
+
+        sql = render_template(
+            "/".join([self.template_path, self._UPDATE_SQL]),
+            jid=jid,
+            jstid=jstid,
+            data=data,
+            has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+        )
 
         return make_json_response(
             data=sql,

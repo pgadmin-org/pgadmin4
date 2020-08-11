@@ -191,52 +191,35 @@ def check_precondition(f):
             kwargs['sid']
         )
 
-        stats_type = ('activity', 'prepared', 'locks', 'config')
+        def get_error(i_node_type):
+            stats_type = ('activity', 'prepared', 'locks', 'config')
+            if f.__name__ in stats_type:
+                return precondition_required(
+                    gettext("Please connect to the selected {0}"
+                            " to view the table.".format(i_node_type))
+                )
+            else:
+                return precondition_required(
+                    gettext("Please connect to the selected {0}"
+                            " to view the graph.".format(i_node_type))
+                )
 
         # Below check handle the case where existing server is deleted
         # by user and python server will raise exception if this check
         # is not introduce.
         if g.manager is None:
-            if f.__name__ in stats_type:
-                return precondition_required(
-                    gettext("Please connect to the selected server"
-                            " to view the table.")
-                )
-            else:
-                return precondition_required(
-                    gettext("Please connect to the selected server"
-                            " to view the graph.")
-                )
+            return get_error('server')
 
         if 'did' in kwargs:
             g.conn = g.manager.connection(did=kwargs['did'])
-            # If the selected DB not connected then return error to browser
-            if not g.conn.connected():
-                if f.__name__ in stats_type:
-                    return precondition_required(
-                        gettext("Please connect to the selected database"
-                                " to view the table.")
-                    )
-                else:
-                    return precondition_required(
-                        gettext("Please connect to the selected database to"
-                                " view the graph.")
-                    )
+            node_type = 'database'
         else:
             g.conn = g.manager.connection()
+            node_type = 'server'
 
-            # If DB not connected then return error to browser
-            if not g.conn.connected():
-                if f.__name__ in stats_type:
-                    return precondition_required(
-                        gettext("Please connect to the selected server"
-                                " to view the table.")
-                    )
-                else:
-                    return precondition_required(
-                        gettext("Please connect to the selected server"
-                                " to view the graph.")
-                    )
+        # If not connected then return error to browser
+        if not g.conn.connected():
+            return get_error(node_type)
 
         # Set template path for sql scripts
         g.server_type = g.manager.server_type

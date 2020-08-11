@@ -325,19 +325,9 @@ class JobScheduleView(PGChildNodeView):
             sid: Server ID
             jid: Job ID
         """
-        data = {}
-        if request.args:
-            for k, v in request.args.items():
-                try:
-                    data[k] = json.loads(
-                        v.decode('utf-8') if hasattr(v, 'decode') else v
-                    )
-                except ValueError:
-                    data[k] = v
-        else:
-            data = json.loads(request.data.decode())
-            # convert python list literal to postgres array literal.
-            format_schedule_data(data)
+        data = json.loads(request.data, encoding='utf-8')
+        # convert python list literal to postgres array literal.
+        format_schedule_data(data)
 
         sql = render_template(
             "/".join([self.template_path, self._CREATE_SQL]),
