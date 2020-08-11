@@ -185,7 +185,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
-    keys_to_ignore = ['oid', 'id', 'oid-2']
+    keys_to_ignore = ['oid', 'id', 'oid-2', 'castfunc']
 
     def _init_(self, **kwargs):
         self.conn = None
