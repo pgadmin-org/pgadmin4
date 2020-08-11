@@ -44,7 +44,7 @@ ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
 
 COMMENT ON VIEW {{ conn|qtIdent(view_schema, view_name) }}
     IS {{ data.comment|qtLiteral }};
-{% elif  data.del_sql == True %}
+{% elif  data.del_sql == True and old_comment != '' %}
 COMMENT ON VIEW {{ conn|qtIdent(view_schema, view_name) }}
     IS {{ old_comment|qtLiteral }};
 {% endif %}

@@ -1331,6 +1331,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 'attlen': rows['attlen'],
                 'typnspname': rows['typnspname'],
                 'defval': None,
+                'description': None,
                 'table': rows['relname'],
                 'schema': self.view_schema
             }
@@ -1341,8 +1342,12 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if 'defval' in rows and rows['defval'] is not None:
                 res['defval'] = rows['defval']
                 o_data['defval'] = None
-            else:
-                continue
+
+            # Generate alter statement for comments
+            if 'description' in rows and (rows['description'] is not None or
+                                          rows['description'] != ''):
+                res['description'] = rows['description']
+                o_data['description'] = None
 
             SQL = render_template("/".join(
                 [self.column_template_path,

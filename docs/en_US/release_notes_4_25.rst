@@ -25,6 +25,7 @@ Bug fixes
 *********
 
 | `Issue #3767 <https://redmine.postgresql.org/issues/3767>`_ -  Ensure that the original file format should be retained when saving the same file in SQL editor.
+| `Issue #3791 <https://redmine.postgresql.org/issues/3791>`_ -  Added missing comments in reverse engineering SQL for each column of a View.
 | `Issue #4361 <https://redmine.postgresql.org/issues/4361>`_ -  Fixed ssh tunnel hang issue when the user tries to disconnect the server.
 | `Issue #4387 <https://redmine.postgresql.org/issues/4387>`_ -  Fixed an issue where the user is not able to insert the data if the table and columns name contains special characters.
 | `Issue #4810 <https://redmine.postgresql.org/issues/4810>`_ -  Fixed an issue where the user is not able to save the new row if the table is empty.
