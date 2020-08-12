@@ -44,3 +44,4 @@ Bug fixes
 | `Issue #5713 <https://redmine.postgresql.org/issues/5713>`_ -  Corrected DROP SQL syntax for catalog.
 | `Issue #5716 <https://redmine.postgresql.org/issues/5716>`_ -  Fixed an issue where ajax call continues to fire even after disconnect the database server.
 | `Issue #5724 <https://redmine.postgresql.org/issues/5724>`_ -  Clarify some of the differences when running in server mode in the docs.
+| `Issue #5730 <https://redmine.postgresql.org/issues/5730>`_ -  Resolve schema diff dependencies by selecting the appropriate node automatically and maintain the order in the generated script.

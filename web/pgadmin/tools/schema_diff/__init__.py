@@ -344,6 +344,17 @@ def get_server(sid, did):
 )
 @login_required
 def connect_server(sid):
+    # Check if server is already connected then no need to reconnect again.
+    driver = get_driver(PG_DEFAULT_DRIVER)
+    manager = driver.connection_manager(sid)
+    conn = manager.connection()
+    if conn.connected():
+        return make_json_response(
+                success=1,
+                info=gettext("Server connected."),
+                data={}
+            )
+
     server = Server.query.filter_by(id=sid).first()
     view = SchemaDiffRegistry.get_node_view('server')
     return view.connect(server.servergroup_id, sid)

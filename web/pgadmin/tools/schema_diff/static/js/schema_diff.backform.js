@@ -514,6 +514,7 @@ let SchemaDiffFooterView = Backform.Form.extend({
     return this;
   },
 });
+
 export {
   SchemaDiffSelect2Control,
   SchemaDiffHeaderView,
