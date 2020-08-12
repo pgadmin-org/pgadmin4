@@ -350,10 +350,10 @@ def connect_server(sid):
     conn = manager.connection()
     if conn.connected():
         return make_json_response(
-                success=1,
-                info=gettext("Server connected."),
-                data={}
-            )
+            success=1,
+            info=gettext("Server connected."),
+            data={}
+        )
 
     server = Server.query.filter_by(id=sid).first()
     view = SchemaDiffRegistry.get_node_view('server')
