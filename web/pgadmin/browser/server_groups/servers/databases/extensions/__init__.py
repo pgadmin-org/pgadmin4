@@ -20,6 +20,8 @@ from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.browser.server_groups.servers.databases.extensions.utils \
+    import get_extension_details
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
@@ -90,6 +92,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
     * ids - id with type and name of extension module being used.
     * operations - function routes mappings defined.
     """
+    EXT_TEMPLATE_PATH = 'extensions/sql'
     node_type = blueprint.node_type
 
     parent_ids = [
@@ -133,7 +136,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
                 PG_DEFAULT_DRIVER
             ).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'extensions/sql'
+            self.template_path = self.EXT_TEMPLATE_PATH
 
             self.datlastsysoid = \
                 self.manager.db_info[kwargs['did']]['datlastsysoid'] \
@@ -281,25 +284,20 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
 
-        status, rset = self.conn.execute_dict(
-            render_template(
-                "/".join([self.template_path, self._PROPERTIES_SQL]),
-                ename=data['name']
+        status, res = get_extension_details(
+            self.conn, data['name'],
+            "/".join([self.template_path, self._PROPERTIES_SQL]))
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                res['oid'],
+                did,
+                res['name'],
+                'icon-extension'
             )
         )
-
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        for row in rset['rows']:
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    row['oid'],
-                    did,
-                    row['name'],
-                    'icon-extension'
-                )
-            )
 
     @check_precondition
     def update(self, gid, sid, did, eid):

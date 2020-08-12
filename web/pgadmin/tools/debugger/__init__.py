@@ -31,14 +31,17 @@ from pgadmin.settings import get_setting
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, DebuggerFunctionArguments
 from pgadmin.tools.debugger.utils.debugger_instance import DebuggerInstance
+from pgadmin.browser.server_groups.servers.databases.extensions.utils \
+    import get_extension_details
 
 MODULE_NAME = 'debugger'
 
 # Constants
+PLDBG_EXTN = 'pldbgapi'
 ASYNC_OK = 1
 DEBUGGER_SQL_PATH = 'debugger/sql'
 DEBUGGER_SQL_V1_PATH = 'debugger/sql/v1'
-DEBUGGER_SQL_V2_PATH = 'debugger/sql/v2'
+DEBUGGER_SQL_V3_PATH = 'debugger/sql/v3'
 
 
 class DebuggerModule(PgAdminModule):
@@ -302,6 +305,18 @@ def script_debugger_direct_js():
         status=200,
         mimetype="application/javascript"
     )
+
+
+def execute_dict_search_path(conn, sql, search_path):
+    sql = "SET search_path={0};".format(search_path) + sql
+    status, res = conn.execute_dict(sql)
+    return status, res
+
+
+def execute_async_search_path(conn, sql, search_path):
+    sql = "SET search_path={0};".format(search_path) + sql
+    status, res = conn.execute_async(sql)
+    return status, res
 
 
 @blueprint.route(
@@ -606,7 +621,7 @@ def direct_new(trans_id):
     )
 
 
-def get_debugger_version(conn):
+def get_debugger_version(conn, search_path):
     """
     Function returns the debugger version.
     :param conn:
@@ -614,23 +629,24 @@ def get_debugger_version(conn):
     """
     debugger_version = 0
     status, rid = conn.execute_scalar(
+        "SET search_path={0};"
         "SELECT COUNT(*) FROM pg_catalog.pg_proc p"
         " LEFT JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid"
         " WHERE n.nspname = ANY(current_schemas(false)) AND"
-        " p.proname = 'pldbg_get_proxy_info';"
+        " p.proname = 'pldbg_get_proxy_info';".format(search_path)
     )
 
     if not status:
         return False, internal_server_error(errormsg=rid)
 
-    if rid == 0:
+    if int(rid) == 0:
         debugger_version = 1
+    else:
+        status, rid = conn.execute_scalar(
+            "SELECT proxyapiver FROM pldbg_get_proxy_info();")
 
-    status, rid = conn.execute_scalar(
-        "SELECT proxyapiver FROM pldbg_get_proxy_info();")
-
-    if status and rid in (2, 3):
-        debugger_version = rid
+        if status and rid in (2, 3):
+            debugger_version = rid
 
     return True, debugger_version
 
@@ -685,6 +701,20 @@ def validate_debug(conn, debug_type, is_superuser):
                              "to 1.1 or above and try again."))
 
     return True, None
+
+
+def get_search_path(conn):
+    status, res = get_extension_details(conn, PLDBG_EXTN)
+    if not status:
+        return False, internal_server_error(errormsg=res)
+
+    status, res = conn.execute_scalar(
+        "SELECT current_setting('search_path')||',{0}'".format(res['schema']))
+
+    if not status:
+        return False, internal_server_error(errormsg=res)
+
+    return True, res
 
 
 @blueprint.route(
@@ -752,8 +782,12 @@ def initialize_target(debug_type, trans_id, sid, did,
 
         func_id = tr_set['rows'][0]['tgfoid']
 
+    status, search_path = get_search_path(conn)
+    if not status:
+        return search_path
+
     # Find out the debugger version and store it in session variables
-    status, debugger_version = get_debugger_version(conn)
+    status, debugger_version = get_debugger_version(conn, search_path)
     if not status:
         return debugger_version
 
@@ -783,6 +817,7 @@ def initialize_target(debug_type, trans_id, sid, did,
         'function_name': de_inst.function_data['name'],
         'debug_type': debug_type,
         'debugger_version': debugger_version,
+        'search_path': search_path,
         'frame_id': 0,
         'restart_debug': 0
     }
@@ -926,7 +961,7 @@ def start_debugger_listener(trans_id):
     if dbg_version <= 2:
         template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = DEBUGGER_SQL_V2_PATH
+        template_path = DEBUGGER_SQL_V3_PATH
 
     # If user again start the same debug function with different arguments
     # then we need to save that values to session variable and database.
@@ -973,7 +1008,8 @@ def start_debugger_listener(trans_id):
                         packge_oid=de_inst.function_data['pkg'],
                         function_oid=de_inst.debugger_data['function_id']
                     )
-                status, res = conn.execute_dict(sql)
+                status, res = execute_dict_search_path(
+                    conn, sql, de_inst.debugger_data['search_path'])
                 if not status:
                     return internal_server_error(errormsg=res)
 
@@ -1031,7 +1067,8 @@ def start_debugger_listener(trans_id):
                     is_ppas_database=de_inst.function_data['is_ppas_database']
                 )
 
-            status, result = conn.execute_async(str_query)
+            status, result = execute_async_search_path(
+                conn, str_query, de_inst.debugger_data['search_path'])
             if not status:
                 return internal_server_error(errormsg=result)
         else:
@@ -1041,7 +1078,8 @@ def start_debugger_listener(trans_id):
                 sql = render_template(
                     "/".join([template_path, 'create_listener.sql']))
 
-                status, res = conn.execute_dict(sql)
+                status, res = execute_dict_search_path(
+                    conn, sql, de_inst.debugger_data['search_path'])
                 if not status:
                     return internal_server_error(errormsg=res)
 
@@ -1062,7 +1100,8 @@ def start_debugger_listener(trans_id):
                         function_oid=de_inst.debugger_data['function_id']
                     )
 
-                    status, res = conn.execute_dict(sql)
+                    status, res = execute_dict_search_path(
+                        conn, sql, de_inst.debugger_data['search_path'])
                     if not status:
                         return internal_server_error(errormsg=res)
                 else:
@@ -1072,7 +1111,8 @@ def start_debugger_listener(trans_id):
                         function_oid=de_inst.debugger_data['function_id']
                     )
 
-                    status, res = conn.execute_dict(sql)
+                    status, res = execute_dict_search_path(
+                        conn, sql, de_inst.debugger_data['search_path'])
                     if not status:
                         return internal_server_error(errormsg=res)
 
@@ -1082,7 +1122,8 @@ def start_debugger_listener(trans_id):
                     session_id=int_session_id
                 )
 
-                status, res = conn.execute_async(sql)
+                status, res = execute_async_search_path(
+                    conn, sql, de_inst.debugger_data['search_path'])
                 if not status:
                     return internal_server_error(errormsg=res)
 
@@ -1158,7 +1199,7 @@ def execute_debugger_query(trans_id, query_type):
     # find the debugger version and execute the query accordingly
     template_path = DEBUGGER_SQL_V1_PATH \
         if de_inst.debugger_data['debugger_version'] <= 2 \
-        else DEBUGGER_SQL_V2_PATH
+        else DEBUGGER_SQL_V3_PATH
 
     if not conn.connected():
         result = gettext('Not connected to server or connection '
@@ -1178,14 +1219,16 @@ def execute_debugger_query(trans_id, query_type):
         de_inst.debugger_data['frame_id'] = 0
         de_inst.update_session()
 
-        status, result = conn.execute_async(sql)
+        status, result = execute_async_search_path(
+            conn, sql, de_inst.debugger_data['search_path'])
         if not status:
             return internal_server_error(errormsg=result)
         return make_json_response(
             data={'status': status, 'result': result}
         )
 
-    status, result = conn.execute_dict(sql)
+    status, result = execute_dict_search_path(
+        conn, sql, de_inst.debugger_data['search_path'])
     if not status:
         return internal_server_error(errormsg=result)
     if query_type == 'abort_target':
@@ -1317,12 +1360,13 @@ def start_execution(trans_id, port_num):
     if dbg_version <= 2:
         template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = DEBUGGER_SQL_V2_PATH
+        template_path = DEBUGGER_SQL_V3_PATH
 
     # connect to port and store the session ID in the session variables
     sql = render_template(
         "/".join([template_path, 'attach_to_port.sql']), port=port_num)
-    status_port, res_port = conn.execute_dict(sql)
+    status_port, res_port = execute_dict_search_path(
+        conn, sql, de_inst.debugger_data['search_path'])
     if not status_port:
         return internal_server_error(errormsg=res_port)
 
@@ -1386,7 +1430,7 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     if dbg_version <= 2:
         template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = DEBUGGER_SQL_V2_PATH
+        template_path = DEBUGGER_SQL_V3_PATH
 
     query_type = ''
 
@@ -1398,7 +1442,8 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
         "/".join([template_path, "get_stack_info.sql"]),
         session_id=de_inst.debugger_data['session_id']
     )
-    status, res_stack = conn.execute_dict(sql_)
+    status, res_stack = execute_dict_search_path(
+        conn, sql_, de_inst.debugger_data['search_path'])
     if not status:
         return internal_server_error(errormsg=res_stack)
 
@@ -1420,7 +1465,8 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
             foid=foid, line_number=line_no
         )
 
-        status, result = conn.execute_dict(sql)
+        status, result = execute_dict_search_path(
+            conn, sql, de_inst.debugger_data['search_path'])
         if not status:
             return internal_server_error(errormsg=result)
     else:
@@ -1473,7 +1519,7 @@ def clear_all_breakpoint(trans_id):
     if dbg_version <= 2:
         template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = DEBUGGER_SQL_V2_PATH
+        template_path = DEBUGGER_SQL_V3_PATH
 
     if conn.connected():
         # get the data sent through post from client
@@ -1487,7 +1533,8 @@ def clear_all_breakpoint(trans_id):
                     line_number=line_no
                 )
 
-                status, result = conn.execute_dict(sql)
+                status, result = execute_dict_search_path(
+                    conn, sql, de_inst.debugger_data['search_path'])
                 if not status:
                     return internal_server_error(errormsg=result)
         else:
@@ -1539,7 +1586,7 @@ def deposit_parameter_value(trans_id):
     if dbg_version <= 2:
         template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = DEBUGGER_SQL_V2_PATH
+        template_path = DEBUGGER_SQL_V3_PATH
 
     if conn.connected():
         # get the data sent through post from client
@@ -1553,7 +1600,8 @@ def deposit_parameter_value(trans_id):
                 val=data[0]['value']
             )
 
-            status, result = conn.execute_dict(sql)
+            status, result = execute_dict_search_path(
+                conn, sql, de_inst.debugger_data['search_path'])
             if not status:
                 return internal_server_error(errormsg=result)
 
@@ -1620,7 +1668,7 @@ def select_frame(trans_id, frame_id):
     if dbg_version <= 2:
         template_path = DEBUGGER_SQL_V1_PATH
     else:
-        template_path = DEBUGGER_SQL_V2_PATH
+        template_path = DEBUGGER_SQL_V3_PATH
 
     de_inst.debugger_data['frame_id'] = frame_id
     de_inst.update_session()
@@ -1632,7 +1680,8 @@ def select_frame(trans_id, frame_id):
             frame_id=frame_id
         )
 
-        status, result = conn.execute_dict(sql)
+        status, result = execute_dict_search_path(
+            conn, sql, de_inst.debugger_data['search_path'])
         if not status:
             return internal_server_error(errormsg=result)
     else:
