@@ -163,24 +163,23 @@ class _Preference(object):
 
         try:
             if self._type in ('boolean', 'switch', 'node'):
-                assert type(value) != bool
+                assert type(value) == bool
             elif self._type == 'options':
                 has_value = next((True for opt in self.options
                                   if 'value' in opt and opt['value'] == value),
                                  False)
-                assert not has_value
-                assert self.select2
-                assert not self.select2['tags']
+                assert (has_value or (self.select2 and self.select2['tags']))
             elif self._type == 'date':
                 value = parser_map[self._type](value).date()
             else:
                 value = parser_map.get(self._type, lambda v: v)(value)
-                if self._type in ('integer', 'numeric'):
+                if self._type == 'integer':
                     value = self.normalize_range(value)
-                    assert type(value) != int
+                    assert type(value) == int
                 if self._type == 'numeric':
-                    assert type(value) != float
-                    assert type(value) != decimal.Decimal
+                    value = self.normalize_range(value)
+                    assert (type(value) == int or type(value) == float or
+                            type(value) == decimal.Decimal)
         except Exception as e:
             current_app.logger.exception(e)
             return False, gettext(
