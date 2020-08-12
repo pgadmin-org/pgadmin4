@@ -841,8 +841,6 @@ class ServerNode(PGChildNodeView):
                     tunnel_password=tunnel_password,
                     server_types=ServerType.types()
                 )
-                if hasattr(str, 'decode') and errmsg is not None:
-                    errmsg = errmsg.decode('utf-8')
                 if not status:
                     db.session.delete(server)
                     db.session.commit()
@@ -1109,8 +1107,6 @@ class ServerNode(PGChildNodeView):
                 server, 401, True, True, getattr(e, 'message', str(e)))
 
         if not status:
-            if hasattr(str, 'decode'):
-                errmsg = errmsg.decode('utf-8')
 
             current_app.logger.error(
                 "Could not connect to server(#{0}) - '{1}'.\nError: {2}"

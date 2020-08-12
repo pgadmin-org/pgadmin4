@@ -106,15 +106,8 @@ def pqencryptpassword(password, user):
 
     # Place salt at the end because it may be known by users trying to crack
     # the MD5 output.
-    # Handling of non-ascii password (Python2)
-    if hasattr(str, 'decode'):
-        password = password.encode('utf-8')
-        user = user.encode('utf-8')
-    else:
-        password = password.encode()
-        user = user.encode()
 
-    m.update(password)
-    m.update(user)
+    m.update(password.encode())
+    m.update(user.encode())
 
     return "md5" + m.hexdigest()

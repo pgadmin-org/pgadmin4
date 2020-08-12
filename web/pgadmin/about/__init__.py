@@ -24,9 +24,6 @@ class AboutModule(PgAdminModule):
     def get_own_menuitems(self):
         appname = config.APP_NAME
 
-        if hasattr(str, 'decode'):
-            appname = appname.decode('utf-8')
-
         return {
             'help_items': [
                 MenuItem(

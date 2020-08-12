@@ -249,11 +249,8 @@ class Connection(BaseConnection):
 
             try:
                 password = decrypt(encpass, crypt_key)
-                # Handling of non ascii password (Python2)
-                if hasattr(str, 'decode'):
-                    password = password.decode('utf-8').encode('utf-8')
                 # password is in bytes, for python3 we need it in string
-                elif isinstance(password, bytes):
+                if isinstance(password, bytes):
                     password = password.decode()
             except Exception as e:
                 manager.stop_ssh_tunnel()
@@ -271,14 +268,9 @@ class Connection(BaseConnection):
             passfile = manager.passfile if manager.passfile else None
 
         try:
-            if hasattr(str, 'decode'):
-                database = self.db.encode('utf-8')
-                user = manager.user.encode('utf-8')
-                conn_id = self.conn_id.encode('utf-8')
-            else:
-                database = self.db
-                user = manager.user
-                conn_id = self.conn_id
+            database = self.db
+            user = manager.user
+            conn_id = self.conn_id
 
             import os
             os.environ['PGAPPNAME'] = '{0} - {1}'.format(
@@ -325,7 +317,7 @@ class Connection(BaseConnection):
                 u":{msg}".format(
                     server_id=self.manager.sid,
                     conn_id=conn_id,
-                    msg=msg.decode('utf-8') if hasattr(str, 'decode') else msg
+                    msg=msg
                 )
             )
             return False, msg
@@ -760,19 +752,6 @@ WHERE
                 quote = csv.QUOTE_ALL
             else:
                 quote = csv.QUOTE_NONE
-
-            if hasattr(str, 'decode'):
-                # Decode the field_separator
-                try:
-                    field_separator = field_separator.decode('utf-8')
-                except Exception as e:
-                    current_app.logger.error(e)
-
-                # Decode the quote_char
-                try:
-                    quote_char = quote_char.decode('utf-8')
-                except Exception as e:
-                    current_app.logger.error(e)
 
             csv_writer = csv.DictWriter(
                 res_io, fieldnames=header, delimiter=field_separator,
@@ -1621,40 +1600,6 @@ Failed to reset the connection to the server due to following error:
 
         return resp
 
-    def decode_to_utf8(self, value):
-        """
-        This method will decode values to utf-8
-        Args:
-            value: String to be decode
-
-        Returns:
-            Decoded string
-        """
-        is_error = False
-        if hasattr(str, 'decode'):
-            try:
-                value = value.decode('utf-8')
-            except UnicodeDecodeError:
-                # Let's try with python's preferred encoding
-                # On Windows lc_messages mostly has environment dependent
-                # encoding like 'French_France.1252'
-                try:
-                    import locale
-                    pref_encoding = locale.getpreferredencoding()
-                    value = value.decode(pref_encoding)\
-                        .encode('utf-8')\
-                        .decode('utf-8')
-                except Exception:
-                    is_error = True
-            except Exception:
-                is_error = True
-
-        # If still not able to decode then
-        if is_error:
-            value = value.decode('ascii', 'ignore')
-
-        return value
-
     def _formatted_exception_msg(self, exception_obj, formatted_msg):
         """
         This method is used to parse the psycopg2.Error object and returns the
@@ -1673,8 +1618,6 @@ Failed to reset the connection to the server due to following error:
             errmsg = exception_obj.diag.message_detail
         else:
             errmsg = str(exception_obj)
-        # errmsg might contains encoded value, lets decode it
-        errmsg = self.decode_to_utf8(errmsg)
 
         # if formatted_msg is false then return from the function
         if not formatted_msg:
@@ -1689,8 +1632,8 @@ Failed to reset the connection to the server due to following error:
         if exception_obj.diag.severity is not None \
                 and exception_obj.diag.message_primary is not None:
             ex_diag_message = u"{0}:  {1}".format(
-                self.decode_to_utf8(exception_obj.diag.severity),
-                self.decode_to_utf8(exception_obj.diag.message_primary)
+                exception_obj.diag.severity,
+                exception_obj.diag.message_primary
             )
             # If both errors are different then only append it
             if errmsg and ex_diag_message and \
@@ -1698,9 +1641,7 @@ Failed to reset the connection to the server due to following error:
                     errmsg.strip().strip('\n').lower():
                 errmsg += ex_diag_message
         elif exception_obj.diag.message_primary is not None:
-            message_primary = self.decode_to_utf8(
-                exception_obj.diag.message_primary
-            )
+            message_primary = exception_obj.diag.message_primary
             if message_primary.lower() not in errmsg.lower():
                 errmsg += message_primary
 
@@ -1708,39 +1649,35 @@ Failed to reset the connection to the server due to following error:
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('SQL state: ')
-            errmsg += self.decode_to_utf8(exception_obj.diag.sqlstate)
+            errmsg += exception_obj.diag.sqlstate
 
         if exception_obj.diag.message_detail is not None and \
                 'Detail:'.lower() not in errmsg.lower():
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Detail: ')
-            errmsg += self.decode_to_utf8(
-                exception_obj.diag.message_detail
-            )
+            errmsg += exception_obj.diag.message_detail
 
         if exception_obj.diag.message_hint is not None and \
                 'Hint:'.lower() not in errmsg.lower():
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Hint: ')
-            errmsg += self.decode_to_utf8(exception_obj.diag.message_hint)
+            errmsg += exception_obj.diag.message_hint
 
         if exception_obj.diag.statement_position is not None and \
                 'Character:'.lower() not in errmsg.lower():
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Character: ')
-            errmsg += self.decode_to_utf8(
-                exception_obj.diag.statement_position
-            )
+            errmsg += exception_obj.diag.statement_position
 
         if exception_obj.diag.context is not None and \
                 'Context:'.lower() not in errmsg.lower():
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Context: ')
-            errmsg += self.decode_to_utf8(exception_obj.diag.context)
+            errmsg += exception_obj.diag.context
 
         notices = self.get_notices()
         return errmsg if notices == '' else notices + '\n' + errmsg

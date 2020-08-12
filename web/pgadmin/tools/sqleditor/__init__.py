@@ -1187,10 +1187,6 @@ def load_file():
         file_data = json.loads(request.data, encoding='utf-8')
 
     file_path = unquote(file_data['file_name'])
-    if hasattr(str, 'decode'):
-        file_path = unquote(
-            file_data['file_name']
-        ).encode('utf-8').decode('utf-8')
 
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()
@@ -1234,10 +1230,6 @@ def save_file():
 
     # generate full path of file
     file_path = unquote(file_data['file_name'])
-    if hasattr(str, 'decode'):
-        file_path = unquote(
-            file_data['file_name']
-        ).encode('utf-8').decode('utf-8')
 
     try:
         Filemanager.check_access_permission(storage_manager_path, file_path)
@@ -1260,18 +1252,12 @@ def save_file():
 
     enc = get_file_encoding_of_loaded_file(os.path.basename(file_path))
 
-    if hasattr(str, 'decode'):
-        file_content = file_data['file_content']
-    else:
-        file_content = file_data['file_content'].encode(enc)
+    file_content = file_data['file_content'].encode(enc)
 
     # write to file
     try:
         with open(file_path, 'wb+') as output_file:
-            if hasattr(str, 'decode'):
-                output_file.write(file_content.encode('utf-8'))
-            else:
-                output_file.write(file_content)
+            output_file.write(file_content)
     except IOError as e:
         err_msg = gettext("Error: {0}").format(e.strerror)
         return internal_server_error(errormsg=err_msg)

@@ -552,8 +552,6 @@ class Filemanager(object):
         is_show_hidden_files = show_hidden
 
         path = unquote(path)
-        if hasattr(str, 'decode'):
-            path = unquote(path).encode('utf-8').decode('utf-8')
 
         try:
             Filemanager.check_access_permission(in_dir, path)
@@ -743,8 +741,6 @@ class Filemanager(object):
         about the given file.
         """
         path = unquote(path)
-        if hasattr(str, 'decode'):
-            path = unquote(path).encode('utf-8').decode('utf-8')
         if self.dir is None:
             self.dir = ""
         orig_path = u"{0}{1}".format(self.dir, path)
@@ -851,8 +847,6 @@ class Filemanager(object):
 
         # extract filename
         oldname = split_path(old)[-1]
-        if hasattr(str, 'decode'):
-            old = old.encode('utf-8').decode('utf-8')
         path = old
         path = split_path(path)[0]  # extract path
 
@@ -860,8 +854,6 @@ class Filemanager(object):
             path += u'/'
 
         newname = new
-        if hasattr(str, 'decode'):
-            newname = new.encode('utf-8').decode('utf-8')
         newpath = path + newname
 
         # make system old path
@@ -899,8 +891,6 @@ class Filemanager(object):
             }
 
         the_dir = self.dir if self.dir is not None else ''
-        path = path.encode(
-            'utf-8').decode('utf-8') if hasattr(str, 'decode') else path
         orig_path = u"{0}{1}".format(the_dir, path)
 
         try:
@@ -949,10 +939,6 @@ class Filemanager(object):
 
             file_obj = req.files['newfile']
             file_name = file_obj.filename
-            if hasattr(str, 'decode'):
-                path = req.form.get('currentpath').encode(
-                    'utf-8').decode('utf-8')
-                file_name = file_obj.filename.encode('utf-8').decode('utf-8')
             orig_path = u"{0}{1}".format(the_dir, path)
             new_name = u"{0}{1}".format(orig_path, file_name)
 
@@ -995,9 +981,6 @@ class Filemanager(object):
 
         name = unquote(name)
         path = unquote(path)
-        if hasattr(str, 'decode'):
-            name = name.encode('utf-8').decode('utf-8')
-            path = path.encode('utf-8').decode('utf-8')
         try:
             orig_path = u"{0}{1}".format(the_dir, path)
             Filemanager.check_access_permission(
@@ -1182,12 +1165,7 @@ class Filemanager(object):
             }
 
         the_dir = self.dir if self.dir is not None else ''
-
-        if hasattr(str, 'decode'):
-            path = path.encode('utf-8')
-            orig_path = u"{0}{1}".format(the_dir, path.decode('utf-8'))
-        else:
-            orig_path = u"{0}{1}".format(the_dir, path)
+        orig_path = u"{0}{1}".format(the_dir, path)
 
         try:
             Filemanager.check_access_permission(

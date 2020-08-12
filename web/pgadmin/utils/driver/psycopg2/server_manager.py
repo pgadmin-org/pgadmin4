@@ -366,9 +366,6 @@ WHERE db.oid = {0}""".format(did))
         if did is not None:
             if did in self.db_info and 'datname' in self.db_info[did]:
                 database = self.db_info[did]['datname']
-                if hasattr(str, 'decode') and \
-                        not isinstance(database, unicode):
-                    database = database.decode('utf-8')
                 if database is None:
                     return False
             else:
@@ -479,12 +476,8 @@ WHERE db.oid = {0}""".format(did))
 
             try:
                 tunnel_password = decrypt(tunnel_password, crypt_key)
-                # Handling of non ascii password (Python2)
-                if hasattr(str, 'decode'):
-                    tunnel_password = \
-                        tunnel_password.decode('utf-8').encode('utf-8')
                 # password is in bytes, for python3 we need it in string
-                elif isinstance(tunnel_password, bytes):
+                if isinstance(tunnel_password, bytes):
                     tunnel_password = tunnel_password.decode()
 
             except Exception as e:

@@ -68,12 +68,7 @@ class ManagedSession(CallbackDict, SessionMixin):
 
     def sign(self, secret):
         if not self.hmac_digest:
-            if hasattr(string, 'lowercase'):
-                population = string.lowercase
-            # If script is running under python3
-            elif hasattr(string, 'ascii_lowercase'):
-                population = string.ascii_lowercase
-            population += string.digits
+            population = string.ascii_lowercase + string.digits
 
             self.randval = ''.join(random.sample(population, 20))
             self.hmac_digest = _calc_hmac(
