@@ -1780,6 +1780,9 @@ define([
         options = _.extend({
           format: 'YYYY-MM-DD HH:mm:ss Z',
           icons: {
+            time: 'fa fa-clock',
+            data: 'fa fa-calendar-alt',
+            today: 'fa fa-calendar-check',
             clear: 'fa fa-trash',
           },
           buttons: {

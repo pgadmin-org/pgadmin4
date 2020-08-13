@@ -30,7 +30,7 @@ let _defaultToolBarButtons = [
   {
     label: gettext('View Data'),
     ariaLabel: gettext('View Data'),
-    btnClass: 'fa fa-table',
+    btnClass: 'pg-font-icon sql-icon-lg icon-view-data',
     text: '',
     toggled: false,
     toggleClass: '',

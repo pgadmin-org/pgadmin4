@@ -247,7 +247,7 @@ define([
           type: 'delete',
           tooltip: gettext('Delete/Drop'),
           extraClasses: ['btn-primary-icon m-1', 'delete_multiple'],
-          icon: 'fa fa-lg fa-trash-alt',
+          icon: 'fa fa-trash-alt',
           disabled:  (_.isFunction(that.canDrop)) ? !(that.canDrop.apply(self, [data, item])) : (!that.canDrop),
           register: function(btn) {
             btn.on('click',() => {

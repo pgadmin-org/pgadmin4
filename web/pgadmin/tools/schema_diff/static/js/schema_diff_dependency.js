@@ -135,6 +135,11 @@ function selectDependencies(data, isChecked) {
   }
 
   setDependencies = function(rowData, dependencies, isChecked) {
+    // Special handling for extension, if extension is present in the
+    // dependency list then iterate and select only extension node.
+    let extensions = dependencies.filter(item => item.type  == 'extension');
+    if (extensions.length > 0) dependencies = extensions;
+
     _.each(dependencies, function(dependency) {
       if (dependency.length == 0) return;
       let dependencyData = [];

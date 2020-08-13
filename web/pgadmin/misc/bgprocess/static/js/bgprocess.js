@@ -36,7 +36,7 @@ define('misc.bgprocess', [
       success_status_tpl: _.template(`
       <div class="d-flex px-2 py-1 bg-success-light border border-success rounded">
         <div class="pr-2">
-          <i class="fa fa-check fa-lg text-success pg-bg-status-icon" aria-hidden="true" role="img"></i>
+          <i class="fa fa-check text-success pg-bg-status-icon" aria-hidden="true" role="img"></i>
         </div>
         <div class="mx-auto pg-bg-status-text alert-text-body"><%-status_text%></div>
       </div>`),
@@ -309,7 +309,7 @@ define('misc.bgprocess', [
                 <div class="py-1">${self.stime.toString()}</div>
                 <div class="d-flex py-1">
                   <div class="my-auto mr-2">
-                    <span class="fa fa-clock-o fa-2x" role="img"></span>
+                    <span class="fa fa-clock fa-lg" role="img"></span>
                   </div>
                   <div class="pg-bg-etime my-auto mr-2"></div>
                   <div class="ml-auto">
@@ -616,7 +616,7 @@ define('misc.bgprocess', [
               '<div class="bg-detailed-desc"></div>' +
               '<div class="bg-process-stats d-flex py-1">' +
                 '<div class="my-auto mr-2">' +
-                  '<span class="fa fa-clock-o fa-2x" role="img"></span>' +
+                  '<span class="fa fa-clock fa-lg" role="img"></span>' +
                 '</div>' +
                 '<div class="pg-bg-etime my-auto mr-2">'+
                   '<span>' + gettext('Start time') + ': <span class="bgprocess-start-time"></span>' +

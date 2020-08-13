@@ -1246,7 +1246,7 @@ define('pgadmin.browser.node', [
               type: 'help',
               tooltip: gettext('SQL help for this object type.'),
               extraClasses: ['btn-primary-icon', 'btn-primary-icon', 'm-1'],
-              icon: 'fa fa-lg fa-info',
+              icon: 'fa fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
                 btn.on('click',() => {
@@ -1499,7 +1499,7 @@ define('pgadmin.browser.node', [
               type: 'help',
               tooltip: gettext('SQL help for this object type.'),
               extraClasses: ['btn-primary-icon', 'pull-left', 'mx-1'],
-              icon: 'fa fa-lg fa-info',
+              icon: 'fa fa-info',
               disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
               register: function(btn) {
                 btn.on('click',() => {
@@ -1511,7 +1511,7 @@ define('pgadmin.browser.node', [
               type: 'help',
               tooltip: gettext('Help for this dialog.'),
               extraClasses: ['btn-primary-icon', 'pull-left', 'mx-1'],
-              icon: 'fa fa-lg fa-question',
+              icon: 'fa fa-question',
               disabled: (that.dialogHelp == '') ? true : false,
               register: function(btn) {
                 btn.on('click',() => {
