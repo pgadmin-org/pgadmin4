@@ -43,7 +43,7 @@ define('misc.bgprocess', [
       failed_status_tpl: _.template(`
       <div class="d-flex px-2 py-1 bg-danger-lighter border border-danger rounded">
         <div class="pr-2">
-          <i class="fa fa-close fa-lg text-danger pg-bg-status-icon" aria-hidden="true" role="img"></i>
+          <i class="fa fa-times fa-lg text-danger pg-bg-status-icon" aria-hidden="true" role="img"></i>
         </div>
         <div class="mx-auto pg-bg-status-text alert-text-body"><%-status_text%></div>
       </div>`),
@@ -301,7 +301,7 @@ define('misc.bgprocess', [
               <div class="card-header bg-primary d-flex">
                 <div>${self.type_desc}</div>
                 <div class="ml-auto">
-                  <button class="btn btn-sm-sq btn-primary pg-bg-close"><i class="fa fa-lg fa-close" role="img"></i></button>
+                  <button class="btn btn-sm-sq btn-primary pg-bg-close"><i class="fa fa-lg fa-times" role="img"></i></button>
                 </div>
               </div>
               <div class="card-body px-2">

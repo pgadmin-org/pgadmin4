@@ -120,10 +120,12 @@
 
 .CodeMirror-foldgutter-open:after {
   content: "\25BC";
+  font-weight: 900;
 }
 
 .CodeMirror-foldgutter-folded:after {
   content: "\25B6";
+  font-weight: 900;
 }
 
 

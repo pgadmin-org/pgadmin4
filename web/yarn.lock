@@ -1003,6 +1003,11 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@fortawesome/fontawesome-free@^5.14.0":
+  version "5.14.0"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.14.0.tgz#a371e91029ebf265015e64f81bfbf7d228c9681f"
+  integrity sha512-OfdMsF+ZQgdKHP9jUbmDcRrP0eX90XXrsXIdyjLbkmSBzmMXPABB8eobUJtivaupucYaByz6WNe1PI1JuYm3qA==
+
 "@istanbuljs/schema@^0.1.2":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
@@ -4546,11 +4551,6 @@ follow-redirects@1.5.10, follow-redirects@^1.0.0:
   integrity sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
   dependencies:
     debug "=3.1.0"
-
-font-awesome@^4.7.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/font-awesome/-/font-awesome-4.7.0.tgz#8fa8cf0411a1a31afd07b06d2902bb9fc815a133"
-  integrity sha1-j6jPBBGhoxr9B7BtKQK7n8gVoTM=
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -10000,12 +10000,12 @@ watchpack@^1.6.1:
     chokidar "^3.4.0"
     watchpack-chokidar2 "^2.0.0"
 
-"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#be9ca6e812dfd8f44eea7ef4835ec3c8dd2bcaf3":
+"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#8298a57d875dce51a4d3707c68a1a2b82f2e6c03":
   version "2.2.4-dev"
-  resolved "git+https://github.com/EnterpriseDB/wcDocker.git#be9ca6e812dfd8f44eea7ef4835ec3c8dd2bcaf3"
+  resolved "git+https://github.com/EnterpriseDB/wcDocker/#8298a57d875dce51a4d3707c68a1a2b82f2e6c03"
   dependencies:
+    "@fortawesome/fontawesome-free" "^5.14.0"
     FileSaver "^0.10.0"
-    font-awesome "^4.7.0"
     jquery "^3.3.1"
     jquery-contextmenu "^2.6.4"
 

@@ -105,7 +105,7 @@ define('pgadmin.node.mview', [
           category: 'refresh_mview', applies: ['object', 'context'],
           label: gettext('With no data'), data: {
             concurrent: false, with_data: false,
-          }, icon: 'fa fa-refresh',
+          }, icon: 'fa fa-sync-alt',
         },{
           name: 'refresh_mview_concurrent', node: 'mview', module: this,
           category: 'refresh_mview', enable: 'is_version_supported',
@@ -118,7 +118,7 @@ define('pgadmin.node.mview', [
           data: {concurrent: true, with_data: false}, priority: 4,
           applies: ['object', 'context'], callback: 'refresh_mview',
           label: gettext('With no data (concurrently)'),
-          icon: 'fa fa-refresh',
+          icon: 'fa fa-sync-alt',
         }]);
       },
 

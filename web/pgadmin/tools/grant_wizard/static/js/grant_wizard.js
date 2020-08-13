@@ -173,7 +173,7 @@ define([
         callback: 'start_grant_wizard',
         priority: 14,
         label: gettext('Grant Wizard...'),
-        icon: 'fa fa-unlock-alt',
+        icon: 'fa fa-unlock',
         enable: supportedNodes.enabled.bind(
           null, pgBrowser.treeMenu, menuUtils.supportedNodes
         ),
@@ -189,7 +189,7 @@ define([
           callback: 'start_grant_wizard',
           priority: 14,
           label: gettext('Grant Wizard...'),
-          icon: 'fa fa-unlock-alt',
+          icon: 'fa fa-unlock',
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.treeMenu, menuUtils.supportedNodes
           ),

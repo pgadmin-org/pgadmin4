@@ -299,11 +299,13 @@ div.strikeout:before {
   left: 0;
   border-top: 1px solid $color-danger;
   width: 100%;
+  font-weight: 900;
 }
 
 div.strikeout:after {
   content: "\00B7";
   font-size: 1px;
+  font-weight: 900;
 }
 
 .sql-scratch {

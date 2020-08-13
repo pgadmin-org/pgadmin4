@@ -34,14 +34,14 @@ class HelpModule(PgAdminModule):
                      label=gettext('pgAdmin Website'),
                      priority=200,
                      target='pgadmin_website',
-                     icon='fa fa-external-link',
+                     icon='fa fa-external-link-alt',
                      url='https://www.pgadmin.org/'),
 
             MenuItem(name='mnu_postgresql_website',
                      label=gettext('PostgreSQL Website'),
                      priority=300,
                      target='postgres_website',
-                     icon='fa fa-external-link',
+                     icon='fa fa-external-link-alt',
                      url='https://www.postgresql.org/')]}
 
     def register_preferences(self):

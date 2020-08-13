@@ -15,7 +15,7 @@ export const QuerySources = {
     ICON_CSS_CLASS: 'fa fa-play',
   },
   EXPLAIN: {
-    ICON_CSS_CLASS: 'fa fa-hand-pointer-o',
+    ICON_CSS_CLASS: 'fa fa-hand-pointer',
   },
   EXPLAIN_ANALYZE: {
     ICON_CSS_CLASS: 'fa fa-list-alt',

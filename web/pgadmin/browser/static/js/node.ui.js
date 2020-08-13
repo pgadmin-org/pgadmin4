@@ -32,7 +32,7 @@ define([
       let $selectAll = $([
         '<button class="btn btn-secondary btn-sm" type="button"',
         ' style="width: 49%;margin: 0 0.5%;">',
-        '<i class="fa fa-check-square-o" role="img"></i>',
+        '<i class="fa fa-check-square" role="img"></i>',
         '<span style="padding: 0px 5px;">',
         gettext('Select All'),
         '</span></button>',

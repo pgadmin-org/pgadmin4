@@ -90,12 +90,12 @@ define('pgadmin.node.server', [
           name: 'disconnect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'disconnect_server',
           category: 'drop', priority: 5, label: gettext('Disconnect Server'),
-          icon: 'fa fa-chain-broken', enable : 'is_connected',
+          icon: 'fa fa-unlink', enable : 'is_connected',
         },{
           name: 'reload_configuration', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'reload_configuration',
           category: 'reload', priority: 6, label: gettext('Reload Configuration'),
-          icon: 'fa fa-repeat', enable : 'enable_reload_config',
+          icon: 'fa fa-redo-alt', enable : 'enable_reload_config',
         },{
           name: 'restore_point', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'restore_point',

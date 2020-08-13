@@ -205,7 +205,7 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
         columns headers. Instead of a button, an icon is created */
         let content = null;
         if(is_editable) {
-          content = '<i class="fa fa-pencil"></i>';
+          content = '<i class="fa fa-pencil-alt"></i>';
         }
         else {
           content = '<i class="fa fa-lock"></i>';

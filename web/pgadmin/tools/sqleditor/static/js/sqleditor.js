@@ -4376,7 +4376,7 @@ define('tools.querytool', [
                   className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
                 }, {
                   text: gettext('Don\'t save'),
-                  className: 'btn btn-secondary fa fa-lg fa-trash-o pg-alertify-button',
+                  className: 'btn btn-secondary fa fa-lg fa-trash-alt pg-alertify-button',
                 }, {
                   text: gettext('Save'),
                   className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',

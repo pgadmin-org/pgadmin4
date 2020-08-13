@@ -73,7 +73,7 @@ define('pgadmin.node.tablespace', [
           applies: ['object', 'context'], callback: 'move_objects',
           category: 'move_tablespace', priority: 5,
           label: gettext('Move objects to...'),
-          icon: 'fa fa-exchange', data: {action: 'create'},
+          icon: 'fa fa-exchange-alt', data: {action: 'create'},
           enable: 'can_move_objects',
         },
         ]);

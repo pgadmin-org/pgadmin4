@@ -134,7 +134,7 @@ define([
       '          </div>' +
       '          <div class="ml-auto">' +
       '              <button class="btn btn-secondary wizard-cancel" <%=this.options.disable_cancel ? "disabled" : ""%>>' +
-      '                <i class="fa fa-close" role="img"></i>&nbsp;' + gettext('Cancel') + '</button>' +
+      '                <i class="fa fa-times" role="img"></i>&nbsp;' + gettext('Cancel') + '</button>' +
       '              <button class="btn btn-secondary wizard-back" <%=this.options.disable_prev ? "disabled" : ""%>>' +
       '                <i class="fa fa-backward" role="img"></i>&nbsp;' + gettext('Back') + '</button>' +
       '              <button class="btn btn-secondary wizard-next" <%=this.options.disable_next ? "disabled" : ""%>>' +

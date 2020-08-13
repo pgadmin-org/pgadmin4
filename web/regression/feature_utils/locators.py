@@ -210,7 +210,7 @@ class QueryToolLocators:
 
     execute_icon = "fa-play"
 
-    explain_icon = "fa-hand-pointer-o"
+    explain_icon = "fa-hand-pointer"
 
     explain_analyze_icon = "fa-list-alt"
 
@@ -225,7 +225,7 @@ class QueryToolLocators:
 
     editable_column_icon_xpath = "//div[contains(@class," \
                                  " 'editable-column-header-icon')]" \
-                                 "/i[contains(@class, 'fa-pencil')]"
+                                 "/i[contains(@class, 'fa-pencil-alt')]"
 
     read_only_column_icon_xpath = "//div[contains(@class," \
                                   " 'editable-column-header-icon')]" \

@@ -440,7 +440,7 @@ define([
 
         if (editable) {
           this.$el.html(
-            '<i class=\'fa fa-pencil-square subnode-edit-in-process\' title=\'' + gettext('Edit row') +  '\' aria-label=\'' + gettext('Edit row') +  '\'></i>'
+            '<i class=\'fa fa-pen-square subnode-edit-in-process\' title=\'' + gettext('Edit row') +  '\' aria-label=\'' + gettext('Edit row') +  '\'></i>'
           );
           let body = $(this.$el).parents()[1],
             container = $(body).find('.tab-content:first > .tab-pane.active:first');
@@ -459,7 +459,7 @@ define([
     },
     render: function() {
       this.$el.empty();
-      this.$el.html('<i class=\'fa fa-pencil-square-o\' title=\'' + gettext('Edit row') + '\' aria-label=\'' + gettext('Edit row') +  '\'></i>');
+      this.$el.html('<i class=\'fa fa-edit\' title=\'' + gettext('Edit row') + '\' aria-label=\'' + gettext('Edit row') +  '\'></i>');
       this.delegateEvents();
       if (this.grabFocus)
         this.$el.trigger('focus');
@@ -1857,7 +1857,7 @@ define([
 
       if (event.altKey && event.keyCode == 84){
         if (self.$el.data('datetimepicker').widget.find('.timepicker').is(':visible')){
-          self.$el.data('datetimepicker').widget.find('.fa-calendar').click();
+          self.$el.data('datetimepicker').widget.find('.fa-calendar-alt').click();
         }else{
           self.$el.data('datetimepicker').widget.find('.fa-clock-o').click();
         }

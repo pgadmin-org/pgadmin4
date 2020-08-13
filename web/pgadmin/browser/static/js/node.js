@@ -116,7 +116,7 @@ define('pgadmin.browser.node', [
         callback: 'refresh',
         priority: 1,
         label: gettext('Refresh...'),
-        icon: 'fa fa-refresh',
+        icon: 'fa fa-sync-alt',
       }]);
 
       if (self.canEdit) {
@@ -131,7 +131,7 @@ define('pgadmin.browser.node', [
           data: {
             'action': 'edit',
           },
-          icon: 'fa fa-pencil-square-o',
+          icon: 'fa fa-edit',
         }]);
       }
 
@@ -229,7 +229,7 @@ define('pgadmin.browser.node', [
             data: {
               'script': stype,
             },
-            icon: 'fa fa-pencil',
+            icon: 'fa fa-pencil-alt',
             enable: self.check_user_permission,
           }]);
         });
@@ -1232,7 +1232,7 @@ define('pgadmin.browser.node', [
               type: 'edit',
               tooltip: gettext('Edit'),
               extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
-              icon: 'fa fa-sm fa-pencil',
+              icon: 'fa fa-sm fa-pencil-alt',
               disabled: !that.canEdit,
               register: function(btn) {
                 btn.on('click',() => {
@@ -1523,7 +1523,7 @@ define('pgadmin.browser.node', [
               type: 'cancel',
               tooltip: gettext('Cancel changes to this object.'),
               extraClasses: ['btn-secondary', 'mx-1'],
-              icon: 'fa fa-close pg-alertify-button',
+              icon: 'fa fa-times pg-alertify-button',
               disabled: false,
               register: function(btn) {
                 btn.on('click',() => {

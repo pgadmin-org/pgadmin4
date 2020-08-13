@@ -81,7 +81,7 @@ define('pgadmin.node.database', [
           name: 'disconnect_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'disconnect_database',
           category: 'drop', priority: 5, label: gettext('Disconnect Database...'),
-          icon: 'fa fa-chain-broken', enable : 'is_connected',
+          icon: 'fa fa-unlink', enable : 'is_connected',
         }]);
 
         _.bindAll(this, 'connection_lost');

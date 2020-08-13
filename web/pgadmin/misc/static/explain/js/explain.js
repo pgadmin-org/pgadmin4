@@ -329,7 +329,7 @@ define('pgadmin.misc.explain', [
     '<%= (data["level"].length) * 30%>px"',
     'title="<%= tooltip_text %>"',
     '>',
-    '  <i class="pg-ex-subplans fa fa-long-arrow-right"></i>',
+    '  <i class="pg-ex-subplans fa fa-long-arrow-alt-right"></i>',
     '<%= display_text %>',
     '<%if (node_extra_info && node_extra_info.length > 0 ) {%>',
     '<ui>',
@@ -1353,7 +1353,7 @@ define('pgadmin.misc.explain', [
         tabindex: 0,
       }).appendTo(statsArea).append(
         $('<i></i>', {
-          class: 'fa fa-line-chart',
+          class: 'fa fa-chart-line',
         }));
 
       // Main div to be drawn all images on

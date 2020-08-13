@@ -20,6 +20,7 @@ Housekeeping
 | `Issue #5327 <https://redmine.postgresql.org/issues/5327>`_ -  Improve code coverage and API test cases for Schemas.
 | `Issue #5336 <https://redmine.postgresql.org/issues/5336>`_ -  Improve code coverage and API test cases for Types.
 | `Issue #5700 <https://redmine.postgresql.org/issues/5700>`_ -  Remove old Python 2 compatibility code.
+| `Issue #5731 <https://redmine.postgresql.org/issues/5731>`_ -  Upgrade font awesome from v4 to v5.
 
 Bug fixes
 *********

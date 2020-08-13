@@ -6,6 +6,7 @@
   font-size: 0.6rem;
   line-height: 2;
   border-style: none;
+  font-weight: 900;
 }
 
 .aciTree, .aciTree.aciTreeFullRow {
@@ -139,6 +140,7 @@
           content: "\f054" !important;
           border-style: none;
           margin-left: 5px;
+          font-weight: 900;
         }
     }
 
@@ -146,6 +148,7 @@
         &:before,
         &.aciTreeHover:before {
           content: " " !important;
+          font-weight: 900;
         }
     }
 
@@ -157,6 +160,7 @@
           content: "\f078" !important;
           border-style: none;
           margin-left: 5px;
+          font-weight: 900;
         }
     }
 

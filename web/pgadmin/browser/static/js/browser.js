@@ -621,7 +621,7 @@ define('pgadmin.browser', [
                     }),
                   },
                 },{
-                  text: gettext('Reset Master Password'), className: 'btn btn-secondary fa fa-trash-o pg-alertify-button pull-left',
+                  text: gettext('Reset Master Password'), className: 'btn btn-secondary fa fa-trash-alt pg-alertify-button pull-left',
                 },{
                   text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
                   key: 27,

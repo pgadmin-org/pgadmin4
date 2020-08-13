@@ -44,7 +44,7 @@ define([
           name: 'refresh', node: this.type, module: this,
           applies: ['object', 'context'], callback: 'refresh',
           priority: 1, label: gettext('Refresh...'),
-          icon: 'fa fa-refresh',
+          icon: 'fa fa-sync-alt',
         }]);
 
         // show query tool only in context menu of supported nodes.
@@ -247,7 +247,7 @@ define([
           type: 'delete',
           tooltip: gettext('Delete/Drop'),
           extraClasses: ['btn-primary-icon m-1', 'delete_multiple'],
-          icon: 'fa fa-lg fa-trash-o',
+          icon: 'fa fa-lg fa-trash-alt',
           disabled:  (_.isFunction(that.canDrop)) ? !(that.canDrop.apply(self, [data, item])) : (!that.canDrop),
           register: function(btn) {
             btn.on('click',() => {

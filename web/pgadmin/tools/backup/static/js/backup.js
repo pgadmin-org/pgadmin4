@@ -580,7 +580,7 @@ define([
         callback: 'start_backup_global',
         priority: 12,
         label: gettext('Backup Globals...'),
-        icon: 'fa fa-floppy-o',
+        icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
       }, {
         name: 'backup_server',
@@ -589,7 +589,7 @@ define([
         callback: 'start_backup_server',
         priority: 12,
         label: gettext('Backup Server...'),
-        icon: 'fa fa-floppy-o',
+        icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
       }, {
         name: 'backup_global_ctx',
@@ -599,7 +599,7 @@ define([
         callback: 'start_backup_global',
         priority: 12,
         label: gettext('Backup Globals...'),
-        icon: 'fa fa-floppy-o',
+        icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
       }, {
         name: 'backup_server_ctx',
@@ -609,7 +609,7 @@ define([
         callback: 'start_backup_server',
         priority: 12,
         label: gettext('Backup Server...'),
-        icon: 'fa fa-floppy-o',
+        icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
       }, {
         name: 'backup_object',
@@ -618,7 +618,7 @@ define([
         callback: 'backup_objects',
         priority: 11,
         label: gettext('Backup...'),
-        icon: 'fa fa-floppy-o',
+        icon: 'fa fa-save',
         enable: supportedNodes.enabled.bind(
           null, pgBrowser.treeMenu, menuUtils.backupSupportedNodes
         ),
@@ -633,7 +633,7 @@ define([
           callback: 'backup_objects',
           priority: 11,
           label: gettext('Backup...'),
-          icon: 'fa fa-floppy-o',
+          icon: 'fa fa-save',
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.treeMenu, menuUtils.backupSupportedNodes
           ),

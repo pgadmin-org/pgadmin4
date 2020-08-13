@@ -467,9 +467,9 @@ define([
         if (item_data.file_type == 'dir') {
           icon_type = 'fa fa-folder-open fm_folder_grid';
         } else if (item_data.file_type == 'drive') {
-          icon_type = 'fa fa-hdd-o fm_drive';
+          icon_type = 'fa fa-hdd fm_drive';
         } else {
-          icon_type = 'fa fa-file-text-o fm_file_grid';
+          icon_type = 'fa fa-file-alt fm_file_grid';
         }
 
         /* For the html ele */
@@ -567,10 +567,10 @@ define([
           icon_type = 'fa fa-folder-open fm_folder_list';
         } else if (item_data.file_type == 'drive') {
           class_type = 'tbl_drive';
-          icon_type = 'fa fa-hdd-o';
+          icon_type = 'fa fa-hdd';
         } else {
           class_type = 'tbl_file';
-          icon_type = 'fa fa-file-text-o';
+          icon_type = 'fa fa-file-alt';
         }
 
         /* For the html ele */
@@ -746,10 +746,10 @@ define([
           // if file/folder is protected do nothing
           if ($(this).find('.fa-lock').length)
             return;
-          if ($(this).find('.fa-file-text-o').length)
+          if ($(this).find('.fa-file-alt').length)
             $(this).click();
           // If folder then first select and then double click to open folder/drive
-          else if ($(this).find('.fa-folder-open').length || $(this).find('.fa-hdd-o').length) {
+          else if ($(this).find('.fa-folder-open').length || $(this).find('.fa-hdd').length) {
             $(this).click();
             setTimeout(() => { $(self).trigger('dblclick'); }, 10);
           }

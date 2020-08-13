@@ -293,10 +293,12 @@
         content: "\f05a" !important;
         font-size: 1rem;
         margin-right: 0.5rem;
+        font-weight: 900;
     }
 
     &.pg-panel-error:before {
         content: "\f06a" !important;
+        font-weight: 900;
     }
 }
 
@@ -393,6 +395,7 @@
 	content: "\f078";
 	font-size: 0.7rem;
 	margin-left: 0rem;
+	font-weight: 900;
 }
 
 .obj_properties .collapsed .caret::before {
@@ -400,6 +403,7 @@
 	content: "\f054";
 	font-size: 0.7rem;
 	border: none;
+	font-weight: 900;
 }
 
 .obj_properties table td {
@@ -851,10 +855,12 @@ body {
 
 .multi-checkbox .check.checked:after {
   content: "\2713";
+  font-weight: 900;
 }
 
 .multi-checkbox .check.partial:after {
   content: "\003F";
+  font-weight: 900;
 }
 
 .pg-el-container {
@@ -914,6 +920,7 @@ table.table-empty-rows{
   font-size: 0.6rem;
   line-height: 2;
   border-style: none;
+  font-weight: 900;
 }
 
 .login_page {
@@ -1102,4 +1109,15 @@ select:-webkit-autofill:focus {
     &.disabled {
       pointer-events: none !important;
     }
+}
+
+.fa {
+  font-weight: 600 !important;
+}
+.pull-right{
+  float:right;
+}
+
+.pull-left{
+  float:left
 }

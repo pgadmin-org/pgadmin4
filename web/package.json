@@ -57,6 +57,7 @@
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-react": "^7.10.4",
+    "@fortawesome/fontawesome-free": "^5.14.0",
     "@simonwep/pickr": "^1.5.1",
     "acitree": "git+https://github.com/imsurinder90/jquery-aciTree.git#rc.7",
     "alertifyjs": "git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263",
@@ -80,7 +81,6 @@
     "cssnano": "^4.1.10",
     "dropzone": "^5.5.1",
     "exports-loader": "~0.7.0",
-    "font-awesome": "^4.7.0",
     "immutability-helper": "^3.0.0",
     "imports-loader": "^0.8.0",
     "ip-address": "^5.8.9",
@@ -107,7 +107,7 @@
     "tempusdominus-core": "^5.0.3",
     "underscore": "^1.9.1",
     "watchify": "~3.11.1",
-    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#be9ca6e812dfd8f44eea7ef4835ec3c8dd2bcaf3",
+    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#8298a57d875dce51a4d3707c68a1a2b82f2e6c03",
     "wkx": "^0.4.6"
   },
   "scripts": {

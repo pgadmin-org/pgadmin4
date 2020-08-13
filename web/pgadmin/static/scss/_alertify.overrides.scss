@@ -194,6 +194,7 @@
   @at-root .ajs-button#{&} {
     font-family: $font-family-icon;
     margin-right: 5px;
+    font-weight: 900;
   }
 }
 
@@ -202,6 +203,7 @@
     font-size: 1.1em !important;
     line-height: 1.2;
     font-family: $font-family-icon;
+    font-weight: 900;
   }
 }
 

@@ -323,6 +323,7 @@
 .context-menu-submenu::after {
   font-family: $font-family-icon;
   content: "\f054" !important;
+  font-weight: 900;
   right: 15px;
   top: 3px;
   font-size: 0.6rem;

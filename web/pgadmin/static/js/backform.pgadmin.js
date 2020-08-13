@@ -2681,7 +2681,7 @@ define([
       text: '',
       extraClasses: ['pg-el-12', 'd-flex'],
       noteClass: 'backform-note',
-      faIcon: 'fa-file-text-o',
+      faIcon: 'fa-file-alt',
       faExtraClass: 'fa-rotate-180 fa-flip-vertical',
       iconWidthClass: 'col-0 pr-2',
       textWidthClass: 'col-sm',
@@ -2847,7 +2847,7 @@ define([
         '<div class="input-group  <%=Backform.controlsClassName%>">',
         ' <input id="<%=cId%>" type="text" class="<%=Backform.controlClassName%> datetimepicker-input <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> data-toggle="datetimepicker"/>',
         ' <div class="input-group-append">',
-        '   <span class="input-group-text fa fa-calendar"></span>',
+        '   <span class="input-group-text fa fa-calendar-alt"></span>',
         ' </div>',
         '</div>',
         '<% if (helpMessage && helpMessage.length) { %>',
@@ -2938,7 +2938,7 @@ define([
 
       timePicker:function() {
         if (this.$el.find('.timepicker').is(':visible')){
-          this.$el.find('.fa-calendar').click();
+          this.$el.find('.fa-calendar-alt').click();
         }else{
           this.$el.find('.fa-clock-o').click();
         }
