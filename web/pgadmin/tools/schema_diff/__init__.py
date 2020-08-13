@@ -388,7 +388,8 @@ def databases(sid):
         view = SchemaDiffRegistry.get_node_view('database')
 
         server = Server.query.filter_by(id=sid).first()
-        response = view.nodes(gid=server.servergroup_id, sid=sid)
+        response = view.nodes(gid=server.servergroup_id, sid=sid,
+                              is_schema_diff=True)
         databases = json.loads(response.data)['data']
         for db in databases:
             res.append({
@@ -653,7 +654,8 @@ def get_schemas(sid, did):
     try:
         view = SchemaDiffRegistry.get_node_view('schema')
         server = Server.query.filter_by(id=sid).first()
-        response = view.nodes(gid=server.servergroup_id, sid=sid, did=did)
+        response = view.nodes(gid=server.servergroup_id, sid=sid, did=did,
+                              is_schema_diff=True)
         schemas = json.loads(response.data)['data']
         return schemas
     except Exception as e:

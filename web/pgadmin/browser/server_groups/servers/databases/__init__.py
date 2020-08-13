@@ -251,9 +251,16 @@ class DatabaseView(PGChildNodeView):
                 'datlastsysoid']
         return last_system_oid
 
-    def get_nodes(self, gid, sid, show_system_templates=False):
+    def get_nodes(self, gid, sid, is_schema_diff=False):
         res = []
         last_system_oid = self.retrieve_last_system_oid()
+
+        # if is_schema_diff then no need to show system templates.
+        if is_schema_diff and self.manager.db_info is not None and \
+                self.manager.did in self.manager.db_info:
+            last_system_oid = \
+                self.manager.db_info[self.manager.did]['datlastsysoid']
+
         server_node_res = self.manager
 
         db_disp_res = None
@@ -303,8 +310,8 @@ class DatabaseView(PGChildNodeView):
         return res
 
     @check_precondition(action="nodes")
-    def nodes(self, gid, sid):
-        res = self.get_nodes(gid, sid)
+    def nodes(self, gid, sid, is_schema_diff=False):
+        res = self.get_nodes(gid, sid, is_schema_diff)
 
         return make_json_response(
             data=res,

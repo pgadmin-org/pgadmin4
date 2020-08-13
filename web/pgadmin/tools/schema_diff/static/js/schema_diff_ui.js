@@ -18,6 +18,7 @@ import {setPGCSRFToken} from 'sources/csrf';
 import {generateScript} from 'tools/datagrid/static/js/show_query_tool';
 import 'pgadmin.sqleditor';
 import pgWindow from 'sources/window';
+import _ from 'underscore';
 
 import { SchemaDiffSelect2Control, SchemaDiffHeaderView,
   SchemaDiffFooterView, SchemaDiffSqlControl} from './schema_diff.backform';
@@ -330,7 +331,7 @@ export default class SchemaDiffUI {
           if (g.rows[0].group_name == 'Database Objects'){
             icon = 'icon-coll-database';
           }
-          return '<i class="wcTabIcon '+ icon +'"></i><span>' + g.rows[0].group_name;
+          return '<i class="wcTabIcon '+ icon +'"></i><span>' + _.escape(g.rows[0].group_name);
         },
         aggregateCollapsed: true,
         lazyTotalsCalculation: true,

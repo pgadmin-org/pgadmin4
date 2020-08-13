@@ -3,18 +3,6 @@
   font-size: 1.3em !important;
 }
 
-.icon-schema-diff-white {
- display: inline-block;
- align-content: center;
- vertical-align: sub;
- height: 18px;
- width: 18px;
- background-size: 20px !important;
- background-repeat: no-repeat;
- background-position-x: center;
- background-position-y: center;
- }
-
 .icon-script {
   display: inline-block;
   align-content: center;

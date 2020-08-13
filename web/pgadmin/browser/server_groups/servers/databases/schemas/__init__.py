@@ -413,7 +413,7 @@ class SchemaView(PGChildNodeView):
         )
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid=None):
+    def nodes(self, gid, sid, did, scid=None, is_schema_diff=False):
         """
         This function will create all the child nodes within the collection
         Here it will create all the schema node.
@@ -422,6 +422,8 @@ class SchemaView(PGChildNodeView):
             gid: Server Group ID
             sid: Server ID
             did: Database ID
+            scid: Schema ID
+            is_schema_diff: True if called by schema diff tool
 
         Returns:
             JSON of available schema child nodes
@@ -437,9 +439,13 @@ class SchemaView(PGChildNodeView):
                     ["'%s'"] * len(schema_restrictions.split(',')))
                 param = schema_res % (tuple(schema_restrictions.split(',')))
 
+        show_system_objects = self.blueprint.show_system_objects
+        if is_schema_diff:
+            show_system_objects = False
+
         SQL = render_template(
             "/".join([self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
-            show_sysobj=self.blueprint.show_system_objects,
+            show_sysobj=show_system_objects,
             _=gettext,
             scid=scid,
             schema_restrictions=param

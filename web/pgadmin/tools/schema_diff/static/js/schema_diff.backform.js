@@ -317,7 +317,7 @@ let SchemaDiffHeaderView = Backform.Form.extend({
       <div class="col-6 target row"></div>
       <div class="col-5 target-buttons">
           <div class="action-btns d-flex">
-              <button class="btn btn-primary mr-auto"><span class="icon-schema-diff icon-schema-diff-white"></span>&nbsp;` + gettext('Compare') + `</button>
+              <button class="btn btn-primary mr-auto"><span class="pg-font-icon icon-schema-diff sql-icon-lg"></span>&nbsp;` + gettext('Compare') + `</button>
               <button id="generate-script" class="btn btn-primary-icon mr-1" disabled><i class="fa fa-file-code sql-icon-lg"></i>&nbsp;` + gettext('Generate Script') + `</button>
               <div class="btn-group mr-1" role="group" aria-label="">
                 <button id="btn-filter" type="button" class="btn btn-primary-icon"
