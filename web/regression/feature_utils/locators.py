@@ -89,7 +89,7 @@ class NavMenuLocators:
 
     process_watcher_close_button_xpath = \
         "//div[contains(@class,'wcFloating')]//" \
-        "div[contains(@class,'fa-close')]"
+        "div[@aria-label='Close panel']//div"
 
     restore_file_name_xpath = "//div[contains(text(),'Restore')]" \
                               "//following::input[@name='file']"
