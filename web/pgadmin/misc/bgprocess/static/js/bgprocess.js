@@ -193,7 +193,13 @@ define('misc.bgprocess', [
           if (pgAdmin.natural_sort(out[io][0], err[ie][0]) <= 0) {
             res.push('<li class="pg-bg-res-out">' + escapeHTML(out[io++][1]) + '</li>');
           } else {
-            res.push('<li class="pg-bg-res-err">' + escapeHTML(err[ie++][1]) + '</li>');
+            let log_msg = escapeHTML(err[ie++][1]);
+            let regex_obj = new RegExp(': (' + gettext('error') + '|' + gettext('fatal') + '):', 'i');
+            if (regex_obj.test(log_msg)) {
+              res.push('<li class="pg-bg-res-err">' + log_msg + '</li>');
+            } else {
+              res.push('<li class="pg-bg-res-out">' + log_msg + '</li>');
+            }
           }
         }
 
@@ -202,7 +208,13 @@ define('misc.bgprocess', [
         }
 
         while (ie < err.length) {
-          res.push('<li class="pg-bg-res-err">' + escapeHTML(err[ie++][1]) + '</li>');
+          let log_msg = escapeHTML(err[ie++][1]);
+          let regex_obj = new RegExp(': (' + gettext('error') + '|' + gettext('fatal') + '):', 'i');
+          if (regex_obj.test(log_msg)) {
+            res.push('<li class="pg-bg-res-err">' + log_msg + '</li>');
+          } else {
+            res.push('<li class="pg-bg-res-out">' + log_msg + '</li>');
+          }
         }
 
         if (res.length) {
