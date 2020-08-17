@@ -12,7 +12,8 @@ function handleDependencies() {
   let isChecked = event.target.checked || (event.target.checked === undefined &&
    event.target.className && event.target.className.indexOf('unchecked') == -1);
 
-  let isHeaderSelected = event.target.id.includes('header-selector');
+  let isHeaderSelected = false;
+  if (event.target.id !== undefined) isHeaderSelected = event.target.id.includes('header-selector');
 
   if (this.gridContext && this.gridContext.rowIndex && _.isUndefined(this.gridContext.row.rows)) {
     // Single Row Selection
