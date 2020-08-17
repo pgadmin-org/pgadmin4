@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-14 17:25+0530\n"
-"PO-Revision-Date: 2020-07-18 16:16+0900\n"
+"PO-Revision-Date: 2020-08-15 15:18+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -8956,11 +8956,11 @@ msgstr "True の場合、グラフ線上のデータにマウスを合わせる�
 
 #: pgadmin/dashboard/__init__.py:199
 msgid "Please connect to the selected {0} to view the table."
-msgstr ""
+msgstr "テーブルを表示するには、選択した {0} に接続してください"
 
 #: pgadmin/dashboard/__init__.py:204
 msgid "Please connect to the selected {0} to view the graph."
-msgstr ""
+msgstr "グラフを表示するには、選択した {0} に接続してください"
 
 #: pgadmin/dashboard/__init__.py:446 pgadmin/dashboard/__init__.py:473
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:498
@@ -11965,7 +11965,7 @@ msgstr "オブジェクトを比較中..."
 
 #: pgadmin/tools/schema_diff/__init__.py:527
 msgid "Successfully compare the specified databases."
-msgstr ""
+msgstr "指定されたデータベースを正常に比較しました"
 
 #: pgadmin/tools/schema_diff/__init__.py:604
 msgid "Selected object is not supported for DDL comparison."
@@ -11991,11 +11991,11 @@ msgstr "{0}を比較中"
 
 #: pgadmin/tools/schema_diff/__init__.py:702
 msgid "Database Objects"
-msgstr ""
+msgstr "データベースオブジェクト"
 
 #: pgadmin/tools/schema_diff/__init__.py:738
 msgid "Comparing {0} of schema '{1}'"
-msgstr ""
+msgstr "スキーマ「{1}」の{0}を比較中"
 
 #: pgadmin/tools/schema_diff/model.py:35
 msgid "Comparision started..."
@@ -12084,13 +12084,13 @@ msgstr "-- このスクリプトは pgAdmin 4 のスキーマ差異ツール（�
 msgid ""
 "-- For the circular dependencies, the order in which Schema Diff writes "
 "the objects is not very sophisticated \n"
-msgstr ""
+msgstr "-- スキーマ比較ツールは、循環依存するオブジェクトの順番を正確に検出できないことがあるため、 \n"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:206
 msgid ""
 "-- and may require manual changes to the script to ensure changes are "
 "applied in the correct order.\n"
-msgstr ""
+msgstr "-- スクリプトを手作業で修正する必要が生じるかもしれません。 \n"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:207
 msgid "-- Please report an issue for any failure with the reproduction steps. \n"
@@ -12131,7 +12131,7 @@ msgstr "データベースを選択..."
 msgid ""
 "Select the server and database for the source and target and click "
 "<strong>Compare</strong> to compare them."
-msgstr ""
+msgstr "比較元と比較対象のサーバ・データベースを選択し、<strong>比較</strong>をクリックしてください"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:768
 msgid "Failed to connect the database."
@@ -12631,7 +12631,7 @@ msgid ""
 "When set to True, keywords won't be highlighted and code folding will be "
 "disabled. Plain text mode will improve editor performance with large "
 "files."
-msgstr ""
+msgstr "True の場合、キーワードが強調表示されなくなり、コードを折り畳むこともできなくなりますが、巨大なファイルを扱う際のパフォーマンスが向上します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:148
 msgid "Code folding?"
@@ -13042,7 +13042,7 @@ msgstr "暗号キーが欠けています"
 
 #: pgadmin/utils/preferences.py:187
 msgid "Invalid value for {0} option."
-msgstr ""
+msgstr "オプション {0} の値が無効です"
 
 #: pgadmin/utils/preferences.py:576
 msgid "Could not find the specified module."
