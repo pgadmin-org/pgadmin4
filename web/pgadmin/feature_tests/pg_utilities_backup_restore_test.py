@@ -72,39 +72,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self.server['db_password'], self.database_name)
 
         # Backup
-        self.page.retry_click(
-            (By.LINK_TEXT,
-             NavMenuLocators.tools_menu_link_text),
-            (By.CSS_SELECTOR,
-             NavMenuLocators.backup_obj_css))
-
-        backup_object = self.wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, NavMenuLocators.backup_obj_css)))
-        backup_object.click()
-
-        # Enter the file name of the backup to be taken
-        self.wait.until(EC.visibility_of_element_located(
-            (By.NAME, NavMenuLocators.backup_filename_txt_box_name)))
-        element = self.wait.until(EC.element_to_be_clickable(
-            (By.NAME, NavMenuLocators.backup_filename_txt_box_name)))
-        element.click()
-        self.page.fill_input_by_field_name(
-            NavMenuLocators.backup_filename_txt_box_name,
-            "test_backup", loose_focus=True)
-
-        # Click on the take Backup button
-        take_bckup = self.page.find_by_xpath(
-            NavMenuLocators.backup_btn_xpath)
-        click = True
-        while click:
-            try:
-                take_bckup.click()
-                if self.page.wait_for_element_to_disappear(
-                    lambda driver: driver.find_element_by_name(
-                        NavMenuLocators.backup_filename_txt_box_name)):
-                    click = False
-            except Exception:
-                pass
+        self.initiate_backup()
 
         # Wait for the backup status alertfier
         self.wait.until(EC.visibility_of_element_located(
@@ -123,8 +91,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 ".loading-logs"), 10)
 
         expected_backup_success_msg = "Successfully completed."
-        if status != expected_backup_success_msg:
-            self.assertEquals(status, expected_backup_success_msg)
+        self.assertEquals(status, expected_backup_success_msg)
 
         backup_file = None
         # Check for XSS in Backup details
@@ -151,31 +118,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         test_gui_helper.close_process_watcher(self)
 
         # Restore
-        tools_menu = self.driver.find_element_by_link_text(
-            NavMenuLocators.tools_menu_link_text)
-        tools_menu.click()
-
-        restore_obj = self.page.find_by_css_selector(
-            NavMenuLocators.restore_obj_css)
-        restore_obj.click()
-
-        self.wait.until(EC.visibility_of_element_located(
-            (By.NAME, NavMenuLocators.restore_file_name_txt_box_name)))
-
-        self.wait.until(EC.element_to_be_clickable(
-            (By.NAME, NavMenuLocators.restore_file_name_txt_box_name))).click()
-
-        self.page.fill_input_by_field_name(
-            NavMenuLocators.restore_file_name_txt_box_name,
-            "test_backup", loose_focus=True)
-
-        restore_btn = self.page.find_by_xpath(
-            NavMenuLocators.restore_button_xpath)
-        restore_btn.click()
-
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(
-                NavMenuLocators.restore_file_name_txt_box_name))
+        self.initiate_restore()
 
         # Wait for the backup status alertfier
         self.wait.until(EC.visibility_of_element_located(
@@ -192,9 +135,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element_by_css_selector(
                 ".loading-logs"), 10)
-
-        if status != expected_backup_success_msg:
-            self.assertEquals(status, expected_backup_success_msg)
+        self.assertEquals(status, expected_backup_success_msg)
 
         # Check for XSS in Restore details
         if self.is_xss_check:
@@ -238,6 +179,68 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             '&lt;h1&gt;test_me&lt;/h1&gt;',
             '{0} detailed window'.format(tool_name)
         )
+
+    def initiate_backup(self):
+        self.page.retry_click(
+            (By.LINK_TEXT,
+             NavMenuLocators.tools_menu_link_text),
+            (By.CSS_SELECTOR,
+             NavMenuLocators.backup_obj_css))
+
+        backup_object = self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, NavMenuLocators.backup_obj_css)))
+        backup_object.click()
+
+        # Enter the file name of the backup to be taken
+        self.wait.until(EC.visibility_of_element_located(
+            (By.NAME, NavMenuLocators.backup_filename_txt_box_name)))
+        element = self.wait.until(EC.element_to_be_clickable(
+            (By.NAME, NavMenuLocators.backup_filename_txt_box_name)))
+        element.click()
+        self.page.fill_input_by_field_name(
+            NavMenuLocators.backup_filename_txt_box_name,
+            "test_backup", loose_focus=True)
+
+        # Click on the take Backup button
+        take_bckup = self.page.find_by_xpath(
+            NavMenuLocators.backup_btn_xpath)
+        click = True
+        while click:
+            try:
+                take_bckup.click()
+                if self.page.wait_for_element_to_disappear(
+                    lambda driver: driver.find_element_by_name(
+                        NavMenuLocators.backup_filename_txt_box_name)):
+                    click = False
+            except Exception:
+                pass
+
+    def initiate_restore(self):
+        tools_menu = self.driver.find_element_by_link_text(
+            NavMenuLocators.tools_menu_link_text)
+        tools_menu.click()
+
+        restore_obj = self.page.find_by_css_selector(
+            NavMenuLocators.restore_obj_css)
+        restore_obj.click()
+
+        self.wait.until(EC.visibility_of_element_located(
+            (By.NAME, NavMenuLocators.restore_file_name_txt_box_name)))
+
+        self.wait.until(EC.element_to_be_clickable(
+            (By.NAME, NavMenuLocators.restore_file_name_txt_box_name))).click()
+
+        self.page.fill_input_by_field_name(
+            NavMenuLocators.restore_file_name_txt_box_name,
+            "test_backup", loose_focus=True)
+
+        restore_btn = self.page.find_by_xpath(
+            NavMenuLocators.restore_button_xpath)
+        restore_btn.click()
+
+        self.page.wait_for_element_to_disappear(
+            lambda driver: driver.find_element_by_css_selector(
+                NavMenuLocators.restore_file_name_txt_box_name))
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code

@@ -214,53 +214,7 @@ def get_test_modules(arguments):
             exclude_pkgs.extend(['resql'])
 
         if not test_utils.is_parallel_ui_tests(args):
-            from selenium import webdriver
-            from selenium.webdriver.chrome.options import Options
-            from selenium.webdriver.common.desired_capabilities import \
-                DesiredCapabilities
-
-            default_browser = 'chrome'
-
-            # Check default browser provided through command line. If provided
-            # then use that browser as default browser else check for the
-            # setting provided in test_config.json file.
-            if (
-                'default_browser' in arguments and
-                arguments['default_browser'] is not None
-            ):
-                default_browser = arguments['default_browser'].lower()
-            elif (
-                test_setup.config_data and
-                "default_browser" in test_setup.config_data
-            ):
-                default_browser = test_setup.config_data[
-                    'default_browser'].lower()
-
-            if default_browser == 'firefox':
-                cap = DesiredCapabilities.FIREFOX
-                cap['requireWindowFocus'] = True
-                cap['enablePersistentHover'] = False
-                profile = webdriver.FirefoxProfile()
-                profile.set_preference("dom.disable_beforeunload", True)
-                driver = webdriver.Firefox(capabilities=cap,
-                                           firefox_profile=profile)
-                driver.implicitly_wait(1)
-            else:
-                options = Options()
-                if test_setup.config_data and \
-                    'headless_chrome' in test_setup.config_data and \
-                        test_setup.config_data['headless_chrome']:
-                    options.add_argument("--headless")
-                options.add_argument("--no-sandbox")
-                options.add_argument("--disable-setuid-sandbox")
-                options.add_argument("--window-size=1280,1024")
-                options.add_argument("--disable-infobars")
-                options.add_experimental_option('w3c', False)
-                driver = webdriver.Chrome(chrome_options=options)
-
-            # maximize browser window
-            driver.maximize_window()
-
+            driver = setup_webdriver_specification(arguments)
             app_starter = AppStarter(driver, config)
             app_starter.start_app()
 
@@ -268,6 +222,76 @@ def get_test_modules(arguments):
     # Register cleanup function to cleanup on exit
     atexit.register(handle_cleanup)
 
+    # Load Test modules
+    module_list = load_modules(arguments, exclude_pkgs)
+    return module_list
+
+
+def setup_webdriver_specification(arguments):
+    """
+    Method return web-driver object set up according to values passed
+    in arguments
+    :param arguments:
+    :return: webdriver object
+    """
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.common.desired_capabilities import \
+        DesiredCapabilities
+
+    default_browser = 'chrome'
+
+    # Check default browser provided through command line. If provided
+    # then use that browser as default browser else check for the
+    # setting provided in test_config.json file.
+    if (
+        'default_browser' in arguments and
+        arguments['default_browser'] is not None
+    ):
+        default_browser = arguments['default_browser'].lower()
+    elif (
+        test_setup.config_data and
+        "default_browser" in test_setup.config_data
+    ):
+        default_browser = test_setup.config_data[
+            'default_browser'].lower()
+
+    if default_browser == 'firefox':
+        cap = DesiredCapabilities.FIREFOX
+        cap['requireWindowFocus'] = True
+        cap['enablePersistentHover'] = False
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("dom.disable_beforeunload", True)
+        driver_local = webdriver.Firefox(capabilities=cap,
+                                         firefox_profile=profile)
+        driver_local.implicitly_wait(1)
+    else:
+        options = Options()
+        if test_setup.config_data and \
+            'headless_chrome' in test_setup.config_data and \
+                test_setup.config_data['headless_chrome']:
+            options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-setuid-sandbox")
+        options.add_argument("--window-size=1280,1024")
+        options.add_argument("--disable-infobars")
+        options.add_experimental_option('w3c', False)
+        driver_local = webdriver.Chrome(chrome_options=options)
+
+    # maximize browser window
+    driver_local.maximize_window()
+    return driver_local
+
+
+def load_modules(arguments, exclude_pkgs):
+    """
+    Method returns list of modules which is formed by removing packages from
+    exclude_pkgs arguments.
+    :param arguments:
+    :param exclude_pkgs:
+    :return:
+    """
+    from pgadmin.utils.route import TestsGeneratorRegistry
     # Load the test modules which are in given package(i.e. in arguments.pkg)
     if arguments['pkg'] is None or arguments['pkg'] == "all":
         TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs)
