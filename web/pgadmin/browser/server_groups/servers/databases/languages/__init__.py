@@ -609,6 +609,28 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    @staticmethod
+    def _parse_privileges(data):
+        """
+        CHeck key in data adn parse privilege according.
+        :param data: Data.
+        :return:
+        """
+        for key in ['lanacl']:
+            if key in data and data[key] is not None:
+                if 'added' in data[key]:
+                    data[key]['added'] = parse_priv_to_db(
+                        data[key]['added'], ["U"]
+                    )
+                if 'changed' in data[key]:
+                    data[key]['changed'] = parse_priv_to_db(
+                        data[key]['changed'], ["U"]
+                    )
+                if 'deleted' in data[key]:
+                    data[key]['deleted'] = parse_priv_to_db(
+                        data[key]['deleted'], ["U"]
+                    )
+
     def get_sql(self, data, lid=None):
         """
         This function will generate sql from model data.
@@ -634,20 +656,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
                     gettext("Could not find the language information.")
                 )
 
-            for key in ['lanacl']:
-                if key in data and data[key] is not None:
-                    if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(
-                            data[key]['added'], ["U"]
-                        )
-                    if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(
-                            data[key]['changed'], ["U"]
-                        )
-                    if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(
-                            data[key]['deleted'], ["U"]
-                        )
+            LanguageView._parse_privileges(data)
 
             old_data = res['rows'][0]
             for arg in required_args:

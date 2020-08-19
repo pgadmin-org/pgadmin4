@@ -94,6 +94,56 @@ class DataTypeReader:
       - Returns data-types on the basis of the condition provided.
     """
 
+    def _get_types_sql(self, conn, condition, add_serials, schema_oid):
+        """
+        Get sql for types.
+        :param conn: connection
+        :param condition: Condition for sql
+        :param add_serials: add_serials flag
+        :param schema_oid: schema iod.
+        :return: sql for get type sql result, status and response.
+        """
+        # Check if template path is already set or not
+        # if not then we will set the template path here
+        if not hasattr(self, 'data_type_template_path'):
+            self.data_type_template_path = 'datatype/sql/' + (
+                '#{0}#{1}#'.format(
+                    self.manager.server_type,
+                    self.manager.version
+                ) if self.manager.server_type == 'gpdb' else
+                '#{0}#'.format(self.manager.version)
+            )
+        sql = render_template(
+            "/".join([self.data_type_template_path, 'get_types.sql']),
+            condition=condition,
+            add_serials=add_serials,
+            schema_oid=schema_oid
+        )
+        status, rset = conn.execute_2darray(sql)
+
+        return status, rset
+
+    @staticmethod
+    def _types_length_checks(length, typeval, precision):
+        min_val = 0
+        max_val = 0
+        if length:
+            min_val = 0 if typeval == 'D' else 1
+            if precision:
+                max_val = 1000
+            elif min_val:
+                # Max of integer value
+                max_val = 2147483647
+            else:
+                # Max value is 6 for data type like
+                # interval, timestamptz, etc..
+                if typeval == 'D':
+                    max_val = 6
+                else:
+                    max_val = 10
+
+        return min_val, max_val
+
     def get_types(self, conn, condition, add_serials=False, schema_oid=''):
         """
         Returns data-types including calculation for Length and Precision.
@@ -106,23 +156,8 @@ class DataTypeReader:
         """
         res = []
         try:
-            # Check if template path is already set or not
-            # if not then we will set the template path here
-            if not hasattr(self, 'data_type_template_path'):
-                self.data_type_template_path = 'datatype/sql/' + (
-                    '#{0}#{1}#'.format(
-                        self.manager.server_type,
-                        self.manager.version
-                    ) if self.manager.server_type == 'gpdb' else
-                    '#{0}#'.format(self.manager.version)
-                )
-            SQL = render_template(
-                "/".join([self.data_type_template_path, 'get_types.sql']),
-                condition=condition,
-                add_serials=add_serials,
-                schema_oid=schema_oid
-            )
-            status, rset = conn.execute_2darray(SQL)
+            status, rset = self._get_types_sql(conn, condition, add_serials,
+                                               schema_oid)
             if not status:
                 return status, rset
 
@@ -131,28 +166,14 @@ class DataTypeReader:
                 # & length validation for current type
                 precision = False
                 length = False
-                min_val = 0
-                max_val = 0
 
                 # Check if the type will have length and precision or not
                 if row['elemoid']:
                     length, precision, typeval = self.get_length_precision(
                         row['elemoid'])
 
-                if length:
-                    min_val = 0 if typeval == 'D' else 1
-                    if precision:
-                        max_val = 1000
-                    elif min_val:
-                        # Max of integer value
-                        max_val = 2147483647
-                    else:
-                        # Max value is 6 for data type like
-                        # interval, timestamptz, etc..
-                        if typeval == 'D':
-                            max_val = 6
-                        else:
-                            max_val = 10
+                min_val, max_val = DataTypeReader._types_length_checks(
+                    length, typeval, precision)
 
                 res.append({
                     'label': row['typname'], 'value': row['typname'],
@@ -215,6 +236,99 @@ class DataTypeReader:
         return length, precision, typeval
 
     @staticmethod
+    def _check_typmod(typmod, name):
+        """
+        Check type mode ad return length as per type.
+        :param typmod:type mode.
+        :param name: name of type.
+        :return:
+        """
+        length = '('
+        if name == 'numeric':
+            _len = (typmod - 4) >> 16
+            _prec = (typmod - 4) & 0xffff
+            length += str(_len)
+            if _prec is not None:
+                length += ',' + str(_prec)
+        elif (
+            name == 'time' or
+            name == 'timetz' or
+            name == 'time without time zone' or
+            name == 'time with time zone' or
+            name == 'timestamp' or
+            name == 'timestamptz' or
+            name == 'timestamp without time zone' or
+            name == 'timestamp with time zone' or
+            name == 'bit' or
+            name == 'bit varying' or
+            name == 'varbit'
+        ):
+            _prec = 0
+            _len = typmod
+            length += str(_len)
+        elif name == 'interval':
+            _prec = 0
+            _len = typmod & 0xffff
+            # Max length for interval data type is 6
+            # If length is greater then 6 then set length to None
+            if _len > 6:
+                _len = ''
+            length += str(_len)
+        elif name == 'date':
+            # Clear length
+            length = ''
+        else:
+            _len = typmod - 4
+            _prec = 0
+            length += str(_len)
+
+        if len(length) > 0:
+            length += ')'
+
+        return length
+
+    @staticmethod
+    def _get_full_type_value(name, schema, length, array):
+        """
+        Generate full type value as per req.
+        :param name: type name.
+        :param schema: schema name.
+        :param length: length.
+        :param array: array of types
+        :return: full type value
+        """
+        if name == 'char' and schema == 'pg_catalog':
+            return '"char"' + array
+        elif name == 'time with time zone':
+            return 'time' + length + ' with time zone' + array
+        elif name == 'time without time zone':
+            return 'time' + length + ' without time zone' + array
+        elif name == 'timestamp with time zone':
+            return 'timestamp' + length + ' with time zone' + array
+        elif name == 'timestamp without time zone':
+            return 'timestamp' + length + ' without time zone' + array
+        else:
+            return name + length + array
+
+    @staticmethod
+    def _check_schema_in_name(typname, schema):
+        """
+        Above 7.4, format_type also sends the schema name if it's not
+        included in the search_path, so we need to skip it in the typname
+        :param typename: typename for check.
+        :param schema: schema name for check.
+        :return: name
+        """
+        if typname.find(schema + '".') >= 0:
+            name = typname[len(schema) + 3]
+        elif typname.find(schema + '.') >= 0:
+            name = typname[len(schema) + 1]
+        else:
+            name = typname
+
+        return name
+
+    @staticmethod
     def get_full_type(nsp, typname, is_dup, numdims, typmod):
         """
         Returns full type name with Length and Precision.
@@ -228,14 +342,7 @@ class DataTypeReader:
         array = ''
         length = ''
 
-        # Above 7.4, format_type also sends the schema name if it's not
-        # included in the search_path, so we need to skip it in the typname
-        if typname.find(schema + '".') >= 0:
-            name = typname[len(schema) + 3]
-        elif typname.find(schema + '.') >= 0:
-            name = typname[len(schema) + 1]
-        else:
-            name = typname
+        name = DataTypeReader._check_schema_in_name(typname, schema)
 
         if name.startswith('_'):
             if not numdims:
@@ -256,60 +363,11 @@ class DataTypeReader:
                 numdims -= 1
 
         if typmod != -1:
-            length = '('
-            if name == 'numeric':
-                _len = (typmod - 4) >> 16
-                _prec = (typmod - 4) & 0xffff
-                length += str(_len)
-                if _prec is not None:
-                    length += ',' + str(_prec)
-            elif (
-                name == 'time' or
-                name == 'timetz' or
-                name == 'time without time zone' or
-                name == 'time with time zone' or
-                name == 'timestamp' or
-                name == 'timestamptz' or
-                name == 'timestamp without time zone' or
-                name == 'timestamp with time zone' or
-                name == 'bit' or
-                name == 'bit varying' or
-                name == 'varbit'
-            ):
-                _prec = 0
-                _len = typmod
-                length += str(_len)
-            elif name == 'interval':
-                _prec = 0
-                _len = typmod & 0xffff
-                # Max length for interval data type is 6
-                # If length is greater then 6 then set length to None
-                if _len > 6:
-                    _len = ''
-                length += str(_len)
-            elif name == 'date':
-                # Clear length
-                length = ''
-            else:
-                _len = typmod - 4
-                _prec = 0
-                length += str(_len)
+            length = DataTypeReader._check_typmod(typmod, name)
 
-            if len(length) > 0:
-                length += ')'
-
-        if name == 'char' and schema == 'pg_catalog':
-            return '"char"' + array
-        elif name == 'time with time zone':
-            return 'time' + length + ' with time zone' + array
-        elif name == 'time without time zone':
-            return 'time' + length + ' without time zone' + array
-        elif name == 'timestamp with time zone':
-            return 'timestamp' + length + ' with time zone' + array
-        elif name == 'timestamp without time zone':
-            return 'timestamp' + length + ' without time zone' + array
-        else:
-            return name + length + array
+        type_value = DataTypeReader._get_full_type_value(name, schema, length,
+                                                         array)
+        return type_value
 
     @classmethod
     def parse_type_name(cls, type_name):

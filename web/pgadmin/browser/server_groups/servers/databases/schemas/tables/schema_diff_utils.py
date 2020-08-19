@@ -293,47 +293,82 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
                     # Keys that are available in source and missing in target.
                     added = dict1_keys - dict2_keys
-                    for item in added:
-                        source_ddl = module_view.ddl_compare(
-                            source_params=source_params,
-                            target_params=target_params,
-                            source=dict1[item],
-                            target=None,
-                            comp_status='source_only'
-                        )
-
-                        diff += '\n' + source_ddl
+                    diff = SchemaDiffTableCompare._compare_source_only(
+                        added, module_view, source_params, target_params,
+                        dict1, diff)
 
                     # Keys that are available in target and missing in source.
                     removed = dict2_keys - dict1_keys
-                    for item in removed:
-                        target_ddl = module_view.ddl_compare(
-                            source_params=source_params,
-                            target_params=target_params,
-                            source=None,
-                            target=dict2[item],
-                            comp_status='target_only'
-                        )
-
-                        diff += '\n' + target_ddl
+                    diff = SchemaDiffTableCompare._compare_target_only(
+                        removed, module_view, source_params, target_params,
+                        dict2, diff)
 
                     # Keys that are available in both source and target.
-                    for key in intersect_keys:
-                        # Recursively Compare the two dictionary
-                        if not are_dictionaries_identical(
-                                dict1[key], dict2[key], ignore_whitespaces,
-                                self.keys_to_ignore):
+                    other_param = {
+                        "dict1": dict1,
+                        "dict2": dict2,
+                        "ignore_whitespaces": ignore_whitespaces,
+                        "source": source,
+                        "target": target
+                    }
+                    diff = self._compare_source_and_target(
+                        intersect_keys, module_view, source_params,
+                        target_params, diff, **other_param)
 
-                            diff_ddl = module_view.ddl_compare(
-                                source_params=source_params,
-                                target_params=target_params,
-                                source=dict1[key],
-                                target=dict2[key],
-                                comp_status='different',
-                                parent_source_data=source,
-                                parent_target_data=target
-                            )
+        return diff
 
-                            diff += '\n' + diff_ddl
+    @staticmethod
+    def _compare_source_only(added, module_view, source_params, target_params,
+                             dict1, diff):
+        for item in added:
+            source_ddl = module_view.ddl_compare(
+                source_params=source_params,
+                target_params=target_params,
+                source=dict1[item],
+                target=None,
+                comp_status='source_only'
+            )
 
+            diff += '\n' + source_ddl
+        return diff
+
+    @staticmethod
+    def _compare_target_only(removed, module_view, source_params,
+                             target_params, dict2, diff):
+        for item in removed:
+            target_ddl = module_view.ddl_compare(
+                source_params=source_params,
+                target_params=target_params,
+                source=None,
+                target=dict2[item],
+                comp_status='target_only'
+            )
+
+            diff += '\n' + target_ddl
+        return diff
+
+    def _compare_source_and_target(self, intersect_keys, module_view,
+                                   source_params, target_params, diff,
+                                   **kwargs):
+        dict1 = kwargs['dict1']
+        dict2 = kwargs['dict2']
+        ignore_whitespaces = kwargs['ignore_whitespaces']
+        source = kwargs['source']
+        target = kwargs['target']
+        for key in intersect_keys:
+            # Recursively Compare the two dictionary
+            if not are_dictionaries_identical(
+                    dict1[key], dict2[key], ignore_whitespaces,
+                    self.keys_to_ignore):
+                diff_ddl = module_view.ddl_compare(
+                    source_params=source_params,
+                    target_params=target_params,
+                    source=dict1[key],
+                    target=dict2[key],
+                    comp_status='different',
+                    parent_source_data=source,
+                    parent_target_data=target
+                )
+
+                diff += '\n' + diff_ddl
         return diff

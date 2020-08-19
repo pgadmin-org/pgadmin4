@@ -789,7 +789,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return None, internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
+            elif len(res['rows']) == 0:
                 return None, gone(
                     gettext("Could not find the view on the server.")
                 )
@@ -819,14 +819,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             self.view_schema = old_data['schema']
 
             try:
-                sql = render_template("/".join(
-                    [self.template_path,
-                     self._SQL_PREFIX + self._UPDATE_SQL]), data=data,
-                    o_data=old_data, conn=self.conn)
-
-                if 'definition' in data and data['definition']:
-                    sql += self.get_columns_sql(did, vid)
-
+                sql = self._get_update_sql(did, vid, data, old_data)
             except Exception as e:
                 current_app.logger.exception(e)
                 return None, internal_server_error(errormsg=str(e))
@@ -836,6 +829,24 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 return None, errmsg
 
         return sql, data['name'] if 'name' in data else old_data['name']
+
+    def _get_update_sql(self, did, vid, data, old_data):
+        """
+        Get sql for update view.
+        :param did: Database Id.
+        :param vid: View Id.
+        :param data: data for get sql.
+        :param old_data: old view data for get sql.
+        :return: sql for update view.
+        """
+        sql = render_template("/".join(
+            [self.template_path,
+             self._SQL_PREFIX + self._UPDATE_SQL]), data=data,
+            o_data=old_data, conn=self.conn)
+
+        if 'definition' in data and data['definition']:
+            sql += self.get_columns_sql(did, vid)
+        return sql
 
     def _get_create_view_sql(self, data):
         """

@@ -909,6 +909,100 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    @staticmethod
+    def _parse_privileges(data):
+        """
+        Parser privilege data as per type.
+        :param data: Data.
+        :return:
+        """
+        if 'acl' in data and 'added' in data['acl']:
+            data['acl']['added'] = parse_priv_to_db(data['acl']['added'],
+                                                    ["a", "r", "w", "x"])
+        if 'acl' in data and 'changed' in data['acl']:
+            data['acl']['changed'] = parse_priv_to_db(
+                data['acl']['changed'], ["a", "r", "w", "x"])
+        if 'acl' in data and 'deleted' in data['acl']:
+            data['acl']['deleted'] = parse_priv_to_db(
+                data['acl']['deleted'], ["a", "r", "w", "x"])
+
+    @staticmethod
+    def _check_old_col_ops(old_col_frmt_options, option, col):
+        """
+        check old column options.
+        :param old_col_frmt_options: old column option data.
+        :param option: option data.
+        :param col: column data.
+        :return:
+        """
+        if (
+            option['option'] in old_col_frmt_options and
+            option['value'] != old_col_frmt_options[option['option']]
+        ):
+            col['coloptions_updated']['changed'].append(option)
+        elif option['option'] not in old_col_frmt_options:
+            col['coloptions_updated']['added'].append(option)
+        if option['option'] in old_col_frmt_options:
+            del old_col_frmt_options[option['option']]
+
+    @staticmethod
+    def _parse_column_options(data):
+        """
+        Parse columns data.
+        :param data: Data.
+        :return:
+        """
+        for c in data['columns']['changed']:
+            old_col_options = c['attfdwoptions'] = []
+            if 'attfdwoptions' in c and c['attfdwoptions']:
+                old_col_options = c['attfdwoptions']
+
+            old_col_frmt_options = {}
+
+            for o in old_col_options:
+                col_opt = o.split("=")
+                old_col_frmt_options[col_opt[0]] = col_opt[1]
+
+            c['coloptions_updated'] = {'added': [],
+                                       'changed': [],
+                                       'deleted': []}
+
+            if 'coloptions' in c and len(c['coloptions']) > 0:
+                for o in c['coloptions']:
+                    ForeignTableView._check_old_col_ops(old_col_frmt_options,
+                                                        o, c)
+
+            for o in old_col_frmt_options:
+                c['coloptions_updated']['deleted'].append(
+                    {'option': o})
+
+    def _format_columns_data(self, data, old_data):
+        """
+        Format columns.
+        :param data: data.
+        :param old_data: old data for compare.
+        :return:
+        """
+        col_data = {}
+        # Prepare dict of columns with key = column's attnum
+        # Will use this in the update template when any column is
+        # changed, to identify the columns.
+        for c in old_data['columns']:
+            col_data[c['attnum']] = c
+
+        old_data['columns'] = col_data
+
+        if 'columns' in data and 'added' in data['columns']:
+            data['columns']['added'] = self._format_columns(
+                data['columns']['added'])
+
+        if 'columns' in data and 'changed' in data['columns']:
+            data['columns']['changed'] = self._format_columns(
+                data['columns']['changed'])
+
+            # Parse Column Options
+            ForeignTableView._parse_column_options(data)
+
     def get_sql(self, **kwargs):
         """
         Generates the SQL statements to create/update the Foreign Table.
@@ -929,7 +1023,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                                                       foid, inherits=True)
             if not status:
                 return old_data
-            if not old_data:
+            elif not old_data:
                 return gone(
                     gettext("The specified foreign table could not be found."))
 
@@ -937,65 +1031,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 data['is_schema_diff'] = True
                 old_data['columns_for_schema_diff'] = old_data['columns']
 
-            # Prepare dict of columns with key = column's attnum
-            # Will use this in the update template when any column is
-            # changed, to identify the columns.
-            col_data = {}
-            for c in old_data['columns']:
-                col_data[c['attnum']] = c
-
-            old_data['columns'] = col_data
-
-            if 'columns' in data and 'added' in data['columns']:
-                data['columns']['added'] = self._format_columns(
-                    data['columns']['added'])
-
-            if 'columns' in data and 'changed' in data['columns']:
-                data['columns']['changed'] = self._format_columns(
-                    data['columns']['changed'])
-
-                # Parse Column Options
-                for c in data['columns']['changed']:
-                    old_col_options = c['attfdwoptions'] = []
-                    if 'attfdwoptions' in c and c['attfdwoptions']:
-                        old_col_options = c['attfdwoptions']
-
-                    old_col_frmt_options = {}
-
-                    for o in old_col_options:
-                        col_opt = o.split("=")
-                        old_col_frmt_options[col_opt[0]] = col_opt[1]
-
-                    c['coloptions_updated'] = {'added': [],
-                                               'changed': [],
-                                               'deleted': []}
-
-                    if 'coloptions' in c and len(c['coloptions']) > 0:
-                        for o in c['coloptions']:
-                            if (
-                                o['option'] in old_col_frmt_options and
-                                o['value'] != old_col_frmt_options[o['option']]
-                            ):
-                                c['coloptions_updated']['changed'].append(o)
-                            elif o['option'] not in old_col_frmt_options:
-                                c['coloptions_updated']['added'].append(o)
-                            if o['option'] in old_col_frmt_options:
-                                del old_col_frmt_options[o['option']]
-
-                    for o in old_col_frmt_options:
-                        c['coloptions_updated']['deleted'].append(
-                            {'option': o})
+            self._format_columns_data(data, old_data)
 
             # Parse Privileges
-            if 'acl' in data and 'added' in data['acl']:
-                data['acl']['added'] = parse_priv_to_db(data['acl']['added'],
-                                                        ["a", "r", "w", "x"])
-            if 'acl' in data and 'changed' in data['acl']:
-                data['acl']['changed'] = parse_priv_to_db(
-                    data['acl']['changed'], ["a", "r", "w", "x"])
-            if 'acl' in data and 'deleted' in data['acl']:
-                data['acl']['deleted'] = parse_priv_to_db(
-                    data['acl']['deleted'], ["a", "r", "w", "x"])
+            ForeignTableView._parse_privileges(data)
 
             # If ftsrvname is changed while comparing two schemas
             # then we need to drop foreign table and recreate it
@@ -1003,16 +1042,16 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 # Modify the data required to recreate the foreign table.
                 self.modify_data_for_schema_diff(data, old_data)
 
-                SQL = render_template(
+                sql = render_template(
                     "/".join([self.template_path,
                               'foreign_table_schema_diff.sql']),
                     data=data, o_data=old_data)
             else:
-                SQL = render_template(
+                sql = render_template(
                     "/".join([self.template_path, self._UPDATE_SQL]),
                     data=data, o_data=old_data
                 )
-            return SQL, data['name'] if 'name' in data else old_data['name']
+            return sql, data['name'] if 'name' in data else old_data['name']
         else:
             data['columns'] = self._format_columns(data['columns'])
 
@@ -1021,9 +1060,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 data['acl'] = parse_priv_to_db(data['acl'],
                                                ["a", "r", "w", "x"])
 
-            SQL = render_template("/".join([self.template_path,
+            sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]), data=data)
-            return SQL, data['name']
+            return sql, data['name']
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, foid):

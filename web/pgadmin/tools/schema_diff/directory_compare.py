@@ -20,40 +20,20 @@ list_keys_array = ['name', 'colname', 'argid', 'token', 'option', 'conname',
                    'fsrvoption', 'umoption']
 
 
-def compare_dictionaries(**kwargs):
+def _get_source_list(added, source_dict, node, source_params, view_object,
+                     node_label, group_name):
     """
-    This function will compare the two dictionaries.
-
-    :param kwargs:
-    :return:
+    Get only source list.
+    :param added: added dict list.
+    :param source_dict: source dict.
+    :param node: node type.
+    :param source_params: source parameters.
+    :param view_object: view object for get sql.
+    :param node_label: node label.
+    :param group_name: group name
+    :return: list of source dict.
     """
-    view_object = kwargs.get('view_object')
-    source_params = kwargs.get('source_params')
-    target_params = kwargs.get('target_params')
-    group_name = kwargs.get('group_name')
-    source_dict = kwargs.get('source_dict')
-    target_dict = kwargs.get('target_dict')
-    node = kwargs.get('node')
-    node_label = kwargs.get('node_label')
-    ignore_whitespaces = kwargs.get('ignore_whitespaces')
-    ignore_keys = kwargs.get('ignore_keys', None)
-
-    dict1 = copy.deepcopy(source_dict)
-    dict2 = copy.deepcopy(target_dict)
-
-    # Find the duplicate keys in both the dictionaries
-    dict1_keys = set(dict1.keys())
-    dict2_keys = set(dict2.keys())
-    intersect_keys = dict1_keys.intersection(dict2_keys)
-
-    # Add gid to the params
-    source_params['gid'] = target_params['gid'] = 1
-
-    # Keys that are available in source and missing in target.
     source_only = []
-    source_dependencies = []
-    added = dict1_keys - dict2_keys
-    global count
     for item in added:
         source_object_id = None
         if 'oid' in source_dict[item]:
@@ -100,9 +80,36 @@ def compare_dictionaries(**kwargs):
         })
         count += 1
 
+    return source_only
+
+
+def _delete_keys(temp_tgt_params):
+    """
+    Delete keys from temp target parameters.
+    :param temp_tgt_params:
+    :type temp_tgt_params:
+    :return:
+    """
+    if 'gid' in temp_tgt_params:
+        del temp_tgt_params['gid']
+    if 'json_resp' in temp_tgt_params:
+        del temp_tgt_params['json_resp']
+
+
+def _get_target_list(removed, target_dict, node, target_params, view_object,
+                     node_label, group_name):
+    """
+    Get only target list.
+    :param removed: removed list.
+    :param target_dict: target dict.
+    :param node: node type.
+    :param target_params: target parameters.
+    :param view_object: view object for get sql.
+    :param node_label: node label.
+    :param group_name: group name.
+    :return: list of target dict.
+    """
     target_only = []
-    # Keys that are available in target and missing in source.
-    removed = dict2_keys - dict1_keys
     for item in removed:
         target_object_id = None
         if 'oid' in target_dict[item]:
@@ -113,10 +120,7 @@ def compare_dictionaries(**kwargs):
             temp_tgt_params['tid'] = target_object_id
             temp_tgt_params['json_resp'] = False
             target_ddl = view_object.get_sql_from_table_diff(**temp_tgt_params)
-            if 'gid' in temp_tgt_params:
-                del temp_tgt_params['gid']
-            if 'json_resp' in temp_tgt_params:
-                del temp_tgt_params['json_resp']
+            _delete_keys(temp_tgt_params)
             diff_ddl = view_object.get_drop_sql(**temp_tgt_params)
         else:
             temp_tgt_params = copy.deepcopy(target_params)
@@ -148,10 +152,32 @@ def compare_dictionaries(**kwargs):
         })
         count += 1
 
-    # Compare the values of duplicates keys.
+    return target_only
+
+
+def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
+                                      node, node_label, view_object,
+                                      **kwargs):
+    """
+    get lists of identical and different keys list.
+    :param intersect_keys:
+    :param source_dict:
+    :param target_dict:
+    :param node:
+    :param node_label:
+    :param view_object:
+    :param other_param:
+    :return: return list of identical and different dict.
+    """
     identical = []
     different = []
-    diff_dependencies = []
+    dict1 = kwargs['dict1']
+    dict2 = kwargs['dict2']
+    ignore_whitespaces = kwargs['ignore_whitespaces']
+    ignore_keys = kwargs['ignore_keys']
+    source_params = kwargs['source_params']
+    target_params = kwargs['target_params']
+    group_name = kwargs['group_name']
     for key in intersect_keys:
         source_object_id = None
         target_object_id = None
@@ -256,6 +282,66 @@ def compare_dictionaries(**kwargs):
                 'dependencies': diff_dependencies
             })
         count += 1
+
+    return identical, different
+
+
+def compare_dictionaries(**kwargs):
+    """
+    This function will compare the two dictionaries.
+
+    :param kwargs:
+    :return:
+    """
+    view_object = kwargs.get('view_object')
+    source_params = kwargs.get('source_params')
+    target_params = kwargs.get('target_params')
+    group_name = kwargs.get('group_name')
+    source_dict = kwargs.get('source_dict')
+    target_dict = kwargs.get('target_dict')
+    node = kwargs.get('node')
+    node_label = kwargs.get('node_label')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
+    ignore_keys = kwargs.get('ignore_keys', None)
+
+    dict1 = copy.deepcopy(source_dict)
+    dict2 = copy.deepcopy(target_dict)
+
+    # Find the duplicate keys in both the dictionaries
+    dict1_keys = set(dict1.keys())
+    dict2_keys = set(dict2.keys())
+    intersect_keys = dict1_keys.intersection(dict2_keys)
+
+    # Add gid to the params
+    source_params['gid'] = target_params['gid'] = 1
+
+    # Keys that are available in source and missing in target.
+
+    added = dict1_keys - dict2_keys
+    global count
+    source_only = _get_source_list(added, source_dict, node, source_params,
+                                   view_object, node_label, group_name)
+
+    target_only = []
+    # Keys that are available in target and missing in source.
+    removed = dict2_keys - dict1_keys
+    target_only = _get_target_list(removed, target_dict, node, target_params,
+                                   view_object, node_label, group_name)
+
+    # Compare the values of duplicates keys.
+    other_param = {
+        "dict1": dict1,
+        "dict2": dict2,
+        "ignore_whitespaces": ignore_whitespaces,
+        "ignore_keys": ignore_keys,
+        "source_params": source_params,
+        "target_params": target_params,
+        "group_name": group_name
+    }
+
+    identical, different = _get_identical_and_different_list(
+        intersect_keys, source_dict, target_dict, node, node_label,
+        view_object, **other_param)
 
     return source_only + target_only + different + identical
 
@@ -491,6 +577,25 @@ def is_key_exists(key_list, target_dict):
     return None
 
 
+def _check_key_in_source_target(key, acl_keys, target, source):
+    """
+    Check if key is present in source if not then check it's present in target.
+    :param key: key to be checked.
+    :param acl_keys:  acl keys
+    :param target: target object.
+    :param source: source object.
+    :return: return key.
+    """
+    if key is None:
+        key = is_key_exists(acl_keys, target)
+        if key is None:
+            key = 'acl'
+    elif key is not None and type(source[key]) != list:
+        key = 'acl'
+
+    return key
+
+
 def parse_acl(source, target, diff_dict):
     """
     This function is used to parse acl.
@@ -504,12 +609,7 @@ def parse_acl(source, target, diff_dict):
 
     # If key is not found in source then check the key is available
     # in target.
-    if key is None:
-        key = is_key_exists(acl_keys, target)
-        if key is None:
-            key = 'acl'
-    elif key is not None and type(source[key]) != list:
-        key = 'acl'
+    key = _check_key_in_source_target(key, acl_keys, target, source)
 
     tmp_source = source[key] if\
         key in source and source[key] is not None else []
