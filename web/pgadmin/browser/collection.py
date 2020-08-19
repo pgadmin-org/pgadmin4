@@ -16,6 +16,7 @@ from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import PGChildModule
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.constants import PGADMIN_NODE
 
 
 @six.add_metaclass(ABCMeta)
@@ -58,15 +59,15 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
 
         if self.module_use_template_javascript:
             scripts.extend([{
-                'name': 'pgadmin.node.%s' % self.node_type,
-                'path': url_for('browser.index') +
-                        '%s/module' % self.node_type,
+                'name': PGADMIN_NODE % self.node_type,
+                'path': url_for('browser.index'
+                                ) + '%s/module' % self.node_type,
                 'when': self.script_load,
                 'is_template': True
             }])
         else:
             scripts.extend([{
-                'name': 'pgadmin.node.%s' % self.node_type,
+                'name': PGADMIN_NODE % self.node_type,
                 'path': url_for(
                     '%s.static' % self.name,
                     filename=('js/%s' % self.node_type)
@@ -93,7 +94,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             "_type": self.node_type,
             "_id": node_id,
             "_pid": parent_id,
-            "module": 'pgadmin.node.%s' % self.node_type
+            "module": PGADMIN_NODE % self.node_type
         }
         for key in kwargs:
             obj.setdefault(key, kwargs[key])
@@ -108,7 +109,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             "_type": 'coll-%s' % (self.node_type),
             "_id": parent_id,
             "_pid": parent_id,
-            "module": 'pgadmin.node.%s' % self.node_type,
+            "module": PGADMIN_NODE % self.node_type,
             "nodes": [self.node_type]
         }
 

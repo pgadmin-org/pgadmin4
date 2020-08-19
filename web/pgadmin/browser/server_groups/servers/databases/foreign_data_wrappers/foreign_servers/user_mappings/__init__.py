@@ -179,6 +179,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_label = "User Mapping"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -374,9 +375,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return False, gone(
-                gettext("Could not find the user mapping information.")
-            )
+            return False, gone(self.not_found_error_msg)
 
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self.datlastsysoid)
@@ -672,9 +671,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the user mapping information.")
-                )
+                return gone(self.not_found_error_msg)
 
             if res['rows'][0]['umoptions'] is not None:
                 res['rows'][0]['umoptions'] = tokenize_options(
@@ -769,9 +766,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the user mapping information.")
-            )
+            return gone(self.not_found_error_msg)
 
         if fsid is None and 'fsid' in res['rows'][0]:
             fsid = res['rows'][0]['fsid']

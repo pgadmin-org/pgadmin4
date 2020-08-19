@@ -97,6 +97,7 @@ blueprint = DatabaseModule(__name__)
 
 class DatabaseView(PGChildNodeView):
     node_type = blueprint.node_type
+    node_label = "Database"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -380,7 +381,7 @@ class DatabaseView(PGChildNodeView):
                 status=200
             )
 
-        return gone(errormsg=_("Could not find the database on the server."))
+        return gone(errormsg=self.not_found_error_msg)
 
     @check_precondition(action="properties")
     def properties(self, gid, sid, did):
@@ -396,7 +397,7 @@ class DatabaseView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the database on the server.")
+                self.not_found_error_msg
             )
 
         SQL = render_template(
@@ -801,7 +802,7 @@ class DatabaseView(PGChildNodeView):
 
         if len(rset['rows']) == 0:
             return gone(
-                _("Could not find the database on the server.")
+                self.not_found_error_msg
             )
 
         res = rset['rows'][0]
@@ -930,7 +931,7 @@ class DatabaseView(PGChildNodeView):
 
             if len(rset['rows']) == 0:
                 return gone(
-                    _("Could not find the database on the server.")
+                    self.not_found_error_msg
                 )
 
             data['old_name'] = (rset['rows'][0])['name']
@@ -1101,7 +1102,7 @@ class DatabaseView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the database on the server.")
+                self.not_found_error_msg
             )
 
         SQL = render_template(

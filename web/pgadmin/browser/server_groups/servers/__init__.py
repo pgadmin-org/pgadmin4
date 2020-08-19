@@ -30,6 +30,7 @@ from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from psycopg2 import Error as psycopg2_Error, OperationalError
 from pgadmin.browser.server_groups.servers.utils import is_valid_ipaddress
+from pgadmin.utils.constants import UNAUTH_REQ
 
 
 def has_any(data, keys):
@@ -240,6 +241,7 @@ blueprint = ServerModule(__name__)
 
 class ServerNode(PGChildNodeView):
     node_type = ServerModule._NODE_TYPE
+    node_label = "Server"
 
     parent_ids = [{'type': 'int', 'id': 'gid'}]
     ids = [{'type': 'int', 'id': 'sid'}]
@@ -658,7 +660,7 @@ class ServerNode(PGChildNodeView):
             return make_json_response(
                 status=410,
                 success=0,
-                errormsg=gettext("Could not find the required server.")
+                errormsg=self.not_found_error_msg
             )
 
         sg = ServerGroup.query.filter_by(
@@ -1004,15 +1006,15 @@ class ServerNode(PGChildNodeView):
         # Fetch Server Details
         server = Server.query.filter_by(id=sid).first()
         if server is None:
-            return bad_request(gettext("Server not found."))
+            return bad_request(self.not_found_error_msg)
 
         if current_user and hasattr(current_user, 'id'):
             # Fetch User Details.
             user = User.query.filter_by(id=current_user.id).first()
             if user is None:
-                return unauthorized(gettext("Unauthorized request."))
+                return unauthorized(gettext(UNAUTH_REQ))
         else:
-            return unauthorized(gettext("Unauthorized request."))
+            return unauthorized(gettext(UNAUTH_REQ))
 
         data = {}
         if request.form:
@@ -1179,7 +1181,7 @@ class ServerNode(PGChildNodeView):
 
         server = Server.query.filter_by(id=sid).first()
         if server is None:
-            return bad_request(gettext("Server not found."))
+            return bad_request(self.not_found_error_msg)
 
         # Release Connection
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
@@ -1287,12 +1289,12 @@ class ServerNode(PGChildNodeView):
             # Fetch Server Details
             server = Server.query.filter_by(id=sid).first()
             if server is None:
-                return bad_request(gettext("Server not found."))
+                return bad_request(self.not_found_error_msg)
 
             # Fetch User Details.
             user = User.query.filter_by(id=current_user.id).first()
             if user is None:
-                return unauthorized(gettext("Unauthorized request."))
+                return unauthorized(gettext(UNAUTH_REQ))
 
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
             conn = manager.connection()
@@ -1407,7 +1409,7 @@ class ServerNode(PGChildNodeView):
         if server is None:
             return make_json_response(
                 success=0,
-                errormsg=gettext("Could not find the required server.")
+                errormsg=self.not_found_error_msg
             )
 
         try:
@@ -1491,7 +1493,7 @@ class ServerNode(PGChildNodeView):
         if server is None:
             return make_json_response(
                 success=0,
-                errormsg=gettext("Could not find the required server.")
+                errormsg=self.not_found_error_msg
             )
 
         try:
@@ -1566,7 +1568,7 @@ class ServerNode(PGChildNodeView):
             if server is None:
                 return make_json_response(
                     success=0,
-                    info=gettext("Could not find the required server.")
+                    info=self.not_found_error_msg
                 )
 
             setattr(server, 'password', None)
@@ -1605,7 +1607,7 @@ class ServerNode(PGChildNodeView):
             if server is None:
                 return make_json_response(
                     success=0,
-                    info=gettext("Could not find the required server.")
+                    info=self.not_found_error_msg
                 )
 
             setattr(server, 'tunnel_password', None)

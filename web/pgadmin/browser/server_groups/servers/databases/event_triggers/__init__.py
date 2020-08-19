@@ -149,6 +149,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_icon = "icon-%s" % blueprint.node_type
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -258,7 +259,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     did,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    self.node_icon
                 ))
 
         return make_json_response(
@@ -292,7 +293,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     did,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    self.node_icon
                 ),
                 status=200
             )
@@ -431,7 +432,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     etid,
                     did,
                     data['name'],
-                    icon="icon-%s" % self.node_type
+                    self.node_icon
                 )
             )
         except Exception as e:
@@ -478,7 +479,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                         etid,
                         did,
                         data['name'],
-                        icon="icon-%s" % self.node_type
+                        self.node_icon
                     )
                 )
             else:

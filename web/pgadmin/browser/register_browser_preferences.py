@@ -7,6 +7,7 @@
 #
 ##########################################################################
 from flask_babelex import gettext
+from pgadmin.utils.constants import KEYBOARD_SHORTCUTS
 
 LOCK_LAYOUT_LEVEL = {
     'PREVENT_DOCKING': 'docking',
@@ -125,7 +126,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 66, 'char': 'b'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -140,7 +141,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 91, 'char': '['}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -155,7 +156,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 93, 'char': ']'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -170,7 +171,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 70, 'char': 'f'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -185,7 +186,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 79, 'char': 'o'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -200,7 +201,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 76, 'char': 'l'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -215,7 +216,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 72, 'char': 'h'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -230,7 +231,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 81, 'char': 'q'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -245,7 +246,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 86, 'char': 'v'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -260,7 +261,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 83, 'char': 's'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -275,7 +276,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 78, 'char': 'n'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -290,7 +291,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 69, 'char': 'e'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -305,7 +306,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 68, 'char': 'd'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -320,7 +321,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 77, 'char': 'm'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -335,7 +336,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 85, 'char': 'u'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -350,7 +351,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 67, 'char': 'c'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -365,7 +366,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 71, 'char': 'g'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -380,7 +381,7 @@ def register_browser_preferences(self):
             'control': True,
             'key': {'key_code': 93, 'char': ']'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -395,7 +396,7 @@ def register_browser_preferences(self):
             'control': True,
             'key': {'key_code': 91, 'char': '['}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -410,7 +411,7 @@ def register_browser_preferences(self):
             'control': False,
             'key': {'key_code': 116, 'char': 'F5'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )
 
@@ -425,6 +426,6 @@ def register_browser_preferences(self):
             'control': True,
             'key': {'key_code': 65, 'char': 'a'}
         },
-        category_label=gettext('Keyboard shortcuts'),
+        category_label=gettext(KEYBOARD_SHORTCUTS),
         fields=fields
     )

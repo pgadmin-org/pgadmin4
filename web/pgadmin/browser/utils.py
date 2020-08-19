@@ -221,6 +221,8 @@ class NodeView(with_metaclass(MethodViewType, View)):
 
     # Inherited class needs to modify these parameters
     node_type = None
+    # Inherited class needs to modify these parameters
+    node_label = None
     # This must be an array object with attributes (type and id)
     parent_ids = []
     # This must be an array object with attributes (type and id)
@@ -707,3 +709,8 @@ class PGChildNodeView(NodeView):
                 )
 
         return dependency
+
+    @property
+    def not_found_error_msg(self):
+        return gettext("Could not find the specified {}.".format(
+            self.node_label).lower())

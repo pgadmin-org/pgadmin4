@@ -163,6 +163,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_label = "Foreign Server"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -356,9 +357,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return False, gone(
-                gettext("Could not find the foreign server information.")
-            )
+            return False, gone(self.not_found_error_msg)
 
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self.datlastsysoid)
@@ -651,9 +650,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the foreign server information.")
-                )
+                return gone(self.not_found_error_msg)
 
             if res['rows'][0]['fsrvoptions'] is not None:
                 res['rows'][0]['fsrvoptions'] = tokenize_options(
@@ -758,9 +755,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the foreign server information.")
-            )
+            return gone(self.not_found_error_msg)
 
         if fid is None and 'fdwid' in res['rows'][0]:
             fid = res['rows'][0]['fdwid']
