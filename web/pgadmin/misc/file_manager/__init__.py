@@ -13,7 +13,6 @@ import os
 import os.path
 import random
 import string
-import sys
 import time
 from urllib.parse import unquote
 from sys import platform as _platform
@@ -30,6 +29,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.constants import PREF_LABEL_OPTIONS
 
 # Checks if platform is Windows
 if _platform == "win32":
@@ -156,24 +156,24 @@ class FileManagerModule(PgAdminModule):
         self.file_upload_size = self.preference.register(
             'options', 'file_upload_size',
             gettext("Maximum file upload size (MB)"), 'integer', 50,
-            category_label=gettext('Options')
+            category_label=PREF_LABEL_OPTIONS
         )
         self.last_directory_visited = self.preference.register(
             'options', 'last_directory_visited',
             gettext("Last directory visited"), 'text', '/',
-            category_label=gettext('Options')
+            category_label=PREF_LABEL_OPTIONS
         )
         self.file_dialog_view = self.preference.register(
             'options', 'file_dialog_view',
             gettext("File dialog view"), 'options', 'list',
-            category_label=gettext('Options'),
+            category_label=PREF_LABEL_OPTIONS,
             options=[{'label': gettext('List'), 'value': 'list'},
                      {'label': gettext('Grid'), 'value': 'grid'}]
         )
         self.show_hidden_files = self.preference.register(
             'options', 'show_hidden_files',
             gettext("Show hidden files and folders?"), 'boolean', False,
-            category_label=gettext('Options')
+            category_label=PREF_LABEL_OPTIONS
         )
 
 

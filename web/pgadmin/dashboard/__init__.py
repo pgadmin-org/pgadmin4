@@ -20,6 +20,7 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY
 
 from config import PG_DEFAULT_DRIVER
 
@@ -117,7 +118,7 @@ class DashboardModule(PgAdminModule):
         self.display_graphs = self.dashboard_preference.register(
             'display', 'show_graphs',
             gettext("Show graphs?"), 'boolean', True,
-            category_label=gettext('Display'),
+            category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('If set to True, graphs '
                              'will be displayed on dashboards.')
         )
@@ -125,7 +126,7 @@ class DashboardModule(PgAdminModule):
         self.display_server_activity = self.dashboard_preference.register(
             'display', 'show_activity',
             gettext("Show activity?"), 'boolean', True,
-            category_label=gettext('Display'),
+            category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('If set to True, activity tables '
                              'will be displayed on dashboards.')
         )
@@ -133,7 +134,7 @@ class DashboardModule(PgAdminModule):
         self.graph_data_points = self.dashboard_preference.register(
             'display', 'graph_data_points',
             gettext("Show graph data points?"), 'boolean', False,
-            category_label=gettext('Display'),
+            category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('If set to True, data points will be '
                              'visible on graph lines.')
         )
@@ -141,7 +142,7 @@ class DashboardModule(PgAdminModule):
         self.graph_mouse_track = self.dashboard_preference.register(
             'display', 'graph_mouse_track',
             gettext("Show mouse hover tooltip?"), 'boolean', True,
-            category_label=gettext('Display'),
+            category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('If set to True, tooltip will appear on mouse '
                              'hover on the graph lines giving the data point '
                              'details')

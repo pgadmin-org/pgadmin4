@@ -47,7 +47,7 @@ from pgadmin.utils.master_password import validate_master_password, \
     set_masterpass_check_text, cleanup_master_password, get_crypt_key, \
     set_crypt_key, process_masterpass_disabled
 from pgadmin.model import User
-from pgadmin.utils.constants import APP_JS, PGADMIN_NODE
+from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE
 
 try:
     from flask_security.views import default_render_json
@@ -749,7 +749,7 @@ def utils():
             support_ssh_tunnel=config.SUPPORT_SSH_TUNNEL,
             logout_url=_get_logout_url()
         ),
-        200, {'Content-Type': APP_JS})
+        200, {'Content-Type': MIMETYPE_APP_JS})
 
 
 @blueprint.route("/js/endpoints.js")
@@ -757,7 +757,7 @@ def utils():
 def exposed_urls():
     return make_response(
         render_template('browser/js/endpoints.js'),
-        200, {'Content-Type': APP_JS}
+        200, {'Content-Type': MIMETYPE_APP_JS}
     )
 
 
@@ -767,7 +767,7 @@ def exposed_urls():
 def error_js():
     return make_response(
         render_template('browser/js/error.js', _=gettext),
-        200, {'Content-Type': APP_JS})
+        200, {'Content-Type': MIMETYPE_APP_JS})
 
 
 @blueprint.route("/js/messages.js")
@@ -775,7 +775,7 @@ def error_js():
 def messages_js():
     return make_response(
         render_template('browser/js/messages.js', _=gettext),
-        200, {'Content-Type': APP_JS})
+        200, {'Content-Type': MIMETYPE_APP_JS})
 
 
 @blueprint.route("/browser.css")

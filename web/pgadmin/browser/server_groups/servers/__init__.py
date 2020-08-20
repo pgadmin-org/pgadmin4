@@ -30,7 +30,7 @@ from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from psycopg2 import Error as psycopg2_Error, OperationalError
 from pgadmin.browser.server_groups.servers.utils import is_valid_ipaddress
-from pgadmin.utils.constants import UNAUTH_REQ
+from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS
 
 
 def has_any(data, keys):
@@ -950,7 +950,7 @@ class ServerNode(PGChildNodeView):
                 "servers/supported_servers.js",
                 server_types=ServerType.types()
             ),
-            200, {'Content-Type': 'application/javascript'}
+            200, {'Content-Type': MIMETYPE_APP_JS}
         )
 
     def connect_status(self, gid, sid):

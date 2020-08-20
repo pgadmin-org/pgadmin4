@@ -26,6 +26,7 @@ from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY
 
 MODULE_NAME = 'schema_diff'
 
@@ -75,7 +76,7 @@ class SchemaDiffModule(PgAdminModule):
         self.preference.register(
             'display', 'schema_diff_new_browser_tab',
             gettext("Open in new browser tab"), 'boolean', False,
-            category_label=gettext('Display'),
+            category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('If set to True, the Schema Diff '
                              'will be opened in a new browser tab.')
         )
@@ -83,7 +84,7 @@ class SchemaDiffModule(PgAdminModule):
         self.preference.register(
             'display', 'ignore_whitespaces',
             gettext("Ignore whitespaces"), 'boolean', False,
-            category_label=gettext('Display'),
+            category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('If set to True, then the Schema Diff '
                              'tool ignores the whitespaces while comparing '
                              'the string objects. Whitespace includes space, '

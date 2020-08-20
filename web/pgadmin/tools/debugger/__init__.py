@@ -33,6 +33,8 @@ from pgadmin.model import db, DebuggerFunctionArguments
 from pgadmin.tools.debugger.utils.debugger_instance import DebuggerInstance
 from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
+    PREF_LABEL_KEYBOARD_SHORTCUTS
 
 MODULE_NAME = 'debugger'
 
@@ -78,7 +80,7 @@ class DebuggerModule(PgAdminModule):
         self.open_in_new_tab = self.preference.register(
             'display', 'debugger_new_browser_tab',
             gettext("Open in new browser tab"), 'boolean', False,
-            category_label=gettext('Display'),
+            category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('If set to True, the Debugger '
                              'will be opened in a new browser tab.')
         )
@@ -92,7 +94,7 @@ class DebuggerModule(PgAdminModule):
                     'char': 'c'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=accesskey_fields
         )
 
@@ -105,7 +107,7 @@ class DebuggerModule(PgAdminModule):
                     'char': 's'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=accesskey_fields
         )
 
@@ -118,7 +120,7 @@ class DebuggerModule(PgAdminModule):
                     'char': 'i'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=accesskey_fields
         )
 
@@ -131,7 +133,7 @@ class DebuggerModule(PgAdminModule):
                     'char': 'o'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=accesskey_fields
         )
 
@@ -144,7 +146,7 @@ class DebuggerModule(PgAdminModule):
                     'char': 't'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=accesskey_fields
         )
 
@@ -157,7 +159,7 @@ class DebuggerModule(PgAdminModule):
                     'char': 'x'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=accesskey_fields
         )
 
@@ -175,7 +177,7 @@ class DebuggerModule(PgAdminModule):
                     'char': 'q'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=shortcut_fields
         )
 
@@ -193,7 +195,7 @@ class DebuggerModule(PgAdminModule):
                     'char': '['
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=shortcut_fields
         )
 
@@ -211,7 +213,7 @@ class DebuggerModule(PgAdminModule):
                     'char': ']'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=shortcut_fields
         )
 
@@ -229,7 +231,7 @@ class DebuggerModule(PgAdminModule):
                     'char': 'Tab'
                 }
             },
-            category_label=gettext('Keyboard shortcuts'),
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
             fields=shortcut_fields
         )
 
