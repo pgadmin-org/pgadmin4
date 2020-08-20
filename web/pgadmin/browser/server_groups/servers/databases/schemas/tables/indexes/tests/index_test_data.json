@@ -209,7 +209,7 @@
       "mock_data": {},
       "expected_data": {
         "status_code": 410,
-        "error_msg": "Could not find the index in the table.",
+        "error_msg": "could not find the specified index.",
         "test_result_data": {}
       },
       "is_list": false
@@ -528,7 +528,7 @@
       "mock_data": {},
       "expected_data": {
         "status_code": 410,
-        "error_msg": "Could not find the index in the table.",
+        "error_msg": "could not find the specified index.",
         "test_result_data": {
         }
       },

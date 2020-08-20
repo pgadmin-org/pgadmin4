@@ -15,6 +15,7 @@ from flask_babelex import gettext
 from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 import config
 
 MODULE_NAME = 'about'
@@ -82,5 +83,5 @@ def script():
     return Response(
         response=render_template("about/about.js", _=gettext),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )

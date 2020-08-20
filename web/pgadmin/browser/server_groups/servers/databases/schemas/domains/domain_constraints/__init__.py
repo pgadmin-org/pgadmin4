@@ -153,6 +153,7 @@ class DomainConstraintView(PGChildNodeView):
       - Returns the dependencies for the Domain Constraint object.
     """
     node_type = blueprint.node_type
+    node_label = "Domain Constraint"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -374,9 +375,7 @@ class DomainConstraintView(PGChildNodeView):
                 status=200
             )
 
-        return gone(
-            gettext("Could not find the specified domain constraint.")
-        )
+        return gone(self.not_found_error_msg())
 
     @check_precondition
     def properties(self, gid, sid, did, scid, doid, coid):
@@ -400,10 +399,7 @@ class DomainConstraintView(PGChildNodeView):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext(
-                "Could not find the specified domain constraint."
-            )
-            )
+            return gone(self.not_found_error_msg())
 
         data = res['rows'][0]
         data['is_sys_obj'] = (
@@ -505,10 +501,7 @@ class DomainConstraintView(PGChildNodeView):
                         errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=gettext(
-                            'The specified domain constraint '
-                            'could not be found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 data = res['rows'][0]
@@ -609,10 +602,7 @@ class DomainConstraintView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(gettext(
-                "Could not find the specified domain constraint."
-            )
-            )
+            return gone(self.not_found_error_msg())
 
         data = res['rows'][0]
 
@@ -681,10 +671,7 @@ class DomainConstraintView(PGChildNodeView):
                 if not status:
                     return False, internal_server_error(errormsg=res)
                 if len(res['rows']) == 0:
-                    return False, gone(gettext(
-                        "Could not find the specified domain constraint."
-                    )
-                    )
+                    return False, gone(self.not_found_error_msg())
 
                 old_data = res['rows'][0]
 
@@ -723,8 +710,7 @@ class DomainConstraintView(PGChildNodeView):
         if not status:
             return False, internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            raise ObjectGone(
-                gettext("The specified domain could not be found."))
+            raise ObjectGone(self.not_found_error_msg('Domain'))
 
         return res['rows'][0]['schema'], res['rows'][0]['domain']
 

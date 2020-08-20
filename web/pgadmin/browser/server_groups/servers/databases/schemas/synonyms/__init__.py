@@ -147,6 +147,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_label = "Synonym"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -304,9 +305,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(
-                gettext("""Could not find the Synonym node.""")
-            )
+            return gone(self.not_found_error_msg())
 
         for row in rset['rows']:
             return make_json_response(
@@ -416,9 +415,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 return False, internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                return False, gone(
-                    gettext('The specified synonym could not be found.')
-                )
+                return False, gone(self.not_found_error_msg())
 
             res['rows'][0]['is_sys_obj'] = (
                 res['rows'][0]['oid'] <= self.datlastsysoid)
@@ -523,9 +520,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 if len(res['rows']) > 0:
                     data = res['rows'][0]
                 else:
-                    return gone(
-                        gettext('The specified synonym could not be found.')
-                    )
+                    return gone(self.not_found_error_msg())
 
                 SQL = render_template("/".join([self.template_path,
                                                 self._DELETE_SQL]),
@@ -628,9 +623,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the synonym on the server.")
-                )
+                return gone(self.not_found_error_msg())
             old_data = res['rows'][0]
             name = old_data['name']
             # If target schema/object is not present then take it from
@@ -684,9 +677,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         if len(res['rows']) > 0:
             data = res['rows'][0]
         else:
-            return gone(
-                gettext('The specified synonym could not be found.')
-            )
+            return gone(self.not_found_error_msg())
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),

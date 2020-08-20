@@ -22,6 +22,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request,\
 from pgadmin.utils.menu import MenuItem
 
 from pgadmin.model import db, Setting
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'settings'
 
@@ -95,7 +96,7 @@ def script():
     """Render the required Javascript"""
     return Response(response=render_template("settings/settings.js"),
                     status=200,
-                    mimetype="application/javascript")
+                    mimetype=MIMETYPE_APP_JS)
 
 
 @blueprint.route("/store", methods=['POST'], endpoint='store_bulk')

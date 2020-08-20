@@ -157,6 +157,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_label = "FTS Template"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -281,9 +282,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                 ),
                 status=200
             )
-        return gone(
-            gettext("Could not find the requested FTS template.")
-        )
+        return gone(self.not_found_error_msg())
 
     @check_precondition
     def properties(self, gid, sid, did, scid, tid):
@@ -323,9 +322,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return False, gone(
-                gettext("Could not find the requested FTS template.")
-            )
+            return False, gone(self.not_found_error_msg())
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self.datlastsysoid)
         return True, res['rows'][0]
@@ -486,9 +483,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                     errormsg=gettext(
                         'Error: Object not found.'
                     ),
-                    info=gettext(
-                        'The specified FTS template could not be found.\n'
-                    )
+                    info=self.not_found_error_msg()
                 )
 
             # Drop fts template
@@ -621,9 +616,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             elif len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the requested FTS template.")
-                )
+                return gone(self.not_found_error_msg())
 
             old_data = res['rows'][0]
             if 'schema' not in data:

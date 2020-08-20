@@ -29,7 +29,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import PREF_LABEL_OPTIONS
+from pgadmin.utils.constants import PREF_LABEL_OPTIONS, MIMETYPE_APP_JS
 
 # Checks if platform is Windows
 if _platform == "win32":
@@ -196,7 +196,7 @@ def utility():
     return Response(response=render_template(
         "file_manager/js/utility.js", _=gettext),
         status=200,
-        mimetype="application/javascript")
+        mimetype=MIMETYPE_APP_JS)
 
 
 @blueprint.route("/file_manager.js")
@@ -206,7 +206,7 @@ def file_manager_js():
     return Response(response=render_template(
         "file_manager/js/file_manager.js", _=gettext),
         status=200,
-        mimetype="application/javascript")
+        mimetype=MIMETYPE_APP_JS)
 
 
 @blueprint.route("/en.json")
@@ -225,7 +225,7 @@ def file_manager_config_js():
     return Response(response=render_template(
         "file_manager/js/file_manager_config.js", _=gettext),
         status=200,
-        mimetype="application/javascript")
+        mimetype=MIMETYPE_APP_JS)
 
 
 @blueprint.route("/<int:trans_id>/file_manager_config.json")

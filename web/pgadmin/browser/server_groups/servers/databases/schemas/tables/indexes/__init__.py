@@ -193,6 +193,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_label = "Index"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -425,7 +426,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(gettext("""Could not find the index in the table."""))
+            return gone(self.not_found_error_msg())
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
@@ -521,8 +522,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return False, gone(
-                gettext("""Could not find the index in the table."""))
+            return False, gone(self.not_found_error_msg())
 
         # Making copy of output for future use
         data = dict(res['rows'][0])
@@ -705,9 +705,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                         errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=gettext(
-                            'The specified index could not be found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 data = dict(res['rows'][0])
@@ -969,9 +967,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 if not status:
                     return internal_server_error(errormsg=res)
                 if len(res['rows']) == 0:
-                    return gone(
-                        gettext("""Could not find the index in the table.""")
-                    )
+                    return gone(self.not_found_error_msg())
 
                 data = dict(res['rows'][0])
                 index = data['name']

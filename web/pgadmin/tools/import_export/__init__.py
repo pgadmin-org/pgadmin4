@@ -22,6 +22,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'import_export'
 
@@ -169,7 +170,7 @@ def script():
     return Response(
         response=render_template("import_export/js/import_export.js", _=_),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

@@ -16,6 +16,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 import config
 from werkzeug.exceptions import InternalServerError
 
@@ -146,7 +147,7 @@ def explain_js():
             _=gettext
         ),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

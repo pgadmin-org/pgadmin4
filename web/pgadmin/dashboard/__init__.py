@@ -20,7 +20,7 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS
 
 from config import PG_DEFAULT_DRIVER
 
@@ -247,7 +247,7 @@ def script():
             _=gettext
         ),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

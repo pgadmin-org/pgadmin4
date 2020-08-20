@@ -26,7 +26,7 @@ from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS
 
 MODULE_NAME = 'schema_diff'
 
@@ -140,7 +140,7 @@ def script():
     return Response(
         response=render_template("schema_diff/js/schema_diff.js", _=gettext),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

@@ -24,7 +24,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, bad_request, internal_server_error
 from pgadmin.utils.csrf import pgCSRFProtect
-
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting
 
@@ -150,7 +150,7 @@ def script():
             user_id=current_user.id
         ),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 
@@ -178,7 +178,7 @@ def current_user_info():
             auth_sources=config.AUTHENTICATION_SOURCES,
         ),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

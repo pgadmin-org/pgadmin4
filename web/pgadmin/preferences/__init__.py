@@ -22,6 +22,7 @@ from pgadmin.utils.ajax import success_return, \
     make_response as ajax_response, internal_server_error
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'preferences'
 
@@ -78,7 +79,7 @@ def script():
     return Response(
         response=render_template("preferences/preferences.js", _=gettext),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

@@ -15,6 +15,7 @@ from flask_babelex import Domain, gettext
 
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'tools'
 
@@ -73,5 +74,5 @@ def translations():
     return Response(
         response=template,
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )

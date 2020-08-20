@@ -32,6 +32,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.settings import get_setting
 from pgadmin.browser.utils import underscore_unescape
 from pgadmin.utils.exception import ObjectGone
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'datagrid'
 
@@ -453,7 +454,7 @@ def script():
     return Response(
         response=render_template("datagrid/js/datagrid.js", _=gettext),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

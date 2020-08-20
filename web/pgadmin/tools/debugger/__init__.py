@@ -34,7 +34,7 @@ from pgadmin.tools.debugger.utils.debugger_instance import DebuggerInstance
 from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
-    PREF_LABEL_KEYBOARD_SHORTCUTS
+    PREF_LABEL_KEYBOARD_SHORTCUTS, MIMETYPE_APP_JS
 
 MODULE_NAME = 'debugger'
 
@@ -280,7 +280,7 @@ def script():
     return Response(
         response=render_template("debugger/js/debugger.js", _=gettext),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 
@@ -291,7 +291,7 @@ def script_debugger_js():
     return Response(
         response=render_template("debugger/js/debugger_ui.js", _=gettext),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 
@@ -305,7 +305,7 @@ def script_debugger_direct_js():
     return Response(
         response=render_template("debugger/js/direct.js", _=gettext),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

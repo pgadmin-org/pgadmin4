@@ -158,6 +158,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     """
 
     node_type = blueprint.node_type
+    node_label = "Column"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -280,7 +281,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         if clid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                    errormsg=gettext("Could not find the column.")
+                    errormsg=self.not_found_error_msg()
                 )
             row = rset['rows'][0]
             return make_json_response(
@@ -339,7 +340,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the column in the table."""))
+            return gone(self.not_found_error_msg())
 
         # Making copy of output for future use
         data = dict(res['rows'][0])
@@ -470,9 +471,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                         errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=gettext(
-                            'The specified column could not be found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 data = dict(res['rows'][0])
@@ -679,9 +678,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
             elif len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the column on the server.")
-                )
+                return gone(self.not_found_error_msg())
+
             old_data = dict(res['rows'][0])
 
             is_view_only = True if 'is_view_only' in old_data and old_data[
@@ -732,9 +730,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the column on the server.")
-                )
+                return gone(self.not_found_error_msg())
 
             data = dict(res['rows'][0])
             # We do not want to display length as -1 in create query
@@ -884,9 +880,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the column on the server.")
-            )
+            return gone(self.not_found_error_msg())
 
         data = dict(res['rows'][0])
         column = data['name']

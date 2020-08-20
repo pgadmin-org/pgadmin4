@@ -24,6 +24,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 # set template path for sql scripts
 MODULE_NAME = 'backup'
@@ -230,7 +231,7 @@ def script():
             "backup/js/backup.js", _=_
         ),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

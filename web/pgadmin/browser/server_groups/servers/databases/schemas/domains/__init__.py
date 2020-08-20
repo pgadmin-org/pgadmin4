@@ -142,6 +142,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_label = "Domain"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -384,7 +385,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 status=200
             )
 
-        return gone(gettext("Could not find the specified domain."))
+        return gone(self.not_found_error_msg())
 
     @check_precondition
     def properties(self, gid, sid, did, scid, doid):
@@ -647,9 +648,7 @@ AND relkind != 'c'))"""
                     errormsg=gettext(
                         'Error: Object not found.'
                     ),
-                    info=gettext(
-                        'The specified domain could not be found.\n'
-                    )
+                    info=self.not_found_error_msg()
                 )
 
             name = res['rows'][0]['name']
@@ -734,9 +733,7 @@ AND relkind != 'c'))"""
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the specified domain.")
-            )
+            return gone(self.not_found_error_msg())
 
         data = res['rows'][0]
 
@@ -832,9 +829,7 @@ AND relkind != 'c'))"""
             if not status:
                 return False, internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the specified domain.")
-                )
+                return gone(self.not_found_error_msg())
 
             old_data = res['rows'][0]
 

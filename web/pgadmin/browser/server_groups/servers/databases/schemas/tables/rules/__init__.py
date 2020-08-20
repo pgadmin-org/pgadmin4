@@ -149,6 +149,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
     * operations - function routes mappings defined.
     """
     node_type = blueprint.node_type
+    node_label = "Rule"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -242,7 +243,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(gettext("""Could not find the rule in the table."""))
+            return gone(self.not_found_error_msg())
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
@@ -313,8 +314,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return False, gone(
-                gettext("""Could not find the rule in the table."""))
+            return False, gone(self.not_found_error_msg())
 
         return True, parse_rule_definition(res)
 
@@ -424,9 +424,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                         errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=gettext(
-                            'The specified rule could not be found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 # drop rule
@@ -481,7 +479,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(gettext("""Could not find the rule in the table."""))
+            return gone(self.not_found_error_msg())
 
         res_data = parse_rule_definition(res)
         SQL = render_template("/".join(
@@ -502,9 +500,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    gettext("""Could not find the rule in the table.""")
-                )
+                return gone(self.not_found_error_msg())
             res_data = parse_rule_definition(res)
 
             old_data = res_data
@@ -544,9 +540,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    gettext("""Could not find the rule in the table.""")
-                )
+                return gone(self.not_found_error_msg())
             res_data = parse_rule_definition(res)
 
             if data:

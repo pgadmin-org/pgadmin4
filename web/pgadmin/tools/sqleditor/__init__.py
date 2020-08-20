@@ -44,6 +44,7 @@ from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
     read_file_generator
 from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'sqleditor'
 
@@ -1172,7 +1173,7 @@ def script():
             _=gettext
         ),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

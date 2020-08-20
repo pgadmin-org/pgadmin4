@@ -21,6 +21,7 @@ from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'maintenance'
 
@@ -164,7 +165,7 @@ def script():
     return Response(
         response=render_template("maintenance/js/maintenance.js", _=_),
         status=200,
-        mimetype="application/javascript"
+        mimetype=MIMETYPE_APP_JS
     )
 
 

@@ -148,6 +148,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_label = "Collation"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -306,7 +307,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
                 status=200
             )
 
-        return gone(gettext("Could not find the specified collation."))
+        return gone(self.not_found_error_msg())
 
     @check_precondition
     def properties(self, gid, sid, did, scid, coid):
@@ -352,8 +353,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return False, gone(gettext("Could not find the collation "
-                                       "object in the database."))
+            return False, gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self.datlastsysoid)
@@ -536,9 +536,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
                     return internal_server_error(errormsg=res)
 
                 if len(res['rows']) == 0:
-                    return gone(gettext(
-                        "Could not find the collation object in the database."
-                    ))
+                    return gone(self.not_found_error_msg())
 
                 data = res['rows'][0]
 
@@ -660,10 +658,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    gettext(
-                        "Could not find the collation object in the database.")
-                )
+                return gone(self.not_found_error_msg())
 
             old_data = res['rows'][0]
             SQL = render_template(
@@ -712,9 +707,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the collation object in the database.")
-            )
+            return gone(self.not_found_error_msg())
 
         data = res['rows'][0]
 

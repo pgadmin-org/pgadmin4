@@ -82,6 +82,7 @@ blueprint = PackageModule(__name__)
 
 class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
     node_type = blueprint.node_type
+    node_label = "Package"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -213,7 +214,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         if pkgid is not None:
             if len(rset['rows']) == 0:
                 return gone(
-                    errormsg=_("Could not find the package.")
+                    errormsg=self.not_found_error_msg()
                 )
 
             row = rset['rows'][0]
@@ -267,7 +268,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if len(rset['rows']) == 0:
             return gone(
-                errormsg=_("Could not find the package in the database.")
+                errormsg=self.not_found_error_msg()
             )
 
         for row in rset['rows']:
@@ -325,7 +326,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if len(res['rows']) == 0:
             return False, gone(
-                errormsg=_("Could not find the package in the database.")
+                errormsg=self.not_found_error_msg()
             )
 
         res['rows'][0]['pkgheadsrc'] = self.get_inner(
@@ -459,9 +460,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                         errormsg=_(
                             'Error: Object not found.'
                         ),
-                        info=_(
-                            'The specified package could not be found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 res['rows'][0]['schema'] = self.schema
@@ -635,7 +634,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=res)
         elif len(res['rows']) == 0:
             return gone(
-                errormsg=_("Could not find the package in the database.")
+                errormsg=self.not_found_error_msg()
             )
 
         res['rows'][0]['pkgheadsrc'] = self.get_inner(
@@ -700,7 +699,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
                 return gone(
-                    errormsg=_("Could not find the package in the database.")
+                    errormsg=self.not_found_error_msg()
                 )
 
             res['rows'][0]['pkgheadsrc'] = self.get_inner(

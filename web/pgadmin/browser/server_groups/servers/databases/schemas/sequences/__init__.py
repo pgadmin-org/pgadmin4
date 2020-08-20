@@ -90,6 +90,7 @@ blueprint = SequenceModule(__name__)
 
 class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
     node_type = blueprint.node_type
+    node_label = "Sequence"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -208,7 +209,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if seid is not None:
             if len(rset['rows']) == 0:
-                return gone(errormsg=_("Could not find the sequence."))
+                return gone(errormsg=self.not_found_error_msg())
             row = rset['rows'][0]
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
@@ -303,8 +304,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return False, internal_server_error(errormsg=res)
         elif len(res['rows']) == 0:
-            return False, gone(
-                _("Could not find the sequence in the database."))
+            return False, gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self.datlastsysoid)
@@ -487,9 +487,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                         errormsg=_(
                             'Error: Object not found.'
                         ),
-                        info=_(
-                            'The specified sequence could not be found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 sql = render_template(
@@ -638,7 +636,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             elif len(res['rows']) == 0:
-                return gone(_("Could not find the sequence in the database."))
+                return gone(self.not_found_error_msg())
 
             # Making copy of output for further processing
             old_data = dict(res['rows'][0])
@@ -711,7 +709,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(_("Could not find the sequence in the database."))
+            return gone(self.not_found_error_msg())
 
         for row in res['rows']:
             sql = render_template(

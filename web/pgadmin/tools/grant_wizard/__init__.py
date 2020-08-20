@@ -26,6 +26,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import precondition_required
 from functools import wraps
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 # set template path for sql scripts
 MODULE_NAME = 'grant_wizard'
@@ -156,7 +157,7 @@ def script():
     return Response(response=render_template(
         "grant_wizard/js/grant_wizard.js", _=gettext),
         status=200,
-        mimetype="application/javascript")
+        mimetype=MIMETYPE_APP_JS)
 
 
 @blueprint.route(

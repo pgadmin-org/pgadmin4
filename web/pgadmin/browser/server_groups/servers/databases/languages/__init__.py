@@ -172,6 +172,8 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
       language node.
     """
 
+    _NOT_FOUND_LANG_INFORMATION = \
+        gettext("Could not find the language information.")
     node_type = blueprint.node_type
 
     parent_ids = [
@@ -366,9 +368,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return False, gone(
-                gettext("Could not find the language information.")
-            )
+            return False, gone(self._NOT_FOUND_LANG_INFORMATION)
 
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self.datlastsysoid)
@@ -652,9 +652,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the language information.")
-                )
+                return gone(self._NOT_FOUND_LANG_INFORMATION)
 
             LanguageView._parse_privileges(data)
 
@@ -740,9 +738,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the language information.")
-            )
+            return gone(self._NOT_FOUND_LANG_INFORMATION)
 
         # Making copy of output for future use
         old_data = dict(res['rows'][0])

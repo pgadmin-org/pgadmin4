@@ -197,6 +197,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
     """
 
     node_type = blueprint.node_type
+    node_label = "Partition"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -321,9 +322,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
         if ptid is not None:
             if len(rset['rows']) == 0:
-                return gone(gettext(
-                    "The specified partitioned table could not be found."
-                ))
+                return gone(self.not_found_error_msg())
 
             return make_json_response(
                 data=browser_node(rset['rows'][0]), status=200
@@ -359,8 +358,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         status, res = self._fetch_properties(did, scid, tid, ptid)
 
         if len(res['rows']) == 0:
-            return gone(gettext(
-                "The specified partitioned table could not be found."))
+            return gone(self.not_found_error_msg())
 
         return super(PartitionsView, self).properties(
             gid, sid, did, scid, ptid, res=res)
@@ -471,8 +469,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
         status, res = self._fetch_properties(did, scid, tid, ptid)
 
         if len(res['rows']) == 0:
-            return gone(gettext(
-                "The specified partitioned table could not be found."))
+            return gone(self.not_found_error_msg())
 
         data = res['rows'][0]
 

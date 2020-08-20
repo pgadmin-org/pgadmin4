@@ -178,6 +178,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
     """
 
     node_type = blueprint.node_type
+    node_label = "Foreign Table"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -442,9 +443,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 status=200
             )
 
-        return gone(gettext(
-            'Could not find the specified foreign table.'
-        ))
+        return gone(self.not_found_error_msg())
 
     @check_precondition
     def properties(self, gid, sid, did, scid, foid):
@@ -462,8 +461,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not status:
             return data
         if not data:
-            return gone(
-                gettext("The specified foreign table could not be found."))
+            return gone(self.not_found_error_msg())
 
         return ajax_response(
             response=data,
@@ -745,9 +743,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                         errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=gettext(
-                            'The specified foreign table could not be found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 name = res['rows'][0]['name']
@@ -841,8 +837,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not status:
             return data
         if not data:
-            return gone(
-                gettext("The specified foreign table could not be found."))
+            return gone(self.not_found_error_msg())
 
         col_data = []
         for c in data['columns']:
@@ -1024,8 +1019,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             if not status:
                 return old_data
             elif not old_data:
-                return gone(
-                    gettext("The specified foreign table could not be found."))
+                return gone(self.not_found_error_msg())
 
             if is_schema_diff:
                 data['is_schema_diff'] = True
@@ -1336,8 +1330,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not status:
             return data
         if not data:
-            return gone(
-                gettext("The specified foreign table could not be found."))
+            return gone(self.not_found_error_msg())
 
         columns = []
         for c in data['columns']:
@@ -1374,8 +1367,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not status:
             return data
         if not data:
-            return gone(
-                gettext("The specified foreign table could not be found."))
+            return gone(self.not_found_error_msg())
 
         columns = []
         values = []
@@ -1417,8 +1409,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not status:
             return data
         if not data:
-            return gone(
-                gettext("The specified foreign table could not be found."))
+            return gone(self.not_found_error_msg())
 
         columns = []
 
@@ -1464,8 +1455,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not status:
             return data
         if not data:
-            return gone(
-                gettext("The specified foreign table could not be found."))
+            return gone(self.not_found_error_msg())
 
         sql = u"DELETE FROM {0}\n\tWHERE <condition>;".format(
             self.qtIdent(self.conn, data['basensp'], data['name'])

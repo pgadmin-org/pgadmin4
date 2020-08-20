@@ -148,6 +148,7 @@ class RowSecurityView(PGChildNodeView):
     """
 
     node_type = blueprint.node_type
+    node_label = "RLS Policy"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -249,7 +250,7 @@ class RowSecurityView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(gettext("""Could not find the policy in the table."""))
+            return gone(self.not_found_error_msg())
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
@@ -321,8 +322,7 @@ class RowSecurityView(PGChildNodeView):
             return False, internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return False, gone(
-                gettext("""Could not find the policy in the table."""))
+            return False, gone(self.not_found_error_msg())
 
         data = dict(res['rows'][0])
 
@@ -483,9 +483,7 @@ class RowSecurityView(PGChildNodeView):
                         errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=gettext(
-                            'The specified policy object could not be found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 # drop policy

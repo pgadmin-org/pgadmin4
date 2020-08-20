@@ -218,6 +218,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    node_label = "Compound Trigger"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -351,9 +352,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(gettext(
-                """Could not find the compound trigger in the table.""")
-            )
+            return gone(self.not_found_error_msg())
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
@@ -434,8 +433,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=data)
 
         if 'rows' in data and len(data['rows']) == 0:
-            return gone(gettext(
-                """Could not find the compound trigger in the table."""))
+            return gone(self.not_found_error_msg())
 
         return ajax_response(
             response=data,
@@ -589,10 +587,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                         errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=gettext(
-                            'The specified compound trigger could not be '
-                            'found.\n'
-                        )
+                        info=self.not_found_error_msg()
                     )
 
                 data = dict(res['rows'][0])
@@ -670,8 +665,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                return gone(gettext(
-                    """Could not find the compound trigger in the table."""))
+                return gone(self.not_found_error_msg())
 
             # Making copy of output for future use
             data = dict(res['rows'][0])
@@ -790,9 +784,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(gettext(
-                    """Could not find the compound trigger in the table.""")
-                )
+                return gone(self.not_found_error_msg())
 
             o_data = dict(res['rows'][0])
 
@@ -912,8 +904,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 if not status:
                     return internal_server_error(errormsg=res)
                 elif len(res['rows']) == 0:
-                    return gone(gettext("Could not find the compound "
-                                        "trigger in the table."))
+                    return gone(self.not_found_error_msg())
 
                 data = dict(res['rows'][0])
                 # Adding parent into data dict,
