@@ -660,7 +660,7 @@ class ServerNode(PGChildNodeView):
             return make_json_response(
                 status=410,
                 success=0,
-                errormsg=self.not_found_error_msg
+                errormsg=self.not_found_error_msg()
             )
 
         sg = ServerGroup.query.filter_by(
@@ -1006,7 +1006,7 @@ class ServerNode(PGChildNodeView):
         # Fetch Server Details
         server = Server.query.filter_by(id=sid).first()
         if server is None:
-            return bad_request(self.not_found_error_msg)
+            return bad_request(self.not_found_error_msg())
 
         if current_user and hasattr(current_user, 'id'):
             # Fetch User Details.
@@ -1181,7 +1181,7 @@ class ServerNode(PGChildNodeView):
 
         server = Server.query.filter_by(id=sid).first()
         if server is None:
-            return bad_request(self.not_found_error_msg)
+            return bad_request(self.not_found_error_msg())
 
         # Release Connection
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
@@ -1289,7 +1289,7 @@ class ServerNode(PGChildNodeView):
             # Fetch Server Details
             server = Server.query.filter_by(id=sid).first()
             if server is None:
-                return bad_request(self.not_found_error_msg)
+                return bad_request(self.not_found_error_msg())
 
             # Fetch User Details.
             user = User.query.filter_by(id=current_user.id).first()
@@ -1409,7 +1409,7 @@ class ServerNode(PGChildNodeView):
         if server is None:
             return make_json_response(
                 success=0,
-                errormsg=self.not_found_error_msg
+                errormsg=self.not_found_error_msg()
             )
 
         try:
@@ -1493,7 +1493,7 @@ class ServerNode(PGChildNodeView):
         if server is None:
             return make_json_response(
                 success=0,
-                errormsg=self.not_found_error_msg
+                errormsg=self.not_found_error_msg()
             )
 
         try:
@@ -1568,7 +1568,7 @@ class ServerNode(PGChildNodeView):
             if server is None:
                 return make_json_response(
                     success=0,
-                    info=self.not_found_error_msg
+                    info=self.not_found_error_msg()
                 )
 
             setattr(server, 'password', None)
@@ -1607,7 +1607,7 @@ class ServerNode(PGChildNodeView):
             if server is None:
                 return make_json_response(
                     success=0,
-                    info=self.not_found_error_msg
+                    info=self.not_found_error_msg()
                 )
 
             setattr(server, 'tunnel_password', None)

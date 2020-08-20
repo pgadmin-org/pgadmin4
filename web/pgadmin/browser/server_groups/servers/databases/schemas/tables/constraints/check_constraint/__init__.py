@@ -520,7 +520,7 @@ class CheckConstraintView(PGChildNodeView):
         data['table'] = self.table
         # Checking whether the table is deleted via query tool
         if len(data['table']) == 0:
-            return gone(_("The specified table could not be found."))
+            return gone(_(self.not_found_error_msg('Table')))
 
         try:
             if 'name' not in data or data['name'] == "":

@@ -89,25 +89,25 @@ class TableModule(SchemaChildModule):
         """
         snippets = [
             render_template(
-                "browser/css/collection.css",
+                self._COLLECTION_CSS,
                 node_type=self.node_type,
             ),
             render_template(
-                "browser/css/node.css",
+                self._NODE_CSS,
                 node_type=self.node_type,
             ),
             render_template(
-                "browser/css/node.css",
+                self._NODE_CSS,
                 node_type='table',
                 file_name='table-inherited',
             ),
             render_template(
-                "browser/css/node.css",
+                self._NODE_CSS,
                 node_type='table',
                 file_name='table-inherits',
             ),
             render_template(
-                "browser/css/node.css",
+                self._NODE_CSS,
                 node_type='table',
                 file_name='table-multi-inherit',
             ),
@@ -594,7 +594,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         if not status:
             return res
         if not res['rows']:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         return super(TableView, self).properties(
             gid, sid, did, scid, tid, res=res
@@ -636,7 +636,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         elif len(res['rows']) == 0:
             return False, gone(
-                gettext("The specified table could not be found."))
+                gettext(self.not_found_error_msg()))
 
         # Update autovacuum properties
         self.update_autovacuum_properties(res['rows'][0])
@@ -729,14 +729,16 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             if data and 'tid' in data:
                 SQL = render_template(
                     "/".join([
-                        self.table_template_path, 'get_columns_for_table.sql'
+                        self.table_template_path,
+                        self._GET_COLUMNS_FOR_TABLE_SQL
                     ]),
                     tid=data['tid']
                 )
             elif data and 'tname' in data:
                 SQL = render_template(
                     "/".join([
-                        self.table_template_path, 'get_columns_for_table.sql'
+                        self.table_template_path,
+                        self._GET_COLUMNS_FOR_TABLE_SQL
                     ]),
                     tname=data['tname']
                 )
@@ -778,7 +780,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 SQL = render_template(
                     "/".join(
                         [self.table_template_path,
-                         'get_columns_for_table.sql']
+                         self._GET_COLUMNS_FOR_TABLE_SQL]
                     ), tid=row['oid']
                 )
 
@@ -1118,7 +1120,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                             'Error: Object not found.'
                         ),
                         info=gettext(
-                            'The specified table could not be found.\n'
+                            self.not_found_error_msg() + '\n'
                         )
                     )
 
@@ -1160,7 +1162,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                return gone(gettext("The specified table could not be found."))
+                return gone(gettext(self.not_found_error_msg()))
 
             return super(TableView, self).truncate(
                 gid, sid, did, scid, tid, res
@@ -1265,8 +1267,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 return internal_server_error(errormsg=res)
 
             if len(res['rows']) == 0:
-                return gone(gettext("The specified table could not be found."
-                                    ))
+                return gone(gettext(self.not_found_error_msg()))
 
             if status:
                 data = res['rows'][0]
@@ -1376,7 +1377,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return res
 
         if len(res['rows']) == 0:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         data = res['rows'][0]
 
@@ -1408,7 +1409,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         data = res['rows'][0]
         data = self._formatter(did, scid, tid, data)
@@ -1456,7 +1457,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         data = res['rows'][0]
         data = self._formatter(did, scid, tid, data)
@@ -1507,7 +1508,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         data = res['rows'][0]
         data = self._formatter(did, scid, tid, data)
@@ -1560,7 +1561,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         data = res['rows'][0]
 
@@ -1609,7 +1610,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             super(TableView, self).get_schema_and_table_name(tid)
 
         if data['name'] is None:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         SQL = render_template(
             "/".join(

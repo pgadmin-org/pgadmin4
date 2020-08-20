@@ -390,6 +390,7 @@ class PGChildNodeView(NodeView):
     _GET_DEFINITION_SQL = 'get_definition.sql'
     _GET_SCHEMA_OID_SQL = 'get_schema_oid.sql'
     _GET_COLUMNS_SQL = 'get_columns.sql'
+    _GET_COLUMNS_FOR_TABLE_SQL = 'get_columns_for_table.sql'
 
     def get_children_nodes(self, manager, **kwargs):
         """
@@ -710,7 +711,6 @@ class PGChildNodeView(NodeView):
 
         return dependency
 
-    @property
-    def not_found_error_msg(self):
+    def not_found_error_msg(self, custom_label=None):
         return gettext("Could not find the specified {}.".format(
-            self.node_label).lower())
+            custom_label if custom_label else self.node_label).lower())

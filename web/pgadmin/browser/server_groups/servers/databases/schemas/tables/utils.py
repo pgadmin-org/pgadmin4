@@ -81,6 +81,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
     * reset_statistics(self, scid, tid):
       - This function will reset statistics of table.
     """
+
+    node_label = "Table"
+
     @staticmethod
     def check_precondition(f):
         """
@@ -812,7 +815,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         schema_name, table_name = self.get_schema_and_table_name(tid)
 
         if table_name is None:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         # table exist
         try:
@@ -1291,7 +1294,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         schema_name, table_name = self.get_schema_and_table_name(tid)
 
         if table_name is None:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg()))
 
         # table exists
         try:

@@ -39,6 +39,9 @@ class DatabaseModule(CollectionNodeModule):
     _NODE_TYPE = 'database'
     _COLLECTION_LABEL = _("Databases")
 
+    _DATABASE_CSS_PATH = 'databases/css'
+    _DATABASE_CSS = "/".join([_DATABASE_CSS_PATH, 'database.css'])
+
     def __init__(self, *args, **kwargs):
         self.min_ver = None
         self.max_ver = None
@@ -67,12 +70,12 @@ class DatabaseModule(CollectionNodeModule):
         """
         snippets = [
             render_template(
-                "browser/css/collection.css",
+                self._COLLECTION_CSS,
                 node_type=self.node_type,
                 _=_
             ),
             render_template(
-                "databases/css/database.css",
+                self._DATABASE_CSS,
                 node_type=self.node_type,
                 _=_
             )
@@ -381,7 +384,7 @@ class DatabaseView(PGChildNodeView):
                 status=200
             )
 
-        return gone(errormsg=self.not_found_error_msg)
+        return gone(errormsg=self.not_found_error_msg())
 
     @check_precondition(action="properties")
     def properties(self, gid, sid, did):
@@ -397,7 +400,7 @@ class DatabaseView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                self.not_found_error_msg
+                self.not_found_error_msg()
             )
 
         SQL = render_template(
@@ -802,7 +805,7 @@ class DatabaseView(PGChildNodeView):
 
         if len(rset['rows']) == 0:
             return gone(
-                self.not_found_error_msg
+                self.not_found_error_msg()
             )
 
         res = rset['rows'][0]
@@ -931,7 +934,7 @@ class DatabaseView(PGChildNodeView):
 
             if len(rset['rows']) == 0:
                 return gone(
-                    self.not_found_error_msg
+                    self.not_found_error_msg()
                 )
 
             data['old_name'] = (rset['rows'][0])['name']
@@ -1102,7 +1105,7 @@ class DatabaseView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                self.not_found_error_msg
+                self.not_found_error_msg()
             )
 
         SQL = render_template(

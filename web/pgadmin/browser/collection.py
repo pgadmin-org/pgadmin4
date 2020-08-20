@@ -27,6 +27,11 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
     browser_url_prefix = BrowserPluginModule.browser_url_prefix
     SHOW_ON_BROWSER = True
 
+    _BROWSER_CSS_PATH = 'browser/css'
+
+    _NODE_CSS = "/".join([_BROWSER_CSS_PATH, 'node.css'])
+    _COLLECTION_CSS = "/".join([_BROWSER_CSS_PATH, 'collection.css'])
+
     def __init__(self, import_name, **kwargs):
         kwargs.setdefault("url_prefix", self.node_path)
         kwargs.setdefault("static_url_path", '/static')
@@ -129,11 +134,11 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         """
         snippets = [
             render_template(
-                "browser/css/collection.css",
+                self._COLLECTION_CSS,
                 node_type=self.node_type
             ),
             render_template(
-                "browser/css/node.css",
+                self._NODE_CSS,
                 node_type=self.node_type,
                 _=gettext
             )

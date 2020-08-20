@@ -385,7 +385,7 @@ class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
 
             if len(res['rows']) == 0:
                 return False, gone(
-                    gettext("The specified table could not be found."))
+                    gettext(self.not_found_error_msg()))
 
             # Update autovacuum properties
             self.update_autovacuum_properties(res['rows'][0])

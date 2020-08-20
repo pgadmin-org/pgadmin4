@@ -398,7 +398,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         data['schema'] = self.schema
         data['table'] = self.table
         if len(data['table']) == 0:
-            return gone(gettext("The specified table could not be found."))
+            return gone(gettext(self.not_found_error_msg('Table')))
 
         # check type for '[]' in it
         data['cltype'], data['hasSqrBracket'] = \
