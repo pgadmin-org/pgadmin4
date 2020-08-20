@@ -1,0 +1,234 @@
+{
+  "grant_wizard_save_permissions": [
+    {
+      "name": "Grant permissions to user for table.",
+      "url": "/grant_wizard/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {
+        "objects": [
+          {
+            "selected": true,
+            "name": "test_tablespace",
+            "name_with_args": "test_tablespace",
+            "nspname": "public",
+            "object_type": "Table"
+          }
+        ],
+        "acl": [
+          {
+            "privileges": [
+              {
+                "privilege_type": "a",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "d",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "D",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "x",
+                "privilege": true,
+                "with_grant": false
+              }
+            ]
+          }
+        ]
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while: Grant permissions to user for table.",
+      "url": "/grant_wizard/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "test_data": {
+        "objects": [
+          {
+            "selected": true,
+            "name": "test_tablespace",
+            "name_with_args": "test_tablespace",
+            "nspname": "public",
+            "object_type": "Table"
+          }
+        ],
+        "acl": [
+          {
+            "privileges": [
+              {
+                "privilege_type": "a",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "d",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "D",
+                "privilege": true,
+                "with_grant": false
+              },
+              {
+                "privilege_type": "x",
+                "privilege": true,
+                "with_grant": false
+              }
+            ]
+          }
+        ]
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while grant permissions.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "grant_wizard_get_properties": [
+    {
+      "name": "Get properties for grant permissions to user.",
+      "url": "/grant_wizard/",
+      "id_database": true,
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while: Get properties for grant permissions to user.",
+      "url": "/grant_wizard/",
+      "id_database": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while getting list of object for grant wizard.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Get properties for grant permissions to user.",
+      "url": "/grant_wizard/",
+      "id_database": false,
+      "node_type": "table",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },{
+      "name": "Get properties for grant permissions to user.",
+      "url": "/grant_wizard/",
+      "node_type": "table",
+      "id_database": false,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while getting list of object for grant wizard.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Get properties for grant permissions to node type.",
+      "url": "/grant_wizard/",
+      "node_type": "schema",
+      "id_database": false,
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "grant_wizard_get_sql": [
+    {
+      "name": "Grant wizard SQL statement.",
+      "url": "/grant_wizard/sql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {
+        "objects":[
+          {
+            "selected": true,
+            "name": "auth_group",
+            "name_with_args": "auth_group",
+            "nspname": "public",
+            "object_type": "Table"
+          }
+        ],
+        "acl":[
+          {
+            "privileges":[
+              {
+                "privilege_type": "a",
+                "privilege": true,
+                "with_grant": false
+              }
+            ]
+          }
+        ]
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "grant_wizard_get_acl_list": [
+    {
+      "name": "Grant wizard acl list",
+      "url": "/grant_wizard/acl/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ]
+}

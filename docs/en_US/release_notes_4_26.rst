@@ -14,6 +14,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5344 <https://redmine.postgresql.org/issues/5344>`_ - Improve code coverage and API test cases for Grant Wizard.
 
 Bug fixes
 *********
