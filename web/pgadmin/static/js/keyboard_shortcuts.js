@@ -17,7 +17,8 @@ const PERIOD_KEY = 190,
   LEFT_KEY = 37,
   UP_KEY = 38,
   RIGHT_KEY = 39,
-  DOWN_KEY = 40;
+  DOWN_KEY = 40,
+  K_KEY = 75;
 
 function isMac() {
   return window.navigator.platform.search('Mac') != -1;
@@ -247,6 +248,12 @@ function keyboardShortcutsQueryTool(
   ) && keyCode === PERIOD_KEY) {
     this._stopEventPropagation(event);
     queryToolActions.uncommentLineCode(sqlEditorController);
+  } else if ((
+    (this.isMac() && event.metaKey) ||
+     (!this.isMac() && event.ctrlKey)
+  ) && !event.altKey && event.shiftKey && keyCode === K_KEY) {
+    this._stopEventPropagation(event);
+    queryToolActions.formatSql(sqlEditorController);
   }  else if (keyCode == ESC_KEY) {
     queryToolActions.focusOut(sqlEditorController);
     /*Apply only for sub-dropdown*/

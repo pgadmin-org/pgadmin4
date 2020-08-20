@@ -169,27 +169,6 @@ def register_query_tool_preferences(self):
         )
     )
 
-    self.tab_size = self.preference.register(
-        'Editor', 'tab_size',
-        gettext("Tab size"), 'integer', 4,
-        min_val=2,
-        max_val=8,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'The number of spaces per tab. Minimum 2, maximum 8.'
-        )
-    )
-
-    self.use_spaces = self.preference.register(
-        'Editor', 'use_spaces',
-        gettext("Use spaces?"), 'boolean', False,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'Specifies whether or not to insert spaces instead of tabs '
-            'when the tab key or auto-indent are used.'
-        )
-    )
-
     self.wrap_code = self.preference.register(
         'Editor', 'wrap_code',
         gettext("Line wrapping?"), 'boolean', False,
@@ -702,4 +681,99 @@ def register_query_tool_preferences(self):
         },
         category_label=gettext('Keyboard shortcuts'),
         fields=shortcut_fields
+    )
+
+    # Register options for SQL formatting
+    self.keyword_case = self.preference.register(
+        'editor', 'keyword_case',
+        gettext("Keyword case"), 'radioModern', 'upper',
+        options=[{'label': 'Upper case', 'value': 'upper'},
+                 {'label': 'Lower case', 'value': 'lower'},
+                 {'label': 'Capitalized', 'value': 'capitalize'}],
+        category_label=gettext('SQL formatting'),
+        help_str=gettext(
+            'Convert keywords to upper, lower, or capitalized casing.'
+        )
+    )
+
+    self.identifier_case = self.preference.register(
+        'editor', 'identifier_case',
+        gettext("Identifier case"), 'radioModern', 'upper',
+        options=[{'label': 'Upper case', 'value': 'upper'},
+                 {'label': 'Lower case', 'value': 'lower'},
+                 {'label': 'Capitalized', 'value': 'capitalize'}],
+        category_label=gettext('SQL formatting'),
+        help_str=gettext(
+            'Convert identifiers to upper, lower, or capitalized casing.'
+        )
+    )
+
+    self.strip_comments = self.preference.register(
+        'editor', 'strip_comments',
+        gettext("Strip comments?"), 'boolean', False,
+        category_label=gettext('SQL formatting'),
+        help_str=gettext('If set to True, comments will be removed.')
+    )
+
+    self.reindent = self.preference.register(
+        'editor', 'reindent',
+        gettext("Re-indent?"), 'boolean', True,
+        category_label=gettext('SQL formatting'),
+        help_str=gettext('If set to True, the indentations of the '
+                         'statements are changed.')
+    )
+
+    self.reindent_aligned = self.preference.register(
+        'editor', 'reindent_aligned',
+        gettext("Re-indent aligned?"), 'boolean', False,
+        category_label=gettext('SQL formatting'),
+        help_str=gettext('If set to True, the indentations of the '
+                         'statements are changed, and statements are '
+                         'aligned by keywords.')
+    )
+
+    self.spaces_around_operators = self.preference.register(
+        'editor', 'spaces_around_operators',
+        gettext("Spaces around operators?"), 'boolean', True,
+        category_label=gettext('SQL formatting'),
+        help_str=gettext('If set to True, spaces are used around all '
+                         'operators.')
+    )
+
+    self.comma_first = self.preference.register(
+        'editor', 'comma_first',
+        gettext("Comma-first notation?"), 'boolean', False,
+        category_label=gettext('SQL formatting'),
+        help_str=gettext('If set to True, comma-first notation for column '
+                         'names is used.')
+    )
+
+    self.wrap_after = self.preference.register(
+        'editor', 'wrap_after',
+        gettext("Wrap after N characters"), 'integer', 4,
+        category_label=gettext('SQL formatting'),
+        help_str=gettext("The column limit (in characters) for wrapping "
+                         "comma-separated lists. If zero, it puts "
+                         "every item in the list on its own line.")
+    )
+
+    self.tab_size = self.preference.register(
+        'editor', 'tab_size',
+        gettext("Tab size"), 'integer', 4,
+        min_val=2,
+        max_val=8,
+        category_label=gettext('SQL formatting'),
+        help_str=gettext(
+            'The number of spaces per tab. Minimum 2, maximum 8.'
+        )
+    )
+
+    self.use_spaces = self.preference.register(
+        'editor', 'use_spaces',
+        gettext("Use spaces?"), 'boolean', False,
+        category_label=gettext('SQL formatting'),
+        help_str=gettext(
+            'Specifies whether or not to insert spaces instead of tabs '
+            'when the tab key or auto-indent are used.'
+        )
     )

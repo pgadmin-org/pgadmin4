@@ -95,6 +95,8 @@ Editing Options
    |                      +---------------------------------------------------------------------------------------------------+----------------+
    |                      | Select *Block Comment* to enclose all lines that contain the selection in C style comment         | Shift+Cmd+/    |
    |                      | notation.  This option acts as a toggle.                                                          |                |
+   |                      +---------------------------------------------------------------------------------------------------+----------------+
+   |                      | Select *Format SQL* to format the selected SQL or all the SQL if none is selected                 | Shift+Cmd+K    |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 View/Edit Data Resultset Control

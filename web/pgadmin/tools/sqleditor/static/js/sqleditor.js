@@ -140,6 +140,9 @@ define('tools.querytool', [
       // Indentation options
       'click #btn-indent-code': 'on_indent_code',
       'click #btn-unindent-code': 'on_unindent_code',
+      // Format
+      'click #btn-format-sql': 'on_format_sql',
+      // Transaction control
       'click #btn-commit': 'on_commit_transaction',
       'click #btn-rollback': 'on_rollback_transaction',
     },
@@ -1743,6 +1746,16 @@ define('tools.querytool', [
       );
     },
 
+    on_format_sql: function() {
+      var self = this;
+      // Trigger the format signal to the SqlEditorController class
+      self.handler.trigger(
+        'pgadmin-sqleditor:format_sql',
+        self,
+        self.handler
+      );
+    },
+
     // Callback function for the clear button click.
     on_clear: function(ev) {
       var self = this;
@@ -2401,6 +2414,8 @@ define('tools.querytool', [
         // Indentation related
         self.on('pgadmin-sqleditor:indent_selected_code', self._indent_selected_code, self);
         self.on('pgadmin-sqleditor:unindent_selected_code', self._unindent_selected_code, self);
+        // Format
+        self.on('pgadmin-sqleditor:format_sql', self._format_sql, self);
 
         window.parent.$(window.parent.document).on('pgadmin-sqleditor:rows-copied', self._copied_in_other_session);
       },
@@ -4228,6 +4243,41 @@ define('tools.querytool', [
         var self = this,
           editor = self.gridView.query_tool_obj;
         editor.execCommand('indentLess');
+      },
+
+      /*
+       * This function will format the SQL
+       */
+      _format_sql: function() {
+        var self = this,
+          editor = self.gridView.query_tool_obj,
+          selection = true,
+          sql = '';
+
+        sql = editor.getSelection();
+
+        if (sql == '') {
+          sql = editor.getValue();
+          selection = false;
+        }
+
+        $.ajax({
+          url: url_for('sql.format'),
+          data: JSON.stringify({'sql': sql}),
+          method: 'POST',
+          contentType: 'application/json',
+          dataType: 'json',
+        })
+          .done(function(res) {
+            if (selection === true) {
+              editor.replaceSelection(res.data.sql, 'around');
+            } else {
+              editor.setValue(res.data.sql);
+            }
+          })
+          .fail(function() {
+          /* failure should be ignored */
+          });
       },
 
       isQueryRunning: function() {

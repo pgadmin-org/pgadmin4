@@ -189,6 +189,15 @@
                                  {{ _(' (Shift+Ctrl+/)') }}{%- endif %}</span>
                         </a>
                     </li>
+                    <li class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" id="btn-format-sql" href="#" tabindex="0">
+                            <span>{{ _('Format SQL') }}{% if client_platform == 'macos' -%}
+                                 {{ _(' (Shift+Cmd+K)') }}
+                            {% else %}
+                                 {{ _(' (Shift+Ctrl+K)') }}{%- endif %}</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="btn-group mr-1" role="group" aria-label="">

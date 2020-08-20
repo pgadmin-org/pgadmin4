@@ -306,12 +306,6 @@ Use the fields on the *Editor* panel to change settings of the query editor.
   changed to text/plain. Keyword highlighting and code folding will be disabled.
   This will improve editor performance with large files.
 
-* Use the *Tab size* field to specify the number of spaces per tab character in
-  the editor.
-
-* When the *Use spaces* switch is set to *True*, the editor will insert spaces
-  (instead of tab characters) when the tab key or auto-indent are used.
-
 .. image:: images/preferences_sql_explain.png
     :alt: Preferences dialog sqleditor explain options
     :align: center
@@ -375,12 +369,40 @@ preferences for copied data.
 * Use the *Result copy quoting* drop-down listbox to select which type of fields
   require quoting; select *All*, *None*, or *Strings*.
 
-Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
-Query Tool window navigation:
-
 .. image:: images/preferences_sql_keyboard_shortcuts.png
     :alt: Preferences dialog sql keyboard shortcuts section
     :align: center
+
+Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
+Query Tool window navigation:
+
+.. image:: images/preferences_sql_formatting.png
+    :alt: Preferences dialog SQL Formatting section
+    :align: center
+
+Use the fields on the *SQL formatting* panel to specify your preferences for
+reformatting of SQL.
+
+* Use the *Command-first notation* option to specify whether to place commas
+  before or after column names.
+* Use the *Identifier case* option to specify whether to change identifiers
+  (object names) into upper, lower, or capitalized case.
+* Use the *Keyword case* option to specify whether to change keywords into
+  upper, lower, or capitalized case.
+* Use the *Re-indent aligned?* option to specify that indentations of statements
+  should be changed, aligned by keywords.
+* Use the *Re-indent?* option to specify that indentations of statements should
+  be changed.
+* Use the *Spaces around operators?* option to specify whether or not to include
+  spaces on either side of operators.
+* Use the *Strip comments?* option to specify whether or not comments should be
+  removed.
+* Use the *Tab size* option to specify the number of spaces per tab or indent.
+* Use the *Use spaces?* option to select whether to use spaces or tabs when
+  indenting.
+* Use the *Wrap after N characters* option to specify the column limit for
+  wrapping column separated lists (e.g. of column names in a table). If set to
+  0 (zero), each item will be on it's own line.
 
 The Schema Diff Node
 ********************

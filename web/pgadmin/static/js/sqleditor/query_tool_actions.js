@@ -123,6 +123,10 @@ let queryToolActions = {
     );
   },
 
+  formatSql: function (sqlEditorController) {
+    sqlEditorController.gridView.on_format_sql();
+  },
+
   focusOut: function () {
     document.activeElement.blur();
     pgWindow.document.activeElement.blur();
