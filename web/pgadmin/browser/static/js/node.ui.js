@@ -41,7 +41,7 @@ define([
       let $unselectAll = $([
         '<button class="btn btn-secondary btn-sm" type="button"',
         ' style="width: 49%;margin: 0 0.5%;">',
-        '<i class="fa fa-square-o"></i><span style="padding: 0px 5px;" role="img">',
+        '<i class="fa fa-square"></i><span style="padding: 0px 5px;" role="img">',
         gettext('Unselect All'),
         '</span></button>',
       ].join(''));

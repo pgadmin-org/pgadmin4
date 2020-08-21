@@ -2809,7 +2809,7 @@ define([
             time: 'fa fa-clock',
             data: 'fa fa-calendar-alt',
             today: 'fa fa-calendar-check',
-            clear: 'fa fa-trash',
+            clear: 'fa fa-trash-alt',
           },
           buttons: {
             showToday: true,

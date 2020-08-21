@@ -563,7 +563,7 @@ define([
       var self = this;
       this.$el.empty();
       $(this.$el).attr('tabindex', 0);
-      this.$el.html('<i aria-label="' + gettext('Delete row') + '" class=\'fa fa-trash\' title=\'' + gettext('Delete row') + '\'></i>');
+      this.$el.html('<i aria-label="' + gettext('Delete row') + '" class=\'fa fa-trash-alt\' title=\'' + gettext('Delete row') + '\'></i>');
       // Listen for Tab/Shift-Tab key
       this.$el.on('keydown', function(e) {
         // with keyboard navigation on space key, mark row for deletion

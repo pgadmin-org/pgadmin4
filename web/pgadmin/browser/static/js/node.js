@@ -147,7 +147,7 @@ define('pgadmin.browser.node', [
           data: {
             'url': 'drop',
           },
-          icon: 'fa fa-trash',
+          icon: 'fa fa-trash-alt',
           enable: _.isFunction(self.canDrop) ?
             function() {
               return !!(self.canDrop.apply(self, arguments));
@@ -166,7 +166,7 @@ define('pgadmin.browser.node', [
             data: {
               'url': 'delete',
             },
-            icon: 'fa fa-trash',
+            icon: 'fa fa-trash-alt',
             enable: _.isFunction(self.canDropCascade) ?
               function() {
                 return self.canDropCascade.apply(self, arguments);

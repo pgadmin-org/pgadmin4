@@ -104,7 +104,7 @@ define('pgadmin.node.table', [
           name: 'reset_table_stats', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'reset_table_stats',
           category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
-          icon: 'fa fa-bar-chart', enable : 'canCreate',
+          icon: 'fa fa-chart-bar', enable : 'canCreate',
         },{
           name: 'count_table_rows', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'count_table_rows',
