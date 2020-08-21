@@ -487,6 +487,26 @@ class BatchProcess(object):
         }
 
     @staticmethod
+    def _check_start_time(p, data):
+        """
+        Check start time and its related other timing checks.
+        :param p: Process.
+        :param data: Data
+        :return:
+        """
+        if 'start_time' in data and data['start_time']:
+            p.start_time = data['start_time']
+
+            # We can't have 'exit_code' without the 'start_time'
+            if 'exit_code' in data and \
+                    data['exit_code'] is not None:
+                p.exit_code = data['exit_code']
+
+                # We can't have 'end_time' without the 'exit_code'.
+                if 'end_time' in data and data['end_time']:
+                    p.end_time = data['end_time']
+
+    @staticmethod
     def update_process_info(p):
         if p.start_time is None or p.end_time is None:
             status = os.path.join(p.logdir, 'status')
@@ -499,18 +519,7 @@ class BatchProcess(object):
                     data = json.load(fp)
 
                     #  First - check for the existance of 'start_time'.
-                    if 'start_time' in data and data['start_time']:
-                        p.start_time = data['start_time']
-
-                        # We can't have 'exit_code' without the 'start_time'
-                        if 'exit_code' in data and \
-                                data['exit_code'] is not None:
-                            p.exit_code = data['exit_code']
-
-                            # We can't have 'end_time' without the 'exit_code'.
-                            if 'end_time' in data and data['end_time']:
-                                p.end_time = data['end_time']
-
+                    BatchProcess._check_start_time(p, data)
                     # get the pid of the utility.
                     if 'pid' in data:
                         p.utility_pid = data['pid']
@@ -527,6 +536,33 @@ class BatchProcess(object):
         return True, False
 
     @staticmethod
+    def _check_process_desc(p):
+        """
+        Check process desc instance and return data according to process.
+        :param p: process
+        :return: return value for details, type_desc and desc related
+        to process
+        """
+        desc = loads(p.desc)
+        details = desc
+        type_desc = ''
+
+        if isinstance(desc, IProcessDesc):
+            args = []
+            args_csv = StringIO(
+                p.arguments.encode('utf-8')
+                if hasattr(p.arguments, 'decode') else p.arguments
+            )
+            args_reader = csv.reader(args_csv, delimiter=str(','))
+            for arg in args_reader:
+                args = args + arg
+            details = desc.details(p.command, args)
+            type_desc = desc.type_desc
+            desc = desc.message
+
+        return desc, details, type_desc
+
+    @staticmethod
     def list():
         processes = Process.query.filter_by(user_id=current_user.id)
         changed = False
@@ -536,8 +572,7 @@ class BatchProcess(object):
             status, updated = BatchProcess.update_process_info(p)
             if not status:
                 continue
-
-            if not changed:
+            elif not changed:
                 changed = updated
 
             if p.start_time is None or (
@@ -551,21 +586,8 @@ class BatchProcess(object):
             etime = parser.parse(p.end_time or get_current_time())
 
             execution_time = BatchProcess.total_seconds(etime - stime)
-            desc = loads(p.desc)
-            details = desc
 
-            if isinstance(desc, IProcessDesc):
-                args = []
-                args_csv = StringIO(
-                    p.arguments.encode('utf-8')
-                    if hasattr(p.arguments, 'decode') else p.arguments
-                )
-                args_reader = csv.reader(args_csv, delimiter=str(','))
-                for arg in args_reader:
-                    args = args + arg
-                details = desc.details(p.command, args)
-                type_desc = desc.type_desc
-                desc = desc.message
+            desc, details, type_desc = BatchProcess._check_process_desc(p)
 
             res.append({
                 'id': p.pid,

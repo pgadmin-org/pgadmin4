@@ -625,6 +625,63 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    @staticmethod
+    def _validate_fsvr_options(data, old_data):
+        """
+        Validate options for foreign server.
+        :param data: Data.
+        :param old_data: old data for get old args.
+        :return: return is valid ad and change option flag.
+        """
+        required_args = [
+            'name'
+        ]
+        for arg in required_args:
+            if arg not in data:
+                data[arg] = old_data[arg]
+
+        is_valid_added_options = is_valid_changed_options = False
+        if 'fsrvoptions' in data and 'added' in data['fsrvoptions']:
+            is_valid_added_options, data['fsrvoptions']['added'] = \
+                validate_options(
+                    data['fsrvoptions']['added'],
+                    'fsrvoption',
+                    'fsrvvalue')
+
+        if 'fsrvoptions' in data and 'changed' in data['fsrvoptions']:
+            is_valid_changed_options, data['fsrvoptions']['changed'] = \
+                validate_options(
+                    data['fsrvoptions']['changed'],
+                    'fsrvoption',
+                    'fsrvvalue')
+
+        return is_valid_added_options, is_valid_changed_options
+
+    @staticmethod
+    def _get_fsvr_acl(data):
+        """
+        Iterate and check acl type.
+        :param data: Data.
+        :return:
+        """
+        for key in ['fsrvacl']:
+            if key in data and data[key] is not None:
+                if 'added' in data[key]:
+                    data[key]['added'] = parse_priv_to_db(
+                        data[key]['added'],
+                        ['U']
+                    )
+                if 'changed' in data[key]:
+                    data[key]['changed'] = parse_priv_to_db(
+                        data[key]['changed'],
+                        ['U']
+                    )
+                if 'deleted' in data[key]:
+                    data[key]['deleted'] = parse_priv_to_db(
+                        data[key]['deleted'],
+                        ['U']
+                    )
+
     def get_sql(self, gid, sid, data, did, fid, fsid=None):
         """
         This function will generate sql from model data.
@@ -637,11 +694,6 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
             fid: foreign data wrapper ID
             fsid: foreign server ID
         """
-
-        required_args = [
-            'name'
-        ]
-
         if fsid is not None:
             sql = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),
@@ -649,51 +701,19 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
+            elif len(res['rows']) == 0:
                 return gone(self.not_found_error_msg())
-
-            if res['rows'][0]['fsrvoptions'] is not None:
+            elif res['rows'][0]['fsrvoptions'] is not None:
                 res['rows'][0]['fsrvoptions'] = tokenize_options(
                     res['rows'][0]['fsrvoptions'], 'fsrvoption', 'fsrvvalue'
                 )
 
-            for key in ['fsrvacl']:
-                if key in data and data[key] is not None:
-                    if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(
-                            data[key]['added'],
-                            ['U']
-                        )
-                    if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(
-                            data[key]['changed'],
-                            ['U']
-                        )
-                    if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(
-                            data[key]['deleted'],
-                            ['U']
-                        )
+            ForeignServerView._get_fsvr_acl(data)
 
             old_data = res['rows'][0]
-            for arg in required_args:
-                if arg not in data:
-                    data[arg] = old_data[arg]
-
-            is_valid_added_options = is_valid_changed_options = False
-            if 'fsrvoptions' in data and 'added' in data['fsrvoptions']:
-                is_valid_added_options, data['fsrvoptions']['added'] =\
-                    validate_options(
-                        data['fsrvoptions']['added'],
-                        'fsrvoption',
-                        'fsrvvalue')
-
-            if 'fsrvoptions' in data and 'changed' in data['fsrvoptions']:
-                is_valid_changed_options, data['fsrvoptions']['changed'] =\
-                    validate_options(
-                        data['fsrvoptions']['changed'],
-                        'fsrvoption',
-                        'fsrvvalue')
+            is_valid_added_options, \
+                is_valid_changed_options = \
+                ForeignServerView._validate_fsvr_options(data, old_data)
 
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
@@ -715,9 +735,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
 
             fdw_data = res['rows'][0]
 
-            for key in ['fsrvacl']:
-                if key in data and data[key] is not None:
-                    data[key] = parse_priv_to_db(data[key], ['U'])
+            ForeignServerView._parse_priv(data)
 
             is_valid_options = False
             if 'fsrvoptions' in data:
@@ -732,6 +750,17 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
                                   conn=self.conn)
             sql += "\n"
         return sql, data['name']
+
+    @staticmethod
+    def _parse_priv(data):
+        """
+        Parse privilege data.
+        :param data: Data.
+        :return:
+        """
+        for key in ['fsrvacl']:
+            if key in data and data[key] is not None:
+                data[key] = parse_priv_to_db(data[key], ['U'])
 
     @check_precondition
     def sql(self, gid, sid, did, fid, fsid, json_resp=True):

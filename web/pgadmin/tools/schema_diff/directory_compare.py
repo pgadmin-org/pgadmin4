@@ -155,6 +155,44 @@ def _get_target_list(removed, target_dict, node, target_params, view_object,
     return target_only
 
 
+def _check_add_req_ids(source_dict, target_dict, key, temp_src_params,
+                       temp_tgt_params):
+    """
+    Check for Foreign Data Wrapper ID and Foreign Server ID and update it
+    in req parameters.
+    :param source_dict: Source dict for compare schema.
+    :param target_dict: Target dict for compare schema.
+    :param key: Key for get obj.
+    :param temp_src_params:
+    :param temp_tgt_params:
+    :return:
+    """
+    if 'fdwid' in source_dict[key]:
+        temp_src_params['fdwid'] = source_dict[key]['fdwid']
+        temp_tgt_params['fdwid'] = target_dict[key]['fdwid']
+    # Provide Foreign Server ID
+    if 'fsid' in source_dict[key]:
+        temp_src_params['fsid'] = source_dict[key]['fsid']
+        temp_tgt_params['fsid'] = target_dict[key]['fsid']
+
+
+def get_source_target_oid(source_dict, target_dict, key):
+    """
+    Get source and target object ID.
+    :param source_dict: Source schema diff data.
+    :param target_dict: Target schema diff data.
+    :param key: Key.
+    :return: source and target object ID.
+    """
+    source_object_id = None
+    target_object_id = None
+    if 'oid' in source_dict[key]:
+        source_object_id = source_dict[key]['oid']
+        target_object_id = target_dict[key]['oid']
+
+    return source_object_id, target_object_id
+
+
 def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                                       node, node_label, view_object,
                                       **kwargs):
@@ -179,11 +217,9 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
     target_params = kwargs['target_params']
     group_name = kwargs['group_name']
     for key in intersect_keys:
-        source_object_id = None
-        target_object_id = None
-        if 'oid' in source_dict[key]:
-            source_object_id = source_dict[key]['oid']
-            target_object_id = target_dict[key]['oid']
+        source_object_id, target_object_id = get_source_target_oid(source_dict,
+                                                                   target_dict,
+                                                                   key)
 
         # Recursively Compare the two dictionary
         if are_dictionaries_identical(dict1[key], dict2[key],
@@ -249,13 +285,8 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                 temp_src_params['oid'] = source_object_id
                 temp_tgt_params['oid'] = target_object_id
                 # Provide Foreign Data Wrapper ID
-                if 'fdwid' in source_dict[key]:
-                    temp_src_params['fdwid'] = source_dict[key]['fdwid']
-                    temp_tgt_params['fdwid'] = target_dict[key]['fdwid']
-                # Provide Foreign Server ID
-                if 'fsid' in source_dict[key]:
-                    temp_src_params['fsid'] = source_dict[key]['fsid']
-                    temp_tgt_params['fsid'] = target_dict[key]['fsid']
+                _check_add_req_ids(source_dict, target_dict, key,
+                                   temp_src_params, temp_tgt_params)
 
                 source_ddl = view_object.get_sql_from_diff(**temp_src_params)
                 diff_dependencies = view_object.get_dependencies(

@@ -634,6 +634,29 @@ def generate_client_primary_key_name(columns_info):
     return temp_key
 
 
+def _check_and_connect(trans_obj):
+    """
+    Check and connect to the database for transaction.
+    :param trans_obj: Transaction object.
+    :return: If any error return error with error msg,
+    if not then return connection object.
+    """
+    manager = get_driver(
+        PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
+    if hasattr(trans_obj, 'conn_id'):
+        conn = manager.connection(did=trans_obj.did,
+                                  conn_id=trans_obj.conn_id)
+    else:
+        conn = manager.connection(did=trans_obj.did)  # default connection
+
+    # Connect to the Server if not connected.
+    if not conn.connected():
+        status, msg = conn.connect()
+        if not status:
+            return True, msg, conn
+    return False, '', conn
+
+
 @blueprint.route(
     '/save/<int:trans_id>', methods=["PUT", "POST"], endpoint='save'
 )
@@ -675,21 +698,12 @@ def save(trans_id):
                 }
             )
 
-        manager = get_driver(
-            PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
-        if hasattr(trans_obj, 'conn_id'):
-            conn = manager.connection(did=trans_obj.did,
-                                      conn_id=trans_obj.conn_id)
-        else:
-            conn = manager.connection(did=trans_obj.did)  # default connection
+        is_error, errmsg, conn = _check_and_connect(trans_obj)
+        if is_error:
+            return make_json_response(
+                data={'status': status, 'result': u"{}".format(errmsg)}
+            )
 
-        # Connect to the Server if not connected.
-        if not conn.connected():
-            status, msg = conn.connect()
-            if not status:
-                return make_json_response(
-                    data={'status': status, 'result': u"{}".format(msg)}
-                )
         status, res, query_results, _rowid = trans_obj.save(
             changed_data,
             session_obj['columns_info'],
@@ -911,6 +925,52 @@ def set_limit(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
+def _check_for_transaction_before_cancel(trans_id):
+    """
+    Check if transaction exists or not before cancel it.
+    :param trans_id: Transaction ID for check.
+    :return: return error is transaction not found, else return grid data.
+    """
+
+    if 'gridData' not in session:
+        return True, ''
+
+    grid_data = session['gridData']
+
+    # Return from the function if transaction id not found
+    if str(trans_id) not in grid_data:
+        return True, ''
+
+    return False, grid_data
+
+
+def _check_and_cancel_transaction(trans_obj, delete_connection, conn, manager):
+    """
+    Check for connection and cancel current transaction.
+    :param trans_obj: transaction object for cancel.
+    :param delete_connection: Flag for remove connection.
+    :param conn: Connection
+    :param manager: Manager
+    :return: Return status and result of transaction cancel.
+    """
+    if conn.connected():
+        # on successful connection cancel the running transaction
+        status, result = conn.cancel_transaction(
+            trans_obj.conn_id, trans_obj.did)
+
+        # Delete connection if we have created it to
+        # cancel the transaction
+        if delete_connection:
+            manager.release(did=trans_obj.did)
+    else:
+        status = False
+        result = gettext(
+            'Not connected to server or connection with the server has '
+            'been closed.'
+        )
+    return status, result
+
+
 @blueprint.route(
     '/cancel/<int:trans_id>',
     methods=["PUT", "POST"], endpoint='cancel_transaction'
@@ -923,17 +983,8 @@ def cancel_transaction(trans_id):
     Args:
         trans_id: unique transaction id
     """
-
-    if 'gridData' not in session:
-        return make_json_response(
-            success=0,
-            errormsg=gettext('Transaction ID not found in the session.'),
-            info='DATAGRID_TRANSACTION_REQUIRED', status=404)
-
-    grid_data = session['gridData']
-
-    # Return from the function if transaction id not found
-    if str(trans_id) not in grid_data:
+    is_error, grid_data = _check_for_transaction_before_cancel(trans_id)
+    if is_error:
         return make_json_response(
             success=0,
             errormsg=gettext('Transaction ID not found in the session.'),
@@ -963,21 +1014,9 @@ def cancel_transaction(trans_id):
                 return internal_server_error(errormsg=str(msg))
             delete_connection = True
 
-        if conn.connected():
-            # on successful connection cancel the running transaction
-            status, result = conn.cancel_transaction(
-                trans_obj.conn_id, trans_obj.did)
-
-            # Delete connection if we have created it to
-            # cancel the transaction
-            if delete_connection:
-                manager.release(did=trans_obj.did)
-        else:
-            status = False
-            result = gettext(
-                'Not connected to server or connection with the server has '
-                'been closed.'
-            )
+        status, result = _check_and_cancel_transaction(trans_obj,
+                                                       delete_connection, conn,
+                                                       manager)
     else:
         status = False
         result = gettext(
