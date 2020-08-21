@@ -1862,7 +1862,7 @@ define([
         if (self.$el.data('datetimepicker').widget.find('.timepicker').is(':visible')){
           self.$el.data('datetimepicker').widget.find('.fa-calendar-alt').click();
         }else{
-          self.$el.data('datetimepicker').widget.find('.fa-clock-o').click();
+          self.$el.data('datetimepicker').widget.find('.fa-clock').click();
         }
       }
 

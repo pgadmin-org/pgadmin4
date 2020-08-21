@@ -2943,19 +2943,19 @@ define([
         if (this.$el.find('.timepicker').is(':visible')){
           this.$el.find('.fa-calendar-alt').click();
         }else{
-          this.$el.find('.fa-clock-o').click();
+          this.$el.find('.fa-clock').click();
         }
       },
 
       controlUp:function() {
-        this.$el.find('.fa-clock-o').click();
+        this.$el.find('.fa-clock').click();
         let $el = this.$el.find('.datetimepicker-input');
         let currdate = $el.data('datetimepicker').date().clone();
         $el.datetimepicker('date', currdate.add(1, 'h'));
       },
 
       controlDown:function() {
-        this.$el.find('.fa-clock-o').click();
+        this.$el.find('.fa-clock').click();
         let $el = this.$el.find('.datetimepicker-input');
         let currdate = $el.data('datetimepicker').date().clone();
         $el.datetimepicker('date', currdate.subtract(1, 'h'));
