@@ -225,8 +225,14 @@ class LDAPAuthentication(BaseAuthentication):
             elif not search_base_dn or search_base_dn == '<Search-Base-DN>':
                 search_base_dn = config.LDAP_BASE_DN
 
+            search_filter = "({0}={1})".format(config.LDAP_USERNAME_ATTRIBUTE,
+                                               self.username)
+            if config.LDAP_SEARCH_FILTER:
+                search_filter = "(&{0}{1})".format(search_filter,
+                                                   config.LDAP_SEARCH_FILTER)
+
             self.conn.search(search_base=search_base_dn,
-                             search_filter=config.LDAP_SEARCH_FILTER,
+                             search_filter=search_filter,
                              search_scope=config.LDAP_SEARCH_SCOPE,
                              attributes=ALL_ATTRIBUTES
                              )
@@ -247,9 +253,11 @@ class LDAPAuthentication(BaseAuthentication):
             )
             return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(e.args[0])
 
-        for entry in self.conn.entries:
-            if config.LDAP_USERNAME_ATTRIBUTE in entry and self.username == \
-                    entry[config.LDAP_USERNAME_ATTRIBUTE].value:
-                return True, entry
-        return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(
-            "Could not find the specified user.")
+        results = len(self.conn.entries)
+        if results > 1:
+            return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(
+                "More than one result found.")
+        elif results < 1:
+            return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(
+                "Could not find the specified user.")
+        return True, self.conn.entries[0]
