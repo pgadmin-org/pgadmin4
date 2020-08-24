@@ -33,6 +33,7 @@ def _get_source_list(added, source_dict, node, source_params, view_object,
     :param group_name: group name
     :return: list of source dict.
     """
+    global count
     source_only = []
     for item in added:
         source_object_id = None
@@ -109,6 +110,7 @@ def _get_target_list(removed, target_dict, node, target_params, view_object,
     :param group_name: group name.
     :return: list of target dict.
     """
+    global count
     target_only = []
     for item in removed:
         target_object_id = None
@@ -207,6 +209,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
     :param other_param:
     :return: return list of identical and different dict.
     """
+    global count
     identical = []
     different = []
     dict1 = kwargs['dict1']
@@ -349,7 +352,6 @@ def compare_dictionaries(**kwargs):
     # Keys that are available in source and missing in target.
 
     added = dict1_keys - dict2_keys
-    global count
     source_only = _get_source_list(added, source_dict, node, source_params,
                                    view_object, node_label, group_name)
 

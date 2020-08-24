@@ -696,13 +696,15 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
             # Allow user to set the blank value in fdwvalue
             # field in option model
             is_valid_added_options = is_valid_changed_options = False
-            if 'umoptions' in data and 'added' in data['umoptions']:
+            if 'umoptions' in data and data['umoptions'] is not None and\
+                    'added' in data['umoptions']:
                 is_valid_added_options, data['umoptions']['added'] =\
                     validate_options(
                         data['umoptions']['added'],
                         'umoption',
                         'umvalue')
-            if 'umoptions' in data and 'changed' in data['umoptions']:
+            if 'umoptions' in data and data['umoptions'] is not None and\
+                    'changed' in data['umoptions']:
                 is_valid_changed_options, data['umoptions']['changed'] =\
                     validate_options(
                         data['umoptions']['changed'],
@@ -873,6 +875,10 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         for row in rset['rows']:
             status, data = self._fetch_properties(row['oid'])
             if status:
+                # For schema diff if umoptions is None then convert it to
+                # the empty list.
+                if 'umoptions' in data and data['umoptions'] is None:
+                    data['umoptions'] = []
                 res[row['name']] = data
 
         return res

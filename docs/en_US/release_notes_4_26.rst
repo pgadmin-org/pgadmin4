@@ -14,8 +14,9 @@ New features
 Housekeeping
 ************
 
-| `Issue #5344 <https://redmine.postgresql.org/issues/5344>`_ - Improve code coverage and API test cases for Grant Wizard.
+| `Issue #5344 <https://redmine.postgresql.org/issues/5344>`_ -  Improve code coverage and API test cases for Grant Wizard.
 
 Bug fixes
 *********
 
+| `Issue #5754 <https://redmine.postgresql.org/issues/5754>`_ -  Fixed an issue where schema diff is not working when providing the options to Foreign Data Wrapper, Foreign Server, and User Mapping.

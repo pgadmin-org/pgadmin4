@@ -682,13 +682,16 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         is_valid_added_options = is_valid_changed_options = False
 
-        if 'fdwoptions' in data and 'added' in data['fdwoptions']:
+        if 'fdwoptions' in data and data['fdwoptions'] is not None and\
+                'added' in data['fdwoptions']:
             is_valid_added_options, data['fdwoptions']['added'] = \
                 validate_options(
                     data['fdwoptions']['added'],
                     'fdwoption',
                     'fdwvalue')
-        if 'fdwoptions' in data and 'changed' in data['fdwoptions']:
+
+        if 'fdwoptions' in data and data['fdwoptions'] is not None and\
+                'changed' in data['fdwoptions']:
             is_valid_changed_options, data['fdwoptions']['changed'] = \
                 validate_options(
                     data['fdwoptions']['changed'],
@@ -960,6 +963,10 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
         for row in rset['rows']:
             status, data = self._fetch_properties(row['oid'])
             if status:
+                # For schema diff if fdwoptions is None then convert it to
+                # the empty list.
+                if 'fdwoptions' in data and data['fdwoptions'] is None:
+                    data['fdwoptions'] = []
                 res[row['name']] = data
 
         return res

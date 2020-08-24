@@ -641,14 +641,16 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
                 data[arg] = old_data[arg]
 
         is_valid_added_options = is_valid_changed_options = False
-        if 'fsrvoptions' in data and 'added' in data['fsrvoptions']:
+        if 'fsrvoptions' in data and data['fsrvoptions'] is not None and\
+                'added' in data['fsrvoptions']:
             is_valid_added_options, data['fsrvoptions']['added'] = \
                 validate_options(
                     data['fsrvoptions']['added'],
                     'fsrvoption',
                     'fsrvvalue')
 
-        if 'fsrvoptions' in data and 'changed' in data['fsrvoptions']:
+        if 'fsrvoptions' in data and data['fsrvoptions'] is not None and\
+                'changed' in data['fsrvoptions']:
             is_valid_changed_options, data['fsrvoptions']['changed'] = \
                 validate_options(
                     data['fsrvoptions']['changed'],
@@ -921,6 +923,10 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
         for row in rset['rows']:
             status, data = self._fetch_properties(row['oid'])
             if status:
+                # For schema diff if fsrvoptions is None then convert it to
+                # the empty list.
+                if 'fsrvoptions' in data and data['fsrvoptions'] is None:
+                    data['fsrvoptions'] = []
                 res[row['name']] = data
 
         return res
