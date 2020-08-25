@@ -405,7 +405,58 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
-
+        ('When backup a schema with default options',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 blobs=True,
+                 schemas=['schema1'],
+                 tables=[],
+                 database='postgres'
+             ),
+             url='/backup/job/{0}/object',
+             expected_cmd_opts=['--verbose', '--format=c', '--blobs',
+                                '--schema', 'schema1'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
+        ('When backup a table with default options',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 blobs=True,
+                 schemas=[],
+                 tables=[['public', 'table1']],
+                 database='postgres'
+             ),
+             url='/backup/job/{0}/object',
+             expected_cmd_opts=['--verbose', '--format=c', '--blobs',
+                                '--table', 'public.table1'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
         ('When backup the server',
          dict(
              class_params=dict(

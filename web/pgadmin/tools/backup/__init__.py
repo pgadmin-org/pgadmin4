@@ -380,9 +380,9 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
 
     args.extend(
         functools.reduce(operator.iconcat, map(
-            lambda s, t: ['--table',
-                          r'{0}'.format(driver.qtIdent(conn, s, t)
-                                        .replace('"', '\"'))],
+            lambda t: ['--table',
+                       r'{0}'.format(driver.qtIdent(conn, t[0], t[1])
+                                     .replace('"', '\"'))],
             data.get('tables', [])), []
         )
     )
