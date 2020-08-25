@@ -11,6 +11,7 @@ SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin,
         WHEN ad.oid IS NOT NULL THEN 'A'::text
         WHEN fs.oid IS NOT NULL THEN 'Fs'::text
         WHEN fdw.oid IS NOT NULL THEN 'Fw'::text
+        WHEN evt.oid IS NOT NULL THEN 'Et'::text
         WHEN col.oid IS NOT NULL THEN 'Co'::text
         WHEN ftsc.oid IS NOT NULL THEN 'Fc'::text
         WHEN ftsp.oid IS NOT NULL THEN 'Fp'::text
@@ -23,7 +24,7 @@ SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin,
     COALESCE(coc.relname, clrw.relname) AS ownertable,
     CASE WHEN cl.relname IS NOT NULL OR att.attname IS NOT NULL THEN cl.relname || COALESCE('.' || att.attname, '')
     ELSE COALESCE(cl.relname, co.conname, pr.proname, tg.tgname, ty.typname, la.lanname, rw.rulename, ns.nspname,
-                  fs.srvname, fdw.fdwname, col.collname, ftsc.cfgname, ftsd.dictname, ftsp.prsname,
+                  fs.srvname, fdw.fdwname, evt.evtname, col.collname, ftsc.cfgname, ftsd.dictname, ftsp.prsname,
                   ftst.tmplname, ext.extname, syn.synname)
     END AS refname,
     COALESCE(nsc.nspname, nso.nspname, nsp.nspname, nst.nspname, nsrw.nspname, colns.nspname, ftscns.nspname,
@@ -53,6 +54,7 @@ LEFT JOIN pg_foreign_data_wrapper fdw ON fdw.oid=dep.refobjid
 LEFT JOIN pg_type prtyp ON prtyp.oid = pr.prorettype
 LEFT JOIN pg_inherits inhits ON (inhits.inhrelid=dep.refobjid)
 LEFT JOIN pg_inherits inhed ON (inhed.inhparent=dep.refobjid)
+LEFT JOIN pg_event_trigger evt ON evt.oid=dep.refobjid
 LEFT JOIN pg_collation col ON col.oid=dep.refobjid
 LEFT JOIN pg_namespace colns ON col.collnamespace=colns.oid
 LEFT JOIN pg_ts_config ftsc ON ftsc.oid=dep.refobjid
@@ -69,7 +71,7 @@ LEFT JOIN pg_namespace synns ON syn.synnamespace=synns.oid
 {{where_clause}} AND
 refclassid IN ( SELECT oid FROM pg_class WHERE relname IN
    ('pg_class', 'pg_constraint', 'pg_conversion', 'pg_language', 'pg_proc', 'pg_rewrite', 'pg_namespace',
-   'pg_trigger', 'pg_type', 'pg_attrdef', 'pg_foreign_server', 'pg_foreign_data_wrapper',
+   'pg_trigger', 'pg_type', 'pg_attrdef', 'pg_event_trigger', 'pg_foreign_server', 'pg_foreign_data_wrapper',
    'pg_collation', 'pg_ts_config', 'pg_ts_dict', 'pg_ts_parser', 'pg_ts_template', 'pg_extension',
    'pg_synonym'))
 UNION
