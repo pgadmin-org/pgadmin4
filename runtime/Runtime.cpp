@@ -67,10 +67,7 @@ bool Runtime::go(int argc, char *argv[])
     configureProxy();
 
     // Display the spash screen
-    QSplashScreen *splash = displaySplash(&app);
-
-    // Get the port number to use
-    quint16 port = getPort();
+    m_splash = displaySplash(&app);
 
     // Generate a random key to authenticate the client to the server
     QString key = QUuid::createUuid().toString();
@@ -80,29 +77,26 @@ bool Runtime::go(int argc, char *argv[])
     MenuActions *menuActions = new MenuActions();
 
     // Create the control object (tray icon or floating window
-    FloatingWindow *floatingWindow = Q_NULLPTR;
-    TrayIcon *trayIcon = Q_NULLPTR;
-
-    splash->showMessage(QString(QWidget::tr("Checking for system tray...")), Qt::AlignBottom | Qt::AlignCenter);
+    m_splash->showMessage(QString(QWidget::tr("Checking for system tray...")), Qt::AlignBottom | Qt::AlignCenter);
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
-        trayIcon = createTrayIcon(splash, menuActions);
+        m_trayIcon = createTrayIcon(menuActions);
     else
-        floatingWindow = createFloatingWindow(splash, menuActions);
+        m_floatingWindow = createFloatingWindow(menuActions);
 
     // Fire up the app server
-    const Server *server = startServerLoop(splash, floatingWindow, trayIcon, port, key);
+    const Server *server = startServerLoop(key);
 
     // Ensure we'll cleanup
     QObject::connect(server, SIGNAL(finished()), server, SLOT(deleteLater()));
     atexit(cleanup);
 
     // Generate the app server URL
-    QString url = QString("http://127.0.0.1:%1/?key=%2").arg(port).arg(key);
+    QString url = QString("http://127.0.0.1:%1/?key=%2").arg(m_port).arg(key);
     Logger::GetLogger()->Log(QString(QWidget::tr("Application Server URL: %1")).arg(url));
 
     // Check the server is running
-    checkServer(splash, url);
+    checkServer(url);
 
     // Stash the URL for any duplicate processes to open
     createAddressFile(url);
@@ -111,10 +105,10 @@ bool Runtime::go(int argc, char *argv[])
     menuActions->setAppServerUrl(url);
 
     // Enable the shutdown server menu as server started successfully.
-    if (trayIcon != Q_NULLPTR)
-        trayIcon->enablePostStartOptions();
-    if (floatingWindow != Q_NULLPTR)
-        floatingWindow->enablePostStartOptions();
+    if (m_trayIcon != Q_NULLPTR)
+        m_trayIcon->enablePostStartOptions();
+    if (m_floatingWindow != Q_NULLPTR)
+        m_floatingWindow->enablePostStartOptions();
 
     // Open the browser if needed
     if (m_settings.value("OpenTabAtStartup", true).toBool())
@@ -124,10 +118,10 @@ bool Runtime::go(int argc, char *argv[])
     QObject::connect(menuActions, SIGNAL(shutdownSignal(QUrl)), server, SLOT(shutdown(QUrl)));
 
     // Final cleanup
-    splash->finish(Q_NULLPTR);
+    m_splash->finish(Q_NULLPTR);
 
-    if (floatingWindow != Q_NULLPTR)
-        floatingWindow->show();
+    if (m_floatingWindow != Q_NULLPTR)
+        m_floatingWindow->show();
 
     Logger::GetLogger()->Log("Everything works fine, successfully started pgAdmin4.");
     Logger::ReleaseLogger();
@@ -301,11 +295,11 @@ quint16 Runtime::getPort() const
 
 
 // Create a tray icon
-TrayIcon * Runtime::createTrayIcon(QSplashScreen *splash, MenuActions *menuActions)
+TrayIcon * Runtime::createTrayIcon(MenuActions *menuActions)
 {
     TrayIcon *trayIcon = Q_NULLPTR;
 
-    splash->showMessage(QString(QWidget::tr("Checking for system tray...")), Qt::AlignBottom | Qt::AlignCenter);
+    m_splash->showMessage(QString(QWidget::tr("Checking for system tray...")), Qt::AlignBottom | Qt::AlignCenter);
     Logger::GetLogger()->Log("Checking for system tray...");
 
     // Start the tray service
@@ -322,11 +316,11 @@ TrayIcon * Runtime::createTrayIcon(QSplashScreen *splash, MenuActions *menuActio
 
 
 // Create a floating window
-FloatingWindow * Runtime::createFloatingWindow(QSplashScreen *splash, MenuActions *menuActions)
+FloatingWindow * Runtime::createFloatingWindow(MenuActions *menuActions)
 {
     FloatingWindow *floatingWindow = Q_NULLPTR;
 
-    splash->showMessage(QString(QWidget::tr("System tray not found, creating floating window...")), Qt::AlignBottom | Qt::AlignCenter);
+    m_splash->showMessage(QString(QWidget::tr("System tray not found, creating floating window...")), Qt::AlignBottom | Qt::AlignCenter);
     Logger::GetLogger()->Log("System tray not found, creating floating window...");
     floatingWindow = new FloatingWindow();
     if (floatingWindow == Q_NULLPTR)
@@ -345,16 +339,81 @@ FloatingWindow * Runtime::createFloatingWindow(QSplashScreen *splash, MenuAction
     return floatingWindow;
 }
 
+bool Runtime::isPortInUse(const quint16 port)
+{
+    QTcpSocket socket;
+
+    // Bind the socket on the specified port. It it fails then
+    // port is in use.
+    bool bindSuccessful = socket.bind(port, QTcpSocket::ShareAddress);
+
+    return !bindSuccessful;
+}
+
+void Runtime::openConfigureWindow(const QString errorMsg)
+{
+    m_splash->finish(Q_NULLPTR);
+
+    qDebug() << errorMsg;
+    QMessageBox::critical(Q_NULLPTR, QString(QWidget::tr("Fatal Error")), errorMsg);
+    Logger::GetLogger()->Log(errorMsg);
+
+    // Allow the user to tweak the configuration if needed
+    m_configDone = false;
+    bool oldFixedPort = m_settings.value("FixedPort", false).toBool();
+
+
+    ConfigWindow *dlg = new ConfigWindow();
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
+    dlg->raise();
+    dlg->activateWindow();
+    QObject::connect(dlg, SIGNAL(closing(bool)), this, SLOT(onConfigDone(bool)));
+
+    // Wait for configuration to be completed
+    while (!m_configDone)
+        delay(100);
+
+    // Read the value of port again if user has changed.
+    bool newFixedPort = m_settings.value("FixedPort", false).toBool();
+    quint16 newPort = m_settings.value("PortNumber").toInt();
+
+    // User hasn't changed the value of fixed port check box
+    // only change the value of the port
+    if (oldFixedPort == newFixedPort && newFixedPort && m_port != newPort)
+        m_port = newPort;
+    // User has selected the fixed port and it's old value is random port,
+    // so port needs to be updated.
+    else if (oldFixedPort != newFixedPort && newFixedPort)
+        m_port = newPort;
+    // User has deselect the fixed port and it's old value is fixed port,
+    // so we will have to get the random port
+    else if (oldFixedPort != newFixedPort && !newFixedPort)
+        m_port = getPort();
+}
 
 // Server startup loop
-Server * Runtime::startServerLoop(QSplashScreen *splash, FloatingWindow *floatingWindow, TrayIcon *trayIcon, quint16 port, QString key)
+Server * Runtime::startServerLoop(QString key)
 {
     bool done = false;
     Server *server;
 
+    // Get the port number to use
+    m_port = getPort();
+
     while (!done)
     {
-        server = startServer(splash, port, key);
+        if (isPortInUse(m_port))
+        {
+            QString error = QString(QWidget::tr("The specified port is already in use."));
+
+            // Open the configuration window
+            openConfigureWindow(error);
+
+            continue;
+        }
+
+        server = startServer(key);
         if (server == NULL)
         {
             Logger::ReleaseLogger();
@@ -364,41 +423,24 @@ Server * Runtime::startServerLoop(QSplashScreen *splash, FloatingWindow *floatin
         // Check for server startup errors
         if (server->isFinished() || server->getError().length() > 0)
         {
-            splash->finish(Q_NULLPTR);
-
-            qDebug() << server->getError();
-
             QString error = QString(QWidget::tr("An error occurred initialising the pgAdmin 4 server:\n\n%1")).arg(server->getError());
-            QMessageBox::critical(Q_NULLPTR, QString(QWidget::tr("Fatal Error")), error);
-            Logger::GetLogger()->Log(error);
 
             delete server;
 
             // Enable the View Log option for diagnostics
-            if (floatingWindow)
-                floatingWindow->enableViewLogOption();
-            if (trayIcon)
-                trayIcon->enableViewLogOption();
+            if (m_floatingWindow)
+                m_floatingWindow->enableViewLogOption();
+            if (m_trayIcon)
+                m_trayIcon->enableViewLogOption();
 
-            // Allow the user to tweak the Python Path if needed
-            m_configDone = false;
-
-            ConfigWindow *dlg = new ConfigWindow();
-            dlg->setAttribute(Qt::WA_DeleteOnClose);
-            dlg->show();
-            dlg->raise();
-            dlg->activateWindow();
-            QObject::connect(dlg, SIGNAL(closing(bool)), this, SLOT(onConfigDone(bool)));
-
-            // Wait for configuration to be completed
-            while (!m_configDone)
-                delay(100);
+            // Open the configuration window
+            openConfigureWindow(error);
 
             // Disable the View Log option again
-            if (floatingWindow)
-                floatingWindow->disableViewLogOption();
-            if (trayIcon)
-                trayIcon->disableViewLogOption();
+            if (m_floatingWindow)
+                m_floatingWindow->disableViewLogOption();
+            if (m_trayIcon)
+                m_trayIcon->disableViewLogOption();
         }
         else
         {
@@ -422,21 +464,21 @@ void Runtime::onConfigDone(bool accepted)
 
 
 // Start the server
-Server * Runtime::startServer(QSplashScreen *splash, quint16 port, QString key)
+Server * Runtime::startServer(QString key)
 {
     Server *server;
 
-    splash->showMessage(QString(QWidget::tr("Starting pgAdmin4 server...")), Qt::AlignBottom | Qt::AlignCenter);
+    m_splash->showMessage(QString(QWidget::tr("Starting pgAdmin4 server...")), Qt::AlignBottom | Qt::AlignCenter);
     Logger::GetLogger()->Log("Starting pgAdmin4 server...");
 
-    QString msg = QString(QWidget::tr("Creating server object, port:%1, key:%2, logfile:%3")).arg(port).arg(key).arg(g_serverLogFile);
+    QString msg = QString(QWidget::tr("Creating server object, port:%1, key:%2, logfile:%3")).arg(m_port).arg(key).arg(g_serverLogFile);
     Logger::GetLogger()->Log(msg);
-    server = new Server(this, port, key, g_serverLogFile);
+    server = new Server(this, m_port, key, g_serverLogFile);
 
     Logger::GetLogger()->Log("Initializing server...");
     if (!server->Init())
     {
-        splash->finish(Q_NULLPTR);
+        m_splash->finish(Q_NULLPTR);
 
         qDebug() << server->getError();
 
@@ -464,7 +506,7 @@ Server * Runtime::startServer(QSplashScreen *splash, quint16 port, QString key)
 
 
 // Check the server is running properly
-void Runtime::checkServer(QSplashScreen *splash, QString url)
+void Runtime::checkServer(QString url)
 {
     // Read the server connection timeout from the registry or set the default timeout.
     int timeout = m_settings.value("ConnectionTimeout", 90).toInt();
@@ -476,6 +518,7 @@ void Runtime::checkServer(QSplashScreen *splash, QString url)
     QTime midTime1 = QTime::currentTime().addSecs(timeout/3);
     QTime midTime2 = QTime::currentTime().addSecs(timeout*2/3);
     bool alive = false;
+    bool enableOptions = false;
 
     Logger::GetLogger()->Log("The server should be up. Attempting to connect and get a response.");
     while(QTime::currentTime() <= endTime)
@@ -489,12 +532,26 @@ void Runtime::checkServer(QSplashScreen *splash, QString url)
 
         if(QTime::currentTime() >= midTime1)
         {
+            if (m_floatingWindow && !enableOptions)
+            {
+                m_floatingWindow->enableViewLogOption();
+                m_floatingWindow->enableConfigOption();
+                enableOptions = true;
+            }
+
+            if (m_trayIcon && !enableOptions)
+            {
+                m_trayIcon->enableViewLogOption();
+                m_trayIcon->enableConfigOption();
+                enableOptions = true;
+            }
+
             if(QTime::currentTime() < midTime2) {
-                splash->showMessage(QString(QWidget::tr("Taking longer than usual...")), Qt::AlignBottom | Qt::AlignCenter);
+                m_splash->showMessage(QString(QWidget::tr("Taking longer than usual...")), Qt::AlignBottom | Qt::AlignCenter);
             }
             else
             {
-                splash->showMessage(QString(QWidget::tr("Almost there...")), Qt::AlignBottom | Qt::AlignCenter);
+                m_splash->showMessage(QString(QWidget::tr("Almost there...")), Qt::AlignBottom | Qt::AlignCenter);
             }
         }
 
@@ -505,7 +562,7 @@ void Runtime::checkServer(QSplashScreen *splash, QString url)
     Logger::GetLogger()->Log("Attempt to connect one more time in case of a long network timeout while looping");
     if (!alive && !pingServer(QUrl(url)))
     {
-        splash->finish(Q_NULLPTR);
+        m_splash->finish(Q_NULLPTR);
         QString error(QWidget::tr("The pgAdmin 4 server could not be contacted."));
         QMessageBox::critical(Q_NULLPTR, QString(QWidget::tr("Fatal Error")), error);
 

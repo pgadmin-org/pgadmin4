@@ -43,20 +43,26 @@ private:
     QSettings m_settings;
     QSharedMemory *m_shmem;
     bool m_configDone;
+    FloatingWindow *m_floatingWindow = Q_NULLPTR;
+    TrayIcon *m_trayIcon = Q_NULLPTR;
+    QSplashScreen *m_splash = Q_NULLPTR;
+    quint16 m_port = 0;
 
     void setupStyling(QApplication *app) const;
     void configureProxy() const;
     QSplashScreen *displaySplash(QApplication *app);
     quint16 getPort() const;
-    TrayIcon *createTrayIcon(QSplashScreen *splash, MenuActions *menuActions);
-    FloatingWindow *createFloatingWindow(QSplashScreen *splash, MenuActions *menuActions);
-    Server *startServerLoop(QSplashScreen *splash, FloatingWindow *floatingWindow, TrayIcon *trayIcon, quint16 port, QString key);
-    Server *startServer(QSplashScreen *splash, quint16 port, QString key);
-    void checkServer(QSplashScreen *splash, QString url);
+    TrayIcon *createTrayIcon(MenuActions *menuActions);
+    FloatingWindow *createFloatingWindow(MenuActions *menuActions);
+    Server *startServerLoop(QString key);
+    Server *startServer(QString key);
+    void checkServer(QString url);
     void createAddressFile(QString url) const;
     void openBrowserTab(QString url) const;
     QString serverRequest(QUrl url, QString path);
     bool pingServer(QUrl url);
+    bool isPortInUse(const quint16 port);
+    void openConfigureWindow(const QString errorMsg);
 
 private slots:
     void onConfigDone(bool accepted);

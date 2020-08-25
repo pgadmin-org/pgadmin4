@@ -117,12 +117,25 @@ void FloatingWindow::enableViewLogOption()
         m_logAction->setEnabled(true);
 }
 
-
 // Disable the View Log option
 void FloatingWindow::disableViewLogOption()
 {
     if (m_logAction != Q_NULLPTR)
         m_logAction->setEnabled(false);
+}
+
+// Enable the configure option
+void FloatingWindow::enableConfigOption()
+{
+    if (m_configAction != Q_NULLPTR)
+        m_configAction->setEnabled(true);
+}
+
+// Disable the configure option
+void FloatingWindow::disableConfigOption()
+{
+    if (m_configAction != Q_NULLPTR)
+        m_configAction->setEnabled(false);
 }
 
 void FloatingWindow::closeEvent(QCloseEvent * event)

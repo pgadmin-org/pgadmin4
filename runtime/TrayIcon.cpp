@@ -116,12 +116,25 @@ void TrayIcon::enableViewLogOption()
         m_logAction->setEnabled(true);
 }
 
-
 // Disable the View Log option
 void TrayIcon::disableViewLogOption()
 {
     if (m_logAction != Q_NULLPTR)
         m_logAction->setEnabled(false);
+}
+
+// Enable the configure option
+void TrayIcon::enableConfigOption()
+{
+    if (m_configAction != Q_NULLPTR)
+        m_configAction->setEnabled(true);
+}
+
+// Disable the configure option
+void TrayIcon::disableConfigOption()
+{
+    if (m_configAction != Q_NULLPTR)
+        m_configAction->setEnabled(false);
 }
 
 void TrayIcon::setMenuActions(MenuActions * menuActions)

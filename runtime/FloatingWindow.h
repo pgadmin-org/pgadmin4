@@ -31,6 +31,8 @@ public:
     void enablePostStartOptions();
     void enableViewLogOption();
     void disableViewLogOption();
+    void enableConfigOption();
+    void disableConfigOption();
     void setMenuActions(MenuActions * menuActions);
 
 private:
