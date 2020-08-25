@@ -542,19 +542,19 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                                   umid=umid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
-                return internal_server_error(errormsg=res)
+                return False, internal_server_error(errormsg=res)
 
             if not res['rows']:
-                return make_json_response(
+                return False, make_json_response(
                     status=410,
                     success=0,
                     errormsg=gettext(
                         'The specified user mapping could not be found.\n'
                     )
                 )
-            return res
+            return True, res
         except Exception as e:
-            return internal_server_error(errormsg=str(e))
+            return False, internal_server_error(errormsg=str(e))
 
     @check_precondition
     def delete(self, gid, sid, did, fid, fsid, **kwargs):
@@ -599,7 +599,11 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                             'could not be found.\n'
                         )
                     )
-                res = self._fetch_specified_user_mapping_properties(umid)
+                status, res = \
+                    self._fetch_specified_user_mapping_properties(umid)
+
+                if not status:
+                    return res
 
                 data = res['rows'][0]
 
