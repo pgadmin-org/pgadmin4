@@ -32,6 +32,8 @@ $alert-danger-bg: $color-danger-lighter !default;
 $alert-danger-color: $color-danger !default;
 $alert-success-bg: $color-success-light !default;
 $alert-success-color: $color-success !default;
+$alert-warning-bg: $color-success-light !default;
+$alert-warning-color: $color-success !default;
 $negative-bg: $color-gray-light;
 $popover-bg: $color-gray-dark;
 $popover-body-color: $white;

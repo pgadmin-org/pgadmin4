@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #2042 <https://redmine.postgresql.org/issues/2042>`_ -  Added SQL Formatter support in Query Tool.
+| `Issue #5772 <https://redmine.postgresql.org/issues/5772>`_ -  Warn the user when connecting to a server that is older than pgAdmin supports.
 
 Housekeeping
 ************

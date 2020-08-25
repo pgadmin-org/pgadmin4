@@ -225,6 +225,13 @@
   @extend .ajs-text-smoothing;
 }
 
+.ajs-message.ajs-warning.ajs-visible {
+  background: $alert-warning-bg;
+  border: $border-width solid $alert-warning-color;
+  color: $alert-warning-color;
+  @extend .ajs-text-smoothing;
+}
+
 .ajs-message.ajs-visible {
   background: $alert-primary-bg;
   border: $border-width solid $alert-primary-color;

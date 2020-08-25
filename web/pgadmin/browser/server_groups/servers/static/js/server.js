@@ -1195,7 +1195,16 @@ define('pgadmin.node.server', [
               pgBrowser.serverInfo || {};
             serverInfo[_data._id] = _.extend({}, _data);
 
-            Alertify.success(res.info);
+            if (_data.version < 90500) {
+              Alertify.warning(gettext('You have connected to a server version that is older ' +
+                'than is supported by pgAdmin. This may cause pgAdmin to break in strange and ' +
+                'unpredictable ways. Or a plague of frogs. Either way, you have been warned!') +
+                '<br /><br />' +
+                res.info, 0);
+            } else {
+              Alertify.success(res.info);
+            }
+
             obj.trigger('connected', obj, _item, _data);
 
             // Generate the event that server is connected
