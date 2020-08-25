@@ -114,19 +114,10 @@ class SQLAutoComplete(object):
         schema_names = []
         if self.conn.connected():
             # Fetch the search path
-            query = render_template(
-                "/".join([self.sql_path, 'schema.sql']), search_path=True)
-            status, res = self.conn.execute_dict(query)
-            if status:
-                for record in res['rows']:
-                    self.search_path.append(record['schema'])
+            self._set_search_path()
 
             # Fetch the schema names
-            query = render_template("/".join([self.sql_path, 'schema.sql']))
-            status, res = self.conn.execute_dict(query)
-            if status:
-                for record in res['rows']:
-                    schema_names.append(record['schema'])
+            self._fetch_schema_name(schema_names)
 
             pref = Preferences.module('sqleditor')
             keywords_in_uppercase = \
@@ -172,6 +163,21 @@ class SQLAutoComplete(object):
             re.compile(r'^nextval\(')]
         self.qualify_columns = 'if_more_than_one_table'
         self.asterisk_column_order = 'table_order'
+
+    def _set_search_path(self):
+        query = render_template(
+            "/".join([self.sql_path, 'schema.sql']), search_path=True)
+        status, res = self.conn.execute_dict(query)
+        if status:
+            for record in res['rows']:
+                self.search_path.append(record['schema'])
+
+    def _fetch_schema_name(self, schema_names):
+        query = render_template("/".join([self.sql_path, 'schema.sql']))
+        status, res = self.conn.execute_dict(query)
+        if status:
+            for record in res['rows']:
+                schema_names.append(record['schema'])
 
     def escape_name(self, name):
         if name and (
@@ -622,6 +628,25 @@ class SQLAutoComplete(object):
             aliases = (tbl + str(i) for i in count(2))
         return next(a for a in aliases if normalize_ref(a) not in tbls)
 
+    def _check_for_aliases(self, left, refs, rtbl, suggestion, right):
+        """
+        Check for generate aliases and return join value
+        :param left:
+        :param refs:
+        :param rtbl:
+        :param suggestion:
+        :param right:
+        :return: return join string.
+        """
+        if self.generate_aliases or normalize_ref(left.tbl) in refs:
+            lref = self.alias(left.tbl, suggestion.table_refs)
+            join = '{0} {4} ON {4}.{1} = {2}.{3}'.format(
+                left.tbl, left.col, rtbl.ref, right.col, lref)
+        else:
+            join = '{0} ON {0}.{1} = {2}.{3}'.format(
+                left.tbl, left.col, rtbl.ref, right.col)
+        return join
+
     def get_join_matches(self, suggestion, word_before_cursor):
         tbls = suggestion.table_refs
         cols = self.populate_scoped_cols(tbls)
@@ -644,13 +669,8 @@ class SQLAutoComplete(object):
             left = child if parent == right else parent
             if suggestion.schema and left.schema != suggestion.schema:
                 continue
-            if self.generate_aliases or normalize_ref(left.tbl) in refs:
-                lref = self.alias(left.tbl, suggestion.table_refs)
-                join = '{0} {4} ON {4}.{1} = {2}.{3}'.format(
-                    left.tbl, left.col, rtbl.ref, right.col, lref)
-            else:
-                join = '{0} ON {0}.{1} = {2}.{3}'.format(
-                    left.tbl, left.col, rtbl.ref, right.col)
+
+            join = self._check_for_aliases(left, refs, rtbl, suggestion, right)
             alias = generate_alias(left.tbl)
             synonyms = [join, '{0} ON {0}.{1} = {2}.{3}'.format(
                 alias, left.col, rtbl.ref, right.col)]
@@ -668,6 +688,34 @@ class SQLAutoComplete(object):
         return self.find_matches(word_before_cursor, joins,
                                  mode='strict', meta='join')
 
+    def list_dict(self, pairs):  # Turns [(a, b), (a, c)] into {a: [b, c]}
+        d = defaultdict(list)
+        for pair in pairs:
+            d[pair[0]].append(pair[1])
+        return d
+
+    def add_cond(self, lcol, rcol, rref, prio, meta, **kwargs):
+        """
+        Add Condition in join
+        :param lcol:
+        :param rcol:
+        :param rref:
+        :param prio:
+        :param meta:
+        :param kwargs:
+        :return:
+        """
+        suggestion = kwargs['suggestion']
+        found_conds = kwargs['found_conds']
+        ltbl = kwargs['ltbl']
+        ref_prio = kwargs['ref_prio']
+        conds = kwargs['conds']
+        prefix = '' if suggestion.parent else ltbl.ref + '.'
+        cond = prefix + lcol + ' = ' + rref + '.' + rcol
+        if cond not in found_conds:
+            found_conds.add(cond)
+            conds.append(Candidate(cond, prio + ref_prio[rref], meta))
+
     def get_join_condition_matches(self, suggestion, word_before_cursor):
         col = namedtuple('col', 'schema tbl col')
         tbls = self.populate_scoped_cols(suggestion.table_refs).items
@@ -679,24 +727,11 @@ class SQLAutoComplete(object):
             return []
         conds, found_conds = [], set()
 
-        def add_cond(lcol, rcol, rref, prio, meta):
-            prefix = '' if suggestion.parent else ltbl.ref + '.'
-            cond = prefix + lcol + ' = ' + rref + '.' + rcol
-            if cond not in found_conds:
-                found_conds.add(cond)
-                conds.append(Candidate(cond, prio + ref_prio[rref], meta))
-
-        def list_dict(pairs):  # Turns [(a, b), (a, c)] into {a: [b, c]}
-            d = defaultdict(list)
-            for pair in pairs:
-                d[pair[0]].append(pair[1])
-            return d
-
         # Tables that are closer to the cursor get higher prio
         ref_prio = dict((tbl.ref, num)
                         for num, tbl in enumerate(suggestion.table_refs))
         # Map (schema, table, col) to tables
-        coldict = list_dict(
+        coldict = self.list_dict(
             ((t.schema, t.name, c.name), t) for t, c in cols if t.ref != lref
         )
         # For each fk from the left table, generate a join condition if
@@ -707,17 +742,35 @@ class SQLAutoComplete(object):
             child = col(fk.childschema, fk.childtable, fk.childcolumn)
             par = col(fk.parentschema, fk.parenttable, fk.parentcolumn)
             left, right = (child, par) if left == child else (par, child)
+
             for rtbl in coldict[right]:
-                add_cond(left.col, right.col, rtbl.ref, 2000, 'fk join')
+                kwargs = {
+                    "suggestion": suggestion,
+                    "found_conds": found_conds,
+                    "ltbl": ltbl,
+                    "conds": conds,
+                    "ref_prio": ref_prio
+                }
+                self.add_cond(left.col, right.col, rtbl.ref, 2000, 'fk join',
+                              **kwargs)
         # For name matching, use a {(colname, coltype): TableReference} dict
         coltyp = namedtuple('coltyp', 'name datatype')
-        col_table = list_dict((coltyp(c.name, c.datatype), t) for t, c in cols)
+        col_table = self.list_dict(
+            (coltyp(c.name, c.datatype), t) for t, c in cols)
         # Find all name-match join conditions
         for c in (coltyp(c.name, c.datatype) for c in lcols):
             for rtbl in (t for t in col_table[c] if t.ref != ltbl.ref):
+                kwargs = {
+                    "suggestion": suggestion,
+                    "found_conds": found_conds,
+                    "ltbl": ltbl,
+                    "conds": conds,
+                    "ref_prio": ref_prio
+                }
                 prio = 1000 if c.datatype in (
                     'integer', 'bigint', 'smallint') else 0
-                add_cond(c.name, c.name, rtbl.ref, prio, 'name join')
+                self.add_cond(c.name, c.name, rtbl.ref, prio, 'name join',
+                              **kwargs)
 
         return self.find_matches(word_before_cursor, conds,
                                  mode='strict', meta='join')
@@ -951,6 +1004,52 @@ class SQLAutoComplete(object):
         Datatype: get_datatype_matches,
     }
 
+    def addcols(self, schema, rel, alias, reltype, cols, columns):
+        """
+        Add columns in schema column list.
+        :param schema: Schema for reference.
+        :param rel:
+        :param alias:
+        :param reltype:
+        :param cols:
+        :param columns:
+        :return:
+        """
+        tbl = TableReference(schema, rel, alias, reltype == 'functions')
+        if tbl not in columns:
+            columns[tbl] = []
+        columns[tbl].extend(cols)
+
+    def _get_schema_columns(self, schemas, tbl, meta, columns):
+        """
+        Check and add schema table columns as per table.
+        :param schemas: Schema
+        :param tbl:
+        :param meta:
+        :param columns: column list
+        :return:
+        """
+        for schema in schemas:
+            relname = self.escape_name(tbl.name)
+            schema = self.escape_name(schema)
+            if tbl.is_function:
+                # Return column names from a set-returning function
+                # Get an array of FunctionMetadata objects
+                functions = meta['functions'].get(schema, {}).get(relname)
+                for func in (functions or []):
+                    # func is a FunctionMetadata object
+                    cols = func.fields()
+                    self.addcols(schema, relname, tbl.alias, 'functions', cols,
+                                 columns)
+            else:
+                for reltype in ('tables', 'views'):
+                    cols = meta[reltype].get(schema, {}).get(relname)
+                    if cols:
+                        cols = cols.values()
+                        self.addcols(schema, relname, tbl.alias, reltype, cols,
+                                     columns)
+                        break
+
     def populate_scoped_cols(self, scoped_tbls, local_tbls=()):
         """Find all columns in a set of scoped_tables.
 
@@ -963,37 +1062,14 @@ class SQLAutoComplete(object):
         columns = OrderedDict()
         meta = self.dbmetadata
 
-        def addcols(schema, rel, alias, reltype, cols):
-            tbl = TableReference(schema, rel, alias, reltype == 'functions')
-            if tbl not in columns:
-                columns[tbl] = []
-            columns[tbl].extend(cols)
-
         for tbl in scoped_tbls:
             # Local tables should shadow database tables
             if tbl.schema is None and normalize_ref(tbl.name) in ctes:
                 cols = ctes[normalize_ref(tbl.name)]
-                addcols(None, tbl.name, 'CTE', tbl.alias, cols)
+                self.addcols(None, tbl.name, 'CTE', tbl.alias, cols, columns)
                 continue
             schemas = [tbl.schema] if tbl.schema else self.search_path
-            for schema in schemas:
-                relname = self.escape_name(tbl.name)
-                schema = self.escape_name(schema)
-                if tbl.is_function:
-                    # Return column names from a set-returning function
-                    # Get an array of FunctionMetadata objects
-                    functions = meta['functions'].get(schema, {}).get(relname)
-                    for func in (functions or []):
-                        # func is a FunctionMetadata object
-                        cols = func.fields()
-                        addcols(schema, relname, tbl.alias, 'functions', cols)
-                else:
-                    for reltype in ('tables', 'views'):
-                        cols = meta[reltype].get(schema, {}).get(relname)
-                        if cols:
-                            cols = cols.values()
-                            addcols(schema, relname, tbl.alias, reltype, cols)
-                            break
+            self._get_schema_columns(schemas, tbl, meta, columns)
 
         return columns
 
@@ -1057,14 +1133,16 @@ class SQLAutoComplete(object):
             if filter_func(meta)
         ]
 
-    def fetch_schema_objects(self, schema, obj_type):
+    def _get_schema_obj_query(self, schema, obj_type):
         """
-        This function is used to fetch schema objects like tables, views, etc..
-        :return:
+        Get query according object type like tables, views, etc...
+        :param schema: schema flag to include schema in clause.
+        :param obj_type: object type.
+        :return: query according to object type and in_clause
+        if schema flag in true.
         """
         in_clause = ''
         query = ''
-        data = []
 
         if schema:
             in_clause = '\'' + schema + '\''
@@ -1087,6 +1165,16 @@ class SQLAutoComplete(object):
             query = render_template("/".join([self.sql_path, 'datatypes.sql']),
                                     schema_names=in_clause)
 
+        return query, in_clause
+
+    def fetch_schema_objects(self, schema, obj_type):
+        """
+        This function is used to fetch schema objects like tables, views, etc..
+        :return:
+        """
+        data = []
+        query, in_clause = self._get_schema_obj_query(schema, obj_type)
+
         if self.conn.connected():
             status, res = self.conn.execute_dict(query)
             if status:
@@ -1107,15 +1195,13 @@ class SQLAutoComplete(object):
         elif obj_type == 'datatypes' and len(data) > 0:
             self.extend_datatypes(data)
 
-    def fetch_functions(self, schema):
+    def _get_function_sql(self, schema):
         """
-        This function is used to fecth the list of functions.
-        :param schema:
-        :return:
+        Check for schema inclusion and fetch sql for functions.
+        :param schema: include schema flag.
+        :return: sql query for functions, and in_clause value.
         """
         in_clause = ''
-        data = []
-
         if schema:
             in_clause = '\'' + schema + '\''
         else:
@@ -1128,30 +1214,44 @@ class SQLAutoComplete(object):
         query = render_template("/".join([self.sql_path, 'functions.sql']),
                                 schema_names=in_clause)
 
+        return query, in_clause
+
+    def _get_function_meta_data(self, res, data):
+        for row in res['rows']:
+            data.append(FunctionMetadata(
+                row['schema_name'],
+                row['func_name'],
+                row['arg_names'].strip('{}').split(',')
+                if row['arg_names'] is not None
+                else row['arg_names'],
+                row['arg_types'].strip('{}').split(',')
+                if row['arg_types'] is not None
+                else row['arg_types'],
+                row['arg_modes'].strip('{}').split(',')
+                if row['arg_modes'] is not None
+                else row['arg_modes'],
+                row['return_type'],
+                row['is_aggregate'],
+                row['is_window'],
+                row['is_set_returning'],
+                row['arg_defaults'].strip('{}').split(',')
+                if row['arg_defaults'] is not None
+                else row['arg_defaults']
+            ))
+
+    def fetch_functions(self, schema):
+        """
+        This function is used to fecth the list of functions.
+        :param schema:
+        :return:
+        """
+        data = []
+        query, in_clause = self._get_function_sql(schema)
+
         if self.conn.connected():
             status, res = self.conn.execute_dict(query)
             if status:
-                for row in res['rows']:
-                    data.append(FunctionMetadata(
-                        row['schema_name'],
-                        row['func_name'],
-                        row['arg_names'].strip('{}').split(',')
-                        if row['arg_names'] is not None
-                        else row['arg_names'],
-                        row['arg_types'].strip('{}').split(',')
-                        if row['arg_types'] is not None
-                        else row['arg_types'],
-                        row['arg_modes'].strip('{}').split(',')
-                        if row['arg_modes'] is not None
-                        else row['arg_modes'],
-                        row['return_type'],
-                        row['is_aggregate'],
-                        row['is_window'],
-                        row['is_set_returning'],
-                        row['arg_defaults'].strip('{}').split(',')
-                        if row['arg_defaults'] is not None
-                        else row['arg_defaults']
-                    ))
+                self._get_function_meta_data(res, data)
 
         if len(data) > 0:
             self.extend_functions(data)

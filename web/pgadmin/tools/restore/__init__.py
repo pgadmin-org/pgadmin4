@@ -178,17 +178,10 @@ def filename_with_file_manager_path(_file):
     return fs_short_path(_file)
 
 
-@blueprint.route('/job/<int:sid>', methods=['POST'], endpoint='create_job')
-@login_required
-def create_restore_job(sid):
+def _get_create_req_data():
     """
-    Args:
-        sid: Server ID
-
-        Creates a new job for restore task
-
-    Returns:
-        None
+    Get data from request for create restore job.
+    :return: return data if no error occurred.
     """
     if request.form:
         data = json.loads(request.form['data'], encoding='utf-8')
@@ -198,15 +191,24 @@ def create_restore_job(sid):
     try:
         _file = filename_with_file_manager_path(data['file'])
     except Exception as e:
-        return bad_request(errormsg=str(e))
+        return True, bad_request(errormsg=str(e)), data
 
     if _file is None:
-        return make_json_response(
+        return True, make_json_response(
             status=410,
             success=0,
             errormsg=_("File could not be found.")
-        )
+        ), data, _file
 
+    return False, '', data, _file
+
+
+def _connect_server(sid):
+    """
+    Get server object and try to connect with it.
+    :param sid: Server ID.
+    :return: if not error occurred then return connection data.
+    """
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(
         id=sid
@@ -227,67 +229,107 @@ def create_restore_job(sid):
     connected = conn.connected()
 
     if not connected:
-        return make_json_response(
+        return True, make_json_response(
             success=0,
             errormsg=_("Please connect to the server first.")
-        )
+        ), driver, manager, conn, connected
 
-    utility = manager.utility('restore')
-    ret_val = does_utility_exist(utility)
-    if ret_val:
-        return make_json_response(
-            success=0,
-            errormsg=ret_val
-        )
+    return False, '', driver, manager, conn, connected, server
 
+
+def set_param(key, param, data, args):
+    """
+    check and add parameter to args list.
+    :param key: Key.
+    :param param:  Parameter to be add in the args list.
+    :param data: Data.
+    :param args: args list.
+    :return: Return true if key in data else return false.
+    """
+    if key in data and data[key]:
+        args.append(param)
+        return True
+    return False
+
+
+def set_value(key, param, data, args, default_value=None):
+    """
+    Add values to args list if key not present in data set default value.
+    :param key: Key.
+    :param param: Parameter to be add in the args list.
+    :param data: Data.
+    :param args: args list.
+    :param default_value:  default value flag.
+    :return:
+    """
+    if key in data and data[key] is not None and data[key] != '':
+        args.append(param)
+        args.append(data[key])
+    elif default_value is not None:
+        args.append(param)
+        args.append(default_value)
+
+
+def _set_value_with_schema(data, key, args, param, driver, conn):
+    """
+    Set value if with_schema flag is true.
+    :param data: Data.
+    :param key: Key.
+    :param args: args list.
+    :param param: parameter to be add in the args list.
+    :param driver: Driver.
+    :param conn: connection.
+    :return:
+    """
+    if isinstance(data[key], list):
+        s, t = data[key]
+        args.extend([
+            param,
+            driver.qtIdent(
+                conn, s
+            ) + '.' + driver.qtIdent(conn, t)
+        ])
+    else:
+        for s, o in data[key]:
+            args.extend([
+                param,
+                driver.qtIdent(
+                    conn, s
+                ) + '.' + driver.qtIdent(conn, o)
+            ])
+
+
+def set_multiple(key, param, data, args, driver, conn, with_schema=True):
+    if key in data and \
+            len(data[key]) > 0:
+        if with_schema:
+            # TODO:// This is temporary
+            # Once object tree is implemented then we will use
+            # list of tuples 'else' part
+            _set_value_with_schema(data, key, args, param, driver, conn)
+        else:
+            for o in data[key]:
+                args.extend([param, o])
+        return True
+    return False
+
+
+def _set_args_param_values(data, manager, server, driver, conn, _file):
+    """
+    add args to the list.
+    :param data: Data.
+    :param manager: Manager.
+    :param server: Server.
+    :param driver: Driver.
+    :param conn: Connection.
+    :param _file: File.
+    :return: args list.
+    """
     args = []
 
     if 'list' in data:
         args.append('--list')
     else:
-        def set_param(key, param):
-            if key in data and data[key]:
-                args.append(param)
-                return True
-            return False
-
-        def set_value(key, param, default_value=None):
-            if key in data and data[key] is not None and data[key] != '':
-                args.append(param)
-                args.append(data[key])
-            elif default_value is not None:
-                args.append(param)
-                args.append(default_value)
-
-        def set_multiple(key, param, with_schema=True):
-            if key in data and \
-                    len(data[key]) > 0:
-                if with_schema:
-                    # TODO:// This is temporary
-                    # Once object tree is implemented then we will use
-                    # list of tuples 'else' part
-                    if isinstance(data[key], list):
-                        s, t = data[key]
-                        args.extend([
-                            param,
-                            driver.qtIdent(
-                                conn, s
-                            ) + '.' + driver.qtIdent(conn, t)
-                        ])
-                    else:
-                        for s, o in data[key]:
-                            args.extend([
-                                param,
-                                driver.qtIdent(
-                                    conn, s
-                                ) + '.' + driver.qtIdent(conn, o)
-                            ])
-                else:
-                    for o in data[key]:
-                        args.extend([param, o])
-                return True
-            return False
-
         args.extend([
             '--host',
             manager.local_bind_host if manager.use_ssh_tunnel else server.host,
@@ -297,45 +339,83 @@ def create_restore_job(sid):
             '--username', server.username, '--no-password'
         ])
 
-        set_value('role', '--role')
-        set_value('database', '--dbname')
+        set_value('role', '--role', data, args)
+        set_value('database', '--dbname', data, args)
 
         if data['format'] == 'directory':
             args.extend(['--format=d'])
 
-        set_param('pre_data', '--section=pre-data')
-        set_param('data', '--section=data')
-        set_param('post_data', '--section=post-data')
+        set_param('pre_data', '--section=pre-data', data, args)
+        set_param('data', '--section=data', data, args)
+        set_param('post_data', '--section=post-data', data, args)
 
-        if not set_param('only_data', '--data-only'):
-            set_param('dns_owner', '--no-owner')
-            set_param('dns_privilege', '--no-privileges')
-            set_param('dns_tablespace', '--no-tablespaces')
+        if not set_param('only_data', '--data-only', data, args):
+            set_param('dns_owner', '--no-owner', data, args)
+            set_param('dns_privilege', '--no-privileges', data, args)
+            set_param('dns_tablespace', '--no-tablespaces', data, args)
 
-        if not set_param('only_schema', '--schema-only'):
-            set_param('disable_trigger', '--disable-triggers')
+        if not set_param('only_schema', '--schema-only', data, args):
+            set_param('disable_trigger', '--disable-triggers', data, args)
 
-        set_param('include_create_database', '--create')
-        set_param('clean', '--clean')
-        set_param('single_transaction', '--single-transaction')
-        set_param('no_data_fail_table', '--no-data-for-failed-tables')
-        set_param('use_set_session_auth', '--use-set-session-authorization')
-        set_param('exit_on_error', '--exit-on-error')
+        set_param('include_create_database', '--create', data, args)
+        set_param('clean', '--clean', data, args)
+        set_param('single_transaction', '--single-transaction', data, args)
+        set_param('no_data_fail_table', '--no-data-for-failed-tables', data,
+                  args)
+        set_param('use_set_session_auth', '--use-set-session-authorization',
+                  data, args)
+        set_param('exit_on_error', '--exit-on-error', data, args)
 
         if manager.version >= 110000:
-            set_param('no_comments', '--no-comments')
+            set_param('no_comments', '--no-comments', data, args)
 
-        set_value('no_of_jobs', '--jobs')
-        set_param('verbose', '--verbose')
+        set_value('no_of_jobs', '--jobs', data, args)
+        set_param('verbose', '--verbose', data, args)
 
-        set_multiple('schemas', '--schema', False)
-        set_multiple('tables', '--table', False)
-        set_multiple('functions', '--function', False)
-        set_multiple('triggers', '--trigger', False)
-        set_multiple('trigger_funcs', '--function', False)
-        set_multiple('indexes', '--index', False)
+        set_multiple('schemas', '--schema', data, args, driver, conn, False)
+        set_multiple('tables', '--table', data, args, driver, conn, False)
+        set_multiple('functions', '--function', data, args, driver, conn,
+                     False)
+        set_multiple('triggers', '--trigger', data, args, driver, conn, False)
+        set_multiple('trigger_funcs', '--function', data, args, driver, conn,
+                     False)
+        set_multiple('indexes', '--index', data, args, driver, conn, False)
 
     args.append(fs_short_path(_file))
+
+    return args
+
+
+@blueprint.route('/job/<int:sid>', methods=['POST'], endpoint='create_job')
+@login_required
+def create_restore_job(sid):
+    """
+    Args:
+        sid: Server ID
+
+        Creates a new job for restore task
+
+    Returns:
+        None
+    """
+    is_error, errmsg, data, _file = _get_create_req_data()
+    if is_error:
+        return errmsg
+
+    is_error, errmsg, driver, manager, conn, \
+        connected, server = _connect_server(sid)
+    if is_error:
+        return errmsg
+
+    utility = manager.utility('restore')
+    ret_val = does_utility_exist(utility)
+    if ret_val:
+        return make_json_response(
+            success=0,
+            errormsg=ret_val
+        )
+
+    args = _set_args_param_values(data, manager, server, driver, conn, _file)
 
     try:
         p = BatchProcess(
