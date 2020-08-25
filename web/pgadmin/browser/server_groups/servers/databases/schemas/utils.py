@@ -11,6 +11,7 @@
 
 import json
 import copy
+import re
 
 from flask import render_template
 
@@ -410,6 +411,30 @@ class DataTypeReader:
             type_name += "[]"
 
         return type_name
+
+    @classmethod
+    def parse_length_precision(cls, fulltype, is_tlength, is_precision):
+        """
+        Parse the type string and split length, precision.
+        :param fulltype: type string
+        :param is_tlength: is length type
+        :param is_precision: is precision type
+        :return: length, precision
+        """
+        t_len, t_prec = None, None
+        if is_tlength and is_precision:
+            match_obj = re.search(r'(\d+),(\d+)', fulltype)
+            if match_obj:
+                t_len = match_obj.group(1)
+                t_prec = match_obj.group(2)
+        elif is_tlength:
+            # If we have length only
+            match_obj = re.search(r'(\d+)', fulltype)
+            if match_obj:
+                t_len = match_obj.group(1)
+                t_prec = None
+
+        return t_len, t_prec
 
 
 def trigger_definition(data):

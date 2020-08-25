@@ -254,6 +254,39 @@ def update_status(**kw):
         raise ValueError("Please verify pid and db_file arguments.")
 
 
+def _handle_execute_exception(ex, args, _stderr, exit_code=None):
+    """
+    Used internally by execute to handle exception
+    :param ex: exception object
+    :param args: execute args dict
+    :param _stderr: stderr
+    :param exit_code: exit code override
+    """
+    info = _log_exception()
+    if _stderr:
+        _stderr.log(info)
+    else:
+        print("WARNING: ", ex.strerror, file=sys.stderr)
+    args.update({'end_time': get_current_time()})
+    args.update({
+        'exit_code': ex.errno if exit_code is None else exit_code})
+
+
+def _fetch_execute_output(process, _stdout, _stderr):
+    """
+    Used internally by execute to fetch execute output and log it.
+    :param process: process obj
+    :param _stdout: stdout
+    :param _stderr: stderr
+    """
+    data = process.communicate()
+    if data:
+        if data[0]:
+            _stdout.log(data[0])
+        if data[1]:
+            _stderr.log(data[1])
+
+
 def execute(argv):
     """
     This function will execute the background process
@@ -268,7 +301,6 @@ def execute(argv):
     # Create seprate thread for stdout and stderr
     process_stdout = ProcessLogger('out')
     process_stderr = ProcessLogger('err')
-    process = None
 
     try:
         # update start_time
@@ -283,7 +315,7 @@ def execute(argv):
         update_status(**args)
         _log('Status updated...')
 
-        if 'PROCID' in os.environ and os.environ['PROCID'] in os.environ:
+        if os.environ.get(os.environ.get('PROCID', None), None):
             os.environ['PGPASSWORD'] = os.environ[os.environ['PROCID']]
 
         kwargs = dict()
@@ -331,34 +363,14 @@ def execute(argv):
         args.update({'end_time': get_current_time()})
 
         # Fetch last output, and error from process if it has missed.
-        data = process.communicate()
-        if data:
-            if data[0]:
-                process_stdout.log(data[0])
-            if data[1]:
-                process_stderr.log(data[1])
+        _fetch_execute_output(process, process_stdout, process_stderr)
 
     # If executable not found or invalid arguments passed
     except OSError as e:
-        info = _log_exception()
-        args.update({'exit_code': 500})
-        if process_stderr:
-            process_stderr.log(info)
-        else:
-            print("WARNING: ", e.strerror, file=sys.stderr)
-        args.update({'end_time': get_current_time()})
-        args.update({'exit_code': e.errno})
-
+        _handle_execute_exception(e, args, process_stderr, exit_code=None)
     # Unknown errors
     except Exception as e:
-        info = _log_exception()
-        args.update({'exit_code': 501})
-        if process_stderr:
-            process_stderr.log(info)
-        else:
-            print("WARNING: ", str(e), file=sys.stderr)
-        args.update({'end_time': get_current_time()})
-        args.update({'exit_code': -1})
+        _handle_execute_exception(e, args, process_stderr, exit_code=-1)
     finally:
         # Update the execution end_time, and exit-code.
         update_status(**args)

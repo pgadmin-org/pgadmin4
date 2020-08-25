@@ -566,21 +566,19 @@ SELECT EXISTS(
         :return:
         """
         # Format the schedule data. Convert the boolean array
-        if 'jschedules' in data:
-            if 'added' in data['jschedules']:
-                for added_schedule in data['jschedules']['added']:
-                    format_schedule_data(added_schedule)
-            if 'changed' in data['jschedules']:
-                for changed_schedule in data['jschedules']['changed']:
-                    format_schedule_data(changed_schedule)
+        for key in ['added', 'changed']:
+            jschedules = data.get('jschedules', {})
+            if key in jschedules:
+                for schedule in jschedules.get(key, []):
+                    format_schedule_data(schedule)
 
         has_connection_str = self.manager.db_info['pgAgent']['has_connstr']
-        if 'jsteps' in data and has_connection_str and \
-                'changed' in data['jsteps']:
-            for changed_step in data['jsteps']['changed']:
-                if 'jstconntype' not in changed_step and (
-                    'jstdbname' in changed_step or
-                        'jstconnstr' in changed_step):
+        jssteps = data.get('jsteps', {})
+        if 'changed' in jschedules:
+            for changed_step in jssteps.get('changed', []):
+                if 'jstconntype' not in changed_step and \
+                    ('jstdbname' in changed_step or
+                     'jstconnstr' in changed_step) and has_connection_str:
                     status, rset = self.conn.execute_dict(
                         render_template(
                             "/".join([self.template_path, 'steps.sql']),
@@ -596,11 +594,11 @@ SELECT EXISTS(
                     row = rset['rows'][0]
                     changed_step['jstconntype'] = row['jstconntype']
                     if row['jstconntype']:
-                        if not ('jstdbname' in changed_step):
-                            changed_step['jstdbname'] = row['jstdbname']
+                        changed_step['jstdbname'] = changed_step.get(
+                            'jstdbname', row['jstdbname'])
                     else:
-                        if not ('jstconnstr' in changed_step):
-                            changed_step['jstconnstr'] = row['jstconnstr']
+                        changed_step['jstconnstr'] = changed_step.get(
+                            'jstconnstr', row['jstconnstr'])
 
 
 JobView.register_node_view(blueprint)

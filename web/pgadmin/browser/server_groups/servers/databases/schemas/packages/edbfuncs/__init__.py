@@ -408,19 +408,21 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
 
         # Insert null value against the parameters which do not have
         # default values.
-        if len(proargmodes_fltrd) > len(proargdefaultvals):
-            dif = len(proargmodes_fltrd) - len(proargdefaultvals)
-            while (dif > 0):
-                proargdefaultvals.insert(0, '')
-                dif -= 1
+        dif = len(proargmodes_fltrd) - len(proargdefaultvals)
+        while dif > 0:
+            proargdefaultvals.insert(0, '')
+            dif -= 1
+
+        def list_get(arr, index, default=''):
+            return arr[index] if len(arr) > index else default
 
         # Prepare list of Argument list dict to be displayed in the Data Grid.
         params = {"arguments": [
             self._map_arguments_dict(
-                i, proargmodes_fltrd[i] if len(proargmodes_fltrd) > i else '',
-                proargtypes[i] if len(proargtypes) > i else '',
-                proargnames[i] if len(proargnames) > i else '',
-                proargdefaultvals[i] if len(proargdefaultvals) > i else ''
+                i, list_get(proargmodes_fltrd, i),
+                list_get(proargtypes, i),
+                list_get(proargnames, i),
+                list_get(proargdefaultvals, i)
             )
             for i in range(len(proargtypes))]}
 
@@ -428,10 +430,10 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         # panel.
 
         proargs = [self._map_arguments_list(
-            proargmodes_fltrd[i] if len(proargmodes_fltrd) > i else '',
-            proargtypes[i] if len(proargtypes) > i else '',
-            proargnames[i] if len(proargnames) > i else '',
-            proargdefaultvals[i] if len(proargdefaultvals) > i else ''
+            list_get(proargmodes_fltrd, i),
+            list_get(proargtypes, i),
+            list_get(proargnames, i),
+            list_get(proargdefaultvals, i)
         )
             for i in range(len(proargtypes))]
 

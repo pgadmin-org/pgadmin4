@@ -14,6 +14,7 @@ from functools import wraps
 import simplejson as json
 from flask import render_template, request, jsonify
 from flask_babelex import gettext
+import re
 
 import pgadmin.browser.server_groups.servers.databases as database
 from config import PG_DEFAULT_DRIVER
@@ -411,6 +412,65 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             data['precision'] = str(data['precision'])
         return data
 
+    def _additional_properties_composite(self, rows):
+        """
+        Used by additional_properties internally for composite type.
+        :param rows: list of data
+        :return: formatted response
+        """
+        res = dict()
+        properties_list = []
+        # To display in composite collection grid
+        composite_lst = []
+
+        for row in rows:
+            # We will fetch Full type name
+
+            typelist = ' '.join([row['attname'], row['fulltype']])
+            if (
+                not row['collname'] or
+                (
+                    row['collname'] == 'default' and
+                    row['collnspname'] == 'pg_catalog'
+                )
+            ):
+                full_collate = ''
+                collate = ''
+            else:
+                full_collate = get_driver(PG_DEFAULT_DRIVER).qtIdent(
+                    self.conn, row['collnspname'], row['collname'])
+                collate = ' COLLATE ' + full_collate
+
+            typelist += collate
+            properties_list.append(typelist)
+
+            is_tlength, is_precision, typeval = \
+                self.get_length_precision(row.get('elemoid', None))
+
+            # Split length, precision from type name for grid
+            t_len, t_prec = DataTypeReader.parse_length_precision(
+                row['fulltype'], is_tlength, is_precision)
+
+            type_name = DataTypeReader.parse_type_name(row['typname'])
+
+            row['type'] = self._cltype_formatter(type_name)
+            row['hasSqrBracket'] = self.hasSqrBracket
+            row = self.convert_length_precision_to_string(row)
+            composite_lst.append({
+                'attnum': row['attnum'], 'member_name': row['attname'],
+                'type': type_name,
+                'collation': full_collate, 'cltype': row['type'],
+                'tlength': t_len, 'precision': t_prec,
+                'is_tlength': is_tlength, 'is_precision': is_precision,
+                'hasSqrBracket': row['hasSqrBracket'],
+                'fulltype': row['fulltype']})
+
+        # Adding both results
+        res['member_list'] = ', '.join(properties_list)
+        res['composite'] = composite_lst
+
+        return res
+
     def additional_properties(self, copy_dict, tid):
         """
         We will use this function to add additional properties according to
@@ -423,93 +483,29 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         # Fetching type of type
         of_type = copy_dict['typtype']
         res = dict()
-        # If type is of Composite then we need to add members list in our
-        # output
+
+        render_args = {'type': of_type}
         if of_type == 'c':
+            render_args['typrelid'] = copy_dict['typrelid']
+        else:
+            render_args['tid'] = tid
+
+        if of_type in ('c', 'e', 'r'):
             SQL = render_template("/".join([self.template_path,
                                             'additional_properties.sql']),
-                                  type='c',
-                                  typrelid=copy_dict['typrelid'])
+                                  **render_args)
             status, rset = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
+        # If type is of Composite then we need to add members list in our
+        # output
+        if of_type == 'c':
             # To display in properties
-            properties_list = []
-            # To display in composite collection grid
-            composite_lst = []
-
-            for row in rset['rows']:
-                # We will fetch Full type name
-
-                typelist = ' '.join([row['attname'], row['fulltype']])
-                if (
-                    not row['collname'] or
-                    (
-                        row['collname'] == 'default' and
-                        row['collnspname'] == 'pg_catalog'
-                    )
-                ):
-                    full_collate = ''
-                    collate = ''
-                else:
-                    full_collate = get_driver(PG_DEFAULT_DRIVER).qtIdent(
-                        self.conn, row['collnspname'], row['collname'])
-                    collate = ' COLLATE ' + full_collate
-                typelist += collate
-                properties_list.append(typelist)
-
-                is_tlength = False
-                is_precision = False
-                if 'elemoid' in row:
-                    is_tlength, is_precision, typeval = \
-                        self.get_length_precision(row['elemoid'])
-
-                # Below logic will allow us to split length, precision from
-                # type name for grid
-                import re
-                t_len = None
-                t_prec = None
-
-                # If we have length & precision both
-                if is_tlength and is_precision:
-                    match_obj = re.search(r'(\d+),(\d+)', row['fulltype'])
-                    if match_obj:
-                        t_len = match_obj.group(1)
-                        t_prec = match_obj.group(2)
-                elif is_tlength:
-                    # If we have length only
-                    match_obj = re.search(r'(\d+)', row['fulltype'])
-                    if match_obj:
-                        t_len = match_obj.group(1)
-                        t_prec = None
-
-                type_name = DataTypeReader.parse_type_name(row['typname'])
-
-                row['type'] = self._cltype_formatter(type_name)
-                row['hasSqrBracket'] = self.hasSqrBracket
-                row = self.convert_length_precision_to_string(row)
-                composite_lst.append({
-                    'attnum': row['attnum'], 'member_name': row['attname'],
-                    'type': type_name,
-                    'collation': full_collate, 'cltype': row['type'],
-                    'tlength': t_len, 'precision': t_prec,
-                    'is_tlength': is_tlength, 'is_precision': is_precision,
-                    'hasSqrBracket': row['hasSqrBracket'],
-                    'fulltype': row['fulltype']})
-
-            # Adding both results
-            res['member_list'] = ', '.join(properties_list)
-            res['composite'] = composite_lst
+            res = self._additional_properties_composite(rset['rows'])
 
         # If type is of ENUM then we need to add labels in our output
         if of_type == 'e':
-            SQL = render_template("/".join([self.template_path,
-                                            'additional_properties.sql']),
-                                  type='e', tid=tid)
-            status, rset = self.conn.execute_2darray(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
             # To display in properties
             properties_list = []
             # To display in enum grid
@@ -525,13 +521,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         # If type is of Range then we need to add collation,subtype etc in our
         # output
         if of_type == 'r':
-            SQL = render_template("/".join([self.template_path,
-                                            'additional_properties.sql']),
-                                  type='r', tid=tid)
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-            range_dict = dict(res['rows'][0])
+            range_dict = dict(rset['rows'][0])
             res.update(range_dict)
 
         if 'seclabels' in copy_dict and copy_dict['seclabels'] is not None:
@@ -1246,132 +1236,126 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         return data
 
-    def get_sql(self, gid, sid, data, scid, tid=None, is_sql=False):
+    def _get_new_sql(self, data, is_sql):
         """
-        This function will genrate sql from model data
+        Used by get_sql internally for new type SQL
+        :param data: input data
+        :param is_sql: is sql
+        :return: generated SQL
         """
-        if tid is not None:
+        required_args = [
+            'name',
+            'typtype'
+        ]
 
-            for key in ['typacl']:
-                if key in data and data[key] is not None:
-                    if 'added' in data[key]:
-                        data[key]['added'] = parse_priv_to_db(
-                            data[key]['added'], self.acl)
-                    if 'changed' in data[key]:
-                        data[key]['changed'] = parse_priv_to_db(
-                            data[key]['changed'], self.acl)
-                    if 'deleted' in data[key]:
-                        data[key]['deleted'] = parse_priv_to_db(
-                            data[key]['deleted'], self.acl)
-
-            if 'composite' in data and len(data['composite']) > 0:
-                for key in ['added', 'changed', 'deleted']:
-                    if key in data['composite']:
-                        for each_type in data['composite'][key]:
-                            each_type = self. \
-                                convert_length_precision_to_string(each_type)
-                            if 'type' in each_type:
-                                each_type['cltype'] = self._cltype_formatter(
-                                    each_type['type'])
-                                each_type['hasSqrBracket'] = self.hasSqrBracket
-
-            SQL = render_template(
-                "/".join([self.template_path,
-                          self._PROPERTIES_SQL]),
-                scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid,
-                show_system_objects=self.blueprint.show_system_objects
-            )
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the type in the database.")
-                )
-
-            # Making copy of output for future use
-            old_data = dict(res['rows'][0])
-
-            SQL = render_template("/".join([self.template_path,
-                                            self._ACL_SQL]),
-                                  scid=scid, tid=tid)
-            status, acl = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=acl)
-
-            # We will set get privileges from acl sql so we don't need
-            # it from properties sql
-            old_data['typacl'] = []
-
-            for row in acl['rows']:
-                priv = parse_priv_from_db(row)
-                if row['deftype'] in old_data:
-                    old_data[row['deftype']].append(priv)
-                else:
-                    old_data[row['deftype']] = [priv]
-
-            # Calling function to check and additional properties if available
-            old_data.update(self.additional_properties(old_data, tid))
-            old_data = self._convert_for_sql(old_data)
-
-            # If typname or collname is changed while comparing
-            # two schemas then we need to drop type and recreate it
-            if 'typtype' in data or 'typname' in data or 'collname' in data\
-                    or 'typinput' in data or 'typoutput' in data:
-                SQL = render_template(
-                    "/".join([self.template_path, 'type_schema_diff.sql']),
-                    data=data, o_data=old_data, conn=self.conn
-                )
-            else:
-                SQL = render_template(
-                    "/".join([self.template_path, self._UPDATE_SQL]),
-                    data=data, o_data=old_data, conn=self.conn
-                )
-        else:
-            required_args = [
-                'name',
-                'typtype'
-            ]
-
-            for arg in required_args:
-                if arg not in data:
-                    return "-- definition incomplete"
+        for arg in required_args:
+            if arg not in data:
+                return "-- definition incomplete"
 
             # Additional checks go here
             # If type is range then check if subtype is defined or not
-            if data and data[arg] == 'r' and \
-                    ('typname' not in data or data['typname'] is None):
+            if data.get(arg, None) == 'r' and \
+                    data.get('typname', None) is None:
                 return "-- definition incomplete"
 
             # If type is external then check if input/output
             # conversion function is defined
-            if data and data[arg] == 'b' and (
-                    'typinput' not in data or
-                    'typoutput' not in data or
-                    data['typinput'] is None or
-                    data['typoutput'] is None):
+            if data.get(arg, None) == 'b' and (
+                data.get('typinput', None) is None or
+                    data.get('typoutput', None) is None):
                 return "-- definition incomplete"
 
-            # Privileges
-            if 'typacl' in data and data['typacl'] is not None:
-                data['typacl'] = parse_priv_to_db(data['typacl'], self.acl)
+        # Privileges
+        if data.get('typacl', None):
+            data['typacl'] = parse_priv_to_db(data['typacl'], self.acl)
 
-            data = self._convert_for_sql(data)
+        data = self._convert_for_sql(data)
 
-            if 'composite' in data and len(data['composite']) > 0:
-                for each_type in data['composite']:
-                    each_type = self.convert_length_precision_to_string(
-                        each_type)
+        if len(data.get('composite', [])) > 0:
+            for each_type in data['composite']:
+                each_type = self.convert_length_precision_to_string(
+                    each_type)
+                each_type['cltype'] = self._cltype_formatter(
+                    each_type['type'])
+                each_type['hasSqrBracket'] = self.hasSqrBracket
+
+        SQL = render_template("/".join([self.template_path,
+                                        self._CREATE_SQL]),
+                              data=data, conn=self.conn, is_sql=is_sql)
+
+        return SQL, data['name']
+
+    def get_sql(self, gid, sid, data, scid, tid=None, is_sql=False):
+        """
+        This function will generate sql from model data
+        """
+        if tid is None:
+            return self._get_new_sql(data, is_sql)
+
+        for key in ['added', 'changed', 'deleted']:
+            if key in data.get('typacl', []):
+                data['typacl'][key] = parse_priv_to_db(
+                    data['typacl'][key], self.acl)
+
+            for each_type in data.get('composite', {}).get(key, []):
+                each_type = self. \
+                    convert_length_precision_to_string(each_type)
+                if 'type' in each_type:
                     each_type['cltype'] = self._cltype_formatter(
                         each_type['type'])
                     each_type['hasSqrBracket'] = self.hasSqrBracket
 
-            SQL = render_template("/".join([self.template_path,
-                                            self._CREATE_SQL]),
-                                  data=data, conn=self.conn, is_sql=is_sql)
+        SQL = render_template(
+            "/".join([self.template_path,
+                      self._PROPERTIES_SQL]),
+            scid=scid, tid=tid,
+            datlastsysoid=self.datlastsysoid,
+            show_system_objects=self.blueprint.show_system_objects
+        )
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+        if len(res['rows']) == 0:
+            return gone(
+                gettext("Could not find the type in the database.")
+            )
 
-        return SQL, data['name'] if 'name' in data else old_data['name']
+        # Making copy of output for future use
+        old_data = dict(res['rows'][0])
+
+        SQL = render_template("/".join([self.template_path,
+                                        self._ACL_SQL]),
+                              scid=scid, tid=tid)
+        status, acl = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=acl)
+
+        # We will set get privileges from acl sql so we don't need
+        # it from properties sql
+        old_data['typacl'] = []
+
+        for row in acl['rows']:
+            priv = parse_priv_from_db(row)
+            old_data[row['deftype']] = \
+                old_data.get(row['deftype'], []).append(priv)
+
+        # Calling function to check and additional properties if available
+        old_data.update(self.additional_properties(old_data, tid))
+        old_data = self._convert_for_sql(old_data)
+
+        # If typname or collname is changed while comparing
+        # two schemas then we need to drop type and recreate it
+        render_sql = self._UPDATE_SQL
+        if any([key in data for key in
+                ['typtype', 'typname', 'collname', 'typinput', 'typoutput']]):
+            render_sql = 'type_schema_diff.sql'
+
+        SQL = render_template(
+            "/".join([self.template_path, render_sql]),
+            data=data, o_data=old_data, conn=self.conn
+        )
+
+        return SQL, old_data['name']
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, **kwargs):
