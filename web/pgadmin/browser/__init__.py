@@ -542,6 +542,86 @@ def _get_logout_url():
         url_for('security.logout'), url_for(BROWSER_INDEX))
 
 
+def _get_supported_browser():
+    """
+    This function return supported browser.
+    :return: browser name, browser known, browser version
+    """
+    browser = request.user_agent.browser
+    version = request.user_agent.version and int(
+        request.user_agent.version.split('.')[0])
+
+    browser_name = None
+    browser_known = True
+    if browser == 'chrome' and version < 72:
+        browser_name = 'Chrome'
+    elif browser == 'firefox' and version < 65:
+        browser_name = 'Firefox'
+    # comparing EdgeHTML engine version
+    elif browser == 'edge' and version < 18:
+        browser_name = 'Edge'
+        # browser version returned by edge browser is actual EdgeHTML
+        # engine version. Below code gets actual browser version using
+        # EdgeHTML version
+        engine_to_actual_browser_version = {
+            16: 41,
+            17: 42,
+            18: 44
+        }
+        version = engine_to_actual_browser_version.get(version, '< 44')
+    elif browser == 'safari' and version < 12:
+        browser_name = 'Safari'
+    elif browser == 'msie':
+        browser_name = 'Internet Explorer'
+    elif browser != 'chrome' and browser != 'firefox' and \
+            browser != 'edge' and browser != 'safari':
+        browser_name = browser
+        browser_known = False
+
+    return browser_name, browser_known, version
+
+
+def check_browser_upgrade():
+    """
+    This function is used to check the browser version.
+    :return:
+    """
+    data = None
+    url = '%s?version=%s' % (config.UPGRADE_CHECK_URL, config.APP_VERSION)
+    current_app.logger.debug('Checking version data at: %s' % url)
+
+    try:
+        # Do not wait for more than 5 seconds.
+        # It stuck on rendering the browser.html, while working in the
+        # broken network.
+        if os.path.exists(config.CA_FILE):
+            response = urlopen(url, data, 5, cafile=config.CA_FILE)
+        else:
+            response = urlopen(url, data, 5)
+        current_app.logger.debug(
+            'Version check HTTP response code: %d' % response.getcode()
+        )
+
+        if response.getcode() == 200:
+            data = json.loads(response.read().decode('utf-8'))
+            current_app.logger.debug('Response data: %s' % data)
+    except Exception:
+        current_app.logger.exception('Exception when checking for update')
+
+    if data is not None and \
+        data[config.UPGRADE_CHECK_KEY]['version_int'] > \
+            config.APP_VERSION_INT:
+        msg = render_template(
+            MODULE_NAME + "/upgrade.html",
+            current_version=config.APP_VERSION,
+            upgrade_version=data[config.UPGRADE_CHECK_KEY]['version'],
+            product_name=config.APP_NAME,
+            download_url=data[config.UPGRADE_CHECK_KEY]['download_url']
+        )
+
+        flash(msg, 'warning')
+
+
 @blueprint.route("/")
 @pgCSRFProtect.exempt
 @login_required
@@ -563,36 +643,7 @@ def index():
     # NOTE: If the checks here are updated, make sure the supported versions
     # at https://www.pgadmin.org/faq/#11 are updated to match!
     if config.CHECK_SUPPORTED_BROWSER:
-        browser = request.user_agent.browser
-        version = request.user_agent.version and int(
-            request.user_agent.version.split('.')[0])
-
-        browser_name = None
-        browser_known = True
-        if browser == 'chrome' and version < 72:
-            browser_name = 'Chrome'
-        elif browser == 'firefox' and version < 65:
-            browser_name = 'Firefox'
-        # comparing EdgeHTML engine version
-        elif browser == 'edge' and version < 18:
-            browser_name = 'Edge'
-            # browser version returned by edge browser is actual EdgeHTML
-            # engine version. Below code gets actual browser version using
-            # EdgeHTML version
-            engine_to_actual_browser_version = {
-                16: 41,
-                17: 42,
-                18: 44
-            }
-            version = engine_to_actual_browser_version.get(version, '< 44')
-        elif browser == 'safari' and version < 12:
-            browser_name = 'Safari'
-        elif browser == 'msie':
-            browser_name = 'Internet Explorer'
-        elif browser != 'chrome' and browser != 'firefox' and \
-                browser != 'edge' and browser != 'safari':
-            browser_name = browser
-            browser_known = False
+        browser_name, browser_known, version = _get_supported_browser()
 
         if browser_name is not None:
             msg = render_template(
@@ -607,40 +658,7 @@ def index():
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.
     if config.UPGRADE_CHECK_ENABLED:
-        data = None
-        url = '%s?version=%s' % (config.UPGRADE_CHECK_URL, config.APP_VERSION)
-        current_app.logger.debug('Checking version data at: %s' % url)
-
-        try:
-            # Do not wait for more than 5 seconds.
-            # It stuck on rendering the browser.html, while working in the
-            # broken network.
-            if os.path.exists(config.CA_FILE):
-                response = urlopen(url, data, 5, cafile=config.CA_FILE)
-            else:
-                response = urlopen(url, data, 5)
-            current_app.logger.debug(
-                'Version check HTTP response code: %d' % response.getcode()
-            )
-
-            if response.getcode() == 200:
-                data = json.loads(response.read().decode('utf-8'))
-                current_app.logger.debug('Response data: %s' % data)
-        except Exception:
-            current_app.logger.exception('Exception when checking for update')
-
-        if data is not None and \
-            data[config.UPGRADE_CHECK_KEY]['version_int'] > \
-                config.APP_VERSION_INT:
-            msg = render_template(
-                MODULE_NAME + "/upgrade.html",
-                current_version=config.APP_VERSION,
-                upgrade_version=data[config.UPGRADE_CHECK_KEY]['version'],
-                product_name=config.APP_NAME,
-                download_url=data[config.UPGRADE_CHECK_KEY]['download_url']
-            )
-
-            flash(msg, 'warning')
+        check_browser_upgrade()
 
     auth_only_internal = False
     auth_source = []

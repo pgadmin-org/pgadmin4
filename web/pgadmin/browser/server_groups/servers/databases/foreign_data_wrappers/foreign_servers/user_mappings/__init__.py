@@ -530,6 +530,32 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return cascade, data
 
+    def _fetch_specified_user_mapping_properties(self, umid):
+        """
+        This function is used to fetch the specified user mapping.
+        :param umid:
+        :return:
+        """
+        try:
+            sql = render_template("/".join([self.template_path,
+                                            'properties.sql']),
+                                  umid=umid, conn=self.conn)
+            status, res = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if not res['rows']:
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        'The specified user mapping could not be found.\n'
+                    )
+                )
+            return res
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+
     @check_precondition
     def delete(self, gid, sid, did, fid, fsid, **kwargs):
         """
@@ -573,22 +599,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                             'could not be found.\n'
                         )
                     )
-
-                sql = render_template("/".join([self.template_path,
-                                                self._PROPERTIES_SQL]),
-                                      umid=umid, conn=self.conn)
-                status, res = self.conn.execute_dict(sql)
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                if not res['rows']:
-                    return make_json_response(
-                        status=410,
-                        success=0,
-                        errormsg=gettext(
-                            'The specified user mapping could not be found.\n'
-                        )
-                    )
+                res = self._fetch_specified_user_mapping_properties(umid)
 
                 data = res['rows'][0]
 

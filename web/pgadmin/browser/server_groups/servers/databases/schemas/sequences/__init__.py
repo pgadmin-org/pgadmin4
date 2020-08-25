@@ -465,11 +465,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             data = {'ids': [seid]}
 
         # Below will decide if it's simple drop or drop with cascade call
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+
+        cascade = self._check_cascade_operation()
 
         try:
             for seid in data['ids']:

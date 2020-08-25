@@ -531,11 +531,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         else:
             data = {'ids': [lid]}
 
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        cascade = self._check_cascade_operation()
 
         try:
             for lid in data['ids']:

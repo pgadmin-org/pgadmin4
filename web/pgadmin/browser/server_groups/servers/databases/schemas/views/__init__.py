@@ -647,7 +647,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             data = {'ids': [vid]}
 
         # Below will decide if it's simple drop or drop with cascade call
-        cascade = True if self.cmd == 'delete' else False
+
+        cascade = self._check_cascade_operation()
 
         try:
             for vid in data['ids']:

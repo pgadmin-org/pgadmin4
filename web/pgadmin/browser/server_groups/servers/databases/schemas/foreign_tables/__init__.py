@@ -722,11 +722,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         else:
             data = {'ids': [foid]}
 
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        cascade = self._check_cascade_operation()
 
         try:
             for foid in data['ids']:

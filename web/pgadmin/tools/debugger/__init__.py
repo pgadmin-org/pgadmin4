@@ -2132,10 +2132,31 @@ def poll_result(trans_id):
     )
 
 
+def release_connection(manager, dbg_obj):
+    """This function is used to release connection."""
+    conn = manager.connection(
+        did=dbg_obj['database_id'],
+        conn_id=dbg_obj['conn_id'])
+    if conn.connected():
+        conn.cancel_transaction(
+            dbg_obj['conn_id'],
+            dbg_obj['database_id'])
+    manager.release(conn_id=dbg_obj['conn_id'])
+
+    if 'exe_conn_id' in dbg_obj:
+        conn = manager.connection(
+            did=dbg_obj['database_id'],
+            conn_id=dbg_obj['exe_conn_id'])
+        if conn.connected():
+            conn.cancel_transaction(
+                dbg_obj['exe_conn_id'],
+                dbg_obj['database_id'])
+        manager.release(conn_id=dbg_obj['exe_conn_id'])
+
+
 def close_debugger_session(_trans_id, close_all=False):
     """
-    This function is used to cancel the debugger transaction and
-    release the connection.
+    This function is used to cancel the debugger transaction.
 
     :param trans_id: Transaction id
     :return:
@@ -2156,24 +2177,7 @@ def close_debugger_session(_trans_id, close_all=False):
                     connection_manager(dbg_obj['server_id'])
 
                 if manager is not None:
-                    conn = manager.connection(
-                        did=dbg_obj['database_id'],
-                        conn_id=dbg_obj['conn_id'])
-                    if conn.connected():
-                        conn.cancel_transaction(
-                            dbg_obj['conn_id'],
-                            dbg_obj['database_id'])
-                    manager.release(conn_id=dbg_obj['conn_id'])
-
-                    if 'exe_conn_id' in dbg_obj:
-                        conn = manager.connection(
-                            did=dbg_obj['database_id'],
-                            conn_id=dbg_obj['exe_conn_id'])
-                        if conn.connected():
-                            conn.cancel_transaction(
-                                dbg_obj['exe_conn_id'],
-                                dbg_obj['database_id'])
-                        manager.release(conn_id=dbg_obj['exe_conn_id'])
+                    release_connection(manager, dbg_obj)
 
             de_inst.clear()
         except Exception:

@@ -524,7 +524,8 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             else {'ids': [coid]}
 
         # Below will decide if it's simple drop or drop with cascade call
-        cascade = True if self.cmd == 'delete' else False
+
+        cascade = self._check_cascade_operation()
 
         try:
             for coid in data['ids']:

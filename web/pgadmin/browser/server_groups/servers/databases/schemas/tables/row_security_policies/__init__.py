@@ -436,6 +436,22 @@ class RowSecurityView(PGChildNodeView):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    @staticmethod
+    def get_policy_data(plid):
+        """
+        return policy data
+        :param plid:
+        :return: policy id
+        """
+        if plid is None:
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            )
+        else:
+            data = {'ids': [plid]}
+
+        return data
+
     @check_precondition
     def delete(self, gid, sid, did, scid, tid, **kwargs):
         """
@@ -453,18 +469,9 @@ class RowSecurityView(PGChildNodeView):
         only_sql = kwargs.get('only_sql', False)
 
         # Below will deplide if it's simple drop or drop with cascade call
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        cascade = self._check_cascade_operation()
 
-        if plid is None:
-            data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
-            )
-        else:
-            data = {'ids': [plid]}
+        data = self.get_policy_data(plid)
 
         for plid in data['ids']:
             try:

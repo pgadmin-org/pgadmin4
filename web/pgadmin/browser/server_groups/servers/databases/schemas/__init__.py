@@ -731,7 +731,7 @@ It may have been removed by another user.
                     "/".join([self.template_path,
                               self._SQL_PREFIX + self._DELETE_SQL]),
                     _=gettext, name=name, conn=self.conn,
-                    cascade=True if self.cmd == 'delete' else False
+                    cascade=self._check_cascade_operation()
                 )
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:

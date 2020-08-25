@@ -895,11 +895,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             data = {'ids': [fnid]}
 
-        if self.cmd == 'delete':
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        cascade = self._check_cascade_operation()
 
         try:
             for fnid in data['ids']:

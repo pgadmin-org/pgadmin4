@@ -342,7 +342,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         else:
             data = {'ids': [eid]}
 
-        cascade = True if self.cmd == 'delete' else False
+        cascade = self._check_cascade_operation()
 
         try:
             for eid in data['ids']:

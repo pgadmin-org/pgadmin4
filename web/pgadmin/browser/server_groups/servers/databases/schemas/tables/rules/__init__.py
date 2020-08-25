@@ -407,7 +407,8 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             data = {'ids': [rid]}
 
         # Below will decide if it's simple drop or drop with cascade call
-        cascade = True if self.cmd == 'delete' else False
+
+        cascade = self._check_cascade_operation()
 
         try:
             for rid in data['ids']:

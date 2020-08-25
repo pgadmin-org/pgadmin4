@@ -627,11 +627,7 @@ AND relkind != 'c'))"""
         else:
             data = {'ids': [doid]}
 
-        if self.cmd == 'delete' or only_sql:
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        cascade = self._check_cascade_operation(only_sql)
 
         for doid in data['ids']:
             SQL = render_template("/".join([self.template_path,
@@ -807,6 +803,26 @@ AND relkind != 'c'))"""
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    def check_domain_type(self, data, old_data, is_schema_diff):
+        """
+        Check domain type
+        :return:
+        """
+        # If fulltype or basetype or collname is changed while comparing
+        # two schemas then we need to drop domain and recreate it
+        if 'fulltype' in data or 'basetype' in data or 'collname' in data:
+            SQL = render_template(
+                "/".join([self.template_path, 'domain_schema_diff.sql']),
+                data=data, o_data=old_data)
+        else:
+            if is_schema_diff:
+                data['is_schema_diff'] = True
+
+            SQL = render_template(
+                "/".join([self.template_path, 'update.sql']),
+                data=data, o_data=old_data)
+        return SQL, data
+
     def get_sql(self, gid, sid, data, scid, doid=None, is_schema_diff=False):
         """
         Generates the SQL statements to create/update the Domain.
@@ -847,19 +863,7 @@ AND relkind != 'c'))"""
 
             old_data['constraints'] = con_data
 
-            # If fulltype or basetype or collname is changed while comparing
-            # two schemas then we need to drop domain and recreate it
-            if 'fulltype' in data or 'basetype' in data or 'collname' in data:
-                SQL = render_template(
-                    "/".join([self.template_path, 'domain_schema_diff.sql']),
-                    data=data, o_data=old_data)
-            else:
-                if is_schema_diff:
-                    data['is_schema_diff'] = True
-
-                SQL = render_template(
-                    "/".join([self.template_path, self._UPDATE_SQL]),
-                    data=data, o_data=old_data)
+            SQL, data = self.check_domain_type(data, old_data, is_schema_diff)
             return SQL.strip('\n'), data['name'] if 'name' in data else \
                 old_data['name']
         else:

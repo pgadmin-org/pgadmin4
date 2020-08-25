@@ -711,6 +711,19 @@ class PGChildNodeView(NodeView):
 
         return dependency
 
+    def _check_cascade_operation(self, only_sql=None):
+        """
+        Check cascade operation.
+        :param only_sql:
+        :return:
+        """
+        if self.cmd == 'delete' or only_sql:
+            # This is a cascade operation
+            cascade = True
+        else:
+            cascade = False
+        return cascade
+
     def not_found_error_msg(self, custom_label=None):
         return gettext("Could not find the specified {}.".format(
             custom_label if custom_label else self.node_label).lower())

@@ -1106,12 +1106,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             data = {'ids': [tid]}
 
-        # Below will decide if it's simple drop or drop with cascade call
-        if self.cmd == 'delete' or only_sql:
-            # This is a cascade operation
-            cascade = True
-        else:
-            cascade = False
+        cascade = self._check_cascade_operation()
 
         return data, cascade
 
