@@ -1117,7 +1117,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             sql += '\n' + exclusion_constraint_sql
         return sql
 
-    def _check_for_foreign_key(self, data):
+    def _check_fk_constraint(self, data):
         if 'foreign_key' in data:
             for c in data['foreign_key']:
                 schema, table = fkey_utils.get_parent(
@@ -1250,7 +1250,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             data = column_utils.parse_format_columns(data)
             data = BaseTableView.check_and_convert_name_to_string(data)
 
-            self._check_foreign_key(data)
+            self._check_fk_constraint(data)
 
             partitions_sql = self._check_for_partitioned(data)
 
