@@ -872,6 +872,17 @@ class DatabaseView(PGChildNodeView):
                     )
                 )
             else:
+                if self.conn.connected():
+                    # Release the connection if it is connected
+                    from pgadmin.utils.driver import get_driver
+                    manager = \
+                        get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+                    manager.connection(did=did, auto_reconnect=True)
+                    status = manager.release(did=did)
+
+                    if not status:
+                        return unauthorized(
+                            _("Database could not be deleted."))
 
                 SQL = render_template(
                     "/".join([self.template_path, self._DELETE_SQL]),
