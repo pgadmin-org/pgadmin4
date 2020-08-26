@@ -21,6 +21,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4216 <https://redmine.postgresql.org/issues/4216>`_ -  Ensure that schema names starting with 'pg' should be visible in browser tree when standard_conforming_strings is set to off.
 | `Issue #5722 <https://redmine.postgresql.org/issues/5722>`_ -  Ensure that the user should be able to drop the database even if it is connected.
 | `Issue #5748 <https://redmine.postgresql.org/issues/5748>`_ -  Fixed incorrect reverse engineering SQL for Foreign key when creating a table.
 | `Issue #5751 <https://redmine.postgresql.org/issues/5751>`_ -  Enable the 'Configure' and 'View log' menu option when the server taking longer than usual time to start.
