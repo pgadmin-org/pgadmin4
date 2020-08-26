@@ -1,0 +1,576 @@
+{
+  "check_constraint_create": [
+    {
+      "name": "Create: Add valid check constraint to table with convalidated = T.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_checkconstraint_add_",
+        "consrc": " (id > 0)",
+        "convalidated": true,
+        "comment": "Create: Add valid check constraint to table api test."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add valid check constraint to table with convalidated = F.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_checkconstraint_add_",
+        "consrc": " (id > 0)",
+        "convalidated": false,
+        "comment": "Create: Add valid check constraint to table api test."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add check constraint without name.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "consrc": " (id > 0)",
+        "convalidated": true,
+        "comment": "Create: Add check constraint without name api test"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "ERROR:  constraint \"none\" for table \"table_checkconstraint_\" does not exist\n",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add check constraint to invalid table name/id.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "consrc": " (id > 0)",
+        "convalidated": true,
+        "comment": "Create: Add check constraint without table name/id. api test",
+        "table_id": 615363
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: With valid data while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_checkconstraint_add_",
+        "consrc": " (id > 0)",
+        "convalidated": true,
+        "comment": "Create: With valid data while server is down api test."
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Without name in data while server is down .",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "consrc": " (id > 0)",
+        "convalidated": true,
+        "comment": "this is test comment"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: With valid data while server is down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_checkconstraint_add_",
+        "consrc": " (id > 0)",
+        "convalidated": true,
+        "comment": "this is test comment"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "check_constraint_delete": [
+    {
+      "name": "Delete: Existing check constraint.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Multiple existing check constraints.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete: Non-existing check constraint.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "check_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Existing check constraint while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Existing check constraint while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "check_constraint_dependencies_dependents": [
+    {
+      "name": "Get dependents: With existing check constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get dependencies: With existing check constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+  ],
+  "check_constraint_get": [
+    {
+      "name": "Get check constraint details: For existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get check constraint details: For existing multiple constraint ids.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get check constraint details: For non-existing constraint id.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "check_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the check constraint in the table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get check constraint details: For existing constraint id while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "check_constraint_get_nodes": [
+    {
+      "name": "Get check constraint node: For existing constraint id with convalidated = T.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": " \"ALTER TABLE %s.%s ADD CONSTRAINT %s CHECK ( (id > 0)) NOT VALID; COMMENT ON CONSTRAINT %s ON %s.%s IS 'this is test comment'\" % (schema_name, table_name, check_constraint_name,check_constraint_name, schema_name, table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get check constraint node: For existing constraint id with convalidated = F.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": " \"ALTER TABLE %s.%s ADD CONSTRAINT %s CHECK ( (id > 0)); COMMENT ON CONSTRAINT %s ON %s.%s IS 'this is test comment'\" % (schema_name, table_name, check_constraint_name,check_constraint_name, schema_name, table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get check constraint nodes: For existing multiple constraint ids with convalidated = T.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": " \"ALTER TABLE %s.%s ADD CONSTRAINT %s CHECK ( (id > 0)) NOT VALID; COMMENT ON CONSTRAINT %s ON %s.%s IS 'this is test comment'\" % (schema_name, table_name, check_constraint_name,check_constraint_name, schema_name, table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get check constraint nodes: For existing multiple constraint ids with convalidated = F.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": " \"ALTER TABLE %s.%s ADD CONSTRAINT %s CHECK ( (id > 0)); COMMENT ON CONSTRAINT %s ON %s.%s IS 'this is test comment'\" % (schema_name, table_name, check_constraint_name,check_constraint_name, schema_name, table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get check constraint node: With non-existing constraint id.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "check_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the check constraint.",
+        "test_result_data": {
+        }
+      },
+      "is_list": false
+    }
+  ],
+  "check_constraint_msql": [
+    {
+      "name": "Get check constraint msql: Modifying comment existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "comment": "Testing msql api"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get check constraint msql: Modifying comment & convalidated of existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "comment": "Testingmsqlapiconvalidated=f",
+        "convalidated": "false"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "check_constraint_put": [
+    {
+      "name": "Put: Update existing check constraint with convalidated = false",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "comment": "This is test comment for index",
+        "convalidated": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Put: Update existing check constraint with comment only",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "comment": "This is test comment for constraint"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Put: Update existing existing check constraint while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "comment": "This is test comment for index"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "check_constraint_sql": [
+    {
+      "name": "Get check constraint sql: With existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get check constraint sql: With non-existing constraint id.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "check_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the object on the server.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get check constraint sql: With existing constraint id while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "check_constraint_validate": [
+    {
+      "name": "Validate check constraint details: For existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Validate check constraint details: For existing constraint id while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Validate check constraint details: For existing constraint id while server down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ]
+}

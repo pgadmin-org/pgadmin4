@@ -1205,6 +1205,21 @@ def generate_scenarios(key, test_cases):
     return scenarios
 
 
+def assert_status_code(self, response):
+    act_res = response.status_code
+    exp_res = self.expected_data["status_code"]
+    return self.assertEquals(act_res, exp_res)
+
+
+def assert_error_message(self, response, error_msg=None):
+    act_res = response.json["errormsg"]
+    if error_msg is not None:
+        exp_res = error_msg
+    else:
+        exp_res = self.expected_data["error_msg"]
+    return self.assertEquals(act_res, exp_res)
+
+
 def create_expected_output(parameters, actual_data):
     """
     This function creates the dict using given parameter and actual data

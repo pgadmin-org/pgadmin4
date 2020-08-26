@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-import json
 import uuid
 from unittest.mock import patch
 
@@ -23,12 +22,13 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as fk_utils
 
 
-class ForeignKeyPutTestCase(BaseTestGenerator):
-    """This class will update foreign key from existing table"""
-    url = '/browser/foreign_key/obj/'
+class ForeignKeyGetDependenciesDependentsTestCase(BaseTestGenerator):
+    """This class will fetch foreign key dependencies/dependents from
+    existing table """
+    url = '/browser/foreign_key/'
 
     # Generates scenarios
-    scenarios = utils.generate_scenarios("foreign_key_put",
+    scenarios = utils.generate_scenarios("foreign_key_dependencies_dependents",
                                          fk_utils.test_cases)
 
     def setUp(self):
@@ -73,33 +73,23 @@ class ForeignKeyPutTestCase(BaseTestGenerator):
         # Create foreign key
         self.foreign_key_name = "test_foreignkey_get_%s" % \
                                 (str(uuid.uuid4())[1:8])
-        if "query" in self.inventory_data:
-            query = self.inventory_data["query"]
-        else:
-            query = None
-
         self.foreign_key_id = fk_utils.create_foreignkey(
             self.server, self.db_name, self.schema_name, self.local_table_name,
-            self.foreign_table_name, query)
+            self.foreign_table_name)
 
     def runTest(self):
-        """This function will update foreign key attached to table column."""
-        self.data["oid"] = self.foreign_key_id
-
+        """This function will fetch foreign key dependencies/dependents
+        attached to table column. """
         if self.is_positive_test:
-            response = fk_utils.api_put(self)
+            if self.is_dependent:
+                self.url = self.url + 'dependent/'
+                response = fk_utils.api_get(self)
+            else:
+                self.url = self.url + 'dependency/'
+                response = fk_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)
-        else:
-            if self.mocking_required:
-                with patch(self.mock_data["function_name"],
-                           side_effect=[eval(self.mock_data["return_value"])]):
-                    response = fk_utils.api_put(self)
-
-            # Assert response
-            utils.assert_status_code(self, response)
-            utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database

@@ -9,6 +9,7 @@
 
 import json
 import uuid
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
@@ -26,25 +27,16 @@ class IndexConstraintAddTestCase(BaseTestGenerator):
     """This class will add index constraint(primary key or unique key) to
     table column"""
     skip_on_database = ['gpdb']
-    primary_key_name = "test_primarykey_add_%s" % \
-                       (str(uuid.uuid4())[1:8])
-    primary_key_data = {"name": primary_key_name,
-                        "spcname": "pg_default",
-                        "columns": [{"column": "id"}]
-                        }
-    unique_key_name = "test_uniquekey_add_%s" % \
-                      (str(uuid.uuid4())[1:8])
-    unique_key_data = {"name": unique_key_name,
-                       "spcname": "pg_default",
-                       "columns": [{"column": "id"}]}
-    scenarios = [
-        ('Add primary Key constraint to table',
-         dict(url='/browser/primary_key/obj/', data=primary_key_data)),
-        ('Add unique Key constraint to table',
-         dict(url='/browser/unique_constraint/obj/', data=unique_key_data))
-    ]
+
+    # Generates scenarios
+    scenarios = utils.generate_scenarios("index_constraint_create",
+                                         index_constraint_utils.test_cases)
 
     def setUp(self):
+        # Load test data
+        self.data = self.test_data
+
+        # Create db connection
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -54,6 +46,8 @@ class IndexConstraintAddTestCase(BaseTestGenerator):
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to add a "
                             "index constraint(primary key or unique key).")
+
+        # Create schema
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
         schema_response = schema_utils.verify_schemas(self.server,
@@ -62,6 +56,8 @@ class IndexConstraintAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add a index "
                             "constraint(primary key or unique key).")
+
+        # Create table
         self.table_name = "table_indexconstraint_%s" % \
                           (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server,
@@ -72,87 +68,56 @@ class IndexConstraintAddTestCase(BaseTestGenerator):
     def runTest(self):
         """This function will add index constraint(primary key or unique key)
         to table column."""
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.schema_id) + '/' + str(self.table_id) + '/',
-            data=json.dumps(self.data),
-            content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        # Create using index
+        if "index" in self.data:
+            index_name = self.data["index"] + (str(uuid.uuid4())[1:8])
+            self.data["index"] = index_name
 
-    def tearDown(self):
-        # Disconnect the database
-        database_utils.disconnect_database(self, self.server_id, self.db_id)
-
-
-class ConstraintsUsingIndexAddTestCase(BaseTestGenerator):
-    """This class will add the constraint(primary key or unique key) to the
-    table column using newly created index"""
-    skip_on_database = ['gpdb']
-
-    primary_key_name = "test_primarykey_add_%s" % (str(uuid.uuid4())[1:8])
-    primary_index_name = "test_primaryindex_add_%s" % (str(uuid.uuid4())[1:8])
-    primary_key_data = {
-        "name": primary_key_name,
-        "spcname": "pg_default",
-        "columns": [],
-        "index": primary_index_name
-    }
-
-    unique_key_name = "test_uniquekey_add_%s" % (str(uuid.uuid4())[1:8])
-    unique_index_name = "test_uniqueindex_add_%s" % (str(uuid.uuid4())[1:8])
-    unique_key_data = {
-        "name": unique_key_name,
-        "spcname": "pg_default",
-        "columns": [],
-        "index": unique_index_name
-    }
-
-    scenarios = [
-        ('Add primary Key constraint to table using index',
-         dict(url='/browser/primary_key/obj/', data=primary_key_data)),
-        ('Add unique Key constraint to table using index',
-         dict(url='/browser/unique_constraint/obj/', data=unique_key_data))
-    ]
-
-    def setUp(self):
-        self.db_name = parent_node_dict["database"][-1]["db_name"]
-        schema_info = parent_node_dict["schema"][-1]
-        self.server_id = schema_info["server_id"]
-        self.db_id = schema_info["db_id"]
-        db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
-                                                 self.server_id, self.db_id)
-        if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to add a "
-                            "constraint using index.")
-        self.schema_id = schema_info["schema_id"]
-        self.schema_name = schema_info["schema_name"]
-        schema_response = schema_utils.verify_schemas(self.server,
-                                                      self.db_name,
-                                                      self.schema_name)
-        if not schema_response:
-            raise Exception("Could not find the schema to add a index "
-                            "constraint(primary key or unique key).")
-        self.table_name = "table_constraint_%s" % (str(uuid.uuid4())[1:8])
-        self.table_id = tables_utils.create_table(self.server, self.db_name,
-                                                  self.schema_name,
-                                                  self.table_name)
-
-    def runTest(self):
-        """This function will add index constraint(primary key or unique key)
-        to table column."""
-        self.index_id = \
-            index_constraint_utils.create_unique_index(
+            self.index_id = index_constraint_utils.create_unique_index(
                 self.server, self.db_name, self.schema_name, self.table_name,
-                self.data["index"], "name")
+                index_name, "name")
 
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.schema_id) + '/' + str(self.table_id) + '/',
-            data=json.dumps(self.data),
-            content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        # Constraint name
+        if "constraint_name" in self.data:
+            constraint_name = self.data["constraint_name"] + (
+                str(uuid.uuid4())[1:8])
+            self.data["name"] = constraint_name
+        else:
+            if "index" in self.data:
+                if "primary_key" in self.url:
+                    constraint_name = index_name
+                else:
+                    constraint_name = self.table_name + '_id_key'
+            else:
+                if "primary_key" in self.url:
+                    constraint_name = self.table_name + '_pkey'
+                elif "columns" in self.data:
+                    constraint_name = self.table_name + '_' + \
+                        self.data["columns"][0]["column"] + '_key'
+
+        if self.is_positive_test:
+            response = index_constraint_utils.api_create(self)
+
+            # Assert response
+            utils.assert_status_code(self, response)
+
+            # Verify in backend
+            self.assertIsNotNone(index_constraint_utils.
+                                 verify_index_constraint(self.server,
+                                                         self.db_name,
+                                                         constraint_name),
+                                 "Could not find constraint created.")
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = index_constraint_utils.api_create(self)
+            else:
+                response = index_constraint_utils.api_create(self)
+
+            # Assert response
+            utils.assert_status_code(self, response)
+            utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database

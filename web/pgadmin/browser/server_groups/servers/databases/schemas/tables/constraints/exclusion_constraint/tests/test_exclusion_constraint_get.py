@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
@@ -23,12 +24,17 @@ from . import utils as exclusion_utils
 
 class ExclusionGetTestCase(BaseTestGenerator):
     """This class will fetch the existing exclusion constraint"""
-    scenarios = [
-        ('Fetch Exclusion Constraint',
-         dict(url='/browser/exclusion_constraint/obj/'))
-    ]
+    url = '/browser/exclusion_constraint/obj/'
+
+    # Generates scenarios from cast_test_data.json file
+    scenarios = utils.generate_scenarios("exclusion_constraint_get",
+                                         exclusion_utils.test_cases)
 
     def setUp(self):
+        # Load test data
+        self.data = self.test_data
+
+        # Create db connection
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -37,6 +43,8 @@ class ExclusionGetTestCase(BaseTestGenerator):
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to add a table.")
+
+        # Create schema
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
         schema_response = schema_utils.verify_schemas(self.server,
@@ -44,25 +52,62 @@ class ExclusionGetTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
+
+        # Create table
         self.table_name = "table_exclusion_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
-        self.index_name = "test_exclusion_get_%s" % (str(uuid.uuid4())[1:8])
-        self.index_id = exclusion_utils.create_exclusion_constraint(
-            self.server, self.db_name, self.schema_name, self.table_name,
-            self.index_name
-        )
+
+        # Create constraint to fetch
+        self.exclusion_constraint_name = \
+            "test_exclusion_delete_%s" % (str(uuid.uuid4())[1:8])
+        self.exclusion_constraint_id = exclusion_utils.\
+            create_exclusion_constraint(self.server, self.db_name,
+                                        self.schema_name, self.table_name,
+                                        self.exclusion_constraint_name)
+
+        # Cross check constraint creation
+        cross_check_res = exclusion_utils.verify_exclusion_constraint(
+            self.server, self.db_name, self.exclusion_constraint_name)
+        if not cross_check_res:
+            raise Exception("Could not find the exclusion constraint "
+                            "to delete.")
+
+        # In case of multiple constraints
+        if self.is_list:
+            # Create constraint to delete
+            self.exclusion_constraint_name_2 = \
+                "test_exclconstraint_get_list_%s" % (str(uuid.uuid4())[1:8])
+            self.exclusion_constraint_id_2 = \
+                exclusion_utils.create_exclusion_constraint(
+                    self.server, self.db_name, self.schema_name,
+                    self.table_name,
+                    self.exclusion_constraint_name_2)
 
     def runTest(self):
-        """This function will fetch the existing exclusion constraint."""
-        response = self.tester.get(
-            "{0}{1}/{2}/{3}/{4}/{5}/{6}".format(self.url, utils.SERVER_GROUP,
-                                                self.server_id, self.db_id,
-                                                self.schema_id, self.table_id,
-                                                self.index_id),
-            follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        """This function will fetch check constraint to table."""
+        if self.is_positive_test:
+            if self.is_list:
+                response = exclusion_utils.api_get(self, '')
+            else:
+                response = exclusion_utils.api_get(self)
+
+            # Assert response
+            utils.assert_status_code(self, response)
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=[eval(self.mock_data["return_value"])]):
+                    response = exclusion_utils.api_get(self)
+            elif 'exclusion_constraint_id' in self.data:
+                self.exclusion_constraint_id = \
+                    self.data["exclusion_constraint_id"]
+                response = exclusion_utils.api_get(self)
+
+            # Assert response
+            utils.assert_status_code(self, response)
+            utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database

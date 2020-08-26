@@ -9,9 +9,73 @@
 
 
 import sys
+import os
 import traceback
+import json
 
 from regression.python_test_utils import test_utils as utils
+
+# Load test data from json file.
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/exclusion_constraint_test_data.json") as data_file:
+    test_cases = json.load(data_file)
+
+
+# api call methods
+def api_create(self):
+    return self.tester.post("{0}{1}/{2}/{3}/{4}/{5}/".
+                            format(self.url, utils.SERVER_GROUP,
+                                   self.server_id, self.db_id,
+                                   self.schema_id, self.table_id),
+                            data=json.dumps(self.data),
+                            content_type='html/json'
+                            )
+
+
+def api_delete(self, exclusion_constraint_id=None):
+    if exclusion_constraint_id is None:
+        exclusion_constraint_id = self.exclusion_constraint_id
+    return self.tester.delete("{0}{1}/{2}/{3}/{4}/{5}/{6}".
+                              format(self.url, utils.SERVER_GROUP,
+                                     self.server_id, self.db_id,
+                                     self.schema_id, self.table_id,
+                                     exclusion_constraint_id),
+                              data=json.dumps(self.data),
+                              follow_redirects=True
+                              )
+
+
+def api_get(self, exclusion_constraint_id=None):
+    if exclusion_constraint_id is None:
+        exclusion_constraint_id = self.exclusion_constraint_id
+    return self.tester.get("{0}{1}/{2}/{3}/{4}/{5}/{6}".
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.db_id,
+                                  self.schema_id, self.table_id,
+                                  exclusion_constraint_id),
+                           follow_redirects=True
+                           )
+
+
+def api_get_msql(self, req_args):
+    return self.tester.get("{0}{1}/{2}/{3}/{4}/{5}/{6}{7}".
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.db_id,
+                                  self.schema_id, self.table_id,
+                                  self.exclusion_constraint_id,
+                                  req_args),
+                           follow_redirects=True
+                           )
+
+
+def api_put(self):
+    return self.tester.put("{0}{1}/{2}/{3}/{4}/{5}/{6}".
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.db_id,
+                                  self.schema_id, self.table_id,
+                                  self.exclusion_constraint_id),
+                           data=json.dumps(self.data),
+                           follow_redirects=True)
 
 
 def create_exclusion_constraint(server, db_name, schema_name, table_name,

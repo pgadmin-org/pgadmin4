@@ -27,16 +27,22 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.foreign_key.tests import utils as fk_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.index_constraint.tests import utils as index_constraint_utils
+from . import utils as constraints_utils
 
 
 class ConstraintDeleteMultipleTestCase(BaseTestGenerator):
     """This class will delete constraints under table node."""
-    scenarios = [
-        # Fetching default URL for table node.
-        ('Delete Constraints', dict(url='/browser/constraints/obj/'))
-    ]
+    url = '/browser/constraints/nodes/'
+
+    # Generates scenarios from cast_test_data.json file
+    scenarios = utils.generate_scenarios("constraints_get_nodes",
+                                         constraints_utils.test_cases)
 
     def setUp(self):
+        # Load test data
+        self.data = self.test_data
+
+        # Create db connection
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -45,6 +51,8 @@ class ConstraintDeleteMultipleTestCase(BaseTestGenerator):
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to add a table.")
+
+        # Create schema
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
         schema_response = schema_utils.verify_schemas(self.server,
@@ -52,12 +60,15 @@ class ConstraintDeleteMultipleTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
+
+        # Create table
         self.table_name = "table_constraint_delete_%s" % \
                           (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server,
                                                   self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
+
         # Create Check Constraints
         self.check_constraint_name = "test_constraint_delete_%s" % \
                                      (str(uuid.uuid4())[1:8])
@@ -113,24 +124,11 @@ class ConstraintDeleteMultipleTestCase(BaseTestGenerator):
 
     def runTest(self):
         """This function will delete constraints under table node."""
-        data = {'ids': [
-            {'id': self.check_constraint_id, '_type': 'check_constraint'},
-            {'id': self.check_constraint_id_1, '_type': 'check_constraint'},
-            {'id': self.exclustion_constraint_id,
-             '_type': 'exclustion_constraint'},
-            {'id': self.foreign_key_id, '_type': 'foreign_key'},
-            {'id': self.primary_key_id, '_type': 'index_constraint'},
-            {'id': self.unique_constraint_id, '_type': 'index_constraint'}
-        ]}
-        response = self.tester.delete(self.url + str(utils.SERVER_GROUP) +
-                                      '/' + str(self.server_id) + '/' +
-                                      str(self.db_id) + '/' +
-                                      str(self.schema_id) + '/' +
-                                      str(self.table_id) + '/',
-                                      data=json.dumps(data),
-                                      content_type='html/json',
-                                      follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        if self.is_positive_test:
+            response = constraints_utils.api_get(self)
+
+            # Assert response
+            utils.assert_status_code(self, response)
 
     def tearDown(self):
         # Disconnect the database

@@ -15,6 +15,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5332 <https://redmine.postgresql.org/issues/5332>`_ -  Improve code coverage and API test cases for Columns and Constraints (Index, Foreign Key, Check, Exclusion).
 | `Issue #5344 <https://redmine.postgresql.org/issues/5344>`_ -  Improve code coverage and API test cases for Grant Wizard.
 
 Bug fixes

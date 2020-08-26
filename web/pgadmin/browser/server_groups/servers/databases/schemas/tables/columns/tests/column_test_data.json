@@ -1,0 +1,803 @@
+{
+  "column_create": [
+    {
+      "name": "Create: Add column with valid data",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_column_add_",
+        "cltype": "\"char\"",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "description": {
+          "comment": "jsoncomment"
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Identity column with Always",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Identity column are not supported by EPAS/PG 10.0 and below.",
+        "name": "test_column_add_",
+        "cltype": "bigint",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": true,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "colconstype": "i",
+        "attidentity": "a",
+        "seqincrement": 1,
+        "seqstart": 1,
+        "seqmin": 1,
+        "seqmax": 10,
+        "seqcache": 1,
+        "seqcycle": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Identity column with As Default",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "col_data_type": "bigint",
+        "server_min_version": 100000,
+        "skip_msg": "Identity column are not supported by EPAS/PG 10.0 and below.",
+        "name": "test_column_add_",
+        "cltype": "bigint",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": true,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "colconstype": "i",
+        "attidentity": "d",
+        "seqincrement": 2,
+        "seqstart": 2,
+        "seqmin": 2,
+        "seqmax": 2000,
+        "seqcache": 1,
+        "seqcycle": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Identity column with Always",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "col_data_type": "bigint",
+        "server_min_version": 120000,
+        "skip_msg": "Generated column are not supported by EPAS/PG 12.0 and below.",
+        "name": "test_column_add_",
+        "cltype": "bigint",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": true,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "colconstype": "g",
+        "genexpr": "100 * 100"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add column with invalid data - without name",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "cltype": "\"char\"",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "description": {
+          "comment": "jsoncomment"
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the required parameter (Name).",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add column to non-existing table",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_column_add_",
+        "cltype": "\"char\"",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "description": {
+          "comment": "jsoncomment"
+        },
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add column with valid data while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_column_add_",
+        "cltype": "\"char\"",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "description": {
+          "comment": "jsoncomment"
+        }
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "column_delete": [
+    {
+      "name": "Delete: Existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Multiple existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete: Non-existing column",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "column_id": 9999999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Existing column while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Existing column while server down-2",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "column_get": [
+    {
+      "name": "Get details: For existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get details: For multiple existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get details: For non-existing column",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "column_id": 999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified column.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get details: For existing column while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get details: For multiple existing column while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "column_get_nodes": [
+    {
+      "name": "Get nodes: For existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get nodes: For multiple existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get nodes: For non-existing column",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "column_id": 999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified column.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "column_sql": [
+    {
+      "name": "Get sql: For existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get nodes: For non-existing column",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "column_id": 999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified column.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get details: For existing column while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "column_dependencies_dependents": [
+    {
+      "name": "Get dependents: For existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get dependencies: For existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+  ],
+  "column_msql": [
+    {
+      "name": "Get msql: Change timestamp array length",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type":"timestamp(3) with time zone[]",
+        "name": "test_column_msql_"
+      },
+      "test_data": {
+        "new_len":6
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": "\"ALTER TABLE %s.%s\\n    ALTER COLUMN %s TYPE timestamp(%s) with time zone [];\" % (self.schema_name, self.table_name, self.column_name, expected_len)"
+      }
+    },
+    {
+      "name": "Get msql: Change timestamp length",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type":"timestamp(4) with time zone",
+        "name": "test_column_msql_"
+      },
+      "test_data": {
+        "new_len":7
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": "\"ALTER TABLE %s.%s\\n    ALTER COLUMN %s TYPE timestamp(%s) with time zone ;\" % (self.schema_name, self.table_name, self.column_name, expected_len)"
+      }
+    },
+    {
+      "name": "Get msql: Change numeric array precision",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type":"numeric(5,2)[]",
+        "name": "test_column_msql_"
+      },
+      "test_data": {
+        "new_len":5,
+        "new_precision":4
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": "\"ALTER TABLE %s.%s\\n    ALTER COLUMN %s TYPE numeric(%s, %s)[];\" % (self.schema_name, self.table_name, self.column_name, expected_len, expected_precision)"
+      }
+    },
+    {
+      "name": "Get msql: Change numeric precision",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type":"numeric(6,3)",
+        "name": "test_column_msql_"
+      },
+      "test_data": {
+        "new_len":6,
+        "new_precision":5
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": "\"ALTER TABLE %s.%s\\n    ALTER COLUMN %s TYPE numeric(%s, %s);\" % (self.schema_name, self.table_name, self.column_name, expected_len, expected_precision)"
+      }
+    },
+    {
+      "name": "Get msql: Change numeric array length",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type":"numeric(6,3)[]",
+        "name": "test_column_msql_"
+      },
+      "test_data": {
+        "new_len":8,
+        "old_precision":3
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": "\"ALTER TABLE %s.%s\\n    ALTER COLUMN %s TYPE numeric(%s, %s)[];\" % (self.schema_name, self.table_name, self.column_name, expected_len, expected_precision)"
+      }
+    },
+    {
+      "name": "Get msql: Change numeric length",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type":"numeric(6,4)",
+        "name": "test_column_msql_"
+      },
+      "test_data": {
+        "new_len":8,
+        "old_precision":4
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": "\"ALTER TABLE %s.%s\\n    ALTER COLUMN %s TYPE numeric(%s, %s);\" % (self.schema_name, self.table_name, self.column_name, expected_len, expected_precision)"
+      }
+    },
+    {
+      "name": "Get msql: Change numeric array len and precision",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type":"numeric(10,5)[]",
+        "name": "test_column_msql_"
+      },
+      "test_data": {
+        "new_len":15,
+        "new_precision":8
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": "\"ALTER TABLE %s.%s\\n    ALTER COLUMN %s TYPE numeric(%s, %s)[];\" % (self.schema_name, self.table_name, self.column_name, expected_len, expected_precision)"
+      }
+    },
+    {
+      "name": "Get msql: Change numeric len and precision",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type":"numeric(12,6)",
+        "name": "test_column_msql_"
+      },
+      "test_data": {
+        "new_len":14,
+        "new_precision":9
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": "\"ALTER TABLE %s.%s\\n    ALTER COLUMN %s TYPE numeric(%s, %s);\" % (self.schema_name, self.table_name, self.column_name, expected_len, expected_precision)"
+      }
+    }
+  ],
+   "column_put": [
+     {
+      "name": "Put: Update existing column comments and null constraints",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type": "char"
+      },
+      "test_data": {
+        "attnotnull": true,
+        "description": "This is test comment for column"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+     {
+      "name": "Put: Update existing column to identity column as Always",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type": "bigint",
+            "server_min_version": 100000,
+            "skip_msg": "Identity column are not supported by EPAS/PG 10.0 and below."
+      },
+      "test_data": {
+                "attnotnull": true,
+                "attidentity": "d",
+                "seqincrement": 2,
+                "seqstart": 2,
+                "seqmin": 2,
+                "seqmax": 2000,
+                "seqcache": 1,
+                "colconstype": "i",
+                "seqcycle": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+     {
+      "name": "Put: Update existing column drop Identity by changing constraint type to NONE",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type": "bigint",
+            "server_min_version": 100000,
+            "skip_msg": "Identity column are not supported by EPAS/PG 10.0 and below.",
+        "create_identity_column":true
+      },
+      "test_data": {
+        "colconstype": "n"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+     {
+      "name": "Put: Update existing column data type",
+      "is_positive_test": true,
+      "inventory_data": {
+        "data_type": "integer"
+      },
+      "test_data": {
+        "cltype": "bigint",
+        "description": "This is test comment for column"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+     {
+      "name": "Put: Update existing column data type while server is down",
+      "is_positive_test": false,
+      "inventory_data": {
+        "data_type": "integer"
+      },
+      "test_data": {
+        "cltype": "bigint",
+        "description": "This is test comment for column"
+      },
+      "mocking_required": true,
+      "mock_data": {
+                "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+   ],
+  "column_get_statistics": [
+    {
+      "name": "Get statistics: For existing column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get statistics: For non-existing column",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "column_id": 999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified column.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get statistics: For existing column while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

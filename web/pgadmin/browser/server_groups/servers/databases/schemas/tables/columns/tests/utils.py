@@ -10,8 +10,70 @@
 
 import sys
 import traceback
-
+import os
+import json
+from urllib.parse import urlencode
 from regression.python_test_utils import test_utils as utils
+
+# Load test data from json file.
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/column_test_data.json") as data_file:
+    test_cases = json.load(data_file)
+
+
+# api method calls
+def api_create(self):
+    return self.tester.post("{0}{1}/{2}/{3}/{4}/{5}/".
+                            format(self.url, utils.SERVER_GROUP,
+                                   self.server_id, self.db_id,
+                                   self.schema_id, self.table_id),
+                            data=json.dumps(self.data),
+                            content_type='html/json'
+                            )
+
+
+def api_delete(self, column_id=None):
+    if column_id is None:
+        column_id = self.column_id
+    return self.tester.delete("{0}{1}/{2}/{3}/{4}/{5}/{6}".
+                              format(self.url, utils.SERVER_GROUP,
+                                     self.server_id, self.db_id,
+                                     self.schema_id, self.table_id, column_id),
+                              data=json.dumps(self.data),
+                              follow_redirects=True
+                              )
+
+
+def api_get(self, column_id=None):
+    if column_id is None:
+        column_id = self.column_id
+    return self.tester.get("{0}{1}/{2}/{3}/{4}/{5}/{6}".
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.db_id, self.schema_id,
+                                  self.table_id, column_id),
+                           data=json.dumps(self.data),
+                           follow_redirects=True
+                           )
+
+
+def api_get_msql(self, url_encode_data):
+    return self.tester.get("{0}{1}/{2}/{3}/{4}/{5}/{6}?{7}".
+                           format(self.url, utils.SERVER_GROUP, self.server_id,
+                                  self.db_id,
+                                  self.schema_id, self.table_id,
+                                  self.column_id,
+                                  urlencode(url_encode_data)),
+                           follow_redirects=True
+                           )
+
+
+def api_put(self):
+    return self.tester.put("{0}{1}/{2}/{3}/{4}/{5}/{6}".
+                           format(self.url, utils.SERVER_GROUP, self.server_id,
+                                  self.db_id, self.schema_id, self.table_id,
+                                  self.column_id),
+                           data=json.dumps(self.data),
+                           follow_redirects=True)
 
 
 def create_column(server, db_name, schema_name, table_name, col_name,

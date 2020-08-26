@@ -9,6 +9,7 @@
 
 import json
 import uuid
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
@@ -25,77 +26,38 @@ from pgadmin.utils import server_utils as server_utils
 
 class ColumnPutTestCase(BaseTestGenerator):
     """This class will update the column under table node."""
-    scenarios = [
-        ('Edit column comments and null constraints', dict(
-            url='/browser/column/obj/',
-            col_data_type='char',
-            data={
-                'attnotnull': True,
-                'description': "This is test comment for column"
-            })),
-        ('Edit column to Identity column as Always', dict(
-            url='/browser/column/obj/',
-            col_data_type='bigint',
-            server_min_version=100000,
-            skip_msg='Identity column are not supported by EPAS/PG 10.0 '
-                     'and below.',
-            data={
-                'attnotnull': True,
-                'attidentity': 'a',
-                'seqincrement': 1,
-                'seqstart': 1,
-                'seqmin': 1,
-                'seqmax': 10,
-                'seqcache': 1,
-                'colconstype': 'i',
-                'seqcycle': True
-            })),
-        ('Edit column to Identity column as Default', dict(
-            url='/browser/column/obj/',
-            col_data_type='bigint',
-            server_min_version=100000,
-            skip_msg='Identity column are not supported by EPAS/PG 10.0 '
-                     'and below.',
-            data={
-                'attnotnull': True,
-                'attidentity': 'd',
-                'seqincrement': 2,
-                'seqstart': 2,
-                'seqmin': 2,
-                'seqmax': 2000,
-                'seqcache': 1,
-                'colconstype': 'i',
-                'seqcycle': True
-            })),
-        ('Edit column Drop Identity by changing constraint type to NONE',
-         dict(url='/browser/column/obj/',
-              col_data_type='bigint',
-              server_min_version=100000,
-              create_identity_column=True,
-              skip_msg='Identity column are not supported by EPAS/PG 10.0 '
-                       'and below.',
-              data={'colconstype': 'n'})
-         )
-    ]
+    url = '/browser/column/obj/'
+
+    # Generates scenarios
+    scenarios = utils.generate_scenarios("column_put",
+                                         columns_utils.test_cases)
 
     def setUp(self):
+        # Load test data
+        self.data = self.test_data
+
+        # Create db connection
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
 
-        if hasattr(self, 'server_min_version'):
+        # Check DB version
+        if "server_min_version" in self.inventory_data:
             server_con = server_utils.connect_server(self, self.server_id)
             if not server_con["info"] == "Server connected.":
                 raise Exception("Could not connect to server to add "
                                 "a table.")
-            if server_con["data"]["version"] < self.server_min_version:
-                self.skipTest(self.skip_msg)
+            if server_con["data"]["version"] < \
+                    self.inventory_data["server_min_version"]:
+                self.skipTest(self.inventory_data["skip_msg"])
 
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to add a table.")
+
+        # Create schema
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
         schema_response = schema_utils.verify_schemas(self.server,
@@ -103,43 +65,53 @@ class ColumnPutTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
+
+        # Create table
         self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
+
+        # Create column
         self.column_name = "test_column_put_%s" % (str(uuid.uuid4())[1:8])
 
-        if hasattr(self, 'create_identity_column') and \
-                self.create_identity_column:
+        if "create_identity_column" in self.inventory_data:
             self.column_id = columns_utils.create_identity_column(
                 self.server, self.db_name, self.schema_name,
-                self.table_name, self.column_name, self.col_data_type)
+                self.table_name, self.column_name,
+                self.inventory_data["data_type"])
         else:
             self.column_id = columns_utils.create_column(
                 self.server, self.db_name, self.schema_name,
-                self.table_name, self.column_name, self.col_data_type)
+                self.table_name, self.column_name,
+                self.inventory_data["data_type"])
 
-    def runTest(self):
-        """This function will update the column under table node."""
+        # Verify column creation
         col_response = columns_utils.verify_column(self.server, self.db_name,
                                                    self.column_name)
         if not col_response:
             raise Exception("Could not find the column to update.")
+
+    def runTest(self):
+        """This function will update the column under table node."""
         self.data.update({
             'attnum': self.column_id,
             'name': self.column_name,
         })
+        if self.is_positive_test:
+            response = columns_utils.api_put(self)
 
-        response = self.tester.put(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' +
-            str(self.db_id) + '/' +
-            str(self.schema_id) + '/' +
-            str(self.table_id) + '/' +
-            str(self.column_id),
-            data=json.dumps(self.data),
-            follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+            # Assert response
+            utils.assert_status_code(self, response)
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=eval(self.mock_data["return_value"])):
+                    response = columns_utils.api_put(self)
+
+            # Assert response
+            utils.assert_status_code(self, response)
+            utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database

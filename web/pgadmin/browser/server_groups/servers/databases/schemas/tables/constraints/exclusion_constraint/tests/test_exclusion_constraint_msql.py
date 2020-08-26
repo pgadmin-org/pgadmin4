@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
@@ -18,21 +19,19 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from unittest.mock import patch
-from . import utils as check_constraint_utils
+from . import utils as exclusion_utils
 
 
-class CheckConstraintAddTestCase(BaseTestGenerator):
-    """This class will add check constraint to existing table"""
-    skip_on_database = ['gpdb']
-    url = '/browser/check_constraint/obj/'
+class ExclusionGetTestCase(BaseTestGenerator):
+    """This class will fetch modified sql for constraint to existing table"""
+    url = '/browser/exclusion_constraint/msql/'
 
-    # Generates scenarios
-    scenarios = utils.generate_scenarios("check_constraint_create",
-                                         check_constraint_utils.test_cases)
+    # Generates scenarios from cast_test_data.json file
+    scenarios = utils.generate_scenarios("exclusion_constraint_msql",
+                                         exclusion_utils.test_cases)
 
     def setUp(self):
-        super(CheckConstraintAddTestCase, self).setUp()
+        super(ExclusionGetTestCase, self).setUp()
         # Load test data
         self.data = self.test_data
 
@@ -44,8 +43,9 @@ class CheckConstraintAddTestCase(BaseTestGenerator):
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to add a check "
+            raise Exception("Could not connect to database to fetch a check "
                             "constraint.")
+
         # Create schema
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
@@ -53,50 +53,47 @@ class CheckConstraintAddTestCase(BaseTestGenerator):
                                                       self.db_name,
                                                       self.schema_name)
         if not schema_response:
-            raise Exception("Could not find the schema to add a check "
+            raise Exception("Could not find the schema to fetch a check "
                             "constraint.")
 
         # Create table
-        self.table_name = "table_checkconstraint_add_%s" % \
+        self.table_name = "table_exclusion_%s" % \
                           (str(uuid.uuid4())[1:8])
         self.table_id = tables_utils.create_table(self.server,
                                                   self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
 
-    def runTest(self):
-        """This function will add check constraint to table."""
-        if "name" in self.data:
-            check_constraint_name = \
-                self.data["name"] + (str(uuid.uuid4())[1:8])
-            self.data["name"] = check_constraint_name
+        # Create constraint to modify
+        self.exclusion_constraint_name = \
+            "test_exclusion_delete_%s" % (str(uuid.uuid4())[1:8])
+        self.exclusion_constraint_id = exclusion_utils.\
+            create_exclusion_constraint(self.server, self.db_name,
+                                        self.schema_name, self.table_name,
+                                        self.exclusion_constraint_name)
 
+        # Cross check constraint creation
+        cross_check_res = exclusion_utils.verify_exclusion_constraint(
+            self.server, self.db_name, self.exclusion_constraint_name)
+        if not cross_check_res:
+            raise Exception("Could not find the exclusion constraint "
+                            "to delete.")
+
+    def runTest(self):
+        """This function will fetch modified sql for constraint to table."""
         if self.is_positive_test:
-            response = check_constraint_utils.api_create(self)
+            req_arg = '?oid=' + str(self.exclusion_constraint_id) + \
+                '&name=' + self.data['name'] + \
+                '&comment=' + self.data['comment'] + \
+                '&fillfactor=' + str(self.data['fillFactor'])
+
+            response = exclusion_utils.api_get_msql(self, req_arg)
 
             # Assert response
             utils.assert_status_code(self, response)
-
-            # Verify in backend
-            cross_check_res = check_constraint_utils. \
-                verify_check_constraint(self.server, self.db_name,
-                                        self.data["name"])
-            self.assertIsNotNone(cross_check_res, "Could not find the newly"
-                                                  " created check constraint.")
-        else:
-            if self.mocking_required:
-                with patch(self.mock_data["function_name"],
-                           side_effect=eval(self.mock_data["return_value"])):
-                    response = check_constraint_utils.api_create(self)
-                    # Assert response
-                    utils.assert_status_code(self, response)
-                    utils.assert_error_message(self, response)
-            else:
-                if 'table_id' in self.data:
-                    self.table_id = self.data['table_id']
-                response = check_constraint_utils.api_create(self)
-                # Assert response
-                utils.assert_status_code(self, response)
+            self.assertIn(self.data['comment'], response.json['data'])
+            self.assertIn(self.data['name'], response.json['data'])
+            self.assertIn(str(self.data['fillFactor']), response.json['data'])
 
     def tearDown(self):
         # Disconnect the database

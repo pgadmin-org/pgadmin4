@@ -19,20 +19,17 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from . import utils as check_constraint_utils
+from . import utils as fk_utils
 
 
-class CheckConstraintPutTestCase(BaseTestGenerator):
-    """This class will update check constraint to existing table"""
-    skip_on_database = ['gpdb']
-    url = '/browser/check_constraint/obj/'
+class ForeignKeyValidateTestCase(BaseTestGenerator):
+    url = '/browser/foreign_key/validate/'
 
     # Generates scenarios from cast_test_data.json file
-    scenarios = utils.generate_scenarios("check_constraint_put",
-                                         check_constraint_utils.test_cases)
+    scenarios = utils.generate_scenarios("foreign_constraint_validate",
+                                         fk_utils.test_cases)
 
     def setUp(self):
-        super(CheckConstraintPutTestCase, self).setUp()
         # Load test data
         self.data = self.test_data
 
@@ -44,8 +41,9 @@ class CheckConstraintPutTestCase(BaseTestGenerator):
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to update a check "
-                            "constraint.")
+            raise Exception(
+                "Could not connect to database to fetch a foreign "
+                "key constraint.")
 
         # Create schema
         self.schema_id = schema_info["schema_id"]
@@ -54,36 +52,33 @@ class CheckConstraintPutTestCase(BaseTestGenerator):
                                                       self.db_name,
                                                       self.schema_name)
         if not schema_response:
-            raise Exception("Could not find the schema to update a check "
-                            "constraint.")
+            raise Exception("Could not find the schema to fetch a foreign "
+                            "key constraint.")
 
-        # Create table
-        self.table_name = "table_checkconstraint_put_%s" % \
-                          (str(uuid.uuid4())[1:8])
-        self.table_id = tables_utils.create_table(self.server,
-                                                  self.db_name,
-                                                  self.schema_name,
-                                                  self.table_name)
+        # Create local table
+        self.local_table_name = "local_table_foreignkey_get_%s" % \
+                                (str(uuid.uuid4())[1:8])
+        self.local_table_id = tables_utils.create_table(
+            self.server, self.db_name, self.schema_name, self.local_table_name)
 
-        # Create constraint to modify
-        self.check_constraint_name = "test_checkconstraint_put_%s" % \
-                                     (str(uuid.uuid4())[1:8])
-        self.check_constraint_id = \
-            check_constraint_utils.create_check_constraint(
-                self.server, self.db_name, self.schema_name, self.table_name,
-                self.check_constraint_name)
+        # Create foreign table
+        self.foreign_table_name = "foreign_table_foreignkey_get_%s" % \
+                                  (str(uuid.uuid4())[1:8])
+        self.foreign_table_id = tables_utils.create_table(
+            self.server, self.db_name, self.schema_name,
+            self.foreign_table_name)
 
-        # Cross check constraint creation
-        chk_constraint = check_constraint_utils.verify_check_constraint(
-            self.server, self.db_name, self.check_constraint_name)
-        if not chk_constraint:
-            raise Exception("Could not find the check constraint to update.")
+        # Create foreign key
+        self.foreign_key_name = "test_foreignkey_get_%s" % \
+                                (str(uuid.uuid4())[1:8])
+        self.foreign_key_id = fk_utils.create_foreignkey(
+            self.server, self.db_name, self.schema_name, self.local_table_name,
+            self.foreign_table_name)
 
     def runTest(self):
-        """This function will update check constraint to table."""
-        self.data["oid"] = self.check_constraint_id
+        """This function will validate check constraint to table."""
         if self.is_positive_test:
-            response = check_constraint_utils.api_put(self)
+            response = fk_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)
@@ -91,7 +86,7 @@ class CheckConstraintPutTestCase(BaseTestGenerator):
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
                            side_effect=[eval(self.mock_data["return_value"])]):
-                    response = check_constraint_utils.api_put(self)
+                    response = fk_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)

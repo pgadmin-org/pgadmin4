@@ -1,0 +1,910 @@
+{
+  "index_constraint_create": [
+    {
+      "name": "Create: Add primary key constraint to table.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "spcname": "pg_default",
+        "columns": [{"column": "id"}],
+        "comment": "this is pk constraint"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add unique key constraint to table.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "spcname": "pg_default",
+        "columns": [{"column": "id"}]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add primary key constraint to table without name using index.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "spcname": "pg_default",
+        "index": "test_primaryindex_add_"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add unique key constraint to table without name using index.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "spcname": "pg_default",
+        "index": "test_uniquekey_add_"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add primary key constraint with insufficient  data.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "spcname": "pg_default"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400,
+        "error_msg": "Could not find at least one required parameter (index).",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add primary key constraint while server down.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "spcname": "pg_default",
+        "columns": [{"column": "id"}]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add unique key constraint without name while server down.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "spcname": "pg_default",
+        "columns": [{"column": "id"}]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add primary key constraint while server down.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "spcname": "pg_default",
+        "columns": [{"column": "id"}]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Unique constraint  without name while server down.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "spcname": "pg_default",
+        "columns": [
+          {
+            "column": "id"
+          }
+        ]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "index_constraint_delete": [
+    {
+      "name": "Delete: Delete primary key constraint.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete multiple primary key constraint.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete: Delete non-existing primary key constraint.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY",
+        "index_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete Unique key constraint.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete multiple Unique key constraint.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete: Delete non-existing Unique key constraint.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"UNIQUE",
+        "index_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete primary key constraint while server down.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": true,
+      "mock_data": {
+                "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete Unique key constraint while server down-2.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": true,
+      "mock_data": {
+                "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_constraint_get": [
+    {
+      "name": "Get: Fetch primary key constraint.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch multiple primary key constraint.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get: Fetch non-existing primary key constraint.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY",
+        "index_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the primary key in the table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch Unique key constraint.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch multiple Unique key constraint.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get: Fetch non-existing Unique key constraint.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE",
+        "index_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the unique key in the table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch primary key constraint while server down.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": true,
+      "mock_data": {
+                "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_constraint_dependencies_dependents": [
+    {
+      "name": "Get: Dependents primary key constraint.",
+      "url": "/browser/primary_key/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+     "is_dependent": true
+    },
+    {
+      "name": "Get: Dependencies primary key constraint.",
+      "url": "/browser/primary_key/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    },
+    {
+      "name": "Get: Dependents Unique key constraint.",
+      "url": "/browser/unique_constraint/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get: Dependencies Unique key constraint.",
+      "url": "/browser/unique_constraint/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+    ],
+  "index_constraint_get_nodes": [
+    {
+      "name": "Get: Fetch primary key constraint.",
+      "url": "/browser/primary_key/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch multiple primary key constraint.",
+      "url": "/browser/primary_key/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get: Fetch Unique key constraint.",
+      "url": "/browser/unique_constraint/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch multiple Unique key constraint.",
+      "url": "/browser/unique_constraint/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get: Fetch Non-existing Unique key constraint.",
+      "url": "/browser/unique_constraint/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE",
+                "index_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the unique key in the table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch primary key constraint while server down.",
+      "url": "/browser/primary_key/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_constraint_sql": [
+    {
+      "name": "Get: Fetch primary key constraint.",
+      "url": "/browser/primary_key/sql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch non-existing primary key constraint.",
+      "url": "/browser/primary_key/sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY",
+        "index_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the primary key in the table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch Unique key constraint.",
+      "url": "/browser/unique_constraint/sql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch primary key constraint while server down.",
+      "url": "/browser/primary_key/sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "mocking_required": true,
+      "mock_data": {
+                "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_constraint_msql": [
+    {
+      "name": "Get: Fetch primary key constraint.",
+      "url": "/browser/primary_key/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "test_data": {
+        "comment": "This is msql api test",
+        "name": "Changing name test"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch Unique key constraint.",
+      "url": "/browser/unique_constraint/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "test_data": {
+      "comment": "This is msql api test"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_constraint_get_statistics": [
+    {
+      "name": "Get statistics: For primary key.",
+      "url": "/browser/primary_key/stats/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get statistics: For non-existing primary key.",
+      "url": "/browser/primary_key/stats/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "test_data": {
+        "index_constraint_id": 1
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_constraint_put": [
+    {
+      "name": "Get: Fetch primary key constraint.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+                "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "test_data": {
+        "comment": "Testing put request api",
+        "name": "Updating name for primary key in via put request"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch Unique key constraint.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+                "constraint_name": "test_uniquekey_add_",
+        "type":"UNIQUE"
+      },
+      "test_data": {
+        "comment": "Testing put request api",
+        "name": "Updating name for Unique key in via put request"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch primary key constraint while server down.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+                "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "test_data": {
+        "comment": "Testing put request api",
+        "name": "Updating name in via put request"
+      },
+      "mocking_required": true,
+      "mock_data": {
+                "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch primary key constraint while server down-2.",
+      "url": "/browser/primary_key/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+                "constraint_name": "test_primarykey_add_",
+        "type":"PRIMARY KEY"
+      },
+      "test_data": {
+        "comment": "Testing put request api",
+        "name": "Updating name in via put request"
+      },
+      "mocking_required": true,
+      "mock_data": {
+                "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+
+  ]
+}

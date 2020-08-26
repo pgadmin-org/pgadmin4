@@ -19,20 +19,17 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from . import utils as check_constraint_utils
+from . import utils as exclusion_utils
 
 
-class CheckConstraintPutTestCase(BaseTestGenerator):
-    """This class will update check constraint to existing table"""
-    skip_on_database = ['gpdb']
-    url = '/browser/check_constraint/obj/'
-
+class ExclusionGetTestCase(BaseTestGenerator):
+    """This class will fetch sql for the existing exclusion constraint"""
+    url = '/browser/exclusion_constraint/sql/'
     # Generates scenarios from cast_test_data.json file
-    scenarios = utils.generate_scenarios("check_constraint_put",
-                                         check_constraint_utils.test_cases)
+    scenarios = utils.generate_scenarios("exclusion_constraint_sql",
+                                         exclusion_utils.test_cases)
 
     def setUp(self):
-        super(CheckConstraintPutTestCase, self).setUp()
         # Load test data
         self.data = self.test_data
 
@@ -44,8 +41,7 @@ class CheckConstraintPutTestCase(BaseTestGenerator):
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to update a check "
-                            "constraint.")
+            raise Exception("Could not connect to database to add a table.")
 
         # Create schema
         self.schema_id = schema_info["schema_id"]
@@ -54,36 +50,33 @@ class CheckConstraintPutTestCase(BaseTestGenerator):
                                                       self.db_name,
                                                       self.schema_name)
         if not schema_response:
-            raise Exception("Could not find the schema to update a check "
-                            "constraint.")
+            raise Exception("Could not find the schema to add a table.")
 
         # Create table
-        self.table_name = "table_checkconstraint_put_%s" % \
-                          (str(uuid.uuid4())[1:8])
-        self.table_id = tables_utils.create_table(self.server,
-                                                  self.db_name,
+        self.table_name = "table_exclusion_%s" % (str(uuid.uuid4())[1:8])
+        self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
 
-        # Create constraint to modify
-        self.check_constraint_name = "test_checkconstraint_put_%s" % \
-                                     (str(uuid.uuid4())[1:8])
-        self.check_constraint_id = \
-            check_constraint_utils.create_check_constraint(
-                self.server, self.db_name, self.schema_name, self.table_name,
-                self.check_constraint_name)
+        # Create constraint to fetch
+        self.exclusion_constraint_name = \
+            "test_exclusion_delete_%s" % (str(uuid.uuid4())[1:8])
+        self.exclusion_constraint_id = exclusion_utils.\
+            create_exclusion_constraint(self.server, self.db_name,
+                                        self.schema_name, self.table_name,
+                                        self.exclusion_constraint_name)
 
         # Cross check constraint creation
-        chk_constraint = check_constraint_utils.verify_check_constraint(
-            self.server, self.db_name, self.check_constraint_name)
-        if not chk_constraint:
-            raise Exception("Could not find the check constraint to update.")
+        cross_check_res = exclusion_utils.verify_exclusion_constraint(
+            self.server, self.db_name, self.exclusion_constraint_name)
+        if not cross_check_res:
+            raise Exception("Could not find the exclusion constraint "
+                            "to delete.")
 
     def runTest(self):
-        """This function will update check constraint to table."""
-        self.data["oid"] = self.check_constraint_id
+        """This function will fetch sql for constraint to table."""
         if self.is_positive_test:
-            response = check_constraint_utils.api_put(self)
+            response = exclusion_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)
@@ -91,7 +84,11 @@ class CheckConstraintPutTestCase(BaseTestGenerator):
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
                            side_effect=[eval(self.mock_data["return_value"])]):
-                    response = check_constraint_utils.api_put(self)
+                    response = exclusion_utils.api_get(self)
+            elif 'exclusion_constraint_id' in self.data:
+                self.exclusion_constraint_id = \
+                    self.data["exclusion_constraint_id"]
+                response = exclusion_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)
