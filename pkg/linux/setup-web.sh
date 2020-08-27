@@ -30,7 +30,7 @@ if [ -f /etc/redhat-release ]; then
     IS_REDHAT=1
     APACHE=httpd
     echo "Setting up pgAdmin 4 in web mode on a Redhat platform..."
-elif [[ ${UNAME} =~ "Ubuntu" ]] || [[ ${UNAME} =~ "debian" ]]; then
+elif [[ ${UNAME} =~ "Ubuntu" ]] || [[ ${UNAME} =~ "Debian" ]]; then
     IS_DEBIAN=1
     APACHE=apache2
     echo "Setting up pgAdmin 4 in web mode on a Debian platform..."
@@ -77,9 +77,15 @@ if [ ${IS_DEBIAN} == 1 ]; then
 
     case ${RESPONSE} in
         y|Y )
-            a2enmod wsgi 1> /dev/null
-            a2enconf pgadmin4 1> /dev/null
-            ;;
+          # Debian uses a different path to Ubuntu
+          if [[ ${UNAME} =~ "Debian" ]]; then
+            /sbin/a2enmod wsgi 1> /dev/null
+            /sbin/a2enconf pgadmin4 1> /dev/null
+          then
+            /usr/sbin/a2enmod wsgi 1> /dev/null
+            /usr/sbin/a2enconf pgadmin4 1> /dev/null
+          fi
+          ;;
         * )
             exit 1;;
     esac
