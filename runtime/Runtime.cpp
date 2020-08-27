@@ -59,6 +59,8 @@ bool Runtime::go(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("pgadmin.org");
     QCoreApplication::setApplicationName("pgadmin4");
 
+    QSettings settings;
+
     // Interlock
     if (alreadyRunning())
         exit(0);
@@ -111,7 +113,7 @@ bool Runtime::go(int argc, char *argv[])
         m_floatingWindow->enablePostStartOptions();
 
     // Open the browser if needed
-    if (m_settings.value("OpenTabAtStartup", true).toBool())
+    if (settings.value("OpenTabAtStartup", true).toBool())
         openBrowserTab(url);
 
     // Make sure the server is shutdown if the server is quit by the user
@@ -270,11 +272,12 @@ QSplashScreen * Runtime::displaySplash(QApplication *app)
 quint16 Runtime::getPort() const
 {
     quint16 port = 0L;
+    QSettings settings;
 
-    if (m_settings.value("FixedPort", false).toBool())
+    if (settings.value("FixedPort", false).toBool())
     {
         // Use the fixed port number
-        port = m_settings.value("PortNumber", 5050).toInt();
+        port = settings.value("PortNumber", 5050).toUInt();
     }
     else
     {
@@ -339,7 +342,7 @@ FloatingWindow * Runtime::createFloatingWindow(MenuActions *menuActions)
     return floatingWindow;
 }
 
-bool Runtime::isPortInUse(const quint16 port)
+bool Runtime::isPortInUse(const quint16 port) const
 {
     QTcpSocket socket;
 
@@ -360,7 +363,8 @@ void Runtime::openConfigureWindow(const QString errorMsg)
 
     // Allow the user to tweak the configuration if needed
     m_configDone = false;
-    bool oldFixedPort = m_settings.value("FixedPort", false).toBool();
+    QSettings settings;
+    bool oldFixedPort = settings.value("FixedPort", false).toBool();
 
 
     ConfigWindow *dlg = new ConfigWindow();
@@ -375,8 +379,8 @@ void Runtime::openConfigureWindow(const QString errorMsg)
         delay(100);
 
     // Read the value of port again if user has changed.
-    bool newFixedPort = m_settings.value("FixedPort", false).toBool();
-    quint16 newPort = m_settings.value("PortNumber").toInt();
+    bool newFixedPort = settings.value("FixedPort", false).toBool();
+    quint16 newPort = settings.value("PortNumber").toUInt();
 
     // User hasn't changed the value of fixed port check box
     // only change the value of the port
@@ -509,7 +513,8 @@ Server * Runtime::startServer(QString key)
 void Runtime::checkServer(QString url)
 {
     // Read the server connection timeout from the registry or set the default timeout.
-    int timeout = m_settings.value("ConnectionTimeout", 90).toInt();
+    QSettings settings;
+    int timeout = settings.value("ConnectionTimeout", 90).toInt();
 
     // Now the server should be up, we'll attempt to connect and get a response.
     // We'll retry in a loop a few time before aborting if necessary.
@@ -588,7 +593,8 @@ void Runtime::createAddressFile(QString url) const
 // Open a browser tab
 void Runtime::openBrowserTab(QString url) const
 {
-    QString cmd = m_settings.value("BrowserCommand").toString();
+    QSettings settings;
+    QString cmd = settings.value("BrowserCommand").toString();
 
     if (!cmd.isEmpty())
     {

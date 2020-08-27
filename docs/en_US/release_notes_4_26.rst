@@ -27,3 +27,4 @@ Bug fixes
 | `Issue #5751 <https://redmine.postgresql.org/issues/5751>`_ -  Enable the 'Configure' and 'View log' menu option when the server taking longer than usual time to start.
 | `Issue #5754 <https://redmine.postgresql.org/issues/5754>`_ -  Fixed an issue where schema diff is not working when providing the options to Foreign Data Wrapper, Foreign Server, and User Mapping.
 | `Issue #5766 <https://redmine.postgresql.org/issues/5766>`_ -  Fixed string indices must be integers issue for PostgreSQL < 9.3.
+| `Issue #5773 <https://redmine.postgresql.org/issues/5773>`_ -  Fixed an issue where the application ignores the fixed port configuration value.

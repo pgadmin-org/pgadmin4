@@ -40,7 +40,6 @@ public:
     bool shutdownServer(QUrl url);
 
 private:
-    QSettings m_settings;
     QSharedMemory *m_shmem;
     bool m_configDone;
     FloatingWindow *m_floatingWindow = Q_NULLPTR;
@@ -61,7 +60,7 @@ private:
     void openBrowserTab(QString url) const;
     QString serverRequest(QUrl url, QString path);
     bool pingServer(QUrl url);
-    bool isPortInUse(const quint16 port);
+    bool isPortInUse(const quint16 port) const;
     void openConfigureWindow(const QString errorMsg);
 
 private slots:
