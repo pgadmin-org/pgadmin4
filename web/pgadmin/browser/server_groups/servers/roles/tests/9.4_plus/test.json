@@ -81,7 +81,8 @@
       "expected_sql_file": "alter_role_options2.sql",
       "expected_msql_file": "alter_role_options2.msql",
       "convert_timestamp_columns": ["rolvaliduntil"],
-      "replace_password": true
+      "replace_password": true,
+      "replace_regex_pattern": ["VALID UNTIL '[0-9\\-T:+ ]*'"]
     },
     {
       "type": "alter",
@@ -95,7 +96,8 @@
       "expected_sql_file": "alter_role_options3.sql",
       "expected_msql_file": "alter_role_options3.msql",
       "convert_timestamp_columns": ["rolvaliduntil"],
-      "replace_password": true
+      "replace_password": true,
+      "replace_regex_pattern": ["VALID UNTIL '[0-9\\-T:+ ]*'"]
     },
     {
       "type": "alter",
@@ -112,7 +114,8 @@
       "expected_sql_file": "alter_role_options4.sql",
       "expected_msql_file": "alter_role_options4.msql",
       "convert_timestamp_columns": ["rolvaliduntil"],
-      "replace_password": true
+      "replace_password": true,
+      "replace_regex_pattern": ["VALID UNTIL '[0-9\\-T:+ ]*'"]
     },
     {
       "type": "delete",

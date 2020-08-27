@@ -702,6 +702,12 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
             sql = sql.replace(self.JSON_PLACEHOLDERS['password'], password)
 
+        if 'replace_regex_pattern' in scenario:
+            for a_patten in scenario['replace_regex_pattern']:
+                found = re.findall(a_patten, resp_sql)
+                if len(found) > 0:
+                    sql = re.sub(a_patten, found[0], sql)
+
         # Replace place holder <owner> with the current username
         # used to connect to the database
         if 'pga_job_id' in scenario:
