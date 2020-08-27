@@ -1,0 +1,1 @@
+GRANT pg_signal_backend, pg_monitor TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;

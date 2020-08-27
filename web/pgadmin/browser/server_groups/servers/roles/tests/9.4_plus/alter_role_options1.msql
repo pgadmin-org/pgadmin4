@@ -7,5 +7,7 @@ ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#"
 	VALID UNTIL '2050-01-01T00:00:00+05:30'
 	PASSWORD 'xxxxxx';
 
+GRANT pg_signal_backend TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
+GRANT pg_monitor TO "Role2_$%{}[]()&*^!@""'`\/#";
 ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#" IN DATABASE postgres
     SET application_name TO 'pg4';

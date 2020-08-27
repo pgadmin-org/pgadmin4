@@ -50,7 +50,7 @@
     },
     {
       "type": "alter",
-      "name": "Alter Role options",
+      "name": "Alter Role options 1",
       "endpoint": "NODE-role.obj_id",
       "sql_endpoint": "NODE-role.sql_id",
       "msql_endpoint": "NODE-role.msql_id",
@@ -61,10 +61,56 @@
         "rolpassword": "abc123",
         "rolconnlimit": 100,
         "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
-        "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] }
+        "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] },
+        "rolmembership": { "added": [{"role": "pg_signal_backend", "admin": true}, {"role": "pg_monitor", "admin": false}] }
       },
-      "expected_sql_file": "alter_role_options.sql",
-      "expected_msql_file": "alter_role_options.msql",
+      "expected_sql_file": "alter_role_options1.sql",
+      "expected_msql_file": "alter_role_options1.msql",
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role options 2",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolmembership": { "changed": [{"role": "pg_signal_backend", "admin": false}, {"role": "pg_monitor", "admin": true}] }
+      },
+      "expected_sql_file": "alter_role_options2.sql",
+      "expected_msql_file": "alter_role_options2.msql",
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role options 3",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolmembership": { "deleted": [{"role": "pg_signal_backend"}] }
+      },
+      "expected_sql_file": "alter_role_options3.sql",
+      "expected_msql_file": "alter_role_options3.msql",
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role options 4",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolmembership": {
+          "added": [{"role": "pg_signal_backend", "admin": true}],
+          "changed": [{"role": "pg_monitor", "admin": true}]
+        }
+      },
+      "expected_sql_file": "alter_role_options4.sql",
+      "expected_msql_file": "alter_role_options4.msql",
       "convert_timestamp_columns": ["rolvaliduntil"],
       "replace_password": true
     },
