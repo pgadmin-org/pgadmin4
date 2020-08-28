@@ -90,6 +90,7 @@ define('tools.querytool', [
 
     // Bind all the events
     events: {
+      'click #btn-show-query-tool': 'on_show_query_tool',
       'click .btn-load-file': 'on_file_load',
       'click #btn-save-file': 'on_save_file',
       'click #btn-file-menu-save': 'on_save_file',
@@ -1959,6 +1960,20 @@ define('tools.querytool', [
       ev.stopPropagation();
     },
 
+    // callback function for show query tool click.
+    on_show_query_tool: function(ev) {
+      var self = this;
+
+      this._stopEventPropogation(ev);
+      this._closeDropDown(ev);
+
+      self.handler.trigger(
+        'pgadmin-sqleditor:button:show_query_tool',
+        self,
+        self.handler
+      );
+    },
+
     // callback function for load file button click.
     on_file_load: function(ev) {
       var self = this;
@@ -2017,6 +2032,48 @@ define('tools.querytool', [
     this.initialize.apply(this, arguments);
   };
 
+  /* This function is used to check whether user have closed
+   * the main window when query tool is opened on new tab
+   */
+  var is_main_window_alive = function() {
+
+    if((pgWindow.default && pgWindow.default.closed) ||
+        pgWindow.default.pgAdmin && pgWindow.default.pgAdmin.Browser
+            && pgWindow.default.pgAdmin.Browser.preference_version() <= 0) {
+
+      alertify.alert()
+        .setting({
+          'title': gettext('Connection lost'),
+          'label':gettext('Close'),
+          'message': gettext('The pgAdmin browser window has been closed and the connection to the server is lost. Please close this window and open a new pgAdmin session.'),
+          'onok': function(){
+            //Close the window after connection is lost
+            window.close();
+          },
+        }).show();
+    }
+  };
+
+  var set_tree_node = function() {
+
+    let browser = pgWindow.default.pgAdmin.Browser;
+    let tree = browser.tree;
+
+    var t = tree,
+      i = t.selected(),
+      d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+    if(!d)
+      return;
+
+    var selected_tree_node = { t, i, d };
+
+    if(!pgWindow.default.pgAdmin.selected_tree_map)
+      pgWindow.default.pgAdmin.selected_tree_map = new Map();
+
+    pgWindow.default.pgAdmin.selected_tree_map.set(d._id.toString(), selected_tree_node);
+  };
+
   _.extend(
     SqlEditorController.prototype,
     Backbone.Events,
@@ -2026,6 +2083,11 @@ define('tools.querytool', [
         this.container = container;
         this.state = {};
         this.csrf_token = pgAdmin.csrf_token;
+
+        //call to check whether user have closed the parent window and trying to refresh, if yes return error.
+        is_main_window_alive();
+        set_tree_node();
+
         // Disable animation first
         modifyAnimation.modifyAlertifyAnimation();
 
@@ -2411,6 +2473,7 @@ define('tools.querytool', [
         self.on('pgadmin-sqleditor:button:explain-timing', self._explain_timing, self);
         self.on('pgadmin-sqleditor:button:explain-summary', self._explain_summary, self);
         self.on('pgadmin-sqleditor:button:explain-settings', self._explain_settings, self);
+        self.on('pgadmin-sqleditor:button:show_query_tool', self._show_query_tool, self);
         // Indentation related
         self.on('pgadmin-sqleditor:indent_selected_code', self._indent_selected_code, self);
         self.on('pgadmin-sqleditor:unindent_selected_code', self._unindent_selected_code, self);
@@ -4225,6 +4288,19 @@ define('tools.querytool', [
 
       _explain_settings: function() {
         this._toggle_explain_option('settings');
+      },
+
+      _show_query_tool: function() {
+        var self = this;
+
+        setTimeout(() => {
+          var tree_node = pgWindow.default.pgAdmin.selected_tree_map.get(self.url_params.did);
+          if(self.preferences.new_browser_tab) {
+            is_main_window_alive();
+          }
+
+          pgWindow.default.pgAdmin.DataGrid.show_query_tool('', tree_node.i);
+        }, 200);
       },
 
       /*
