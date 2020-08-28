@@ -44,7 +44,7 @@ from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
     read_file_generator
 from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
-from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED
 
 MODULE_NAME = 'sqleditor'
 
@@ -964,10 +964,7 @@ def _check_and_cancel_transaction(trans_obj, delete_connection, conn, manager):
             manager.release(did=trans_obj.did)
     else:
         status = False
-        result = gettext(
-            'Not connected to server or connection with the server has '
-            'been closed.'
-        )
+        result = SERVER_CONNECTION_CLOSED
     return status, result
 
 

@@ -103,6 +103,9 @@ class NavMenuLocators:
         "//*[contains(@class,'wcTabTop')]//*[contains(@class,'wcPanelTab') " \
         "and contains(.,'{}')]"
 
+    process_watcher_error_close_xpath = \
+        ".btn.btn-sm-sq.btn-primary.pg-bg-close > i"
+
 
 class QueryToolLocators:
     btn_save_file = "#btn-save-file"

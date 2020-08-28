@@ -20,7 +20,7 @@ def close_bgprocess_popup(tester):
                 ".ajs-message.ajs-bg-bgprocess.ajs-visible"))
     except Exception:
         tester.driver.find_element_by_css_selector(
-            ".btn.btn-sm-sq.btn-primary.pg-bg-close > i").click()
+            NavMenuLocators.process_watcher_error_close_xpath).click()
 
     # In cases where restore div is not closed (sometime due to some error)
     try:
@@ -30,7 +30,7 @@ def close_bgprocess_popup(tester):
                 "[contains(text(), 'Restoring backup')]"))
     except Exception:
         tester.driver.find_element_by_css_selector(
-            ".btn.btn-sm-sq.btn-primary.pg-bg-close > i").click()
+            NavMenuLocators.process_watcher_error_close_xpath).click()
 
     # In cases where maintenance window is not closed (sometime due to some
     # error)
@@ -41,7 +41,7 @@ def close_bgprocess_popup(tester):
                 "[contains(text(), 'Maintenance')]"))
     except Exception:
         tester.driver.find_element_by_css_selector(
-            ".btn.btn-sm-sq.btn-primary.pg-bg-close > i").click()
+            NavMenuLocators.process_watcher_error_close_xpath).click()
 
 
 def close_process_watcher(tester):

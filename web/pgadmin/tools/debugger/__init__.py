@@ -34,7 +34,7 @@ from pgadmin.tools.debugger.utils.debugger_instance import DebuggerInstance
 from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
-    PREF_LABEL_KEYBOARD_SHORTCUTS, MIMETYPE_APP_JS
+    PREF_LABEL_KEYBOARD_SHORTCUTS, MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED
 
 MODULE_NAME = 'debugger'
 
@@ -870,10 +870,7 @@ def restart_debugging(trans_id):
         return make_json_response(
             data={
                 'status': False,
-                'result': gettext(
-                    'Not connected to server or connection with the server '
-                    'has been closed.'
-                )
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
 
@@ -913,10 +910,7 @@ def restart_debugging(trans_id):
         )
     else:
         status = False
-        result = gettext(
-            'Not connected to server or connection with the server has '
-            'been closed.'
-        )
+        result = SERVER_CONNECTION_CLOSED
         return make_json_response(data={'status': status, 'result': result})
 
 
@@ -942,10 +936,7 @@ def start_debugger_listener(trans_id):
         return make_json_response(
             data={
                 'status': False,
-                'result': gettext(
-                    'Not connected to server or connection with the server '
-                    'has been closed.'
-                )
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
 
@@ -1140,19 +1131,13 @@ def start_debugger_listener(trans_id):
                 )
             else:
                 status = False
-                result = gettext(
-                    'Not connected to server or connection with the server '
-                    'has been closed.'
-                )
+                result = SERVER_CONNECTION_CLOSED
                 return make_json_response(
                     data={'status': status, 'result': result}
                 )
     else:
         status = False
-        result = gettext(
-            'Not connected to server or connection with the server has '
-            'been closed.'
-        )
+        result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(data={'status': status, 'result': result})
 
@@ -1185,10 +1170,7 @@ def execute_debugger_query(trans_id, query_type):
         return make_json_response(
             data={
                 'status': False,
-                'result': gettext(
-                    'Not connected to server or connection with the server '
-                    'has been closed.'
-                )
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
 
@@ -1204,8 +1186,7 @@ def execute_debugger_query(trans_id, query_type):
         else DEBUGGER_SQL_V3_PATH
 
     if not conn.connected():
-        result = gettext('Not connected to server or connection '
-                         'with the server has been closed.')
+        result = SERVER_CONNECTION_CLOSED
         return internal_server_error(errormsg=result)
 
     sql = render_template(
@@ -1264,10 +1245,7 @@ def messages(trans_id):
         return make_json_response(
             data={
                 'status': 'NotConnected',
-                'result': gettext(
-                    'Not connected to server or connection with the server '
-                    'has been closed.'
-                )
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
 
@@ -1302,10 +1280,7 @@ def messages(trans_id):
             data={'status': status, 'result': port_number}
         )
     else:
-        result = gettext(
-            'Not connected to server or connection with the '
-            'server has been closed.'
-        )
+        result = SERVER_CONNECTION_CLOSED
         return internal_server_error(errormsg=str(result))
 
 
@@ -1334,10 +1309,7 @@ def start_execution(trans_id, port_num):
         return make_json_response(
             data={
                 'status': 'NotConnected',
-                'result': gettext(
-                    'Not connected to server or connection with the server '
-                    'has been closed.'
-                )
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
 
@@ -1414,10 +1386,7 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
         return make_json_response(
             data={
                 'status': False,
-                'result': gettext(
-                    'Not connected to server or connection with the server '
-                    'has been closed.'
-                )
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
 
@@ -1473,10 +1442,7 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
             return internal_server_error(errormsg=result)
     else:
         status = False
-        result = gettext(
-            'Not connected to server or connection with the server '
-            'has been closed.'
-        )
+        result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(
         data={'status': status, 'result': result['rows']}
@@ -1504,10 +1470,7 @@ def clear_all_breakpoint(trans_id):
         return make_json_response(
             data={
                 'status': False,
-                'result': gettext(
-                    'Not connected to server or connection '
-                    'with the server has been closed.'
-                )
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
@@ -1543,9 +1506,7 @@ def clear_all_breakpoint(trans_id):
             return make_json_response(data={'status': False})
     else:
         status = False
-        result = gettext(
-            'Not connected to server or connection with the server has '
-            'been closed.')
+        result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(
         data={'status': status, 'result': result['rows']}
@@ -1573,8 +1534,7 @@ def deposit_parameter_value(trans_id):
         return make_json_response(
             data={
                 'status': False,
-                'result': gettext('Not connected to server or connection '
-                                  'with the server has been closed.')
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
@@ -1622,10 +1582,7 @@ def deposit_parameter_value(trans_id):
             )
     else:
         status = False
-        result = gettext(
-            'Not connected to server or connection with the server has '
-            'been closed.'
-        )
+        result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(data={'status': status, 'result': result})
 
@@ -1652,10 +1609,7 @@ def select_frame(trans_id, frame_id):
         return make_json_response(
             data={
                 'status': False,
-                'result': gettext(
-                    'Not connected to server or connection '
-                    'with the server has been closed.'
-                )
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
 
@@ -1688,10 +1642,7 @@ def select_frame(trans_id, frame_id):
             return internal_server_error(errormsg=result)
     else:
         status = False
-        result = gettext(
-            'Not connected to server or connection with the server '
-            'has been closed.'
-        )
+        result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(
         data={'status': status, 'result': result['rows']}
@@ -1969,9 +1920,7 @@ def poll_end_execution_result(trans_id):
     if de_inst.debugger_data is None:
         return make_json_response(
             data={'status': 'NotConnected',
-                  'result': gettext(
-                      'Not connected to server or connection with the '
-                      'server has been closed.')
+                  'result': SERVER_CONNECTION_CLOSED
                   }
         )
 
@@ -2070,8 +2019,7 @@ def poll_end_execution_result(trans_id):
             )
     else:
         status = 'NotConnected'
-        result = gettext('Not connected to server or connection with the '
-                         'server has been closed.')
+        result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(data={'status': status, 'result': result})
 
@@ -2097,8 +2045,7 @@ def poll_result(trans_id):
         return make_json_response(
             data={
                 'status': 'NotConnected',
-                'result': gettext('Not connected to server or connection '
-                                  'with the server has been closed.')
+                'result': SERVER_CONNECTION_CLOSED
             }
         )
 
@@ -2119,10 +2066,7 @@ def poll_result(trans_id):
             status = 'Busy'
     else:
         status = 'NotConnected'
-        result = gettext(
-            'Not connected to server or connection with the server '
-            'has been closed.'
-        )
+        result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(
         data={

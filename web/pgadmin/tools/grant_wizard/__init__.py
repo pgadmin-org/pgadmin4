@@ -184,6 +184,10 @@ def properties(sid, did, node_id, node_type):
     """It fetches the properties of object types
        and render into selection page of wizard
     """
+
+    function_sql_url = '/sql/function.sql'
+    get_schema_sql_url = '/sql/get_schemas.sql'
+
     # unquote encoded url parameter
     node_type = unquote(node_type)
 
@@ -201,7 +205,7 @@ def properties(sid, did, node_id, node_type):
         # Get sys_obj_values and get list of schemas
         ntype = 'schema'
         sql = render_template("/".join(
-            [server_prop['template_path'], '/sql/get_schemas.sql']),
+            [server_prop['template_path'], get_schema_sql_url]),
             show_sysobj=show_sysobj)
         status, res = conn.execute_dict(sql)
 
@@ -210,7 +214,7 @@ def properties(sid, did, node_id, node_type):
         node_types = res['rows']
     else:
         sql = render_template("/".join(
-            [server_prop['template_path'], '/sql/get_schemas.sql']),
+            [server_prop['template_path'], get_schema_sql_url]),
             nspid=node_id, show_sysobj=False)
         status, res = conn.execute_dict(sql)
 
@@ -226,7 +230,7 @@ def properties(sid, did, node_id, node_type):
         # Fetch functions against schema
         if ntype in ['schema', 'function']:
             sql = render_template("/".join(
-                [server_prop['template_path'], '/sql/function.sql']),
+                [server_prop['template_path'], function_sql_url]),
                 node_id=node_id, type='function')
 
             status, res = conn.execute_dict(sql)
@@ -243,7 +247,7 @@ def properties(sid, did, node_id, node_type):
               server_prop['version'] >= 11000)) and
                 ntype in ['schema', 'procedure']):
             sql = render_template("/".join(
-                [server_prop['template_path'], '/sql/function.sql']),
+                [server_prop['template_path'], function_sql_url]),
                 node_id=node_id, type='procedure')
 
             status, res = conn.execute_dict(sql)
@@ -257,7 +261,7 @@ def properties(sid, did, node_id, node_type):
         # Fetch trigger functions
         if ntype in ['schema', 'trigger_function']:
             sql = render_template("/".join(
-                [server_prop['template_path'], '/sql/function.sql']),
+                [server_prop['template_path'], function_sql_url]),
                 node_id=node_id, type='trigger_function')
             status, res = conn.execute_dict(sql)
 

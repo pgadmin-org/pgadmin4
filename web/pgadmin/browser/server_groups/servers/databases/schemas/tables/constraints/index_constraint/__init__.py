@@ -201,6 +201,8 @@ class IndexConstraintView(PGChildNodeView):
 
     node_label = _('Index constraint')
 
+    node_icon = "icon-%s" % node_type
+
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
@@ -287,10 +289,7 @@ class IndexConstraintView(PGChildNodeView):
             return res
 
         if len(res) == 0:
-            return gone(_("""Could not find the {} in the table.""").format(
-                _("primary key") if self.constraint_type == "p"
-                else _("unique key")
-            ))
+            return gone(self.key_not_found_error_msg())
 
         result = res
         if cid:
@@ -392,16 +391,13 @@ class IndexConstraintView(PGChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if len(rset['rows']) == 0:
-            return gone(_("""Could not find the {} in the table.""").format(
-                _("primary key") if self.constraint_type == "p"
-                else _("unique key")
-            ))
+            return gone(self.key_not_found_error_msg())
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
             tid,
             rset['rows'][0]['name'],
-            icon="icon-%s" % self.node_type
+            icon=self.node_icon
         )
         return make_json_response(
             data=res,
@@ -441,7 +437,7 @@ class IndexConstraintView(PGChildNodeView):
                     row['oid'],
                     tid,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 )
             )
         return make_json_response(
@@ -486,7 +482,7 @@ class IndexConstraintView(PGChildNodeView):
                     row['oid'],
                     tid,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 ))
         return res
 
@@ -627,7 +623,7 @@ class IndexConstraintView(PGChildNodeView):
                     res['rows'][0]['oid'],
                     tid,
                     data['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 )
             )
 
@@ -688,7 +684,7 @@ class IndexConstraintView(PGChildNodeView):
                     cid,
                     tid,
                     name,
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 )
             )
         except Exception as e:
@@ -844,10 +840,7 @@ class IndexConstraintView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
-            return gone(_("""Could not find the {} in the table.""").format(
-                _("primary key") if self.constraint_type == "p"
-                else _("unique key")
-            ))
+            return gone(self.key_not_found_error_msg())
 
         data = res['rows'][0]
         data['schema'] = self.schema
@@ -936,12 +929,7 @@ class IndexConstraintView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
             if len(res['rows']) == 0:
-                return gone(
-                    _("""Could not find the {} in the table.""").format(
-                        _("primary key") if self.constraint_type == "p"
-                        else _("unique key")
-                    )
-                )
+                return gone(self.key_not_found_error_msg())
 
             result = res['rows'][0]
             name = result['name']
@@ -1008,6 +996,12 @@ class IndexConstraintView(PGChildNodeView):
         return ajax_response(
             response=dependencies_result,
             status=200
+        )
+
+    def key_not_found_error_msg(self):
+        return _("""Could not find the {} in the table.""").format(
+            _("primary key") if self.constraint_type == "p"
+            else _("unique key")
         )
 
 

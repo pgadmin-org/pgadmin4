@@ -91,6 +91,7 @@ blueprint = SequenceModule(__name__)
 class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
     node_type = blueprint.node_type
     node_label = "Sequence"
+    node_icon = "icon-%s" % node_type
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -216,7 +217,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 ),
                 status=200
             )
@@ -228,7 +229,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 ))
 
         return make_json_response(
@@ -437,7 +438,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 row['oid'],
                 row['relnamespace'],
                 data['name'],
-                icon="icon-%s" % self.node_type
+                icon=self.node_icon
             )
         )
 
@@ -550,7 +551,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 seid,
                 row['schema'],
                 row['name'],
-                icon="icon-%s" % self.node_type
+                icon=self.node_icon
             )
         )
 

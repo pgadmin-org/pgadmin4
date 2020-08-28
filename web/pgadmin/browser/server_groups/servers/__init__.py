@@ -30,7 +30,8 @@ from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from psycopg2 import Error as psycopg2_Error, OperationalError
 from pgadmin.browser.server_groups.servers.utils import is_valid_ipaddress
-from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS
+from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
+    SERVER_CONNECTION_CLOSED
 
 
 def has_any(data, keys):
@@ -1224,9 +1225,7 @@ class ServerNode(PGChildNodeView):
         else:
             return make_json_response(data={
                 'status': False,
-                'result': gettext(
-                    'Not connected to the server or the connection to the'
-                    ' server has been closed.')})
+                'result': SERVER_CONNECTION_CLOSED})
 
     def create_restore_point(self, gid, sid):
         """

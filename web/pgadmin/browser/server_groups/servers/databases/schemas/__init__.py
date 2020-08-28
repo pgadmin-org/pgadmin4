@@ -208,6 +208,7 @@ class SchemaView(PGChildNodeView):
     """
     node_type = schema_blueprint.node_type
     _SQL_PREFIX = 'sql/'
+    node_icon = 'icon-%s' % node_type
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -455,8 +456,6 @@ class SchemaView(PGChildNodeView):
         if not status:
             return internal_server_error(errormsg=rset)
 
-        icon = 'icon-{0}'.format(self.node_type)
-
         if scid is not None:
             if len(rset['rows']) == 0:
                 return gone(gettext(
@@ -468,7 +467,7 @@ class SchemaView(PGChildNodeView):
                     row['oid'],
                     did,
                     row['name'],
-                    icon=icon,
+                    icon=self.node_icon,
                     can_create=row['can_create'],
                     has_usage=row['has_usage']
                 ),
@@ -481,7 +480,7 @@ class SchemaView(PGChildNodeView):
                     row['oid'],
                     did,
                     row['name'],
-                    icon=icon,
+                    icon=self.node_icon,
                     can_create=row['can_create'],
                     has_usage=row['has_usage']
                 )
@@ -523,15 +522,13 @@ Could not find the schema in the database.
 It may have been removed by another user.
 """))
 
-        icon = 'icon-{0}'.format(self.node_type)
-
         for row in rset['rows']:
             return make_json_response(
                 data=self.blueprint.generate_browser_node(
                     row['oid'],
                     did,
                     row['name'],
-                    icon=icon,
+                    icon=self.node_icon,
                     can_create=row['can_create'],
                     has_usage=row['has_usage']
                 ),
@@ -635,14 +632,12 @@ It may have been removed by another user.
             if not status:
                 return internal_server_error(errormsg=scid)
 
-            icon = 'icon-{0}'.format(self.node_type)
-
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     scid,
                     did,
                     data['name'],
-                    icon=icon
+                    icon=self.node_icon
                 )
             )
         except Exception as e:
@@ -676,7 +671,7 @@ It may have been removed by another user.
                     scid,
                     did,
                     name,
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 )
             )
         except Exception as e:

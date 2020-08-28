@@ -27,3 +27,5 @@ PREF_LABEL_SQL_FORMATTING = gettext('SQL formatting')
 
 PGADMIN_NODE = 'pgadmin.node.%s'
 UNAUTH_REQ = "Unauthorized request."
+SERVER_CONNECTION_CLOSED = gettext(
+    'Not connected to server or connection with the server has been closed.')

@@ -83,6 +83,7 @@ blueprint = PackageModule(__name__)
 class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
     node_type = blueprint.node_type
     node_label = "Package"
+    node_icon = "icon-%s" % node_type
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -223,7 +224,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 )
             )
 
@@ -233,7 +234,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 ))
 
         return make_json_response(
@@ -277,7 +278,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.node_icon
                 ))
 
         return make_json_response(
@@ -409,7 +410,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 pkgid,
                 scid,
                 data['name'],
-                icon="icon-%s" % self.node_type
+                icon=self.node_icon
             )
         )
 
@@ -516,7 +517,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 pkgid,
                 scid,
                 name,
-                icon="icon-%s" % self.node_type
+                icon=self.node_icon
             )
         )
 
