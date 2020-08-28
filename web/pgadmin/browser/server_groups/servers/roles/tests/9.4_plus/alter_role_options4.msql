@@ -1,1 +1,1 @@
-GRANT pg_signal_backend, pg_monitor TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
+GRANT test_rolemembership_1, test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;

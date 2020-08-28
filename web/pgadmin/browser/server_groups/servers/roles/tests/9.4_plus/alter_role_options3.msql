@@ -1,1 +1,1 @@
-REVOKE pg_signal_backend FROM "Role2_$%{}[]()&*^!@""'`\/#";
+REVOKE test_rolemembership_1 FROM "Role2_$%{}[]()&*^!@""'`\/#";

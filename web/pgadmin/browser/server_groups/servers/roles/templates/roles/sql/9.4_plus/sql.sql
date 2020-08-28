@@ -31,7 +31,7 @@ UNION ALL
 	array_to_string(array_agg(sql), E'\n') AS sql
 FROM
 (SELECT
-	'GRANT ' || array_to_string(array_agg(rolname), ', ') || ' TO ' || pg_catalog.quote_ident(pg_get_userbyid(%(rid)s::OID)) ||
+	'GRANT ' || array_to_string(array_agg(rolname order by rolname), ', ') || ' TO ' || pg_catalog.quote_ident(pg_get_userbyid(%(rid)s::OID)) ||
 	CASE WHEN admin_option THEN ' WITH ADMIN OPTION;' ELSE ';' END AS sql
 FROM
 	(SELECT

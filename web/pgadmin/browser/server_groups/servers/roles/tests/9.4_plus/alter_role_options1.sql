@@ -12,8 +12,8 @@ CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
   ENCRYPTED PASSWORD '<PASSWORD>'
   VALID UNTIL '<TIMESTAMPTZ_1>';
 
-GRANT pg_monitor TO "Role2_$%{}[]()&*^!@""'`\/#";
-GRANT pg_signal_backend TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
+GRANT test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#";
+GRANT test_rolemembership_1 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
 
 ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#" IN DATABASE postgres SET application_name TO 'pg4';
 

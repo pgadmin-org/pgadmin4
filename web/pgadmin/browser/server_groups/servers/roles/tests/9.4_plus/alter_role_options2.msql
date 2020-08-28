@@ -1,2 +1,2 @@
-REVOKE ADMIN OPTION FOR pg_signal_backend FROM "Role2_$%{}[]()&*^!@""'`\/#";
-GRANT pg_monitor TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
+REVOKE ADMIN OPTION FOR test_rolemembership_1 FROM "Role2_$%{}[]()&*^!@""'`\/#";
+GRANT test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
