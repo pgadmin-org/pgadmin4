@@ -23,6 +23,7 @@ Bug fixes
 *********
 
 | `Issue #4216 <https://redmine.postgresql.org/issues/4216>`_ -  Ensure that schema names starting with 'pg' should be visible in browser tree when standard_conforming_strings is set to off.
+| `Issue #5426 <https://redmine.postgresql.org/issues/5426>`_ -  Adjusted the height of jobstep code block to use maximum space.
 | `Issue #5652 <https://redmine.postgresql.org/issues/5652>`_ -  Modified the 'Commit' and 'Rollback' query tool button icons.
 | `Issue #5722 <https://redmine.postgresql.org/issues/5722>`_ -  Ensure that the user should be able to drop the database even if it is connected.
 | `Issue #5748 <https://redmine.postgresql.org/issues/5748>`_ -  Fixed incorrect reverse engineering SQL for Foreign key when creating a table.

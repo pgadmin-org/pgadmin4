@@ -1,3 +1,6 @@
 div[role=tabpanel] > .pgadmin-control-group.form-group.c.jscexceptions {
   min-height: 400px;
 }
+div[role=tabpanel] >.pgadmin-control-group.jstcode .CodeMirror-sizer{
+  height: 400px;
+}
