@@ -231,18 +231,22 @@ def load_servers(args):
 
             check_attrib("Name")
             check_attrib("Group")
-            check_attrib("Port")
-            check_attrib("Username")
+
+            is_service_attrib_available = True if "Service" in obj else False
+
+            if not is_service_attrib_available:
+                check_attrib("Port")
+                check_attrib("Username")
+
             check_attrib("SSLMode")
             check_attrib("MaintenanceDB")
 
-            if "Host" not in obj and \
-                "HostAddr" not in obj and \
-                    "Service" not in obj:
-                print("'Host', 'HostAddr' or 'Service' attribute not found "
-                      "for server '%s'" % server)
-                print_summary()
-                sys.exit(1)
+            if "Host" not in obj and "HostAddr" not in obj:
+                if is_service_attrib_available is False:
+                    print("'Host', 'HostAddr' or 'Service' attribute "
+                          "not found for server '%s'" % server)
+                    print_summary()
+                    sys.exit(1)
 
             # Get the group. Create if necessary
             group_id = -1
@@ -274,20 +278,23 @@ def load_servers(args):
             new_server.name = obj["Name"]
             new_server.servergroup_id = group_id
             new_server.user_id = user_id
+            new_server.ssl_mode = obj["SSLMode"]
+            new_server.maintenance_db = obj["MaintenanceDB"]
 
-            new_server.host = obj["Host"]
+            if "Host" in obj:
+                new_server.host = obj["Host"]
 
             if "HostAddr" in obj:
                 new_server.hostaddr = obj["HostAddr"]
 
-            new_server.port = obj["Port"]
-            new_server.maintenance_db = obj["MaintenanceDB"]
-            new_server.username = obj["Username"]
+            if "Port" in obj:
+                new_server.port = obj["Port"]
+
+            if "Username" in obj:
+                new_server.username = obj["Username"]
 
             if "Role" in obj:
                 new_server.role = obj["Role"]
-
-            new_server.ssl_mode = obj["SSLMode"]
 
             if "Comment" in obj:
                 new_server.comment = obj["Comment"]
@@ -319,7 +326,7 @@ def load_servers(args):
             if "FGColor" in obj:
                 new_server.fgcolor = obj["FGColor"]
 
-            if "Service" in obj:
+            if is_service_attrib_available:
                 new_server.service = obj["Service"]
 
             if "Timeout" in obj:
