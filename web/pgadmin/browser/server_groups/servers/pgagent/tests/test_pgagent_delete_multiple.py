@@ -41,7 +41,7 @@ class PgAgentDeleteMultipleTestCase(BaseTestGenerator):
             data=json.dumps({'ids': [self.job_id1, self.job_id2]}),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """Clean up code"""

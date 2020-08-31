@@ -78,7 +78,7 @@ class TestExternalTablesModule(BaseTestGenerator):
         manager.sversion = self.manager['sversion']
         manager.server_type = self.manager['server_type']
         module = ExternalTablesModule('something')
-        self.assertEquals(
+        self.assertEqual(
             self.expected_result,
             module.backend_supported(manager)
         )
@@ -96,6 +96,6 @@ class TestExternalTablesModule(BaseTestGenerator):
 
     def __test_template_javascript(self):
         module = ExternalTablesModule('something')
-        self.assertEquals(
+        self.assertEqual(
             self.expected_result,
             module.module_use_template_javascript)

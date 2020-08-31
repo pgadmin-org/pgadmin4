@@ -815,7 +815,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                               conn=self.conn)
         sql += "\n"
 
-        sql_header = u"""-- User Mapping : {0}
+        sql_header = """-- User Mapping : {0}
 
 -- DROP USER MAPPING FOR {0} SERVER {1}
 

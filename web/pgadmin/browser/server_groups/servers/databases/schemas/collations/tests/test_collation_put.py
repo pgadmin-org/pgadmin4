@@ -94,7 +94,7 @@ class CollationPutTestCase(BaseTestGenerator):
 
         actual_response_code = put_response.status_code
         expected_response_code = self.expected_data['status_code']
-        self.assertEquals(actual_response_code, expected_response_code)
+        self.assertEqual(actual_response_code, expected_response_code)
 
     def tearDown(self):
         # Disconnect database to delete it

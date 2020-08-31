@@ -54,9 +54,9 @@ class TableSpaceDeleteTestCase(BaseTestGenerator):
             '/' + str(self.server_id) + '/' + str(self.tablespace_id),
             follow_redirects=True
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         delete_response_data = json.loads(response.data.decode('utf-8'))
-        self.assertEquals(delete_response_data['success'], 1)
+        self.assertEqual(delete_response_data['success'], 1)
 
     def tearDown(self):
         """This function deletes the tablespace"""

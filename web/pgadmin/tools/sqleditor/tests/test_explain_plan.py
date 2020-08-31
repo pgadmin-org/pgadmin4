@@ -37,7 +37,7 @@ class TestExplainPlan(BaseTestGenerator):
         url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # Start query tool transaction
         url = '/sqleditor/query_tool/start/{0}'.format(self.trans_id)
@@ -55,17 +55,17 @@ class TestExplainPlan(BaseTestGenerator):
                 }
             }), content_type='html/json')
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # Query tool polling
         url = '/sqleditor/poll/{0}'.format(self.trans_id)
         response = self.tester.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
 
         # Check the ouput of explain plan
-        self.assertEquals(len(response_data['data']['result']), 1)
-        self.assertEquals(len(response_data['data']['result'][0]), 1)
+        self.assertEqual(len(response_data['data']['result']), 1)
+        self.assertEqual(len(response_data['data']['result'][0]), 1)
 
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

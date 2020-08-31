@@ -41,7 +41,7 @@ class LoginRoleAddTestCase(BaseTestGenerator):
             data=json.dumps(data),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         role_id = response_data['node']['_id']
         role_dict = {"server_id": server_id, "role_id": role_id,

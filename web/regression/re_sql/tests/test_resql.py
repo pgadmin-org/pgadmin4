@@ -268,7 +268,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                                             data=json.dumps(scenario['data']),
                                             content_type='html/json')
                 try:
-                    self.assertEquals(response.status_code, 200)
+                    self.assertEqual(response.status_code, 200)
                 except Exception as e:
                     self.final_test_status = False
                     print(scenario['name'] + "... FAIL")
@@ -302,7 +302,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                                            data=json.dumps(scenario['data']),
                                            follow_redirects=True)
                 try:
-                    self.assertEquals(response.status_code, 200)
+                    self.assertEqual(response.status_code, 200)
                 except Exception as e:
                     self.final_test_status = False
                     print(scenario['name'] + "... FAIL")
@@ -328,7 +328,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     delete_url, data=json.dumps(scenario.get('data', {})),
                     follow_redirects=True)
                 try:
-                    self.assertEquals(delete_response.status_code, 200)
+                    self.assertEqual(delete_response.status_code, 200)
                 except Exception as e:
                     self.final_test_status = False
                     print(scenario['name'] + "... FAIL")
@@ -395,14 +395,14 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         response = self.tester.get(url,
                                    follow_redirects=True)
         try:
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
         except Exception as e:
             self.final_test_status = False
             print(scenario['name'] + "... FAIL")
             traceback.print_exc()
             return False
         try:
-            if type(response.data) == bytes:
+            if isinstance(response.data, bytes):
                 response_data = response.data.decode('utf8')
                 resp = json.loads(response_data)
             else:
@@ -432,7 +432,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 sql = self.preprocess_expected_sql(scenario, sql, resp_sql,
                                                    object_id)
                 try:
-                    self.assertEquals(sql, resp_sql)
+                    self.assertEqual(sql, resp_sql)
                 except Exception as e:
                     self.final_test_status = False
                     traceback.print_exc()
@@ -458,7 +458,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         response = self.tester.get(sql_url)
 
         try:
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
         except Exception as e:
 
             self.final_test_status = False
@@ -487,7 +487,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 sql = self.preprocess_expected_sql(scenario, sql, resp_sql,
                                                    object_id)
                 try:
-                    self.assertEquals(sql, resp_sql)
+                    self.assertEqual(sql, resp_sql)
                 except Exception as e:
                     self.final_test_status = False
                     traceback.print_exc()
@@ -504,7 +504,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             exp_sql = self.preprocess_expected_sql(scenario, exp_sql, resp_sql,
                                                    object_id)
             try:
-                self.assertEquals(exp_sql, resp_sql)
+                self.assertEqual(exp_sql, resp_sql)
             except Exception as e:
                 self.final_test_status = False
                 traceback.print_exc()

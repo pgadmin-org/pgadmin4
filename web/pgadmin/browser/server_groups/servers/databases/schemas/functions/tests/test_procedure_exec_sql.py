@@ -54,7 +54,7 @@ class ProcedureExecSQLTestCase(BaseTestGenerator):
             '/' + str(self.server_id) + '/' + str(self.db_id) + '/' +
             str(self.schema_id) + '/' +
             str(proc_id))
-        self.assertEquals(exec_response.status_code, 200)
+        self.assertEqual(exec_response.status_code, 200)
         exec_sql = json.loads(exec_response.data.decode('utf-8'))
 
         # Replace multiple spaces with one space and check the expected sql
@@ -68,7 +68,7 @@ class ProcedureExecSQLTestCase(BaseTestGenerator):
             expected_sql = self.expected_sql.format("EXEC", self.schema_name,
                                                     proc_name)
 
-        self.assertEquals(sql, expected_sql)
+        self.assertEqual(sql, expected_sql)
 
         # Verify the EXEC SQL by running it if we don't have arguments
         if not self.with_args:

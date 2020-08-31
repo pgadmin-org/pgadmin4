@@ -260,21 +260,21 @@ class TestEncodingCharset(BaseTestGenerator):
             .format(self.trans_id, test_utils.SERVER_GROUP, self.encode_sid,
                     self.encode_did)
         response = self.tester.post(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # Check character
         url = "/sqleditor/query_tool/start/{0}".format(self.trans_id)
         sql = "select E'{0}';".format(self.test_str)
         response = self.tester.post(url, data=json.dumps({"sql": sql}),
                                     content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         url = '/sqleditor/poll/{0}'.format(self.trans_id)
         response = self.tester.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
-        self.assertEquals(response_data['data']['rows_fetched_to'], 1)
+        self.assertEqual(response_data['data']['rows_fetched_to'], 1)
         result = response_data['data']['result'][0][0]
-        self.assertEquals(result, self.test_str)
+        self.assertEqual(result, self.test_str)
 
         database_utils.disconnect_database(self, self.encode_sid,
                                            self.encode_did)

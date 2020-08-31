@@ -86,6 +86,6 @@ class TriggerFuncAddTestCase(BaseTestGenerator):
                 '/', data=json.dumps(data), content_type='html/json'
             )
 
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

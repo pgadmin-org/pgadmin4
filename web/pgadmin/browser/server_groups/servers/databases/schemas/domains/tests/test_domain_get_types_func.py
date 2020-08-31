@@ -82,7 +82,7 @@ class DomainGetTypesTestCase(BaseTestGenerator):
 
         expected_response_code = self.expected_data['status_code']
 
-        self.assertEquals(response.status_code, expected_response_code)
+        self.assertEqual(response.status_code, expected_response_code)
 
     def tearDown(self):
         # Disconnect the database

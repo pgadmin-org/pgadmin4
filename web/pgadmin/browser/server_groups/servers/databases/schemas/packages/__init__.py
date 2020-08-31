@@ -366,8 +366,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         required_args = [
-            u'name',
-            u'pkgheadsrc'
+            'name',
+            'pkgheadsrc'
         ]
 
         data = request.form if request.form else json.loads(
@@ -622,7 +622,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         required_args = [
-            u'name'
+            'name'
         ]
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]), scid=scid,
@@ -734,7 +734,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             if not json_resp:
                 return sql
 
-            sql_header = u"-- Package: {0}.{1}\n\n-- ".format(
+            sql_header = "-- Package: {0}.{1}\n\n-- ".format(
                 self.schema, result['name'])
 
             sql_header += render_template(

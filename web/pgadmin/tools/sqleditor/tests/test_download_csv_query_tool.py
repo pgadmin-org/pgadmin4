@@ -119,7 +119,7 @@ class TestDownloadCSV(BaseTestGenerator):
         url = self.init_url.format(
             self.trans_id, test_utils.SERVER_GROUP, self._sid, self._did)
         response = self.tester.post(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # If invalid tx test then make the Tx id invalid so that tests fails
         if not self.is_valid_tx:
@@ -137,7 +137,7 @@ class TestDownloadCSV(BaseTestGenerator):
                     response = self.tester.post(url, data={"query": self.sql})
                     headers = dict(response.headers)
                     # when valid query
-                    self.assertEquals(response.status_code, 200)
+                    self.assertEqual(response.status_code, 200)
                     csv_data = response.data.decode()
                     self.assertTrue(self.output_columns in csv_data)
                     self.assertTrue(self.output_values in csv_data)
@@ -149,7 +149,7 @@ class TestDownloadCSV(BaseTestGenerator):
                     response = self.tester.post(url, data={"query": self.sql})
                     headers = dict(response.headers)
                     # when valid query
-                    self.assertEquals(response.status_code, 200)
+                    self.assertEqual(response.status_code, 200)
                     csv_data = response.data.decode()
                     self.assertTrue(self.output_columns in csv_data)
                     self.assertTrue(self.output_values in csv_data)
@@ -167,7 +167,7 @@ class TestDownloadCSV(BaseTestGenerator):
             self.app.logger.disabled = False
             if self.is_valid:
                 # when valid query
-                self.assertEquals(response.status_code, 200)
+                self.assertEqual(response.status_code, 200)
                 csv_data = response.data.decode()
                 self.assertTrue(self.output_columns in csv_data)
                 self.assertTrue(self.output_values in csv_data)
@@ -175,7 +175,7 @@ class TestDownloadCSV(BaseTestGenerator):
                 self.assertIn(self.filename, headers['Content-Disposition'])
             elif not self.is_valid and self.is_valid_tx:
                 # When user enters wrong query
-                self.assertEquals(response.status_code, 200)
+                self.assertEqual(response.status_code, 200)
                 response_data = json.loads(response.data.decode('utf-8'))
                 self.assertFalse(response_data['data']['status'])
                 self.assertTrue(
@@ -184,7 +184,7 @@ class TestDownloadCSV(BaseTestGenerator):
                 )
             else:
                 # when TX id is invalid
-                self.assertEquals(response.status_code, 500)
+                self.assertEqual(response.status_code, 500)
 
         database_utils.disconnect_database(self, self._sid, self._did)
 

@@ -578,7 +578,7 @@ class TablespaceView(PGChildNodeView):
             data=old_data, conn=self.conn
         )
 
-        sql_header = u"""
+        sql_header = """
 -- Tablespace: {0}
 
 -- DROP TABLESPACE {0};

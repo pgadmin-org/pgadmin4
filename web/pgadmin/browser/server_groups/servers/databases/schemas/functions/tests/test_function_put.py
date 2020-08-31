@@ -60,7 +60,7 @@ class FunctionPutTestCase(BaseTestGenerator):
             str(func_id),
             data=json.dumps(data),
             follow_redirects=True)
-        self.assertEquals(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 200)
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
 

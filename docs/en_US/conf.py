@@ -208,8 +208,8 @@ htmlhelp_basename = 'pgadmin4'
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
 latex_documents = [
-    ('index', 'pgadmin4.tex', u'pgAdmin 4 Documentation',
-     u'The pgAdmin Development Team', 'manual'),
+    ('index', 'pgadmin4.tex', 'pgAdmin 4 Documentation',
+     'The pgAdmin Development Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -247,6 +247,6 @@ latex_elements = {
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pgadmin4', u'pgAdmin 4 Documentation',
-     [u'The pgAdmin Development Team'], 1)
+    ('index', 'pgadmin4', 'pgAdmin 4 Documentation',
+     ['The pgAdmin Development Team'], 1)
 ]

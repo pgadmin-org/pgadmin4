@@ -68,8 +68,8 @@ class TypesSubTypeDiffTestCase(BaseTestGenerator):
         if self.is_positive_test:
             response = self.get_subtype_diff()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data['status_code'])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

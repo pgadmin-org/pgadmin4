@@ -753,7 +753,7 @@ AND relkind != 'c'))"""
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]), data=data)
 
-        sql_header = u"""-- DOMAIN: {0}.{1}\n\n""".format(
+        sql_header = """-- DOMAIN: {0}.{1}\n\n""".format(
             data['basensp'], data['name'])
 
         sql_header += """-- DROP DOMAIN {0};\n

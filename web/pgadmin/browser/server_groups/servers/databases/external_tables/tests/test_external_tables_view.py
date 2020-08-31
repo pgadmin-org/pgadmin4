@@ -340,8 +340,8 @@ class TestExternalTablesView(BaseTestGenerator):
         self.manager.connection.assert_called_with(
             **self.expected_manager_connection_to_be_called_with
         )
-        self.assertEquals(self.manager, external_tables_view.manager)
-        self.assertEquals(self.connection, external_tables_view.connection)
+        self.assertEqual(self.manager, external_tables_view.manager)
+        self.assertEqual(self.connection, external_tables_view.connection)
 
     @patch('pgadmin.browser.server_groups.servers.databases.external_tables'
            '.render_template')

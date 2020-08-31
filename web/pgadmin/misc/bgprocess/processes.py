@@ -49,9 +49,7 @@ def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
     ).strftime(format)
 
 
-class IProcessDesc(object):
-    __metaclass__ = ABCMeta
-
+class IProcessDesc(object, metaclass=ABCMeta):
     @abstractproperty
     def message(self):
         pass
@@ -210,26 +208,26 @@ class BatchProcess(object):
             )
 
         executor = file_quote(os.path.join(
-            os.path.dirname(u_encode(__file__)), u'process_executor.py'
+            os.path.dirname(u_encode(__file__)), 'process_executor.py'
         ))
         paths = os.environ['PATH'].split(os.pathsep)
         interpreter = None
 
         current_app.logger.info(
-            u"Process Executor: Operating System Path %s",
+            "Process Executor: Operating System Path %s",
             str(paths)
         )
 
         if os.name == 'nt':
-            paths.insert(0, os.path.join(u_encode(sys.prefix), u'Scripts'))
+            paths.insert(0, os.path.join(u_encode(sys.prefix), 'Scripts'))
             paths.insert(0, u_encode(sys.prefix))
 
-            interpreter = which(u'pythonw.exe', paths)
+            interpreter = which('pythonw.exe', paths)
             if interpreter is None:
-                interpreter = which(u'python.exe', paths)
+                interpreter = which('python.exe', paths)
 
             current_app.logger.info(
-                u"Process Executor: Interpreter value in path: %s",
+                "Process Executor: Interpreter value in path: %s",
                 str(interpreter)
             )
             if interpreter is None and current_app.PGADMIN_RUNTIME:
@@ -247,16 +245,16 @@ class BatchProcess(object):
                 bin_path = os.path.dirname(sys.executable)
 
                 venv = os.path.realpath(
-                    os.path.join(bin_path, u'..\\venv')
+                    os.path.join(bin_path, '..\\venv')
                 )
 
-                interpreter = which(u'pythonw.exe', [venv])
+                interpreter = which('pythonw.exe', [venv])
                 if interpreter is None:
-                    interpreter = which(u'python.exe', [venv])
+                    interpreter = which('python.exe', [venv])
 
                 current_app.logger.info(
-                    u"Process Executor: Interpreter value in virtual "
-                    u"environment: %s", str(interpreter)
+                    "Process Executor: Interpreter value in virtual "
+                    "environment: %s", str(interpreter)
                 )
 
                 if interpreter is not None:
@@ -274,7 +272,7 @@ class BatchProcess(object):
             # directory in the PATH environment variable. Hence - it will
             # anyway be the redundant value in paths.
             if not current_app.PGADMIN_RUNTIME:
-                paths.insert(0, os.path.join(u_encode(sys.prefix), u'bin'))
+                paths.insert(0, os.path.join(u_encode(sys.prefix), 'bin'))
             python_binary_name = 'python{0}'.format(sys.version_info[0])
             interpreter = which(u_encode(python_binary_name), paths)
 
@@ -286,7 +284,7 @@ class BatchProcess(object):
         cmd.extend(self.args)
 
         current_app.logger.info(
-            u"Executing the process executor with the arguments: %s",
+            "Executing the process executor with the arguments: %s",
             str(cmd)
         )
 

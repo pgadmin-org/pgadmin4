@@ -586,7 +586,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                                   conn=self.conn
                                   )
         else:
-            sql = u"-- definition incomplete"
+            sql = "-- definition incomplete"
         return sql
 
     def get_sql(self, gid, sid, did, scid, data, tid=None):

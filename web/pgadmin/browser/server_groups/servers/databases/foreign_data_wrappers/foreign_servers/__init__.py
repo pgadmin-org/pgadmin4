@@ -837,7 +837,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
                               conn=self.conn)
         sql += "\n"
 
-        sql_header = u"""-- Foreign Server: {0}
+        sql_header = """-- Foreign Server: {0}
 
 -- DROP SERVER {0}
 

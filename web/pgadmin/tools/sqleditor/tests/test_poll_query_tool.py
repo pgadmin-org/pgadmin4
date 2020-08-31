@@ -80,7 +80,7 @@ NOTICE:  Hello, world!
         url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         cnt = 0
         for s in self.sql:
@@ -90,12 +90,12 @@ NOTICE:  Hello, world!
             response = self.tester.post(url, data=json.dumps({"sql": s}),
                                         content_type='html/json')
 
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
             # Query tool polling
             url = '/sqleditor/poll/{0}'.format(self.trans_id)
             response = self.tester.get(url)
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
             response_data = json.loads(response.data.decode('utf-8'))
 
             if self.expected_message[cnt] is not None:
@@ -104,8 +104,8 @@ NOTICE:  Hello, world!
                               response_data['data']['additional_messages'])
 
             # Check the output
-            self.assertEquals(self.expected_result[cnt],
-                              response_data['data']['result'][0][0])
+            self.assertEqual(self.expected_result[cnt],
+                             response_data['data']['result'][0][0])
 
             cnt += 1
 

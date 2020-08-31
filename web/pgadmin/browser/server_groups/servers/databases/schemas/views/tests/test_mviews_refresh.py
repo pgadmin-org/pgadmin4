@@ -115,7 +115,7 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
             str(self.m_view_id),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         if is_put_request and response.json['success'] == 0:
             self.skipTest(
                 "Couldn't check materialized view refresh"
@@ -136,9 +136,9 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
                 follow_redirects=True
             )
             if self.type == 'invalid':
-                self.assertEquals(response.status_code, 410)
+                self.assertEqual(response.status_code, 410)
             else:
-                self.assertEquals(response.status_code, 200)
+                self.assertEqual(response.status_code, 200)
                 # On success we get job_id from server
                 self.assertTrue('job_id' in response.json['data'])
 

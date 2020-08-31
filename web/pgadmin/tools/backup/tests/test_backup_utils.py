@@ -27,7 +27,7 @@ def run_backup_job(tester, job_id, expected_params, assert_in, assert_not_in,
                    assert_equal):
     cnt = 0
     the_process = None
-    while 1:
+    while True:
         if cnt >= 5:
             break
         # Check the process list
@@ -81,7 +81,7 @@ def run_backup_job(tester, job_id, expected_params, assert_in, assert_not_in,
 
     cnt = 0
     # Retrieve the backup job process logs
-    while 1:
+    while True:
         out, err, status = get_params(p_details_data)
         if status or cnt >= 5:
             break

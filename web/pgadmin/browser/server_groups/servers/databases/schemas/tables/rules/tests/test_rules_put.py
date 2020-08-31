@@ -85,8 +85,8 @@ class RulesUpdateTestCase(BaseTestGenerator):
                     self.rule_id = 9999
                 response = self.update_rule(data)
 
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

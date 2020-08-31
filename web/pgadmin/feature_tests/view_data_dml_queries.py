@@ -339,7 +339,7 @@ CREATE TABLE public.nonintpkey
     def _verify_messsages(self, text):
         messages_ele = self.page.find_by_css_selector(
             QueryToolLocators.query_messages_panel)
-        self.assertEquals(text, messages_ele.text)
+        self.assertEqual(text, messages_ele.text)
 
     def _verify_row_data(self, row_height, config_check_data):
         self.page.click_execute_query_button()
@@ -369,7 +369,7 @@ CREATE TABLE public.nonintpkey
                     print("stale reference exception at id:", idx)
                     retry -= 1
             time.sleep(0.4)
-            self.assertEquals(element.text, config_check_data[str(idx)][1])
+            self.assertEqual(element.text, config_check_data[str(idx)][1])
 
         # scroll browser back to the left
         # to reset position so other assertions can succeed

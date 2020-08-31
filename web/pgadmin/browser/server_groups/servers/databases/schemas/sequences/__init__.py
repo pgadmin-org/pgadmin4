@@ -252,11 +252,9 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         for row in nodes:
             system_seq = self._get_dependency(row['oid'],
                                               show_system_objects=True)
-            seq = filter(lambda dep: dep['type'] == 'column' and
-                         dep['field'] == 'internal', system_seq)
-            if type(seq) is not list:
-                seq = list(seq)
-            if len(seq) > 0:
+            seq = [dep for dep in system_seq
+                   if dep['type'] == 'column' and dep['field'] == 'internal']
+            if not seq:
                 continue
 
             # Append the node into the newly created list
@@ -373,9 +371,9 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         required_args = [
-            u'name',
-            u'schema',
-            u'seqowner',
+            'name',
+            'schema',
+            'seqowner',
         ]
 
         data = request.form if request.form else json.loads(
@@ -622,7 +620,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         required_args = [
-            u'name'
+            'name'
         ]
 
         if seid is not None:
@@ -739,7 +737,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         if not json_resp:
             return sql
 
-        sql_header = u"""-- SEQUENCE: {0}.{1}\n\n""".format(
+        sql_header = """-- SEQUENCE: {0}.{1}\n\n""".format(
             result['schema'], result['name'])
 
         sql_header += """-- DROP SEQUENCE {0};

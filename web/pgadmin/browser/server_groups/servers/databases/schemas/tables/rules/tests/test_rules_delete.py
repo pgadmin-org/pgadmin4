@@ -79,8 +79,8 @@ class RulesDeleteTestCase(BaseTestGenerator):
                        return_value=eval(self.mock_data["return_value"])):
                 response = self.delete_rules()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

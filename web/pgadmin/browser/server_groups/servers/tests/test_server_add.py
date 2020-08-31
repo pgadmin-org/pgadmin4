@@ -29,7 +29,7 @@ class ServersAddTestCase(BaseTestGenerator):
         url = "{0}{1}/".format(self.url, utils.SERVER_GROUP)
         response = self.tester.post(url, data=json.dumps(self.server),
                                     content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         self.server_id = response_data['node']['_id']
         server_dict = {"server_id": int(self.server_id)}
@@ -68,7 +68,7 @@ class AddServersWithSavePasswordTestCase(BaseTestGenerator):
 
         response = self.tester.post(url, data=json.dumps(_server),
                                     content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         self.server_id = response_data['node']['_id']
         server_dict = {"server_id": int(self.server_id)}
@@ -77,7 +77,7 @@ class AddServersWithSavePasswordTestCase(BaseTestGenerator):
                                    str(utils.SERVER_GROUP) + '/' +
                                    str(self.server_id),
                                    follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTrue('is_password_saved' in response.json['result'])
         utils.write_node_info("sid", server_dict)
 

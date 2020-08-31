@@ -111,21 +111,21 @@ class TestViewData(BaseTestGenerator):
         else:
             response = self.tester.post(url)
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         url = "/sqleditor/view_data/start/{0}".format(self.trans_id)
         response = self.tester.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # Check the query result
         url = '/sqleditor/poll/{0}'.format(self.trans_id)
         response = self.tester.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
 
-        self.assertEquals(response_data['data']['result'], self.result_data)
-        self.assertEquals(response_data['data']['rows_fetched_to'],
-                          self.rows_fetched_to)
+        self.assertEqual(response_data['data']['result'], self.result_data)
+        self.assertEqual(response_data['data']['rows_fetched_to'],
+                         self.rows_fetched_to)
 
     def tearDown(self):
         database_utils.disconnect_database(self, self.server_id,

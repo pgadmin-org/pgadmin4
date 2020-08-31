@@ -246,7 +246,7 @@ class TestTransactionControl(BaseTestGenerator):
         response = self.tester.post(self.auto_commit_url,
                                     data=json.dumps(auto_commit),
                                     content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def _execute_select_sql(self):
         is_success, _ = \
@@ -254,22 +254,22 @@ class TestTransactionControl(BaseTestGenerator):
                           query=self.select_sql,
                           start_query_tool_url=self.start_query_tool_url,
                           poll_url=self.poll_url)
-        self.assertEquals(is_success, True)
+        self.assertEqual(is_success, True)
 
     def _check_transaction_status(self, expected_transaction_status):
         # Check transaction status
         response = self.tester.get(self.status_url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         transaction_status = response_data['data']['status']
-        self.assertEquals(transaction_status, expected_transaction_status)
+        self.assertEqual(transaction_status, expected_transaction_status)
 
     def _save_changed_data(self):
         response = self.tester.post(self.save_url,
                                     data=json.dumps(self.save_payload),
                                     content_type='html/json')
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def _commit_transaction(self):
         is_success, _ = \
@@ -277,7 +277,7 @@ class TestTransactionControl(BaseTestGenerator):
                           query='COMMIT;',
                           start_query_tool_url=self.start_query_tool_url,
                           poll_url=self.poll_url)
-        self.assertEquals(is_success, True)
+        self.assertEqual(is_success, True)
 
     def _initialize_database_connection(self):
         database_info = parent_node_dict["database"][-1]
@@ -305,7 +305,7 @@ class TestTransactionControl(BaseTestGenerator):
         url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def _initialize_urls(self):
         self.start_query_tool_url = \

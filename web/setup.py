@@ -362,8 +362,8 @@ def setup_db():
 
     app = create_app()
 
-    print(u"pgAdmin 4 - Application Initialisation")
-    print(u"======================================\n")
+    print("pgAdmin 4 - Application Initialisation")
+    print("======================================\n")
 
     with app.app_context():
         # Run migration for the first time i.e. create database

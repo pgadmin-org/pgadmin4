@@ -75,8 +75,8 @@ class RulesAddTestCase(BaseTestGenerator):
                 with patch(self.mock_data["function_name"],
                            side_effect=eval(self.mock_data["return_value"])):
                     response = self.create_rule(data)
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def create_rule(self, data):
         return self.tester.post(

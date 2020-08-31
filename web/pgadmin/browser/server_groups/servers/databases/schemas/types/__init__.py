@@ -1424,7 +1424,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if not isinstance(SQL, str):
             return SQL
         # We are appending headers here for sql panel
-        sql_header = u"-- Type: {0}\n\n-- ".format(data['name'])
+        sql_header = "-- Type: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template("/".join([self.template_path,
                                                 self._DELETE_SQL]),

@@ -52,7 +52,7 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
         return sql
 
     def test_setup(self, connection, cursor):
-        cursor.execute(u"""
+        cursor.execute("""
             SELECT
                 db.oid as did, datlastsysoid
             FROM

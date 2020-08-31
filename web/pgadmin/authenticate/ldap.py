@@ -189,7 +189,7 @@ class LDAPAuthentication(BaseAuthentication):
         # Create the TLS configuration object if required
         tls = None
 
-        if type(uri) == str:
+        if isinstance(uri, str):
             return False, "LDAP configuration error: Set the proper LDAP URI."
 
         if uri.scheme == 'ldaps' or config.LDAP_USE_STARTTLS:

@@ -754,7 +754,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if not isinstance(SQL, str):
                 return SQL
 
-            sql_header = u"-- Column: {0}\n\n-- ".format(
+            sql_header = "-- Column: {0}\n\n-- ".format(
                 self.qtIdent(
                     self.conn, data['schema'], data['table'], data['name'])
             )

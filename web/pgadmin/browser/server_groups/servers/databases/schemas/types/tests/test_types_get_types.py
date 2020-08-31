@@ -76,8 +76,8 @@ class TypesGetTypesTestCase(BaseTestGenerator):
                            side_effect=[return_value_object]):
                     response = self.get_types()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data['status_code'])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

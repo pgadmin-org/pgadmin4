@@ -85,7 +85,7 @@ class FtsParserPutTestCase(BaseTestGenerator):
             data=json.dumps(data),
             follow_redirects=True)
 
-        self.assertEquals(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 200)
 
     def tearDown(self):
         """This function delete the fts_parser and disconnect the test

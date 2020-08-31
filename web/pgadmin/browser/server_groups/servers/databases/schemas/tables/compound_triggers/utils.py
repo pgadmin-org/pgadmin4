@@ -181,7 +181,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
 
     SQL, name = get_sql(conn, data, tid, None, datlastsysoid)
 
-    sql_header = u"-- Compound Trigger: {0}\n\n-- ".format(data['name'])
+    sql_header = "-- Compound Trigger: {0}\n\n-- ".format(data['name'])
 
     sql_header += render_template("/".join([template_path, 'delete.sql']),
                                   data=data, conn=conn)

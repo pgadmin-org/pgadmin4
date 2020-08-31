@@ -716,7 +716,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
                                         self._CREATE_SQL]),
                               data=data, conn=self.conn)
 
-        sql_header = u"-- Collation: {0};\n\n-- ".format(data['name'])
+        sql_header = "-- Collation: {0};\n\n-- ".format(data['name'])
 
         sql_header += render_template("/".join([self.template_path,
                                                 self._DELETE_SQL]),

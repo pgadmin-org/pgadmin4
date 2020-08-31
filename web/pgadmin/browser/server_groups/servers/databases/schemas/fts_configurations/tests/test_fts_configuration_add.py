@@ -80,7 +80,7 @@ class FTSConfiguraionAddTestCase(BaseTestGenerator):
             data=json.dumps(data),
             content_type='html/json')
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """This function delete the fts_config and disconnect the test

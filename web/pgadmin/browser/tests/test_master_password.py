@@ -73,24 +73,24 @@ class MasterPasswordTestCase(BaseTestGenerator):
                 data=json.dumps(req_data),
             )
 
-            self.assertEquals(response.json['data']['present'], True)
+            self.assertEqual(response.json['data']['present'], True)
         else:
             if 'reset' in req_data:
                 response = self.tester.delete(
                     '/browser/master_password'
                 )
-                self.assertEquals(response.status_code, 200)
-                self.assertEquals(response.json['data'], False)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json['data'], False)
             else:
                 response = self.tester.post(
                     '/browser/master_password',
                     data=json.dumps(req_data),
                 )
-                self.assertEquals(response.status_code, 200)
+                self.assertEqual(response.status_code, 200)
 
                 if hasattr(self, 'content'):
-                    self.assertEquals(response.json['data']['title'],
-                                      self.content[0])
+                    self.assertEqual(response.json['data']['title'],
+                                     self.content[0])
 
                     for text in self.content[1]:
                         self.assertIn(text, response.json['data']['content'])
@@ -99,8 +99,8 @@ class MasterPasswordTestCase(BaseTestGenerator):
                     response = self.tester.get(
                         '/browser/master_password'
                     )
-                    self.assertEquals(response.status_code, 200)
-                    self.assertEquals(response.json['data'], True)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(response.json['data'], True)
 
     def tearDown(self):
         config.MASTER_PASSWORD_REQUIRED = False

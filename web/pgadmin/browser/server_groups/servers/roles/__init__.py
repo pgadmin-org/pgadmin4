@@ -119,11 +119,11 @@ class RoleView(PGChildNodeView):
         :param req_keys: required keys
         :return: Valid or Invalid
         """
-        if type(data) != list:
+        if not isinstance(data, list):
             return False
 
         for item in data:
-            if type(item) != dict:
+            if not isinstance(item, dict):
                 return False
 
             for a_key in req_keys:
@@ -142,13 +142,13 @@ class RoleView(PGChildNodeView):
         :param req_delete_keys: required keys when deleting
         :return: Valid or Invalid
         """
-        if type(data) != dict:
+        if not isinstance(data, dict):
             return False
 
-        for op in [u'added', u'deleted', u'changed']:
+        for op in ['added', 'deleted', 'changed']:
             op_data = data.get(op, [])
             check_keys = req_add_keys \
-                if op in [u'added', u'changed'] else req_delete_keys
+                if op in ['added', 'changed'] else req_delete_keys
             if not self._validate_input_dict_for_new(op_data, check_keys):
                 return False
 
@@ -160,15 +160,15 @@ class RoleView(PGChildNodeView):
         :param data: role data
         :return: valid or invalid message
         """
-        if u'rolvaliduntil' in data:
+        if 'rolvaliduntil' in data:
             # Make date explicit so that it works with every
             # postgres database datestyle format
             try:
-                if data[u'rolvaliduntil'] is not None and \
-                    data[u'rolvaliduntil'] != '' and \
-                        len(data[u'rolvaliduntil']) > 0:
-                    data[u'rolvaliduntil'] = dateutil_parser.parse(
-                        data[u'rolvaliduntil']
+                if data['rolvaliduntil'] is not None and \
+                    data['rolvaliduntil'] != '' and \
+                        len(data['rolvaliduntil']) > 0:
+                    data['rolvaliduntil'] = dateutil_parser.parse(
+                        data['rolvaliduntil']
                     ).isoformat()
             except Exception:
                 return _("Date format is invalid.")
@@ -181,15 +181,15 @@ class RoleView(PGChildNodeView):
         :param data: role data
         :return: valid or invalid message
         """
-        if u'rolconnlimit' in data:
+        if 'rolconnlimit' in data:
             # If roleconnlimit is empty string then set it to -1
-            if data[u'rolconnlimit'] == '':
-                data[u'rolconnlimit'] = -1
+            if data['rolconnlimit'] == '':
+                data['rolconnlimit'] = -1
 
-            if data[u'rolconnlimit'] is not None:
-                data[u'rolconnlimit'] = int(data[u'rolconnlimit'])
-                if type(data[u'rolconnlimit']) != int or \
-                        data[u'rolconnlimit'] < -1:
+            if data['rolconnlimit'] is not None:
+                data['rolconnlimit'] = int(data['rolconnlimit'])
+                if not isinstance(data['rolconnlimit'], int) or \
+                        data['rolconnlimit'] < -1:
                     return _("Connection limit must be an integer value "
                              "or equal to -1.")
         return None
@@ -209,31 +209,31 @@ class RoleView(PGChildNodeView):
             return ret_val
 
         if id == -1:
-            data[u'members'] = []
-            data[u'admins'] = []
+            data['members'] = []
+            data['admins'] = []
 
-            data[u'admins'] = _part_dict_list(
-                data[u'rolmembership'], lambda d: d[u'admin'], u'role')
-            data[u'members'] = _part_dict_list(
-                data[u'rolmembership'], lambda d: not d[u'admin'], u'role')
+            data['admins'] = _part_dict_list(
+                data['rolmembership'], lambda d: d['admin'], 'role')
+            data['members'] = _part_dict_list(
+                data['rolmembership'], lambda d: not d['admin'], 'role')
         else:
-            data[u'admins'] = _part_dict_list(
-                data[u'rolmembership'].get(u'added', []),
-                lambda d: d[u'admin'], u'role')
-            data[u'members'] = _part_dict_list(
-                data[u'rolmembership'].get(u'added', []),
-                lambda d: not d[u'admin'], u'role')
+            data['admins'] = _part_dict_list(
+                data['rolmembership'].get('added', []),
+                lambda d: d['admin'], 'role')
+            data['members'] = _part_dict_list(
+                data['rolmembership'].get('added', []),
+                lambda d: not d['admin'], 'role')
 
-            data[u'admins'].extend(_part_dict_list(
-                data[u'rolmembership'].get(u'changed', []),
-                lambda d: d[u'admin'], u'role'))
-            data[u'revoked_admins'] = _part_dict_list(
-                data[u'rolmembership'].get(u'changed', []),
-                lambda d: not d[u'admin'], u'role')
+            data['admins'].extend(_part_dict_list(
+                data['rolmembership'].get('changed', []),
+                lambda d: d['admin'], 'role'))
+            data['revoked_admins'] = _part_dict_list(
+                data['rolmembership'].get('changed', []),
+                lambda d: not d['admin'], 'role')
 
-            data[u'revoked'] = _part_dict_list(
-                data[u'rolmembership'].get(u'deleted', []),
-                lambda _: True, u'role')
+            data['revoked'] = _part_dict_list(
+                data['rolmembership'].get('deleted', []),
+                lambda _: True, 'role')
 
     def _validate_rolemembership(self, id, data):
         """
@@ -241,7 +241,7 @@ class RoleView(PGChildNodeView):
         :param data: role data
         :return: valid or invalid message
         """
-        if u'rolmembership' not in data:
+        if 'rolmembership' not in data:
             return None
 
         if id == -1:
@@ -257,7 +257,7 @@ rolmembership:[{
 ]""")
 
             if not self._validate_input_dict_for_new(
-                    data[u'rolmembership'], [u'role', u'admin']):
+                    data['rolmembership'], ['role', 'admin']):
                 return msg
 
             self._process_rolemembership(id, data)
@@ -287,7 +287,7 @@ rolmembership:{
         ]
 """)
         if not self._validate_input_dict_for_update(
-                data[u'rolmembership'], [u'role', u'admin'], [u'role']):
+                data['rolmembership'], ['role', 'admin'], ['role']):
             return msg
 
         self._process_rolemembership(id, data)
@@ -299,7 +299,7 @@ rolmembership:{
         :param data: role data
         :return: valid or invalid message
         """
-        if u'seclabels' not in data or self.manager.version < 90200:
+        if 'seclabels' not in data or self.manager.version < 90200:
             return None
 
         if id == -1:
@@ -313,7 +313,7 @@ seclabels:[{
     ...
 ]""")
             if not self._validate_input_dict_for_new(
-                    data[u'seclabels'], [u'provider', u'label']):
+                    data['seclabels'], ['provider', 'label']):
                 return msg
 
             return None
@@ -342,7 +342,7 @@ seclabels:{
         ]
 """)
         if not self._validate_input_dict_for_update(
-                data[u'seclabels'], [u'provider', u'label'], [u'provider']):
+                data['seclabels'], ['provider', 'label'], ['provider']):
             return msg
 
         return None
@@ -353,7 +353,7 @@ seclabels:{
         :param data: role data
         :return: valid or invalid message
         """
-        if u'variables' not in data:
+        if 'variables' not in data:
             return None
 
         if id == -1:
@@ -368,7 +368,7 @@ value: <value>
 ...
 ]""")
             if not self._validate_input_dict_for_new(
-                    data[u'variables'], [u'name', u'value']):
+                    data['variables'], ['name', 'value']):
                 return msg
 
             return None
@@ -400,7 +400,7 @@ rolmembership:{
     ]
 """)
         if not self._validate_input_dict_for_update(
-                data[u'variables'], [u'name', u'value'], [u'name']):
+                data['variables'], ['name', 'value'], ['name']):
             return msg
         return None
 
@@ -410,7 +410,7 @@ rolmembership:{
         :param data: role data
         :return: valid or invalid message
         """
-        if (id == -1) and u'rolname' not in data:
+        if (id == -1) and 'rolname' not in data:
             return precondition_required(
                 _("Name must be specified.")
             )
@@ -429,10 +429,10 @@ rolmembership:{
 
                     val = req[key]
                     if key in [
-                        u'rolcanlogin', u'rolsuper', u'rolcreatedb',
-                        u'rolcreaterole', u'rolinherit', u'rolreplication',
-                        u'rolcatupdate', u'variables', u'rolmembership',
-                        u'seclabels'
+                        'rolcanlogin', 'rolsuper', 'rolcreatedb',
+                        'rolcreaterole', 'rolinherit', 'rolreplication',
+                        'rolcatupdate', 'variables', 'rolmembership',
+                        'seclabels'
                     ]:
                         data[key] = json.loads(val, encoding='utf-8')
                     else:
@@ -451,17 +451,17 @@ rolmembership:{
                 return precondition_required(invalid_msg)
 
             invalid_msg = self._validate_rolemembership(
-                kwargs.get(u'rid', -1), data)
+                kwargs.get('rid', -1), data)
             if invalid_msg is not None:
                 return precondition_required(invalid_msg)
 
             invalid_msg = self._validate_seclabels(
-                kwargs.get(u'rid', -1), data)
+                kwargs.get('rid', -1), data)
             if invalid_msg is not None:
                 return precondition_required(invalid_msg)
 
             invalid_msg = self._validate_variables(
-                kwargs.get(u'rid', -1), data)
+                kwargs.get('rid', -1), data)
             if invalid_msg is not None:
                 return precondition_required(invalid_msg)
 
@@ -581,13 +581,13 @@ rolmembership:{
                 self.sql_path = 'roles/sql/#{0}#'.format(self.manager.version)
 
                 self.alterKeys = [
-                    u'rolcanlogin', u'rolsuper', u'rolcreatedb',
-                    u'rolcreaterole', u'rolinherit', u'rolreplication',
-                    u'rolconnlimit', u'rolvaliduntil', u'rolpassword'
+                    'rolcanlogin', 'rolsuper', 'rolcreatedb',
+                    'rolcreaterole', 'rolinherit', 'rolreplication',
+                    'rolconnlimit', 'rolvaliduntil', 'rolpassword'
                 ] if self.manager.version >= 90200 else [
-                    u'rolcanlogin', u'rolsuper', u'rolcreatedb',
-                    u'rolcreaterole', u'rolinherit', u'rolconnlimit',
-                    u'rolvaliduntil', u'rolpassword'
+                    'rolcanlogin', 'rolsuper', 'rolcreatedb',
+                    'rolcreaterole', 'rolinherit', 'rolconnlimit',
+                    'rolvaliduntil', 'rolpassword'
                 ]
 
                 fetch_name, check_permission, \
@@ -781,8 +781,8 @@ rolmembership:{
             row = res['rows'][0]
 
             status, res = self.conn.execute_2darray(
-                u"DROP ROLE {0};".format(self.qtIdent(self.conn,
-                                                      row['rolname']))
+                "DROP ROLE {0};".format(self.qtIdent(self.conn,
+                                                     row['rolname']))
             )
             if not status:
                 return internal_server_error(
@@ -836,7 +836,7 @@ rolmembership:{
 
         status, rid = self.conn.execute_scalar(
             "SELECT oid FROM pg_roles WHERE rolname = %(rolname)s",
-            {'rolname': self.request[u'rolname']}
+            {'rolname': self.request['rolname']}
         )
 
         if not status:

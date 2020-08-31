@@ -41,8 +41,8 @@ if __name__ == '__main__':
 
         pattern = re.compile(r'"([^"]+)",\s*[^,]*\s*,\s*(.*)$')
         keyword_types = [
-            u'UNRESERVED_KEYWORD', u'COL_NAME_KEYWORD',
-            u'TYPE_FUNC_NAME_KEYWORD', u'RESERVED_KEYWORD'
+            'UNRESERVED_KEYWORD', 'COL_NAME_KEYWORD',
+            'TYPE_FUNC_NAME_KEYWORD', 'RESERVED_KEYWORD'
         ]
 
         for line in ins:
@@ -54,7 +54,7 @@ if __name__ == '__main__':
                 else:
                     keywords_file.write("        ")
                 keywords_file.write(
-                    '"' + match.group(1) + u'": ' +
+                    '"' + match.group(1) + '": ' +
                     str(keyword_types.index(match.group(2)))
                 )
                 idx += 1

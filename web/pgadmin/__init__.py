@@ -40,10 +40,7 @@ from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
 
-# If script is running under python3, it will not have the xrange function
-# defined
 winreg = None
-xrange = range
 if os.name == 'nt':
     import winreg
 
@@ -164,7 +161,7 @@ class PgAdmin(Flask):
 
     def register_logout_hook(self, module):
         if hasattr(module, 'on_logout') and \
-                type(getattr(module, 'on_logout')) == MethodType:
+                isinstance(getattr(module, 'on_logout'), MethodType):
             self.logout_hooks.append(module)
 
 
@@ -312,8 +309,8 @@ def create_app(app_name=None):
     # Setup authentication
     ##########################################################################
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = u'sqlite:///{0}?timeout={1}' \
-        .format(config.SQLITE_PATH.replace(u'\\', u'/'),
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
+        .format(config.SQLITE_PATH.replace('\\', '/'),
                 getattr(config, 'SQLITE_TIMEOUT', 500)
                 )
 
@@ -506,7 +503,7 @@ def create_app(app_name=None):
                             "SOFTWARE\\" + server_type + "\\Services", 0,
                             winreg.KEY_READ | arch_key
                         )
-                        for i in xrange(0, winreg.QueryInfoKey(root_key)[0]):
+                        for i in range(0, winreg.QueryInfoKey(root_key)[0]):
                             inst_id = winreg.EnumKey(root_key, i)
                             inst_key = winreg.OpenKey(root_key, inst_id)
 
@@ -568,8 +565,8 @@ def create_app(app_name=None):
                     svr_discovery_id = section
                     description = registry.get(section, 'Description')
                     data_directory = registry.get(section, 'DataDirectory')
-                    svr_comment = gettext(u"Auto-detected {0} installation "
-                                          u"with the data directory at {1}"
+                    svr_comment = gettext("Auto-detected {0} installation "
+                                          "with the data directory at {1}"
                                           ).format(description, data_directory)
                     add_server(user_id, servergroup_id, svr_name,
                                svr_superuser, svr_port, svr_discovery_id,

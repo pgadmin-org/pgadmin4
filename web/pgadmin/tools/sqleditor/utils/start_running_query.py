@@ -42,7 +42,7 @@ class StartRunningQuery:
             http_session,
             trans_id
         )
-        if type(session_obj) is Response:
+        if isinstance(session_obj, Response):
             return session_obj
 
         # Remove any existing primary keys or has_oids in session_obj

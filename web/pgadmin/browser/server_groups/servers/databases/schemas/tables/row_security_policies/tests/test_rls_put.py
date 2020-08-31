@@ -97,8 +97,8 @@ class PolicyUpdateTestCase(BaseTestGenerator):
                     self.policy_id = 9999
                 response = self.update_policy(self.test_data)
 
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         connection = utils.get_db_connection(self.server['db'],

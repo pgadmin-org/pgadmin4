@@ -32,7 +32,7 @@ class ServerDeleteTestCase(BaseTestGenerator):
             raise Exception("No server to delete!!!")
         # Call API to delete the servers
         response = self.tester.delete(url + str(self.server_id))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """This function delete the server from SQLite """

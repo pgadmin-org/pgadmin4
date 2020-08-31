@@ -20,6 +20,6 @@ def db_upgrade(app):
         migration_folder = os.path.join(
             os.path.dirname(os.path.realpath(u_encode(__file__, fs_encoding))),
             os.pardir, os.pardir,
-            u'migrations'
+            'migrations'
         )
         flask_migrate.upgrade(migration_folder)

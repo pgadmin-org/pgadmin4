@@ -610,7 +610,7 @@ class DomainConstraintView(PGChildNodeView):
                                         self._CREATE_SQL]),
                               data=data, domain=domain, schema=schema)
 
-        sql_header = u"""-- CHECK: {1}.{0}
+        sql_header = """-- CHECK: {1}.{0}
 
 -- ALTER DOMAIN {1} DROP CONSTRAINT {0};
 

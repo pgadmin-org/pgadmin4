@@ -555,7 +555,7 @@ class Dialect(object):
     def validate_text(dialect, attr):
         val = getattr(dialect, attr)
         if not isinstance(val, str):
-            if type(val) == bytes:
+            if isinstance(val, bytes):
                 raise Error('"{0}" must be string, not bytes'.format(attr))
             raise Error('"{0}" must be string, not {1}'.format(
                 attr, type(val).__name__))

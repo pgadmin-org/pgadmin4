@@ -91,13 +91,13 @@ class StartRunningDataSortingTest(BaseTestGenerator):
         )
         if self.type == 'get':
             result = FilterDialog.get(*self.input_parameters)
-            self.assertEquals(
+            self.assertEqual(
                 result.status_code, expected_response.status_code
             )
         else:
             result = FilterDialog.save(
                 *self.input_arg_parameters, **self.input_kwarg_parameters
             )
-            self.assertEquals(
+            self.assertEqual(
                 result.status_code, expected_response.status_code
             )

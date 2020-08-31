@@ -35,7 +35,7 @@ class ColParamsJSONDecoder(json.JSONDecoder):
         retval = obj
         try:
             retval = json.JSONDecoder.decode(self, obj)
-            if type(retval) == str:
+            if isinstance(retval, str):
                 retval = obj
         except (ValueError, TypeError, KeyError):
             retval = obj

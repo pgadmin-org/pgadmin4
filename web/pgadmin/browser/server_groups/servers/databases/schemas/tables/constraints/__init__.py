@@ -9,7 +9,7 @@
 
 """Implements Constraint Node"""
 
-import json
+import simplejson as json
 from flask import request
 from functools import wraps
 from pgadmin.utils.driver import get_driver

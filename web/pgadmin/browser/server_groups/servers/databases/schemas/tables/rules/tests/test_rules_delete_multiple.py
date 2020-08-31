@@ -86,8 +86,8 @@ class RulesDeleteTestCase(BaseTestGenerator):
         data = {'ids': self.rule_ids}
         if self.is_positive_test:
             response = self.delete_multiple_rule(data)
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

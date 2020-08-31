@@ -91,7 +91,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 ".loading-logs"), 10)
 
         expected_backup_success_msg = "Successfully completed."
-        self.assertEquals(status, expected_backup_success_msg)
+        self.assertEqual(status, expected_backup_success_msg)
 
         backup_file = None
         # Check for XSS in Backup details
@@ -135,7 +135,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element_by_css_selector(
                 ".loading-logs"), 10)
-        self.assertEquals(status, expected_backup_success_msg)
+        self.assertEqual(status, expected_backup_success_msg)
 
         # Check for XSS in Restore details
         if self.is_xss_check:

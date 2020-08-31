@@ -71,8 +71,8 @@ class FDWValidatorsTestCase(BaseTestGenerator):
                            side_effect=[return_value_object]):
                     response = self.get_validators_fdw()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data['status_code'])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function delete the FDW and disconnect the test database """

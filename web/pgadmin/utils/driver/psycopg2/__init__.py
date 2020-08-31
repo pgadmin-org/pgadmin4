@@ -306,20 +306,20 @@ class Driver(BaseDriver):
             return True
         # certain types should not be quoted even though it contains a space.
         # Evilness.
-        elif for_types and value[-2:] == u"[]":
+        elif for_types and value[-2:] == "[]":
             val_noarray = value[:-2]
 
         if for_types and val_noarray.lower() in [
-            u'bit varying',
-            u'"char"',
-            u'character varying',
-            u'double precision',
-            u'timestamp without time zone',
-            u'timestamp with time zone',
-            u'time without time zone',
-            u'time with time zone',
-            u'"trigger"',
-            u'"unknown"'
+            'bit varying',
+            '"char"',
+            'character varying',
+            'double precision',
+            'timestamp without time zone',
+            'timestamp with time zone',
+            'time without time zone',
+            'time with time zone',
+            '"trigger"',
+            '"unknown"'
         ]:
             return False
 
@@ -328,12 +328,12 @@ class Driver(BaseDriver):
                 (val_noarray.startswith('"') or val_noarray.endswith('"')):
             return False
 
-        if u'0' <= val_noarray[0] <= u'9':
+        if '0' <= val_noarray[0] <= '9':
             return True
 
         for c in val_noarray:
-            if (not (u'a' <= c <= u'z') and c != u'_' and
-                    not (u'0' <= c <= u'9')):
+            if (not ('a' <= c <= 'z') and c != '_' and
+                    not ('0' <= c <= '9')):
                 return True
 
         # check string is keywaord or not
@@ -385,7 +385,7 @@ class Driver(BaseDriver):
         value = None
 
         for val in args:
-            if type(val) == list:
+            if isinstance(val, list):
                 return map(lambda w: Driver.qtIdent(conn, w), val)
 
             # DataType doesn't have len function then convert it to string

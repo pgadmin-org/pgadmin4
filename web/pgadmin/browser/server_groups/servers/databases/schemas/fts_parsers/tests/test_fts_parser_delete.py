@@ -76,7 +76,7 @@ class FtsParserDeleteTestCase(BaseTestGenerator):
             str(self.fts_parser_id),
             follow_redirects=True)
 
-        self.assertEquals(delete_response.status_code, 200)
+        self.assertEqual(delete_response.status_code, 200)
 
         negative_delete_response = self.tester.delete(
             self.url + str(utils.SERVER_GROUP) + '/' +
@@ -86,7 +86,7 @@ class FtsParserDeleteTestCase(BaseTestGenerator):
             str(0),
             follow_redirects=True)
 
-        self.assertEquals(negative_delete_response.status_code, 500)
+        self.assertEqual(negative_delete_response.status_code, 500)
 
     def tearDown(self):
         """This function disconnect the test database."""

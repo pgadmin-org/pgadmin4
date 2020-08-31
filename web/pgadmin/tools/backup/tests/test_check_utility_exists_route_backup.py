@@ -33,6 +33,6 @@ class TestUtilityCheckRouteCase(BaseTestGenerator):
         does_utility_exist_mock.return_value = False
         server_id = self.server_information['server_id']
         response = self.tester.get(self.url.format(server_id))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response = json.loads(response.data.decode('utf-8'))
-        self.assertEquals(self.expected_success_value, response['success'])
+        self.assertEqual(self.expected_success_value, response['success'])

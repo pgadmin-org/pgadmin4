@@ -38,7 +38,7 @@ class ServersWithServiceIDAddTestCase(BaseTestGenerator):
             data=json.dumps(self.server),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         self.server_id = response_data['node']['_id']
 

@@ -124,8 +124,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
         for source in source_cols:
             if 'name' in source:
-                if type(target_cols) is list and len(
-                        target_cols) > 0:
+                if isinstance(target_cols, list) and target_cols:
                     tmp = None
                     for item in target_cols:
                         if item['name'] == source['name']:
@@ -190,8 +189,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
             different[constraint] = {}
             for source in source_cols:
                 if 'name' in source:
-                    if type(target_cols) is list and len(
-                            target_cols) > 0:
+                    if isinstance(target_cols, list) and target_cols:
                         tmp_src = copy.deepcopy(source)
                         if 'oid' in tmp_src:
                             tmp_src.pop('oid')

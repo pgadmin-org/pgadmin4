@@ -292,7 +292,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
                         show_system_objects=show_system_objects)
 
     if with_header:
-        sql_header = u"-- Trigger: {0}\n\n-- ".format(data['name'])
+        sql_header = "-- Trigger: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template("/".join([template_path, 'delete.sql']),
                                       data=data, conn=conn)

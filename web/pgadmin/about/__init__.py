@@ -33,7 +33,7 @@ class AboutModule(PgAdminModule):
                     module="pgAdmin.About",
                     callback='about_show',
                     icon='fa fa-info-circle',
-                    label=gettext(u'About %(appname)s', appname=appname)
+                    label=gettext('About %(appname)s', appname=appname)
                 )
             ]
         }

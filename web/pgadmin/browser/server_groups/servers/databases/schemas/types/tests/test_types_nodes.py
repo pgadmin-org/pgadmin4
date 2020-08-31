@@ -95,8 +95,8 @@ class TypesNodesTestCase(BaseTestGenerator):
                 self.type_id = 99999
                 response = self.get_type_node()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data['status_code'])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

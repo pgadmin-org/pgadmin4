@@ -41,7 +41,7 @@ class PgAgentDeleteScheduleTestCase(BaseTestGenerator):
             ),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         is_present = pgagent_utils.verify_pgagent_schedule(self)
         self.assertFalse(
             is_present, "pgAgent schedule was not deleted successfully"

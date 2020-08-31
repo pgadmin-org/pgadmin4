@@ -36,11 +36,11 @@ class SearchObjectsApiTypes(BaseTestGenerator):
 
         url = self.url + '/' + str(server_id) + '/' + str(db_id)
         response = self.tester.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # repsonse data should be dict
         response_data = json.loads(response.data.decode('utf-8'))['data']
-        self.assertEquals(type(response_data), dict)
+        self.assertEqual(type(response_data), dict)
 
         # response data key values should not be None
         for key, value in response_data.items():

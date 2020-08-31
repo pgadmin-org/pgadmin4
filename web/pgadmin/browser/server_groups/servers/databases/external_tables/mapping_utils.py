@@ -99,8 +99,7 @@ def format_options(format_type, options):
         return options
 
     result_options = tokenize_options(options)
-    all_keys = list(result_options.keys())
-    all_keys.sort()
+    all_keys = sorted(result_options)
     if format_type not in ['csv', 'text']:
         return ','.join([
             '%s = %s' % (key, result_options[key]) for key in all_keys

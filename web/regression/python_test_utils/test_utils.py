@@ -1100,7 +1100,7 @@ def get_server_type(server):
         pg_cursor.execute("SELECT version()")
         version_string = pg_cursor.fetchone()
         connection.close()
-        if type(version_string) == tuple:
+        if isinstance(version_string, tuple):
             version_string = version_string[0]
 
         if "Greenplum Database" in version_string:
@@ -1208,7 +1208,7 @@ def generate_scenarios(key, test_cases):
 def assert_status_code(self, response):
     act_res = response.status_code
     exp_res = self.expected_data["status_code"]
-    return self.assertEquals(act_res, exp_res)
+    return self.assertEqual(act_res, exp_res)
 
 
 def assert_error_message(self, response, error_msg=None):
@@ -1217,7 +1217,7 @@ def assert_error_message(self, response, error_msg=None):
         exp_res = error_msg
     else:
         exp_res = self.expected_data["error_msg"]
-    return self.assertEquals(act_res, exp_res)
+    return self.assertEqual(act_res, exp_res)
 
 
 def create_expected_output(parameters, actual_data):
@@ -1406,9 +1406,7 @@ def get_parallel_sequential_module_list(module_list):
             parallel_tests.remove(module)
 
     #  list of tests can be executed in sequentially
-    sequential_tests = list(
-        filter(lambda i: i not in parallel_tests,
-               module_list))
+    sequential_tests = [i for i in module_list if i not in parallel_tests]
 
     # return parallel & sequential lists
     return parallel_tests, sequential_tests

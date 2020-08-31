@@ -50,7 +50,7 @@ class TableSpaceAddTestCase(BaseTestGenerator):
             data=json.dumps(data),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         tablespace_id = response_data['node']['_id']
         tablespace_dict = {"tablespace_id": tablespace_id,

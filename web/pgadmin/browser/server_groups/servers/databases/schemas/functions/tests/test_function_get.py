@@ -41,7 +41,7 @@ class FunctionGetTestCase(BaseTestGenerator):
             str(self.db_id) + '/' +
             str(self.schema_id) + '/' + str(trigger_func_id),
             content_type='html/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
 

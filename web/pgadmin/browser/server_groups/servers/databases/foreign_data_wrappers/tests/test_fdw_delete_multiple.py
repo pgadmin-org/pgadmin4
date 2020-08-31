@@ -73,8 +73,8 @@ class FDWDDeleteMultipleTestCase(BaseTestGenerator):
         data = {'ids': self.fdw_ids}
         delete_response = self.delete_multiple(data)
 
-        self.assertEquals(delete_response.status_code,
-                          self.expected_data['status_code'])
+        self.assertEqual(delete_response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function disconnect the test database and drop added extension

@@ -75,7 +75,7 @@ class MaintenanceJobTest(BaseTestGenerator):
 
         cnt = 0
         the_process = None
-        while 1:
+        while True:
             if cnt >= 10:
                 break
             # Check the process list
@@ -118,7 +118,7 @@ class MaintenanceJobTest(BaseTestGenerator):
         p_details_data = json.loads(p_details.data.decode('utf-8'))
 
         # Retrieve the backup job process logs
-        while 1:
+        while True:
             out, err, status = MaintenanceJobTest.get_params(p_details_data)
             if status:
                 break

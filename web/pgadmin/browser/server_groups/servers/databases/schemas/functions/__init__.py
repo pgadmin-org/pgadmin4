@@ -1092,7 +1092,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             return resp_data
 
         # Fetch the function definition.
-        args = u''
+        args = ''
         args_without_name = []
 
         args_list = []
@@ -1183,7 +1183,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                        func_def=name_with_default_args,
                                        query_for="sql_panel")
 
-        sql_header = u"""-- {0}: {1}.{2}({3})\n\n""".format(
+        sql_header = """-- {0}: {1}.{2}({3})\n\n""".format(
             object_type.upper(), resp_data['pronamespace'],
             resp_data['proname'],
             resp_data['proargtypenames'].lstrip('(').rstrip(')'))
@@ -1470,7 +1470,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Parse Privileges
             self._parse_privilege_data(data)
 
-            args = u''
+            args = ''
             args_without_name = []
 
             args_list = []

@@ -392,9 +392,9 @@ class Filemanager(object):
             if last_dir is not None:
                 check_dir_exists = True
             else:
-                last_dir = u"/"
+                last_dir = "/"
 
-        if not config.SERVER_MODE and last_dir == u"/" or last_dir == "/":
+        if not config.SERVER_MODE and last_dir == "/" or last_dir == "/":
             last_dir = homedir
 
         if check_dir_exists:
@@ -412,14 +412,14 @@ class Filemanager(object):
                     index = last_dir.rfind('/')
                 last_dir = last_dir[0:index]
             if not last_dir:
-                last_dir = u"/"
+                last_dir = "/"
 
             if _platform == 'win32':
                 if not (last_dir.endswith('\\') or last_dir.endswith('/')):
-                    last_dir += u"\\"
+                    last_dir += "\\"
             else:
                 if not last_dir.endswith('/'):
-                    last_dir += u"/"
+                    last_dir += "/"
 
         # create configs using above configs
         configs = {
@@ -516,13 +516,13 @@ class Filemanager(object):
                     bitmask >>= 1
                 if (drive_name != '' and drive_name is not None and
                         drive_name in drives):
-                    return u"{0}{1}".format(drive_name, ':')
+                    return "{0}{1}".format(drive_name, ':')
                 else:
                     return drives  # return drives if no argument is passed
             except Exception:
                 return ['C:']
         else:
-            return u'/'
+            return '/'
 
     @staticmethod
     def suspend_windows_warning():
@@ -557,7 +557,7 @@ class Filemanager(object):
             Filemanager.check_access_permission(in_dir, path)
         except Exception as e:
             Filemanager.resume_windows_warning()
-            err_msg = gettext(u"Error: {0}").format(e)
+            err_msg = gettext("Error: {0}").format(e)
             files = {
                 'Code': 0,
                 'Error': err_msg
@@ -570,7 +570,7 @@ class Filemanager(object):
             drives = Filemanager._get_drives()
             for drive in drives:
                 protected = 0
-                path = file_name = u"{0}:".format(drive)
+                path = file_name = "{0}:".format(drive)
                 try:
                     drive_size = getdrivesize(path)
                     drive_size_in_units = sizeof_fmt(drive_size)
@@ -597,7 +597,7 @@ class Filemanager(object):
             Filemanager.resume_windows_warning()
             return {
                 'Code': 0,
-                'Error': gettext(u"'{0}' file does not exist.").format(path)
+                'Error': gettext("'{0}' file does not exist.").format(path)
             }
 
         user_dir = path
@@ -634,8 +634,8 @@ class Filemanager(object):
                 if os.path.isdir(system_path):
                     if files_only == 'true':
                         continue
-                    file_extension = u"dir"
-                    user_path = u"{0}/".format(user_path)
+                    file_extension = "dir"
+                    user_path = "{0}/".format(user_path)
                 else:
                     # filter files based on file_type
                     if file_type is not None and file_type != "*" and \
@@ -660,9 +660,9 @@ class Filemanager(object):
             Filemanager.resume_windows_warning()
             if (hasattr(e, 'strerror') and
                     e.strerror == gettext('Permission denied')):
-                err_msg = gettext(u"Error: {0}").format(e.strerror)
+                err_msg = gettext("Error: {0}").format(e.strerror)
             else:
-                err_msg = gettext(u"Error: {0}").format(e)
+                err_msg = gettext("Error: {0}").format(e)
             files = {
                 'Code': 0,
                 'Error': err_msg
@@ -694,7 +694,7 @@ class Filemanager(object):
             # in server mode.
             if not orig_path.startswith(in_dir):
                 raise InternalServerError(
-                    gettext(u"Access denied ({0})").format(path))
+                    gettext("Access denied ({0})").format(path))
         return True
 
     @staticmethod
@@ -702,30 +702,30 @@ class Filemanager(object):
 
         if (path.startswith('\\\\') and _platform == 'win32')\
                 or config.SERVER_MODE is False or in_dir is None:
-            return u"{}".format(path)
+            return "{}".format(path)
 
         if path == '/' or path == '\\':
             if _platform == 'win32':
                 if in_dir.endswith('\\') or in_dir.endswith('/'):
-                    return u"{}".format(in_dir)
+                    return "{}".format(in_dir)
                 else:
-                    return u"{}{}".format(in_dir, '\\')
+                    return "{}{}".format(in_dir, '\\')
             else:
                 if in_dir.endswith('/'):
-                    return u"{}".format(in_dir)
+                    return "{}".format(in_dir)
                 else:
-                    return u"{}{}".format(in_dir, '/')
+                    return "{}{}".format(in_dir, '/')
 
         if in_dir.endswith('/') or in_dir.endswith('\\'):
             if path.startswith('/') or path.startswith('\\'):
-                return u"{}{}".format(in_dir[:-1], path)
+                return "{}{}".format(in_dir[:-1], path)
             else:
-                return u"{}/{}".format(in_dir, path)
+                return "{}/{}".format(in_dir, path)
         else:
             if path.startswith('/') or path.startswith('\\'):
-                return u"{}{}".format(in_dir, path)
+                return "{}{}".format(in_dir, path)
             else:
-                return u"{}/{}".format(in_dir, path)
+                return "{}/{}".format(in_dir, path)
 
     def validate_request(self, capability):
         """
@@ -743,7 +743,7 @@ class Filemanager(object):
         path = unquote(path)
         if self.dir is None:
             self.dir = ""
-        orig_path = u"{0}{1}".format(self.dir, path)
+        orig_path = "{0}{1}".format(self.dir, path)
 
         try:
             Filemanager.check_access_permission(self.dir, path)
@@ -752,7 +752,7 @@ class Filemanager(object):
                 'Filename': split_path(path)[-1],
                 'FileType': '',
                 'Path': path,
-                'Error': gettext(u"Error: {0}").format(e),
+                'Error': gettext("Error: {0}").format(e),
                 'Code': 0,
                 'Info': '',
                 'Properties': {
@@ -784,7 +784,7 @@ class Filemanager(object):
 
         if not path_exists(orig_path):
             thefile['Error'] = gettext(
-                u"'{0}' file does not exist.").format(path)
+                "'{0}' file does not exist.").format(path)
             thefile['Code'] = -1
             return thefile
 
@@ -813,7 +813,7 @@ class Filemanager(object):
         if config.SERVER_MODE:
             the_dir = self.dir
             if the_dir is not None and not the_dir.endswith('/'):
-                the_dir += u'/'
+                the_dir += '/'
 
         filelist = self.list_filesystem(
             the_dir, path, trans_data, file_type, show_hidden)
@@ -836,7 +836,7 @@ class Filemanager(object):
             Filemanager.check_access_permission(the_dir, new)
         except Exception as e:
             res = {
-                'Error': gettext(u"Error: {0}").format(e),
+                'Error': gettext("Error: {0}").format(e),
                 'Code': 0
             }
             return res
@@ -851,23 +851,23 @@ class Filemanager(object):
         path = split_path(path)[0]  # extract path
 
         if not path[-1] == '/':
-            path += u'/'
+            path += '/'
 
         newname = new
         newpath = path + newname
 
         # make system old path
-        oldpath_sys = u"{0}{1}".format(the_dir, old)
-        newpath_sys = u"{0}{1}".format(the_dir, newpath)
+        oldpath_sys = "{0}{1}".format(the_dir, old)
+        newpath_sys = "{0}{1}".format(the_dir, newpath)
 
-        error_msg = gettext(u'Renamed successfully.')
+        error_msg = gettext('Renamed successfully.')
         code = 1
         try:
             os.rename(oldpath_sys, newpath_sys)
         except Exception as e:
             code = 0
-            error_msg = u"{0} {1}".format(
-                gettext(u'There was an error renaming the file:'), e)
+            error_msg = "{0} {1}".format(
+                gettext('There was an error renaming the file:'), e)
 
         result = {
             'Old Path': old,
@@ -891,13 +891,13 @@ class Filemanager(object):
             }
 
         the_dir = self.dir if self.dir is not None else ''
-        orig_path = u"{0}{1}".format(the_dir, path)
+        orig_path = "{0}{1}".format(the_dir, path)
 
         try:
             Filemanager.check_access_permission(the_dir, path)
         except Exception as e:
             res = {
-                'Error': gettext(u"Error: {0}").format(e),
+                'Error': gettext("Error: {0}").format(e),
                 'Code': 0
             }
             return res
@@ -911,7 +911,7 @@ class Filemanager(object):
                 os.remove(orig_path)
         except Exception as e:
             code = 0
-            err_msg = gettext(u"Error: {0}").format(e.strerror)
+            err_msg = gettext("Error: {0}").format(e.strerror)
 
         result = {
             'Path': path,
@@ -939,8 +939,8 @@ class Filemanager(object):
 
             file_obj = req.files['newfile']
             file_name = file_obj.filename
-            orig_path = u"{0}{1}".format(the_dir, path)
-            new_name = u"{0}{1}".format(orig_path, file_name)
+            orig_path = "{0}{1}".format(the_dir, path)
+            new_name = "{0}{1}".format(orig_path, file_name)
 
             with open(new_name, 'wb') as f:
                 while True:
@@ -951,14 +951,14 @@ class Filemanager(object):
                     f.write(data)
         except Exception as e:
             code = 0
-            err_msg = gettext(u"Error: {0}").format(
-                e.strerror if hasattr(e, 'strerror') else gettext(u'Unknown'))
+            err_msg = gettext("Error: {0}").format(
+                e.strerror if hasattr(e, 'strerror') else gettext('Unknown'))
 
         try:
             Filemanager.check_access_permission(the_dir, path)
         except Exception as e:
             res = {
-                'Error': gettext(u"Error: {0}").format(e),
+                'Error': gettext("Error: {0}").format(e),
                 'Code': 0
             }
             return res
@@ -982,19 +982,19 @@ class Filemanager(object):
         name = unquote(name)
         path = unquote(path)
         try:
-            orig_path = u"{0}{1}".format(the_dir, path)
+            orig_path = "{0}{1}".format(the_dir, path)
             Filemanager.check_access_permission(
-                the_dir, u"{}{}".format(path, name))
+                the_dir, "{}{}".format(path, name))
 
-            new_name = u"{0}{1}".format(orig_path, name)
+            new_name = "{0}{1}".format(orig_path, name)
             if not os.path.exists(new_name):
                 code = 0
         except Exception as e:
             code = 0
             if hasattr(e, 'strerror'):
-                err_msg = gettext(u"Error: {0}").format(e.strerror)
+                err_msg = gettext("Error: {0}").format(e.strerror)
             else:
-                err_msg = gettext(u"Error: {0}").format(e)
+                err_msg = gettext("Error: {0}").format(e)
 
         result = {
             'Path': path,
@@ -1012,12 +1012,12 @@ class Filemanager(object):
         with same name already exists
         """
         last_char = new_name[-1]
-        t_new_path = u"{}/{}{}_{}".format(in_dir, path, new_name, count)
+        t_new_path = "{}/{}{}_{}".format(in_dir, path, new_name, count)
         if last_char == 'r' and not path_exists(t_new_path):
             return t_new_path, new_name
         else:
             last_char = int(t_new_path[-1]) + 1
-            new_path = u"{}/{}{}_{}".format(in_dir, path, new_name, last_char)
+            new_path = "{}/{}{}_{}".format(in_dir, path, new_name, last_char)
             if path_exists(new_path):
                 count += 1
                 return Filemanager.get_new_name(in_dir, path, new_name, count)
@@ -1084,13 +1084,13 @@ class Filemanager(object):
             # we don't want to expose real path of file
             # so only show error message.
             if ex.strerror == 'Permission denied':
-                err_msg = gettext(u"Error: {0}").format(ex.strerror)
+                err_msg = gettext("Error: {0}").format(ex.strerror)
             else:
-                err_msg = gettext(u"Error: {0}").format(str(ex))
+                err_msg = gettext("Error: {0}").format(str(ex))
 
         except Exception as ex:
             status = False
-            err_msg = gettext(u"Error: {0}").format(str(ex))
+            err_msg = gettext("Error: {0}").format(str(ex))
 
         # Remove root storage path from error message
         # when running in Server mode
@@ -1114,19 +1114,19 @@ class Filemanager(object):
         the_dir = self.dir if self.dir is not None else ''
 
         try:
-            Filemanager.check_access_permission(the_dir, u"{}{}".format(
+            Filemanager.check_access_permission(the_dir, "{}{}".format(
                 path, name))
         except Exception as e:
             res = {
-                'Error': gettext(u"Error: {0}").format(e),
+                'Error': gettext("Error: {0}").format(e),
                 'Code': 0
             }
             return res
 
         if the_dir != "":
-            new_path = u"{}/{}{}/".format(the_dir, path, name)
+            new_path = "{}/{}{}/".format(the_dir, path, name)
         else:
-            new_path = u"{}{}/".format(path, name)
+            new_path = "{}{}/".format(path, name)
 
         err_msg = ''
         code = 1
@@ -1136,14 +1136,14 @@ class Filemanager(object):
                 os.mkdir(new_path)
             except Exception as e:
                 code = 0
-                err_msg = gettext(u"Error: {0}").format(e.strerror)
+                err_msg = gettext("Error: {0}").format(e.strerror)
         else:
             new_path, new_name = self.get_new_name(the_dir, path, name)
             try:
                 os.mkdir(new_path)
             except Exception as e:
                 code = 0
-                err_msg = gettext(u"Error: {0}").format(e.strerror)
+                err_msg = gettext("Error: {0}").format(e.strerror)
 
         result = {
             'Parent': path,
@@ -1165,14 +1165,14 @@ class Filemanager(object):
             }
 
         the_dir = self.dir if self.dir is not None else ''
-        orig_path = u"{0}{1}".format(the_dir, path)
+        orig_path = "{0}{1}".format(the_dir, path)
 
         try:
             Filemanager.check_access_permission(
-                the_dir, u"{}{}".format(path, path)
+                the_dir, "{}{}".format(path, path)
             )
         except Exception as e:
-            resp = Response(gettext(u"Error: {0}").format(e))
+            resp = Response(gettext("Error: {0}").format(e))
             resp.headers['Content-Disposition'] = \
                 'attachment; filename=' + name
             return resp
@@ -1189,7 +1189,7 @@ class Filemanager(object):
         try:
             Filemanager.check_access_permission(the_dir, path)
         except Exception as e:
-            err_msg = gettext(u"Error: {0}").format(e)
+            err_msg = gettext("Error: {0}").format(e)
             res['Code'] = 0
             res['Error'] = err_msg
         return res

@@ -92,8 +92,8 @@ class TriggersGetTestCase(BaseTestGenerator):
                     "?oid=17312&description=commaa&name=code&_=1589522392579"
                 response = self.tester.get(url, follow_redirects=True)
 
-                self.assertEquals(response.status_code,
-                                  self.expected_data["status_code"])
+                self.assertEqual(response.status_code,
+                                 self.expected_data["status_code"])
             if hasattr(self, "table_nodes"):
                 self.trigger_id = ''
                 response = self.get_trigger()
@@ -119,8 +119,8 @@ class TriggersGetTestCase(BaseTestGenerator):
                            return_value=eval(self.mock_data["return_value"])):
                     response = self.get_trigger()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

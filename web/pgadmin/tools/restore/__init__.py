@@ -168,7 +168,7 @@ def filename_with_file_manager_path(_file):
     storage_dir = get_storage_directory()
 
     if storage_dir:
-        _file = os.path.join(storage_dir, _file.lstrip(u'/').lstrip(u'\\'))
+        _file = os.path.join(storage_dir, _file.lstrip('/').lstrip('\\'))
     elif not os.path.isabs(_file):
         _file = os.path.join(document_dir(), _file)
 

@@ -156,22 +156,22 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
                           query=sql,
                           poll_url=self.poll_url,
                           start_query_tool_url=self.start_query_tool_url)
-        self.assertEquals(is_success, True)
+        self.assertEqual(is_success, True)
         return response_data
 
     def _check_primary_keys(self, response_data):
         primary_keys = response_data['data']['primary_keys']
-        self.assertEquals(primary_keys, self.expected_primary_keys)
+        self.assertEqual(primary_keys, self.expected_primary_keys)
 
     def _check_oids(self, response_data):
         has_oids = response_data['data']['has_oids']
-        self.assertEquals(has_oids, self.expected_has_oids)
+        self.assertEqual(has_oids, self.expected_has_oids)
 
     def _check_editable_columns(self, response_data):
         columns_info = response_data['data']['colinfo']
         for col, expected_is_editable in \
                 zip(columns_info, self.expected_cols_is_editable):
-            self.assertEquals(col['is_editable'], expected_is_editable)
+            self.assertEqual(col['is_editable'], expected_is_editable)
 
     def _initialize_database_connection(self):
         database_info = parent_node_dict["database"][-1]
@@ -204,7 +204,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def _initialize_urls(self):
         self.start_query_tool_url = \
@@ -265,4 +265,4 @@ class TestTemporaryTable(TestQueryUpdatableResultset):
         results_column_data = response_data['data']['result']
         for result_data, expected_is_editable in \
                 zip(results_column_data, self.expected_results_column_data):
-            self.assertEquals(result_data, expected_is_editable)
+            self.assertEqual(result_data, expected_is_editable)

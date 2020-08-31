@@ -224,4 +224,4 @@ class TestEncoding(BaseTestGenerator):
 
     def runTest(self):
         result = get_encoding(self.db_encoding)
-        self.assertEquals(result, self.expected_return_value)
+        self.assertEqual(result, self.expected_return_value)

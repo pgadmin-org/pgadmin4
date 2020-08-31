@@ -44,7 +44,7 @@ class DatabaseMultipleDeleteTestCase(BaseTestGenerator):
                 follow_redirects=True,
                 data=json.dumps(data),
                 content_type='html/json')
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
         else:
             raise Exception("Could not connect to server to delete the "
                             "database.")

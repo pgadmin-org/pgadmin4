@@ -746,7 +746,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=db_name)
 
-        sql_header = u"-- Event Trigger: {0} on database {1}\n\n-- ".format(
+        sql_header = "-- Event Trigger: {0} on database {1}\n\n-- ".format(
             result['name'], db_name
         )
 

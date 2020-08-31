@@ -104,17 +104,17 @@ class SearchObjectsHelperTest(BaseTestGenerator):
             # test template path
             manager.server_type = 'pg'
             manager.version = 906000
-            self.assertEquals(so_obj.get_template_path(),
-                              'search_objects/sql/pg/#906000#')
+            self.assertEqual(so_obj.get_template_path(),
+                             'search_objects/sql/pg/#906000#')
 
-            self.assertEquals(so_obj.get_show_node_prefs(),
-                              self.expected_show_node_prefs)
+            self.assertEqual(so_obj.get_show_node_prefs(),
+                             self.expected_show_node_prefs)
 
-            self.assertEquals(so_obj.get_supported_types(),
-                              self.expected_supported_types)
+            self.assertEqual(so_obj.get_supported_types(),
+                             self.expected_supported_types)
 
-            self.assertEquals(so_obj.get_supported_types(skip_check=True),
-                              self.expected_supported_types_skip)
+            self.assertEqual(so_obj.get_supported_types(skip_check=True),
+                             self.expected_supported_types_skip)
 
-            self.assertEquals(so_obj.search('searchtext', 'all'),
-                              self.expected_search_op)
+            self.assertEqual(so_obj.search('searchtext', 'all'),
+                             self.expected_search_op)

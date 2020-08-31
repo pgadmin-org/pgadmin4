@@ -84,7 +84,7 @@ class LanguagesGetTestCase(BaseTestGenerator):
                     actual_response_code = response.status_code
                     expected_status_code = self.expected_data['status_code']
 
-        self.assertEquals(actual_response_code, expected_status_code)
+        self.assertEqual(actual_response_code, expected_status_code)
 
     def get_language_properties(self):
         return self.tester.get("{0}{1}/{2}/{3}/{4}".format(
@@ -147,7 +147,7 @@ class LanguagesGetNodesTestCase(BaseTestGenerator):
 
                 actual_response_code = response.status_code
                 expected_status_code = self.expected_data['status_code']
-        self.assertEquals(actual_response_code, expected_status_code)
+        self.assertEqual(actual_response_code, expected_status_code)
 
     def get_language_nodes(self):
         return self.tester.get("{0}{1}/{2}/{3}/".format(

@@ -204,13 +204,13 @@ APP_VERSION_EXTN = ('.css', '.js', '.html', '.svg', '.png', '.gif', '.ico')
 if IS_WIN:
     # Use the short path on windows
     DATA_DIR = os.path.realpath(
-        os.path.join(fs_short_path(env('APPDATA')), u"pgAdmin")
+        os.path.join(fs_short_path(env('APPDATA')), "pgAdmin")
     )
 else:
     if SERVER_MODE:
         DATA_DIR = '/var/lib/pgadmin'
     else:
-        DATA_DIR = os.path.realpath(os.path.expanduser(u'~/.pgadmin/'))
+        DATA_DIR = os.path.realpath(os.path.expanduser('~/.pgadmin/'))
 
 # An optional login banner to show security warnings/disclaimers etc. at
 # login and password recovery etc. HTML may be included for basic formatting,

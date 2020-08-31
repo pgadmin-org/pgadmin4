@@ -45,7 +45,7 @@ class LoginRolePutTestCase(BaseTestGenerator):
             str(self.server_id) + '/' + str(self.role_id),
             data=json.dumps(data),
             follow_redirects=True)
-        self.assertEquals(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 200)
 
     def tearDown(self):
         """This function delete the role from added server"""

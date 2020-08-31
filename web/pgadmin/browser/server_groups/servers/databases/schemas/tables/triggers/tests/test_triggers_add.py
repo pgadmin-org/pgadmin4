@@ -92,8 +92,8 @@ class TriggersAddTestCase(BaseTestGenerator):
                 with patch(self.mock_data["function_name"],
                            side_effect=eval(self.mock_data["return_value"])):
                     response = self.create_trigger()
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         # Disconnect the database

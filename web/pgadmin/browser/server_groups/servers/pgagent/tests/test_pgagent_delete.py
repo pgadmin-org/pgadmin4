@@ -38,7 +38,7 @@ class PgAgentDeleteTestCase(BaseTestGenerator):
             ),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         is_present = pgagent_utils.verify_pgagent_job(self)
         self.assertFalse(
             is_present, "pgAgent job was not deleted successfully"

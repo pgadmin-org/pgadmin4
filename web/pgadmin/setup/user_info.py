@@ -16,7 +16,7 @@ import getpass
 
 
 def user_info_desktop():
-    print(u"NOTE: Configuring authentication for DESKTOP mode.")
+    print("NOTE: Configuring authentication for DESKTOP mode.")
     email = config.DESKTOP_USER
     p1 = ''.join([
         random.choice(string.ascii_letters + string.digits)
@@ -26,7 +26,7 @@ def user_info_desktop():
 
 
 def user_info_server():
-    print(u"NOTE: Configuring authentication for SERVER mode.\n")
+    print("NOTE: Configuring authentication for SERVER mode.\n")
 
     if all(value in os.environ for value in
            ['PGADMIN_SETUP_EMAIL', 'PGADMIN_SETUP_PASSWORD']):
@@ -39,8 +39,8 @@ def user_info_server():
     else:
         # Prompt the user for their default username and password.
         print(
-            u"Enter the email address and password to use for the initial "
-            u"pgAdmin user account:\n"
+            "Enter the email address and password to use for the initial "
+            "pgAdmin user account:\n"
         )
 
         email_filter = re.compile(
@@ -51,7 +51,7 @@ def user_info_server():
 
         email = input("Email address: ")
         while email == '' or not email_filter.match(email):
-            print(u'Invalid email address. Please try again.')
+            print('Invalid email address. Please try again.')
             email = input("Email address: ")
 
         def pprompt():
@@ -60,11 +60,11 @@ def user_info_server():
         p1, p2 = pprompt()
         while p1 != p2 or len(p1) < 6:
             if p1 != p2:
-                print(u'Passwords do not match. Please try again.')
+                print('Passwords do not match. Please try again.')
             else:
                 print(
-                    u'Password must be at least 6 characters. '
-                    u'Please try again.'
+                    'Password must be at least 6 characters. '
+                    'Please try again.'
                 )
             p1, p2 = pprompt()
 

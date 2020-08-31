@@ -115,7 +115,7 @@ class RestoreJobTest(BaseTestGenerator):
 
         cnt = 0
         the_process = None
-        while 1:
+        while True:
             if cnt >= 5:
                 break
             # Check the process list
@@ -165,7 +165,7 @@ class RestoreJobTest(BaseTestGenerator):
 
         # Retrieve the restore job process logs
         cnt = 0
-        while 1:
+        while True:
             out, err, status = RestoreJobTest.get_params(p_details_data)
             if status or cnt >= 5:
                 break

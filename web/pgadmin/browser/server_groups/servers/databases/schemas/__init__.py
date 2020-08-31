@@ -867,7 +867,7 @@ It may have been removed by another user.
             _=gettext, data=data, conn=self.conn
         )
 
-        sql_header = u"-- SCHEMA: {0}\n\n-- ".format(data['name'])
+        sql_header = "-- SCHEMA: {0}\n\n-- ".format(data['name'])
 
         # drop schema
         sql_header += render_template(
@@ -1051,7 +1051,7 @@ It may have been removed by another user.
             _=gettext, data=old_data, conn=self.conn
         )
 
-        sql_header = u"""
+        sql_header = """
 -- CATALOG: {0}
 
 -- DROP SCHEMA {0};

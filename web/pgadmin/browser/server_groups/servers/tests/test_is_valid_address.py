@@ -32,8 +32,8 @@ class IsValidAddressTestCase(BaseTestGenerator):
         pass
 
     def runTest(self):
-        self.assertEquals(utils.is_valid_ipaddress(self.address),
-                          self.respdata)
+        self.assertEqual(utils.is_valid_ipaddress(self.address),
+                         self.respdata)
 
     @classmethod
     def tearDownClass(cls):

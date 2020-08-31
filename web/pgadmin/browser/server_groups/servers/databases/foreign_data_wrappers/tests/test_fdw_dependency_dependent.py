@@ -67,7 +67,7 @@ class FDWDependencyAndDependentTestCase(BaseTestGenerator):
             response = self.get_dependency_dependent()
             expected_response_code = self.expected_data['status_code']
 
-        self.assertEquals(response.status_code, expected_response_code)
+        self.assertEqual(response.status_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop added extension

@@ -99,7 +99,7 @@ class SynonymPutTestCase(BaseTestGenerator):
             str(self.syn_oid),
             data=json.dumps(data),
             follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """ Disconnect the database. """

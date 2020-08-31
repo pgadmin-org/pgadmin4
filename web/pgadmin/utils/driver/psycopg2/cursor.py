@@ -232,7 +232,7 @@ class DictCursor(_cursor):
         it = _cursor.__iter__(self)
         try:
             yield self._dict_tuple(next(it))
-            while 1:
+            while True:
                 yield self._dict_tuple(next(it))
         except StopIteration:
             pass

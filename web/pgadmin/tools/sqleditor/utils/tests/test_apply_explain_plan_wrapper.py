@@ -117,7 +117,7 @@ class StartRunningQueryTest(BaseTestGenerator):
             render_template_mock.return_value = self.expected_return_value
             result = apply_explain_plan_wrapper_if_needed(
                 **self.function_input_parameters)
-            self.assertEquals(result, self.expected_return_value)
+            self.assertEqual(result, self.expected_return_value)
             if self.expect_render_template_mock_parameters:
                 render_template_mock.assert_called_with(
                     self.expect_render_template_mock_parameters[

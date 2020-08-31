@@ -146,7 +146,7 @@ def api_get_index_msql(self):
 def assert_status_code(self, response):
     act_res = response.status_code
     exp_res = self.expected_data["status_code"]
-    return self.assertEquals(act_res, exp_res)
+    return self.assertEqual(act_res, exp_res)
 
 
 def assert_error_message(self, response, error_msg=None):
@@ -155,7 +155,7 @@ def assert_error_message(self, response, error_msg=None):
         exp_res = error_msg
     else:
         exp_res = self.expected_data["error_msg"]
-    return self.assertEquals(act_res, exp_res)
+    return self.assertEqual(act_res, exp_res)
 
 
 def create_index(server, db_name, schema_name, table_name, index_name,

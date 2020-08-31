@@ -72,7 +72,7 @@ class LanguagesAddTestCase(BaseTestGenerator):
                     response = self.create_language()
                     actual_status_code = response.status_code
                     expected_status_code = self.expected_data["status_code"]
-        self.assertEquals(actual_status_code, expected_status_code)
+        self.assertEqual(actual_status_code, expected_status_code)
 
     def create_language(self):
         """This function will add language under test database."""

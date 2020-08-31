@@ -466,7 +466,7 @@ class SQLAutoComplete(object):
             if sort_key:
                 if display_meta and len(display_meta) > 50:
                     # Truncate meta-text to 50 characters, if necessary
-                    display_meta = display_meta[:47] + u'...'
+                    display_meta = display_meta[:47] + '...'
 
                 # Lexical order of items in the collection, used for
                 # tiebreaking items with the same match group length and start
@@ -572,7 +572,7 @@ class SQLAutoComplete(object):
         lastword = last_word(word_before_cursor, include='most_punctuations')
         if lastword == '*':
             if suggestion.context == 'insert':
-                def filter(col):
+                def is_scoped(col):
                     if not col.has_default:
                         return True
                     return not any(
@@ -580,7 +580,7 @@ class SQLAutoComplete(object):
                         for p in self.insert_col_skip_patterns
                     )
                 scoped_cols = \
-                    dict((t, [col for col in cols if filter(col)])
+                    dict((t, [col for col in cols if is_scoped(col)])
                          for t, cols in scoped_cols.items())
             if self.asterisk_column_order == 'alphabetic':
                 for cols in scoped_cols.values():

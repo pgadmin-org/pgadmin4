@@ -275,7 +275,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                     ):
                         # Coverts string into python list as expected.
                         data[key] = []
-                        if type(req[key]) != list or len(req[key]) != 0:
+                        if not isinstance(req[key], list) and req[key]:
                             data[key] = json.loads(req[key], encoding='utf-8')
 
                         if key == 'inherits':
@@ -854,7 +854,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not json_resp:
             return SQL.strip('\n')
 
-        sql_header = u"""-- FOREIGN TABLE: {0}.{1}\n\n""".format(
+        sql_header = """-- FOREIGN TABLE: {0}.{1}\n\n""".format(
             data['basensp'], data['name'])
 
         sql_header += """-- DROP FOREIGN TABLE {0};
@@ -1337,7 +1337,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         else:
             columns = '*'
 
-        sql = u"SELECT {0}\n\tFROM {1};".format(
+        sql = "SELECT {0}\n\tFROM {1};".format(
             columns,
             self.qtIdent(self.conn, data['basensp'], data['name'])
         )
@@ -1377,7 +1377,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if len(columns) > 0:
             columns = ", ".join(columns)
             values = ", ".join(values)
-            sql = u"INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
+            sql = "INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
                 self.qtIdent(self.conn, data['basensp'], data['name']),
                 columns, values
             )
@@ -1422,7 +1422,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 columns = "=?, ".join(columns)
                 columns += "=?"
 
-            sql = u"UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
+            sql = "UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
                 self.qtIdent(self.conn, data['basensp'], data['name']),
                 columns
             )
@@ -1453,7 +1453,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not data:
             return gone(self.not_found_error_msg())
 
-        sql = u"DELETE FROM {0}\n\tWHERE <condition>;".format(
+        sql = "DELETE FROM {0}\n\tWHERE <condition>;".format(
             self.qtIdent(self.conn, data['basensp'], data['name'])
         )
 

@@ -37,7 +37,7 @@ class SearchObjectsApiSearch(BaseTestGenerator):
         url_params = urlencode(url_params)
         response = self.tester.get(self.base_url + '?' + url_params)
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def runTest(self):
         database_info = parent_node_dict["database"][-1]
@@ -61,7 +61,7 @@ class SearchObjectsApiSearch(BaseTestGenerator):
             types_url = '/search_objects/types/' +\
                         str(server_id) + '/' + str(db_id)
             response = self.tester.get(types_url)
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
             types_data = json.loads(response.data.decode('utf-8'))['data']
 
             for a_type in types_data:

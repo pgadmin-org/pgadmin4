@@ -51,7 +51,7 @@ class LanguagesGetFunctionAndTemplateTestCase(BaseTestGenerator):
                 response = self.get_language_functions_template()
                 actual_response_code = response.status_code
                 expected_status_code = self.expected_data['status_code']
-        self.assertEquals(actual_response_code, expected_status_code)
+        self.assertEqual(actual_response_code, expected_status_code)
 
     def get_language_functions_template(self):
         """

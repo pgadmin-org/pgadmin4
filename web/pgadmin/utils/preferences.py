@@ -163,7 +163,7 @@ class _Preference(object):
 
         try:
             if self._type in ('boolean', 'switch', 'node'):
-                assert type(value) == bool
+                assert isinstance(value, bool)
             elif self._type == 'options':
                 has_value = next((True for opt in self.options
                                   if 'value' in opt and opt['value'] == value),
@@ -175,11 +175,12 @@ class _Preference(object):
                 value = parser_map.get(self._type, lambda v: v)(value)
                 if self._type == 'integer':
                     value = self.normalize_range(value)
-                    assert type(value) == int
+                    assert isinstance(value, int)
                 if self._type == 'numeric':
                     value = self.normalize_range(value)
-                    assert (type(value) == int or type(value) == float or
-                            type(value) == decimal.Decimal)
+                    assert (
+                        isinstance(value, int) or isinstance(value, float) or
+                        isinstance(value, decimal.Decimal))
         except Exception as e:
             current_app.logger.exception(e)
             return False, gettext(
@@ -190,7 +191,7 @@ class _Preference(object):
             pid=self.pid
         ).filter_by(uid=current_user.id).first()
 
-        value = u"{}".format(value)
+        value = "{}".format(value)
         if pref is None:
             pref = UserPrefTable(
                 uid=current_user.id, pid=self.pid, value=value

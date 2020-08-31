@@ -81,7 +81,7 @@ config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 if not os.path.isfile(config.SQLITE_PATH):
     setup_py = os.path.join(
         os.path.dirname(os.path.realpath(u_encode(__file__, fs_encoding))),
-        u'setup.py'
+        'setup.py'
     )
     exec(open(file_quote(setup_py), 'r').read())
 

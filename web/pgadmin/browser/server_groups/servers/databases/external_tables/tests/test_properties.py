@@ -130,7 +130,7 @@ class TestProperties(BaseTestGenerator):
                 self.fail('No exception was raised')
         except PropertiesException as exception:
             if hasattr(self, 'expected_raise_exception'):
-                if type(exception) is self.expected_raise_exception:
+                if isinstance(exception, self.expected_raise_exception):
                     if hasattr(self,
                                'expected_internal_server_error_called_with'):
                         internal_server_error_mock.assert_called_with(

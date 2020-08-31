@@ -95,7 +95,7 @@ class DomainReverseEngineeredSQLTestCase(BaseTestGenerator):
             get_response = self.get_sql()
 
             expected_response_code = self.expected_data['status_code']
-            self.assertEquals(get_response.status_code, expected_response_code)
+            self.assertEqual(get_response.status_code, expected_response_code)
             orig_sql = json.loads(get_response.data.decode('utf-8'))
 
             # Replace multiple spaces with one space and check the expected sql
@@ -108,7 +108,7 @@ class DomainReverseEngineeredSQLTestCase(BaseTestGenerator):
                                              self.test_data['domain_sql'],
                                              self.server["username"])
 
-            self.assertEquals(sql, expected_sql)
+            self.assertEqual(sql, expected_sql)
 
             domain_utils.delete_domain(self.server,
                                        db_name,
@@ -129,15 +129,15 @@ class DomainReverseEngineeredSQLTestCase(BaseTestGenerator):
                     get_response = self.get_sql()
 
                     expected_response_code = self.expected_data['status_code']
-                    self.assertEquals(get_response.status_code,
-                                      expected_response_code)
+                    self.assertEqual(get_response.status_code,
+                                     expected_response_code)
 
             if hasattr(self, "wrong_domain_id"):
                 self.domain_id = 99999
                 get_response = self.get_sql()
                 expected_response_code = self.expected_data['status_code']
-                self.assertEquals(get_response.status_code,
-                                  expected_response_code)
+                self.assertEqual(get_response.status_code,
+                                 expected_response_code)
 
     def tearDown(self):
         # Disconnect the database

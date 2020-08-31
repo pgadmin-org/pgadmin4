@@ -235,7 +235,7 @@ def _check_required_args(data, name):
     :return: If any error return error.
     """
     required_args = [
-        [u'columns', u'index']  # Either of one should be there.
+        ['columns', 'index']  # Either of one should be there.
     ]
 
     def is_key_list(key, data):

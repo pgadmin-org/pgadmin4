@@ -319,9 +319,9 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
 
         var = res['rows'][0]
 
-        sql = u"-- Package Variable: {}".format(var['name'])
-        sql += u"\n\n"
-        sql += u"{} {};".format(var['name'], var['datatype'])
+        sql = "-- Package Variable: {}".format(var['name'])
+        sql += "\n\n"
+        sql += "{} {};".format(var['name'], var['datatype'])
 
         return ajax_response(response=sql)
 

@@ -38,12 +38,12 @@ class ChangePasswordTestCase(BaseTestGenerator):
         # This testcase validates if confirmation password is less than
         # minimum length
         ('TestCase for Validating New_Password_Less_Than_Min_Length',
-         dict(password=(
-             config_data['pgAdmin4_login_credentials']
-             ['login_password']),
-             new_password=str(uuid.uuid4())[4:8],
-             new_password_confirm=str(uuid.uuid4())[4:8],
-             respdata='Password must be at least 6 characters')),
+         [dict(password=(
+             config_data['pgAdmin4_login_credentials']['login_password']),
+             new_password=new_password,
+             new_password_confirm=new_password,
+             respdata='Password must be at least 8 characters')
+             for new_password in [str(uuid.uuid4())[4:8]]][0]),
 
         # This testcase validates if both password fields are left blank
         ('TestCase for Validating Empty_New_Password', dict(
@@ -108,7 +108,7 @@ class ChangePasswordTestCase(BaseTestGenerator):
             # Logout the Administrator before login normal user
             self.tester.logout()
             response = self.tester.login(self.username, self.password, True)
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
             # test the 'change password' test case
             utils.change_password(self)
             # Delete the normal user after changing it's password
@@ -119,7 +119,7 @@ class ChangePasswordTestCase(BaseTestGenerator):
                 '/user_management/user/' + str(user_id),
                 follow_redirects=True
             )
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
         else:
             utils.change_password(self)
 

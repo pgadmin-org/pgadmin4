@@ -874,7 +874,7 @@ class TestSaveChangedData(BaseTestGenerator):
                           query=query,
                           start_query_tool_url=self.start_query_tool_url,
                           poll_url=self.poll_url)
-        self.assertEquals(is_success, True)
+        self.assertEqual(is_success, True)
         return response_data
 
     def _save_changed_data(self):
@@ -883,19 +883,19 @@ class TestSaveChangedData(BaseTestGenerator):
                                     data=json.dumps(self.save_payload),
                                     content_type='html/json')
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # Check that the save is successful
         response_data = json.loads(response.data.decode('utf-8'))
         save_status = response_data['data']['status']
-        self.assertEquals(save_status, self.save_status)
+        self.assertEqual(save_status, self.save_status)
 
     def _check_saved_data(self):
         check_sql = self.check_sql % self.test_table_name
         response_data = self._execute_sql_query(check_sql)
         # Check table for updates
         result = response_data['data']['result']
-        self.assertEquals(result, self.check_result)
+        self.assertEqual(result, self.check_result)
 
     def _initialize_database_connection(self):
         database_info = parent_node_dict["database"][-1]
@@ -922,7 +922,7 @@ class TestSaveChangedData(BaseTestGenerator):
         url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def _initialize_urls_and_select_sql(self):
         self.start_query_tool_url = \

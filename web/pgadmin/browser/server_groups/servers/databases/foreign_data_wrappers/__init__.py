@@ -829,7 +829,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
                               )
         sql += "\n"
 
-        sql_header = u"""-- Foreign Data Wrapper: {0}\n\n""".format(
+        sql_header = """-- Foreign Data Wrapper: {0}\n\n""".format(
             res['rows'][0]['name'])
 
         sql_header += """-- DROP FOREIGN DATA WRAPPER {0}

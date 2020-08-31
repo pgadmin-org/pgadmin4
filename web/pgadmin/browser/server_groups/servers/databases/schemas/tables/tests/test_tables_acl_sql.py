@@ -41,9 +41,7 @@ class TestTablesAclSql(SQLTemplateTestBase):
         return sql
 
     def assertions(self, fetch_result, descriptions):
-        public_acls = list(
-            filter(lambda acl: acl[1] == 'PUBLIC', fetch_result)
-        )
+        public_acls = [acl for acl in fetch_result if acl[1] == 'PUBLIC']
         self.assertEqual(len(public_acls), 1)
 
         new_acl_map = dict(

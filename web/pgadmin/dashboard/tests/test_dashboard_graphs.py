@@ -92,18 +92,18 @@ class DashboardGraphsTestCase(BaseTestGenerator):
             url = self.getStatsUrl(self.server_id, self.did,
                                    ",".join(self.chart_data.keys()))
             response = self.tester.get(url)
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
             resp_data = json.loads(response.data)
 
             # All requested charts received
-            self.assertEquals(len(resp_data.keys()),
-                              len(self.chart_data.keys()))
+            self.assertEqual(len(resp_data.keys()),
+                             len(self.chart_data.keys()))
 
             # All requested charts data received
             for chart_name, chart_vals in self.chart_data.items():
-                self.assertEquals(set(resp_data[chart_name].keys()),
-                                  set(chart_vals))
+                self.assertEqual(set(resp_data[chart_name].keys()),
+                                 set(chart_vals))
 
         else:
             raise Exception("Error while connecting server to add the"

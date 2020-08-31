@@ -69,7 +69,7 @@ class FtsDictionaryGetTestCase(BaseTestGenerator):
                                    str(self.fts_dict_id),
                                    content_type='html/json')
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """This function delete the fts dictionaries and disconnect the test

@@ -87,7 +87,7 @@ class FTSConfPutTestCase(BaseTestGenerator):
             str(self.fts_conf_id),
             data=json.dumps(data),
             follow_redirects=True)
-        self.assertEquals(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 200)
 
         negative_put_response = self.tester.put(
             self.url + str(utils.SERVER_GROUP) + '/' +
@@ -97,7 +97,7 @@ class FTSConfPutTestCase(BaseTestGenerator):
             str(0),
             data=json.dumps(data),
             follow_redirects=True)
-        self.assertEquals(negative_put_response.status_code, 500)
+        self.assertEqual(negative_put_response.status_code, 500)
 
     def tearDown(self):
         """This function delete the fts_config and disconnect the test
@@ -187,7 +187,7 @@ class FTSConfDictPutTestCase(BaseTestGenerator):
             str(self.fts_conf_id),
             data=json.dumps(data),
             follow_redirects=True)
-        self.assertEquals(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 200)
 
         # check again whether dictionary is schema qualified
         get_response = self.tester.get(
@@ -200,7 +200,7 @@ class FTSConfDictPutTestCase(BaseTestGenerator):
         response_data = json.loads(get_response.data)
         res_dictname = response_data["tokens"][0]["dictname"]
 
-        self.assertEquals(dictname, res_dictname[0])
+        self.assertEqual(dictname, res_dictname[0])
 
     def tearDown(self):
         """This function delete the fts_config and disconnect the test

@@ -396,7 +396,7 @@ def are_lists_identical(source_list, target_list, ignore_whitespaces,
         for index in range(len(source_list)):
             # Check the type of the value if it is an dictionary then
             # call are_dictionaries_identical() function.
-            if type(source_list[index]) is dict:
+            if isinstance(source_list[index], dict):
                 if not are_dictionaries_identical(source_list[index],
                                                   target_list[index],
                                                   ignore_whitespaces,
@@ -444,13 +444,13 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_whitespaces,
         if key in ignore_keys:
             continue
 
-        if type(source_dict[key]) is dict:
+        if isinstance(source_dict[key], dict):
             if not are_dictionaries_identical(source_dict[key],
                                               target_dict[key],
                                               ignore_whitespaces,
                                               ignore_keys):
                 return False
-        elif type(source_dict[key]) is list:
+        elif isinstance(source_dict[key], list):
             # Sort the source and target list on the basis of
             # list key array.
             source_dict[key], target_dict[key] = sort_list(source_dict[key],
@@ -511,31 +511,30 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference=None):
         if key in ignore_keys:
             continue
         elif key in tar_only:
-            if type(target_dict[key]) is list:
+            if isinstance(target_dict[key], list):
                 difference[key] = {}
                 difference[key]['deleted'] = target_dict[key]
         elif key in src_only:
             # Source only values in the newly added list
-            if type(source_dict[key]) is list:
+            if isinstance(source_dict[key], list):
                 difference[key] = {}
                 difference[key]['added'] = source_dict[key]
-        elif type(source_dict[key]) is dict:
+        elif isinstance(source_dict[key], dict):
             directory_diff(source_dict[key], target_dict[key],
                            ignore_keys, difference)
-        elif type(source_dict[key]) is list:
+        elif isinstance(source_dict[key], list):
             tmp_target = None
-            tmp_list = list(filter(
-                lambda x: type(x) == list or type(x) == dict, source_dict[key]
-            ))
+            tmp_list = [x for x in source_dict[key]
+                        if isinstance(x, (list, dict))]
 
-            if len(tmp_list) > 0:
+            if tmp_list:
                 tmp_target = copy.deepcopy(target_dict[key])
                 for index in range(len(source_dict[key])):
                     source = copy.deepcopy(source_dict[key][index])
-                    if type(source) is list:
+                    if isinstance(source, list):
                         # TODO
                         pass
-                    elif type(source) is dict:
+                    elif isinstance(source, dict):
                         # Check the above keys are exist in the dictionary
                         tmp_key = is_key_exists(list_keys_array, source)
                         if tmp_key is not None:
@@ -550,35 +549,33 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference=None):
                         if len(updated) > 0:
                             difference[key]['changed'] = updated
                     elif target_dict[key] is None or \
-                            (type(target_dict[key]) is list and
+                            (isinstance(target_dict[key], list) and
                              len(target_dict[key]) < index and
                              source != target_dict[key][index]):
                         difference[key] = source
-                    elif type(target_dict[key]) is list and\
+                    elif isinstance(target_dict[key], list) and\
                             len(target_dict[key]) > index:
                         difference[key] = source
             elif len(source_dict[key]) > 0:
                 difference[key] = source_dict[key]
-            elif key in target_dict and type(target_dict[key]) is list:
+            elif key in target_dict and isinstance(target_dict[key], list):
                 # If no element in source dict then check for the element
                 # is available in target and the type is of list.
                 # Added such elements as a deleted.
-                tmp_tar_list = list(filter(
-                    lambda x: type(x) == list or type(x) == dict,
-                    target_dict[key]
-                ))
-                if len(tmp_tar_list):
+                tmp_tar_list = [x for x in target_dict[key]
+                                if isinstance(x, (list, dict))]
+                if tmp_tar_list:
                     difference[key] = {'deleted': target_dict[key]}
 
-            if type(source) is dict and tmp_target and key in tmp_target and \
-                    tmp_target[key] and len(tmp_target[key]) > 0:
-                if type(tmp_target[key]) is list and \
-                        type(tmp_target[key][0]) is dict:
+            if isinstance(source, dict) and tmp_target and key in tmp_target \
+                    and tmp_target[key] and len(tmp_target[key]) > 0:
+                if isinstance(tmp_target[key], list) and \
+                        isinstance(tmp_target[key][0], dict):
                     deleted = deleted + tmp_target[key]
                 else:
                     deleted.append({key: tmp_target[key]})
                 difference[key]['deleted'] = deleted
-            elif tmp_target and type(tmp_target) is list:
+            elif tmp_target and isinstance(tmp_target, list):
                 difference[key]['deleted'] = tmp_target
 
             # No point adding empty list into difference.
@@ -623,7 +620,7 @@ def _check_key_in_source_target(key, acl_keys, target, source):
         key = is_key_exists(acl_keys, target)
         if key is None:
             key = 'acl'
-    elif key is not None and type(source[key]) != list:
+    elif key is not None and not isinstance(source[key], list):
         key = 'acl'
 
     return key
@@ -674,13 +671,13 @@ def sort_list(source, target):
     :return:
     """
     # Check the above keys are exist in the dictionary
-    if source is not None and len(source) > 0 and type(source[0]) == dict:
+    if source is not None and source and isinstance(source[0], dict):
         tmp_key = is_key_exists(list_keys_array, source[0])
         if tmp_key is not None:
             source = sorted(source, key=lambda k: k[tmp_key])
 
     # Check the above keys are exist in the dictionary
-    if target is not None and len(target) > 0 and type(target[0]) == dict:
+    if target is not None and target and isinstance(target[0], dict):
         tmp_key = is_key_exists(list_keys_array, target[0])
         if tmp_key is not None:
             target = sorted(target, key=lambda k: k[tmp_key])
@@ -701,7 +698,7 @@ def compare_list_by_ignoring_keys(source_list, target_list, added, updated,
     :param ignore_keys:
     :return:
     """
-    if type(target_list) is list and len(target_list) > 0:
+    if isinstance(target_list, list) and target_list:
         tmp_target = None
         for item in target_list:
             if key in item and item[key] == source_list[key]:

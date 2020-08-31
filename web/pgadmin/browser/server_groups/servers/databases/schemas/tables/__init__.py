@@ -1426,7 +1426,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         else:
             columns = '*'
 
-        sql = u"SELECT {0}\n\tFROM {1};".format(
+        sql = "SELECT {0}\n\tFROM {1};".format(
             columns,
             self.qtIdent(self.conn, data['schema'], data['name'])
         )
@@ -1474,7 +1474,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         if len(columns) > 0:
             columns = ", ".join(columns)
             values = ", ".join(values)
-            sql = u"INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
+            sql = "INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
                 self.qtIdent(self.conn, data['schema'], data['name']),
                 columns, values
             )
@@ -1527,7 +1527,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 columns = "=?, ".join(columns)
             columns += "=?"
 
-            sql = u"UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
+            sql = "UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
                 self.qtIdent(self.conn, data['schema'], data['name']),
                 columns
             )
@@ -1565,7 +1565,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         data = res['rows'][0]
 
-        sql = u"DELETE FROM {0}\n\tWHERE <condition>;".format(
+        sql = "DELETE FROM {0}\n\tWHERE <condition>;".format(
             self.qtIdent(self.conn, data['schema'], data['name'])
         )
 

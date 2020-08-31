@@ -37,7 +37,7 @@ class DatabasesGetTestCase(BaseTestGenerator):
                     self.url + str(utils.SERVER_GROUP) + '/' + str(
                         server_id) + '/' +
                     str(db_id), follow_redirects=True)
-                self.assertEquals(response.status_code, 200)
+                self.assertEqual(response.status_code, 200)
             else:
                 raise Exception("Could not connect to database.")
         except Exception as exception:

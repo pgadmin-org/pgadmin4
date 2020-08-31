@@ -167,7 +167,7 @@ class ExternalTablesView(PGChildNodeView):
 
         result = self.get_external_tables(database_id, sql_statement)
 
-        if type(result) is not list:
+        if not isinstance(result, list):
             return result
 
         return make_json_response(
@@ -197,10 +197,10 @@ class ExternalTablesView(PGChildNodeView):
         )
         result = self.get_external_tables(database_id, sql_statement)
 
-        if type(result) is not list:
+        if not isinstance(result, list):
             return result
 
-        if len(result) == 0:
+        if not result:
             return make_json_response(
                 data=gettext('Could not find the external table.'),
                 status=404

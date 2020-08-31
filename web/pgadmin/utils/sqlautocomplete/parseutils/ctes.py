@@ -87,7 +87,7 @@ def extract_ctes(sql):
     idx = p.token_index(tok) + 1
 
     # Collapse everything after the ctes into a remainder query
-    remainder = u''.join(str(tok) for tok in p.tokens[idx:])
+    remainder = ''.join(str(tok) for tok in p.tokens[idx:])
 
     return ctes, remainder
 

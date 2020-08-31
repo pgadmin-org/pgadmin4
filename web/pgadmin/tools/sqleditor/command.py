@@ -169,7 +169,7 @@ class SQLFilter(object):
         self.did = kwargs['did']
         self.obj_id = kwargs['obj_id']
         sql_filter = kwargs.get('sql_filter', None)
-        self._row_filter = sql_filter if type(sql_filter) is str else None
+        self._row_filter = sql_filter if isinstance(sql_filter, str) else None
         self._data_sorting = kwargs.get('data_sorting', None)
         self._set_sorting_from_filter_dialog = False
 
@@ -212,7 +212,7 @@ class SQLFilter(object):
         Args:
             row_filter: sql query
         """
-        if type(row_filter) is not str:
+        if not isinstance(row_filter, str):
             row_filter = None
 
         status, msg = self.validate_filter(row_filter)

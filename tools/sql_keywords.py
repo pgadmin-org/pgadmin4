@@ -49,7 +49,7 @@ def get_release_tag(current_url=PG_CURRENT_VERSION_URL,
                     version_regex=PG_CURRENT_VERSION_REGEX):
     resp_text = get_file_from_url(current_url)
     version = apply_regex(resp_text, version_regex)
-    if type(version) == list:
+    if isinstance(version, list):
         version = version[0]
 
     return "REL_" + version.replace(".", "_")

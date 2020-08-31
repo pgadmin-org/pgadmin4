@@ -57,7 +57,7 @@ class ResourceGroupsPutTestCase(BaseTestGenerator):
             self.url, utils.SERVER_GROUP, self.server_id,
             self.resource_group_id), data=json.dumps(data),
             follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """This function delete the resource group from the database."""

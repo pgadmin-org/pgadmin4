@@ -36,4 +36,4 @@ class TestCompileTemplateName(BaseTestGenerator):
         result = compile_template_name(
             'some/prefix', 'some_file.sql', self.server_type, self.version
         )
-        self.assertEquals(result, self.expected_return_value)
+        self.assertEqual(result, self.expected_return_value)

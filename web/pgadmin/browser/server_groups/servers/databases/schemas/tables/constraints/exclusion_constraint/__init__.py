@@ -832,7 +832,7 @@ class ExclusionConstraintView(PGChildNodeView):
             SQL = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]), data=data)
 
-            sql_header = u"-- Constraint: {0}\n\n-- ".format(data['name'])
+            sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 
             sql_header += render_template(
                 "/".join([self.template_path, self._DELETE_SQL]),

@@ -133,7 +133,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
                         datlastsysoid=datlastsysoid, schema=schema,
                         table=table)
     if with_header:
-        sql_header = u"-- POLICY: {0}\n\n-- ".format(data['name'])
+        sql_header = "-- POLICY: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template("/".join([template_path,
                                                 'delete.sql']),

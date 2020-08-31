@@ -74,8 +74,8 @@ class FDWDPutTestCase(BaseTestGenerator):
                            return_value=eval(self.mock_data["return_value"])):
                     put_response = self.update_fdw()
 
-        self.assertEquals(put_response.status_code,
-                          self.expected_data['status_code'])
+        self.assertEqual(put_response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function delete the FDW and disconnect the test database """

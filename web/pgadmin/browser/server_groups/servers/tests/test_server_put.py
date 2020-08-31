@@ -36,7 +36,7 @@ class ServerUpdateTestCase(BaseTestGenerator):
             self.url + str(utils.SERVER_GROUP) + '/' +
             str(self.server_id), data=json.dumps(data),
             content_type='html/json')
-        self.assertEquals(put_response.status_code, 200)
+        self.assertEqual(put_response.status_code, 200)
 
     def tearDown(self):
         """This function delete the server from SQLite"""

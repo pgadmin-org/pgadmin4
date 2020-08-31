@@ -109,14 +109,14 @@ class SchemaDiffTestCase():
 
         response = self.tester.get(comp_url)
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         return json.loads(response.data.decode('utf-8'))
 
     def runTest(self):
         """ This function will test the schema diff."""
 
         response = self.tester.get("schema_diff/initialize")
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         self.trans_id = response_data['data']['schemaDiffTransId']
 
@@ -162,7 +162,7 @@ class SchemaDiffTestCase():
 
                     response = self.tester.get(url)
 
-                    self.assertEquals(response.status_code, 200)
+                    self.assertEqual(response.status_code, 200)
                     response_data = json.loads(response.data.decode('utf-8'))
                     file_obj.write(response_data['diff_ddl'])
             elif 'diff_ddl' in diff:
@@ -178,7 +178,7 @@ class SchemaDiffTestCase():
             response_data = self.compare()
             for diff in response_data['data']:
                 if diff['type'] in self.nodes:
-                    self.assertEquals(diff['status'], 'Identical')
+                    self.assertEqual(diff['status'], 'Identical')
         except Exception as e:
             os.remove(diff_file)
 

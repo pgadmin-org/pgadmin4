@@ -235,7 +235,7 @@ else:
         return _path
 
     def document_dir():
-        return os.path.realpath(os.path.expanduser(u'~/'))
+        return os.path.realpath(os.path.expanduser('~/'))
 
 
 def get_complete_file_path(file):
@@ -257,7 +257,7 @@ def get_complete_file_path(file):
     if storage_dir:
         file = os.path.join(
             storage_dir,
-            file.lstrip(u'/').lstrip(u'\\')
+            file.lstrip('/').lstrip('\\')
         )
         if IS_WIN:
             file = file.replace('\\', '/')
@@ -273,8 +273,8 @@ def does_utility_exist(file):
     """
     error_msg = None
     if not os.path.exists(file):
-        error_msg = gettext(u"'%s' file not found. Please correct the Binary"
-                            u" Path in the Preferences dialog" % file)
+        error_msg = gettext("'%s' file not found. Please correct the Binary"
+                            " Path in the Preferences dialog" % file)
     return error_msg
 
 

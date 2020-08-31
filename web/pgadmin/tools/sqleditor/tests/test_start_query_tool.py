@@ -34,8 +34,8 @@ class StartQueryTool(BaseTestGenerator):
                 data='"some sql statement"'
             )
 
-            self.assertEquals(response.status, '200 OK')
-            self.assertEquals(response.data, b'some result')
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.data, b'some result')
             StartRunningQuery_execute_mock \
                 .assert_called_with('transformed sql', 1234, ANY, False)
             extract_sql_from_network_parameters_mock \

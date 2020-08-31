@@ -512,7 +512,7 @@ class IndexConstraintView(PGChildNodeView):
     @staticmethod
     def _check_required_args(data):
         required_args = [
-            [u'columns', u'index']  # Either of one should be there.
+            ['columns', 'index']  # Either of one should be there.
         ]
 
         def is_key_list(key, data):
@@ -878,7 +878,7 @@ class IndexConstraintView(PGChildNodeView):
             data=data,
             constraint_name=self.constraint_name)
 
-        sql_header = u"-- Constraint: {0}\n\n-- ".format(data['name'])
+        sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template(
             "/".join([self.template_path, self._DELETE_SQL]),

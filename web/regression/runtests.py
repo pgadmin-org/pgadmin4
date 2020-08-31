@@ -127,6 +127,25 @@ app.test_client_class = TestClient
 test_client = app.test_client()
 test_client.setApp(app)
 
+
+class CaptureMail:
+    # A hack Mail service that simply captures what would be sent.
+    def __init__(self, app):
+        app.extensions["mail"] = self
+        self.sent = []
+        self.ascii_attachments = []
+
+    def send(self, msg):
+        self.sent.append(msg.body)
+
+    def pop(self):
+        if len(self.sent):
+            return self.sent.pop(0)
+        return None
+
+
+CaptureMail(app)
+
 setattr(unittest.result.TestResult, "passed", [])
 
 unittest.runner.TextTestResult.addSuccess = test_utils.add_success

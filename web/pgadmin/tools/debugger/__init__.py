@@ -1269,7 +1269,7 @@ def messages(trans_id):
             # From the above message we need to find out port number
             # as "7" so below logic will find 7 as port number
             # and attach listened to that port number
-            tmp_list = list(filter(lambda x: 'PLDBGBREAK' in x, notify))
+            tmp_list = [x for x in notify if 'PLDBGBREAK' in x]
             if len(tmp_list) > 0:
                 port_number = re.search(r'\d+', tmp_list[0])
                 if port_number is not None:

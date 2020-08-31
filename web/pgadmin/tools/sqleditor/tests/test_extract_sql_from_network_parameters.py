@@ -59,4 +59,4 @@ class ExtractSQLFromNetworkParametersTest(BaseTestGenerator):
             self.request_form_data
         )
 
-        self.assertEquals(result, self.expected_result)
+        self.assertEqual(result, self.expected_result)

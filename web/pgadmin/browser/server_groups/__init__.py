@@ -177,8 +177,8 @@ class ServerGroupView(NodeView):
             )
         else:
             try:
-                if u'name' in data:
-                    servergroup.name = data[u'name']
+                if 'name' in data:
+                    servergroup.name = data['name']
                 db.session.commit()
             except exc.IntegrityError:
                 db.session.rollback()
@@ -230,16 +230,16 @@ class ServerGroupView(NodeView):
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-        if data[u'name'] != '':
+        if data['name'] != '':
             try:
                 sg = ServerGroup(
                     user_id=current_user.id,
-                    name=data[u'name'])
+                    name=data['name'])
                 db.session.add(sg)
                 db.session.commit()
 
-                data[u'id'] = sg.id
-                data[u'name'] = sg.name
+                data['id'] = sg.id
+                data['name'] = sg.name
 
                 return jsonify(
                     node=self.blueprint.generate_browser_node(

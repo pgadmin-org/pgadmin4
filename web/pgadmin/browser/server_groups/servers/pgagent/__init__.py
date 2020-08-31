@@ -271,7 +271,7 @@ SELECT EXISTS(
     def create(self, gid, sid):
         """Create the pgAgent job."""
         required_args = [
-            u'jobname'
+            'jobname'
         ]
 
         data = request.form if request.form else json.loads(

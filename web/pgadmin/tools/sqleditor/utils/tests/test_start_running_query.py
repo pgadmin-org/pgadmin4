@@ -497,12 +497,12 @@ class StartRunningQueryTest(BaseTestGenerator):
                     '" excepted but not raised'
                 )
 
-            self.assertEquals(result, expected_response)
+            self.assertEqual(result, expected_response)
 
         except AssertionError:
             raise
         except Exception as exception:
-            self.assertEquals(self.manager_connection_exception, exception)
+            self.assertEqual(self.manager_connection_exception, exception)
 
         self.__mock_assertions(internal_server_error_mock,
                                make_json_response_mock)

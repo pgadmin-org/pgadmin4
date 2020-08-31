@@ -76,8 +76,8 @@ class FDWDAddTestCase(BaseTestGenerator):
                 del self.data['name']
                 response = self.create_foreign_data_wrapper()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data['status_code'])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function delete the FDW and disconnect the test database """

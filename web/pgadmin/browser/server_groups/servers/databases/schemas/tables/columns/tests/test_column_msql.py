@@ -102,7 +102,7 @@ class ColumnMsqlTestCase(BaseTestGenerator):
             expected_precision = self.data["old_precision"]
 
         expected_sql = (eval(self.expected_data["test_result_data"]))
-        self.assertEquals(response_data['data'], expected_sql)
+        self.assertEqual(response_data['data'], expected_sql)
 
     def tearDown(self):
         # Disconnect the database

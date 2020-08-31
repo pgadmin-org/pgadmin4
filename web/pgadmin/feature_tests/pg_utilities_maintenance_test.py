@@ -137,15 +137,15 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         )
 
         if status != "Successfully completed.":
-            self.assertEquals(status, "Successfully completed.")
+            self.assertEqual(status, "Successfully completed.")
 
         command = self.page.find_by_css_selector(
             NavMenuLocators.
             process_watcher_detailed_command_canvas_css).text
 
         if self.test_level == 'database':
-            self.assertEquals(command, "VACUUM (VERBOSE)\nRunning Query:"
-                                       "\nVACUUM VERBOSE;")
+            self.assertEqual(command, "VACUUM (VERBOSE)\nRunning Query:"
+                                      "\nVACUUM VERBOSE;")
         elif self.is_xss_check and self.test_level == 'table':
             # Check for XSS in the dialog
             source_code = self.page.find_by_css_selector(
@@ -158,10 +158,10 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
                 'Maintenance detailed window'
             )
         else:
-            self.assertEquals(command, "VACUUM "
-                                       "(VERBOSE)\nRunning Query:"
-                                       "\nVACUUM VERBOSE"
-                                       " public." + self.table_name + ";")
+            self.assertEqual(command, "VACUUM "
+                                      "(VERBOSE)\nRunning Query:"
+                                      "\nVACUUM VERBOSE"
+                                      " public." + self.table_name + ";")
 
         test_gui_helper.close_process_watcher(self)
 

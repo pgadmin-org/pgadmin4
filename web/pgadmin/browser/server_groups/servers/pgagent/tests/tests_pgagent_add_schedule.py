@@ -66,7 +66,7 @@ class PgAgentAddScheduleTestCase(BaseTestGenerator):
             data=json.dumps(data),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.data)
         self.schedule_id = response_data['node']['_id']

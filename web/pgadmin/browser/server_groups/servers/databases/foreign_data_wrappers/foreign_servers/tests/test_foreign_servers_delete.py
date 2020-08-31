@@ -87,7 +87,7 @@ class ForeignServerDeleteTestCase(BaseTestGenerator):
 
         actual_response_code = delete_response.status_code
         expected_response_code = self.expected_data['status_code']
-        self.assertEquals(actual_response_code, expected_response_code)
+        self.assertEqual(actual_response_code, expected_response_code)
 
     def tearDown(self):
         """This function disconnect the test database and drop

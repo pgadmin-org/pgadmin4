@@ -111,11 +111,11 @@ END %s;""" % (self.schema_name, self.pkg_name, self.proc_name,
 
         response_data = json.loads(response.data.decode('utf-8'))
 
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(len(response_data['data']), 1)
-        self.assertEquals(response_data['data'][0]['label'],
-                          self.func_name + '()')
-        self.assertEquals(response_data['data'][0]['_type'], 'edbfunc')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response_data['data']), 1)
+        self.assertEqual(response_data['data'][0]['label'],
+                         self.func_name + '()')
+        self.assertEqual(response_data['data'][0]['_type'], 'edbfunc')
 
         # Fetch Package procedure
         url = self.url.format('edbproc') + str(
@@ -127,11 +127,11 @@ END %s;""" % (self.schema_name, self.pkg_name, self.proc_name,
 
         response_data = json.loads(response.data.decode('utf-8'))
 
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(len(response_data['data']), 1)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response_data['data']), 1)
         self.assertIn(self.proc_name, response_data['data'][0]['label'])
         self.assertIn("INOUT", response_data['data'][0]['label'])
-        self.assertEquals(response_data['data'][0]['_type'], 'edbproc')
+        self.assertEqual(response_data['data'][0]['_type'], 'edbproc')
 
     def tearDown(self):
         """This function disconnect the test database."""

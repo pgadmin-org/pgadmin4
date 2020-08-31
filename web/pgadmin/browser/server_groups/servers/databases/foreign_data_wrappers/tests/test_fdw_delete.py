@@ -82,8 +82,8 @@ class FDWDeleteTestCase(BaseTestGenerator):
                 self.fdw_id = 99999
                 response = self.delete_fdw()
 
-        self.assertEquals(response.status_code,
-                          self.expected_data['status_code'])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function disconnect the test database and drop added extension

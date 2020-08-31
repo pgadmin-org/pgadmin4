@@ -73,31 +73,31 @@ class TestEditorHistory(BaseTestGenerator):
         url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def runTest(self):
         url = '/sqleditor/query_history/{0}'.format(self.trans_id)
 
         if not self.clear:
             response = self.tester.post(url, data=self.entry)
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
             response = self.tester.get(url)
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
             response_data = json.loads(response.data.decode('utf-8'))
-            self.assertEquals(len(response_data['data']['result']),
-                              self.expected_len)
+            self.assertEqual(len(response_data['data']['result']),
+                             self.expected_len)
         else:
             response = self.tester.delete(url)
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
             response = self.tester.get(url)
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
             response_data = json.loads(response.data.decode('utf-8'))
-            self.assertEquals(len(response_data['data']['result']),
-                              self.expected_len)
+            self.assertEqual(len(response_data['data']['result']),
+                             self.expected_len)
 
     def tearDown(self):
         # Disconnect the database

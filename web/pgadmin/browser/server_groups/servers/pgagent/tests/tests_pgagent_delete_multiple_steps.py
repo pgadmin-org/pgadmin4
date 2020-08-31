@@ -47,7 +47,7 @@ class PgAgentDeleteMultipleStepsTestCase(BaseTestGenerator):
             data=json.dumps({'ids': [self.step_id1, self.step_id2]}),
             content_type='html/json'
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """Clean up code"""

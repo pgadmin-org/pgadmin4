@@ -12,9 +12,7 @@ def change_password(self):
     response = self.tester.get(
         '/browser/change_password', follow_redirects=True
     )
-    self.assertTrue(
-        'Password Change' in response.data.decode('utf-8')
-    )
+    self.assertIn('Password Change', response.data.decode('utf-8'))
 
     csrf_token = self.tester.fetch_csrf(response)
 
@@ -28,4 +26,4 @@ def change_password(self):
         ),
         follow_redirects=True
     )
-    self.assertTrue(self.respdata in response.data.decode('utf-8'))
+    self.assertIn(self.respdata, response.data.decode('utf-8'))

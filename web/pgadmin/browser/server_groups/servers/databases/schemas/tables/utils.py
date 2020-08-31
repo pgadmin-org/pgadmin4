@@ -467,7 +467,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         self._format_column_list(data)
 
         if json_resp:
-            sql_header = u"-- Table: {0}.{1}\n\n-- ".format(
+            sql_header = "-- Table: {0}.{1}\n\n-- ".format(
                 data['schema'], data['name'])
 
             sql_header += render_template("/".join([self.table_template_path,
@@ -520,7 +520,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 self.conn, schema=schema, table=table, did=did, tid=tid,
                 idx=row['oid'], datlastsysoid=self.datlastsysoid,
                 template_path=None, with_header=json_resp)
-            index_sql = u"\n" + index_sql
+            index_sql = "\n" + index_sql
 
             # Add into main sql
             index_sql = re.sub('\n{2,}', '\n\n', index_sql)
@@ -549,7 +549,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                         self.conn, schema=schema, table=table, scid=scid,
                         plid=row['oid'], datlastsysoid=self.datlastsysoid,
                         template_path=None, with_header=json_resp)
-                policy_sql = u"\n" + policy_sql
+                policy_sql = "\n" + policy_sql
 
                 # Add into main sql
                 policy_sql = re.sub('\n{2,}', '\n\n', policy_sql)
@@ -575,7 +575,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 trid=row['oid'], datlastsysoid=self.datlastsysoid,
                 show_system_objects=self.blueprint.show_system_objects,
                 template_path=None, with_header=json_resp)
-            trigger_sql = u"\n" + trigger_sql
+            trigger_sql = "\n" + trigger_sql
 
             # Add into main sql
             trigger_sql = re.sub('\n{2,}', '\n\n', trigger_sql)
@@ -603,7 +603,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                     compound_trigger_utils.get_reverse_engineered_sql(
                         self.conn, schema=schema, table=table, tid=tid,
                         trid=row['oid'], datlastsysoid=self.datlastsysoid)
-                compound_trigger_sql = u"\n" + compound_trigger_sql
+                compound_trigger_sql = "\n" + compound_trigger_sql
 
                 # Add into main sql
                 compound_trigger_sql = \
@@ -661,7 +661,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         sql_header = ''
         if len(rset['rows']):
             if json_resp:
-                sql_header = u"\n-- Partitions SQL"
+                sql_header = "\n-- Partitions SQL"
             partition_sql = ''
             for row in rset['rows']:
                 part_data = dict()

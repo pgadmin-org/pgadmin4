@@ -66,7 +66,7 @@ class ExtensionsDeleteMultipleTestCase(BaseTestGenerator):
             data=json.dumps(data),
             content_type='html/json'
         )
-        self.assertEquals(delete_response.status_code, 200)
+        self.assertEqual(delete_response.status_code, 200)
 
     def tearDown(self):
         """This function disconnect the test database. """

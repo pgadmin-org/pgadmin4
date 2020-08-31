@@ -661,7 +661,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                                   conn=self.conn
                                   )
         else:
-            sql = u"-- definition incomplete"
+            sql = "-- definition incomplete"
         return sql
 
     @staticmethod

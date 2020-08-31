@@ -38,10 +38,10 @@ def has_any(data, keys):
     """
     Checks any one of the keys present in the data given
     """
-    if data is None and type(data) != dict:
+    if data is None and not isinstance(data, dict):
         return False
 
-    if keys is None and type(keys) != list:
+    if keys is None and not isinstance(keys, list):
         return False
 
     for key in keys:
@@ -726,9 +726,9 @@ class ServerNode(PGChildNodeView):
     def create(self, gid):
         """Add a server node to the settings database"""
         required_args = [
-            u'name',
-            u'db',
-            u'sslmode',
+            'name',
+            'db',
+            'sslmode',
         ]
 
         data = request.form if request.form else json.loads(
@@ -743,10 +743,10 @@ class ServerNode(PGChildNodeView):
         # Some fields can be provided with service file so they are optional
         if 'service' in data and not data['service']:
             required_args.extend([
-                u'host',
-                u'port',
-                u'username',
-                u'role'
+                'host',
+                'port',
+                'username',
+                'role'
             ])
         for arg in required_args:
             if arg not in data:
@@ -786,8 +786,8 @@ class ServerNode(PGChildNodeView):
                 ssl_mode=data.get('sslmode'),
                 comment=data.get('comment', None),
                 role=data.get('role', None),
-                db_res=','.join(data[u'db_res'])
-                if u'db_res' in data else None,
+                db_res=','.join(data['db_res'])
+                if 'db_res' in data else None,
                 sslcert=data.get('sslcert', None),
                 sslkey=data.get('sslkey', None),
                 sslrootcert=data.get('sslrootcert', None),
@@ -851,7 +851,7 @@ class ServerNode(PGChildNodeView):
                         status=401,
                         success=0,
                         errormsg=gettext(
-                            u"Unable to connect to server:\n\n{}"
+                            "Unable to connect to server:\n\n{}"
                         ).format(errmsg)
                     )
                 else:

@@ -90,7 +90,7 @@ class ForeignTableDeleteMultipleTestCase(BaseTestGenerator):
             follow_redirects=True,
             data=json.dumps(data))
 
-        self.assertEquals(delete_response.status_code, 200)
+        self.assertEqual(delete_response.status_code, 200)
 
     def tearDown(self):
         """ This function disconnect the test database. """

@@ -31,7 +31,7 @@ class TestSSLConnection(BaseTestGenerator):
                 connection.commit()
                 cursor.execute("SELECT ssl_is_used()")
                 is_ssl_used = cursor.fetchone()[0]
-                self.assertEquals(True, is_ssl_used)
+                self.assertEqual(True, is_ssl_used)
         else:
             self.skipTest(
                 'Cannot run SSL connection check test '

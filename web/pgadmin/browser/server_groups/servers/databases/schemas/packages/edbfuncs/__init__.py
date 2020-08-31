@@ -529,7 +529,7 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         if not status:
             return internal_server_error(errormsg=res)
 
-        sql = u"-- Package {}: {}".format(
+        sql = "-- Package {}: {}".format(
             'Function' if self.node_type == 'edbfunc' else 'Procedure',
             name)
         if body != '':

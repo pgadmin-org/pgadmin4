@@ -185,7 +185,7 @@ class ServerManager(object):
             elif did in self.db_info:
                 database = self.db_info[did]['datname']
             else:
-                maintenance_db_id = u'DB:{0}'.format(self.db)
+                maintenance_db_id = 'DB:{0}'.format(self.db)
                 if maintenance_db_id in self.connections:
                     conn = self.connections[maintenance_db_id]
                     # try to connect maintenance db if not connected
@@ -193,7 +193,7 @@ class ServerManager(object):
                         conn.connect()
 
                     if conn.connected():
-                        status, res = conn.execute_dict(u"""
+                        status, res = conn.execute_dict("""
 SELECT
     db.oid as did, db.datname, db.datallowconn,
     pg_encoding_to_char(db.encoding) AS serverencoding,
@@ -223,8 +223,8 @@ WHERE db.oid = {0}""".format(did))
             else:
                 raise ConnectionLost(self.sid, None, None)
 
-        my_id = (u'CONN:{0}'.format(conn_id)) if conn_id is not None else \
-            (u'DB:{0}'.format(database))
+        my_id = ('CONN:{0}'.format(conn_id)) if conn_id is not None else \
+            ('DB:{0}'.format(database))
 
         self.pinged = datetime.datetime.now()
 
@@ -373,9 +373,9 @@ WHERE db.oid = {0}""".format(did))
 
         my_id = None
         if conn_id is not None:
-            my_id = u'CONN:{0}'.format(conn_id)
+            my_id = 'CONN:{0}'.format(conn_id)
         elif database is not None:
-            my_id = u'DB:{0}'.format(database)
+            my_id = 'DB:{0}'.format(database)
 
         if my_id is not None:
             if my_id in self.connections:

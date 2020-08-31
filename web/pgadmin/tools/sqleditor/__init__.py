@@ -223,7 +223,7 @@ def start_view_data(trans_id):
         status, msg = default_conn.connect()
         if not status:
             return make_json_response(
-                data={'status': status, 'result': u"{}".format(msg)}
+                data={'status': status, 'result': "{}".format(msg)}
             )
 
     if status and conn is not None and \
@@ -309,7 +309,7 @@ def extract_sql_from_network_parameters(request_data, request_arguments,
     if request_data:
         sql_parameters = json.loads(request_data, encoding='utf-8')
 
-        if type(sql_parameters) is str:
+        if isinstance(sql_parameters, str):
             return dict(sql=str(sql_parameters), explain_plan=None)
         return sql_parameters
     else:
@@ -596,8 +596,8 @@ def fetch_pg_types(columns_info, trans_obj):
 
     if oids:
         status, res = default_conn.execute_dict(
-            u"SELECT oid, format_type(oid, NULL) AS typname FROM pg_type "
-            u"WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
+            "SELECT oid, format_type(oid, NULL) AS typname FROM pg_type "
+            "WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
         )
 
         if not status:
@@ -616,7 +616,7 @@ def generate_client_primary_key_name(columns_info):
     initial_temp_key_len = len(temp_key)
     duplicate = False
     suffix = 1
-    while 1:
+    while True:
         for col in columns_info:
             if col['name'] == temp_key:
                 duplicate = True
@@ -701,7 +701,7 @@ def save(trans_id):
         is_error, errmsg, conn = _check_and_connect(trans_obj)
         if is_error:
             return make_json_response(
-                data={'status': status, 'result': u"{}".format(errmsg)}
+                data={'status': status, 'result': "{}".format(errmsg)}
             )
 
         status, res, query_results, _rowid = trans_obj.save(
@@ -1414,7 +1414,7 @@ def query_tool_status(trans_id):
     (status, error_msg, conn, trans_obj,
      session_obj) = check_transaction_status(trans_id)
 
-    if not status and error_msg and type(error_msg) == str:
+    if not status and error_msg and isinstance(error_msg, str):
         return internal_server_error(
             errormsg=error_msg
         )

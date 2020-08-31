@@ -40,7 +40,7 @@ class DatabaseAddTestCase(BaseTestGenerator):
                                         "/" + str(self.server_id) + "/",
                                         data=json.dumps(self.data),
                                         content_type='html/json')
-            self.assertEquals(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
             response_data = json.loads(response.data.decode('utf-8'))
             db_id = response_data['node']['_id']
             db_dict = {"server_id": self.server_id, "db_id": db_id,

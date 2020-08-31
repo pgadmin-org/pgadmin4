@@ -659,7 +659,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                                   conn=self.conn
                                   )
         else:
-            sql = u"-- definition incomplete"
+            sql = "-- definition incomplete"
         return sql
 
     def _check_template_name_and_schema_name(self, data, old_data):
@@ -849,7 +849,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                               data=res['rows'][0],
                               conn=self.conn, is_displaying=True)
 
-        sql_header = u"""-- Text Search Dictionary: {0}.{1}\n\n""".format(
+        sql_header = """-- Text Search Dictionary: {0}.{1}\n\n""".format(
             res['rows'][0]['schema'], res['rows'][0]['name'])
         sql_header += """-- DROP TEXT SEARCH DICTIONARY {0};\n
 """.format(self.qtIdent(self.conn, res['rows'][0]['schema'],

@@ -181,7 +181,7 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
                                    str(self.m_view_id),
                                    data=json.dumps(data),
                                    follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         # Disconnect the database

@@ -574,7 +574,7 @@ class DatabaseView(PGChildNodeView):
     def create(self, gid, sid):
         """Create the database."""
         required_args = [
-            u'name'
+            'name'
         ]
 
         data = request.form if request.form else json.loads(
@@ -992,7 +992,7 @@ class DatabaseView(PGChildNodeView):
         Generates sql for creating new database.
         """
         required_args = [
-            u'name'
+            'name'
         ]
 
         for arg in required_args:
@@ -1183,7 +1183,7 @@ class DatabaseView(PGChildNodeView):
         frmtd_variables = parse_variables_from_db(res1['rows'])
         result.update(frmtd_variables)
 
-        sql_header = u"-- Database: {0}\n\n-- ".format(result['name'])
+        sql_header = "-- Database: {0}\n\n-- ".format(result['name'])
 
         sql_header += render_template(
             "/".join([self.template_path, self._DELETE_SQL]),

@@ -104,7 +104,7 @@ class EventTriggerFunctionsTestCase(BaseTestGenerator):
                 actual_response_code = response.status_code
                 expected_response_code = self.expected_data['status_code']
 
-        self.assertEquals(actual_response_code, expected_response_code)
+        self.assertEqual(actual_response_code, expected_response_code)
 
     def tearDown(self):
         # Disconnect the database

@@ -62,12 +62,12 @@ BROWSER_STATIC = 'browser.static'
 JQUERY_ACIPLUGIN = 'jquery.aciplugin'
 BROWSER_INDEX = 'browser.index'
 PGADMIN_BROWSER = 'pgAdmin.Browser'
-PASS_ERROR_MSG = u'Your password has not been changed.'
-SMTP_SOCKET_ERROR = u'SMTP Socket error: {error}\n {pass_error}'.format(
+PASS_ERROR_MSG = 'Your password has not been changed.'
+SMTP_SOCKET_ERROR = 'SMTP Socket error: {error}\n {pass_error}'.format(
     error={}, pass_error=PASS_ERROR_MSG)
-SMTP_ERROR = u'SMTP error: {error}\n {pass_error}'.format(
+SMTP_ERROR = 'SMTP error: {error}\n {pass_error}'.format(
     error={}, pass_error=PASS_ERROR_MSG)
-PASS_ERROR = u'Error: {error}\n {pass_error}'.format(
+PASS_ERROR = 'Error: {error}\n {pass_error}'.format(
     error={}, pass_error=PASS_ERROR_MSG)
 
 

@@ -96,7 +96,7 @@ class ForeignTableAddTestCase(BaseTestGenerator):
             str(self.schema_id) + '/', data=json.dumps(data),
             content_type='html/json')
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """ This function disconnect the test database and delete test

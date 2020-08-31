@@ -54,7 +54,7 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
         self.mockSubprocessCall.return_value = 0
 
         self.mockOs.listdir.return_value = [
-            u'history.js', u'reactComponents.js']
+            'history.js', 'reactComponents.js']
 
         javascript_bundler.bundle()
         self.mockSubprocessCall.assert_called_once_with(
@@ -100,7 +100,7 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
             "mock exception behavior")
         self.mockOs.path.exists.return_value = True
         self.mockOs.listdir.return_value = [
-            u'history.js', u'reactComponents.js']
+            'history.js', 'reactComponents.js']
 
         javascript_bundler.bundle()
         self.mockSubprocessCall.assert_called_once_with(

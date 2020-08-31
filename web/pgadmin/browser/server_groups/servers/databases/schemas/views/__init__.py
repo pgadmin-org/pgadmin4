@@ -1569,7 +1569,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         else:
             columns = '*'
 
-        sql = u"SELECT {0}\n\tFROM {1};".format(
+        sql = "SELECT {0}\n\tFROM {1};".format(
             columns,
             self.qtIdent(self.conn, data_view['schema'], data_view['name'])
         )
@@ -1629,7 +1629,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         if len(columns) > 0:
             columns = ", ".join(columns)
             values = ", ".join(values)
-            sql = u"INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
+            sql = "INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
                 self.qtIdent(
                     self.conn, data_view['schema'], data_view['name']
                 ),

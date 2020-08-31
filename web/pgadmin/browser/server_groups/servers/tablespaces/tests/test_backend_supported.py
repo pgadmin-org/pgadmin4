@@ -43,6 +43,6 @@ class BackendSupportedTestCase(BaseTestGenerator):
         manager = MagicMock()
         manager.sversion = self.manager['sversion']
         manager.server_type = self.manager['server_type']
-        self.assertEquals(
+        self.assertEqual(
             self.expected_result, module.backend_supported(manager)
         )

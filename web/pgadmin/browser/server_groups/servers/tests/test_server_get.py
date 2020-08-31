@@ -37,7 +37,7 @@ class ServersGetTestCase(BaseTestGenerator):
         response = self.tester.get(self.url + str(utils.SERVER_GROUP) + '/' +
                                    str(server_id),
                                    follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """This function delete the server from SQLite """
