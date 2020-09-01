@@ -100,7 +100,7 @@ define('misc.dependents', [
           },
           {
             name: 'field',
-            label: ' ', // label kept blank, it will change dynamically
+            label: gettext('field'),
             cell: 'string',
             editable: false,
           },
