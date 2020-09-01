@@ -81,7 +81,7 @@ if [ ${IS_DEBIAN} == 1 ]; then
           if [[ ${UNAME} =~ "Debian" ]]; then
             /sbin/a2enmod wsgi 1> /dev/null
             /sbin/a2enconf pgadmin4 1> /dev/null
-          then
+          else
             /usr/sbin/a2enmod wsgi 1> /dev/null
             /usr/sbin/a2enconf pgadmin4 1> /dev/null
           fi
