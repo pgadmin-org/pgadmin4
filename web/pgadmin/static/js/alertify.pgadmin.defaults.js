@@ -424,7 +424,8 @@ define([
   };
 
   var alertifySuccess = alertify.success,
-    alertifyError = alertify.error;
+    alertifyError = alertify.error,
+    alertifyWarning = alertify.warning;
 
   /*
   For adding the jasmine test cases, we needed to refer the original success,
@@ -433,6 +434,7 @@ define([
   _.extend(alertify, {
     orig_success: alertifySuccess,
     orig_error: alertifyError,
+    orig_warning: alertifyWarning,
   });
 
   _.extend(alertify, {
@@ -465,6 +467,17 @@ define([
         <div class="alert-text-body" role="status">${message}</div>
       </div>`;
       var alert = alertify.notify(alertMessage, timeout);
+      return alert;
+    },
+    warning: function(message, timeout) {
+      var alertMessage =
+      `<div class="d-flex px-3 py-2">
+        <div class="mr-3">
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        </div>
+        <div class="alert-text-body" role="status">${message}</div>
+      </div>`;
+      var alert = alertify.orig_warning(alertMessage, timeout);
       return alert;
     },
   });
