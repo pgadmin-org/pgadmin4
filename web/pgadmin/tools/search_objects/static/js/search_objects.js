@@ -35,7 +35,7 @@ define([
         callback: 'show_search_objects',
         enable: this.search_objects_enabled,
         priority: 1,
-        label: gettext('Search objects'),
+        label: gettext('Search Objects...'),
       }, {
         name: 'search_objects',
         module: this,
@@ -43,7 +43,7 @@ define([
         callback: 'show_search_objects',
         enable: this.search_objects_enabled,
         priority: 1,
-        label: gettext('Search objects'),
+        label: gettext('Search Objects...'),
       }];
 
       pgBrowser.add_menus(menus);
