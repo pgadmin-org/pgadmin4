@@ -8,6 +8,7 @@
 ##########################################################################
 
 """pgagent helper utilities"""
+from flask import render_template
 
 
 def format_boolean_array(value):
@@ -44,3 +45,40 @@ def format_schedule_data(data):
         data['jscmonths'] = format_boolean_array(data['jscmonths'])
 
     return data
+
+
+def format_step_data(job_id, data, has_connection_str, conn, template_path):
+    """
+    This function is used to format the step data. If data is not an
+    instance of list then format
+    :param job_id: Job ID
+    :param data: a step data
+    :param has_connection_str: has pgagent connection str
+    :param conn: Connection obj
+    :param conn: SQL template path
+    """
+    if 'jstconntype' not in data and \
+        ('jstdbname' in data or
+         'jstconnstr' in data) and has_connection_str:
+        status, rset = conn.execute_dict(
+            render_template(
+                "/".join([template_path, 'steps.sql']),
+                jid=job_id,
+                jstid=data['jstid'],
+                conn=conn,
+                has_connstr=has_connection_str
+            )
+        )
+        if not status:
+            return False, rset
+
+        row = rset['rows'][0]
+        data['jstconntype'] = row['jstconntype']
+        if row['jstconntype']:
+            data['jstdbname'] = data.get(
+                'jstdbname', row['jstdbname'])
+        else:
+            data['jstconnstr'] = data.get(
+                'jstconnstr', row['jstconnstr'])
+
+    return True, None

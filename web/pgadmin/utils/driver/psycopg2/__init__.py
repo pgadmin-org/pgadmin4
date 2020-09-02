@@ -14,6 +14,7 @@ object.
 
 """
 import datetime
+import re
 from flask import session
 from flask_login import current_user
 from werkzeug.exceptions import InternalServerError
@@ -64,6 +65,28 @@ class Driver(BaseDriver):
 
         super(Driver, self).__init__()
 
+    def _restore_connections_from_session(self):
+        """
+        Used internally by connection_manager to restore connections
+        from sessions.
+        """
+        if session.sid not in self.managers:
+            self.managers[session.sid] = managers = dict()
+            if '__pgsql_server_managers' in session:
+                session_managers = \
+                    session['__pgsql_server_managers'].copy()
+                for server in \
+                    Server.query.filter_by(
+                        user_id=current_user.id):
+                    manager = managers[str(server.id)] = \
+                        ServerManager(server)
+                    if server.id in session_managers:
+                        manager._restore(session_managers[server.id])
+                        manager.update_session()
+            return managers
+
+        return {}
+
     def connection_manager(self, sid=None):
         """
         connection_manager(...)
@@ -86,20 +109,7 @@ class Driver(BaseDriver):
             with connection_restore_lock:
                 # The wait is over but the object might have been loaded
                 # by some other thread check again
-                if session.sid not in self.managers:
-                    self.managers[session.sid] = managers = dict()
-                    if '__pgsql_server_managers' in session:
-                        session_managers =\
-                            session['__pgsql_server_managers'].copy()
-                        for server in \
-                                Server.query.filter_by(
-                                    user_id=current_user.id):
-                            manager = managers[str(server.id)] =\
-                                ServerManager(server)
-                            if server.id in session_managers:
-                                manager._restore(session_managers[server.id])
-                                manager.update_session()
-
+                managers = self._restore_connections_from_session()
         else:
             managers = self.managers[session.sid]
             if str(sid) in managers:
@@ -331,10 +341,8 @@ class Driver(BaseDriver):
         if '0' <= val_noarray[0] <= '9':
             return True
 
-        for c in val_noarray:
-            if (not ('a' <= c <= 'z') and c != '_' and
-                    not ('0' <= c <= '9')):
-                return True
+        if re.search('[^a-z_0-9]+', val_noarray):
+            return True
 
         # check string is keywaord or not
         category = Driver.ScanKeywordExtraLookup(value)
