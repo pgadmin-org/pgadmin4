@@ -22,22 +22,25 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as tables_utils
 
 
-class TableAddTestCase(BaseTestGenerator):
-    """ This class will add new collation under schema node. """
+class TableUpdateTestCase(BaseTestGenerator):
+    """This class will add new collation under schema node."""
     url = '/browser/table/obj/'
 
     # Generates scenarios
-    scenarios = utils.generate_scenarios("table_create",
+    scenarios = utils.generate_scenarios("table_put_partition",
                                          tables_utils.test_cases)
 
     def setUp(self):
         # Load test data
         self.data = self.test_data
 
-        # Check server version
+        # Create db connection
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
+        self.db_id = schema_info["db_id"]
 
+        # Check Server version
         if "server_min_version" in self.inventory_data:
             server_con = server_utils.connect_server(self, self.server_id)
             if not server_con["info"] == "Server connected.":
@@ -47,15 +50,12 @@ class TableAddTestCase(BaseTestGenerator):
                     self.inventory_data["server_min_version"]:
                 self.skipTest(self.inventory_data["skip_msg"])
 
-        # Create db connection
-        self.db_name = parent_node_dict["database"][-1]["db_name"]
-        self.db_id = schema_info["db_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to add a table.")
 
-        # Create schema
+        # Verify schema
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
         schema_response = schema_utils.verify_schemas(self.server,
@@ -64,60 +64,49 @@ class TableAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
 
-    def runTest(self):
-        """ This function will add table under schema node. """
-        if "table_name" in self.data:
-            self.table_name = self.data["table_name"]
+        # Create table
+        self.table_name = "test_table_put_%s" % (str(uuid.uuid4())[1:8])
+        self.is_partition = self.inventory_data.get("is_partition",)
+        if self.is_partition:
+            self.table_id = tables_utils.create_table_for_partition(
+                self.server,
+                self.db_name,
+                self.schema_name,
+                self.table_name,
+                'partitioned',
+                self.inventory_data["partition_type"])
         else:
-            self.table_name = "test_table_add_%s" % (str(uuid.uuid4())[1:8])
+            self.table_id = tables_utils.create_table(
+                self.server, self.db_name,
+                self.schema_name,
+                self.table_name)
 
-        db_user = self.server["username"]
+        # Verify table creation
+        table_response = tables_utils.verify_table(self.server, self.db_name,
+                                                   self.table_id)
+        if not table_response:
+            raise Exception("Could not find the table to update.")
 
-        # Get the common data
-        self.data.update(tables_utils.get_table_common_data())
-        if self.server_information and \
-            'server_version' in self.server_information and \
-                self.server_information['server_version'] >= 120000:
-            self.data['spcname'] = None
-        self.data.update({
-            "name": self.table_name,
-            "relowner": db_user,
-            "schema": self.schema_name,
-            "relacl": [{
-                "grantee": db_user,
-                "grantor": db_user,
-                "privileges": [{
-                    "privilege_type": "a",
-                    "privilege": True,
-                    "with_grant": True
-                }, {
-                    "privilege_type": "r",
-                    "privilege": True,
-                    "with_grant": False
-                }, {
-                    "privilege_type": "w",
-                    "privilege": True,
-                    "with_grant": False
-                }]
-            }]
-        })
+    def runTest(self):
+        """This function will fetch added table under schema node."""
+        self.data["id"] = self.table_id
 
-        # Add table
+        if self.is_partition:
+            tables_utils.set_partition_data(
+                self.server, self.db_name, self.schema_name, self.table_name,
+                self.inventory_data["partition_type"], self.data,
+                self.inventory_data["mode"])
+
         if self.is_positive_test:
-            response = tables_utils.api_create(self)
+            response = tables_utils.api_put(self)
 
             # Assert response
             utils.assert_status_code(self, response)
-
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
                            side_effect=eval(self.mock_data["return_value"])):
-                    response = tables_utils.api_create(self)
-            else:
-                if self.table_name == "":
-                    del self.data["name"]
-                response = tables_utils.api_create(self)
+                    response = tables_utils.api_put(self)
 
             # Assert response
             utils.assert_status_code(self, response)

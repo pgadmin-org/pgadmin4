@@ -20,17 +20,20 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as tables_utils
 
 
-class TableDeleteTestCase(BaseTestGenerator):
-    """This class will delete new table under schema node."""
-    url = '/browser/table/obj/'
+class TableGetScriptSqlTestCase(BaseTestGenerator):
+    """This class will add new collation under schema node."""
+    url = '/browser/table/'
 
     # Generates scenarios
-    scenarios = utils.generate_scenarios("table_delete",
+    scenarios = utils.generate_scenarios("table_get_script_sql",
                                          tables_utils.test_cases)
 
     def setUp(self):
         # Load test data
         self.data = self.test_data
+
+        # Update url
+        self.url = self.url + self.add_to_url
 
         # Create db connection
         self.db_name = parent_node_dict["database"][-1]["db_name"]
@@ -52,35 +55,24 @@ class TableDeleteTestCase(BaseTestGenerator):
             raise Exception("Could not find the schema to add a table.")
 
         # Create table
-        self.table_name = "test_table_delete_%s" % (str(uuid.uuid4())[1:8])
-        self.table_id = tables_utils.create_table(self.server, self.db_name,
-                                                  self.schema_name,
-                                                  self.table_name)
-
-        # Create table
-        if self.is_list:
-            self.table_name_1 = \
-                "test_table_delete_%s" % (str(uuid.uuid4())[1:8])
-            self.table_id_1 = tables_utils.create_table(self.server,
-                                                        self.db_name,
-                                                        self.schema_name,
-                                                        self.table_name_1
-                                                        )
-
-        # Verify table creation
-        table_response = tables_utils.verify_table(self.server, self.db_name,
-                                                   self.table_id)
-        if not table_response:
-            raise Exception("Could not find the table to delete.")
+        self.table_name = "test_table_get_%s" % (str(uuid.uuid4())[1:8])
+        if "query" in self.inventory_data:
+            custom_query = self.inventory_data["query"]
+            self.table_id = tables_utils.create_table(self.server,
+                                                      self.db_name,
+                                                      self.schema_name,
+                                                      self.table_name,
+                                                      custom_query)
+        else:
+            self.table_id = tables_utils.create_table(self.server,
+                                                      self.db_name,
+                                                      self.schema_name,
+                                                      self.table_name)
 
     def runTest(self):
         """This function will delete added table under schema node."""
         if self.is_positive_test:
-            if self.is_list:
-                self.data["ids"] = [self.table_id, self.table_id_1]
-                response = tables_utils.api_delete(self, "")
-            else:
-                response = tables_utils.api_delete(self)
+            response = tables_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)
@@ -88,11 +80,15 @@ class TableDeleteTestCase(BaseTestGenerator):
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
                            side_effect=eval(self.mock_data["return_value"])):
-                    response = tables_utils.api_delete(self)
+                    if self.is_list:
+                        response = tables_utils.api_get(self, "")
+                    else:
+                        response = tables_utils.api_get(self)
             else:
                 if 'table_id' in self.data:
                     self.table_id = self.data['table_id']
-                response = tables_utils.api_delete(self)
+
+                response = tables_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)

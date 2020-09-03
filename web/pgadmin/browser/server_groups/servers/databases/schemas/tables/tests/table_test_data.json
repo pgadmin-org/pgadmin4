@@ -1,0 +1,1934 @@
+{
+  "table_create": [
+    {
+      "name": "Create: Add Table with Identity columns",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Identity columns are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "description": "Create Table API Test",
+        "columns": [
+          {
+            "name": "iden_always",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "i",
+            "attidentity": "a",
+            "seqincrement": 1,
+            "seqstart": 1,
+            "seqmin": 1,
+            "seqmax": 10,
+            "seqcache": 1,
+            "seqcycle": true
+          },
+          {
+            "name": "iden_default",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "i",
+            "attidentity": "d",
+            "seqincrement": 2,
+            "seqstart": 2,
+            "seqmin": 2,
+            "seqmax": 2000,
+            "seqcache": 1,
+            "seqcycle": true
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Table with Generated columns",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 120000,
+        "skip_msg": "Generated  columns are not supported by EPAS/PG 12.0 and below."
+      },
+      "test_data": {
+        "columns": [
+          {
+            "name": "c1",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "c2",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "genrated",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "g",
+            "genexpr": "m1*m2"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add hash partitioned table with 2 partitions.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 110000,
+        "skip_msg": "Hash Partition are not supported by PPAS/PG 11.0 and below."
+      },
+      "test_data": {
+        "is_partitioned": true,
+        "partition_type": "hash",
+        "partitions": [
+          {
+            "values_modulus": "24",
+            "values_remainder": "3",
+            "is_attach": false,
+            "partition_name": "emp_2016"
+          },
+          {
+            "values_modulus": "8",
+            "values_remainder": "2",
+            "is_attach": false,
+            "partition_name": "emp_2017"
+          }
+        ],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "empno"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Multilevel List partitioned table with subpartition table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "is_partitioned": true,
+        "partition_type": "list",
+        "multilevel_partition": true,
+        "partitions": [
+          {
+            "values_in": "'2012-01-01', '2012-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2012_multi_level",
+            "is_sub_partitioned": true,
+            "sub_partition_type": "list",
+            "sub_partition_keys": [
+              {
+                "key_type": "column",
+                "pt_column": "empno"
+              }
+            ]
+          },
+          {
+            "values_in": "'2013-01-01', '2013-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2013_multi_level",
+            "is_sub_partitioned": true,
+            "sub_partition_type": "range",
+            "sub_partition_keys": [
+              {
+                "key_type": "column",
+                "pt_column": "empno"
+              }
+            ]
+          }
+        ],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "DOJ"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add list partitioned table with 2 partitions.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "is_partitioned": true,
+        "partition_type": "list",
+        "partitions": [
+          {
+            "values_in": "'2012-01-01', '2012-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2012"
+          },
+          {
+            "values_in": "'2013-01-01', '2013-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2013"
+          }
+        ],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "DOJ"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add multilevel Range partitioned table with subpartition table",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "is_partitioned": true,
+        "partition_type": "range",
+        "multilevel_partition": true,
+        "partitions": [
+          {
+            "values_from": "'2010-01-01'",
+            "values_to": "'2010-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2010_multi_level",
+            "is_sub_partitioned": true,
+            "sub_partition_type": "range",
+            "sub_partition_keys": [
+              {
+                "key_type": "column",
+                "pt_column": "empno"
+              }
+            ]
+          },
+          {
+            "values_from": "'2011-01-01'",
+            "values_to": "'2011-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2011_multi_level",
+            "is_sub_partitioned": true,
+            "sub_partition_type": "list",
+            "sub_partition_keys": [
+              {
+                "key_type": "column",
+                "pt_column": "empno"
+              }
+            ]
+          }
+        ],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "DOJ"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Range partitioned table with 1 default and 2 value based partition",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 110000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "is_partitioned": true,
+        "partition_type": "range",
+        "is_default": true,
+        "partitions": [
+          {
+            "values_from": "'2010-01-01'",
+            "values_to": "'2010-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2010_def"
+          },
+          {
+            "values_from": "'2011-01-01'",
+            "values_to": "'2011-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2011_def"
+          },
+          {
+            "values_from": "",
+            "values_to": "",
+            "is_attach": false,
+            "is_default": true,
+            "partition_name": "emp_2012_def"
+          }
+        ],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "DOJ"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add range partitioned table with 2 partitions",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "is_partitioned": true,
+        "partition_type": "range",
+        "partitions": [
+          {
+            "values_from": "'2010-01-01'",
+            "values_to": "'2010-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2010"
+          },
+          {
+            "values_from": "'2011-01-01'",
+            "values_to": "'2011-12-31'",
+            "is_attach": false,
+            "partition_name": "emp_2011"
+          }
+        ],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "DOJ"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Table with name more than 64 chars.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Identity columns are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "table_name": "abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz123",
+        "description": "Create Table API Test",
+        "columns": [
+          {
+            "name": "iden_always",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "i",
+            "attidentity": "a",
+            "seqincrement": 1,
+            "seqstart": 1,
+            "seqmin": 1,
+            "seqmax": 10,
+            "seqcache": 1,
+            "seqcycle": true
+          },
+          {
+            "name": "iden_default",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "i",
+            "attidentity": "d",
+            "seqincrement": 2,
+            "seqstart": 2,
+            "seqmin": 2,
+            "seqmax": 2000,
+            "seqcache": 1,
+            "seqcycle": true
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Table without name parameter.",
+      "is_positive_test": false,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Identity columns are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "table_name": "",
+        "description": "Create Table API Test",
+        "columns": [
+          {
+            "name": "iden_always",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "i",
+            "attidentity": "a",
+            "seqincrement": 1,
+            "seqstart": 1,
+            "seqmin": 1,
+            "seqmax": 10,
+            "seqcache": 1,
+            "seqcycle": true
+          },
+          {
+            "name": "iden_default",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "i",
+            "attidentity": "d",
+            "seqincrement": 2,
+            "seqstart": 2,
+            "seqmin": 2,
+            "seqmax": 2000,
+            "seqcache": 1,
+            "seqcycle": true
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the required parameter (name).",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Table while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Identity columns are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {
+        "description": "Create Table API Test",
+        "columns": [
+          {
+            "name": "iden_always",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "i",
+            "attidentity": "a",
+            "seqincrement": 1,
+            "seqstart": 1,
+            "seqmin": 1,
+            "seqmax": 10,
+            "seqcache": 1,
+            "seqcycle": true
+          },
+          {
+            "name": "iden_default",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "i",
+            "attidentity": "d",
+            "seqincrement": 2,
+            "seqstart": 2,
+            "seqmin": 2,
+            "seqmax": 2000,
+            "seqcache": 1,
+            "seqcycle": true
+          }
+        ]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "table_delete": [
+    {
+      "name": "Delete: Delete existing table",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete multiple existing table",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete: Delete non-existing table",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete existing table when server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "table_get": [
+    {
+      "name": "Get: Fetch existing table details",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch multiple existing table details",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get: Fetch non-existing table details",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch existing table details while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get: Fetch multiple existing table details while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "table_get_nodes": [
+    {
+      "name": "Get nodes: Fetch existing table details",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get nodes: Fetch multiple existing table details",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get nodes: Fetch non-existing table details",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get nodes: Fetch existing table details while server is down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get nodes: Fetch multiple existing table details while server is down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "table_msql": [
+    {
+      "name": "Get msql: Fetch existing table details",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "description": "Msql API Tests",
+        "name": "chnagename"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get msql: Fetch non-existing table details",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1,
+        "description": "Msql API Tests",
+        "name": "chnagename"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "table_sql": [
+    {
+      "name": "Get sql: Fetch existing table sql",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get sql: Fetch non-existing table sql",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "table_dependencies_dependents": [
+    {
+      "name": "Get dependents: Fetch existing table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get dependencies: Fetch multiple existing table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+  ],
+  "table_get_statistics": [
+    {
+      "name": "Get statistics: Fetch existing table stats.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get statistics: Fetch multiple existing table stats.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get statistics: Fetch existing table stats while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get statistics: Fetch existing table stats while server is down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "table_put_partition": [
+    {
+      "name": "Put: Create partitions of existing range partitioned table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": true,
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "partition_type": "range",
+        "mode": "create"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Create partitions with partition table of existing range.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": true,
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "partition_type": "range",
+        "mode": "multilevel"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Create partitions of existing list partitioned table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": true,
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "partition_type": "list",
+        "mode": "create"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Create partitions with partition table of existing list partitioned table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": true,
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "partition_type": "list",
+        "mode": "multilevel"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Detach partition from existing range partitioned table'.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": true,
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "partition_type": "range",
+        "mode": "detach"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Detach partition from existing list partitioned table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": true,
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "partition_type": "list",
+        "mode": "detach"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Attach partition to existing range partitioned table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": true,
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "partition_type": "range",
+        "mode": "attach"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Attach partition to existing list partitioned table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": true,
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "partition_type": "list",
+        "mode": "attach"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Update comment in table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_partition": false
+      },
+      "test_data": {
+        "description": "This is test comment for table"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "table_put": [
+    {
+      "name": "Put: Enable custom auto vacuum and set the parameters for table without autovacuum_enabled",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "autovacuum_custom": true,
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 20
+            },
+            {
+              "name": "autovacuum_vacuum_threshold",
+              "value": 20
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Change a parameter to zero value without autovacuum_enabled",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 0
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Enable autovacuum_enabled",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "autovacuum_enabled": "t"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Reset individual parameters for table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "autovacuum_enabled": "x",
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": null
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Reset custom auto vacuum.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "autovacuum_custom": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Enable toast custom auto vacuum and set the parameters for table without autovacuum_enabled.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "toast_autovacuum": true,
+        "vacuum_toast": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 20
+            },
+            {
+              "name": "autovacuum_vacuum_threshold",
+              "value": 20
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Change a toast parameter to zero value without autovacuum_enabled",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "vacuum_toast": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 0
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Enable toast.autovacuum_enabled.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "toast_autovacuum_enabled": "t"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Reset individual toast parameters for table'.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "toast_autovacuum_enabled": "x",
+        "vacuum_toast": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": null
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Reset auto vacuum.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "toast_autovacuum":false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put: Update column privileges.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "is_grant_tab": true
+      },
+      "test_data": {
+        "columns": {
+                "changed": [{
+                    "attnum": 1,
+                    "attacl": {
+                        "added": [{
+                            "privileges": [
+                                {"privilege_type": "a", "privilege": true,
+                                 "with_grant": true},
+                                {"privilege_type": "r", "privilege": true,
+                                 "with_grant": true},
+                                {"privilege_type": "w", "privilege": true,
+                                 "with_grant": true},
+                                {"privilege_type": "x", "privilege": true,
+                                 "with_grant": true
+                                 }
+                            ]
+                        }]
+                    }
+                }]
+            }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "table_get_script_sql": [
+    {
+      "name": "Get Insert Sql: Fetch insert sql for existing table.",
+      "add_to_url": "insert_sql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Insert Sql: Fetch insert sql for existing table without column.",
+      "add_to_url": "insert_sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"create table %s.%s()\" % (schema_name,table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Insert Sql: Fetch insert sql for non-existing table.",
+      "add_to_url": "insert_sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Insert Sql: Fetch insert sql for existing table while server is down.",
+      "add_to_url": "insert_sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Update Sql: Fetch update sql for existing table.",
+      "add_to_url": "update_sql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Update Sql: Fetch update sql for existing table without column.",
+      "add_to_url": "update_sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"create table %s.%s()\" % (schema_name,table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Update Sql: Fetch update sql for non-existing table.",
+      "add_to_url": "update_sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Update Sql: Fetch update sql for existing table while server is down.",
+      "add_to_url": "update_sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Delete Sql: Fetch delete sql for existing table.",
+      "add_to_url": "delete_sql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Delete Sql: Fetch delete sql for non-existing table.",
+      "add_to_url": "delete_sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Delete Sql: Fetch delete sql for existing table while server is down.",
+      "add_to_url": "delete_sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Select Sql: Fetch select sql for existing table.",
+      "add_to_url": "select_sql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Select Sql: Fetch select sql for non-existing table.",
+      "add_to_url": "select_sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Select Sql: Fetch select sql for existing table while server is down.",
+      "add_to_url": "select_sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "table_get_pre_table_creation_parameters": [
+    {
+      "name": "Get pre table creation parameter: Fetch table vacuum parameters.",
+      "add_to_url": "get_table_vacuum/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch toast table vacuum parameters.",
+      "add_to_url": "get_toast_table_vacuum/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch access methods.",
+      "add_to_url": "get_access_methods/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch types.",
+      "add_to_url": "get_types/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch of types.",
+      "add_to_url": "get_oftype/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch tables available for inheritance .",
+      "add_to_url": "get_inherits/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch list of tables available for like/relation .",
+      "add_to_url": "get_relations/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch list of tables required for constraints.",
+      "add_to_url": "all_tables/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch list of tables required for constraints while server down.",
+      "add_to_url": "all_tables/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch list of columns for foreign table using tid.",
+      "add_to_url": "get_columns/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "url_encoded_data": true,
+      "test_data": {
+        "tid": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch list of columns for foreign table using tid while server down.",
+      "add_to_url": "get_columns/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "url_encoded_data": true,
+      "test_data": {
+        "tid": ""
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch list of columns for foreign table using tname.",
+      "add_to_url": "get_columns/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "url_encoded_data": true,
+      "test_data": {
+        "tname": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch list of operators for column.",
+      "add_to_url": "get_operator/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "url_encoded_data": true,
+      "test_data": {
+        "col_type":"integer"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pre table creation parameter: Fetch list of operator class for column.",
+      "add_to_url": "get_oper_class/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "url_encoded_data": true,
+      "test_data": {
+        "indextype":"btree"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "table_delete_statistics": [
+    {
+      "name": "Delete: Reset table statistics for existing table details.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Reset table statistics for non-existing table details.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "test_table_get_existing_table_actions": [
+    {
+      "name": "Get row count of table: Fetch table row count.",
+      "add_to_url": "count_rows/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get row count of table: Fetch table row count for non-existing table.",
+      "add_to_url": "count_rows/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "table_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get attached tables table: Fetch table attached to parent.",
+      "add_to_url": "get_attach_tables/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 100000,
+        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

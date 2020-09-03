@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-import json
 import uuid
 from unittest.mock import patch
 
@@ -15,29 +14,35 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as tables_utils
 
 
-class TableAddTestCase(BaseTestGenerator):
-    """ This class will add new collation under schema node. """
-    url = '/browser/table/obj/'
+class TableGetTestCase(BaseTestGenerator):
+    """This class will add new collation under schema node."""
+    url = '/browser/table/'
 
     # Generates scenarios
-    scenarios = utils.generate_scenarios("table_create",
-                                         tables_utils.test_cases)
+    scenarios = utils.generate_scenarios(
+        "test_table_get_existing_table_actions", tables_utils.test_cases)
 
     def setUp(self):
         # Load test data
         self.data = self.test_data
 
-        # Check server version
+        # Update url
+        self.url = self.url + self.add_to_url
+
+        # Create db connection
+        self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
+        self.db_id = schema_info["db_id"]
 
+        # Check Server version
         if "server_min_version" in self.inventory_data:
             server_con = server_utils.connect_server(self, self.server_id)
             if not server_con["info"] == "Server connected.":
@@ -47,9 +52,6 @@ class TableAddTestCase(BaseTestGenerator):
                     self.inventory_data["server_min_version"]:
                 self.skipTest(self.inventory_data["skip_msg"])
 
-        # Create db connection
-        self.db_name = parent_node_dict["database"][-1]["db_name"]
-        self.db_id = schema_info["db_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
@@ -64,60 +66,28 @@ class TableAddTestCase(BaseTestGenerator):
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
 
+        # Create table
+        self.table_name = "test_table_get_%s" % (str(uuid.uuid4())[1:8])
+        self.table_id = tables_utils.create_table(self.server, self.db_name,
+                                                  self.schema_name,
+                                                  self.table_name)
+
     def runTest(self):
-        """ This function will add table under schema node. """
-        if "table_name" in self.data:
-            self.table_name = self.data["table_name"]
-        else:
-            self.table_name = "test_table_add_%s" % (str(uuid.uuid4())[1:8])
-
-        db_user = self.server["username"]
-
-        # Get the common data
-        self.data.update(tables_utils.get_table_common_data())
-        if self.server_information and \
-            'server_version' in self.server_information and \
-                self.server_information['server_version'] >= 120000:
-            self.data['spcname'] = None
-        self.data.update({
-            "name": self.table_name,
-            "relowner": db_user,
-            "schema": self.schema_name,
-            "relacl": [{
-                "grantee": db_user,
-                "grantor": db_user,
-                "privileges": [{
-                    "privilege_type": "a",
-                    "privilege": True,
-                    "with_grant": True
-                }, {
-                    "privilege_type": "r",
-                    "privilege": True,
-                    "with_grant": False
-                }, {
-                    "privilege_type": "w",
-                    "privilege": True,
-                    "with_grant": False
-                }]
-            }]
-        })
-
-        # Add table
+        """This function will delete added table under schema node."""
         if self.is_positive_test:
-            response = tables_utils.api_create(self)
+            response = tables_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)
-
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
                            side_effect=eval(self.mock_data["return_value"])):
-                    response = tables_utils.api_create(self)
+                    response = tables_utils.api_get(self)
             else:
-                if self.table_name == "":
-                    del self.data["name"]
-                response = tables_utils.api_create(self)
+                if 'table_id' in self.data:
+                    self.table_id = self.data['table_id']
+                response = tables_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)

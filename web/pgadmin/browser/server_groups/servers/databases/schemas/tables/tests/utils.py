@@ -10,11 +10,89 @@
 
 import sys
 import traceback
+import os
+import json
+from urllib.parse import urlencode
 
 from regression.python_test_utils import test_utils as utils
 
+# Load test data from json file.
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/table_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
-def create_table(server, db_name, schema_name, table_name):
+
+def api_create(self):
+    return self.tester.post("{0}{1}/{2}/{3}/{4}/".
+                            format(self.url, utils.SERVER_GROUP,
+                                   self.server_id,
+                                   self.db_id, self.schema_id),
+                            data=json.dumps(self.data),
+                            content_type='html/json'
+                            )
+
+
+def api_delete(self, table_id=None):
+    if table_id is None:
+        table_id = self.table_id
+    return self.tester.delete("{0}{1}/{2}/{3}/{4}/{5}".
+                              format(self.url, utils.SERVER_GROUP,
+                                     self.server_id, self.db_id,
+                                     self.schema_id, table_id),
+                              data=json.dumps(self.data),
+                              follow_redirects=True)
+
+
+def api_get(self, table_id=None):
+    if table_id is None:
+        table_id = self.table_id
+    return self.tester.get("{0}{1}/{2}/{3}/{4}/{5}".
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.db_id,
+                                  self.schema_id, table_id),
+                           follow_redirects=True
+                           )
+
+
+def api_get_msql(self, url_encode_data):
+    return self.tester.get("{0}{1}/{2}/{3}/{4}/{5}?{6}".
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.db_id,
+                                  self.schema_id, self.table_id,
+                                  urlencode(url_encode_data)),
+                           follow_redirects=True
+                           )
+
+
+def api_put(self):
+    return self.tester.put("{0}{1}/{2}/{3}/{4}/{5}".
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.db_id,
+                                  self.schema_id, self.table_id),
+                           data=json.dumps(self.data),
+                           follow_redirects=True
+                           )
+
+
+def api_get_pre_table_creation_params(self, url_encode_data=None):
+    if url_encode_data is None:
+        return self.tester.get("{0}{1}/{2}/{3}/{4}/".
+                               format(self.url, utils.SERVER_GROUP,
+                                      self.server_id, self.db_id,
+                                      self.schema_id),
+                               follow_redirects=True
+                               )
+    else:
+        return self.tester.get("{0}{1}/{2}/{3}/{4}/?{5}".
+                               format(self.url, utils.SERVER_GROUP,
+                                      self.server_id, self.db_id,
+                                      self.schema_id,
+                                      urlencode(url_encode_data)),
+                               follow_redirects=True
+                               )
+
+
+def create_table(server, db_name, schema_name, table_name, custom_query=None):
     """
     This function creates a table under provided schema.
     :param server: server details
@@ -28,6 +106,12 @@ def create_table(server, db_name, schema_name, table_name):
     :return table_id: table id
     :rtype: int
     """
+    if custom_query is None:
+        query = "CREATE TABLE %s.%s(id serial UNIQUE NOT NULL, name text," \
+                " location text)" % \
+                (schema_name, table_name)
+    else:
+        query = eval(custom_query)
     try:
         connection = utils.get_db_connection(db_name,
                                              server['username'],
@@ -38,9 +122,6 @@ def create_table(server, db_name, schema_name, table_name):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        query = "CREATE TABLE %s.%s(id serial UNIQUE NOT NULL, name text," \
-                " location text)" %\
-                (schema_name, table_name)
         pg_cursor.execute(query)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
