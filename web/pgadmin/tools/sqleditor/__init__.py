@@ -1316,75 +1316,78 @@ def save_file():
 )
 @login_required
 def start_query_download_tool(trans_id):
-    sync_conn = None
     (status, error_msg, sync_conn, trans_obj,
      session_obj) = check_transaction_status(trans_id)
 
-    if status and sync_conn is not None and \
-       trans_obj is not None and session_obj is not None:
-
-        data = request.values if request.values else None
-        try:
-            if data and 'query' in data:
-                sql = data['query']
-
-                # This returns generator of records.
-                status, gen = sync_conn.execute_on_server_as_csv(
-                    sql, records=2000
-                )
-
-                if not status:
-                    return make_json_response(
-                        data={
-                            'status': status, 'result': gen
-                        }
-                    )
-
-                r = Response(
-                    gen(
-                        quote=blueprint.csv_quoting.get(),
-                        quote_char=blueprint.csv_quote_char.get(),
-                        field_separator=blueprint.csv_field_separator.get(),
-                        replace_nulls_with=blueprint.replace_nulls_with.get()
-                    ),
-                    mimetype='text/csv' if
-                    blueprint.csv_field_separator.get() == ','
-                    else 'text/plain'
-                )
-
-                if 'filename' in data and data['filename'] != "":
-                    filename = data['filename']
-                else:
-                    import time
-                    filename = '{0}.{1}'. \
-                        format(int(time.time()), 'csv' if blueprint.
-                               csv_field_separator.get() == ',' else 'txt')
-
-                # We will try to encode report file name with latin-1
-                # If it fails then we will fallback to default ascii file name
-                # werkzeug only supports latin-1 encoding supported values
-                try:
-                    tmp_file_name = filename
-                    tmp_file_name.encode('latin-1', 'strict')
-                except UnicodeEncodeError:
-                    filename = "download.csv"
-
-                r.headers[
-                    "Content-Disposition"
-                ] = "attachment;filename={0}".format(filename)
-
-                return r
-        except (ConnectionLost, SSHTunnelConnectionLost):
-            raise
-        except Exception as e:
-            current_app.logger.error(e)
-            err_msg = "Error: {0}".format(
-                e.strerror if hasattr(e, 'strerror') else str(e))
-            return internal_server_error(errormsg=err_msg)
-    else:
+    if not status or sync_conn is None or trans_obj is None or \
+            session_obj is None:
         return internal_server_error(
             errormsg=gettext("Transaction status check failed.")
         )
+
+    data = request.values if request.values else None
+    if data is None or (data and 'query' not in data):
+        return make_json_response(
+            status=410,
+            success=0,
+            errormsg=gettext(
+                "Could not find the required parameter (query)."
+            )
+        )
+
+    try:
+        sql = data['query']
+
+        # This returns generator of records.
+        status, gen = sync_conn.execute_on_server_as_csv(
+            sql, records=2000
+        )
+
+        if not status:
+            return make_json_response(
+                data={
+                    'status': status, 'result': gen
+                }
+            )
+
+        r = Response(
+            gen(
+                quote=blueprint.csv_quoting.get(),
+                quote_char=blueprint.csv_quote_char.get(),
+                field_separator=blueprint.csv_field_separator.get(),
+                replace_nulls_with=blueprint.replace_nulls_with.get()
+            ),
+            mimetype='text/csv' if
+            blueprint.csv_field_separator.get() == ','
+            else 'text/plain'
+        )
+
+        import time
+        extn = 'csv' if blueprint.csv_field_separator.get() == ',' else 'txt'
+        filename = data['filename'] if data.get('filename', '') != "" else \
+            '{0}.{1}'.format(int(time.time()), extn)
+
+        # We will try to encode report file name with latin-1
+        # If it fails then we will fallback to default ascii file name
+        # werkzeug only supports latin-1 encoding supported values
+        try:
+            tmp_file_name = filename
+            tmp_file_name.encode('latin-1', 'strict')
+        except UnicodeEncodeError:
+            filename = "download.csv"
+
+        r.headers[
+            "Content-Disposition"
+        ] = "attachment;filename={0}".format(filename)
+
+        return r
+    except (ConnectionLost, SSHTunnelConnectionLost):
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        err_msg = "Error: {0}".format(
+            e.strerror if hasattr(e, 'strerror') else str(e))
+        return internal_server_error(errormsg=err_msg)
 
 
 @blueprint.route(
