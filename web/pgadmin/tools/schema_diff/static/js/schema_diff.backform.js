@@ -175,7 +175,7 @@ let SchemaDiffSelect2Control =
       let span = this.$el.find('.select2-selection .select2-selection__rendered span.wcTabIcon'),
         selSpan = this.$el.find('option:selected');
 
-      if (span.hasClass('icon-server-not-connected')) {
+      if (span.hasClass('icon-server-not-connected') || span.hasClass('icon-shared-server-not-connected')) {
         let icon = (data.icon) ? data.icon : 'icon-pg';
         span.removeClass('icon-server-not-connected');
         span.addClass(icon);

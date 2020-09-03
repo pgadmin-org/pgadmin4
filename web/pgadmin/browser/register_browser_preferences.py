@@ -9,6 +9,7 @@
 from flask_babelex import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS
+import config
 
 LOCK_LAYOUT_LEVEL = {
     'PREVENT_DOCKING': 'docking',
@@ -23,6 +24,15 @@ def register_browser_preferences(self):
         gettext("Show system objects?"), 'boolean', False,
         category_label=PREF_LABEL_DISPLAY
     )
+    if config.SERVER_MODE:
+        self.hide_shared_server = self.preference.register(
+            'display', 'hide_shared_server',
+            gettext("Hide shared server?"), 'boolean', False,
+            category_label=gettext('Display'),
+            help_str=gettext(
+                'If set to true, then all shared server will be hidden'
+            )
+        )
 
     self.preference.register(
         'display', 'enable_acitree_animation',

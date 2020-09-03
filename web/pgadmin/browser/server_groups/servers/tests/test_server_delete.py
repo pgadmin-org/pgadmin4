@@ -9,15 +9,14 @@
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
+from . import utils as servers_utils
 
 
 class ServerDeleteTestCase(BaseTestGenerator):
     """ This class will delete the last server present under tree node."""
 
-    scenarios = [
-        # Fetching the default url for server node
-        ('Default Server Node url', dict(url='/browser/server/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('delete_server',
+                                         servers_utils.test_cases)
 
     def setUp(self):
         """This function add the server to test the DELETE API"""

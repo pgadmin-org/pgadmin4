@@ -44,6 +44,7 @@ define('pgadmin.browser.utils',
 
   pgAdmin['csrf_token_header'] = '{{ current_app.config.get('WTF_CSRF_HEADERS')[0] }}';
   pgAdmin['csrf_token'] = '{{ csrf_token() }}';
+  pgAdmin['server_mode'] = '{{ current_app.config.get('SERVER_MODE') }}';
 
   /* Get the inactivity related config */
   pgAdmin['user_inactivity_timeout'] = {{ current_app.config.get('USER_INACTIVITY_TIMEOUT') }};

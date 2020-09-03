@@ -110,6 +110,7 @@ def dump_servers(args):
                 add_value(attr_dict, "Role", server.role)
                 add_value(attr_dict, "SSLMode", server.ssl_mode)
                 add_value(attr_dict, "Comment", server.comment)
+                add_value(attr_dict, "Shared", server.shared)
                 add_value(attr_dict, "DBRestriction", server.db_res)
                 add_value(attr_dict, "PassFile", server.passfile)
                 add_value(attr_dict, "SSLCert", server.sslcert)
@@ -257,6 +258,14 @@ def load_servers(args):
 
         for server in data["Servers"]:
             obj = data["Servers"][server]
+
+            # Check if server is shared.Won't import if user is non-admin
+            if 'Shared' in obj \
+                and obj['Shared'] and \
+                    not user.has_role("Administrator"):
+                print("Can't import the server '%s' as it is shared " %
+                      obj["Name"])
+                continue
 
             # Get the group. Create if necessary
             group_id = next(

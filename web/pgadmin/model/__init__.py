@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 25
+SCHEMA_VERSION = 26
 
 ##########################################################################
 #
@@ -173,6 +173,7 @@ class Server(db.Model):
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(db.String(64), nullable=True)
+    shared = db.Column(db.Boolean(), nullable=False)
 
 
 class ModulePreference(db.Model):
@@ -305,3 +306,88 @@ class Database(db.Model):
         nullable=False,
         primary_key=True
     )
+
+
+class SharedServer(db.Model):
+    """Define a shared Postgres server"""
+
+    __tablename__ = 'sharedserver'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id')
+    )
+    server_owner = db.Column(
+        db.String(128),
+        db.ForeignKey('user.username')
+    )
+    servergroup_id = db.Column(
+        db.Integer,
+        db.ForeignKey('servergroup.id'),
+        nullable=False
+    )
+    name = db.Column(db.String(128), nullable=False)
+    host = db.Column(db.String(128), nullable=True)
+    hostaddr = db.Column(db.String(128), nullable=True)
+    port = db.Column(
+        db.Integer(),
+        db.CheckConstraint('port >= 1 AND port <= 65534'),
+        nullable=False)
+    maintenance_db = db.Column(db.String(64), nullable=True)
+    username = db.Column(db.String(64), nullable=False)
+    password = db.Column(db.String(64), nullable=True)
+    save_password = db.Column(
+        db.Integer(),
+        db.CheckConstraint('save_password >= 0 AND save_password <= 1'),
+        nullable=False
+    )
+    role = db.Column(db.String(64), nullable=True)
+    ssl_mode = db.Column(
+        db.String(16),
+        db.CheckConstraint(
+            "ssl_mode IN ('allow', 'prefer', 'require', 'disable', "
+            "'verify-ca', 'verify-full')"
+        ),
+        nullable=False)
+    comment = db.Column(db.String(1024), nullable=True)
+    discovery_id = db.Column(db.String(128), nullable=True)
+    servers = db.relationship(
+        'ServerGroup',
+        backref=db.backref('sharedserver', cascade="all, delete-orphan"),
+        lazy='joined'
+    )
+    db_res = db.Column(db.Text(), nullable=True)
+    passfile = db.Column(db.Text(), nullable=True)
+    sslcert = db.Column(db.Text(), nullable=True)
+    sslkey = db.Column(db.Text(), nullable=True)
+    sslrootcert = db.Column(db.Text(), nullable=True)
+    sslcrl = db.Column(db.Text(), nullable=True)
+    sslcompression = db.Column(
+        db.Integer(),
+        db.CheckConstraint('sslcompression >= 0 AND sslcompression <= 1'),
+        nullable=False
+    )
+    bgcolor = db.Column(db.Text(10), nullable=True)
+    fgcolor = db.Column(db.Text(10), nullable=True)
+    service = db.Column(db.Text(), nullable=True)
+    connect_timeout = db.Column(db.Integer(), nullable=False)
+    use_ssh_tunnel = db.Column(
+        db.Integer(),
+        db.CheckConstraint('use_ssh_tunnel >= 0 AND use_ssh_tunnel <= 1'),
+        nullable=False
+    )
+    tunnel_host = db.Column(db.String(128), nullable=True)
+    tunnel_port = db.Column(
+        db.Integer(),
+        db.CheckConstraint('port <= 65534'),
+        nullable=True)
+    tunnel_username = db.Column(db.String(64), nullable=True)
+    tunnel_authentication = db.Column(
+        db.Integer(),
+        db.CheckConstraint('tunnel_authentication >= 0 AND '
+                           'tunnel_authentication <= 1'),
+        nullable=False
+    )
+    tunnel_identity_file = db.Column(db.String(64), nullable=True)
+    tunnel_password = db.Column(db.String(64), nullable=True)
+    shared = db.Column(db.Boolean(), nullable=False)

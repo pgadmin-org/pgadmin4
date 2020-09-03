@@ -20,13 +20,14 @@ from flask_babelex import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     make_response as ajax_response, internal_server_error
-from pgadmin.model import Server
+from pgadmin.model import Server, SharedServer
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS
+from sqlalchemy import or_
 
 MODULE_NAME = 'schema_diff'
 
@@ -270,6 +271,7 @@ def servers():
     server id.
     """
     res = {}
+    auto_detected_server = None
     try:
         """Return a JSON document listing the server groups for the user"""
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -277,7 +279,19 @@ def servers():
         from pgadmin.browser.server_groups.servers import\
             server_icon_and_background
 
-        for server in Server.query.filter_by(user_id=current_user.id):
+        for server in Server.query.filter(
+                or_(Server.user_id == current_user.id, Server.shared)):
+
+            shared_server = SharedServer.query.filter_by(
+                name=server.name, user_id=current_user.id,
+                servergroup_id=server.servergroup_id).first()
+
+            if server.discovery_id:
+                auto_detected_server = server.name
+
+            if shared_server and shared_server.name == auto_detected_server:
+                continue
+
             manager = driver.connection_manager(server.id)
             conn = manager.connection()
             connected = conn.connected()

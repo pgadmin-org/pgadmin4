@@ -66,6 +66,7 @@ class ServerManager(object):
         self.hostaddr = server.hostaddr
         self.port = server.port
         self.db = server.maintenance_db
+        self.shared = server.shared
         self.did = None
         self.user = server.username
         self.password = server.password

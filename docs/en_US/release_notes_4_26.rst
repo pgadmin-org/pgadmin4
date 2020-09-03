@@ -11,6 +11,7 @@ New features
 
 | `Issue #2042 <https://redmine.postgresql.org/issues/2042>`_ -  Added SQL Formatter support in Query Tool.
 | `Issue #4059 <https://redmine.postgresql.org/issues/4059>`_ -  Added a new button to the query tool toolbar to open a new query tool window.
+| `Issue #4979 <https://redmine.postgresql.org/issues/4979>`_ -  Added shared server support for admin users.
 | `Issue #5772 <https://redmine.postgresql.org/issues/5772>`_ -  Warn the user when connecting to a server that is older than pgAdmin supports.
 
 Housekeeping

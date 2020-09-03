@@ -9,8 +9,8 @@
 
 define('pgadmin.node.server_group', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.node',
-], function(gettext, url_for, $, _, pgAdmin) {
+  'sources/pgadmin', 'pgadmin.user_management.current_user', 'pgadmin.browser', 'pgadmin.browser.node',
+], function(gettext, url_for, $, _, pgAdmin, current_user) {
 
   if (!pgAdmin.Browser.Nodes['server_group']) {
     pgAdmin.Browser.Nodes['server_group'] = pgAdmin.Browser.Node.extend({
@@ -39,14 +39,25 @@ define('pgadmin.node.server_group', [
         defaults: {
           id: undefined,
           name: null,
+          user_id: undefined,
         },
         schema: [
           {
             id: 'id', label: gettext('ID'), type: 'int', group: null,
             mode: ['properties'],
+            visible: function(model){
+              if (model.attributes.user_id != current_user.id && !current_user.is_admin)
+                return false;
+              return true;
+            },
           },{
             id: 'name', label: gettext('Name'), type: 'text', group: null,
             mode: ['properties', 'edit', 'create'],
+            disabled: function(model){
+              if (model.attributes.user_id != current_user.id && !_.isUndefined(model.attributes.user_id))
+                return true;
+              return false;
+            },
           },
         ],
         validate: function() {
@@ -69,7 +80,12 @@ define('pgadmin.node.server_group', [
           return null;
         },
       }),
-      canDrop: function(itemData) { return itemData.can_delete; },
+
+      canDrop: function(itemData) {
+        var serverOwner = itemData.user_id;
+        if (serverOwner != current_user.id)
+          return false;
+        return true; },
       dropAsRemove: true,
       canDelete: function(i) {
         var s = pgAdmin.Browser.tree.siblings(i, true);

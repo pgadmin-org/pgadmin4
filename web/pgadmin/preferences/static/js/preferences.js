@@ -463,6 +463,7 @@ define('pgadmin.preferences', [
             }
 
             if (e.button.text == gettext('Save')) {
+              debugger;
               let requires_refresh = false;
               preferences.updateAll();
 
@@ -476,6 +477,29 @@ define('pgadmin.preferences', [
 
                 if(pref.name == 'theme') {
                   requires_refresh = true;
+                }
+
+                if(pref.name == 'hide_shared_server') {
+                  Alertify.confirm(
+                    gettext('Browser tree refresh required'),
+                    gettext('A browser tree refresh is required. Do you wish to refresh the tree?'),
+                    function() {
+                      pgAdmin.Browser.tree.destroy({
+                        success: function() {
+                          pgAdmin.Browser.initializeBrowserTree(pgAdmin.Browser);
+                          return true;
+                        },
+                      });
+                    },
+                    function() {
+                      preferences.reset();
+                      changed = {};
+                      return true;
+                    }
+                  ).set('labels', {
+                    ok: gettext('Refresh'),
+                    cancel: gettext('Later'),
+                  });
                 }
               });
 

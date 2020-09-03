@@ -11,6 +11,11 @@
     "login_password": "PASSWORD",
     "login_username": "USER2@EXAMPLE.COM"
   },
+  "pgAdmin4_test_non_admin_credentials": {
+    "new_password": "NEWPASSWORD",
+    "login_password": "PASSWORD",
+    "login_username": "USER@EXAMPLE.COM"
+  },
   "pgAdmin4_ldap_credentials": {
     "login_password": "PASSWORD",
     "login_username": "USERNAME"

@@ -23,6 +23,7 @@ from pgadmin.utils.ajax import success_return, \
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.browser.server_groups import ServerGroupModule as sgm
 
 MODULE_NAME = 'preferences'
 
@@ -203,6 +204,7 @@ def save(pid):
 
     res, msg = Preferences.save(
         data['mid'], data['category_id'], data['id'], data['value'])
+    sgm.get_nodes(sgm)
 
     if not res:
         return internal_server_error(errormsg=msg)
