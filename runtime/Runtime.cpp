@@ -346,11 +346,15 @@ bool Runtime::isPortInUse(const quint16 port) const
 {
     QTcpSocket socket;
 
-    // Bind the socket on the specified port. It it fails then
-    // port is in use.
-    bool bindSuccessful = socket.bind(port, QTcpSocket::ShareAddress);
+    // Bind the socket on the specified port.
+    socket.bind(port, QTcpSocket::DontShareAddress);
 
-    return !bindSuccessful;
+    // Returns the host port number of the local socket if available; otherwise returns 0
+    quint16 tmpPort = socket.localPort();
+    if (tmpPort == 0)
+        return true;
+
+    return false;
 }
 
 void Runtime::openConfigureWindow(const QString errorMsg)
