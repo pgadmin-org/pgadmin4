@@ -2071,7 +2071,7 @@ define('tools.querytool', [
     if(!pgWindow.default.pgAdmin.selected_tree_map)
       pgWindow.default.pgAdmin.selected_tree_map = new Map();
 
-    pgWindow.default.pgAdmin.selected_tree_map.set(d._id.toString(), selected_tree_node);
+    pgWindow.default.pgAdmin.selected_tree_map.set(d._pid.toString(), selected_tree_node);
   };
 
   _.extend(

@@ -16,6 +16,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
     update_session_grid_transaction
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
+from pgadmin.utils.constants import ERROR_MSG_TRANS_ID_NOT_FOUND
 
 
 class FilterDialog(object):
@@ -23,7 +24,7 @@ class FilterDialog(object):
     def get(*args):
         """To fetch the current sorted columns"""
         status, error_msg, conn, trans_obj, session_obj = args
-        if error_msg == gettext('Transaction ID not found in the session.'):
+        if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
             return make_json_response(
                 success=0,
                 errormsg=error_msg,
@@ -76,7 +77,7 @@ class FilterDialog(object):
         else:
             data = request.args or request.form
 
-        if error_msg == gettext('Transaction ID not found in the session.'):
+        if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
             return make_json_response(
                 success=0,
                 errormsg=error_msg,

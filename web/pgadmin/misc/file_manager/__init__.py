@@ -557,10 +557,9 @@ class Filemanager(object):
             Filemanager.check_access_permission(in_dir, path)
         except Exception as e:
             Filemanager.resume_windows_warning()
-            err_msg = gettext("Error: {0}").format(e)
             files = {
                 'Code': 0,
-                'Error': err_msg
+                'Error': str(e)
             }
             return files
 
@@ -660,9 +659,9 @@ class Filemanager(object):
             Filemanager.resume_windows_warning()
             if (hasattr(e, 'strerror') and
                     e.strerror == gettext('Permission denied')):
-                err_msg = gettext("Error: {0}").format(e.strerror)
+                err_msg = str(e.strerror)
             else:
-                err_msg = gettext("Error: {0}").format(e)
+                err_msg = str(e)
             files = {
                 'Code': 0,
                 'Error': err_msg
@@ -751,7 +750,7 @@ class Filemanager(object):
                 'Filename': split_path(path)[-1],
                 'FileType': '',
                 'Path': path,
-                'Error': gettext("Error: {0}").format(e),
+                'Error': str(e),
                 'Code': 0,
                 'Info': '',
                 'Properties': {
@@ -835,7 +834,7 @@ class Filemanager(object):
             Filemanager.check_access_permission(the_dir, new)
         except Exception as e:
             res = {
-                'Error': gettext("Error: {0}").format(e),
+                'Error': str(e),
                 'Code': 0
             }
             return res
@@ -896,7 +895,7 @@ class Filemanager(object):
             Filemanager.check_access_permission(the_dir, path)
         except Exception as e:
             res = {
-                'Error': gettext("Error: {0}").format(e),
+                'Error': str(e),
                 'Code': 0
             }
             return res
@@ -910,7 +909,7 @@ class Filemanager(object):
                 os.remove(orig_path)
         except Exception as e:
             code = 0
-            err_msg = gettext("Error: {0}").format(e.strerror)
+            err_msg = str(e.strerror)
 
         result = {
             'Path': path,
@@ -950,14 +949,13 @@ class Filemanager(object):
                     f.write(data)
         except Exception as e:
             code = 0
-            err_msg = gettext("Error: {0}").format(
-                e.strerror if hasattr(e, 'strerror') else gettext('Unknown'))
+            err_msg = str(e.strerror) if hasattr(e, 'strerror') else str(e)
 
         try:
             Filemanager.check_access_permission(the_dir, path)
         except Exception as e:
             res = {
-                'Error': gettext("Error: {0}").format(e),
+                'Error': str(e),
                 'Code': 0
             }
             return res
@@ -991,9 +989,9 @@ class Filemanager(object):
         except Exception as e:
             code = 0
             if hasattr(e, 'strerror'):
-                err_msg = gettext("Error: {0}").format(e.strerror)
+                err_msg = str(e.strerror)
             else:
-                err_msg = gettext("Error: {0}").format(e)
+                err_msg = str(e)
 
         result = {
             'Path': path,
@@ -1083,13 +1081,13 @@ class Filemanager(object):
             # we don't want to expose real path of file
             # so only show error message.
             if ex.strerror == 'Permission denied':
-                err_msg = gettext("Error: {0}").format(ex.strerror)
+                err_msg = str(ex.strerror)
             else:
-                err_msg = gettext("Error: {0}").format(str(ex))
+                err_msg = str(ex)
 
         except Exception as ex:
             status = False
-            err_msg = gettext("Error: {0}").format(str(ex))
+            err_msg = str(ex)
 
         # Remove root storage path from error message
         # when running in Server mode
@@ -1117,7 +1115,7 @@ class Filemanager(object):
                 path, name))
         except Exception as e:
             res = {
-                'Error': gettext("Error: {0}").format(e),
+                'Error': str(e),
                 'Code': 0
             }
             return res
@@ -1135,14 +1133,14 @@ class Filemanager(object):
                 os.mkdir(new_path)
             except Exception as e:
                 code = 0
-                err_msg = gettext("Error: {0}").format(e.strerror)
+                err_msg = str(e.strerror)
         else:
             new_path, new_name = self.get_new_name(the_dir, path, name)
             try:
                 os.mkdir(new_path)
             except Exception as e:
                 code = 0
-                err_msg = gettext("Error: {0}").format(e.strerror)
+                err_msg = str(e.strerror)
 
         result = {
             'Parent': path,
@@ -1171,7 +1169,7 @@ class Filemanager(object):
                 the_dir, "{}{}".format(path, path)
             )
         except Exception as e:
-            resp = Response(gettext("Error: {0}").format(e))
+            resp = Response(str(e))
             resp.headers['Content-Disposition'] = \
                 'attachment; filename=' + name
             return resp
@@ -1188,7 +1186,7 @@ class Filemanager(object):
         try:
             Filemanager.check_access_permission(the_dir, path)
         except Exception as e:
-            err_msg = gettext("Error: {0}").format(e)
+            err_msg = str(e)
             res['Code'] = 0
             res['Error'] = err_msg
         return res

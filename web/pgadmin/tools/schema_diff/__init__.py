@@ -26,7 +26,8 @@ from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS,\
+    ERROR_MSG_TRANS_ID_NOT_FOUND
 from sqlalchemy import or_
 
 MODULE_NAME = 'schema_diff'
@@ -155,17 +156,13 @@ def check_transaction_status(trans_id):
     """
 
     if 'schemaDiff' not in session:
-        return False, gettext(
-            'Transaction ID not found in the session.'
-        ), None, None
+        return False, ERROR_MSG_TRANS_ID_NOT_FOUND, None, None
 
     schema_diff_data = session['schemaDiff']
 
     # Return from the function if transaction id not found
     if str(trans_id) not in schema_diff_data:
-        return False, gettext(
-            'Transaction ID not found in the session.'
-        ), None, None
+        return False, ERROR_MSG_TRANS_ID_NOT_FOUND, None, None
 
     # Fetch the object for the specified transaction id.
     # Use pickle.loads function to get the model object
@@ -439,7 +436,7 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
     status, error_msg, diff_model_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg, status=404)
 
     # Server version compatibility check
@@ -566,7 +563,7 @@ def poll(trans_id):
     status, error_msg, diff_model_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg, status=404)
 
     msg, diff_percentage = diff_model_obj.get_comparison_info()
@@ -599,7 +596,7 @@ def ddl_compare(trans_id, source_sid, source_did, source_scid,
     status, error_msg, diff_model_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg, status=404)
 
     view = SchemaDiffRegistry.get_node_view(node_type)

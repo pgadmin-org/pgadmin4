@@ -44,7 +44,8 @@ from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
     read_file_generator
 from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
-from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED
+from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED,\
+    ERROR_MSG_TRANS_ID_NOT_FOUND
 
 MODULE_NAME = 'sqleditor'
 
@@ -139,17 +140,13 @@ def check_transaction_status(trans_id):
     """
 
     if 'gridData' not in session:
-        return False, gettext(
-            'Transaction ID not found in the session.'
-        ), None, None, None
+        return False, ERROR_MSG_TRANS_ID_NOT_FOUND, None, None, None
 
     grid_data = session['gridData']
 
     # Return from the function if transaction id not found
     if str(trans_id) not in grid_data:
-        return False, gettext(
-            'Transaction ID not found in the session.'
-        ), None, None, None
+        return False, ERROR_MSG_TRANS_ID_NOT_FOUND, None, None, None
 
     # Fetch the object for the specified transaction id.
     # Use pickle.loads function to get the command object
@@ -199,7 +196,7 @@ def start_view_data(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -345,7 +342,7 @@ def poll(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -531,7 +528,7 @@ def fetch(trans_id, fetch_all=None):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -677,7 +674,7 @@ def save(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -750,7 +747,7 @@ def append_filter_inclusive(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -805,7 +802,7 @@ def append_filter_exclusive(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -857,7 +854,7 @@ def remove_filter(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -901,7 +898,7 @@ def set_limit(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -984,7 +981,7 @@ def cancel_transaction(trans_id):
     if is_error:
         return make_json_response(
             success=0,
-            errormsg=gettext('Transaction ID not found in the session.'),
+            errormsg=ERROR_MSG_TRANS_ID_NOT_FOUND,
             info='DATAGRID_TRANSACTION_REQUIRED', status=404)
 
     # Fetch the object for the specified transaction id.
@@ -1043,7 +1040,7 @@ def get_object_name(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -1079,7 +1076,7 @@ def set_auto_commit(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -1124,7 +1121,7 @@ def set_auto_rollback(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
@@ -1176,7 +1173,7 @@ def auto_complete(trans_id):
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
 
-    if error_msg == gettext('Transaction ID not found in the session.'):
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)

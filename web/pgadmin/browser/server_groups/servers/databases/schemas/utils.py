@@ -19,6 +19,10 @@ from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.constants import DATATYPE_TIME_WITH_TIMEZONE,\
+    DATATYPE_TIME_WITHOUT_TIMEZONE,\
+    DATATYPE_TIMESTAMP_WITH_TIMEZONE,\
+    DATATYPE_TIMESTAMP_WITHOUT_TIMEZONE
 
 
 class SchemaChildModule(CollectionNodeModule):
@@ -205,20 +209,22 @@ class DataTypeReader:
                                    1014, 'bpchar[]', 'character[]',
                                    1015, 'varchar[]', 'character varying[]'):
                 typeval = 'L'
-            elif elemoid_or_name in (1083, 'time', 'time without time zone',
+            elif elemoid_or_name in (1083, 'time',
+                                     DATATYPE_TIME_WITHOUT_TIMEZONE,
                                      1114, 'timestamp',
-                                     'timestamp without time zone',
+                                     DATATYPE_TIMESTAMP_WITHOUT_TIMEZONE,
                                      1115, 'timestamp[]',
                                      'timestamp without time zone[]',
                                      1183, 'time[]',
                                      'time without time zone[]',
                                      1184, 'timestamptz',
-                                     'timestamp with time zone',
+                                     DATATYPE_TIMESTAMP_WITH_TIMEZONE,
                                      1185, 'timestamptz[]',
                                      'timestamp with time zone[]',
                                      1186, 'interval',
                                      1187, 'interval[]', 'interval[]',
-                                     1266, 'timetz', 'time with time zone',
+                                     1266, 'timetz',
+                                     DATATYPE_TIME_WITH_TIMEZONE,
                                      1270, 'timetz', 'time with time zone[]'):
                 typeval = 'D'
             elif elemoid_or_name in (1231, 'numeric[]',
@@ -254,12 +260,12 @@ class DataTypeReader:
         elif (
             name == 'time' or
             name == 'timetz' or
-            name == 'time without time zone' or
-            name == 'time with time zone' or
+            name == DATATYPE_TIME_WITHOUT_TIMEZONE or
+            name == DATATYPE_TIME_WITH_TIMEZONE or
             name == 'timestamp' or
             name == 'timestamptz' or
-            name == 'timestamp without time zone' or
-            name == 'timestamp with time zone' or
+            name == DATATYPE_TIMESTAMP_WITHOUT_TIMEZONE or
+            name == DATATYPE_TIMESTAMP_WITH_TIMEZONE or
             name == 'bit' or
             name == 'bit varying' or
             name == 'varbit'
@@ -300,13 +306,13 @@ class DataTypeReader:
         """
         if name == 'char' and schema == 'pg_catalog':
             return '"char"' + array
-        elif name == 'time with time zone':
+        elif name == DATATYPE_TIME_WITH_TIMEZONE:
             return 'time' + length + ' with time zone' + array
-        elif name == 'time without time zone':
+        elif name == DATATYPE_TIME_WITHOUT_TIMEZONE:
             return 'time' + length + ' without time zone' + array
-        elif name == 'timestamp with time zone':
+        elif name == DATATYPE_TIMESTAMP_WITH_TIMEZONE:
             return 'timestamp' + length + ' with time zone' + array
-        elif name == 'timestamp without time zone':
+        elif name == DATATYPE_TIMESTAMP_WITHOUT_TIMEZONE:
             return 'timestamp' + length + ' without time zone' + array
         else:
             return name + length + array

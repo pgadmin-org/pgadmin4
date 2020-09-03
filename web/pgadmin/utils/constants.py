@@ -29,3 +29,14 @@ PGADMIN_NODE = 'pgadmin.node.%s'
 UNAUTH_REQ = "Unauthorized request."
 SERVER_CONNECTION_CLOSED = gettext(
     'Not connected to server or connection with the server has been closed.')
+
+# Data Types
+DATATYPE_TIME_WITH_TIMEZONE = 'time with time zone'
+DATATYPE_TIME_WITHOUT_TIMEZONE = 'time without time zone'
+
+DATATYPE_TIMESTAMP_WITH_TIMEZONE = 'timestamp with time zone'
+DATATYPE_TIMESTAMP_WITHOUT_TIMEZONE = 'timestamp without time zone'
+
+# Error Messages
+ERROR_MSG_TRANS_ID_NOT_FOUND = gettext(
+    'Transaction ID not found in the session.')
