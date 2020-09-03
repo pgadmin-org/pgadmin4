@@ -201,8 +201,6 @@ class IndexConstraintView(PGChildNodeView):
 
     node_label = _('Index constraint')
 
-    node_icon = "icon-%s" % node_type
-
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
@@ -1014,6 +1012,8 @@ class PrimaryKeyConstraintView(IndexConstraintView):
 
     constraint_type = "p"
 
+    node_icon = "icon-%s" % node_type
+
 
 class UniqueConstraintView(IndexConstraintView):
     node_type = 'unique_constraint'
@@ -1023,6 +1023,8 @@ class UniqueConstraintView(IndexConstraintView):
     constraint_name = "UNIQUE"
 
     constraint_type = "u"
+
+    node_icon = "icon-%s" % node_type
 
 
 primary_key_constraint = ConstraintRegistry(
