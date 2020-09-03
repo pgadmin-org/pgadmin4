@@ -463,7 +463,6 @@ define('pgadmin.preferences', [
             }
 
             if (e.button.text == gettext('Save')) {
-              debugger;
               let requires_refresh = false;
               preferences.updateAll();
 
