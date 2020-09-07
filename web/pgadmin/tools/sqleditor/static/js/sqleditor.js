@@ -40,6 +40,7 @@ define('tools.querytool', [
   'sources/csrf',
   'tools/datagrid/static/js/datagrid_panel_title',
   'sources/window',
+  'sources/is_native',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
   'slick.pgadmin.formatters',
@@ -54,7 +55,7 @@ define('tools.querytool', [
   GeometryViewer, historyColl, queryHist, querySources,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
   modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, queryTxnStatus, csrfToken, panelTitleFunc,
-  pgWindow) {
+  pgWindow, isNative) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -789,10 +790,14 @@ define('tools.querytool', [
         c.display_name = _.escape(c.display_name);
         c.column_type = _.escape(c.column_type);
 
+        // If the keys have name from existing JS keywords then it may
+        // create problem. eg - contructor, hasOwnProperty.
+        // nonative_field is field with extra double quotes
         var options = {
           id:  _.escape(c.name),
           pos: c.pos,
           field: c.name,
+          nonative_field: `"${c.name}"`,
           name: c.label,
           display_name: c.display_name,
           column_type: c.column_type,
@@ -809,11 +814,11 @@ define('tools.querytool', [
         var column_type = c.column_type.trim();
         var label = c.name.length > column_type.length ? _.escape(c.display_name) : column_type;
 
-        if (_.isUndefined(column_size[table_name][c.name])) {
+        if (_.isUndefined(column_size[table_name][options.nonative_field])) {
           options['width'] = SqlEditorUtils.calculateColumnWidth(label);
-          column_size[table_name][c.name] = options['width'];
+          column_size[table_name][c.nonative_field] = options['width'];
         } else {
-          options['width'] = column_size[table_name][c.name];
+          options['width'] = column_size[table_name][options.nonative_field];
         }
         // If grid is editable then add editor else make it readonly
         if (c.cell == 'oid' && c.name == 'oid') {
@@ -999,7 +1004,7 @@ define('tools.querytool', [
         var cols = this.getColumns();
         _.each(cols, function(col) {
           var col_size = self.handler['col_size'];
-          col_size[self.handler['table_name']][col['id']] = col['width'];
+          col_size[self.handler['table_name']][col['nonative_field']] = col['width'];
         });
       }.bind(grid));
 
@@ -1190,6 +1195,13 @@ define('tools.querytool', [
         if (item_current) {
           item_current[self.client_primary_key] = _key;
         }
+
+        // When adding new rows, mark all native JS keywords undefined if not already set
+        _.each(args.grid.getColumns(), function(col){
+          if(isNative(item_current[col.field])) {
+            item_current[col.field] = undefined;
+          }
+        });
 
         data_view.addItem(item_current);
         self.handler.data_store.added[_key] = {
