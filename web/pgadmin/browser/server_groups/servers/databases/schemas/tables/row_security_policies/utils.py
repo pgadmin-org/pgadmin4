@@ -68,13 +68,15 @@ def get_sql(conn, **kwargs):
     data = kwargs.get('data')
     scid = kwargs.get('scid')
     plid = kwargs.get('plid')
+    policy_table_id = kwargs.get('policy_table_id')
     schema = kwargs.get('schema')
     table = kwargs.get('table')
     template_path = kwargs.get('template_path', None)
 
     if plid is not None:
         sql = render_template("/".join([template_path, 'properties.sql']),
-                              schema=schema, plid=plid, scid=scid)
+                              schema=schema, plid=plid, scid=scid,
+                              policy_table_id=policy_table_id)
         status, res = conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=res)
@@ -110,12 +112,14 @@ def get_reverse_engineered_sql(conn, **kwargs):
     table = kwargs.get('table')
     scid = kwargs.get('scid')
     plid = kwargs.get('plid')
+    policy_table_id = kwargs.get('policy_table_id')
     datlastsysoid = kwargs.get('datlastsysoid')
     template_path = kwargs.get('template_path', None)
     with_header = kwargs.get('with_header', True)
 
     SQL = render_template("/".join(
-        [template_path, 'properties.sql']), plid=plid, scid=scid)
+        [template_path, 'properties.sql']), plid=plid, scid=scid,
+        policy_table_id=policy_table_id)
 
     status, res = conn.execute_dict(SQL)
     if not status:
@@ -130,6 +134,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
     data['table'] = table
 
     SQL, name = get_sql(conn, data=data, scid=scid, plid=None,
+                        policy_table_id=policy_table_id,
                         datlastsysoid=datlastsysoid, schema=schema,
                         table=table)
     if with_header:

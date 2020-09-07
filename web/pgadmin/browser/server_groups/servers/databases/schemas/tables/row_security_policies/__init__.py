@@ -315,7 +315,8 @@ class RowSecurityView(PGChildNodeView):
         """
         sql = render_template("/".join(
             [self.template_path, self._PROPERTIES_SQL]
-        ), plid=plid, scid=scid, datlastsysoid=self.datlastsysoid)
+        ), plid=plid, scid=scid, policy_table_id=tid,
+            datlastsysoid=self.datlastsysoid)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -415,6 +416,7 @@ class RowSecurityView(PGChildNodeView):
         try:
             sql, name = row_security_policies_utils.get_sql(
                 self.conn, data=data, scid=scid, plid=plid,
+                policy_table_id=tid,
                 schema=self.schema, table=self.table)
 
             # Most probably this is due to error
@@ -475,7 +477,7 @@ class RowSecurityView(PGChildNodeView):
 
         for plid in data['ids']:
             try:
-                # Get name for policy from plid
+                # Get name of policy using plid
                 sql = render_template("/".join([self.template_path,
                                                 'get_policy_name.sql']),
                                       plid=plid)
@@ -525,7 +527,7 @@ class RowSecurityView(PGChildNodeView):
         data = dict(request.args)
 
         sql, name = row_security_policies_utils.get_sql(
-            self.conn, data=data, scid=scid, plid=plid,
+            self.conn, data=data, scid=scid, plid=plid, policy_table_id=tid,
             schema=self.schema, table=self.table)
         if not isinstance(sql, str):
             return sql
@@ -554,7 +556,7 @@ class RowSecurityView(PGChildNodeView):
 
         SQL = row_security_policies_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, scid=scid,
-            plid=plid, datlastsysoid=self.datlastsysoid)
+            plid=plid, policy_table_id=tid, datlastsysoid=self.datlastsysoid)
 
         return ajax_response(response=SQL)
 
