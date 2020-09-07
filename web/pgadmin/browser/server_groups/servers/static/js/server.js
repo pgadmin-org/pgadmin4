@@ -744,7 +744,6 @@ define('pgadmin.node.server', [
         // Default values!
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
-          console.warn('warn');
 
           if (isNew) {
             this.set({'gid': args.node_info['server_group']._id});

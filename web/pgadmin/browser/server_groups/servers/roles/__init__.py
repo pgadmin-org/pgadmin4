@@ -20,6 +20,7 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, precondition_required, \
     internal_server_error, forbidden, success_return, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils.constants import ERROR_FETCHING_ROLE_INFORMATION
 
 from config import PG_DEFAULT_DRIVER
 
@@ -619,10 +620,7 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                _(
-                    "Error retrieving roles from the database server.\n{0}"
-                ).format(res)
-            )
+                _(ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(res))
 
         self.transform(res)
 
@@ -640,11 +638,7 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                _(
-                    "Error fetching role information from the database "
-                    "server.\n{0}"
-                ).format(rset)
-            )
+                _(ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(rset))
 
         res = []
         for row in rset['rows']:
@@ -676,10 +670,7 @@ rolmembership:{
         if not status:
             return internal_server_error(
                 _(
-                    "Error fetching role information from the database "
-                    "server.\n{0}"
-                ).format(rset)
-            )
+                    ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(rset))
 
         for row in rset['rows']:
             return make_json_response(
@@ -693,7 +684,7 @@ rolmembership:{
                 status=200
             )
 
-        return gone(_("Could not find the role information."))
+        return gone()
 
     def transform(self, rset):
         for row in rset['rows']:
@@ -729,14 +720,11 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                _(
-                    "Error retrieving roles from the database server.\n{0}"
-                ).format(res)
-            )
+                _(ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(res))
 
         self.transform(res)
         if len(res['rows']) == 0:
-            return gone(_("Could not find the role information."))
+            return gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self.datlastsysoid)
@@ -841,8 +829,7 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                _("Could not retrieve the role information.\n{0}").format(msg)
-            )
+                _(ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(msg))
 
         status, rset = self.conn.execute_dict(
             render_template(self.sql_path + self._NODES_SQL,
@@ -853,10 +840,7 @@ rolmembership:{
         if not status:
             return internal_server_error(
                 _(
-                    "Error fetching role information from the database "
-                    "server.\n{0}"
-                ).format(rset)
-            )
+                    ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(rset))
         for row in rset['rows']:
             return jsonify(
                 node=self.blueprint.generate_browser_node(
@@ -867,7 +851,7 @@ rolmembership:{
                 )
             )
 
-        return gone(_("Could not find the role information."))
+        return gone(self.not_found_error_msg())
 
     @check_precondition(action='update')
     @validate_request
@@ -900,11 +884,7 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                _(
-                    "Error fetching role information from the database "
-                    "server.\n{0}"
-                ).format(rset)
-            )
+                _(ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(rset))
 
         for row in rset['rows']:
             return jsonify(
@@ -917,7 +897,7 @@ rolmembership:{
                 )
             )
 
-        return gone(_("Could not find the role information."))
+        return gone(self.not_found_error_msg())
 
     @check_precondition(action='msql')
     @validate_request

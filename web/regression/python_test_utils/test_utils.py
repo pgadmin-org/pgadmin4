@@ -1681,8 +1681,7 @@ def get_test_user(self, user_details,
 
 def create_user_wise_test_client(user):
     """
-    This function creates new test client and pem database connection as per
-    provided user and execute the test cases.
+    This function creates new test client and execute the test cases.
     :return: None
     """
 
