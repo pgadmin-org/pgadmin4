@@ -39,10 +39,10 @@ Use the fields in the *Definition* tab to define the index:
     * Select *hash* to create a hash index.  A hash index may improve
       performance when managing simple equality comparisons.
     * Select *gist* to create a GiST index.  A GiST index may improve
+      performance when managing two-dimensional geometric data types and
+      nearest-neighbor searches.
+    * Select *gin* to create a GIN index.  A GIN index may improve
       performance when managing values with more than one key.
-    * Select *gin* to create a GIN index.  A GIN index may improve performance
-      when managing two-dimensional geometric data types and nearest-neighbor
-      searches.
     * Select *spgist* to create a space-partitioned GiST index. A SP-GiST index
       may improve performance when managing non-balanced data structures.
     * Select *brin* to create a BRIN index.  A BRIN index may improve
