@@ -14,6 +14,8 @@
 #include "ui_ConfigWindow.h"
 
 #include <QSettings>
+#include <QTcpSocket>
+#include <QtWidgets>
 
 ConfigWindow::ConfigWindow(QWidget *parent) :
     QDialog(parent)
@@ -23,12 +25,17 @@ ConfigWindow::ConfigWindow(QWidget *parent) :
 
 void ConfigWindow::initConfigWindow()
 {
-    QSettings settings;
-
     ui = new Ui::ConfigWindow;
     ui->setupUi(this);
 
     m_needRestart = false;
+
+    setConfigValues();
+}
+
+void ConfigWindow::setConfigValues()
+{
+    QSettings settings;
 
     ui->browserCommandLineEdit->setText(settings.value("BrowserCommand").toString());
 
@@ -70,19 +77,28 @@ void ConfigWindow::on_buttonBox_accepted()
     QString pythonpath = ui->pythonPathLineEdit->text();
     QString applicationpath = ui->applicationPathLineEdit->text();
 
-    m_needRestart = (settings.value("FixedPort").toBool() != fixedport ||
-                     settings.value("PortNumber").toInt() != portnumber ||
-                     settings.value("PythonPath").toString() != pythonpath ||
-                     settings.value("ApplicationPath").toString() != applicationpath);
+    if (fixedport && (settings.value("FixedPort").toBool() != fixedport ||
+         settings.value("PortNumber").toInt() != portnumber) && isPortInUse(portnumber))
+    {
+        QString error = QString(QWidget::tr("The specified fixed port is already in use. Please provide any other valid port."));
+        QMessageBox::critical(Q_NULLPTR, QString(QWidget::tr("Fatal Error")), error);
+    }
+    else
+    {
+        m_needRestart = (settings.value("FixedPort").toBool() != fixedport ||
+                         settings.value("PortNumber").toInt() != portnumber ||
+                         settings.value("PythonPath").toString() != pythonpath ||
+                         settings.value("ApplicationPath").toString() != applicationpath);
 
-    settings.setValue("BrowserCommand", browsercommand);
-    settings.setValue("FixedPort", fixedport);
-    settings.setValue("PortNumber", portnumber);
-    settings.setValue("OpenTabAtStartup", opentabatstartup);
-    settings.setValue("PythonPath", pythonpath);
-    settings.setValue("ApplicationPath", applicationpath);
+        settings.setValue("BrowserCommand", browsercommand);
+        settings.setValue("FixedPort", fixedport);
+        settings.setValue("PortNumber", portnumber);
+        settings.setValue("OpenTabAtStartup", opentabatstartup);
+        settings.setValue("PythonPath", pythonpath);
+        settings.setValue("ApplicationPath", applicationpath);
 
-    settings.sync();
+        settings.sync();
+    }
 
     emit accepted(m_needRestart);
     emit closing(true);
@@ -104,3 +120,17 @@ void ConfigWindow::on_chkFixedPort_stateChanged(int state)
         ui->spinPortNumber->setEnabled(false);
 }
 
+bool ConfigWindow::isPortInUse(const quint16 port) const
+{
+    QTcpSocket socket;
+
+    // Bind the socket on the specified port.
+    socket.bind(port, QTcpSocket::DontShareAddress);
+
+    // Returns the host port number of the local socket if available; otherwise returns 0
+    quint16 tmpPort = socket.localPort();
+    if (tmpPort == 0)
+        return true;
+
+    return false;
+}

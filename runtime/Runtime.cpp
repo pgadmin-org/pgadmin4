@@ -342,20 +342,6 @@ FloatingWindow * Runtime::createFloatingWindow(MenuActions *menuActions)
     return floatingWindow;
 }
 
-bool Runtime::isPortInUse(const quint16 port) const
-{
-    QTcpSocket socket;
-
-    // Bind the socket on the specified port.
-    socket.bind(port, QTcpSocket::DontShareAddress);
-
-    // Returns the host port number of the local socket if available; otherwise returns 0
-    quint16 tmpPort = socket.localPort();
-    if (tmpPort == 0)
-        return true;
-
-    return false;
-}
 
 void Runtime::openConfigureWindow(const QString errorMsg)
 {
@@ -411,16 +397,6 @@ Server * Runtime::startServerLoop(QString key)
 
     while (!done)
     {
-        if (isPortInUse(m_port))
-        {
-            QString error = QString(QWidget::tr("The specified port is already in use."));
-
-            // Open the configuration window
-            openConfigureWindow(error);
-
-            continue;
-        }
-
         server = startServer(key);
         if (server == NULL)
         {

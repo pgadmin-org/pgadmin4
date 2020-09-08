@@ -24,6 +24,7 @@ class ConfigWindow : public QDialog
 
 public:
     explicit ConfigWindow(QWidget *parent = Q_NULLPTR);
+    void setConfigValues();
 
 signals:
     void accepted(bool needRestart);
@@ -39,6 +40,7 @@ private:
     bool m_needRestart;
 
     void initConfigWindow();
+    bool isPortInUse(const quint16 port) const;
 };
 
 #endif // CONFIGWINDOW_H

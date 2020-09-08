@@ -68,6 +68,7 @@ void MenuActions::onConfig()
     if (!m_configWindow)
         m_configWindow = new ConfigWindow();
 
+    m_configWindow->setConfigValues();
     m_configWindow->show();
     m_configWindow->raise();
     m_configWindow->activateWindow();

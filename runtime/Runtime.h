@@ -60,7 +60,6 @@ private:
     void openBrowserTab(QString url) const;
     QString serverRequest(QUrl url, QString path);
     bool pingServer(QUrl url);
-    bool isPortInUse(const quint16 port) const;
     void openConfigureWindow(const QString errorMsg);
 
 private slots:
