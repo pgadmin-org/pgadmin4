@@ -238,7 +238,7 @@ define('pgadmin.node.server', [
                     d = t.itemData(i);
                     t.removeIcon(i);
                     d.connected = false;
-                    if (d.shared){
+                    if (d.shared && pgAdmin.server_mode == 'True'){
                       d.icon = 'icon-shared-server-not-connected';
                     }else{
                       d.icon = 'icon-server-not-connected';
@@ -1216,6 +1216,7 @@ define('pgadmin.node.server', [
               tree.unload(item);
               tree.setInode(item);
               tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
+              Alertify.info('Please enter the server details to connect to the server. This server is a shared server.');
             }else{
               data.is_connecting = false;
               tree.unload(item);
@@ -1238,7 +1239,7 @@ define('pgadmin.node.server', [
           // Let's not change the status of the tree node now.
           if (!_wasConnected) {
             tree.setInode(_item);
-            if (data.shared){
+            if (data.shared && pgAdmin.server_mode == 'True'){
               tree.addIcon(_item, {icon: 'icon-shared-server-not-connected'});
             }else{
               tree.addIcon(_item, {icon: 'icon-server-not-connected'});
@@ -1400,7 +1401,7 @@ define('pgadmin.node.server', [
         _tree.unload(_item);
         _tree.setInode(_item);
         _tree.removeIcon(_item);
-        if (_data.shared){
+        if (_data.shared && pgAdmin.server_mode == 'True'){
           _tree.addIcon(_item, {icon: 'icon-shared-server-not-connected'});
         }else{
           _tree.addIcon(_item, {icon: 'icon-server-not-connected'});
@@ -1470,7 +1471,7 @@ define('pgadmin.node.server', [
         })
         .fail(function(xhr, status, error) {
           tree.setInode(item);
-          if (data.shared){
+          if (data.shared && pgAdmin.server_mode == 'True'){
             tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
           }else{
             tree.addIcon(item, {icon: 'icon-server-not-connected'});
