@@ -112,6 +112,20 @@ class ServerManager(object):
 
         self.connections = dict()
 
+    def _set_password(self, res):
+        """
+        Set password for server manager object.
+        :param res: response dict.
+        :return:
+        """
+        if hasattr(self, 'password') and self.password:
+            if hasattr(self.password, 'decode'):
+                res['password'] = self.password.decode('utf-8')
+            else:
+                res['password'] = str(self.password)
+        else:
+            res['password'] = self.password
+
     def as_dict(self):
         """
         Returns a dictionary object representing the server manager.
@@ -123,13 +137,8 @@ class ServerManager(object):
         res['sid'] = self.sid
         res['ver'] = self.ver
         res['sversion'] = self.sversion
-        if hasattr(self, 'password') and self.password:
-            if hasattr(self.password, 'decode'):
-                res['password'] = self.password.decode('utf-8')
-            else:
-                res['password'] = str(self.password)
-        else:
-            res['password'] = self.password
+
+        self._set_password(res)
 
         if self.use_ssh_tunnel:
             if hasattr(self, 'tunnel_password') and self.tunnel_password:
@@ -244,6 +253,76 @@ WHERE db.oid = {0}""".format(did))
 
             return self.connections[my_id]
 
+    @staticmethod
+    def _get_password_to_conn(data, masterpass_processed):
+        """
+        Get password for connect to server with simple and ssh connection.
+        :param data: Data.
+        :param masterpass_processed:
+        :return:
+        """
+        # The data variable is a copy so is not automatically synced
+        # update here
+        if masterpass_processed and 'password' in data:
+            data['password'] = None
+        if masterpass_processed and 'tunnel_password' in data:
+            data['tunnel_password'] = None
+
+    def _get_server_type(self):
+        """
+        Get server type and server cls.
+        :return:
+        """
+        from pgadmin.browser.server_groups.servers.types import ServerType
+
+        if self.ver and not self.server_type:
+            for st in ServerType.types():
+                if st.instance_of(self.ver):
+                    self.server_type = st.stype
+                    self.server_cls = st
+                    break
+
+    def _check_and_reconnect_server(self, conn, conn_info, data):
+        """
+        Check and try to reconnect the server if server previously connected
+        and auto_reconnect is true.
+        :param conn:
+        :type conn:
+        :param conn_info:
+        :type conn_info:
+        :param data:
+        :type data:
+        :return:
+        :rtype:
+        """
+        from pgadmin.browser.server_groups.servers.types import ServerType
+        if conn_info['wasConnected'] and conn_info['auto_reconnect']:
+            try:
+                # Check SSH Tunnel needs to be created
+                if self.use_ssh_tunnel == 1 and \
+                        not self.tunnel_created:
+                    status, error = self.create_ssh_tunnel(
+                        data['tunnel_password'])
+
+                    # Check SSH Tunnel is alive or not.
+                    self.check_ssh_tunnel_alive()
+
+                conn.connect(
+                    password=data['password'],
+                    server_types=ServerType.types()
+                )
+                # This will also update wasConnected flag in
+                # connection so no need to update the flag manually.
+            except CryptKeyMissing:
+                # maintain the status as this will help to restore once
+                # the key is available
+                conn.wasConnected = conn_info['wasConnected']
+                conn.auto_reconnect = conn_info['auto_reconnect']
+            except Exception as e:
+                current_app.logger.exception(e)
+                self.connections.pop(conn_info['conn_id'])
+                raise
+
     def _restore(self, data):
         """
         Helps restoring to reconnect the auto-connect connections smoothly on
@@ -253,21 +332,9 @@ WHERE db.oid = {0}""".format(did))
         # restarted. As we need server version to resolve sql template paths.
         masterpass_processed = process_masterpass_disabled()
 
-        # The data variable is a copy so is not automatically synced
-        # update here
-        if masterpass_processed and 'password' in data:
-            data['password'] = None
-        if masterpass_processed and 'tunnel_password' in data:
-            data['tunnel_password'] = None
-
-        from pgadmin.browser.server_groups.servers.types import ServerType
-
-        if self.ver and not self.server_type:
-            for st in ServerType.types():
-                if st.instance_of(self.ver):
-                    self.server_type = st.stype
-                    self.server_cls = st
-                    break
+        ServerManager._get_password_to_conn(data, masterpass_processed)
+        # Get server type.
+        self._get_server_type()
 
         # We need to know about the existing server variant supports during
         # first connection for identifications.
@@ -297,34 +364,8 @@ WHERE db.oid = {0}""".format(did))
                     array_to_string=conn_info['array_to_string']
                 )
 
-            # only try to reconnect if connection was connected previously
-            # and auto_reconnect is true.
-            if conn_info['wasConnected'] and conn_info['auto_reconnect']:
-                try:
-                    # Check SSH Tunnel needs to be created
-                    if self.use_ssh_tunnel == 1 and \
-                       not self.tunnel_created:
-                        status, error = self.create_ssh_tunnel(
-                            data['tunnel_password'])
-
-                        # Check SSH Tunnel is alive or not.
-                        self.check_ssh_tunnel_alive()
-
-                    conn.connect(
-                        password=data['password'],
-                        server_types=ServerType.types()
-                    )
-                    # This will also update wasConnected flag in
-                    # connection so no need to update the flag manually.
-                except CryptKeyMissing:
-                    # maintain the status as this will help to restore once
-                    # the key is available
-                    conn.wasConnected = conn_info['wasConnected']
-                    conn.auto_reconnect = conn_info['auto_reconnect']
-                except Exception as e:
-                    current_app.logger.exception(e)
-                    self.connections.pop(conn_info['conn_id'])
-                    raise
+            # only try to reconnect
+            self._check_and_reconnect_server(conn, conn_info, data)
 
     def _restore_connections(self):
         for conn_id in self.connections:
@@ -358,25 +399,50 @@ WHERE db.oid = {0}""".format(did))
                     current_app.logger.exception(e)
                     raise
 
-    def release(self, database=None, conn_id=None, did=None):
-        # Stop the SSH tunnel if release() function calls without
-        # any parameter.
+    def _stop_ssh_tunnel(self, did, database, conn_id):
+        """
+        Stop ssh tunnel connection if function call without any parameter.
+        :param did: Database Id.
+        :param database: Database.
+        :param conn_id: COnnection Id.
+        :return:
+        """
         if database is None and conn_id is None and did is None:
             self.stop_ssh_tunnel()
 
+    def _check_db_info(self, did, conn_id, database):
+        """
+        Check did is not none and it is resent in db_info.
+        :param did: Database Id.
+        :param conn_id: Connection Id.
+        :return:
+        """
+        if database is None and conn_id is None and did is None:
+            self.stop_ssh_tunnel()
+
+        my_id = None
         if did is not None:
             if did in self.db_info and 'datname' in self.db_info[did]:
                 database = self.db_info[did]['datname']
                 if database is None:
-                    return False
+                    return True, False, my_id
             else:
-                return False
+                return True, False, my_id
 
-        my_id = None
         if conn_id is not None:
             my_id = 'CONN:{0}'.format(conn_id)
         elif database is not None:
             my_id = 'DB:{0}'.format(database)
+
+        return False, True, my_id
+
+    def release(self, database=None, conn_id=None, did=None):
+        # Stop the SSH tunnel if release() function calls without
+        # any parameter.
+        is_return, return_value, my_id = self._check_db_info(did, conn_id,
+                                                             database)
+        if is_return:
+            return return_value
 
         if my_id is not None:
             if my_id in self.connections:

@@ -346,68 +346,29 @@ class Connection(BaseConnection):
 
         return status, msg
 
-    def _initialize(self, conn_id, **kwargs):
-        self.execution_aborted = False
-        self.__backend_pid = self.conn.get_backend_pid()
-
-        setattr(g, "{0}#{1}".format(
-            self.manager.sid,
-            self.conn_id.encode('utf-8')
-        ), None)
-
-        status, cur = self.__cursor()
-        formatted_exception_msg = self._formatted_exception_msg
-        manager = self.manager
-
-        def _execute(cur, query, params=None):
-            try:
-                self.__internal_blocking_execute(cur, query, params)
-            except psycopg2.Error as pe:
-                cur.close()
-                return formatted_exception_msg(pe, False)
-            return None
-
-        # autocommit flag does not work with asynchronous connections.
-        # By default asynchronous connection runs in autocommit mode.
+    def _set_auto_commit(self, kwargs):
+        """
+        autocommit flag does not work with asynchronous connections.
+        By default asynchronous connection runs in autocommit mode.
+        :param kwargs:
+        :return:
+        """
         if self.async_ == 0:
             if 'autocommit' in kwargs and kwargs['autocommit'] is False:
                 self.conn.autocommit = False
             else:
                 self.conn.autocommit = True
 
-        register_string_typecasters(self.conn)
-
-        if self.array_to_string:
-            register_array_to_string_typecasters(self.conn)
-
-        # Register type casters for binary data only after registering array to
-        # string type casters.
-        if self.use_binary_placeholder:
-            register_binary_typecasters(self.conn)
-
-        postgres_encoding, self.python_encoding, typecast_encoding = \
-            get_encoding(self.conn.encoding)
-
-        # Note that we use 'UPDATE pg_settings' for setting bytea_output as a
-        # convenience hack for those running on old, unsupported versions of
-        # PostgreSQL 'cos we're nice like that.
-        status = _execute(
-            cur,
-            "SET DateStyle=ISO; "
-            "SET client_min_messages=notice; "
-            "SELECT set_config('bytea_output','hex',false) FROM pg_settings"
-            " WHERE name = 'bytea_output'; "
-            "SET client_encoding='{0}';".format(postgres_encoding)
-        )
-
-        if status is not None:
-            self.conn.close()
-            self.conn = None
-
-            return False, status
-
+    def _set_role(self, manager, cur, conn_id):
+        """
+        Set role
+        :param manager:
+        :param cur:
+        :param conn_id:
+        :return:
+        """
         if manager.role:
-            status = _execute(cur, "SET ROLE TO %s", [manager.role])
+            status = self._execute(cur, "SET ROLE TO %s", [manager.role])
 
             if status is not None:
                 self.conn.close()
@@ -425,9 +386,71 @@ class Connection(BaseConnection):
                     _(
                         "Failed to setup the role with error message:\n{0}"
                     ).format(status)
+        return False, ''
+
+    def _execute(self, cur, query, params=None):
+        formatted_exception_msg = self._formatted_exception_msg
+        try:
+            self.__internal_blocking_execute(cur, query, params)
+        except psycopg2.Error as pe:
+            cur.close()
+            return formatted_exception_msg(pe, False)
+        return None
+
+    def _initialize(self, conn_id, **kwargs):
+        self.execution_aborted = False
+        self.__backend_pid = self.conn.get_backend_pid()
+
+        setattr(g, "{0}#{1}".format(
+            self.manager.sid,
+            self.conn_id.encode('utf-8')
+        ), None)
+
+        status, cur = self.__cursor()
+
+        manager = self.manager
+
+        # autocommit flag does not work with asynchronous connections.
+        # By default asynchronous connection runs in autocommit mode.
+        self._set_auto_commit(kwargs)
+
+        register_string_typecasters(self.conn)
+
+        if self.array_to_string:
+            register_array_to_string_typecasters(self.conn)
+
+        # Register type casters for binary data only after registering array to
+        # string type casters.
+        if self.use_binary_placeholder:
+            register_binary_typecasters(self.conn)
+
+        postgres_encoding, self.python_encoding, typecast_encoding = \
+            get_encoding(self.conn.encoding)
+
+        # Note that we use 'UPDATE pg_settings' for setting bytea_output as a
+        # convenience hack for those running on old, unsupported versions of
+        # PostgreSQL 'cos we're nice like that.
+        status = self._execute(
+            cur,
+            "SET DateStyle=ISO; "
+            "SET client_min_messages=notice; "
+            "SELECT set_config('bytea_output','hex',false) FROM pg_settings"
+            " WHERE name = 'bytea_output'; "
+            "SET client_encoding='{0}';".format(postgres_encoding)
+        )
+
+        if status is not None:
+            self.conn.close()
+            self.conn = None
+
+            return False, status
+
+        is_error, errmsg = self._set_role(manager, cur, conn_id)
+        if is_error:
+            return False, errmsg
 
         # Check database version every time on reconnection
-        status = _execute(cur, "SELECT version()")
+        status = self._execute(cur, "SELECT version()")
 
         if status is not None:
             self.conn.close()
@@ -449,7 +472,7 @@ class Connection(BaseConnection):
             manager.ver = row['version']
             manager.sversion = self.conn.server_version
 
-        status = _execute(cur, """
+        status = self._execute(cur, """
 SELECT
     db.oid as did, db.datname, db.datallowconn,
     pg_encoding_to_char(db.encoding) AS serverencoding,
@@ -468,21 +491,44 @@ WHERE db.datname = current_database()""")
                 if len(manager.db_info) == 1:
                     manager.did = res['did']
 
-        status = _execute(cur, """
-SELECT
-    oid as id, rolname as name, rolsuper as is_superuser,
-    CASE WHEN rolsuper THEN true ELSE rolcreaterole END as can_create_role,
-    CASE WHEN rolsuper THEN true ELSE rolcreatedb END as can_create_db
-FROM
-    pg_catalog.pg_roles
-WHERE
-    rolname = current_user""")
+        self._set_user_info(cur, manager)
+
+        self._set_server_type_and_password(kwargs, manager)
+
+        manager.update_session()
+
+        return True, None
+
+    def _set_user_info(self, cur, manager):
+        """
+        Set user info.
+        :param cur:
+        :param manager:
+        :return:
+        """
+        status = self._execute(cur, """
+        SELECT
+            oid as id, rolname as name, rolsuper as is_superuser,
+            CASE WHEN rolsuper THEN true ELSE rolcreaterole END as
+            can_create_role,
+            CASE WHEN rolsuper THEN true ELSE rolcreatedb END as can_create_db
+        FROM
+            pg_catalog.pg_roles
+        WHERE
+            rolname = current_user""")
 
         if status is None:
             manager.user_info = dict()
             if cur.rowcount > 0:
                 manager.user_info = cur.fetchmany(1)[0]
 
+    def _set_server_type_and_password(self, kwargs, manager):
+        """
+        Set server type
+        :param kwargs:
+        :param manager:
+        :return:
+        """
         if 'password' in kwargs:
             manager.password = kwargs['password']
 
@@ -500,10 +546,6 @@ WHERE
                 manager.server_type = st.stype
                 manager.server_cls = st
                 break
-
-        manager.update_session()
-
-        return True, None
 
     def __cursor(self, server_cursor=False):
 
@@ -1188,26 +1230,36 @@ WHERE
             self.conn = None
         return False
 
+    def _decrypt_password(self, manager):
+        """
+        Decrypt password
+        :param manager: Manager for get password.
+        :return:
+        """
+        password = getattr(manager, 'password', None)
+        if password:
+            # Fetch Logged in User Details.
+            user = User.query.filter_by(id=current_user.id).first()
+
+            if user is None:
+                return False, gettext("Unauthorized request."), password
+
+            crypt_key_present, crypt_key = get_crypt_key()
+            if not crypt_key_present:
+                return False, crypt_key, password
+
+            password = decrypt(password, crypt_key).decode()
+        return True, '', password
+
     def reset(self):
         if self.conn and self.conn.closed:
             self.conn = None
         pg_conn = None
         manager = self.manager
 
-        password = getattr(manager, 'password', None)
-
-        if password:
-            # Fetch Logged in User Details.
-            user = User.query.filter_by(id=current_user.id).first()
-
-            if user is None:
-                return False, gettext("Unauthorized request.")
-
-            crypt_key_present, crypt_key = get_crypt_key()
-            if not crypt_key_present:
-                return False, crypt_key
-
-            password = decrypt(password, crypt_key).decode()
+        is_return, return_value, password = self._decrypt_password(manager)
+        if is_return:
+            return False, return_value
 
         try:
             pg_conn = psycopg2.connect(
