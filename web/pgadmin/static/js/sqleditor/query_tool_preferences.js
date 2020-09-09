@@ -136,6 +136,12 @@ function updateUIPreferences(sqlEditor) {
     .attr('aria-label',
       shortcut_title(gettext('Rollback'),preferences.rollback_transaction));
 
+  $el.find('#btn-show-query-tool')
+    .attr('title',
+      shortcut_title(gettext('Query tool'),preferences.show_query_tool))
+    .attr('aria-label',
+      shortcut_title(gettext('Query tool'),preferences.show_query_tool));
+
   /* Set explain options on query editor */
   if (preferences.explain_verbose){
     $el.find('.explain-verbose').removeClass('visibility-hidden');

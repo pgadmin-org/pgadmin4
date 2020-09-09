@@ -65,7 +65,15 @@ export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentif
 
   const gridUrl = generateUrl(transId, queryToolTitle, parentData);
 
-  datagrid.launch_grid(transId, gridUrl, true, queryToolTitle, sURL);
+  let retVal = datagrid.launch_grid(transId, gridUrl, true, queryToolTitle, sURL);
+  if(!retVal) {
+    alertify.alert(
+      gettext('Query tool launch error'),
+      gettext(
+        'Please allow the pop-ups for this site to perform the desired action. If the main window of pgAdmin is closed then close this window and open a new pgAdmin session.'
+      )
+    );
+  }
 }
 
 export function generateScript(parentData, datagrid) {

@@ -161,6 +161,14 @@ let queryToolActions = {
     sqlEditorController.close_on_save = false;
     sqlEditorController.save_data();
   },
+
+  openQueryTool: function (sqlEditorController) {
+    sqlEditorController.gridView.handler.trigger(
+      'pgadmin-sqleditor:button:show_query_tool',
+      sqlEditorController.gridView,
+      sqlEditorController.gridView.handler
+    );
+  },
 };
 
 module.exports = queryToolActions;

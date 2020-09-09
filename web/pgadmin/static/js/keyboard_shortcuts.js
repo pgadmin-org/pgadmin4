@@ -199,6 +199,7 @@ function keyboardShortcutsQueryTool(
   let commitKeys = sqlEditorController.preferences.commit_transaction;
   let rollbackKeys = sqlEditorController.preferences.rollback_transaction;
   let saveDataKeys = sqlEditorController.preferences.save_data;
+  let queryToolKeys = sqlEditorController.preferences.show_query_tool;
 
   if (this.validateShortcutKeys(executeKeys, event)) {
     this._stopEventPropagation(event);
@@ -230,6 +231,9 @@ function keyboardShortcutsQueryTool(
   } else if (this.validateShortcutKeys(saveDataKeys, event)) {
     this._stopEventPropagation(event);
     queryToolActions.saveDataChanges(sqlEditorController);
+  } else if (this.validateShortcutKeys(queryToolKeys, event)) {
+    this._stopEventPropagation(event);
+    queryToolActions.openQueryTool(sqlEditorController);
   } else if ((
     (this.isMac() && event.metaKey) ||
      (!this.isMac() && event.ctrlKey)
