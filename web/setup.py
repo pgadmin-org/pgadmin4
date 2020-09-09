@@ -155,12 +155,13 @@ def dump_servers(args):
               (servers_dumped, args.dump_servers))
 
 
-def _validate_servers_data(data):
+def _validate_servers_data(data, is_admin):
     """
     Used internally by load_servers to validate servers data.
     :param data: servers data
     :return: error message if any
     """
+    skip_servers = []
     # Loop through the servers...
     if "Servers" not in data:
         return ("'Servers' attribute not found in file '%s'" %
@@ -168,6 +169,13 @@ def _validate_servers_data(data):
 
     for server in data["Servers"]:
         obj = data["Servers"][server]
+
+        # Check if server is shared.Won't import if user is non-admin
+        if obj.get('Shared', None) and not is_admin:
+            print("Won't import the server '%s' as it is shared " %
+                  obj["Name"])
+            skip_servers.append(server)
+            continue
 
         def check_attrib(attrib):
             if attrib not in obj:
@@ -191,6 +199,8 @@ def _validate_servers_data(data):
             return ("'Host', 'HostAddr' or 'Service' attribute "
                     "not found for server '%s'" % server)
 
+    for server in skip_servers:
+        del data["Servers"][server]
     return None
 
 
@@ -250,7 +260,7 @@ def load_servers(args):
             print("Added %d Server Group(s) and %d Server(s)." %
                   (groups_added, servers_added))
 
-        err_msg = _validate_servers_data(data)
+        err_msg = _validate_servers_data(data, user.has_role("Administrator"))
         if err_msg is not None:
             print(err_msg)
             print_summary()
@@ -258,14 +268,6 @@ def load_servers(args):
 
         for server in data["Servers"]:
             obj = data["Servers"][server]
-
-            # Check if server is shared.Won't import if user is non-admin
-            if 'Shared' in obj \
-                and obj['Shared'] and \
-                    not user.has_role("Administrator"):
-                print("Can't import the server '%s' as it is shared " %
-                      obj["Name"])
-                continue
 
             # Get the group. Create if necessary
             group_id = next(

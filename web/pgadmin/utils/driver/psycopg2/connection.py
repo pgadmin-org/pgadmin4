@@ -1167,9 +1167,8 @@ WHERE db.datname = current_database()""")
 
         rows = []
         self.row_count = cur.rowcount
-        if cur.rowcount > 0:
-            for row in cur:
-                rows.append(dict(row))
+        for row in cur:
+            rows.append(dict(row))
 
         return True, {'columns': columns, 'rows': rows}
 

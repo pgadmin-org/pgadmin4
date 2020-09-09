@@ -7,18 +7,49 @@
 #
 ##########################################################################
 
-"""Check if requires BEGIN in the current query."""
+
+def _get_keyword(query):
+    """
+    Calculate word len, used internally by is_begin_required
+    :param query: query
+    :return: keyword len, keyword
+    """
+    query_len = len(query)
+    word_len = 0
+    while (word_len < query_len) and query[word_len].isalpha():
+        word_len += 1
+
+    keyword = query[0:word_len]
+    return word_len, keyword
+
+
+def _check_next_keyword(query, word_len, keyword_list):
+    """
+    Check if the next keyword is from the keyword list
+    :param query: query
+    :param word_len: current keyword len
+    :param keyword_list: next keyword list
+    :return: boolean
+    """
+    if keyword_list is None:
+        return True
+    query_len = len(query)
+    query = query[word_len:query_len]
+    query = query.strip()
+    word_len, keyword = _get_keyword(query)
+
+    if keyword.lower() in keyword_list:
+        return False
+    return True
 
 
 def is_begin_required(query):
-    word_len = 0
+    """Check if requires BEGIN in the current query."""
     query = query.strip()
     query_len = len(query)
 
     # Check word length (since "beginx" is not "begin").
-    while (word_len < query_len) and query[word_len].isalpha():
-        word_len += 1
-
+    word_len, keyword = _get_keyword(query)
     # Transaction control commands.  These should include every keyword that
     #  gives rise to a TransactionStmt in the backend grammar, except for the
     #  savepoint-related commands.
@@ -26,42 +57,14 @@ def is_begin_required(query):
     #  (We assume that START must be START TRANSACTION, since there is
     #  presently no other "START foo" command.)
 
-    keyword = query[0:word_len]
-
-    if word_len == 5 and keyword.lower() == "abort":
-        return False
-    if word_len == 5 and keyword.lower() == "begin":
-        return False
-    if word_len == 5 and keyword.lower() == "start":
-        return False
-    if word_len == 6 and keyword.lower() == "commit":
-        return False
-    if word_len == 3 and keyword.lower() == "end":
-        return False
-    if word_len == 8 and keyword.lower() == "rollback":
-        return False
-    if word_len == 7 and keyword.lower() == "prepare":
-        # PREPARE TRANSACTION is a TC command, PREPARE foo is not
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-        if word_len == 11 and keyword.lower() == "transaction":
-            return False
-        return True
-
     # Commands not allowed within transactions. The statements checked for
     # here should be exactly those that call PreventTransactionChain() in the
     # backend.
-    if word_len == 6 and keyword.lower() == "vacuum":
+    if keyword.lower() in ["abort", "begin", "start", "commit", "vacuum",
+                           "end", "rollback"]:
         return False
 
-    if word_len == 7 and keyword.lower() == "cluster":
+    if keyword.lower() == "cluster":
         # CLUSTER with any arguments is allowed in transactions
         query = query[word_len:query_len]
         query = query.strip()
@@ -70,98 +73,44 @@ def is_begin_required(query):
             return True  # has additional words
         return False  # it's CLUSTER without arguments
 
-    if word_len == 6 and keyword.lower() == "create":
+    if keyword.lower() == "create":
         query = query[word_len:query_len]
         query = query.strip()
         query_len = len(query)
-        word_len = 0
+        word_len, keyword = _get_keyword(query)
 
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-        if word_len == 8 and keyword.lower() == "database":
-            return False
-        if word_len == 10 and keyword.lower() == "tablespace":
+        if keyword.lower() in ["database", "tablespace"]:
             return False
 
         # CREATE [UNIQUE] INDEX CONCURRENTLY isn't allowed in xacts
-        if word_len == 7 and keyword.lower() == "cluster":
+        if keyword.lower() == "cluster":
             query = query[word_len:query_len]
             query = query.strip()
             query_len = len(query)
-            word_len = 0
+            word_len, keyword = _get_keyword(query)
 
-            while (word_len < query_len) and query[word_len].isalpha():
-                word_len += 1
-
-            keyword = query[0:word_len]
-
-        if word_len == 5 and keyword.lower() == "index":
+        if keyword.lower() == "index":
             query = query[word_len:query_len]
             query = query.strip()
-            query_len = len(query)
-            word_len = 0
+            word_len, keyword = _get_keyword(query)
 
-            while (word_len < query_len) and query[word_len].isalpha():
-                word_len += 1
-
-            keyword = query[0:word_len]
-            if word_len == 12 and keyword.lower() == "concurrently":
+            if keyword.lower() == "concurrently":
                 return False
         return True
 
-    if word_len == 5 and keyword.lower() == "alter":
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-
+    next_keyword_map = {
+        # PREPARE TRANSACTION is a TC command, PREPARE foo is not
+        "prepare": ["transaction"],
         # ALTER SYSTEM isn't allowed in xacts
-        if word_len == 6 and keyword.lower() == "system":
-            return False
-        return True
+        "alter": ["system"],
+        # Note: these tests will match DROP SYSTEM and REINDEX TABLESPACE,
+        # which aren't really valid commands so we don't care much. The other
+        # four possible matches are correct.
+        "drop": ["database", "system", "tablespace"],
+        "reindex": ["database", "system", "tablespace"],
+        # DISCARD ALL isn't allowed in xacts, but other variants are allowed.
+        "discard": ["all"],
+    }
 
-    # Note: these tests will match DROP SYSTEM and REINDEX TABLESPACE, which
-    # aren't really valid commands so we don't care much. The other four
-    # possible matches are correct.
-    if word_len == 4 and keyword.lower() == "drop" \
-            or word_len == 7 and keyword.lower() == "reindex":
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-        if word_len == 8 and keyword.lower() == "database":
-            return False
-        if word_len == 6 and keyword.lower() == "system":
-            return False
-        if word_len == 10 and keyword.lower() == "tablespace":
-            return False
-        return True
-
-    # DISCARD ALL isn't allowed in xacts, but other variants are allowed.
-    if word_len == 7 and keyword.lower() == "discard":
-        query = query[word_len:query_len]
-        query = query.strip()
-        query_len = len(query)
-        word_len = 0
-
-        while (word_len < query_len) and query[word_len].isalpha():
-            word_len += 1
-
-        keyword = query[0:word_len]
-        if word_len == 3 and keyword.lower() == "all":
-            return False
-        return True
-
-    return True
+    return _check_next_keyword(
+        query, word_len, next_keyword_map.get(keyword.lower(), None))
