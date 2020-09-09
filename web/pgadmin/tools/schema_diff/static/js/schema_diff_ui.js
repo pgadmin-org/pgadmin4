@@ -239,7 +239,7 @@ export default class SchemaDiffUI {
             }
 
             pgWindow.pgAdmin.ddl_diff = generated_script;
-            generateScript(server_data, pgWindow.pgAdmin.DataGrid);
+            generateScript(server_data, pgWindow.pgAdmin.DataGrid, Alertify);
           }
 
           $('#diff_fetching_data').find('.schema-diff-busy-text').text('');
@@ -485,7 +485,7 @@ export default class SchemaDiffUI {
       contentType: 'application/json',
     })
       .done(function (res) {
-        let msg = res.data.compare_msg;
+        let msg = _.escape(res.data.compare_msg);
         if (res.data.diff_percentage != 100) {
           msg = msg + gettext(' (this may take a few minutes)...');
         }

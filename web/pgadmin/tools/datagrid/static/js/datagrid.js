@@ -234,8 +234,12 @@ define('pgadmin.datagrid', [
 
         if (self.preferences.new_browser_tab) {
           var newWin = window.open('', '_blank');
-          newWin.document.write(queryToolForm);
-          newWin.document.title = panel_title;
+          if(newWin) {
+            newWin.document.write(queryToolForm);
+            newWin.document.title = panel_title;
+          } else {
+            return false;
+          }
         } else {
           /* On successfully initialization find the dashboard panel,
            * create new panel and add it to the dashboard panel.
@@ -283,6 +287,7 @@ define('pgadmin.datagrid', [
 
           openQueryToolURL(queryToolPanel);
         }
+        return true;
       },
     },
     Backbone.Events);

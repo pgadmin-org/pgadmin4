@@ -64,19 +64,10 @@ export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentif
   }
 
   const gridUrl = generateUrl(transId, queryToolTitle, parentData);
-
-  let retVal = datagrid.launch_grid(transId, gridUrl, true, queryToolTitle, sURL);
-  if(!retVal) {
-    alertify.alert(
-      gettext('Query tool launch error'),
-      gettext(
-        'Please allow the pop-ups for this site to perform the desired action. If the main window of pgAdmin is closed then close this window and open a new pgAdmin session.'
-      )
-    );
-  }
+  launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL, alertify);
 }
 
-export function generateScript(parentData, datagrid) {
+export function generateScript(parentData, datagrid, alertify) {
   const queryToolTitle = `${parentData.database}/${parentData.user}@${parentData.server}`;
   const transId = getRandomInt(1, 9999999);
 
@@ -90,6 +81,18 @@ export function generateScript(parentData, datagrid) {
     +`&server_type=${parentData.stype}`
     +`&did=${parentData.did}`;
 
-  datagrid.launch_grid(transId, url_endpoint, true, queryToolTitle, '');
+  launchDataGrid(datagrid, transId, url_endpoint, queryToolTitle, '', alertify);
+}
 
+export function launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL, alertify) {
+  let retVal = datagrid.launch_grid(transId, gridUrl, true, queryToolTitle, sURL);
+
+  if(!retVal) {
+    alertify.alert(
+      gettext('Query tool launch error'),
+      gettext(
+        'Please allow the pop-ups for this site to perform the desired action. If the main window of pgAdmin is closed then close this window and open a new pgAdmin session.'
+      )
+    );
+  }
 }
