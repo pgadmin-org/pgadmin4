@@ -1272,6 +1272,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             if status:
                 data = res['rows'][0]
 
+            # Update autovacuum properties
+            self.update_autovacuum_properties(data)
+
             sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
                 self, did=did, scid=scid, tid=tid, main_sql=main_sql,
                 data=data, json_resp=json_resp)
