@@ -246,7 +246,7 @@ class ResourceGroupView(NodeView):
             gid: Server Group ID
             sid: Server ID
         """
-        sql = render_template("/".join([self.sql_path, ]))
+        sql = render_template("/".join([self.sql_path, self._PROPERTIES_SQL]))
         status, res = self.conn.execute_dict(sql)
 
         if not status:

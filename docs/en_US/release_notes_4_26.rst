@@ -39,3 +39,4 @@ Bug fixes
 | `Issue #5773 <https://redmine.postgresql.org/issues/5773>`_ -  Fixed an issue where the application ignores the fixed port configuration value.
 | `Issue #5775 <https://redmine.postgresql.org/issues/5775>`_ -  Ensure that 'setup-web.sh' should work in Debian 10.
 | `Issue #5794 <https://redmine.postgresql.org/issues/5794>`_ -  Fixed excessive CPU usage by stopping the indefinite growth of the graph dataset.
+| `Issue #5820 <https://redmine.postgresql.org/issues/5820>`_ -  Fixed an issue while refreshing Resource Group.
