@@ -80,15 +80,20 @@ export function statsReducer(state, action) {
     action.counterData = action.incoming;
   }
 
+  let newState = {};
   Object.keys(action.incoming).forEach(label => {
-    let newEle = action.counter ?  action.incoming[label] - action.counterData[label] : action.incoming[label];
-    state[label] = state[label] || [];
-    if(state[label].length >= X_AXIS_LENGTH) {
-      state[label].pop();
+    if(state[label]) {
+      newState[label] = [
+        action.counter ?  action.incoming[label] - action.counterData[label] : action.incoming[label],
+        ...state[label].slice(0, X_AXIS_LENGTH-1),
+      ];
+    } else {
+      newState[label] = [
+        action.counter ?  action.incoming[label] - action.counterData[label] : action.incoming[label],
+      ];
     }
-    state[label].unshift(newEle);
   });
-  return state;
+  return newState;
 }
 
 const chartsDefault = {
