@@ -38,6 +38,7 @@ Bug fixes
 | `Issue #5766 <https://redmine.postgresql.org/issues/5766>`_ -  Fixed string indices must be integers issue for PostgreSQL < 9.3.
 | `Issue #5773 <https://redmine.postgresql.org/issues/5773>`_ -  Fixed an issue where the application ignores the fixed port configuration value.
 | `Issue #5775 <https://redmine.postgresql.org/issues/5775>`_ -  Ensure that 'setup-web.sh' should work in Debian 10.
+| `Issue #5779 <https://redmine.postgresql.org/issues/5779>`_ -  Remove illegal argument from trigger function in trigger DDL statement.
 | `Issue #5794 <https://redmine.postgresql.org/issues/5794>`_ -  Fixed excessive CPU usage by stopping the indefinite growth of the graph dataset.
 | `Issue #5815 <https://redmine.postgresql.org/issues/5815>`_ -  Fixed an issue where clicking on the 'Generate script' button shows a forever spinner due to pop up blocker.
 | `Issue #5820 <https://redmine.postgresql.org/issues/5820>`_ -  Fixed an issue while refreshing Resource Group.

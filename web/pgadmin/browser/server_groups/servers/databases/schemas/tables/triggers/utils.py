@@ -131,6 +131,8 @@ def get_trigger_function_and_columns(conn, data, tid,
             formatted_args = ', '.join(formatted_args)
 
             data['tgargs'] = formatted_args
+        else:
+            data['tgargs'] = None
 
         if len(data['tgattr']) >= 1:
             columns = ', '.join(data['tgattr'].split(' '))
