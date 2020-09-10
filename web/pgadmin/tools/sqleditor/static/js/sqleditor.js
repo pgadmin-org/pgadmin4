@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import {getTreeNodeHierarchyFromIdentifier} from 'sources/tree/pgadmin_tree_node';
+import {showQueryTool} from 'tools/datagrid/static/js/show_query_tool';
 
 define('tools.querytool', [
   'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
@@ -4317,14 +4318,16 @@ define('tools.querytool', [
       _show_query_tool: function() {
         var self = this;
 
-        setTimeout(() => {
-          var tree_node = pgWindow.default.pgAdmin.selected_tree_map.get(self.url_params.did || self.url_params.sid);
-          if(self.preferences.new_browser_tab) {
-            is_main_window_alive();
-          }
+        var tree_node = pgWindow.default.pgAdmin.selected_tree_map.get(self.url_params.did || self.url_params.sid);
+        if(self.preferences.new_browser_tab) {
+          is_main_window_alive();
+        }
+        this._open_query_tool(tree_node);
+      },
 
-          pgWindow.default.pgAdmin.DataGrid.show_query_tool('', tree_node.i);
-        }, 200);
+      _open_query_tool: function(tree_node) {
+        const transId = pgadminUtils.getRandomInt(1, 9999999);
+        showQueryTool(pgWindow.default.pgAdmin.DataGrid, pgWindow.default.pgAdmin.Browser, alertify, '', tree_node.i, transId);
       },
 
       /*
