@@ -16,15 +16,31 @@ Use the fields in the *General* tab to identify the server:
 
 * Use the *Name* field to add a descriptive name for the server; the name
   specified will be displayed in the *Browser* tree control.
+
 * Use the drop-down list box in the *Server group* field to select the parent
   node for the server; the server will be displayed in the *Browser* tree
   control within the specified group.
+
 * Use the color-picker in the *Background* field to specify the background
   color for the server.
+
 * Use the color-picker in the *Foreground* field to specify the foreground
   color for the server.
+
 * If the *Connect now?* checkbox is checked, the client will attempt a
   connection to the server upon completion of the dialog; this is the default
+
+* If the *Shared with all?* switch is moved to *Yes* then that server can be
+  shared with all the other users. This option is available only to admin users. For more information on users see :ref:`User Management Dialog <user_management>`. The users can access the shared servers with some restritctions. The Users accessing the shared servers cannot do the following operations on the shared servers:
+
+    * Create a server
+    * Delete the server
+    * Rename the server
+    * Rename the group server
+    * Change of host, port, and maintenance database
+
+  Please note that once the server is shared, it's icon is changed in the browser tree.
+
 * Provide a comment about the server in the *Comments* field.
 
 Click the *Connection* tab to continue.
