@@ -53,6 +53,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
         group_name = kwargs.get('group_name')
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
+        source_schema_name = kwargs.get('source_schema_name', None)
         source_tables = {}
         target_tables = {}
 
@@ -76,7 +77,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     node_label=self.blueprint.collection_label,
                                     group_name=group_name,
                                     ignore_whitespaces=ignore_whitespaces,
-                                    ignore_keys=self.keys_to_ignore)
+                                    ignore_keys=self.keys_to_ignore,
+                                    source_schema_name=source_schema_name)
 
     def ddl_compare(self, **kwargs):
         """

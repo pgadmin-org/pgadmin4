@@ -260,6 +260,15 @@ export default class SchemaDiffUI {
         let data = self.grid.getData().getItem(sel_rows[row]);
         if(!_.isUndefined(data.diff_ddl)) {
           if (!(data.dependLevel in script_array)) script_array[data.dependLevel] = [];
+          // Check whether the selected object belongs to source only schema
+          // if yes then we will have to add create schema statement before
+          // creating any other object.
+          if (!_.isUndefined(data.source_schema_name) && !_.isNull(data.source_schema_name)) {
+            let schema_query = '\nCREATE SCHEMA IF NOT EXISTS ' + data.source_schema_name + ';\n';
+            if (script_array[data.dependLevel].indexOf(schema_query) == -1) {
+              script_array[data.dependLevel].push(schema_query);
+            }
+          }
           script_array[data.dependLevel].push(data.diff_ddl);
         }
       }

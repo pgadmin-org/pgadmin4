@@ -464,8 +464,10 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
             schema_result['target_only']) + len(
             schema_result['in_both_database'])
 
-        node_percent = round(100 / (total_schema * len(
-            SchemaDiffRegistry.get_registered_nodes())))
+        node_percent = 0
+        if total_schema > 0:
+            node_percent = round(100 / (total_schema * len(
+                SchemaDiffRegistry.get_registered_nodes())))
         total_percent = 0
 
         # Compare Database objects
@@ -494,7 +496,8 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
                         node_percent=node_percent,
-                        ignore_whitespaces=ignore_whitespaces)
+                        ignore_whitespaces=ignore_whitespaces,
+                        is_schema_source_only=True)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -741,6 +744,12 @@ def compare_schema_objects(**kwargs):
     total_percent = kwargs.get('total_percent')
     node_percent = kwargs.get('node_percent')
     ignore_whitespaces = kwargs.get('ignore_whitespaces')
+    is_schema_source_only = kwargs.get('is_schema_source_only', False)
+    source_schema_name = None
+    if is_schema_source_only:
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        source_schema_name = driver.qtIdent(None, schema_name)
+
     comparison_result = []
 
     all_registered_nodes = SchemaDiffRegistry.get_registered_nodes()
@@ -762,7 +771,8 @@ def compare_schema_objects(**kwargs):
                                target_did=target_did,
                                target_scid=target_scid,
                                group_name=gettext(schema_name),
-                               ignore_whitespaces=ignore_whitespaces)
+                               ignore_whitespaces=ignore_whitespaces,
+                               source_schema_name=source_schema_name)
 
             if res is not None:
                 comparison_result = comparison_result + res

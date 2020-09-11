@@ -20,19 +20,21 @@ list_keys_array = ['name', 'colname', 'argid', 'token', 'option', 'conname',
                    'fsrvoption', 'umoption']
 
 
-def _get_source_list(added, source_dict, node, source_params, view_object,
-                     node_label, group_name):
+def _get_source_list(**kwargs):
     """
     Get only source list.
-    :param added: added dict list.
-    :param source_dict: source dict.
-    :param node: node type.
-    :param source_params: source parameters.
-    :param view_object: view object for get sql.
-    :param node_label: node label.
-    :param group_name: group name
+    :param kwargs
     :return: list of source dict.
     """
+    added = kwargs.get('added')
+    source_dict = kwargs.get('source_dict')
+    node = kwargs.get('node')
+    source_params = kwargs.get('source_params')
+    view_object = kwargs.get('view_object')
+    node_label = kwargs.get('node_label')
+    group_name = kwargs.get('group_name')
+    source_schema_name = kwargs.get('source_schema_name')
+
     global count
     source_only = []
     for item in added:
@@ -77,7 +79,8 @@ def _get_source_list(added, source_dict, node, source_params, view_object,
             'target_ddl': '',
             'diff_ddl': diff_ddl,
             'group_name': group_name,
-            'dependencies': source_dependencies
+            'dependencies': source_dependencies,
+            'source_schema_name': source_schema_name
         })
         count += 1
 
@@ -220,9 +223,8 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
     target_params = kwargs['target_params']
     group_name = kwargs['group_name']
     for key in intersect_keys:
-        source_object_id, target_object_id = get_source_target_oid(source_dict,
-                                                                   target_dict,
-                                                                   key)
+        source_object_id, target_object_id = \
+            get_source_target_oid(source_dict, target_dict, key)
 
         # Recursively Compare the two dictionary
         if are_dictionaries_identical(dict1[key], dict2[key],
@@ -337,6 +339,7 @@ def compare_dictionaries(**kwargs):
     node_label = kwargs.get('node_label')
     ignore_whitespaces = kwargs.get('ignore_whitespaces')
     ignore_keys = kwargs.get('ignore_keys', None)
+    source_schema_name = kwargs.get('source_schema_name')
 
     dict1 = copy.deepcopy(source_dict)
     dict2 = copy.deepcopy(target_dict)
@@ -352,8 +355,13 @@ def compare_dictionaries(**kwargs):
     # Keys that are available in source and missing in target.
 
     added = dict1_keys - dict2_keys
-    source_only = _get_source_list(added, source_dict, node, source_params,
-                                   view_object, node_label, group_name)
+
+    source_only = _get_source_list(added=added, source_dict=source_dict,
+                                   node=node, source_params=source_params,
+                                   view_object=view_object,
+                                   node_label=node_label,
+                                   group_name=group_name,
+                                   source_schema_name=source_schema_name)
 
     target_only = []
     # Keys that are available in target and missing in source.

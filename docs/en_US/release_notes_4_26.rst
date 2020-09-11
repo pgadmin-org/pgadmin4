@@ -41,4 +41,5 @@ Bug fixes
 | `Issue #5779 <https://redmine.postgresql.org/issues/5779>`_ -  Remove illegal argument from trigger function in trigger DDL statement.
 | `Issue #5794 <https://redmine.postgresql.org/issues/5794>`_ -  Fixed excessive CPU usage by stopping the indefinite growth of the graph dataset.
 | `Issue #5815 <https://redmine.postgresql.org/issues/5815>`_ -  Fixed an issue where clicking on the 'Generate script' button shows a forever spinner due to pop up blocker.
+| `Issue #5816 <https://redmine.postgresql.org/issues/5816>`_ -  Ensure that the 'CREATE SCHEMA' statement should be present in the generated script if the schema is not present in the target database.
 | `Issue #5820 <https://redmine.postgresql.org/issues/5820>`_ -  Fixed an issue while refreshing Resource Group.

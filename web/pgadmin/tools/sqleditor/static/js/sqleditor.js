@@ -7,8 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {getTreeNodeHierarchyFromIdentifier} from 'sources/tree/pgadmin_tree_node';
-import {showQueryTool} from 'tools/datagrid/static/js/show_query_tool';
+import {launchDataGrid} from 'tools/datagrid/static/js/show_query_tool';
 
 define('tools.querytool', [
   'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
@@ -2071,34 +2070,6 @@ define('tools.querytool', [
     }
   };
 
-  var set_tree_node = function() {
-
-    let browser = pgWindow.default.pgAdmin.Browser;
-    let tree = browser.tree;
-
-    var t = tree,
-      i = t.selected(),
-      d = i && i.length == 1 ? t.itemData(i) : undefined;
-
-    if(!d)
-      return;
-
-    const parentData = getTreeNodeHierarchyFromIdentifier.call(pgWindow.default.pgAdmin.Browser, i);
-
-    if(!parentData) {
-      return;
-    }
-
-    let conn_param = parentData.database || parentData.server;
-
-    var selected_tree_node = { t, i, d };
-
-    if(!pgWindow.default.pgAdmin.selected_tree_map)
-      pgWindow.default.pgAdmin.selected_tree_map = new Map();
-
-    pgWindow.default.pgAdmin.selected_tree_map.set(conn_param._id.toString(), selected_tree_node);
-  };
-
   _.extend(
     SqlEditorController.prototype,
     Backbone.Events,
@@ -2111,7 +2082,6 @@ define('tools.querytool', [
 
         //call to check whether user have closed the parent window and trying to refresh, if yes return error.
         is_main_window_alive();
-        set_tree_node();
 
         // Disable animation first
         modifyAnimation.modifyAlertifyAnimation();
@@ -4318,16 +4288,27 @@ define('tools.querytool', [
       _show_query_tool: function() {
         var self = this;
 
-        var tree_node = pgWindow.default.pgAdmin.selected_tree_map.get(self.url_params.did || self.url_params.sid);
         if(self.preferences.new_browser_tab) {
           is_main_window_alive();
         }
-        this._open_query_tool(tree_node);
+        this._open_query_tool(self);
       },
 
-      _open_query_tool: function(tree_node) {
+      _open_query_tool: function(that) {
+
         const transId = pgadminUtils.getRandomInt(1, 9999999);
-        showQueryTool(pgWindow.default.pgAdmin.DataGrid, pgWindow.default.pgAdmin.Browser, alertify, '', tree_node.i, transId);
+
+        let url_endpoint = url_for('datagrid.panel', {
+          'trans_id': transId,
+        });
+
+        url_endpoint += `?is_query_tool=${that.url_params.is_query_tool}`
+          +`&sgid=${that.url_params.sgid}`
+          +`&sid=${that.url_params.sid}`
+          +`&server_type=${that.url_params.server_type}`
+          +`&did=${that.url_params.did}`;
+
+        launchDataGrid(pgWindow.default.pgAdmin.DataGrid, transId, url_endpoint, that.url_params.title, '', alertify);
       },
 
       /*
