@@ -314,6 +314,11 @@ def create_app(app_name=None):
                 getattr(config, 'SQLITE_TIMEOUT', 500)
                 )
 
+    # Override USER_DOES_NOT_EXIST and INVALID_PASSWORD messages from flask.
+    app.config['SECURITY_MSG_USER_DOES_NOT_EXIST'] = \
+        app.config['SECURITY_MSG_INVALID_PASSWORD'] = \
+        (gettext("Incorrect username or password."), "error")
+
     # Create database connection object and mailer
     db.init_app(app)
 

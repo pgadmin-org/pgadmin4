@@ -23,7 +23,7 @@ from pgadmin.model import User
 class BaseAuthentication(object):
 
     DEFAULT_MSG = {
-        'USER_DOES_NOT_EXIST': 'Specified user does not exist',
+        'USER_DOES_NOT_EXIST': 'Incorrect username or password.',
         'LOGIN_FAILED': 'Login failed',
         'EMAIL_NOT_PROVIDED': 'Email/Username not provided',
         'PASSWORD_NOT_PROVIDED': 'Password not provided'
