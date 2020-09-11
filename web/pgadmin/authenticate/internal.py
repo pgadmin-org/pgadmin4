@@ -17,16 +17,18 @@ from flask_babelex import gettext
 
 from .registry import AuthSourceRegistry
 from pgadmin.model import User
+from pgadmin.utils.validation_utils import validate_email
 
 
 @six.add_metaclass(AuthSourceRegistry)
 class BaseAuthentication(object):
 
     DEFAULT_MSG = {
-        'USER_DOES_NOT_EXIST': 'Incorrect username or password.',
-        'LOGIN_FAILED': 'Login failed',
-        'EMAIL_NOT_PROVIDED': 'Email/Username not provided',
-        'PASSWORD_NOT_PROVIDED': 'Password not provided'
+        'USER_DOES_NOT_EXIST': gettext('Incorrect username or password.'),
+        'LOGIN_FAILED': gettext('Login failed'),
+        'EMAIL_NOT_PROVIDED': gettext('Email/Username not provided'),
+        'PASSWORD_NOT_PROVIDED': gettext('Password not provided'),
+        'INVALID_EMAIL': gettext('Email/Username is not valid')
     }
 
     @abstractproperty
@@ -85,7 +87,10 @@ class InternalAuthentication(BaseAuthentication):
 
     def validate(self, form):
         """User validation"""
-
+        # validate the email id first
+        if not validate_email(form.data['email']):
+            form.errors['email'] = [self.messages('INVALID_EMAIL')]
+            return False
         # Flask security validation
         return form.validate_on_submit()
 

@@ -18,6 +18,7 @@ from urllib.parse import unquote
 from sys import platform as _platform
 import config
 import codecs
+import pathlib
 from werkzeug.exceptions import InternalServerError
 
 import simplejson as json
@@ -316,6 +317,11 @@ class Filemanager(object):
 
     # Stores list of dict for filename & its encoding
     loaded_file_encoding_list = []
+
+    ERROR_NOT_ALLOWED = {
+        'Error': gettext('Not allowed'),
+        'Code': 0
+    }
 
     def __init__(self, trans_id):
         self.trans_id = trans_id
@@ -822,10 +828,7 @@ class Filemanager(object):
         Rename file or folder
         """
         if not self.validate_request('rename'):
-            return {
-                'Error': gettext('Not allowed'),
-                'Code': 0
-            }
+            return self.ERROR_NOT_ALLOWED
 
         the_dir = self.dir if self.dir is not None else ''
 
@@ -883,10 +886,7 @@ class Filemanager(object):
         Delete file or folder
         """
         if not self.validate_request('delete'):
-            return {
-                'Error': gettext('Not allowed'),
-                'Code': 0
-            }
+            return self.ERROR_NOT_ALLOWED
 
         the_dir = self.dir if self.dir is not None else ''
         orig_path = "{0}{1}".format(the_dir, path)
@@ -924,10 +924,7 @@ class Filemanager(object):
         File upload functionality
         """
         if not self.validate_request('upload'):
-            return {
-                'Error': gettext('Not allowed'),
-                'Code': 0
-            }
+            return self.ERROR_NOT_ALLOWED
 
         the_dir = self.dir if self.dir is not None else ''
         err_msg = ''
@@ -939,6 +936,12 @@ class Filemanager(object):
             file_name = file_obj.filename
             orig_path = "{0}{1}".format(the_dir, path)
             new_name = "{0}{1}".format(orig_path, file_name)
+
+            try:
+                # Check if the new file is inside the users directory
+                pathlib.Path(new_name).relative_to(the_dir)
+            except ValueError as _:
+                return self.ERROR_NOT_ALLOWED
 
             with open(new_name, 'wb') as f:
                 while True:
@@ -1103,10 +1106,7 @@ class Filemanager(object):
         Functionality to create new folder
         """
         if not self.validate_request('create'):
-            return {
-                'Error': gettext('Not allowed'),
-                'Code': 0
-            }
+            return self.ERROR_NOT_ALLOWED
 
         the_dir = self.dir if self.dir is not None else ''
 
@@ -1156,10 +1156,7 @@ class Filemanager(object):
         Functionality to download file
         """
         if not self.validate_request('download'):
-            return {
-                'Error': gettext('Not allowed'),
-                'Code': 0
-            }
+            return self.ERROR_NOT_ALLOWED
 
         the_dir = self.dir if self.dir is not None else ''
         orig_path = "{0}{1}".format(the_dir, path)

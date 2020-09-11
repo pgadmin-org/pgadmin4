@@ -22,9 +22,10 @@ from werkzeug.exceptions import InternalServerError
 import config
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
-    make_json_response, bad_request, internal_server_error
+    make_json_response, bad_request, internal_server_error, forbidden
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting
 
@@ -104,16 +105,11 @@ def validate_password(data, new_data):
 
 def validate_user(data):
     new_data = dict()
-    email_filter = re.compile(
-        "^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9]"
-        "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
-        "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-    )
 
     validate_password(data, new_data)
 
     if 'email' in data and data['email'] and data['email'] != "":
-        if email_filter.match(data['email']):
+        if validate_email(data['email']):
             new_data['email'] = data['email']
         else:
             raise InternalServerError(_("Invalid email address."))
@@ -382,6 +378,18 @@ def update(uid):
     data = request.form if request.form else json.loads(
         request.data, encoding='utf-8'
     )
+
+    # Username and email can not be changed for internal users
+    if usr.auth_source == current_app.PGADMIN_DEFAULT_AUTH_SOURCE:
+        non_editable_params = ('username', 'email')
+
+        for f in non_editable_params:
+            if f in data:
+                return forbidden(
+                    errmsg=_(
+                        "'{0}' is not allowed to modify."
+                    ).format(f)
+                )
 
     try:
         new_data = validate_user(data)

@@ -34,9 +34,18 @@ def get_storage_directory():
     if storage_dir is None:
         return None
 
-    username = current_user.username.split('@')[0]
-    if len(username) == 0 or username[0].isdigit():
-        username = 'pga_user_' + username
+    def _preprocess_username(un):
+        ret_un = un
+        if len(ret_un) == 0 or ret_un[0].isdigit():
+            ret_un = 'pga_user_' + username
+
+        ret_un = ret_un.replace('@', '_')\
+            .replace('/', 'slash')\
+            .replace('\\', 'slash')
+
+        return ret_un
+
+    username = _preprocess_username(current_user.username.split('@')[0])
 
     # Figure out the old-style storage directory name
     old_storage_dir = os.path.join(
@@ -45,11 +54,13 @@ def get_storage_directory():
         username
     )
 
+    username = _preprocess_username(current_user.username)
+
     # Figure out the new style storage directory name
     storage_dir = os.path.join(
         storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode')
         else storage_dir,
-        current_user.username.replace('@', '_')
+        username
     )
 
     # Rename an old-style storage directory, if the new style doesn't exist

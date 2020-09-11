@@ -14,6 +14,8 @@ import os
 import re
 import getpass
 
+from pgadmin.utils.validation_utils import validate_email
+
 
 def user_info_desktop():
     print("NOTE: Configuring authentication for DESKTOP mode.")
@@ -43,14 +45,8 @@ def user_info_server():
             "pgAdmin user account:\n"
         )
 
-        email_filter = re.compile(
-            "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]"
-            "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9]"
-            "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-        )
-
         email = input("Email address: ")
-        while email == '' or not email_filter.match(email):
+        while not validate_email(email):
             print('Invalid email address. Please try again.')
             email = input("Email address: ")
 
