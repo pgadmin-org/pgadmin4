@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-11 19:58+0530\n"
-"PO-Revision-Date: 2020-08-15 15:18+0900\n"
+"PO-Revision-Date: 2020-09-12 18:00+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: pgadmin/__init__.py:320 pgadmin/authenticate/internal.py:27
 msgid "Incorrect username or password."
-msgstr ""
+msgstr "ユーザ名またはパスワードが違います"
 
 #: pgadmin/__init__.py:523 pgadmin/__init__.py:573
 msgid "Auto-detected {0} installation with the data directory at {1}"
@@ -105,19 +105,19 @@ msgstr "ロゴ"
 
 #: pgadmin/authenticate/internal.py:28
 msgid "Login failed"
-msgstr ""
+msgstr "ログイン失敗"
 
 #: pgadmin/authenticate/internal.py:29
 msgid "Email/Username not provided"
-msgstr ""
+msgstr "メールアドレス/ユーザ名が未指定です"
 
 #: pgadmin/authenticate/internal.py:30
 msgid "Password not provided"
-msgstr ""
+msgstr "パスワードが未指定です"
 
 #: pgadmin/authenticate/internal.py:31
 msgid "Email/Username is not valid"
-msgstr ""
+msgstr "メールアドレス/ユーザ名が不正です"
 
 #: pgadmin/authenticate/internal.py:86
 msgid "internal"
@@ -211,7 +211,7 @@ msgstr "システムオブジェクトを表示"
 
 #: pgadmin/browser/register_browser_preferences.py:30
 msgid "Hide shared server?"
-msgstr ""
+msgstr "共有サーバを隠す"
 
 #: pgadmin/browser/register_browser_preferences.py:31
 #: pgadmin/utils/constants.py:20
@@ -220,7 +220,7 @@ msgstr "ディスプレイ"
 
 #: pgadmin/browser/register_browser_preferences.py:32
 msgid "If set to true, then all shared server will be hidden"
-msgstr ""
+msgstr "True の場合、すべての共有サーバが非表示になります"
 
 #: pgadmin/browser/register_browser_preferences.py:39
 msgid "Enable browser tree animation?"
@@ -429,7 +429,7 @@ msgstr "サーバへの接続が切断されました"
 
 #: pgadmin/browser/utils.py:729
 msgid "Could not find the specified {}."
-msgstr ""
+msgstr "指定された{}が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/__init__.py:184
 msgid "The specified server group cannot be deleted."
@@ -597,7 +597,7 @@ msgstr "統計を生成するための、サーバへの有効な接続があり
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1288
 msgid "Please enter the server details to connect"
-msgstr ""
+msgstr "接続するサーバの詳細を入力してください"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1449
 #: pgadmin/tools/schema_diff/__init__.py:366
@@ -750,7 +750,7 @@ msgstr "データベースがサーバ内に見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:859
 msgid "Database could not be deleted."
-msgstr ""
+msgstr "データベースを削除できませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:900
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:510
@@ -3355,7 +3355,7 @@ msgstr "テーブルが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1123
 msgid "\n"
-msgstr ""
+msgstr "\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1135
 msgid "Table dropped"
@@ -7146,6 +7146,15 @@ msgid ""
 "...\n"
 "]"
 msgstr ""
+"\n"
+"作成モードでの構成パラメータ/変数は、以下の形式の JSON オブジェクトを配列にして渡してください\n"
+"variables:[{\n"
+"database: <データベース> または null,\n"
+"name: <構成>,\n"
+"value: <値>\n"
+"},\n"
+"...\n"
+"]"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:377
 msgid ""
@@ -7176,6 +7185,30 @@ msgid ""
 "    ...\n"
 "    ]\n"
 msgstr ""
+"\n"
+"更新モードでの構成パラメータ/変数は、以下の形式の JSON オブジェクトを配列にして渡してください\n"
+"rolmembership:{\n"
+"'added': [{\n"
+"    database: <データベース> または null,\n"
+"    name: <構成>,\n"
+"    value: <値>\n"
+"    },\n"
+"    ...\n"
+"    ],\n"
+"'deleted': [{\n"
+"    database: <データベース> または null,\n"
+"    name: <構成>,\n"
+"    value: <値>\n"
+"    },\n"
+"    ...\n"
+"    ],\n"
+"'updated': [{\n"
+"    database: <データベース> または null,\n"
+"    name: <構成>,\n"
+"    value: <値>\n"
+"    },\n"
+"    ...\n"
+"    ]\n"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:486
 msgid "The current user does not have permission to drop the role."
@@ -7214,6 +7247,8 @@ msgid ""
 "\n"
 "{0}"
 msgstr ""
+"\n"
+"{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:777
 msgid ""
@@ -7533,7 +7568,7 @@ msgstr "サーバグループ"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:765
 msgid "Shared Server Owner"
-msgstr ""
+msgstr "共有サーバの所有者"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:768
 msgid "Server type"
@@ -7581,7 +7616,7 @@ msgstr "いますぐ接続"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:790
 msgid "Shared with all?"
-msgstr ""
+msgstr "すべてと共有"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:821
 #: pgadmin/browser/server_groups/servers/static/js/server.js:842
@@ -7724,6 +7759,8 @@ msgid ""
 " pgAdmin. This may cause pgAdmin to break in strange and unpredictable "
 "ways. Or a plague of frogs. Either way, you have been warned!"
 msgstr ""
+"pgAdmin がサポートしていない、古いバージョンのサーバへ接続しました。"
+"したがって、想定外の挙動やエラーが発生するかもしれません"
 
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:201
 msgid "Please select a parameter name."
@@ -9043,12 +9080,12 @@ msgstr "バックエンドプロセス「{0}」を終了できませんでした
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:197
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:212
 msgid "error"
-msgstr ""
+msgstr "エラー"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:197
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:212
 msgid "fatal"
-msgstr ""
+msgstr "致命的エラー"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:233
 msgid "Started"
@@ -9105,7 +9142,7 @@ msgstr "実行時間"
 #: pgadmin/misc/dependencies/static/js/dependencies.js:102
 #: pgadmin/misc/dependents/static/js/dependents.js:103
 msgid "field"
-msgstr ""
+msgstr "フィールド"
 
 #: pgadmin/misc/dependencies/static/js/dependencies.js:136
 msgid "No dependency information is available for the selected object."
@@ -9478,11 +9515,11 @@ msgstr "カテゴリが選択されていません"
 
 #: pgadmin/preferences/static/js/preferences.js:483
 msgid "Browser tree refresh required"
-msgstr ""
+msgstr "ブラウザツリーの再読み込みが必要です"
 
 #: pgadmin/preferences/static/js/preferences.js:484
 msgid "A browser tree refresh is required. Do you wish to refresh the tree?"
-msgstr ""
+msgstr "ブラウザツリーを再読み込みする必要があります。続行しますか？"
 
 #: pgadmin/preferences/static/js/preferences.js:500
 #: pgadmin/preferences/static/js/preferences.js:517
@@ -10416,7 +10453,7 @@ msgstr "クエリツールエラー"
 
 #: pgadmin/tools/datagrid/static/js/show_query_tool.js:92
 msgid "Query tool launch error"
-msgstr ""
+msgstr "クエリツールの起動エラー"
 
 #: pgadmin/tools/datagrid/static/js/show_query_tool.js:93
 msgid ""
@@ -10424,6 +10461,9 @@ msgid ""
 "the main window of pgAdmin is closed then close this window and open a "
 "new pgAdmin session."
 msgstr ""
+"要求された操作を正しく実行させるため、このサイトからのポップアップウィンドウを許可してください。"
+"pgAdmin のメインウィンドウが終了させられた場合は、このウィンドウを閉じ、新しい pgAdmin "
+"セッションを開始してください"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:49
 msgid "Save As"
@@ -10539,15 +10579,15 @@ msgstr " (Shift+Ctrl+/)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:202
 msgid "Format SQL"
-msgstr ""
+msgstr "SQL を整形"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:203
 msgid " (Shift+Cmd+K)"
-msgstr ""
+msgstr " (Shift+Cmd+K)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:205
 msgid " (Shift+Ctrl+K)"
-msgstr ""
+msgstr " (Shift+Ctrl+K)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:225
 msgid "Sort/Filter"
@@ -11784,7 +11824,7 @@ msgstr "エラー： {0}"
 
 #: pgadmin/tools/sqleditor/__init__.py:1330
 msgid "Could not find the required parameter (query)."
-msgstr ""
+msgstr "要求されたパラメータ（クエリ）が見つかりませんでした"
 
 #: pgadmin/tools/sqleditor/command.py:74
 msgid "This feature has not been implemented for object type '{0}'."
@@ -11882,6 +11922,8 @@ msgid ""
 "The pgAdmin browser window has been closed and the connection to the "
 "server is lost. Please close this window and open a new pgAdmin session."
 msgstr ""
+"pgAdmin のブラウザウィンドウが終了させられ、サーバへの接続が失われた場合は、このウィンドウを"
+"閉じ、新しい pgAdmin セッションを開始してください"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2192
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2194
@@ -12404,71 +12446,73 @@ msgstr "True の場合、自動補完時のキーワードが大文字で表示�
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:692
 msgid "Keyword case"
-msgstr ""
+msgstr "キーワードの大文字小文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:697
 msgid "Convert keywords to upper, lower, or capitalized casing."
-msgstr ""
+msgstr "キーワードを大文字、小文字、1文字目だけ大文字へ変換します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:704
 msgid "Identifier case"
-msgstr ""
+msgstr "識別子の大文字小文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:709
 msgid "Convert identifiers to upper, lower, or capitalized casing."
-msgstr ""
+msgstr "識別子を大文字、小文字、1文字目だけ大文字へ変換します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:716
 msgid "Strip comments?"
-msgstr ""
+msgstr "コメントを削除"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:718
 msgid "If set to True, comments will be removed."
-msgstr ""
+msgstr "True の場合、コメントを削除します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:723
 msgid "Re-indent?"
-msgstr ""
+msgstr "再インデント"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:725
 msgid "If set to True, the indentations of the statements are changed."
-msgstr ""
+msgstr "True の場合、文のインデントを変更します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:731
 msgid "Re-indent aligned?"
-msgstr ""
+msgstr "再インデントと整列"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:733
 msgid ""
 "If set to True, the indentations of the statements are changed, and "
 "statements are aligned by keywords."
-msgstr ""
+msgstr "True の場合、文のインデントを変更し、キーワードで整列させます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:740
 msgid "Spaces around operators?"
-msgstr ""
+msgstr "演算子前後のスペース挿入"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:742
 msgid "If set to True, spaces are used around all operators."
-msgstr ""
+msgstr "True の場合、演算子すべての前後にスペースを使用します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:748
 msgid "Comma-first notation?"
-msgstr ""
+msgstr "コンマの冒頭配置"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:750
 msgid "If set to True, comma-first notation for column names is used."
-msgstr ""
+msgstr "True の場合、コンマを列名よりも前に配置します"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:756
 msgid "Wrap after N characters"
-msgstr ""
+msgstr "N 文字目で折り返す"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:758
 msgid ""
 "The column limit (in characters) for wrapping comma-separated lists. If "
 "zero, it puts every item in the list on its own line."
 msgstr ""
+"コンマ区切りのリストを、何文字目で折り返すかを指定します。0 にすると、すべての項目を"
+"一つの行にまとめます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:765
 msgid "Tab size"
@@ -12503,7 +12547,7 @@ msgstr "ユーザが削除されました"
 
 #: pgadmin/tools/user_management/__init__.py:389
 msgid "'{0}' is not allowed to modify."
-msgstr ""
+msgstr "「{0}」の変更は禁止されています"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:33
 msgid "Filter by email"
@@ -12669,7 +12713,7 @@ msgstr "結果グリッド"
 
 #: pgadmin/utils/constants.py:26
 msgid "SQL formatting"
-msgstr ""
+msgstr "SQL の整形"
 
 #: pgadmin/utils/constants.py:41
 msgid "Transaction ID not found in the session."
@@ -12677,7 +12721,7 @@ msgstr "トランザクション ID がセッション内に見つかりませ�
 
 #: pgadmin/utils/constants.py:45
 msgid "Error fetching role information from the database server."
-msgstr ""
+msgstr "データベースサーバからロール情報を取得中にエラーが発生しました"
 
 #: pgadmin/utils/exception.py:68
 msgid ""
