@@ -1,4 +1,4 @@
-VERSION = 4.25.0.0
+VERSION = 4.26.0.0
 QMAKE_TARGET_COMPANY = "The pgAdmin Development Team"
 QMAKE_TARGET_PRODUCT = "pgAdmin 4"
 QMAKE_TARGET_DESCRIPTION = "pgAdmin 4 Desktop Runtime"
