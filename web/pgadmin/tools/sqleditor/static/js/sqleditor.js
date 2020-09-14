@@ -4302,13 +4302,24 @@ define('tools.querytool', [
           'trans_id': transId,
         });
 
-        url_endpoint += `?is_query_tool=${that.url_params.is_query_tool}`
+        url_endpoint += `?is_query_tool=${true}`
           +`&sgid=${that.url_params.sgid}`
           +`&sid=${that.url_params.sid}`
-          +`&server_type=${that.url_params.server_type}`
-          +`&did=${that.url_params.did}`;
+          +`&server_type=${that.url_params.server_type}`;
 
-        launchDataGrid(pgWindow.default.pgAdmin.DataGrid, transId, url_endpoint, that.url_params.title, '', alertify);
+        if(that.url_params.did) {
+          url_endpoint += `&did=${that.url_params.did}`;
+        }
+
+        let panel_title = that.url_params.title;
+        if(that.url_params.is_query_tool == 'false') {//check whether query tool is hit from View/Edit
+          var split_title = that.url_params.title.split('/');
+          if(split_title.length > 2) {
+            panel_title = split_title[split_title.length-2] + '/' + split_title[split_title.length-1];
+          }
+        }
+
+        launchDataGrid(pgWindow.default.pgAdmin.DataGrid, transId, url_endpoint, panel_title, '', alertify);
       },
 
       /*
