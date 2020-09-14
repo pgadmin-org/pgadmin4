@@ -1,10 +1,5 @@
 {% if data %}
-{% if not data.lc_collate and not data.lc_type and not data.locale and not data.copy_collation %}
 CREATE COLLATION {{ conn|qtIdent(data.schema, data.name) }}
-    FROM pg_catalog."default";
-{% else %}
-CREATE COLLATION {{ conn|qtIdent(data.schema, data.name) }}
-{% endif %}
 {# if user has provided lc_collate & lc_type #}
 {% if data.lc_collate and data.lc_type %}
     (LC_COLLATE = {{ data.lc_collate|qtLiteral }}, LC_CTYPE = {{ data.lc_type|qtLiteral }});

@@ -216,7 +216,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     })
 
     keys_to_ignore = ['oid', 'typnamespace', 'typrelid', 'typarray', 'alias',
-                      'schema', 'oid-2', 'type_acl']
+                      'schema', 'oid-2', 'type_acl', 'rngcollation', 'attnum']
 
     def check_precondition(f):
         """
@@ -1337,7 +1337,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         for row in acl['rows']:
             priv = parse_priv_from_db(row)
             old_data[row['deftype']] = \
-                old_data.get(row['deftype'], []).append(priv)
+                (old_data.get(row['deftype'], None) or []).append(priv)
 
         # Calling function to check and additional properties if available
         old_data.update(self.additional_properties(old_data, tid))
