@@ -252,7 +252,7 @@ export class QueryHistoryEntries {
     self.$el = $(`
         <div class="toggle-and-history-container">
             <div class="query-history-toggle">
-                <label class="control-label">
+                <label class="control-label" for="generated-queries-toggle">
                     ` + gettext('Show queries generated internally by pgAdmin?') + `
                 </label>
                 <input id="generated-queries-toggle" type="checkbox"

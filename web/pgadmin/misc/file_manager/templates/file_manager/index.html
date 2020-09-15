@@ -9,11 +9,11 @@
                 <div class="input-group" role="group">
                     <div class="input-group-prepend">
                         <button name="home" type="button" value="Home" title="{{ _('Home') }}" class="btn btn-primary-icon home"
-                                tabindex="0">
+                                tabindex="0" aria-label="home">
                             <span class="fa fa-home sql-icon-lg"></span>
                         </button>
                         <button name="level-up" type="button" title="{{ _('Back') }}" value="LevelUp" class="btn btn-primary-icon level-up"
-                                disabled tabindex="0">
+                                disabled tabindex="0" aria-label="level up">
                             <span class="fa fa-level-up-alt sql-icon-lg"></span>
                         </button>
                     </div>
@@ -25,31 +25,31 @@
                 <input class="mode" name="mode" type="hidden" value="add"/>
                 <input class="currentpath" name="currentpath" type="hidden"/>
                 <button type="button" title="{{ _('Refresh') }}" class="btn btn-sm btn-primary-icon refresh"
-                        tabindex="0">
+                        tabindex="0" aria-label="refresh">
                     <span class="fa fa-sync-alt sql-icon-lg"></span>
                 </button>
                 <button type="button" title="{{ _('Download File') }}" class="btn btn-sm btn-primary-icon download"
-                        disabled>
+                        disabled aria-label="Download File">
                     <span class="fa fa-download sql-icon-lg"></span>
                 </button>
                 <button name="delete" type="button" title="{{ _('Delete File/Folder') }}" class="btn btn-sm btn-primary-icon delete"
-                        disabled>
+                        disabled aria-label="delete">
                     <span class="fa fa-trash-alt sql-icon-lg"></span>
                 </button>
                 <button name="rename" type="button" title="{{ _('Rename File/Folder') }}" class="btn btn-sm btn-primary-icon rename"
-                        tabindex="0">
+                        tabindex="0" aria-label="rename">
                     <span class="fa fa-edit sql-icon-lg"></span>
                 </button>
                 <button name="newfolder" type="button" title="{{ _('Create new folder') }}" value="New Folder"
-                        class="btn btn-sm btn-primary-icon create" tabindex="0">
+                        class="btn btn-sm btn-primary-icon create" tabindex="0" aria-label="newfolder">
                     <span class="fa fa-folder-open sql-icon-lg"></span>
                     <span class="fa fa-plus add-folder-icon"></span>
                 </button>
                 <div class="btn-group" role="group">
-                    <button class="ON btn btn-primary-icon btn-sm grid" type="button" title="{{ _('View as grid') }}" tabindex="0">
+                    <button class="ON btn btn-primary-icon btn-sm grid" type="button" title="{{ _('View as grid') }}" tabindex="0" aria-label="View as grid">
                         <span class="fa fa-th sql-icon-lg"></span>
                     </button>
-                    <button type="button" class="btn btn-primary-icon btn-sm list" title="{{ _('View as table') }}" tabindex="0">
+                    <button type="button" class="btn btn-primary-icon btn-sm list" title="{{ _('View as table') }}" tabindex="0" aria-label="View as table">
                         <span class="fa fa-list sql-icon-lg"></span>
                     </button>
                 </div>

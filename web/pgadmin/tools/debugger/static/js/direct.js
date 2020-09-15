@@ -1771,7 +1771,7 @@ define([
 
       var editor_pane = $('<div id="stack_editor_pane" ' +
         'class="pg-panel-content info"></div>');
-      var code_editor_area = $('<textarea id="debugger-editor-textarea">' +
+      var code_editor_area = $('<textarea aria-label="Code editor area" id="debugger-editor-textarea">' +
         '</textarea>').appendTo(editor_pane);
       self.code_editor_panel.layout().addItem(editor_pane);
 

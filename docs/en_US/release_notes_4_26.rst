@@ -29,6 +29,7 @@ Bug fixes
 | `Issue #5426 <https://redmine.postgresql.org/issues/5426>`_ -  Adjusted the height of jobstep code block to use maximum space.
 | `Issue #5652 <https://redmine.postgresql.org/issues/5652>`_ -  Modified the 'Commit' and 'Rollback' query tool button icons.
 | `Issue #5722 <https://redmine.postgresql.org/issues/5722>`_ -  Ensure that the user should be able to drop the database even if it is connected.
+| `Issue #5732 <https://redmine.postgresql.org/issues/5732>`_ -  Fixed some accessibility issues.
 | `Issue #5734 <https://redmine.postgresql.org/issues/5734>`_ -  Update the description of GIN and GiST indexes in the documentation.
 | `Issue #5746 <https://redmine.postgresql.org/issues/5746>`_ -  Fixed an issue where --load-server does not allow loading connections that use pg_services.
 | `Issue #5748 <https://redmine.postgresql.org/issues/5748>`_ -  Fixed incorrect reverse engineering SQL for Foreign key when creating a table.

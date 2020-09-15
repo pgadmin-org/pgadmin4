@@ -367,7 +367,7 @@ define('tools.querytool', [
       queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
 
       var text_container = $('<textarea id="sql_query_tool" tabindex="-1"></textarea>');
-      var output_container = $('<div id="output-panel" tabindex="0"></div>').append(text_container);
+      var output_container = $('<label for="sql_query_tool" class="sr-only">SQL Editor</label><div id="output-panel" tabindex="0"></div>').append(text_container);
       self.sql_panel_obj.$container.find('.pg-panel-content').append(output_container);
 
       self.query_tool_obj = CodeMirror.fromTextArea(text_container.get(0), {

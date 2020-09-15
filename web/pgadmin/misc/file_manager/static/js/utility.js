@@ -589,7 +589,7 @@ define([
         } else {
           item_ele +=
             `<div>
-              <input type="text" class="fm_file_rename"/>
+              <input aria-label="file_rename" type="text" class="fm_file_rename"/>
               <div class="fm_file_name">
                 <div class="d-flex">
                   <span class="fm_file_list ${icon_type}"></span>
@@ -1260,11 +1260,11 @@ define([
           select_box = `<div class='change_file_types d-flex align-items-center p-1'>
           <div>` +
             gettext('Show hidden files and folders?') +
-            `<input type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='0'>
+            `<input  aria-label="Show hidden files and folders" type='checkbox' id='show_hidden' onclick='pgAdmin.FileUtils.handleClick(this)' tabindex='0'>
           </div>
           <div class="ml-auto">
             <label class="my-auto">` + gettext('Format') + `</label>
-            <select name='type' tabindex='0'>${fileFormats}</select>
+            <select aria-label="select" name='type' tabindex='0'>${fileFormats}</select>
           <div>`;
         }
 
@@ -1542,7 +1542,7 @@ define([
         // we remove simple file upload element
         $('.file-input-container').remove();
         $('.upload').remove();
-        $('.create').before('<button value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn btn-sm btn-primary-icon upload" tabindex="0"><span class="fa fa-upload sql-icon-lg"></span></button> ');
+        $('.create').before('<button aria-label="Upload" value="Upload" type="button" title="Upload File" name="upload" id="upload" class="btn btn-sm btn-primary-icon upload" tabindex="0"><span class="fa fa-upload sql-icon-lg"></span></button> ');
 
         $('#uploader .upload').off().on('click', function() {
           // we create prompt
