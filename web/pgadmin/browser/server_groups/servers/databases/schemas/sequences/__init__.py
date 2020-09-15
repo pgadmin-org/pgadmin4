@@ -254,7 +254,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                                               show_system_objects=True)
             seq = [dep for dep in system_seq
                    if dep['type'] == 'column' and dep['field'] == 'internal']
-            if not seq:
+            if len(seq) > 0:
                 continue
 
             # Append the node into the newly created list

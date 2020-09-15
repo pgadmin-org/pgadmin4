@@ -44,3 +44,4 @@ Bug fixes
 | `Issue #5815 <https://redmine.postgresql.org/issues/5815>`_ -  Fixed an issue where clicking on the 'Generate script' button shows a forever spinner due to pop up blocker.
 | `Issue #5816 <https://redmine.postgresql.org/issues/5816>`_ -  Ensure that the 'CREATE SCHEMA' statement should be present in the generated script if the schema is not present in the target database.
 | `Issue #5820 <https://redmine.postgresql.org/issues/5820>`_ -  Fixed an issue while refreshing Resource Group.
+| `Issue #5833 <https://redmine.postgresql.org/issues/5833>`_ -  Fixed an issue where custom sequences are not visible when show system objects are set to false.
