@@ -83,7 +83,7 @@ define('pgadmin.node.server_group', [
 
       canDrop: function(itemData) {
         var serverOwner = itemData.user_id;
-        if (serverOwner != current_user.id)
+        if (serverOwner != current_user.id && !_.isUndefined(serverOwner))
           return false;
         return true; },
       dropAsRemove: true,
