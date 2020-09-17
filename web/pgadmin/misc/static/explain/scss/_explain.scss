@@ -18,7 +18,6 @@
           position: absolute;
           top: 4px;
           margin-left: 4px;
-          opacity: 0.5;
 
           &.pg-explain-download-area.btn-group {
             left: 90px;
@@ -92,7 +91,7 @@ div.tab-pane[data-explain-tabpanel=table] {
           word-wrap: break-word;
         }
         &.pg-ex-highlighter {
-          color: $color-primary;
+          color: $color-fg;
         }
       }
       &.pga-ex-collapsible {
@@ -126,11 +125,4 @@ div.tab-pane[data-explain-tabpanel=statistics] {
       }
     }
   }
-}
-
-/* Setting it to hardcoded white as the SVG generated is having white bg
- * Need to check what can be done.
- */
-.pgadmin-explain-container {
-  background-color: #fff;
 }

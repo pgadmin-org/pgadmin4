@@ -764,6 +764,7 @@ define('pgadmin.misc.explain', [
         isSubPlan = (this.get('Parent Relationship') === 'SubPlan');
 
       var planData = this.toJSON();
+      var colorFg = getComputedStyle(document.documentElement).getPropertyValue('--color-fg');
 
       _nodeExplainTableData(planData, _ctx);
 
@@ -811,6 +812,7 @@ define('pgadmin.misc.explain', [
         150, {
           'font-size': TXT_SIZE,
           'text-anchor': 'middle',
+          'fill': colorFg,
         }
       );
 
@@ -832,15 +834,16 @@ define('pgadmin.misc.explain', [
 
         var arrow_view_box = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT];
         var opts = {
-            stroke: '#000000',
+            stroke: colorFg,
             strokeWidth: arrow_size + 2,
           },
           subplanOpts = {
-            stroke: '#866486',
+            stroke: colorFg,
             strokeWidth: arrow_size + 2,
           },
           arrowOpts = {
             viewBox: arrow_view_box.join(' '),
+            fill: colorFg,
           };
 
         // Draw an arrow from current node to its parent
@@ -1161,12 +1164,13 @@ define('pgadmin.misc.explain', [
 
     draw: function(s, xpos, ypos, graphContainer, toolTipContainer, _ctx) {
       var g = s.g();
+      var colorBg = getComputedStyle(document.documentElement).getPropertyValue('--color-bg');
 
       //draw the border
       g.rect(
         0, 0, this.get('width') - 10, this.get('height') - 10, 5
       ).attr({
-        fill: '#FFF',
+        fill: colorBg,
       });
 
       var plan = this.get('Plan');
