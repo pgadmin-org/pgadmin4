@@ -37,7 +37,7 @@ def get_storage_directory():
     def _preprocess_username(un):
         ret_un = un
         if len(ret_un) == 0 or ret_un[0].isdigit():
-            ret_un = 'pga_user_' + username
+            ret_un = 'pga_user_' + un
 
         ret_un = ret_un.replace('@', '_')\
             .replace('/', 'slash')\
