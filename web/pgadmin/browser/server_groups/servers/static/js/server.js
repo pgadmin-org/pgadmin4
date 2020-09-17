@@ -872,7 +872,7 @@ define('pgadmin.node.server', [
             },
           }),
         },{
-          id: 'password', label: gettext('Password'), type: 'password', maxlength: '2000',
+          id: 'password', label: gettext('Password'), type: 'password', maxlength: null,
           group: gettext('Connection'), control: 'input', mode: ['create'], deps: ['connect_now'],
           visible: function(model) {
             return model.get('connect_now') && model.isNew();

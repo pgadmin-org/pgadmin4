@@ -18,3 +18,4 @@ Bug fixes
 *********
 
 | `Issue #5417 <https://redmine.postgresql.org/issues/5417>`_ -  Fixed and improve API test cases for the schema diff tool.
+| `Issue #5802 <https://redmine.postgresql.org/issues/5802>`_ -  Remove maximum length on the password field in the server dialog.
