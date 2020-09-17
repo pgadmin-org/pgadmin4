@@ -70,7 +70,8 @@ SET {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral }}{% e
 {% if data.fdwacl %}
 {% if 'deleted' in data.fdwacl %}
 {% for priv in data.fdwacl.deleted %}
-{{ PRIVILEGE.RESETALL(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name) }} {% endfor %}
+{{ PRIVILEGE.RESETALL(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name) }}
+{% endfor %}
 {% endif %}
 {% if 'changed' in data.fdwacl %}
 {% for priv in data.fdwacl.changed %}

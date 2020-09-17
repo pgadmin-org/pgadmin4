@@ -381,25 +381,12 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return False, internal_server_error(errormsg=result)
 
-        # if no acl found then by default add public
-        if res['rows'][0]['acl'] is None:
-            res['rows'][0]['lanacl'] = dict()
-            res['rows'][0]['lanacl']['grantee'] = 'PUBLIC'
-            res['rows'][0]['lanacl']['grantor'] = res['rows'][0]['lanowner']
-            res['rows'][0]['lanacl']['privileges'] = [
-                {
-                    'privilege_type': 'U',
-                    'privilege': True,
-                    'with_grant': False
-                }
-            ]
-        else:
-            for row in result['rows']:
-                priv = parse_priv_from_db(row)
-                if row['deftype'] in res['rows'][0]:
-                    res['rows'][0][row['deftype']].append(priv)
-                else:
-                    res['rows'][0][row['deftype']] = [priv]
+        for row in result['rows']:
+            priv = parse_priv_from_db(row)
+            if row['deftype'] in res['rows'][0]:
+                res['rows'][0][row['deftype']].append(priv)
+            else:
+                res['rows'][0][row['deftype']] = [priv]
 
         seclabels = []
         if 'seclabels' in res['rows'][0] and \

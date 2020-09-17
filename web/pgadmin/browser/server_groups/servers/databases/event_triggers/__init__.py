@@ -660,7 +660,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             )
         else:
             sql = self._get_create_with_grant_sql(data)
-        return sql
+        return sql.strip('\n')
 
     def _get_create_with_grant_sql(self, data):
 

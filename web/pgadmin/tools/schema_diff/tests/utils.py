@@ -16,38 +16,50 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
 
 
 def restore_schema(server, db_name, schema_name, sql_path):
-    connection = utils.get_db_connection(db_name,
-                                         server['username'],
-                                         server['db_password'],
-                                         server['host'],
-                                         server['port'],
-                                         server['sslmode']
-                                         )
-
-    old_isolation_level = connection.isolation_level
-    connection.set_isolation_level(0)
-    pg_cursor = connection.cursor()
-
-    sql = ''
-    with open(sql_path, 'r') as content_file:
-        sql = content_file.read()
-    pg_cursor.execute(sql)
-    connection.set_isolation_level(old_isolation_level)
-    connection.commit()
-
-    SQL = """SELECT
-    nsp.oid
-FROM
-    pg_namespace nsp
-    WHERE nsp.nspname = '{0}'""".format(schema_name)
-
-    pg_cursor.execute(SQL)
-    schema = pg_cursor.fetchone()
+    """
+    This function is used to restore the schema.
+    :param server:
+    :param db_name:
+    :param schema_name:
+    :param sql_path:
+    :return:
+    """
     schema_id = None
-    if schema:
-        schema_id = schema[0]
-    connection.close()
-    return schema_id
+    try:
+        connection = utils.get_db_connection(db_name,
+                                             server['username'],
+                                             server['db_password'],
+                                             server['host'],
+                                             server['port'],
+                                             server['sslmode']
+                                             )
+
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+
+        with open(sql_path, 'r') as content_file:
+            sql = content_file.read()
+        pg_cursor.execute(sql)
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+        SQL = """SELECT
+        nsp.oid
+    FROM
+        pg_namespace nsp
+        WHERE nsp.nspname = '{0}'""".format(schema_name)
+
+        pg_cursor.execute(SQL)
+        schema = pg_cursor.fetchone()
+        if schema:
+            schema_id = schema[0]
+        connection.close()
+    except Exception as e:
+        print(str(e))
+        return False, schema_id
+
+    return True, schema_id
 
 
 def create_schema(server, db_name, schema_name):

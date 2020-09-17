@@ -12,23 +12,20 @@ import json
 import os
 import random
 
-from pgadmin.utils import server_utils as server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from .utils import create_table, create_schema, restore_schema
-from pgadmin.browser.server_groups.servers.databases.tests import utils as \
-    database_utils
+from .utils import restore_schema
 from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
 
 
-class SchemaDiffTestCase():
+class SchemaDiffTestCase(BaseTestGenerator):
     """ This class will test the schema diff. """
     scenarios = [
         # Fetching default URL for database node.
         ('Schema diff comparison', dict(
-            url='schema_diff/compare/{0}/{1}/{2}/{3}/{4}/{5}/{6}'))
+            url='schema_diff/compare/{0}/{1}/{2}/{3}/{4}'))
     ]
 
     def setUp(self):
@@ -40,8 +37,12 @@ class SchemaDiffTestCase():
 
         self.server = parent_node_dict["server"][-1]["server"]
         self.server_id = parent_node_dict["server"][-1]["server_id"]
-        self.nodes = ['table', 'function', 'procedure', 'view', 'mview']
-        self.restore_backup()
+        self.schema_name = 'test_schema_diff'
+
+        self.restored_backup = True
+        status = self.restore_backup()
+        if not status:
+            self.restored_backup = False
 
     def restore_backup(self):
         self.sql_folder = self.get_sql_folder()
@@ -60,10 +61,19 @@ class SchemaDiffTestCase():
             raise FileNotFoundError(
                 '{} file does not exists'.format(tar_sql_path))
 
-        self.src_schema_id = restore_schema(self.server, self.src_database,
-                                            'source', src_sql_path)
-        self.tar_schema_id = restore_schema(self.server, self.tar_database,
-                                            'target', tar_sql_path)
+        status, self.src_schema_id = restore_schema(
+            self.server, self.src_database, self.schema_name, src_sql_path)
+        if not status:
+            print("Failed to restore schema on source database.")
+            return False
+
+        status, self.tar_schema_id = restore_schema(
+            self.server, self.tar_database, self.schema_name, tar_sql_path)
+        if not status:
+            print("Failed to restore schema on target database.")
+            return False
+
+        return True
 
     def get_sql_folder(self):
         """
@@ -101,10 +111,8 @@ class SchemaDiffTestCase():
     def compare(self):
         comp_url = self.url.format(self.trans_id, self.server_id,
                                    self.src_db_id,
-                                   self.src_schema_id,
                                    self.server_id,
-                                   self.tar_db_id,
-                                   self.tar_schema_id
+                                   self.tar_db_id
                                    )
 
         response = self.tester.get(comp_url)
@@ -114,7 +122,7 @@ class SchemaDiffTestCase():
 
     def runTest(self):
         """ This function will test the schema diff."""
-
+        self.assertEqual(True, self.restored_backup)
         response = self.tester.get("schema_diff/initialize")
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
@@ -142,18 +150,21 @@ class SchemaDiffTestCase():
         file_obj = open(diff_file, 'a')
 
         for diff in response_data['data']:
-            if diff['type'] in self.nodes and diff['status'] == 'Identical':
+            if diff['status'] == 'Identical':
                 src_obj_oid = diff['source_oid']
                 tar_obj_oid = diff['target_oid']
+                src_schema_id = diff['source_scid']
+                tar_schema_id = diff['target_scid']
+
                 if src_obj_oid is not None and tar_obj_oid is not None:
                     url = 'schema_diff/ddl_compare/{0}/{1}/{2}/{3}/{4}/{5}/' \
                           '{6}/{7}/{8}/{9}/{10}/'.format(self.trans_id,
                                                          self.server_id,
                                                          self.src_db_id,
-                                                         self.src_schema_id,
+                                                         src_schema_id,
                                                          self.server_id,
                                                          self.tar_db_id,
-                                                         self.tar_schema_id,
+                                                         tar_schema_id,
                                                          src_obj_oid,
                                                          tar_obj_oid,
                                                          diff['type'],
@@ -170,17 +181,17 @@ class SchemaDiffTestCase():
 
         file_obj.close()
         try:
-            restore_schema(self.server, self.tar_database, 'target',
+            restore_schema(self.server, self.tar_database, self.schema_name,
                            diff_file)
 
             os.remove(diff_file)
 
             response_data = self.compare()
             for diff in response_data['data']:
-                if diff['type'] in self.nodes:
-                    self.assertEqual(diff['status'], 'Identical')
+                self.assertEqual(diff['status'], 'Identical')
         except Exception as e:
-            os.remove(diff_file)
+            if os.path.exists(diff_file):
+                os.remove(diff_file)
 
     def tearDown(self):
         """This function drop the added database"""

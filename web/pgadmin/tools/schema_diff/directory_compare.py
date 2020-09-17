@@ -483,6 +483,14 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_whitespaces,
                     target_value = target_value.translate(
                         str.maketrans('', '', string.whitespace))
 
+            # We need a proper solution as sometimes we observe that
+            # source_value is '' and target_value is None or vice versa
+            # in such situation we shown the comparison as different
+            # which is wrong.
+            if (source_value == '' and target_value is None) or \
+                    (source_value is None and target_value == ''):
+                continue
+
             if source_value != target_value:
                 return False
 
@@ -596,6 +604,12 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference=None):
                     difference[key] = ''
                 else:
                     difference[key] = source_dict[key]
+
+    if len(src_only) == 0 and len(tar_only) > 0:
+        for key in tar_only:
+            if isinstance(target_dict[key], list):
+                difference[key] = {}
+                difference[key]['deleted'] = target_dict[key]
 
     return difference
 
