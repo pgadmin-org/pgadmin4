@@ -1810,15 +1810,13 @@ define([
       // Use the Backform Control's render function
       Backform.Control.prototype.render.apply(this, arguments);
 
-      var field = _.defaults(this.field.toJSON(), this.defaults);
-
       this.sqlCtrl = CodeMirror.fromTextArea(
         (this.$el.find('textarea')[0]), {
           lineNumbers: true,
           mode: 'text/x-pgsql',
           readOnly: true,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-          screenReaderLabel: field.label,
+          screenReaderLabel: 'SQL',
         });
 
       this.reflectPreferences();

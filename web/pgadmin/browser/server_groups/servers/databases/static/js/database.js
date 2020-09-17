@@ -461,6 +461,7 @@ define('pgadmin.node.database', [
             id: 'schema_res', label: gettext('Schema restriction'),
             type: 'select2', group: gettext('Advanced'),
             mode: ['properties', 'edit', 'create'],
+            helpMessage: gettext('Note: Changes to the schema restriction will require the Schemas node in the browser to be refreshed before they will be shown.'),
             select2: {
               multiple: true, allowClear: false, tags: true,
               tokenSeparators: [','], first_empty: false,
@@ -487,11 +488,6 @@ define('pgadmin.node.database', [
                 }
               },
             }),
-          },
-          {
-            id: 'note', label: gettext('Note: Changes to the schema restriction will require the Schemas node in the browser to be refreshed before they will be shown.'),
-            group: gettext('Advanced'), type: 'help',
-            mode: ['edit', 'create'],
           },
         ],
         validate: function() {
