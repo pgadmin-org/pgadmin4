@@ -75,17 +75,16 @@ def is_query_resultset_updatable(conn, sql_path):
         is_resultset_updatable = has_oids or (primary_keys is not None and
                                               len(primary_keys) != 0)
 
-        if is_resultset_updatable:
-            column_types = get_columns_types(columns_info=columns_info,
-                                             table_oid=table_oid,
-                                             conn=conn,
-                                             has_oids=has_oids,
-                                             is_query_tool=True)
-            return True, has_oids, primary_keys, \
-                pk_names, table_oid, column_types
-        else:
+        if not is_resultset_updatable:
             _set_all_columns_not_editable(columns_info=columns_info)
-            return return_not_updatable()
+
+        column_types = get_columns_types(columns_info=columns_info,
+                                         table_oid=table_oid,
+                                         conn=conn,
+                                         has_oids=has_oids,
+                                         is_query_tool=True)
+        return is_resultset_updatable, has_oids, primary_keys, \
+            pk_names, table_oid, column_types
     else:
         raise InternalServerError(SERVER_CONNECTION_CLOSED)
 
