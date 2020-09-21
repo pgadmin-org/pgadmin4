@@ -386,8 +386,8 @@ define([
         }
 
         self.trigger('pgadmin-session:set', self, attrs);
-        if (!options || !options.silent) {
-          self.trigger('change', self, options);
+        if (!opts || !opts.silent) {
+          self.trigger('change', self, opts);
         }
 
         // Perform default validations.
@@ -1132,7 +1132,8 @@ define([
           } else {
             (self.handler || self).trigger('pgadmin-session:removed', self, copy);
           }
-
+          /* When removing the object use the original session attrs and not the changed ones */
+          obj.set(obj.origSessAttrs, {silent: true});
           self.sessAttrs['deleted'].push(obj);
 
           self.checkDuplicateWithModel(obj);
