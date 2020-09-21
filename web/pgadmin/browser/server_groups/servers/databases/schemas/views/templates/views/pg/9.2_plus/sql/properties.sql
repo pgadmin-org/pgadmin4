@@ -8,7 +8,7 @@ SELECT
     (CASE WHEN length(spc.spcname::text) > 0 THEN spc.spcname ELSE 'pg_default' END) as spcname,
     pg_get_userbyid(c.relowner) AS owner,
     description As comment,
-    pg_get_viewdef(c.oid, true) AS definition,
+    pg_get_viewdef(c.oid) AS definition,
     nsp.nspname AS schema,
     array_to_string(c.relacl::text[], ', ') AS acl,
     {#=============Checks if it is system view================#}

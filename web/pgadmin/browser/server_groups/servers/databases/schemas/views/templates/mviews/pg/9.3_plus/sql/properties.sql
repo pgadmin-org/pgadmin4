@@ -15,7 +15,7 @@ SELECT
     nsp.nspname as schema,
     pg_get_userbyid(c.relowner) AS owner,
     description AS comment,
-    pg_get_viewdef(c.oid, true) AS definition,
+    pg_get_viewdef(c.oid) AS definition,
     {# ============= Checks if it is system view ================ #}
     {% if vid and datlastsysoid %}
     CASE WHEN {{vid}} <= {{datlastsysoid}} THEN True ELSE False END AS system_view,

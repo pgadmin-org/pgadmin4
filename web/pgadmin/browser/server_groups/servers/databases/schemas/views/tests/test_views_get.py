@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+import json
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
@@ -27,15 +28,29 @@ class ViewsGetTestCase(BaseTestGenerator):
     m_view_sql = "CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS " \
                  "SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER" \
                  " TO %s"
+    view_sql_with_bracket = "CREATE OR REPLACE VIEW %s.%s AS " \
+                            "SELECT CASE WHEN (pg_db.datistemplate = false " \
+                            "AND pg_db.datallowconn = true AND " \
+                            "(pg_db.datconnlimit = -1 OR " \
+                            "pg_db.datacl is null)) then true else false " \
+                            "end as res FROM pg_database pg_db; " \
+                            "ALTER TABLE %s.%s OWNER TO %s"
     scenarios = [
         ('Get view under schema node', dict(
             url='/browser/view/obj/',
             view_name="test_view_get_%s" % (str(uuid.uuid4())[1:8]),
-            sql_query=view_sql)),
+            sql_query=view_sql,
+            type='view_without_conditions')),
         ('Get materialized view under schema node',
          dict(url='/browser/mview/obj/',
               view_name="test_mview_get_%s" % (str(uuid.uuid4())[1:8]),
-              sql_query=m_view_sql))
+              sql_query=m_view_sql,
+              type='m_view_without_conditions')),
+        ('Get view having brackets in script under schema node', dict(
+            url='/browser/view/obj/',
+            view_name="test_view_get_%s" % (str(uuid.uuid4())[1:8]),
+            sql_query=view_sql_with_bracket,
+            type='view_with_conditions'))
     ]
 
     def setUp(self):
@@ -77,6 +92,9 @@ class ViewsGetTestCase(BaseTestGenerator):
             follow_redirects=True
         )
         self.assertEqual(response.status_code, 200)
+        if self.type == 'view_with_conditions':
+            response_data = json.loads(response.data.decode('utf-8'))
+            self.assertIn('((pg_db.datistemplate', response_data['definition'])
 
     def tearDown(self):
         # Disconnect the database
