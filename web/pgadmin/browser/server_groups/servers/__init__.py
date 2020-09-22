@@ -194,14 +194,6 @@ class ServerModule(sg.ServerGroupPluginModule):
                     # set to true
                     continue
 
-                # if hide_shared_server or \
-                #         shared_server.name == auto_detected_server:
-                #     # Don't include shared server if hide shared server is
-                #     # set to true
-                #     continue
-
-                # if shared_server.name == auto_detected_server:
-                #     continue
                 server = self.get_shared_server_properties(server,
                                                            shared_server)
             connected = False
@@ -1280,8 +1272,9 @@ class ServerNode(PGChildNodeView):
         if server is None:
             return bad_request(self.not_found_error_msg())
 
-        # Return if username is blank
-        if server.username is None:
+        # Return if username is blank and the server is shared
+        if server.username is None and not server.service and \
+                server.shared:
             return make_json_response(
                 status=200,
                 success=0,
@@ -1819,6 +1812,7 @@ class ServerNode(PGChildNodeView):
                     tunnel_identity_file=server.tunnel_identity_file,
                     errmsg=errmsg,
                     _=gettext,
+                    service=server.service,
                     prompt_tunnel_password=prompt_tunnel_password,
                     prompt_password=prompt_password
                 )
@@ -1832,6 +1826,7 @@ class ServerNode(PGChildNodeView):
                     server_label=server.name,
                     username=server.username,
                     errmsg=errmsg,
+                    service=server.service,
                     _=gettext,
                 )
             )

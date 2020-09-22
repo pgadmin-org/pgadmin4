@@ -1208,7 +1208,7 @@ define('pgadmin.node.server', [
       $.get(server_url)
         .done(function(res) {
           if (res.shared && _.isNull(res.username) && data.user_id != current_user.id){
-            if (selectedTreeNodeData._type == 'server'){
+            if (selectedTreeNodeData._type == 'server' && !res.service){
               pgAdmin.Browser.Node.callbacks.show_obj_properties.call(
                 pgAdmin.Browser.Nodes[tree.itemData(item)._type], {action: 'edit'}
               );
