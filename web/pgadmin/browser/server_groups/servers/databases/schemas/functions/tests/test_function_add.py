@@ -9,22 +9,84 @@
 
 import json
 import uuid
-
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from . import utils as funcs_utils
+from .. import FunctionView
 
 
 class FunctionAddTestCase(BaseTestGenerator):
     """ This class will add new function under schema node. """
     scenarios = [
         # Fetching default URL for function node.
-        ('Fetch Function Node URL', dict(
-            url='/browser/function/obj/'))
+        (
+            'Fetch Function Node URL',
+            dict(
+                url='/browser/function/obj/',
+                is_positive_test=True,
+                mocking_required=False,
+                mock_data={},
+                expected_data={
+                    "status_code": 200
+                }
+            ),
+        ),
+        ('Create Function Get Sql Fail', dict(
+            url='/browser/function/obj/',
+            is_positive_test=False,
+            mocking_required=True,
+            is_mock_function=True,
+            mock_data={
+                "function_name": '_get_sql',
+                "return_value": "(False, '')"
+            },
+            expected_data={
+                "status_code": 500
+            }
+        )),
+        ('Create Function Get Sql Execution Fail', dict(
+            url='/browser/function/obj/',
+            is_positive_test=False,
+            mocking_required=True,
+            mock_data={
+                "function_name": "pgadmin.utils.driver.psycopg2."
+                                 "connection.Connection.execute_scalar",
+                "return_value": "(False, 'Mocked Internal Server "
+                                "Error while create new function get sql.')"
+            },
+            expected_data={
+                "status_code": 500
+            }
+        )),
+        ('Create Function Fail', dict(
+            url='/browser/function/obj/',
+            is_positive_test=False,
+            mocking_required=True,
+            mock_data={
+                "function_name": "pgadmin.utils.driver.psycopg2."
+                                 "connection.Connection.execute_dict",
+                "return_value": "(False, 'Mocked Internal Server "
+                                "Error while create new function.')"
+            },
+            expected_data={
+                "status_code": 500
+            }
+        )),
     ]
+
+    def create_function(self, data):
+        response = self.tester.post(
+            self.url + str(utils.SERVER_GROUP) + '/' +
+            str(self.server_id) + '/' + str(self.db_id) +
+            '/' + str(self.schema_id) + '/',
+            data=json.dumps(data),
+            content_type='html/json'
+        )
+        return response
 
     def runTest(self):
         """ This function will add function under schema node. """
@@ -82,14 +144,23 @@ class FunctionAddTestCase(BaseTestGenerator):
 
             data['prosupportfuc'] = support_function_name
 
-        response = self.tester.post(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' + str(self.db_id) +
-            '/' + str(self.schema_id) + '/',
-            data=json.dumps(data),
-            content_type='html/json'
-        )
+        if self.is_positive_test:
+            response = self.create_function(data)
+        else:
+            if hasattr(self, 'is_mock_function'):
+                def _get_sql(self, **kwargs):
+                    return False, ''
+                with patch.object(FunctionView,
+                                  self.mock_data["function_name"],
+                                  new=_get_sql):
+                    response = self.create_function(data)
 
-        self.assertEqual(response.status_code, 200)
+            else:
+                with patch(self.mock_data["function_name"],
+                           return_value=eval(self.mock_data["return_value"])):
+                    response = self.create_function(data)
+
+        self.assertEqual(response.status_code,
+                         self.expected_data['status_code'])
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

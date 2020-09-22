@@ -1219,15 +1219,14 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
                                     data=self.request, fnid=fnid)
 
-        if status:
-            sql = re.sub('\n{2,}', '\n\n', sql)
-            return make_json_response(
-                data=sql,
-                status=200
-            )
-        else:
-            sql = re.sub('\n{2,}', '\n\n', sql)
-            return sql
+        if not status:
+            return internal_server_error(errormsg=sql)
+
+        sql = re.sub('\n{2,}', '\n\n', sql)
+        return make_json_response(
+            data=sql,
+            status=200
+        )
 
     @staticmethod
     def _update_arguments_for_get_sql(data, old_data):
@@ -1359,7 +1358,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if not isinstance(old_data, dict):
             return False, gettext(
                 "Could not find the function in the database."
-            )
+            ), ''
 
         # Get Schema Name
         old_data['pronamespace'] = self._get_schema(
@@ -1423,7 +1422,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             "/".join([self.sql_template_path, self._UPDATE_SQL]),
             data=data, o_data=old_data
         )
-        return sql
+        return True, '', sql
 
     def _get_sql(self, **kwargs):
         """
@@ -1464,8 +1463,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 'is_sql': is_sql,
                 'is_schema_diff': is_schema_diff,
             }
-            sql = self._get_sql_for_edit_mode(data, parallel_dict,
-                                              all_ids_dict, vol_dict)
+            status, errmsg, sql = self._get_sql_for_edit_mode(
+                data, parallel_dict, all_ids_dict, vol_dict)
+
+            if not status:
+                return False, errmsg
+
         else:
             # Parse Privileges
             self._parse_privilege_data(data)

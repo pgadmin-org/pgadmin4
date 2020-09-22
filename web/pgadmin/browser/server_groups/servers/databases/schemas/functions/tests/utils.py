@@ -142,7 +142,7 @@ def create_procedure(server, db_name, schema_name, func_name, s_type,
         traceback.print_exc(file=sys.stderr)
 
 
-def create_function(server, db_name, schema_name, func_name):
+def create_function(server, db_name, schema_name, func_name, args=None):
     """This function add the procedure to schema"""
     try:
         connection = utils.get_db_connection(db_name,
@@ -152,11 +152,15 @@ def create_function(server, db_name, schema_name, func_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
+        if args:
+            args = "{0}".format(args)
+        else:
+            args = ''
         query = "CREATE FUNCTION " + schema_name + "." + func_name + \
-                "()" \
+                "({0})" \
                 " RETURNS integer LANGUAGE 'sql' STABLE" \
                 " SECURITY DEFINER AS $$" \
-                " SELECT 1; $$;"
+                " SELECT 1; $$;".format(args)
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created function
