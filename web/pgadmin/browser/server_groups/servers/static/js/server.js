@@ -58,7 +58,7 @@ define('pgadmin.node.server', [
       label: gettext('Server'),
       canDrop: function(node){
         var serverOwner = node.user_id;
-        if (serverOwner != current_user.id)
+        if (serverOwner != current_user.id && !_.isUndefined(serverOwner))
           return false;
         return true;
       },
@@ -763,6 +763,14 @@ define('pgadmin.node.server', [
         },
         {
           id: 'server_owner', label: gettext('Shared Server Owner'), type: 'text', mode: ['properties'],
+          visible:function(model){
+            var serverOwner = model.attributes.user_id;
+            if (model.attributes.shared && serverOwner != current_user.id && pgAdmin.server_mode == 'True'){
+              return true;
+            }
+            return false;
+
+          },
         },
         {
           id: 'server_type', label: gettext('Server type'), type: 'options',
@@ -1239,7 +1247,7 @@ define('pgadmin.node.server', [
           // Let's not change the status of the tree node now.
           if (!_wasConnected) {
             tree.setInode(_item);
-            if (data.shared && pgAdmin.server_mode == 'True'){
+            if (_data.shared && pgAdmin.server_mode == 'True'){
               tree.addIcon(_item, {icon: 'icon-shared-server-not-connected'});
             }else{
               tree.addIcon(_item, {icon: 'icon-server-not-connected'});

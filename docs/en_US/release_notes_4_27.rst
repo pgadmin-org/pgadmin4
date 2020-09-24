@@ -27,3 +27,4 @@ Bug fixes
 | `Issue #5841 <https://redmine.postgresql.org/issues/5841>`_ -  Fixed an issue where the server is not able to connect using the service.
 | `Issue #5843 <https://redmine.postgresql.org/issues/5843>`_ -  Fixed an issue where the 'PARALLEL UNSAFE' option is missing from reverse engineering SQL of function/procedure.
 | `Issue #5845 <https://redmine.postgresql.org/issues/5845>`_ -  Fixed an issue where the query tool is not fetching more than 1000 rows for the table does not have any primary key.
+| `Issue #5861 <https://redmine.postgresql.org/issues/5861>`_ -  Ensure that the 'Remove Server' option should be visible in the context menu.
