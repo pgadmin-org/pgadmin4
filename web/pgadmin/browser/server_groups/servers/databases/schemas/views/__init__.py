@@ -351,7 +351,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             {'get': 'get_toast_table_vacuum'}]
     })
 
-    keys_to_ignore = ['oid', 'schema', 'xmin', 'oid-2']
+    keys_to_ignore = ['oid', 'schema', 'xmin', 'oid-2', 'setting']
 
     def __init__(self, *args, **kwargs):
         """

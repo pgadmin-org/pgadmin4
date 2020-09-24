@@ -22,7 +22,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
     table_keys_to_ignore = ['oid', 'schema', 'edit_types', 'attnum',
                             'col_type', 'references', 'reltuples', 'oid-2',
                             'rows_cnt', 'seqrelid', 'atttypid', 'elemoid',
-                            'hastoasttable', 'relhassubclass', 'relacl_str']
+                            'hastoasttable', 'relhassubclass', 'relacl_str',
+                            'setting']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',

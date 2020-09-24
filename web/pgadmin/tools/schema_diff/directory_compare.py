@@ -12,6 +12,7 @@
 import copy
 import string
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
+from flask import current_app
 
 count = 1
 
@@ -227,6 +228,11 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
             get_source_target_oid(source_dict, target_dict, key)
 
         # Recursively Compare the two dictionary
+        current_app.logger.debug(
+            "Schema Diff: Source Dict: {0}".format(dict1[key]))
+        current_app.logger.debug(
+            "Schema Diff: Target Dict: {0}".format(dict2[key]))
+
         if are_dictionaries_identical(dict1[key], dict2[key],
                                       ignore_whitespaces, ignore_keys):
             identical.append({
@@ -439,12 +445,17 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_whitespaces,
     # If number of keys are different in source and target then
     # return False
     if len(src_only) != len(tar_only):
+        current_app.logger.debug("Schema Diff: Number of keys are different "
+                                 "in source and target")
         return False
     else:
         # If number of keys are same but key is not present in target then
         # return False
         for key in src_only:
             if key not in tar_only:
+                current_app.logger.debug(
+                    "Schema Diff: Number of keys are same but key is not"
+                    " present in target")
                 return False
 
     for key in source_dict.keys():
@@ -492,6 +503,10 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_whitespaces,
                 continue
 
             if source_value != target_value:
+                current_app.logger.debug(
+                    "Schema Diff: Object name: '{0}', Source Value: '{1}', "
+                    "Target Value: '{2}', Key: '{3}'".format(
+                        source_dict['name'], source_value, target_value, key))
                 return False
 
     return True

@@ -705,6 +705,7 @@ def compare_database_objects(**kwargs):
         if hasattr(view, 'compare'):
             msg = gettext('Comparing {0}'). \
                 format(gettext(view.blueprint.collection_label))
+            app.logger.debug(msg)
             diff_model_obj.set_comparison_info(msg, total_percent)
             # Update the message and total percentage in session object
             update_session_diff_transaction(trans_id, session_obj,
@@ -759,6 +760,7 @@ def compare_schema_objects(**kwargs):
             msg = gettext('Comparing {0} of schema \'{1}\''). \
                 format(gettext(view.blueprint.collection_label),
                        gettext(schema_name))
+            app.logger.debug(msg)
             diff_model_obj.set_comparison_info(msg, total_percent)
             # Update the message and total percentage in session object
             update_session_diff_transaction(trans_id, session_obj,
