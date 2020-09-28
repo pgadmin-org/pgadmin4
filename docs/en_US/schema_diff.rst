@@ -33,8 +33,12 @@ upper-right hand corner of the tab bar.
     :alt: schema diff dialog
     :align: center
 
-Use the :ref:`Preferences <preferences>` dialog to specify if *Schema Diff*
-should open in a new browser tab. Set *Open in new browser tab* option to true.
+Use the :ref:`Preferences <preferences>` dialog to specify following:
+
+ * *Schema Diff* should open in a new browser tab. Set *Open in new browser tab* option to true.
+ * *Schema Diff* should ignore the whitespaces while comparing string objects. Set *Ignore whitespaces* option to true.
+ * *Schema Diff* should ignore the owner while comparing objects. Set *Ignore owner* option to true.
+
 
 The *Schema Diff* panel is divided into two panels; an Object Comparison panel
 and a DDL Comparison panel.

@@ -25,7 +25,6 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS,\
     ERROR_MSG_TRANS_ID_NOT_FOUND
 from sqlalchemy import or_
@@ -91,6 +90,15 @@ class SchemaDiffModule(PgAdminModule):
                              'tool ignores the whitespaces while comparing '
                              'the string objects. Whitespace includes space, '
                              'tabs, and CRLF')
+        )
+
+        self.preference.register(
+            'display', 'ignore_owner',
+            gettext("Ignore owner"), 'boolean', False,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('If set to True, then the Schema Diff '
+                             'tool ignores the owner while comparing '
+                             'the objects.')
         )
 
 
@@ -452,9 +460,6 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
                                     diff_model_obj)
 
     try:
-        pref = Preferences.module('schema_diff')
-        ignore_whitespaces = pref.preference('ignore_whitespaces').get()
-
         # Fetch all the schemas of source and target database
         # Compare them and get the status.
         schema_result = fetch_compare_schemas(source_sid, source_did,
@@ -477,8 +482,7 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
                 source_sid=source_sid, source_did=source_did,
                 target_sid=target_sid, target_did=target_did,
                 diff_model_obj=diff_model_obj, total_percent=total_percent,
-                node_percent=node_percent,
-                ignore_whitespaces=ignore_whitespaces)
+                node_percent=node_percent)
         comparison_result = \
             comparison_result + comparison_schema_result
 
@@ -496,7 +500,6 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
                         node_percent=node_percent,
-                        ignore_whitespaces=ignore_whitespaces,
                         is_schema_source_only=True)
 
                 comparison_result = \
@@ -514,8 +517,7 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
                         schema_name=item['schema_name'],
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
-                        node_percent=node_percent,
-                        ignore_whitespaces=ignore_whitespaces)
+                        node_percent=node_percent)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -533,8 +535,7 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
                         schema_name=item['schema_name'],
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
-                        node_percent=node_percent,
-                        ignore_whitespaces=ignore_whitespaces)
+                        node_percent=node_percent)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -695,7 +696,6 @@ def compare_database_objects(**kwargs):
     diff_model_obj = kwargs.get('diff_model_obj')
     total_percent = kwargs.get('total_percent')
     node_percent = kwargs.get('node_percent')
-    ignore_whitespaces = kwargs.get('ignore_whitespaces')
     comparison_result = []
 
     all_registered_nodes = SchemaDiffRegistry.get_registered_nodes(None,
@@ -715,8 +715,7 @@ def compare_database_objects(**kwargs):
                                source_did=source_did,
                                target_sid=target_sid,
                                target_did=target_did,
-                               group_name=gettext('Database Objects'),
-                               ignore_whitespaces=ignore_whitespaces)
+                               group_name=gettext('Database Objects'))
 
             if res is not None:
                 comparison_result = comparison_result + res
@@ -744,7 +743,6 @@ def compare_schema_objects(**kwargs):
     diff_model_obj = kwargs.get('diff_model_obj')
     total_percent = kwargs.get('total_percent')
     node_percent = kwargs.get('node_percent')
-    ignore_whitespaces = kwargs.get('ignore_whitespaces')
     is_schema_source_only = kwargs.get('is_schema_source_only', False)
     source_schema_name = None
     if is_schema_source_only:
@@ -773,7 +771,6 @@ def compare_schema_objects(**kwargs):
                                target_did=target_did,
                                target_scid=target_scid,
                                group_name=gettext(schema_name),
-                               ignore_whitespaces=ignore_whitespaces,
                                source_schema_name=source_schema_name)
 
             if res is not None:

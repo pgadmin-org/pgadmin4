@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5200 <https://redmine.postgresql.org/issues/5200>`_ -  Added support to ignore the owner while comparing objects in the Schema Diff tool
 
 Housekeeping
 ************

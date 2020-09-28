@@ -32,7 +32,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
     trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tfunction',
                               'tgqual', 'tgconstraint']
-    index_keys_to_ignore = ['relowner', 'indrelid', 'indclass']
+    index_keys_to_ignore = ['indrelid', 'indclass']
 
     keys_to_ignore = table_keys_to_ignore + constraint_keys_to_ignore \
         + trigger_keys_to_ignore + index_keys_to_ignore
@@ -53,7 +53,6 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                          'scid': kwargs.get('target_scid')}
 
         group_name = kwargs.get('group_name')
-        ignore_whitespaces = kwargs.get('ignore_whitespaces')
         source_schema_name = kwargs.get('source_schema_name', None)
         source_tables = {}
         target_tables = {}
@@ -77,7 +76,6 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     node=self.node_type,
                                     node_label=self.blueprint.collection_label,
                                     group_name=group_name,
-                                    ignore_whitespaces=ignore_whitespaces,
                                     ignore_keys=self.keys_to_ignore,
                                     source_schema_name=source_schema_name)
 
@@ -246,7 +244,6 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         source = kwargs.get('source')
         target = kwargs.get('target')
         diff_dict = kwargs.get('diff_dict')
-        ignore_whitespaces = kwargs.get('ignore_whitespaces')
 
         # Get the difference result for source and target columns
         col_diff = self.table_col_comp(source, target)
@@ -308,7 +305,6 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                     other_param = {
                         "dict1": dict1,
                         "dict2": dict2,
-                        "ignore_whitespaces": ignore_whitespaces,
                         "source": source,
                         "target": target
                     }
@@ -353,14 +349,12 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                    **kwargs):
         dict1 = kwargs['dict1']
         dict2 = kwargs['dict2']
-        ignore_whitespaces = kwargs['ignore_whitespaces']
         source = kwargs['source']
         target = kwargs['target']
         for key in intersect_keys:
             # Recursively Compare the two dictionary
             if not are_dictionaries_identical(
-                    dict1[key], dict2[key], ignore_whitespaces,
-                    self.keys_to_ignore):
+                    dict1[key], dict2[key], self.keys_to_ignore):
                 diff_ddl = module_view.ddl_compare(
                     source_params=source_params,
                     target_params=target_params,
