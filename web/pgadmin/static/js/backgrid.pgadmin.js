@@ -9,10 +9,10 @@
 
 define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-  'moment', 'bignumber', 'sources/utils', 'sources/keyboard_shortcuts', 'sources/select2/configure_show_on_scroll',
+  'moment', 'bignumber', 'codemirror', 'sources/utils', 'sources/keyboard_shortcuts', 'sources/select2/configure_show_on_scroll',
   'bootstrap.datetimepicker', 'backgrid.filter', 'bootstrap.toggle',
 ], function(
-  gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber,
+  gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber, CodeMirror,
   commonUtils, keyboardShortcuts, configure_show_on_scroll
 ) {
   /*
@@ -44,7 +44,7 @@ define([
   _.extend(Backgrid.InputCellEditor.prototype.events, {
     'keydown': function(e) {
       let preferences = pgBrowser.get_preferences_for_module('browser');
-      if(keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,e)) {
+      if(preferences && keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,e)) {
         pgBrowser.keyboardNavigation.bindAddGridRow();
       } else {
         Backgrid.InputCellEditor.prototype.saveOrCancel.apply(this, arguments);
@@ -324,7 +324,7 @@ define([
         events: {
           'keydown': function (event) {
             let preferences = pgBrowser.get_preferences_for_module('browser');
-            if(keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,event)) {
+            if(preferences && keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,event)) {
               pgBrowser.keyboardNavigation.bindAddGridRow();
             }
           },
@@ -605,6 +605,96 @@ define([
       return this;
     },
   });
+
+
+  Backgrid.Extension.ClearCell = Backgrid.Cell.extend({
+    defaults: _.defaults({
+      defaultClearMsg: gettext('Are you sure you wish to clear this row?'),
+      defaultClearTitle: gettext('Clear Row'),
+    }, Backgrid.Cell.prototype.defaults),
+
+    /** @property */
+    className: 'clear-cell',
+    events: {
+      'click': 'clearRow',
+    },
+    clearRow: function(e) {
+      e.preventDefault();
+      if (_.isEmpty(e.currentTarget.innerHTML)) return false;
+      var that = this;
+      // We will check if row is deletable or not
+
+      var clear_msg = !_.isUndefined(this.column.get('customClearMsg')) ?
+        this.column.get('customClearMsg') : that.defaults.defaultClearMsg;
+      var clear_title = !_.isUndefined(this.column.get('customClearTitle')) ?
+        this.column.get('customClearTitle') : that.defaults.defaultClearTitle;
+      Alertify.confirm(
+        clear_title,
+        clear_msg,
+        function() {
+          that.model.set('name', null);
+          that.model.set('sql', null);
+        },
+        function() {
+          return true;
+        }
+      );
+
+    },
+    exitEditMode: function() {
+      this.$el.removeClass('editor');
+    },
+    initialize: function() {
+      Backgrid.Cell.prototype.initialize.apply(this, arguments);
+    },
+    render: function() {
+      var self = this;
+      this.$el.empty();
+      $(this.$el).attr('tabindex', 0);
+      if (this.model.get('name') !== null && this.model.get('sql') !== null)
+        this.$el.html('<i aria-label="' + gettext('Clear row') + '" class=\'fa fa-eraser\' title=\'' + gettext('Clear row') + '\'></i>');
+      // Listen for Tab/Shift-Tab key
+      this.$el.on('keydown', function(e) {
+        // with keyboard navigation on space key, mark row for deletion
+        if (e.keyCode == 32) {
+          self.$el.click();
+        }
+        var gotoCell;
+        if (e.keyCode == 9 || e.keyCode == 16) {
+          // go to Next Cell & if Shift is also pressed go to Previous Cell
+          gotoCell = e.shiftKey ? self.$el.prev() : self.$el.next();
+        }
+
+        if (gotoCell) {
+          let command = new Backgrid.Command({
+            key: 'Tab',
+            keyCode: 9,
+            which: 9,
+            shiftKey: e.shiftKey,
+          });
+          setTimeout(function() {
+            // When we have Editable Cell
+            if (gotoCell.hasClass('editable')) {
+              e.preventDefault();
+              e.stopPropagation();
+              self.model.trigger('backgrid:edited', self.model,
+                self.column, command);
+            }
+            else {
+              // When we have Non-Editable Cell
+              self.model.trigger('backgrid:edited', self.model,
+                self.column, command);
+            }
+          }, 20);
+        }
+      });
+
+
+      this.delegateEvents();
+      return this;
+    },
+  });
+
 
   Backgrid.Extension.CustomHeaderCell = Backgrid.HeaderCell.extend({
     initialize: function() {
@@ -2078,6 +2168,84 @@ define([
       this.$input = this.$el.find('input');
       this.delegateEvents();
       return this;
+    },
+  });
+
+  Backgrid.Extension.SqlCell = Backgrid.Extension.TextareaCell.extend({
+    className: 'sql-cell',
+    defaults: {
+      lineWrapping: true,
+    },
+    template: _.template([
+      '<div data-toggle="tooltip" data-placement="top" data-html="true" title="<%- val %>"><textarea aria-label="' + gettext('SQL') +'" + style="display: none;"><%- val %></textarea><div>',
+    ].join('\n')),
+
+    render: function() {
+      let self = this,
+        col = _.defaults(this.column.toJSON(), this.defaults),
+        model = this.model,
+        column = this.column,
+        columnName = this.column.get('name'),
+        editable = Backgrid.callByNeed(col.editable, column, model);
+
+      if (this.sqlCell) {
+        this.sqlCell.toTextArea();
+        delete this.sqlCell;
+        this.sqlCell = null;
+      }
+
+      this.$el.empty();
+      this.$el.append(this.template({
+        val:this.formatter.fromRaw(model.get(columnName), model),
+      })
+      );
+      this.$el.addClass(columnName);
+      this.updateStateClassesMaybe();
+      this.delegateEvents();
+
+      setTimeout(function() {
+        self.sqlCell = CodeMirror.fromTextArea(
+          (self.$el.find('textarea')[0]), {
+            mode: 'text/x-pgsql',
+            readOnly: !editable,
+            singleCursorHeightPerLine: true,
+            screenReaderLabel: columnName,
+          });
+      });
+
+      return this;
+    },
+    enterEditMode: function () {
+      if (!this.$el.hasClass('editor')) this.$el.addClass('editor');
+      this.sqlCell.focus();
+      this.sqlCell.on('blur', this.exitEditMode.bind(this));
+    },
+    exitEditMode: function () {
+      this.$el.removeClass('editor');
+      this.saveOrCancel.apply(this, arguments);
+    },
+    saveOrCancel: function() {
+      var model = this.model;
+      var column = this.column;
+      if (this.sqlCell) {
+        var val = this.sqlCell.getTextArea().value;
+        var newValue = this.sqlCell.getValue();
+        if (_.isUndefined(newValue)) {
+          model.trigger('backgrid:error', model, column, val);
+        }
+        else {
+          model.set(column.get('name'), newValue);
+        }
+      }
+    },
+    remove: function() {
+      if (this.sqlCell) {
+        $(this.$el.find('[data-toggle="tooltip"]')).tooltip('dispose');
+        this.sqlCell.toTextArea();
+        delete this.sqlCell;
+        this.sqlCell = null;
+      }
+      return Backgrid.Extension.TextareaCell.prototype.remove.apply(this, arguments);
     },
   });
 

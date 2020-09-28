@@ -18,7 +18,8 @@ describe('the keyboard shortcuts', () => {
     F7_KEY = 118,
     F8_KEY = 119,
     PERIOD_KEY = 190,
-    FWD_SLASH_KEY = 191;
+    FWD_SLASH_KEY = 191,
+    C1_KEY = 49;
 
   let sqlEditorControllerSpy, event, queryToolActionsSpy;
   beforeEach(() => {
@@ -120,6 +121,19 @@ describe('the keyboard shortcuts', () => {
       },
     };
 
+    sqlEditorControllerSpy.macros = [
+      {
+        alt: false,
+        control: true,
+        id: 1,
+        key: '1',
+        key_code: C1_KEY,
+        key_label: 'Ctrl + 1',
+        name: 'C1',
+        sql: 'Select 1;',
+      },
+    ];
+
     queryToolActionsSpy = jasmine.createSpyObj(queryToolActions, [
       'explainAnalyze',
       'explain',
@@ -131,6 +145,7 @@ describe('the keyboard shortcuts', () => {
       'executeCommit',
       'executeRollback',
       'saveDataChanges',
+      'executeMacro',
     ]);
   });
 
@@ -663,6 +678,47 @@ describe('the keyboard shortcuts', () => {
         );
 
         expect(queryToolActionsSpy.executeRollback).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Macro Ctrl + 1', () => {
+    describe('when there is not a query already running', () => {
+      beforeEach(() => {
+        event.which = C1_KEY;
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = true;
+
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolActionsSpy, event
+        );
+      });
+
+      it('should execute the macro', () => {
+        expect(queryToolActionsSpy.executeMacro).toHaveBeenCalledWith(sqlEditorControllerSpy,
+          sqlEditorControllerSpy.macros[0].id);
+      });
+
+      it('should stop event propagation', () => {
+        expect(event.preventDefault).toHaveBeenCalled();
+      });
+    });
+
+    describe('when the query is already running', () => {
+      it('does nothing', () => {
+        event.keyCode = C1_KEY;
+        event.altKey = false;
+        event.shiftKey = false;
+        event.ctrlKey = true;
+
+        sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
+
+        keyboardShortcuts.processEventQueryTool(
+          sqlEditorControllerSpy, queryToolActionsSpy, event
+        );
+
+        expect(queryToolActionsSpy.executeMacro).not.toHaveBeenCalled();
       });
     });
   });

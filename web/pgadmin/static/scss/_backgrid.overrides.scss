@@ -359,3 +359,31 @@ table tr th button {
      }
    }
 }
+
+.backgrid .sql-cell .CodeMirror-scroll {
+  overflow: hidden !important;
+}
+
+.backgrid .sql-cell .cm-s-default {
+  height: 50px !important;
+}
+
+.backgrid .sql-cell .CodeMirror-hscrollbar > div {
+  width: 100% !important;
+}
+
+.backgrid .sql-cell .CodeMirror-hscrollbar {
+  overflow-x: hidden !important;
+}
+
+.backgrid .sql-cell .CodeMirror-vscrollbar {
+  overflow-y: hidden !important;
+}
+
+.backgrid .sql-cell .CodeMirror-sizer {
+  padding-bottom: 0 !important;
+}
+
+.backgrid .sql-cell .CodeMirror-scrollbar-filler {
+  display: none !important;
+}

@@ -32,7 +32,7 @@ from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    success_return, internal_server_error
+    success_return, internal_server_error, make_response as ajax_response
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
@@ -46,6 +46,8 @@ from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED,\
     ERROR_MSG_TRANS_ID_NOT_FOUND
+from pgadmin.tools.sqleditor.utils.macros import get_macros,\
+    get_user_macros, set_macros
 
 MODULE_NAME = 'sqleditor'
 
@@ -109,6 +111,9 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.get_query_history',
             'sqleditor.add_query_history',
             'sqleditor.clear_query_history',
+            'sqleditor.get_macro',
+            'sqleditor.get_macros',
+            'sqleditor.set_macros'
         ]
 
     def register_preferences(self):
@@ -1547,3 +1552,46 @@ def get_query_history(trans_id):
         check_transaction_status(trans_id)
 
     return QueryHistory.get(current_user.id, trans_obj.sid, conn.db)
+
+
+@blueprint.route(
+    '/get_macros/<int:trans_id>',
+    methods=["GET"], endpoint='get_macros'
+)
+@blueprint.route(
+    '/get_macros/<int:macro_id>/<int:trans_id>',
+    methods=["GET"], endpoint='get_macro'
+)
+@login_required
+def macros(trans_id, macro_id=None, json_resp=True):
+    """
+    This method is used to get all the columns for data sorting dialog.
+
+    Args:
+        trans_id: unique transaction id
+        macro_id: Macro id
+    """
+
+    status, error_msg, conn, trans_obj, session_ob = \
+        check_transaction_status(trans_id)
+
+    return get_macros(macro_id, json_resp)
+
+
+@blueprint.route(
+    '/set_macros/<int:trans_id>',
+    methods=["PUT"], endpoint='set_macros'
+)
+@login_required
+def update_macros(trans_id):
+    """
+    This method is used to get all the columns for data sorting dialog.
+
+    Args:
+        trans_id: unique transaction id
+    """
+
+    status, error_msg, conn, trans_obj, session_ob = \
+        check_transaction_status(trans_id)
+
+    return set_macros()

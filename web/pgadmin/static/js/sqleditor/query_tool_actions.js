@@ -39,6 +39,11 @@ let queryToolActions = {
     $('.sql-editor-message').html('');
   },
 
+  executeMacro: function (sqlEditorController, MacroId) {
+    this._clearMessageTab();
+    sqlEditorController.check_data_changes_to_execute_query(null, false, MacroId);
+  },
+
   executeQuery: function (sqlEditorController) {
     this._clearMessageTab();
     sqlEditorController.check_data_changes_to_execute_query();

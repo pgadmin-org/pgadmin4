@@ -395,3 +395,32 @@ input.editor-checkbox:focus {
 .hide-vertical-scrollbar {
   overflow-y: hidden;
 }
+
+
+/*  Macros */
+
+.macro-tab {
+  top: 0px !important;
+}
+
+.macro-tab .tab-pane {
+  padding: 0px !important;
+}
+
+.macro_dialog .CodeMirror {
+  overflow-y: auto;
+  resize: vertical;
+}
+.macro_dialog .sql-cell > div {
+  overflow-y: auto;
+  resize: vertical;
+}
+
+.macro_dialog .CodeMirror-cursor {
+    width: 1px !important;
+    height: 18px !important;
+}
+
+.macro_dialog  .pg-prop-status-bar {
+  z-index: 1;
+}

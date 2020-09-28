@@ -377,6 +377,31 @@
                     <i class="fa fa-download sql-icon-lg" aria-hidden="true" role="img"></i>
                 </button>
             </div>
+            <div class="btn-group mr-1 user_macros" role="group" aria-label="">
+                <button id="btn-macro-dropdown" type="button" class="btn btn-sm btn-primary-icon dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        aria-label="{{ _('Macros') }}" title="{{ _('Macros') }}" tabindex="0">
+                    <i class="fa fa-scroll sql-icon-lg" aria-hidden="true" role="img"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" id="btn-manage-macros" href="#" tabindex="0">
+                            <span> {{ _('Manage Macros...') }} </span>
+                        </a>
+                    </li>
+                    {% if macros|length > 0 %}
+                    <li class="dropdown-divider"></li>
+                    {% endif %}
+                    {% for i in macros %}
+                    <li>
+                        <a class="dropdown-item btn-macro" data-macro-id="{{ i.id }}" href="#" tabindex="0">
+                            <span> {{ _(i.name) }} </span>
+                            <span> ({{ i.key_label }}) </span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
 
         <div class="connection_status_wrapper d-flex">
@@ -459,7 +484,8 @@ require(['sources/generated/browser_nodes', 'sources/generated/codemirror', 'sou
         sqlEditorController.start(
             {{ uniqueId }},
             {{ url_params|safe}},
-            '{{ layout|safe }}'
+            '{{ layout|safe }}',
+            {{ macros|safe }}
         );
 
         // If opening from schema diff, set the generated script to the SQL Editor

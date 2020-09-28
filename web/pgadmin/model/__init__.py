@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 26
+SCHEMA_VERSION = 27
 
 ##########################################################################
 #
@@ -391,3 +391,26 @@ class SharedServer(db.Model):
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(db.String(64), nullable=True)
     shared = db.Column(db.Boolean(), nullable=False)
+
+
+class Macros(db.Model):
+    """Define a particular macro."""
+    __tablename__ = 'macros'
+    id = db.Column(db.Integer, primary_key=True)
+    alt = db.Column(db.Boolean(), nullable=False)
+    control = db.Column(db.Boolean(), nullable=False)
+    key = db.Column(db.String(32), nullable=False)
+    key_code = db.Column(db.Integer, nullable=False)
+
+
+class UserMacros(db.Model):
+    """Define the macro for a particular user."""
+    __tablename__ = 'user_macros'
+    mid = db.Column(
+        db.Integer, db.ForeignKey('macros.id'), primary_key=True
+    )
+    uid = db.Column(
+        db.Integer, db.ForeignKey('user.id'), primary_key=True
+    )
+    name = db.Column(db.String(1024), nullable=False)
+    sql = db.Column(db.Text(), nullable=False)

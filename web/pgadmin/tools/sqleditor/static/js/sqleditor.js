@@ -43,6 +43,7 @@ define('tools.querytool', [
   'tools/datagrid/static/js/datagrid_panel_title',
   'sources/window',
   'sources/is_native',
+  'sources/sqleditor/macro',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
   'slick.pgadmin.formatters',
@@ -57,7 +58,7 @@ define('tools.querytool', [
   GeometryViewer, historyColl, queryHist, querySources,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
   modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, queryTxnStatus, csrfToken, panelTitleFunc,
-  pgWindow, isNative) {
+  pgWindow, isNative, MacroHandler) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -149,6 +150,9 @@ define('tools.querytool', [
       // Transaction control
       'click #btn-commit': 'on_commit_transaction',
       'click #btn-rollback': 'on_rollback_transaction',
+      // Manage Macros
+      'click #btn-manage-macros': 'on_manage_macros',
+      'click .btn-macro': 'on_execute_macro',
     },
 
     reflectPreferences: function() {
@@ -2038,7 +2042,29 @@ define('tools.querytool', [
 
       queryToolActions.executeRollback(this.handler);
     },
+
+    // Callback function for manage macros button click.
+    on_manage_macros: function() {
+      var self = this;
+
+      // Trigger the show_filter signal to the SqlEditorController class
+      self.handler.trigger(
+        'pgadmin-sqleditor:button:manage_macros',
+        self,
+        self.handler
+      );
+    },
+
+    // Callback function for manage macros button click.
+    on_execute_macro: function(e) {
+      let macroId = $(e.currentTarget).data('macro-id');
+      this.handler.history_query_source = QuerySources.EXECUTE;
+      queryToolActions.executeMacro(this.handler, macroId);
+    },
+
   });
+
+
 
   /* Defining controller class for data grid, which actually
    * perform the operations like executing the sql query, poll the result,
@@ -2308,7 +2334,7 @@ define('tools.querytool', [
        * call the render method of the grid view to render the slickgrid
        * header and loading icon and start execution of the sql query.
        */
-      start: function(transId, url_params, layout) {
+      start: function(transId, url_params, layout, macros) {
         var self = this;
 
         self.is_query_tool = url_params.is_query_tool==='true'?true:false;
@@ -2333,6 +2359,7 @@ define('tools.querytool', [
           layout: layout,
         });
         self.transId = self.gridView.transId = transId;
+        self.macros = self.gridView.macros = macros;
 
         self.gridView.current_file = undefined;
 
@@ -2474,12 +2501,14 @@ define('tools.querytool', [
         self.on('pgadmin-sqleditor:unindent_selected_code', self._unindent_selected_code, self);
         // Format
         self.on('pgadmin-sqleditor:format_sql', self._format_sql, self);
+        self.on('pgadmin-sqleditor:button:manage_macros', self._manage_macros, self);
+        self.on('pgadmin-sqleditor:button:execute_macro', self._execute_macro, self);
 
         window.parent.$(window.parent.document).on('pgadmin-sqleditor:rows-copied', self._copied_in_other_session);
       },
 
       // Checks if there is any dirty data in the grid before executing a query
-      check_data_changes_to_execute_query: function(explain_prefix=null, shouldReconnect=false) {
+      check_data_changes_to_execute_query: function(explain_prefix=null, shouldReconnect=false, macroId=undefined) {
         var self = this;
 
         // Check if the data grid has any changes before running query
@@ -2492,7 +2521,10 @@ define('tools.querytool', [
             gettext('The data has been modified, but not saved. Are you sure you wish to discard the changes?'),
             function() {
               // The user does not want to save, just continue
-              if(self.is_query_tool) {
+              if (macroId !== undefined) {
+                self._execute_macro_query(explain_prefix, shouldReconnect, macroId);
+              }
+              else if(self.is_query_tool) {
                 self._execute_sql_query(explain_prefix, shouldReconnect);
               }
               else {
@@ -2508,7 +2540,10 @@ define('tools.querytool', [
             cancel: gettext('No'),
           });
         } else {
-          if(self.is_query_tool) {
+          if (macroId !== undefined) {
+            self._execute_macro_query(explain_prefix, shouldReconnect, macroId);
+          }
+          else if(self.is_query_tool) {
             self._execute_sql_query(explain_prefix, shouldReconnect);
           }
           else {
@@ -2600,6 +2635,37 @@ define('tools.querytool', [
             if (msg)
               self.update_msg_history(false, msg);
           });
+      },
+
+      // Executes sql query  for macroin the editor in Query Tool mode
+      _execute_macro_query: function(explain_prefix, shouldReconnect, macroId) {
+        var self = this;
+
+        self.has_more_rows = false;
+        self.fetching_rows = false;
+
+        $.ajax({
+          url: url_for('sqleditor.get_macro', {'macro_id': macroId, 'trans_id': self.transId}),
+          method: 'GET',
+          contentType: 'application/json',
+          dataType: 'json',
+        })
+          .done(function(res) {
+            if (res) {
+              // Replace the place holder
+              let query = res.sql.replaceAll('$SELECTION$', self.gridView.query_tool_obj.getSelection());
+
+              const executeQuery = new ExecuteQuery.ExecuteQuery(self, pgAdmin.Browser.UserManagement);
+              executeQuery.poll = pgBrowser.override_activity_event_decorator(executeQuery.poll).bind(executeQuery);
+              executeQuery.execute(query, explain_prefix, shouldReconnect);
+            } else {
+              // Let it be for now
+            }
+          })
+          .fail(function() {
+          /* failure should not be ignored */
+          });
+
       },
 
       // Executes sql query in the editor in Query Tool mode
@@ -3968,6 +4034,7 @@ define('tools.querytool', [
         $('#btn-file-menu-dropdown').prop('disabled', mode_disabled);
         $('#btn-find').prop('disabled', mode_disabled);
         $('#btn-find-menu-dropdown').prop('disabled', mode_disabled);
+        $('#btn-macro-dropdown').prop('disabled', mode_disabled);
 
         if (this.is_query_tool) {
 
@@ -4374,6 +4441,24 @@ define('tools.querytool', [
           /* failure should be ignored */
           });
       },
+
+      // This function will open the manage macro dialog
+      _manage_macros: function() {
+        let self = this;
+
+        /* When server is disconnected and connected, connection is lost,
+         * To reconnect pass true
+         */
+        MacroHandler.dialog(self);
+      },
+
+      // This function will open the manage macro dialog
+      _execute_macro: function() {
+
+        queryToolActions.executeMacro(this.handler);
+
+      },
+
 
       isQueryRunning: function() {
         return is_query_running;

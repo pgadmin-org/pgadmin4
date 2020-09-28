@@ -33,6 +33,7 @@ from pgadmin.settings import get_setting
 from pgadmin.browser.utils import underscore_unescape
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.tools.sqleditor.utils.macros import get_user_macros
 
 MODULE_NAME = 'datagrid'
 
@@ -274,6 +275,8 @@ def panel(trans_id):
 
     layout = get_setting('SQLEditor/Layout')
 
+    macros = get_user_macros()
+
     return render_template(
         "datagrid/index.html",
         _=gettext,
@@ -286,6 +289,7 @@ def panel(trans_id):
         bgcolor=bgcolor,
         fgcolor=fgcolor,
         layout=layout,
+        macros=macros
     )
 
 

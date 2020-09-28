@@ -324,15 +324,38 @@ function keyboardShortcutsQueryTool(
         }
       }
     }
+  } else {
+    // Macros
+    let macroId = this.validateMacros(sqlEditorController, event);
+
+    if  (macroId !== false) {
+      this._stopEventPropagation(event);
+      queryToolActions.executeMacro(sqlEditorController, macroId);
+    }
   }
 
   return panel_type;
 }
 
+function validateMacros(sqlEditorController, event) {
+  let keyCode = event.which || event.keyCode;
+
+  let macro = sqlEditorController.macros.filter(mc =>
+    mc.alt == event.altKey &&
+    mc.control  == event.ctrlKey &&
+    mc.key_code == keyCode);
+
+  if (macro.length == 1) {
+    return macro[0].id;
+  }
+
+  return false;
+}
+
 export {
   keyboardShortcutsDebugger as processEventDebugger,
   keyboardShortcutsQueryTool as processEventQueryTool,
-  focusDockerPanel, validateShortcutKeys,
+  focusDockerPanel, validateShortcutKeys, validateMacros,
   _stopEventPropagation, isMac, isKeyCtrlAlt, isKeyAltShift, isKeyCtrlShift,
   isKeyCtrlAltShift, isAltShiftBoth, isCtrlShiftBoth, isCtrlAltBoth,
   shortcut_key, shortcut_title, shortcut_accesskey_title,
