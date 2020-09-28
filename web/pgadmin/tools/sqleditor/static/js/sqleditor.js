@@ -77,6 +77,14 @@ define('tools.querytool', [
 
   var is_query_running = false;
 
+  const EMPTY_DATA_OUTPUT_CONTENT = '<div role="status" class="pg-panel-message">' +
+    gettext('No data output. Execute a query to get output.') +
+  '</div>';
+
+  const EMPTY_EXPLAIN_CONTENT = '<div role="status" class="pg-panel-message">' +
+    gettext('Use Explain/Explain analyze button to generate the plan for a query. Alternatively, you can also execute "EXPLAIN (FORMAT JSON) [QUERY]".') +
+  '</div>';
+
   // Defining Backbone view for the sql grid.
   var SQLEditorView = Backbone.View.extend({
     initialize: function(opts) {
@@ -255,7 +263,7 @@ define('tools.querytool', [
         isCloseable: false,
         isPrivate: true,
         extraClasses: 'hide-vertical-scrollbar',
-        content: '<div id ="datagrid" class="sql-editor-grid-container text-12" tabindex="0"></div>',
+        content: `<div id ="datagrid" class="sql-editor-grid-container text-12" tabindex="0">${EMPTY_DATA_OUTPUT_CONTENT}</div>`,
       });
 
       var explain = new pgAdmin.Browser.Panel({
@@ -265,7 +273,7 @@ define('tools.querytool', [
         height: '100%',
         isCloseable: false,
         isPrivate: true,
-        content: '<div class="sql-editor-explain" tabindex="0"></div>',
+        content: `<div class="sql-editor-explain pg-el-container" tabindex="0">${EMPTY_EXPLAIN_CONTENT}</div>`,
       });
 
       var messages = new pgAdmin.Browser.Panel({
@@ -2724,7 +2732,7 @@ define('tools.querytool', [
         self.changedModels = [];
         self.has_oids = data.has_oids;
         self.oids = data.oids;
-        $('.sql-editor-explain').empty();
+        $('.sql-editor-explain').html(EMPTY_EXPLAIN_CONTENT);
         self.explain_plan = false;
 
         /* If object don't have primary keys then set the
