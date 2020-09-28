@@ -15,8 +15,6 @@ import json
 import os
 import sys
 import builtins
-from pgadmin.model import db, User, Version, ServerGroup, Server, \
-    SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 
 # Grab the SERVER_MODE if it's been set by the runtime
 if 'SERVER_MODE' in globals():
@@ -31,6 +29,8 @@ if sys.path[0] != root:
     sys.path.insert(0, root)
 
 from pgadmin import create_app
+from pgadmin.model import db, User, Version, ServerGroup, Server, \
+    SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 
 
 def add_value(attr_dict, key, value):
