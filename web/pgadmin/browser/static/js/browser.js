@@ -2171,22 +2171,6 @@ define('pgadmin.browser', [
       'Ctrl-Space': 'autocomplete',
       'Cmd-Space': 'autocomplete',
 
-      // Select All text
-      'Ctrl-A': 'selectAll',
-      'Cmd-A': 'selectAll',
-
-      // Redo text
-      'Ctrl-Y': 'redo',
-      'Cmd-Y': 'redo',
-
-      // Undo text
-      'Ctrl-Z': 'undo',
-      'Cmd-Z': 'undo',
-
-      // Delete Line
-      'Ctrl-D': 'deleteLine',
-      'Cmd-D': 'deleteLine',
-
       'Alt-Up': 'goLineUp',
       'Alt-Down': 'goLineDown',
 
