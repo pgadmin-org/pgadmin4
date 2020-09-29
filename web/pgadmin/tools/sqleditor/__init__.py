@@ -50,6 +50,7 @@ from pgadmin.tools.sqleditor.utils.macros import get_macros,\
     get_user_macros, set_macros
 
 MODULE_NAME = 'sqleditor'
+TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
 
 
 class SqlEditorModule(PgAdminModule):
@@ -1292,16 +1293,17 @@ def save_file():
     enc = get_file_encoding_of_loaded_file(os.path.basename(file_path))
 
     file_content = file_data['file_content'].encode(enc)
+    error_str = gettext("Error: {0}")
 
     # write to file
     try:
         with open(file_path, 'wb+') as output_file:
             output_file.write(file_content)
     except IOError as e:
-        err_msg = gettext("Error: {0}").format(e.strerror)
+        err_msg = error_str.format(e.strerror)
         return internal_server_error(errormsg=err_msg)
     except Exception as e:
-        err_msg = gettext("Error: {0}").format(e.strerror)
+        err_msg = error_str.format(e.strerror)
         return internal_server_error(errormsg=err_msg)
 
     return make_json_response(
@@ -1324,7 +1326,7 @@ def start_query_download_tool(trans_id):
     if not status or sync_conn is None or trans_obj is None or \
             session_obj is None:
         return internal_server_error(
-            errormsg=gettext("Transaction status check failed.")
+            errormsg=TRANSACTION_STATUS_CHECK_FAILED
         )
 
     data = request.values if request.values else None
@@ -1443,11 +1445,11 @@ def query_tool_status(trans_id):
             )
         else:
             return internal_server_error(
-                errormsg=gettext("Transaction status check failed.")
+                errormsg=TRANSACTION_STATUS_CHECK_FAILED
             )
     else:
         return internal_server_error(
-            errormsg=gettext("Transaction status check failed.")
+            errormsg=TRANSACTION_STATUS_CHECK_FAILED
         )
 
 

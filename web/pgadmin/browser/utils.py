@@ -113,9 +113,9 @@ class PGChildModule(object):
         super(PGChildModule, self).__init__()
 
     def backend_supported(self, manager, **kwargs):
-        if hasattr(self, 'show_node'):
-            if not self.show_node:
-                return False
+        if hasattr(self, 'show_node') and not self.show_node:
+            return False
+
         sversion = getattr(manager, 'sversion', None)
 
         if sversion is None or not isinstance(sversion, int):
@@ -391,6 +391,8 @@ class PGChildNodeView(NodeView):
     _GET_SCHEMA_OID_SQL = 'get_schema_oid.sql'
     _GET_COLUMNS_SQL = 'get_columns.sql'
     _GET_COLUMNS_FOR_TABLE_SQL = 'get_columns_for_table.sql'
+    _GET_SUBTYPES_SQL = 'get_subtypes.sql'
+    _GET_EXTERNAL_FUNCTIONS_SQL = 'get_external_functions.sql'
 
     def get_children_nodes(self, manager, **kwargs):
         """

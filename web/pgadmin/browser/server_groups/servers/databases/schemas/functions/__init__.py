@@ -1192,11 +1192,13 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 self.conn, resp_data['pronamespace'], resp_data['proname']),
             resp_data['proargtypenames'].lstrip('(').rstrip(')'))
 
+        pattern = '\n{2,}'
+        repl = '\n\n'
         if not json_resp:
-            return re.sub('\n{2,}', '\n\n', func_def)
+            return re.sub(pattern, repl, func_def)
 
         sql = sql_header + func_def
-        sql = re.sub('\n{2,}', '\n\n', sql)
+        sql = re.sub(pattern, repl, sql)
 
         return ajax_response(response=sql)
 

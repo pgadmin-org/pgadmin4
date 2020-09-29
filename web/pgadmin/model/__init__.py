@@ -38,11 +38,12 @@ SCHEMA_VERSION = 27
 ##########################################################################
 
 db = SQLAlchemy()
+USER_ID = 'user.id'
 
 # Define models
 roles_users = db.Table(
     'roles_users',
-    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('user_id', db.Integer(), db.ForeignKey(USER_ID)),
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
 
@@ -80,7 +81,7 @@ class User(db.Model, UserMixin):
 class Setting(db.Model):
     """Define a setting object"""
     __tablename__ = 'setting'
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), primary_key=True)
     setting = db.Column(db.String(256), primary_key=True)
     value = db.Column(db.String(1024))
 
@@ -89,7 +90,7 @@ class ServerGroup(db.Model):
     """Define a server group for the treeview"""
     __tablename__ = 'servergroup'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), nullable=False)
 
     name = db.Column(db.String(128), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'name'),)
@@ -101,7 +102,7 @@ class Server(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id'),
+        db.ForeignKey(USER_ID),
         nullable=False
     )
     servergroup_id = db.Column(
@@ -214,7 +215,7 @@ class UserPreference(db.Model):
         db.Integer, db.ForeignKey('preferences.id'), primary_key=True
     )
     uid = db.Column(
-        db.Integer, db.ForeignKey('user.id'), primary_key=True
+        db.Integer, db.ForeignKey(USER_ID), primary_key=True
     )
     value = db.Column(db.String(1024), nullable=False)
 
@@ -256,7 +257,7 @@ class Process(db.Model):
     pid = db.Column(db.String(), nullable=False, primary_key=True)
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id'),
+        db.ForeignKey(USER_ID),
         nullable=False
     )
     command = db.Column(db.String(), nullable=False)
@@ -283,7 +284,7 @@ class QueryHistoryModel(db.Model):
     __tablename__ = 'query_history'
     srno = db.Column(db.Integer(), nullable=False, primary_key=True)
     uid = db.Column(
-        db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True
+        db.Integer, db.ForeignKey(USER_ID), nullable=False, primary_key=True
     )
     sid = db.Column(
         db.Integer(), db.ForeignKey('server.id'), nullable=False,
@@ -315,7 +316,7 @@ class SharedServer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id')
+        db.ForeignKey(USER_ID)
     )
     server_owner = db.Column(
         db.String(128),
@@ -410,7 +411,7 @@ class UserMacros(db.Model):
         db.Integer, db.ForeignKey('macros.id'), primary_key=True
     )
     uid = db.Column(
-        db.Integer, db.ForeignKey('user.id'), primary_key=True
+        db.Integer, db.ForeignKey(USER_ID), primary_key=True
     )
     name = db.Column(db.String(1024), nullable=False)
     sql = db.Column(db.Text(), nullable=False)

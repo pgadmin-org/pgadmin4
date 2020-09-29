@@ -140,6 +140,10 @@ class Connection(BaseConnection):
       - This function will return the encrypted password for database server
       - greater than or equal to 10.
     """
+    UNAUTHORIZED_REQUEST = gettext("Unauthorized request.")
+    CURSOR_NOT_FOUND = \
+        gettext("Cursor could not be found for the async connection.")
+    ARGS_STR = "{0}#{1}"
 
     def __init__(self, manager, conn_id, db, auto_reconnect=True, async_=0,
                  use_binary_placeholder=False, array_to_string=False):
@@ -245,7 +249,7 @@ class Connection(BaseConnection):
             user = User.query.filter_by(id=current_user.id).first()
 
             if user is None:
-                return False, gettext("Unauthorized request.")
+                return False, self.UNAUTHORIZED_REQUEST
 
             try:
                 password = decrypt(encpass, crypt_key)
@@ -401,7 +405,7 @@ class Connection(BaseConnection):
         self.execution_aborted = False
         self.__backend_pid = self.conn.get_backend_pid()
 
-        setattr(g, "{0}#{1}".format(
+        setattr(g, self.ARGS_STR.format(
             self.manager.sid,
             self.conn_id.encode('utf-8')
         ), None)
@@ -563,7 +567,7 @@ WHERE db.datname = current_database()""")
                 self.db,
                 None if self.conn_id[0:3] == 'DB:' else self.conn_id[5:]
             )
-        cur = getattr(g, "{0}#{1}".format(
+        cur = getattr(g, self.ARGS_STR.format(
             self.manager.sid,
             self.conn_id.encode('utf-8')
         ), None)
@@ -635,7 +639,7 @@ WHERE db.datname = current_database()""")
                     )
 
         setattr(
-            g, "{0}#{1}".format(
+            g, self.ARGS_STR.format(
                 self.manager.sid, self.conn_id.encode('utf-8')
             ), cur
         )
@@ -1031,7 +1035,7 @@ WHERE db.datname = current_database()""")
 
     def __attempt_execution_reconnect(self, fn, *args, **kwargs):
         self.reconnecting = True
-        setattr(g, "{0}#{1}".format(
+        setattr(g, self.ARGS_STR.format(
             self.manager.sid,
             self.conn_id.encode('utf-8')
         ), None)
@@ -1187,9 +1191,7 @@ WHERE db.datname = current_database()""")
         """
         cur = self.__async_cursor
         if not cur:
-            return False, gettext(
-                "Cursor could not be found for the async connection."
-            )
+            return False, self.CURSOR_NOT_FOUND
 
         if self.conn.isexecuting():
             return False, gettext(
@@ -1242,7 +1244,7 @@ WHERE db.datname = current_database()""")
             user = User.query.filter_by(id=current_user.id).first()
 
             if user is None:
-                return False, gettext("Unauthorized request."), password
+                return False, self.UNAUTHORIZED_REQUEST, password
 
             crypt_key_present, crypt_key = get_crypt_key()
             if not crypt_key_present:
@@ -1404,9 +1406,7 @@ Failed to reset the connection to the server due to following error:
 
         cur = self.__async_cursor
         if not cur:
-            return False, gettext(
-                "Cursor could not be found for the async connection."
-            )
+            return False, self.CURSOR_NOT_FOUND
 
         current_app.logger.log(
             25,
@@ -1505,9 +1505,7 @@ Failed to reset the connection to the server due to following error:
         """
         cur = self.__async_cursor
         if not cur:
-            return gettext(
-                "Cursor could not be found for the async connection."
-            )
+            return self.CURSOR_NOT_FOUND
 
         current_app.logger.log(
             25,
@@ -1559,7 +1557,7 @@ Failed to reset the connection to the server due to following error:
                 # Fetch Logged in User Details.
                 user = User.query.filter_by(id=current_user.id).first()
                 if user is None:
-                    return False, gettext("Unauthorized request.")
+                    return False, self.UNAUTHORIZED_REQUEST
 
                 crypt_key_present, crypt_key = get_crypt_key()
                 if not crypt_key_present:

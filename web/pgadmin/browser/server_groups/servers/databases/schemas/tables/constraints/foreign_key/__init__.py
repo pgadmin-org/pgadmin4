@@ -184,6 +184,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
     """
 
     node_type = 'foreign_key'
+    FOREIGN_KEY_PATH = 'foreign_key/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -232,7 +233,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 self.manager.db_info[kwargs['did']]['datlastsysoid'] \
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
-            self.template_path = 'foreign_key/sql/#{0}#'.format(
+            self.template_path = self.FOREIGN_KEY_PATH.format(
                 self.manager.version)
 
             # We need parent's name eg table name and schema name
@@ -337,7 +338,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         """
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
-        self.template_path = 'foreign_key/sql/#{0}#'.format(
+        self.template_path = self.FOREIGN_KEY_PATH.format(
             self.manager.version)
 
         # We need parent's name eg table name and schema name
@@ -448,8 +449,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         """
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
-        self.template_path = 'foreign_key/sql/#{0}#'.format(
-            self.manager.version)
+        self.template_path = self.FOREIGN_KEY_PATH.format(self.manager.version)
 
         # We need parent's name eg table name and schema name
         schema, table = fkey_utils.get_parent(self.conn, tid)

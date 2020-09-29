@@ -70,6 +70,8 @@ class DashboardModule(PgAdminModule):
         register_preferences
         Register preferences for this module.
         """
+        help_string = gettext('The number of seconds between graph samples.')
+
         # Register options for the PG and PPAS help paths
         self.dashboard_preference = Preferences(
             'dashboards', gettext('Dashboards')
@@ -80,7 +82,7 @@ class DashboardModule(PgAdminModule):
             gettext("Session statistics refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
             category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
+            help_str=help_string
         )
 
         self.tps_stats_refresh = self.dashboard_preference.register(
@@ -88,7 +90,7 @@ class DashboardModule(PgAdminModule):
             gettext("Transaction throughput refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
             category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
+            help_str=help_string
         )
 
         self.ti_stats_refresh = self.dashboard_preference.register(
@@ -96,7 +98,7 @@ class DashboardModule(PgAdminModule):
             gettext("Tuples in refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
             category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
+            help_str=help_string
         )
 
         self.to_stats_refresh = self.dashboard_preference.register(
@@ -104,7 +106,7 @@ class DashboardModule(PgAdminModule):
             gettext("Tuples out refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
             category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
+            help_str=help_string
         )
 
         self.bio_stats_refresh = self.dashboard_preference.register(
@@ -112,7 +114,7 @@ class DashboardModule(PgAdminModule):
             gettext("Block I/O statistics refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
             category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
+            help_str=help_string
         )
 
         self.display_graphs = self.dashboard_preference.register(

@@ -180,6 +180,7 @@ class ExclusionConstraintView(PGChildNodeView):
     """
 
     node_type = 'exclusion_constraint'
+    EXCLUSION_CONSTRAINT_PATH = 'exclusion_constraint/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -226,7 +227,7 @@ class ExclusionConstraintView(PGChildNodeView):
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
-            self.template_path = 'exclusion_constraint/sql/#{0}#'.format(
+            self.template_path = self.EXCLUSION_CONSTRAINT_PATH.format(
                 self.manager.version)
 
             # We need parent's name eg table name and schema name
@@ -327,7 +328,7 @@ class ExclusionConstraintView(PGChildNodeView):
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
 
-        self.template_path = 'exclusion_constraint/sql/#{0}#'.format(
+        self.template_path = self.EXCLUSION_CONSTRAINT_PATH.format(
             self.manager.version)
 
         # We need parent's name eg table name and schema name
@@ -438,7 +439,7 @@ class ExclusionConstraintView(PGChildNodeView):
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
 
-        self.template_path = 'exclusion_constraint/sql/#{0}#'.format(
+        self.template_path = self.EXCLUSION_CONSTRAINT_PATH.format(
             self.manager.version)
 
         # We need parent's name eg table name and schema name

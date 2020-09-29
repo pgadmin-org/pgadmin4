@@ -361,6 +361,7 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
         self.conn_id = kwargs['conn_id'] if 'conn_id' in kwargs else None
         self.cmd_type = kwargs['cmd_type'] if 'cmd_type' in kwargs else None
         self.limit = -1
+        self._OBJECT_QUERY_SQL = 'objectquery.sql'
 
         if self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_LAST_100_ROWS):
             self.limit = 100
@@ -499,14 +500,14 @@ class TableCommand(GridCommand):
 
         if sql_filter is None:
             sql = render_template(
-                "/".join([self.sql_path, 'objectquery.sql']),
+                "/".join([self.sql_path, self._OBJECT_QUERY_SQL]),
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, limit=self.limit, has_oids=has_oids,
                 data_sorting=data_sorting
             )
         else:
             sql = render_template(
-                "/".join([self.sql_path, 'objectquery.sql']),
+                "/".join([self.sql_path, self._OBJECT_QUERY_SQL]),
                 object_name=self.object_name,
                 nsp_name=self.nsp_name, limit=self.limit, has_oids=has_oids,
                 sql_filter=sql_filter, data_sorting=data_sorting
@@ -716,13 +717,13 @@ class ViewCommand(GridCommand):
 
         if sql_filter is None:
             sql = render_template(
-                "/".join([self.sql_path, 'objectquery.sql']),
+                "/".join([self.sql_path, self._OBJECT_QUERY_SQL]),
                 object_name=self.object_name, nsp_name=self.nsp_name,
                 limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
-                "/".join([self.sql_path, 'objectquery.sql']),
+                "/".join([self.sql_path, self._OBJECT_QUERY_SQL]),
                 object_name=self.object_name, nsp_name=self.nsp_name,
                 sql_filter=sql_filter, limit=self.limit,
                 data_sorting=data_sorting
@@ -777,13 +778,13 @@ class ForeignTableCommand(GridCommand):
 
         if sql_filter is None:
             sql = render_template(
-                "/".join([self.sql_path, 'objectquery.sql']),
+                "/".join([self.sql_path, self._OBJECT_QUERY_SQL]),
                 object_name=self.object_name, nsp_name=self.nsp_name,
                 limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
-                "/".join([self.sql_path, 'objectquery.sql']),
+                "/".join([self.sql_path, self._OBJECT_QUERY_SQL]),
                 object_name=self.object_name, nsp_name=self.nsp_name,
                 sql_filter=sql_filter, limit=self.limit,
                 data_sorting=data_sorting
@@ -828,13 +829,13 @@ class CatalogCommand(GridCommand):
 
         if sql_filter is None:
             sql = render_template(
-                "/".join([self.sql_path, 'objectquery.sql']),
+                "/".join([self.sql_path, self._OBJECT_QUERY_SQL]),
                 object_name=self.object_name, nsp_name=self.nsp_name,
                 limit=self.limit, data_sorting=data_sorting
             )
         else:
             sql = render_template(
-                "/".join([self.sql_path, 'objectquery.sql']),
+                "/".join([self.sql_path, self._OBJECT_QUERY_SQL]),
                 object_name=self.object_name, nsp_name=self.nsp_name,
                 sql_filter=sql_filter, limit=self.limit,
                 data_sorting=data_sorting

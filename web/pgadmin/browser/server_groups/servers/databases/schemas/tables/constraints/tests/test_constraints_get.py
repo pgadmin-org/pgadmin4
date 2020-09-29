@@ -135,33 +135,6 @@ class ConstraintDeleteMultipleTestCase(BaseTestGenerator):
             # Assert response
             utils.assert_status_code(self, response)
 
-        # data = {'ids': [
-        #     {'id': self.check_constraint_id, '_type': 'check_constraint'},
-        #     {'id': self.check_constraint_id_1, '_type': 'check_constraint'},
-        #     {'id': self.exclustion_constraint_id,
-        #      '_type': 'exclustion_constraint'},
-        #     {'id': self.foreign_key_id, '_type': 'foreign_key'},
-        #     {'id': self.primary_key_id, '_type': 'index_constraint'},
-        #     {'id': self.unique_constraint_id, '_type': 'index_constraint'}
-        # ]}
-        # response = self.tester.delete(self.url + str(utils.SERVER_GROUP) +
-        #                               '/' + str(self.server_id) + '/' +
-        #                               str(self.db_id) + '/' +
-        #                               str(self.schema_id) + '/' +
-        #                               str(self.table_id) + '/',
-        #                               data=json.dumps(data),
-        #                               content_type='html/json',
-        #                               follow_redirects=True)
-        # response = self.tester.get(self.url + str(utils.SERVER_GROUP) +
-        #                               '/' + str(self.server_id) + '/' +
-        #                               str(self.db_id) + '/' +
-        #                               str(self.schema_id) + '/' +
-        #                               str(self.table_id) + '/',
-        #                               data=json.dumps(data),
-        #                               content_type='html/json',
-        #                               follow_redirects=True)
-        # self.assertEquals(response.status_code, 200)
-
     def tearDown(self):
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

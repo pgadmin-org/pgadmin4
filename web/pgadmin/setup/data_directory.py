@@ -10,6 +10,9 @@
 import os
 import getpass
 
+FAILED_CREATE_DIR = \
+    "ERROR  : Failed to create the directory {}:\n           {}"
+
 
 def _create_directory_if_not_exists(_path):
     if _path and not os.path.exists(_path):
@@ -24,8 +27,7 @@ def create_app_data_directory(config):
     try:
         _create_directory_if_not_exists(os.path.dirname(config.SQLITE_PATH))
     except PermissionError as e:
-        print("ERROR  : Failed to create the directory {}:\n           {}".
-              format(os.path.dirname(config.SQLITE_PATH), e))
+        print(FAILED_CREATE_DIR.format(os.path.dirname(config.SQLITE_PATH), e))
         print(
             "HINT :   Create the directory {}, ensure it is writeable by\n"
             "         '{}', and try again, or, create a config_local.py file\n"
@@ -56,8 +58,7 @@ def create_app_data_directory(config):
     try:
         _create_directory_if_not_exists(os.path.dirname(config.LOG_FILE))
     except PermissionError as e:
-        print("ERROR  : Failed to create the directory {}:\n           {}".
-              format(os.path.dirname(config.LOG_FILE), e))
+        print(FAILED_CREATE_DIR.format(os.path.dirname(config.LOG_FILE), e))
         print(
             "HINT   : Create the directory {}, ensure it is writeable by\n"
             "         '{}', and try again, or, create a config_local.py file\n"
@@ -73,8 +74,7 @@ def create_app_data_directory(config):
     try:
         _create_directory_if_not_exists(config.SESSION_DB_PATH)
     except PermissionError as e:
-        print("ERROR  : Failed to create the directory {}:\n           {}".
-              format(config.SESSION_DB_PATH, e))
+        print(FAILED_CREATE_DIR.format(config.SESSION_DB_PATH, e))
         print(
             "HINT   : Create the directory {}, ensure it is writeable by\n"
             "         '{}', and try again, or, create a config_local.py file\n"
@@ -93,8 +93,7 @@ def create_app_data_directory(config):
     try:
         _create_directory_if_not_exists(config.STORAGE_DIR)
     except PermissionError as e:
-        print("ERROR  : Failed to create the directory {}\n           {}:".
-              format(config.STORAGE_DIR, e))
+        print(FAILED_CREATE_DIR.format(config.STORAGE_DIR, e))
         print(
             "HINT   : Create the directory {}, ensure it is writable by\n"
             "         '{}', and try again, or, create a config_local.py file\n"

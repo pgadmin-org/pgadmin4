@@ -200,6 +200,7 @@ class IndexConstraintView(PGChildNodeView):
     node_type = 'index_constraint'
 
     node_label = _('Index constraint')
+    INDEX_CONSTRAINT_PATH = 'index_constraint/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -245,8 +246,8 @@ class IndexConstraintView(PGChildNodeView):
                 self.manager.db_info[kwargs['did']]['datlastsysoid'] \
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
-            self.template_path = 'index_constraint/sql/#{0}#'\
-                .format(self.manager.version)
+            self.template_path = self.INDEX_CONSTRAINT_PATH.format(
+                self.manager.version)
 
             # We need parent's name eg table name and schema name
             schema, table = idxcons_utils.get_parent(self.conn, kwargs['tid'])
@@ -344,8 +345,8 @@ class IndexConstraintView(PGChildNodeView):
         """
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
-        self.template_path = 'index_constraint/sql/#{0}#'\
-            .format(self.manager.version)
+        self.template_path = self.INDEX_CONSTRAINT_PATH.format(
+            self.manager.version)
 
         # We need parent's name eg table name and schema name
         schema, table = idxcons_utils.get_parent(self.conn, tid)
@@ -460,8 +461,8 @@ class IndexConstraintView(PGChildNodeView):
         """
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         self.conn = self.manager.connection(did=did)
-        self.template_path = 'index_constraint/sql/#{0}#'\
-            .format(self.manager.version)
+        self.template_path = self.INDEX_CONSTRAINT_PATH.format(
+            self.manager.version)
 
         # We need parent's name eg table name and schema name
         schema, table = idxcons_utils.get_parent(self.conn, tid)

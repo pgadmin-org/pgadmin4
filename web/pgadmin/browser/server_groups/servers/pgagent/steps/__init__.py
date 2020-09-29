@@ -146,6 +146,7 @@ class JobStepView(PGChildNodeView):
     """
 
     node_type = blueprint.node_type
+    STEP_NOT_FOUND = "Could not find the specified job step."
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -266,7 +267,7 @@ SELECT EXISTS(
 
         if jstid is not None:
             if len(result['rows']) == 0:
-                return gone(errormsg="Could not find the specified job step.")
+                return gone(errormsg=self.STEP_NOT_FOUND)
 
             row = result['rows'][0]
             return make_json_response(
@@ -322,7 +323,7 @@ SELECT EXISTS(
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            return gone(errormsg="Could not find the specified job step.")
+            return gone(errormsg=self.STEP_NOT_FOUND)
 
         return ajax_response(
             response=res['rows'][0],
@@ -423,9 +424,7 @@ SELECT EXISTS(
 
             if len(res['rows']) == 0:
                 return gone(
-                    errormsg=gettext(
-                        "Could not find the specified job step."
-                    )
+                    errormsg=gettext(self.STEP_NOT_FOUND)
                 )
             row = res['rows'][0]
             data['jstconntype'] = row['jstconntype']
@@ -549,9 +548,7 @@ SELECT EXISTS(
 
             if len(res['rows']) == 0:
                 return gone(
-                    errormsg=gettext(
-                        "Could not find the specified job step."
-                    )
+                    errormsg=gettext(self.STEP_NOT_FOUND)
                 )
             row = res['rows'][0]
             data['jstconntype'] = row['jstconntype']

@@ -38,6 +38,7 @@ PROCESS_NOT_STARTED = 0
 PROCESS_STARTED = 1
 PROCESS_FINISHED = 2
 PROCESS_TERMINATED = 3
+PROCESS_NOT_FOUND = _("Could not find a process with the specified ID.")
 
 
 def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
@@ -78,9 +79,7 @@ class BatchProcess(object):
         p = Process.query.filter_by(pid=_id, user_id=current_user.id).first()
 
         if p is None:
-            raise LookupError(
-                _("Could not find a process with the specified ID.")
-            )
+            raise LookupError(PROCESS_NOT_FOUND)
 
         tmp_desc = loads(p.desc)
 
@@ -623,9 +622,7 @@ class BatchProcess(object):
         ).first()
 
         if p is None:
-            raise LookupError(
-                _("Could not find a process with the specified ID.")
-            )
+            raise LookupError(PROCESS_NOT_FOUND)
 
         if p.end_time is not None:
             logdir = p.logdir
@@ -666,9 +663,7 @@ class BatchProcess(object):
         ).first()
 
         if p is None:
-            raise LookupError(
-                _("Could not find a process with the specified ID.")
-            )
+            raise LookupError(PROCESS_NOT_FOUND)
 
         try:
             process = psutil.Process(p.utility_pid)

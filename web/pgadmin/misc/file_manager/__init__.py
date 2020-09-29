@@ -785,6 +785,8 @@ class Filemanager(object):
         Returns a JSON object containing information
         about the given file.
         """
+        date_created = 'Date Created'
+        date_modified = 'Date Modified'
         path = unquote(path)
         if self.dir is None:
             self.dir = ""
@@ -801,8 +803,8 @@ class Filemanager(object):
                 'Code': 0,
                 'Info': '',
                 'Properties': {
-                    'Date Created': '',
-                    'Date Modified': '',
+                    date_created: '',
+                    date_modified: '',
                     'Width': '',
                     'Height': '',
                     'Size': ''
@@ -819,8 +821,8 @@ class Filemanager(object):
             'Code': 1,
             'Info': '',
             'Properties': {
-                'Date Created': '',
-                'Date Modified': '',
+                date_created: '',
+                date_modified: '',
                 'Width': '',
                 'Height': '',
                 'Size': ''
@@ -842,8 +844,8 @@ class Filemanager(object):
         created = time.ctime(os.path.getctime(orig_path))
         modified = time.ctime(os.path.getmtime(orig_path))
 
-        thefile['Properties']['Date Created'] = created
-        thefile['Properties']['Date Modified'] = modified
+        thefile['Properties'][date_created] = created
+        thefile['Properties'][date_modified] = modified
         thefile['Properties']['Size'] = sizeof_fmt(getsize(orig_path))
 
         return thefile

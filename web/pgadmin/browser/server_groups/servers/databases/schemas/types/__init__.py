@@ -178,6 +178,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    icon_str = "icon-%s"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -326,7 +327,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             rset['rows'][0]['oid'],
             scid,
             rset['rows'][0]['name'],
-            icon="icon-%s" % self.node_type
+            icon=self.icon_str % self.node_type
         )
 
         return make_json_response(
@@ -367,7 +368,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-%s" % self.node_type
+                    icon=self.icon_str % self.node_type
                 ))
 
         return make_json_response(
@@ -723,7 +724,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         res = [{'label': '', 'value': ''}]
         try:
             SQL = render_template("/".join([self.template_path,
-                                            'get_subtypes.sql']),
+                                            self._GET_SUBTYPES_SQL]),
                                   subtype=True)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
@@ -753,7 +754,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         try:
             SQL = render_template("/".join([self.template_path,
-                                            'get_subtypes.sql']),
+                                            self._GET_SUBTYPES_SQL]),
                                   subtype_opclass=True, data=data)
             if SQL:
                 status, rset = self.conn.execute_2darray(SQL)
@@ -784,14 +785,14 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         try:
             SQL = render_template("/".join([self.template_path,
-                                            'get_subtypes.sql']),
+                                            self._GET_SUBTYPES_SQL]),
                                   get_opcintype=True, data=data)
             if SQL:
                 status, opcintype = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=opcintype)
                 SQL = render_template("/".join([self.template_path,
-                                                'get_subtypes.sql']),
+                                                self._GET_SUBTYPES_SQL]),
                                       opcintype=opcintype, conn=self.conn)
                 status, rset = self.conn.execute_2darray(SQL)
                 if not status:
@@ -825,7 +826,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # We want to send data only if in we are in edit mode
             # else we will disable the combobox
             SQL = render_template("/".join([self.template_path,
-                                            'get_subtypes.sql']),
+                                            self._GET_SUBTYPES_SQL]),
                                   getoid=True, data=data)
             if SQL:
                 status, oid = self.conn.execute_scalar(SQL)
@@ -836,7 +837,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     canonical = False
 
             SQL = render_template("/".join([self.template_path,
-                                            'get_subtypes.sql']),
+                                            self._GET_SUBTYPES_SQL]),
                                   canonical=canonical, conn=self.conn, oid=oid)
             if SQL:
                 status, rset = self.conn.execute_2darray(SQL)
@@ -868,7 +869,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # The SQL generated below will populate Input/Output/Send/
             # Receive/Analyze/TypModeIN/TypModOUT combo box
             sql = render_template("/".join([self.template_path,
-                                            'get_external_functions.sql']),
+                                            self._GET_EXTERNAL_FUNCTIONS_SQL]),
                                   extfunc=True)
             if sql:
                 status, rset = self.conn.execute_2darray(sql)
@@ -882,7 +883,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
             # The SQL generated below will populate TypModeIN combo box
             sql = render_template("/".join([self.template_path,
-                                            'get_external_functions.sql']),
+                                            self._GET_EXTERNAL_FUNCTIONS_SQL]),
                                   typemodin=True)
             if sql:
                 status, rset = self.conn.execute_2darray(sql)
@@ -912,7 +913,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :return:
         """
         sql = render_template("/".join([self.template_path,
-                                        'get_external_functions.sql']),
+                                        self._GET_EXTERNAL_FUNCTIONS_SQL]),
                               typemodout=True)
         if sql:
             status, rset = self.conn.execute_2darray(sql)
@@ -1076,7 +1077,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     tid,
                     scid,
                     name,
-                    icon="icon-%s" % self.node_type
+                    icon=self.icon_str % self.node_type
                 )
             )
         except Exception as e:
@@ -1248,22 +1249,23 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             'typtype'
         ]
 
+        definition_incomplete = "-- definition incomplete"
         for arg in required_args:
             if arg not in data:
-                return "-- definition incomplete"
+                return definition_incomplete
 
             # Additional checks go here
             # If type is range then check if subtype is defined or not
             if data.get(arg, None) == 'r' and \
                     data.get('typname', None) is None:
-                return "-- definition incomplete"
+                return definition_incomplete
 
             # If type is external then check if input/output
             # conversion function is defined
             if data.get(arg, None) == 'b' and (
                 data.get('typinput', None) is None or
                     data.get('typoutput', None) is None):
-                return "-- definition incomplete"
+                return definition_incomplete
 
         # Privileges
         if data.get('typacl', None):

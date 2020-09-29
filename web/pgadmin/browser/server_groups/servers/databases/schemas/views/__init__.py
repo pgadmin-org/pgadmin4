@@ -313,6 +313,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
     node_type = view_blueprint.node_type
     _SQL_PREFIX = 'sql/'
     _ALLOWED_PRIVS_JSON = 'sql/allowed_privs.json'
+    PROPERTIES_PATH = 'sql/{0}/#{1}#/properties.sql'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -1098,7 +1099,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         for trigger in data['rows']:
             SQL = render_template("/".join(
                 [self.ct_trigger_temp_path,
-                 'sql/{0}/#{1}#/properties.sql'.format(
+                 self.PROPERTIES_PATH.format(
                      self.manager.server_type, self.manager.version)]),
                 tid=vid,
                 trid=trigger['oid']
@@ -1194,7 +1195,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         sql_data = ''
         SQL = render_template("/".join(
             [self.trigger_temp_path,
-             'sql/{0}/#{1}#/properties.sql'.format(
+             self.PROPERTIES_PATH.format(
                  self.manager.server_type, self.manager.version)]),
             tid=vid)
 
@@ -1205,7 +1206,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         for trigger in data['rows']:
             SQL = render_template("/".join(
                 [self.trigger_temp_path,
-                 'sql/{0}/#{1}#/properties.sql'.format(
+                 self.PROPERTIES_PATH.format(
                      self.manager.server_type, self.manager.version)]),
                 tid=vid,
                 trid=trigger['oid']
@@ -1743,6 +1744,7 @@ class MViewNode(ViewNode, VacuumSettings):
     """
     node_type = mview_blueprint.node_type
     operations = mview_operations
+    TOAST_STR = 'toast.'
 
     def __init__(self, *args, **kwargs):
         """
@@ -1879,7 +1881,7 @@ class MViewNode(ViewNode, VacuumSettings):
                         if 'value' in item.keys() and
                         item['value'] is not None]
         vacuum_toast = [
-            {'name': 'toast.' + item['name'], 'value': item['value']}
+            {'name': self.TOAST_STR + item['name'], 'value': item['value']}
             for item in data.get('vacuum_toast', [])
             if 'value' in item.keys() and item['value'] is not None]
 
@@ -1953,7 +1955,7 @@ class MViewNode(ViewNode, VacuumSettings):
                         if
                         'value' in item.keys() and item['value'] is not None]
         vacuum_toast = [
-            {'name': 'toast.' + item['name'], 'value': item['value']}
+            {'name': self.TOAST_STR + item['name'], 'value': item['value']}
             for item in result['vacuum_toast'] if
             'value' in item.keys() and item['value'] is not None]
 
@@ -2111,7 +2113,7 @@ class MViewNode(ViewNode, VacuumSettings):
             res['rows'][0]['vacuum_settings_str'] += '\n' \
                 if res['rows'][0]['vacuum_settings_str'] != "" else ""
             res['rows'][0]['vacuum_settings_str'] += '\n'.\
-                join(map(lambda o: 'toast.' + o,
+                join(map(lambda o: self.TOAST_STR + o,
                          res['rows'][0]['toast_reloptions']))
 
         res['rows'][0]['vacuum_settings_str'] = res['rows'][0][

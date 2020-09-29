@@ -14,6 +14,8 @@ from flask import request
 
 from pgadmin.utils.ajax import service_unavailable, gone, internal_server_error
 
+SERVICE_UNAVAILABLE = 'Service Unavailable'
+
 
 class ConnectionLost(HTTPException):
     """
@@ -28,7 +30,7 @@ class ConnectionLost(HTTPException):
 
     @property
     def name(self):
-        return HTTP_STATUS_CODES.get(503, 'Service Unavailable')
+        return HTTP_STATUS_CODES.get(503, SERVICE_UNAVAILABLE)
 
     def get_response(self, environ=None):
         return service_unavailable(
@@ -61,7 +63,7 @@ class SSHTunnelConnectionLost(HTTPException):
 
     @property
     def name(self):
-        return HTTP_STATUS_CODES.get(503, 'Service Unavailable')
+        return HTTP_STATUS_CODES.get(503, SERVICE_UNAVAILABLE)
 
     def get_response(self, environ=None):
         return service_unavailable(
@@ -86,25 +88,26 @@ class CryptKeyMissing(HTTPException):
     """
     Exception
     """
+    CRYPT_KEY_MISSING = "Crypt key is missing."
 
     def __init__(self):
         HTTPException.__init__(self)
 
     @property
     def name(self):
-        return HTTP_STATUS_CODES.get(503, 'Service Unavailable')
+        return HTTP_STATUS_CODES.get(503, SERVICE_UNAVAILABLE)
 
     def get_response(self, environ=None):
         return service_unavailable(
-            _("Crypt key is missing."),
+            _(self.CRYPT_KEY_MISSING),
             info="CRYPTKEY_MISSING",
         )
 
     def __str__(self):
-        return "Crypt key is missing."
+        return self.CRYPT_KEY_MISSING
 
     def __repr__(self):
-        return "Crypt key is missing."
+        return self.CRYPT_KEY_MISSING
 
 
 class ObjectGone(HTTPException):
