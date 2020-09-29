@@ -188,7 +188,7 @@ Expand the *Miscellaneous* node to specify miscellaneous display preferences.
 * Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
   drop down. Note that, to apply the theme you need to refresh the pgAdmin page. You can also submit your
   own themes, check `here <https://git.postgresql.org/gitweb/?p=pgadmin4.git;a=blob_plain;f=README>`_ how.
-  Currently we support Standard, Dark and High Contrast (Beta) theme.
+  Currently we support Standard, Dark and High Contrast theme.
 
 The Paths Node
 **************
