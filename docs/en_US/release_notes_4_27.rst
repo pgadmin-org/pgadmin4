@@ -21,6 +21,7 @@ Bug fixes
 *********
 
 | `Issue #4806 <https://redmine.postgresql.org/issues/4806>`_ -  Added useful message when the explain plan is not used and empty.
+| `Issue #4855 <https://redmine.postgresql.org/issues/4855>`_ -  Fixed an issue where file extension is stripped on renaming a file.
 | `Issue #5131 <https://redmine.postgresql.org/issues/5131>`_ -  Ensure that 'ctrl + a' shortcut does not move the cursor in SQL editor.
 | `Issue #5417 <https://redmine.postgresql.org/issues/5417>`_ -  Fixed and improve API test cases for the schema diff tool.
 | `Issue #5739 <https://redmine.postgresql.org/issues/5739>`_ -  Ensure that the import/export feature should work with SSH Tunnel.

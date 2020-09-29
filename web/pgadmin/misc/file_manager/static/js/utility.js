@@ -867,7 +867,7 @@ define([
         $('.fileinfo #contents li div').on('blur dblclick', 'input', function(e) {
           e.stopPropagation();
 
-          var old_name = decodeURI($(this).siblings('span').attr('title'));
+          var old_name = decodeURI($(this).siblings('div').find('.less_text').attr('title'));
           newvalue = old_name.substring(0, old_name.indexOf('.'));
           var last = getFileExtension(old_name),
             file_data, new_name, file_path, full_name;
@@ -945,7 +945,7 @@ define([
         $('.fileinfo table#contents tr td div').on(
           'blur dblclick', 'input',
           function(e) {
-            var old_name = decodeURI($(this).siblings('span').attr('title')),
+            var old_name = decodeURI($(this).siblings('div').find('.less_text').attr('title')),
               new_value = old_name.substring(0, old_name.indexOf('.')),
               last = getFileExtension(old_name);
             if (old_name.indexOf('.') == 0) {
@@ -974,8 +974,7 @@ define([
 
                 if (new_value !== new_name) {
                   renameItem(file_data);
-                  var parent = file_path.split('/').reverse().slice(2).reverse().join('/') + '/';
-                  getFolderInfo(parent);
+                  getFolderInfo($('.currentpath').val());
                 }
               }
             } else {
