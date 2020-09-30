@@ -204,7 +204,7 @@ if [ ${OS_VERSION} == 7 ]; then
 fi
 
 # Get the libpq we need
-yumdownloader --downloadonly --destdir=$DISTROOT postgresql12-libs
+yumdownloader --downloadonly --destdir=$DISTROOT postgresql13-libs
 
 #
 # Get the results!
