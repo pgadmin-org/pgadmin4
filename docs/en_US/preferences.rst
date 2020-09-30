@@ -49,7 +49,7 @@ Use the fields on the *Display* panel to specify general display preferences:
   the client will display the animated dialogues/notifications otherwise it
   will be unanimated.
 
-* When the *Hide shared server?* switch is set to *True*, the client will hide
+* When the *Hide shared servers?* switch is set to *True*, the client will hide
   all the shared servers from the browser tree.
 
 * Use the *Lock layout* field to lock the UI layout at different levels. This

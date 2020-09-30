@@ -346,7 +346,7 @@
       "mock_data": {
       },
       "expected_data": {
-        "status_code": 500
+        "status_code": 200
       }
     },
     {

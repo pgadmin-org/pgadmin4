@@ -27,10 +27,11 @@ def register_browser_preferences(self):
     if config.SERVER_MODE:
         self.hide_shared_server = self.preference.register(
             'display', 'hide_shared_server',
-            gettext("Hide shared server?"), 'boolean', False,
+            gettext("Hide shared servers?"), 'boolean', False,
             category_label=gettext('Display'),
             help_str=gettext(
-                'If set to true, then all shared server will be hidden'
+                'If set to True, then all shared servers will be '
+                'hidden from browser tree'
             )
         )
 

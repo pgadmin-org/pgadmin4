@@ -269,7 +269,10 @@ define('pgadmin.node.server', [
                 gettext('Are you sure you want to disconnect the server %s?', d.label),
                 function() { disconnect(); },
                 function() { return true;}
-              );
+              ).set('labels', {
+                ok: gettext('Ok'),
+                cancel: gettext('Cancel'),
+              });
             } else {
               disconnect();
             }
@@ -752,6 +755,11 @@ define('pgadmin.node.server', [
         },
         schema: [{
           id: 'id', label: gettext('ID'), type: 'int', mode: ['properties'],
+          visible: function(model){
+            if (model.attributes.user_id != current_user.id && pgAdmin.server_mode == 'True')
+              return false;
+            return true;
+          },
         },{
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'edit', 'create'], disabled: 'isShared',
@@ -759,7 +767,7 @@ define('pgadmin.node.server', [
         {
           id: 'gid', label: gettext('Server group'), type: 'int',
           control: 'node-list-by-id', node: 'server_group',
-          mode: ['create', 'edit'], select2: {allowClear: false}, visible: 'isVisible',
+          mode: ['create', 'edit'], select2: {allowClear: false}, disabled: 'isShared',
         },
         {
           id: 'server_owner', label: gettext('Shared Server Owner'), type: 'text', mode: ['properties'],
@@ -795,7 +803,7 @@ define('pgadmin.node.server', [
           id: 'connect_now', controlLabel: gettext('Connect now?'), type: 'checkbox',
           group: null, mode: ['create'],
         },{
-          id: 'shared', label: gettext('Shared with all?'), type: 'switch',
+          id: 'shared', label: gettext('Shared?'), type: 'switch',
           mode: ['properties', 'create', 'edit'], 'options': {'size': 'mini'},
           readonly: function(model){
             var serverOwner = model.attributes.user_id;

@@ -30,7 +30,7 @@ Use the fields in the *General* tab to identify the server:
 * If the *Connect now?* checkbox is checked, the client will attempt a
   connection to the server upon completion of the dialog; this is the default
 
-* If the *Shared with all?* switch is moved to *Yes* then that server can be
+* If the *Shared?* switch is moved to *Yes* then that server can be
   shared with all the other users. This option is available only to admin users. For more information on users see :ref:`User Management Dialog <user_management>`. The users can access the shared servers with some restritctions. The Users accessing the shared servers cannot do the following operations on the shared servers:
 
     * Create a server
