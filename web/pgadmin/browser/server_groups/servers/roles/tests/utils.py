@@ -152,3 +152,38 @@ def delete_role(connection, role_names):
         exception = "Error while deleting role: %s: line:%s %s" % (
             file_name, sys.exc_traceback.tb_lineno, exception)
         print(exception, file=sys.stderr)
+
+
+def create_role_with_password(server, role_name, role_password):
+    """
+     This function create the role.
+     :param server:
+     :param role_name:
+     :param role_password:
+     :return:
+     """
+    try:
+        connection = utils.get_db_connection(server['db'],
+                                             server['username'],
+                                             server['db_password'],
+                                             server['host'],
+                                             server['port'],
+                                             server['sslmode'])
+        pg_cursor = connection.cursor()
+        pg_cursor.execute(
+            "CREATE ROLE %s LOGIN PASSWORD '%s'" % (role_name, role_password))
+        connection.commit()
+        # Get 'oid' from newly created tablespace
+        pg_cursor.execute(
+            "SELECT pr.oid from pg_catalog.pg_roles pr WHERE pr.rolname='%s'" %
+            role_name)
+        oid = pg_cursor.fetchone()
+        role_id = ''
+        if oid:
+            role_id = oid[0]
+        connection.close()
+        return role_id
+    except Exception as exception:
+        exception = "Error while deleting role: %s: line:%s %s" % (
+            file_name, sys.exc_traceback.tb_lineno, exception)
+        print(exception, file=sys.stderr)

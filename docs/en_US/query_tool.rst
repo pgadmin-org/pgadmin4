@@ -300,3 +300,24 @@ transaction status by clicking on the status icon in the Query Tool:
 .. image:: images/query_tool_connection_status.png
     :alt: Query tool connection and transaction statuses
     :align: center
+
+Change connection
+*****************
+
+User can connect to another server or database from existing open session of query tool.
+
+* Click on the connection link next to connection status.
+* Now click on the *<New Connection>* option from the dropdown.
+
+.. image:: images/new_connection_options.png
+    :alt: Query tool connection options
+    :align: center
+
+* Now select server, database, user, and role to connect and click OK.
+
+.. image:: images/new_connection_dialog.png
+    :alt: Query tool connection dialog
+    :align: center
+
+* A newly created connection will now get listed in the options.
+* To connect, select the newly created connection from the dropdown list.

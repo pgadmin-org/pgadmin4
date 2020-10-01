@@ -417,8 +417,17 @@
                     title="" role="img">
                 </i>
             </div>
-            <div class="editor-title"
-                 style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};">&nbsp;</div>
+            <div class="connection-info btn-group mr-1" role="group" aria-label="">
+                <div class="editor-title" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                     style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};">&nbsp;
+                </div>
+                <span class="conn-info-dd dropdown-toggle dropdown-toggle-split"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                <ul class="dropdown-menu" id="connections-list">
+                </ul>
+            </div>
+
+
         </div>
         <div id="editor-panel" tabindex="0">
             <div id="fetching_data" class="pg-sp-container sql-editor-busy-fetching">
@@ -481,6 +490,7 @@ require(['sources/generated/browser_nodes', 'sources/generated/codemirror', 'sou
             var script_type_url = '';
         {% endif %}
         // Start the query tool.
+
         sqlEditorController.start(
             {{ uniqueId }},
             {{ url_params|safe}},

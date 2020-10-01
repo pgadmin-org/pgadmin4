@@ -18,22 +18,23 @@ from flask import Response, url_for, session, request, make_response
 from werkzeug.useragents import UserAgent
 from flask import current_app as app, render_template
 from flask_babelex import gettext
-from flask_security import login_required
+from flask_security import login_required, current_user
 from pgadmin.tools.sqleditor.command import ObjectRegistry, SQLFilter
+from pgadmin.tools.sqleditor import check_transaction_status
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    internal_server_error
+    internal_server_error, unauthorized
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.model import Server
+from pgadmin.model import Server, User
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.preferences import Preferences
 from pgadmin.settings import get_setting
 from pgadmin.browser.utils import underscore_unescape
 from pgadmin.utils.exception import ObjectGone
-from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.tools.sqleditor.utils.macros import get_user_macros
+from pgadmin.utils.constants import MIMETYPE_APP_JS, UNAUTH_REQ
 
 MODULE_NAME = 'datagrid'
 
@@ -74,7 +75,8 @@ class DataGridModule(PgAdminModule):
             'datagrid.filter_validate',
             'datagrid.filter',
             'datagrid.panel',
-            'datagrid.close'
+            'datagrid.close',
+            'datagrid.update_query_tool_connection'
         ]
 
     def on_logout(self, user):
@@ -324,10 +326,48 @@ def initialize_query_tool(trans_id, sgid, sid, did=None):
             req_args['recreate'] == '1'):
         connect = False
 
+    is_error, errmsg, conn_id, version = _init_query_tool(trans_id, connect,
+                                                          sgid, sid, did)
+    if is_error:
+        return errmsg
+
+    return make_json_response(
+        data={
+            'connId': str(conn_id),
+            'serverVersion': version,
+        }
+    )
+
+
+def _connect(conn, **kwargs):
+    """
+    Connect the database.
+    :param conn: Connection instance.
+    :param kwargs: user, role and password data from user.
+    :return:
+    """
+    user = None
+    role = None
+    password = None
+    is_ask_password = False
+    if 'user' in kwargs and 'role' in kwargs:
+        user = kwargs['user']
+        role = kwargs['role'] if kwargs['role'] else None
+        password = kwargs['password'] if kwargs['password'] else None
+        is_ask_password = True
+    if user:
+        status, msg = conn.connect(user=user, role=role,
+                                   password=password)
+    else:
+        status, msg = conn.connect()
+
+    return status, msg, is_ask_password, user, role, password
+
+
+def _init_query_tool(trans_id, connect, sgid, sid, did, **kwargs):
     # Create asynchronous connection using random connection id.
     conn_id = str(random.randint(1, 9999999))
 
-    # Use Maintenance database OID
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
 
     if did is None:
@@ -338,24 +378,41 @@ def initialize_query_tool(trans_id, sgid, sid, did=None):
         )
     except Exception as e:
         app.logger.error(e)
-        return internal_server_error(errormsg=str(e))
+        return True, internal_server_error(errormsg=str(e)), '', ''
 
     try:
         conn = manager.connection(did=did, conn_id=conn_id,
                                   auto_reconnect=False,
                                   use_binary_placeholder=True,
                                   array_to_string=True)
+
         if connect:
-            status, msg = conn.connect()
+            status, msg, is_ask_password, user, role, password = _connect(
+                conn, **kwargs)
             if not status:
                 app.logger.error(msg)
-                return internal_server_error(errormsg=str(msg))
+                if is_ask_password:
+                    server = Server.query.filter_by(id=sid).first()
+                    return True, make_json_response(
+                        success=0,
+                        status=428,
+                        result=render_template(
+                            'servers/password.html',
+                            server_label=server.name,
+                            username=user,
+                            errmsg=msg,
+                            _=gettext,
+                        )
+                    ), '', ''
+                else:
+                    return True, internal_server_error(
+                        errormsg=str(msg)), '', ''
     except (ConnectionLost, SSHTunnelConnectionLost) as e:
         app.logger.error(e)
         raise
     except Exception as e:
         app.logger.error(e)
-        return internal_server_error(errormsg=str(e))
+        return True, internal_server_error(errormsg=str(e)), '', ''
 
     if 'gridData' not in session:
         sql_grid_data = dict()
@@ -377,10 +434,77 @@ def initialize_query_tool(trans_id, sgid, sid, did=None):
     # Store the grid dictionary into the session variable
     session['gridData'] = sql_grid_data
 
+    return False, '', conn_id, manager.version
+
+
+@blueprint.route(
+    '/initialize/query_tool/update_connection/<int:trans_id>/'
+    '<int:sgid>/<int:sid>/<int:did>',
+    methods=["POST"], endpoint='update_query_tool_connection'
+)
+def update_query_tool_connection(trans_id, sgid, sid, did):
+    # Remove transaction Id.
+    with query_tool_close_session_lock:
+        data = json.loads(request.data, encoding='utf-8')
+
+        if 'gridData' not in session:
+            return make_json_response(data={'status': True})
+
+        grid_data = session['gridData']
+
+        # Return from the function if transaction id not found
+        if str(trans_id) not in grid_data:
+            return make_json_response(data={'status': True})
+
+        connect = True
+
+        req_args = request.args
+        if ('recreate' in req_args and
+                req_args['recreate'] == '1'):
+            connect = False
+
+        new_trans_id = str(random.randint(1, 9999999))
+        kwargs = {
+            'user': data['user'],
+            'role': data['role'],
+            'password': data['password'] if 'password' in data else None
+        }
+
+        is_error, errmsg, conn_id, version = _init_query_tool(
+            new_trans_id, connect, sgid, sid, did, **kwargs)
+
+        if is_error:
+            return errmsg
+        else:
+            try:
+                # Check the transaction and connection status
+                status, error_msg, conn, trans_obj, session_obj = \
+                    check_transaction_status(trans_id)
+
+                status, error_msg, new_conn, new_trans_obj, new_session_obj = \
+                    check_transaction_status(new_trans_id)
+
+                new_session_obj['primary_keys'] = session_obj[
+                    'primary_keys'] if 'primary_keys' in session_obj else None
+                new_session_obj['columns_info'] = session_obj[
+                    'columns_info'] if 'columns_info' in session_obj else None
+                new_session_obj['client_primary_key'] = session_obj[
+                    'client_primary_key'] if 'client_primary_key'\
+                                             in session_obj else None
+
+                close_query_tool_session(trans_id)
+                # Remove the information of unique transaction id from the
+                # session variable.
+                grid_data.pop(str(trans_id), None)
+                session['gridData'] = grid_data
+            except Exception as e:
+                app.logger.error(e)
+
     return make_json_response(
         data={
             'connId': str(conn_id),
-            'serverVersion': manager.version,
+            'serverVersion': version,
+            'tran_id': new_trans_id
         }
     )
 

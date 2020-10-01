@@ -95,6 +95,15 @@ class ServerGroup(db.Model):
     name = db.Column(db.String(128), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'name'),)
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializable format"""
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+        }
+
 
 class Server(db.Model):
     """Define a registered Postgres server"""
@@ -175,6 +184,44 @@ class Server(db.Model):
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(db.String(64), nullable=True)
     shared = db.Column(db.Boolean(), nullable=False)
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializable format"""
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "servergroup_id": self.servergroup_id,
+            "name": self.name,
+            "host": self.host,
+            "hostaddr": self.hostaddr,
+            "port": self.port,
+            "maintenance_db": self.maintenance_db,
+            "username": self.username,
+            "password": self.password,
+            "save_password": self.save_password,
+            "role": self.role,
+            "ssl_mode": self.ssl_mode,
+            "comment": self.comment,
+            "discovery_id": self.discovery_id,
+            "db_res": self.db_res,
+            "passfile": self.passfile,
+            "sslcert": self.sslcert,
+            "sslkey": self.sslkey,
+            "sslrootcert": self.sslrootcert,
+            "sslcrl": self.sslcrl,
+            "sslcompression": self.sslcompression,
+            "bgcolor": self.bgcolor,
+            "fgcolor": self.fgcolor,
+            "service": self.service,
+            "connect_timeout": self.connect_timeout,
+            "use_ssh_tunnel": self.use_ssh_tunnel,
+            "tunnel_host": self.tunnel_host,
+            "tunnel_port": self.tunnel_port,
+            "tunnel_authentication": self.tunnel_authentication,
+            "tunnel_identity_file": self.tunnel_identity_file,
+            "tunnel_password": self.tunnel_password
+        }
 
 
 class ModulePreference(db.Model):

@@ -315,10 +315,6 @@ input.editor-checkbox:focus {
   padding: 10px 0px;
 }
 
-.editor-title {
-  width:100%;
-}
-
 .connection-status-hide {
   display: none !important;
 }
@@ -396,7 +392,6 @@ input.editor-checkbox:focus {
   overflow-y: hidden;
 }
 
-
 /*  Macros */
 
 .macro-tab {
@@ -423,4 +418,8 @@ input.editor-checkbox:focus {
 
 .macro_dialog  .pg-prop-status-bar {
   z-index: 1;
+}
+
+.new-connection-dialog-style {
+  width: 100% !important;
 }

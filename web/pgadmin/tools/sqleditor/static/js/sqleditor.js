@@ -14,6 +14,7 @@ define('tools.querytool', [
   'jqueryui.position', 'underscore', 'pgadmin.alertifyjs',
   'sources/pgadmin', 'backbone', 'bundled_codemirror', 'sources/utils',
   'pgadmin.misc.explain',
+  'pgadmin.user_management.current_user',
   'sources/selection/grid_selector',
   'sources/selection/active_cell_capture',
   'sources/selection/clipboard',
@@ -26,6 +27,7 @@ define('tools.querytool', [
   'sources/sqleditor/execute_query',
   'sources/sqleditor/query_tool_http_error_handler',
   'sources/sqleditor/filter_dialog',
+  'sources/sqleditor/new_connection_dialog',
   'sources/sqleditor/geometry_viewer',
   'sources/sqleditor/history/history_collection.js',
   'sources/sqleditor/history/query_history',
@@ -53,8 +55,8 @@ define('tools.querytool', [
   'pgadmin.tools.user_management',
 ], function(
   gettext, url_for, $, jqueryui, jqueryui_position, _, alertify, pgAdmin, Backbone, codemirror, pgadminUtils,
-  pgExplain, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
-  XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler,
+  pgExplain, current_user, GridSelector, ActiveCellCapture, clipboard, copyData, RangeSelectionHelper, handleQueryOutputKeyboardEvent,
+  XCellSelectionModel, setStagedRows, SqlEditorUtils, ExecuteQuery, httpErrorHandler, FilterHandler, newConnectionHandler,
   GeometryViewer, historyColl, queryHist, querySources,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
   modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, queryTxnStatus, csrfToken, panelTitleFunc,
@@ -98,6 +100,9 @@ define('tools.querytool', [
       this.layout = opts.layout;
       this.set_server_version(opts.server_ver);
       this.trigger('pgadmin-sqleditor:view:initialised');
+      this.connection_list = [
+        {'server_group': null,'server': null, 'database': null, 'user': null, 'role': null, 'title': '&lt;New Connection&gt;'},
+      ];
     },
 
     // Bind all the events
@@ -163,6 +168,35 @@ define('tools.querytool', [
       'click .btn-macro': 'on_execute_macro',
     },
 
+    render_connection: function(data_list) {
+      if(this.handler.is_query_tool) {
+        var dropdownElement = document.getElementById('connections-list');
+        dropdownElement.innerHTML = '';
+        data_list.forEach((option, index) => {
+          $('#connections-list').append('<li class="connection-list-item" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.title +'</a></li>');
+
+        });
+        var self = this;
+        $('.connection-list-item').click(function() {
+          self.get_connection_data(this);
+        });
+      } else {
+        $('.conn-info-dd').hide();
+        $('.editor-title').css({pointerEvents: 'none'});
+      }
+    },
+
+    get_connection_data: function(event){
+      var index = $(event).attr('data-index');
+      var connection_details = this.connection_list[index];
+      if(connection_details.server_group) {
+        this.on_change_connection(connection_details);
+      } else {
+        this.on_new_connection();
+      }
+
+    },
+
     reflectPreferences: function() {
       let self = this,
         browser = pgWindow.default.pgAdmin.Browser,
@@ -213,6 +247,7 @@ define('tools.querytool', [
 
     set_editor_title: function(title) {
       this.$el.find('.editor-title').text(title);
+      this.render_connection(this.connection_list);
     },
 
     // This function is used to render the template.
@@ -696,6 +731,8 @@ define('tools.querytool', [
       pgBrowser.register_to_activity_listener(document, ()=>{
         alertify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Please close the window and login again.'));
       });
+
+      self.render_connection(self.connection_list);
     },
 
     /* Regarding SlickGrid usage in render_grid function.
@@ -1607,6 +1644,17 @@ define('tools.querytool', [
       );
     },
 
+    on_new_connection: function() {
+      var self = this;
+
+      // Trigger the show_filter signal to the SqlEditorController class
+      self.handler.trigger(
+        'pgadmin-sqleditor:button:show_new_connection',
+        self,
+        self.handler
+      );
+    },
+
     // Callback function for include filter button click.
     on_include_filter: function(ev) {
       var self = this;
@@ -2070,6 +2118,83 @@ define('tools.querytool', [
       queryToolActions.executeMacro(this.handler, macroId);
     },
 
+    on_change_connection: function(connection_details, ref) {
+      let title = this.$el.find('.editor-title').html();
+      if(connection_details['title'] != title) {
+        var self = this;
+        $.ajax({
+          async: false,
+          url: url_for('datagrid.update_query_tool_connection', {
+            'trans_id': self.transId,
+            'sgid': connection_details['server_group'],
+            'sid': connection_details['server'],
+            'did': connection_details['database'],
+          }),
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(connection_details),
+        })
+          .done(function(res) {
+            if(res.success) {
+              self.transId = res.data.tran_id;
+              self.handler.transId = res.data.tran_id;
+              self.handler.url_params = {
+                'did': connection_details['database'],
+                'is_query_tool': self.handler.url_params.is_query_tool,
+                'server_type': self.handler.url_params.server_type,
+                'sgid': connection_details['server_group'],
+                'sid': connection_details['server'],
+                'title': connection_details['title'],
+              };
+              self.set_editor_title(self.handler.url_params.title);
+              self.handler.setTitle(self.handler.url_params.title);
+              alertify.success('connected successfully');
+              if(ref){
+                let connection_data = {
+                  'server_group': self.handler.url_params.sgid,
+                  'server': connection_details['server'],
+                  'database': connection_details['database'],
+                  'user': connection_details['user'],
+                  'title': connection_details['title'],
+                  'role': connection_details['role'],
+                  'password': connection_details['password'],
+                  'is_allow_new_connection': true,
+                };
+                self.connection_list.unshift(connection_data);
+                self.render_connection(self.connection_list);
+                ref.close();
+              }
+            }
+            return true;
+          })
+          .fail(function(xhr) {
+            if(xhr.status == 428) {
+              alertify.connectServer('Connect to server', xhr.responseJSON.result, connection_details['server'], false);
+            } else {
+              alertify.error(xhr.responseJSON['errormsg']);
+            }
+            /*let url = url_for('sqleditor.connect_server_with_user', {
+              'sid': newConnCollectionModel['server'],
+              'usr': newConnCollectionModel['user']
+            });
+            $.ajax({
+              async: false,
+              url: url,
+              headers: {
+                'Cache-Control' : 'no-cache',
+              },
+            }).done(function () {
+              Backform.Select2Control.prototype.onChange.apply(self, arguments);
+              response.server_list.forEach(function(obj){
+                if(obj.id==self.model.changed.server) {
+                  response.server_name = obj.name;
+                }
+              });
+            }).fail(function(xhr){});*/
+
+          });
+      }
+    },
   });
 
 
@@ -2393,6 +2518,17 @@ define('tools.querytool', [
 
           $('#btn-conn-status i').removeClass('obtaining-conn');
           self.gridView.set_editor_title(_.unescape(url_params.title));
+          let connection_data = {
+            'server_group': self.gridView.handler.url_params.sgid,
+            'server': self.gridView.handler.url_params.sid,
+            'database': self.gridView.handler.url_params.did,
+            'user': null,
+            'role': null,
+            'title': _.unescape(url_params.title),
+            'is_allow_new_connection': false,
+          };
+          self.gridView.connection_list.unshift(connection_data);
+          self.gridView.render_connection(self.gridView.connection_list);
         };
 
         pgBrowser.Events.on('pgadmin:query_tool:connected:' + transId, afterConn);
@@ -2487,6 +2623,7 @@ define('tools.querytool', [
         self.on('pgadmin-sqleditor:button:save_file', self._save_file, self);
         self.on('pgadmin-sqleditor:button:deleterow', self._delete, self);
         self.on('pgadmin-sqleditor:button:show_filter', self._show_filter, self);
+        self.on('pgadmin-sqleditor:button:show_new_connection', self._show_new_connection, self);
         self.on('pgadmin-sqleditor:button:include_filter', self._include_filter, self);
         self.on('pgadmin-sqleditor:button:exclude_filter', self._exclude_filter, self);
         self.on('pgadmin-sqleditor:button:remove_filter', self._remove_filter, self);
@@ -3696,7 +3833,6 @@ define('tools.querytool', [
           }
         };
       },
-
       // This function will show the filter in the text area.
       _show_filter: function() {
         let self = this,
@@ -3711,7 +3847,19 @@ define('tools.querytool', [
         }
         FilterHandler.dialog(self, reconnect);
       },
+      // This function will show the new connection.
+      _show_new_connection: function() {
+        let self = this,
+          reconnect = false;
 
+        /* When server is disconnected and connected, connection is lost,
+         * To reconnect pass true
+         */
+        if (arguments.length > 0 && arguments[arguments.length - 1] == 'connect') {
+          reconnect = true;
+        }
+        newConnectionHandler.dialog(self, reconnect);
+      },
       // This function will include the filter by selection.
       _include_filter: function() {
         var self = this,

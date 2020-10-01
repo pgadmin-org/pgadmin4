@@ -1247,7 +1247,7 @@ class ServerNode(PGChildNodeView):
             }
         )
 
-    def connect(self, gid, sid):
+    def connect(self, gid, sid, user_name=None):
         """
         Connect the Server and return the connection object.
         Verification Process before Connection:
@@ -1368,7 +1368,8 @@ class ServerNode(PGChildNodeView):
         # not provided, or password has not been saved earlier.
         if prompt_password or prompt_tunnel_password:
             return self.get_response_for_password(server, 428, prompt_password,
-                                                  prompt_tunnel_password)
+                                                  prompt_tunnel_password,
+                                                  user=user_name)
 
         status = True
         try:
@@ -1802,7 +1803,8 @@ class ServerNode(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     def get_response_for_password(self, server, status, prompt_password=False,
-                                  prompt_tunnel_password=False, errmsg=None):
+                                  prompt_tunnel_password=False, errmsg=None,
+                                  user=None):
 
         if server.use_ssh_tunnel:
             return make_json_response(
@@ -1829,7 +1831,7 @@ class ServerNode(PGChildNodeView):
                 result=render_template(
                     'servers/password.html',
                     server_label=server.name,
-                    username=server.username,
+                    username=user if user else server.username,
                     errmsg=errmsg,
                     service=server.service,
                     _=gettext,

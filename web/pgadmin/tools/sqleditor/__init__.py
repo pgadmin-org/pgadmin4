@@ -10,17 +10,15 @@
 """A blueprint module implementing the sqleditor frame."""
 import os
 import pickle
-import sys
 import re
-
-import simplejson as json
-from flask import Response, url_for, render_template, session, request, \
-    current_app
-from flask_babelex import gettext
-from flask_security import login_required, current_user
 from urllib.parse import unquote
 
+import simplejson as json
 from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
+from flask import Response, url_for, render_template, session, current_app
+from flask import request, jsonify
+from flask_babelex import gettext
+from flask_security import login_required, current_user
 from pgadmin.misc.file_manager import Filemanager
 from pgadmin.tools.sqleditor.command import QueryToolCommand
 from pgadmin.tools.sqleditor.utils.constant_definition import ASYNC_OK, \
@@ -32,11 +30,11 @@ from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    success_return, internal_server_error, make_response as ajax_response
+    success_return, internal_server_error
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.menu import MenuItem
-from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing
+from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
     register_query_tool_preferences
@@ -44,13 +42,16 @@ from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
     read_file_generator
 from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
-from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED,\
-    ERROR_MSG_TRANS_ID_NOT_FOUND
 from pgadmin.tools.sqleditor.utils.macros import get_macros,\
     get_user_macros, set_macros
+from pgadmin.utils.constants import MIMETYPE_APP_JS, \
+    SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, ERROR_FETCHING_DATA
+from pgadmin.model import Server
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
+_NODES_SQL = 'nodes.sql'
 
 
 class SqlEditorModule(PgAdminModule):
@@ -114,7 +115,13 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.clear_query_history',
             'sqleditor.get_macro',
             'sqleditor.get_macros',
-            'sqleditor.set_macros'
+            'sqleditor.set_macros',
+            'sqleditor.get_new_connection_data',
+            'sqleditor.get_new_connection_database',
+            'sqleditor.get_new_connection_user',
+            'sqleditor.get_new_connection_role',
+            'sqleditor.connect_server',
+            'sqleditor.connect_server_with_user',
         ]
 
     def register_preferences(self):
@@ -230,7 +237,7 @@ def start_view_data(trans_id):
             )
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
         # set fetched row count to 0 as we are executing query again.
         trans_obj.update_fetched_row_cnt(0)
 
@@ -376,7 +383,7 @@ def poll(trans_id):
             if isinstance(trans_obj, QueryToolCommand):
                 trans_status = conn.transaction_status()
                 if trans_status == TX_STATUS_INERROR and \
-                   trans_obj.auto_rollback:
+                        trans_obj.auto_rollback:
                     conn.execute_void("ROLLBACK;")
 
             st, result = conn.async_fetchmany_2darray(ON_DEMAND_RECORD_COUNT)
@@ -686,13 +693,12 @@ def save(trans_id):
                                   status=404)
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
 
         # If there is no primary key found then return from the function.
         if ('primary_keys' not in session_obj or
-           len(session_obj['primary_keys']) <= 0 or
-           len(changed_data) <= 0) and \
-           'has_oids' not in session_obj:
+            len(session_obj['primary_keys']) <= 0 or
+                len(changed_data) <= 0) and 'has_oids' not in session_obj:
             return make_json_response(
                 data={
                     'status': False,
@@ -759,7 +765,7 @@ def append_filter_inclusive(trans_id):
                                   status=404)
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
 
         res = None
         filter_sql = ''
@@ -813,7 +819,7 @@ def append_filter_exclusive(trans_id):
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
 
         res = None
         filter_sql = ''
@@ -866,7 +872,7 @@ def remove_filter(trans_id):
                                   status=404)
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
 
         res = None
 
@@ -910,7 +916,7 @@ def set_limit(trans_id):
                                   status=404)
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
 
         res = None
 
@@ -1052,7 +1058,7 @@ def get_object_name(trans_id):
                                   status=404)
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
         res = trans_obj.object_name
     else:
         status = False
@@ -1088,7 +1094,7 @@ def set_auto_commit(trans_id):
                                   status=404)
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
 
         res = None
 
@@ -1133,7 +1139,7 @@ def set_auto_rollback(trans_id):
                                   status=404)
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
 
         res = None
 
@@ -1185,7 +1191,7 @@ def auto_complete(trans_id):
                                   status=404)
 
     if status and conn is not None and \
-       trans_obj is not None and session_obj is not None:
+            trans_obj is not None and session_obj is not None:
 
         # Create object of SQLAutoComplete class and pass connection object
         auto_complete_obj = SQLAutoComplete(
@@ -1470,6 +1476,282 @@ def get_filter_data(trans_id):
         check_transaction_status(trans_id)
 
     return FilterDialog.get(status, error_msg, conn, trans_obj, session_ob)
+
+
+@blueprint.route(
+    '/new_connection_dialog/<int:sgid>/<int:sid>',
+    methods=["GET"], endpoint='get_new_connection_data'
+)
+@login_required
+def get_new_connection_data(sgid, sid=None):
+    """
+    This method is used to get required data for get new connection.
+    :extract_sql_from_network_parameters,
+    """
+    try:
+        # if sid and not did:
+        servers = Server.query.all()
+        server_list = [
+            {'name': server.serialize['name'], "id": server.serialize['id']}
+            for server in servers]
+
+        msg = "Success"
+        return make_json_response(
+            data={
+                'status': True,
+                'msg': msg,
+                'result': {
+                    'server_list': server_list
+                }
+            }
+        )
+
+    except Exception:
+        return make_json_response(
+            data={
+                'status': False,
+                'msg': ERROR_FETCHING_DATA,
+                'result': {
+                    'server_list': []
+                }
+            }
+        )
+
+
+@blueprint.route(
+    '/new_connection_database/<int:sgid>/<int:sid>',
+    methods=["GET"], endpoint='get_new_connection_database'
+)
+@login_required
+def get_new_connection_database(sgid, sid=None):
+    """
+    This method is used to get required data for get new connection.
+    :extract_sql_from_network_parameters,
+    """
+    try:
+        database_list = []
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+        if conn.connected():
+            is_connected = True
+        else:
+            is_connected = False
+        if is_connected:
+            if sid:
+                template_path = 'databases/sql/#{0}#'.format(manager.version)
+                last_system_oid = 0
+                server_node_res = manager
+
+                db_disp_res = None
+                params = None
+                if server_node_res and server_node_res.db_res:
+                    db_disp_res = ", ".join(
+                        ['%s'] * len(server_node_res.db_res.split(','))
+                    )
+                    params = tuple(server_node_res.db_res.split(','))
+                sql = render_template(
+                    "/".join([template_path, _NODES_SQL]),
+                    last_system_oid=last_system_oid,
+                    db_restrictions=db_disp_res
+                )
+                status, databases = conn.execute_dict(sql, params)
+                database_list = [
+                    {'label': database['name'], 'value': database['did']} for
+                    database in databases['rows']]
+            else:
+                status = False
+
+            msg = "Success"
+            return make_json_response(
+                data={
+                    'status': status,
+                    'msg': msg,
+                    'result': {
+                        'data': database_list,
+                    }
+                }
+            )
+        else:
+            return make_json_response(
+                data={
+                    'status': False,
+                    'msg': SERVER_CONNECTION_CLOSED,
+                    'result': {
+                        'database_list': [],
+                    }
+                }
+            )
+    except Exception:
+        return make_json_response(
+            data={
+                'status': False,
+                'msg': ERROR_FETCHING_DATA,
+                'result': {
+                    'database_list': [],
+                }
+            }
+        )
+
+
+@blueprint.route(
+    '/new_connection_user/<int:sgid>/<int:sid>',
+    methods=["GET"], endpoint='get_new_connection_user'
+)
+@login_required
+def get_new_connection_user(sgid, sid=None):
+    """
+    This method is used to get required data for get new connection.
+    :extract_sql_from_network_parameters,
+    """
+    try:
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+        user_list = []
+        if conn.connected():
+            is_connected = True
+        else:
+            is_connected = False
+        if is_connected:
+            if sid:
+                sql_path = 'roles/sql/#{0}#'.format(manager.version)
+                status, users = conn.execute_2darray(
+                    render_template(sql_path + _NODES_SQL)
+                )
+                user_list = [
+                    {'value': user['rolname'], 'label': user['rolname']} for
+                    user in users['rows'] if user['rolcanlogin']]
+            else:
+                status = False
+
+            msg = "Success"
+            return make_json_response(
+                data={
+                    'status': status,
+                    'msg': msg,
+                    'result': {
+                        'data': user_list,
+                    }
+                }
+            )
+        else:
+            return make_json_response(
+                data={
+                    'status': False,
+                    'msg': SERVER_CONNECTION_CLOSED,
+                    'result': {
+                        'user_list': [],
+                    }
+                }
+            )
+    except Exception:
+        return make_json_response(
+            data={
+                'status': False,
+                'msg': 'Unable to fetch data.',
+                'result': {
+                    'user_list': [],
+                }
+            }
+        )
+
+
+@blueprint.route(
+    '/new_connection_role/<int:sgid>/<int:sid>',
+    methods=["GET"], endpoint='get_new_connection_role'
+)
+@login_required
+def get_new_connection_role(sgid, sid=None):
+    """
+    This method is used to get required data for get new connection.
+    :extract_sql_from_network_parameters,
+    """
+    try:
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+        role_list = []
+        if conn.connected():
+            is_connected = True
+        else:
+            is_connected = False
+        if is_connected:
+            if sid:
+                sql_path = 'roles/sql/#{0}#'.format(manager.version)
+                status, roles = conn.execute_2darray(
+                    render_template(sql_path + _NODES_SQL)
+                )
+                role_list = [
+                    {'value': role['rolname'], 'label': role['rolname']} for
+                    role in roles['rows']]
+            else:
+                status = False
+
+            msg = "Success"
+            return make_json_response(
+                data={
+                    'status': status,
+                    'msg': msg,
+                    'result': {
+                        'data': role_list,
+                    }
+                }
+            )
+        else:
+            return make_json_response(
+                data={
+                    'status': False,
+                    'msg': SERVER_CONNECTION_CLOSED,
+                    'result': {
+                        'user_list': [],
+                    }
+                }
+            )
+    except Exception:
+        return make_json_response(
+            data={
+                'status': False,
+                'msg': 'Unable to fetch data.',
+                'result': {
+                    'user_list': [],
+                }
+            }
+        )
+
+
+@blueprint.route(
+    '/connect_server/<int:sid>/<usr>',
+    methods=["POST"],
+    endpoint="connect_server_with_user"
+)
+@blueprint.route(
+    '/connect_server/<int:sid>',
+    methods=["POST"],
+    endpoint="connect_server"
+)
+@login_required
+def connect_server(sid, usr=None):
+    # Check if server is already connected then no need to reconnect again.
+    server = Server.query.filter_by(id=sid).first()
+    driver = get_driver(PG_DEFAULT_DRIVER)
+    manager = driver.connection_manager(sid)
+    conn = manager.connection()
+    user = None
+
+    if usr and manager.user != usr:
+        user = usr
+    else:
+        user = manager.user
+        if conn.connected():
+            return make_json_response(
+                success=1,
+                info=gettext("Server connected."),
+                data={}
+            )
+
+    view = SchemaDiffRegistry.get_node_view('server')
+    return view.connect(server.servergroup_id, sid, user_name=user)
 
 
 @blueprint.route(

@@ -44,3 +44,5 @@ ERROR_MSG_TRANS_ID_NOT_FOUND = gettext(
 # Role module constant
 ERROR_FETCHING_ROLE_INFORMATION = gettext(
     'Error fetching role information from the database server.')
+
+ERROR_FETCHING_DATA = gettext('Unable to fetch data.')

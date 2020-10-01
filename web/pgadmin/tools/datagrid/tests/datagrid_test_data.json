@@ -1,0 +1,134 @@
+{
+  "data_grid_init_query_tool": [
+    {
+      "name": "Datagrid init query tool",
+      "url": "/datagrid/initialize/query_tool/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "data_grid_query_tool_close": [
+    {
+      "name": "Datagrid query tool close",
+      "url": "/datagrid/close/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "data_grid_validate_filter": [
+    {
+      "name": "Datagrid validate filter",
+      "url": "/datagrid/filter/validate/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": "id = 1",
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Datagrid validate filter",
+      "url": "/datagrid/filter/validate/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "test_data": "id = 1",
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error while validate filter')"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "data_grid_update_connection": [
+    {
+      "name": "Datagrid update connection positive",
+      "url": "/datagrid/initialize/query_tool/update_connection/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "is_create_role": false,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Datagrid update connection with new user",
+      "url": "/datagrid/initialize/query_tool/update_connection/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "is_create_role": true,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "data_grid_panel": [
+    {
+      "name": "Datagrid Panel",
+      "url": "/datagrid/panel/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {},
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "data_grid_initialize": [
+    {
+      "name": "Datagrid Initialize",
+      "url": "/datagrid/initialize/datagrid/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": "id=1",
+      "mock_data": {
+
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },{
+      "name": "Datagrid Initialize",
+      "url": "/datagrid/initialize/datagrid/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": null,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Datagrid Initialize",
+      "url": "/datagrid/initialize/datagrid/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "test_data": "id=1",
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while initialize datagrid.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ]
+}
