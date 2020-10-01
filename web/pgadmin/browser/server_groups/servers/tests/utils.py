@@ -50,3 +50,25 @@ def create_server_with_api(self, url):
         return server_id
     except Exception as exception:
         raise Exception("Error while creating server. %s" % exception)
+
+
+def get_server_data(server):
+    """
+    This function returns the server details
+    :param server:
+    :return: server data
+    """
+
+    server_data = \
+        {
+            "name": server['name'],
+            "comment": server['comment'],
+            "username": server['username'],
+            "host": server['host'],
+            "db_password": server['db_password'],
+            "port": server['port'],
+            "sslmode": server['sslmode'],
+            "db": server['db']
+        }
+
+    return server_data

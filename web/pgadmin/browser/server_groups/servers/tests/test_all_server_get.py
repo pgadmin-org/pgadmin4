@@ -12,6 +12,7 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as servers_utils
+import json
 
 
 class AllServersGetTestCase(BaseTestGenerator):
@@ -25,8 +26,22 @@ class AllServersGetTestCase(BaseTestGenerator):
 
     def setUp(self):
         """This function add the server to test the GET API"""
-        self.server['password'] = 'edb'
-        self.server_id = utils.create_server(self.server)
+
+        server_details = servers_utils.get_server_data(self.server)
+        server_details['password'] = self.server['db_password']
+        server_details['save_password'] = 1
+        server_details['connect_now'] = 1
+
+        url = "/browser/server/obj/{0}/".format(utils.SERVER_GROUP)
+
+        response = self.tester.post(
+            url,
+            data=json.dumps(server_details),
+            content_type='html/json'
+        )
+        response_data = json.loads(response.data.decode('utf-8'))
+        self.server_id = response_data['node']['_id']
+
         server_dict = {"server_id": self.server_id}
         utils.write_node_info("sid", server_dict)
 
@@ -53,7 +68,7 @@ class AllServersGetTestCase(BaseTestGenerator):
             elif hasattr(self, 'children'):
 
                 self.url = self.url + '{0}/{1}'.format(
-                    utils.SERVER_GROUP, server_id)
+                    utils.SERVER_GROUP, self.server_id)
             elif hasattr(self, 'server_list'):
                 if hasattr(self, 'servers'):
                     server_id = ''
@@ -64,7 +79,7 @@ class AllServersGetTestCase(BaseTestGenerator):
                     url = '/browser/server/connect/' + '{0}/{1}'.format(
                         utils.SERVER_GROUP,
                         self.server_id)
-                    self.server['password'] = 'edb'
+                    self.server['password'] = self.server['db_password']
 
                     self.connect_to_server(url)
                 self.url = self.url + '{0}/{1}?_={2}'.format(
