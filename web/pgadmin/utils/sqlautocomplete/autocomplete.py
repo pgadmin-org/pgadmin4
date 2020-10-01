@@ -11,8 +11,7 @@
 
 import re
 import operator
-import sys
-from itertools import count, repeat, chain
+from itertools import count
 from .completion import Completion
 from collections import namedtuple, defaultdict, OrderedDict
 
@@ -28,9 +27,9 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.preferences import Preferences
 
-Match = namedtuple('Match', ['completion', 'priority'])
+Match = namedtuple("Match", ["completion", "priority"])
 
-_SchemaObject = namedtuple('SchemaObject', 'name schema meta')
+_SchemaObject = namedtuple("SchemaObject", "name schema meta")
 
 
 def SchemaObject(name, schema=None, meta=None):
@@ -41,14 +40,12 @@ def SchemaObject(name, schema=None, meta=None):
 _FIND_WORD_RE = re.compile(r'([a-zA-Z0-9_]+|[^a-zA-Z0-9_\s]+)')
 _FIND_BIG_WORD_RE = re.compile(r'([^\s]+)')
 
-_Candidate = namedtuple(
-    'Candidate', 'completion prio meta synonyms prio2 display'
-)
+_Candidate = namedtuple("Candidate",
+                        "completion prio meta synonyms prio2 display")
 
 
 def Candidate(
-    completion, prio=None, meta=None, synonyms=None, prio2=None,
-    display=None
+    completion, prio=None, meta=None, synonyms=None, prio2=None, display=None
 ):
     return _Candidate(
         completion, prio, meta, synonyms or [completion], prio2,
@@ -57,7 +54,7 @@ def Candidate(
 
 
 # Used to strip trailing '::some_type' from default-value expressions
-arg_default_type_strip_regex = re.compile(r'::[\w\.]+(\[\])?$')
+arg_default_type_strip_regex = re.compile(r"::[\w\.]+(\[\])?$")
 
 
 def normalize_ref(ref):
@@ -65,15 +62,15 @@ def normalize_ref(ref):
 
 
 def generate_alias(tbl):
-    """ Generate a table alias, consisting of all upper-case letters in
+    """Generate a table alias, consisting of all upper-case letters in
     the table name, or, if there are no upper-case letters, the first letter +
     all letters preceded by _
     param tbl - unescaped name of the table to alias
     """
-    return ''.join(
+    return "".join(
         [letter for letter in tbl if letter.isupper()] or
-        [letter for letter, prev in zip(tbl, '_' + tbl)
-         if prev == '_' and letter != '_']
+        [letter for letter, prev in zip(tbl, "_" + tbl)
+         if prev == "_" and letter != "_"]
     )
 
 
@@ -97,13 +94,14 @@ class SQLAutoComplete(object):
         self.sid = kwargs['sid'] if 'sid' in kwargs else None
         self.conn = kwargs['conn'] if 'conn' in kwargs else None
         self.keywords = []
+        self.name_pattern = re.compile(r"^[_a-z][_a-z0-9\$]*$")
+
         self.databases = []
         self.functions = []
         self.datatypes = []
-        self.dbmetadata = {'tables': {}, 'views': {}, 'functions': {},
-                           'datatypes': {}}
+        self.dbmetadata = \
+            {"tables": {}, "views": {}, "functions": {}, "datatypes": {}}
         self.text_before_cursor = None
-        self.name_pattern = re.compile("^[_a-z][_a-z0-9\$]*$")
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(self.sid)
 
@@ -182,7 +180,8 @@ class SQLAutoComplete(object):
     def escape_name(self, name):
         if name and (
             (not self.name_pattern.match(name)) or
-            (name.upper() in self.reserved_words)
+            (name.upper() in self.reserved_words) or
+            (name.upper() in self.functions)
         ):
             name = '"%s"' % name
 
@@ -212,7 +211,7 @@ class SQLAutoComplete(object):
 
         # schemata is a list of schema names
         schemata = self.escaped_names(schemata)
-        metadata = self.dbmetadata['tables']
+        metadata = self.dbmetadata["tables"]
         for schema in schemata:
             metadata[schema] = {}
 
@@ -224,7 +223,7 @@ class SQLAutoComplete(object):
         self.all_completions.update(schemata)
 
     def extend_casing(self, words):
-        """ extend casing data
+        """extend casing data
 
         :return:
         """
@@ -274,7 +273,7 @@ class SQLAutoComplete(object):
                 name=colname,
                 datatype=datatype,
                 has_default=has_default,
-                default=default
+                default=default,
             )
             metadata[schema][relname][colname] = column
             self.all_completions.add(colname)
@@ -285,7 +284,7 @@ class SQLAutoComplete(object):
 
         # dbmetadata['schema_name']['functions']['function_name'] should return
         # the function metadata namedtuple for the corresponding function
-        metadata = self.dbmetadata['functions']
+        metadata = self.dbmetadata["functions"]
 
         for f in func_data:
             schema, func = self.escaped_names([f.schema_name, f.func_name])
@@ -309,10 +308,10 @@ class SQLAutoComplete(object):
         self._arg_list_cache = \
             dict((usage,
                  dict((meta, self._arg_list(meta, usage))
-                      for sch, funcs in self.dbmetadata['functions'].items()
+                      for sch, funcs in self.dbmetadata["functions"].items()
                       for func, metas in funcs.items()
                       for meta in metas))
-                 for usage in ('call', 'call_display', 'signature'))
+                 for usage in ("call", "call_display", "signature"))
 
     def extend_foreignkeys(self, fk_data):
 
@@ -322,7 +321,7 @@ class SQLAutoComplete(object):
 
         # These are added as a list of ForeignKey namedtuples to the
         # ColumnMetadata namedtuple for both the child and parent
-        meta = self.dbmetadata['tables']
+        meta = self.dbmetadata["tables"]
 
         for fk in fk_data:
             e = self.escaped_names
@@ -350,7 +349,7 @@ class SQLAutoComplete(object):
         # dbmetadata['datatypes'][schema_name][type_name] should store type
         # metadata, such as composite type field names. Currently, we're not
         # storing any metadata beyond typename, so just store None
-        meta = self.dbmetadata['datatypes']
+        meta = self.dbmetadata["datatypes"]
 
         for t in type_data:
             schema, type_name = self.escaped_names(t)
@@ -364,11 +363,11 @@ class SQLAutoComplete(object):
         self.databases = []
         self.special_commands = []
         self.search_path = []
-        self.dbmetadata = {'tables': {}, 'views': {}, 'functions': {},
-                           'datatypes': {}}
+        self.dbmetadata = \
+            {"tables": {}, "views": {}, "functions": {}, "datatypes": {}}
         self.all_completions = set(self.keywords + self.functions)
 
-    def find_matches(self, text, collection, mode='fuzzy', meta=None):
+    def find_matches(self, text, collection, mode="strict", meta=None):
         """Find completion matches for the given text.
 
         Given the user's input text and a collection of available
@@ -389,17 +388,26 @@ class SQLAutoComplete(object):
             collection:
             mode:
             meta:
-            meta_collection:
         """
         if not collection:
             return []
         prio_order = [
-            'keyword', 'function', 'view', 'table', 'datatype', 'database',
-            'schema', 'column', 'table alias', 'join', 'name join', 'fk join',
-            'table format'
+            "keyword",
+            "function",
+            "view",
+            "table",
+            "datatype",
+            "database",
+            "schema",
+            "column",
+            "table alias",
+            "join",
+            "name join",
+            "fk join",
+            "table format",
         ]
         type_priority = prio_order.index(meta) if meta in prio_order else -1
-        text = last_word(text, include='most_punctuations').lower()
+        text = last_word(text, include="most_punctuations").lower()
         text_len = len(text)
 
         if text and text[0] == '"':
@@ -409,7 +417,7 @@ class SQLAutoComplete(object):
             # Completion.position value is correct
             text = text[1:]
 
-        if mode == 'fuzzy':
+        if mode == "fuzzy":
             fuzzy = True
             priority_func = self.prioritizer.name_count
         else:
@@ -422,19 +430,20 @@ class SQLAutoComplete(object):
         # Note: higher priority values mean more important, so use negative
         # signs to flip the direction of the tuple
         if fuzzy:
-            regex = '.*?'.join(map(re.escape, text))
-            pat = re.compile('(%s)' % regex)
+            regex = ".*?".join(map(re.escape, text))
+            pat = re.compile("(%s)" % regex)
 
             def _match(item):
-                if item.lower()[:len(text) + 1] in (text, text + ' '):
+                if item.lower()[: len(text) + 1] in (text, text + " "):
                     # Exact match of first word in suggestion
                     # This is to get exact alias matches to the top
                     # E.g. for input `e`, 'Entries E' should be on top
                     # (before e.g. `EndUsers EU`)
-                    return float('Infinity'), -1
+                    return float("Infinity"), -1
                 r = pat.search(self.unescape_name(item.lower()))
                 if r:
                     return -len(r.group()), -r.start()
+
         else:
             match_end_limit = len(text)
 
@@ -446,7 +455,7 @@ class SQLAutoComplete(object):
                 if match_point >= 0:
                     # Use negative infinity to force keywords to sort after all
                     # fuzzy matches
-                    return -float('Infinity'), -match_point
+                    return -float("Infinity"), -match_point
 
         matches = []
         for cand in collection:
@@ -466,7 +475,7 @@ class SQLAutoComplete(object):
             if sort_key:
                 if display_meta and len(display_meta) > 50:
                     # Truncate meta-text to 50 characters, if necessary
-                    display_meta = display_meta[:47] + '...'
+                    display_meta = display_meta[:47] + "..."
 
                 # Lexical order of items in the collection, used for
                 # tiebreaking items with the same match group length and start
@@ -478,14 +487,18 @@ class SQLAutoComplete(object):
                 # We also use the unescape_name to make sure quoted names have
                 # the same priority as unquoted names.
                 lexical_priority = (
-                    tuple(0 if c in (' _') else -ord(c)
+                    tuple(0 if c in (" _") else -ord(c)
                           for c in self.unescape_name(item.lower())) + (1,) +
                     tuple(c for c in item)
                 )
 
                 priority = (
-                    sort_key, type_priority, prio, priority_func(item),
-                    prio2, lexical_priority
+                    sort_key,
+                    type_priority,
+                    prio,
+                    priority_func(item),
+                    prio2,
+                    lexical_priority,
                 )
                 matches.append(
                     Match(
@@ -493,9 +506,9 @@ class SQLAutoComplete(object):
                             text=item,
                             start_position=-text_len,
                             display_meta=display_meta,
-                            display=display
+                            display=display,
                         ),
-                        priority=priority
+                        priority=priority,
                     )
                 )
         return matches
@@ -516,8 +529,8 @@ class SQLAutoComplete(object):
             matches.extend(matcher(self, suggestion, word_before_cursor))
 
         # Sort matches so highest priorities are first
-        matches = sorted(matches, key=operator.attrgetter('priority'),
-                         reverse=True)
+        matches = \
+            sorted(matches, key=operator.attrgetter("priority"), reverse=True)
 
         result = dict()
         for m in matches:
@@ -539,23 +552,28 @@ class SQLAutoComplete(object):
 
         tables = suggestion.table_refs
         do_qualify = suggestion.qualifiable and {
-            'always': True, 'never': False,
-            'if_more_than_one_table': len(tables) > 1}[self.qualify_columns]
+            "always": True,
+            "never": False,
+            "if_more_than_one_table": len(tables) > 1,
+        }[self.qualify_columns]
 
         def qualify(col, tbl):
             return (tbl + '.' + col) if do_qualify else col
 
-        scoped_cols = self.populate_scoped_cols(
-            tables, suggestion.local_tables
-        )
+        scoped_cols = \
+            self.populate_scoped_cols(tables, suggestion.local_tables)
 
         def make_cand(name, ref):
             synonyms = (name, generate_alias(name))
-            return Candidate(qualify(name, ref), 0, 'column', synonyms)
+            return Candidate(qualify(name, ref), 0, "column", synonyms)
 
         def flat_cols():
-            return [make_cand(c.name, t.ref) for t, cols in scoped_cols.items()
-                    for c in cols]
+            return [
+                make_cand(c.name, t.ref)
+                for t, cols in scoped_cols.items()
+                for c in cols
+            ]
+
         if suggestion.require_last_table:
             # require_last_table is used for 'tb11 JOIN tbl2 USING
             # (...' which should
@@ -569,10 +587,11 @@ class SQLAutoComplete(object):
                 dict((t, [col for col in cols if col.name in other_tbl_cols])
                      for t, cols in scoped_cols.items() if t.ref == ltbl)
 
-        lastword = last_word(word_before_cursor, include='most_punctuations')
-        if lastword == '*':
-            if suggestion.context == 'insert':
-                def is_scoped(col):
+        lastword = last_word(word_before_cursor, include="most_punctuations")
+        if lastword == "*":
+            if suggestion.context == "insert":
+
+                def filter(col):
                     if not col.has_default:
                         return True
                     return not any(
@@ -580,40 +599,39 @@ class SQLAutoComplete(object):
                         for p in self.insert_col_skip_patterns
                     )
                 scoped_cols = \
-                    dict((t, [col for col in cols if is_scoped(col)])
+                    dict((t, [col for col in cols if filter(col)])
                          for t, cols in scoped_cols.items())
-            if self.asterisk_column_order == 'alphabetic':
+            if self.asterisk_column_order == "alphabetic":
                 for cols in scoped_cols.values():
-                    cols.sort(key=operator.attrgetter('name'))
+                    cols.sort(key=operator.attrgetter("name"))
             if (
                 lastword != word_before_cursor and
                 len(tables) == 1 and
-                word_before_cursor[-len(lastword) - 1] == '.'
+                word_before_cursor[-len(lastword) - 1] == "."
             ):
                 # User typed x.*; replicate "x." for all columns except the
                 # first, which gets the original (as we only replace the "*"")
-                sep = ', ' + word_before_cursor[:-1]
+                sep = ", " + word_before_cursor[:-1]
                 collist = sep.join(c.completion for c in flat_cols())
             else:
-                collist = ', '.join(qualify(c.name, t.ref)
+                collist = ", ".join(qualify(c.name, t.ref)
                                     for t, cs in scoped_cols.items()
                                     for c in cs)
 
-            return [Match(
-                completion=Completion(
-                    collist,
-                    -1,
-                    display_meta='columns',
-                    display='*'
-                ),
-                priority=(1, 1, 1)
-            )]
+            return [
+                Match(
+                    completion=Completion(
+                        collist, -1, display_meta="columns", display="*"
+                    ),
+                    priority=(1, 1, 1),
+                )
+            ]
 
         return self.find_matches(word_before_cursor, flat_cols(),
-                                 mode='strict', meta='column')
+                                 meta="column")
 
     def alias(self, tbl, tbls):
-        """ Generate a unique table alias
+        """Generate a unique table alias
         tbl - name of the table to alias, quoted if it needs to be
         tbls - TableReference iterable of tables already in query
         """
@@ -628,25 +646,6 @@ class SQLAutoComplete(object):
             aliases = (tbl + str(i) for i in count(2))
         return next(a for a in aliases if normalize_ref(a) not in tbls)
 
-    def _check_for_aliases(self, left, refs, rtbl, suggestion, right):
-        """
-        Check for generate aliases and return join value
-        :param left:
-        :param refs:
-        :param rtbl:
-        :param suggestion:
-        :param right:
-        :return: return join string.
-        """
-        if self.generate_aliases or normalize_ref(left.tbl) in refs:
-            lref = self.alias(left.tbl, suggestion.table_refs)
-            join = '{0} {4} ON {4}.{1} = {2}.{3}'.format(
-                left.tbl, left.col, rtbl.ref, right.col, lref)
-        else:
-            join = '{0} ON {0}.{1} = {2}.{3}'.format(
-                left.tbl, left.col, rtbl.ref, right.col)
-        return join
-
     def get_join_matches(self, suggestion, word_before_cursor):
         tbls = suggestion.table_refs
         cols = self.populate_scoped_cols(tbls)
@@ -658,10 +657,12 @@ class SQLAutoComplete(object):
         joins = []
         # Iterate over FKs in existing tables to find potential joins
         fks = (
-            (fk, rtbl, rcol) for rtbl, rcols in cols.items()
-            for rcol in rcols for fk in rcol.foreignkeys
+            (fk, rtbl, rcol)
+            for rtbl, rcols in cols.items()
+            for rcol in rcols
+            for fk in rcol.foreignkeys
         )
-        col = namedtuple('col', 'schema tbl col')
+        col = namedtuple("col", "schema tbl col")
         for fk, rtbl, rcol in fks:
             right = col(rtbl.schema, rtbl.name, rcol.name)
             child = col(fk.childschema, fk.childtable, fk.childcolumn)
@@ -670,54 +671,38 @@ class SQLAutoComplete(object):
             if suggestion.schema and left.schema != suggestion.schema:
                 continue
 
-            join = self._check_for_aliases(left, refs, rtbl, suggestion, right)
+            if self.generate_aliases or normalize_ref(left.tbl) in refs:
+                lref = self.alias(left.tbl, suggestion.table_refs)
+                join = "{0} {4} ON {4}.{1} = {2}.{3}".format(
+                    left.tbl, left.col, rtbl.ref, right.col, lref
+                )
+            else:
+                join = "{0} ON {0}.{1} = {2}.{3}".format(
+                    left.tbl, left.col, rtbl.ref, right.col
+                )
             alias = generate_alias(left.tbl)
-            synonyms = [join, '{0} ON {0}.{1} = {2}.{3}'.format(
-                alias, left.col, rtbl.ref, right.col)]
+            synonyms = [
+                join,
+                "{0} ON {0}.{1} = {2}.{3}".format(
+                    alias, left.col, rtbl.ref, right.col
+                ),
+            ]
             # Schema-qualify if (1) new table in same schema as old, and old
             # is schema-qualified, or (2) new in other schema, except public
             if not suggestion.schema and \
                 (qualified[normalize_ref(rtbl.ref)] and
                  left.schema == right.schema or
-                 left.schema not in (right.schema, 'public')):
-                join = left.schema + '.' + join
+                 left.schema not in (right.schema, "public")):
+                join = left.schema + "." + join
             prio = ref_prio[normalize_ref(rtbl.ref)] * 2 + (
-                0 if (left.schema, left.tbl) in other_tbls else 1)
-            joins.append(Candidate(join, prio, 'join', synonyms=synonyms))
+                0 if (left.schema, left.tbl) in other_tbls else 1
+            )
+            joins.append(Candidate(join, prio, "join", synonyms=synonyms))
 
-        return self.find_matches(word_before_cursor, joins,
-                                 mode='strict', meta='join')
-
-    def list_dict(self, pairs):  # Turns [(a, b), (a, c)] into {a: [b, c]}
-        d = defaultdict(list)
-        for pair in pairs:
-            d[pair[0]].append(pair[1])
-        return d
-
-    def add_cond(self, lcol, rcol, rref, prio, meta, **kwargs):
-        """
-        Add Condition in join
-        :param lcol:
-        :param rcol:
-        :param rref:
-        :param prio:
-        :param meta:
-        :param kwargs:
-        :return:
-        """
-        suggestion = kwargs['suggestion']
-        found_conds = kwargs['found_conds']
-        ltbl = kwargs['ltbl']
-        ref_prio = kwargs['ref_prio']
-        conds = kwargs['conds']
-        prefix = '' if suggestion.parent else ltbl.ref + '.'
-        cond = prefix + lcol + ' = ' + rref + '.' + rcol
-        if cond not in found_conds:
-            found_conds.add(cond)
-            conds.append(Candidate(cond, prio + ref_prio[rref], meta))
+        return self.find_matches(word_before_cursor, joins, meta="join")
 
     def get_join_condition_matches(self, suggestion, word_before_cursor):
-        col = namedtuple('col', 'schema tbl col')
+        col = namedtuple("col", "schema tbl col")
         tbls = self.populate_scoped_cols(suggestion.table_refs).items
         cols = [(t, c) for t, cs in tbls() for c in cs]
         try:
@@ -727,11 +712,24 @@ class SQLAutoComplete(object):
             return []
         conds, found_conds = [], set()
 
+        def add_cond(lcol, rcol, rref, prio, meta):
+            prefix = "" if suggestion.parent else ltbl.ref + "."
+            cond = prefix + lcol + " = " + rref + "." + rcol
+            if cond not in found_conds:
+                found_conds.add(cond)
+                conds.append(Candidate(cond, prio + ref_prio[rref], meta))
+
+        def list_dict(pairs):  # Turns [(a, b), (a, c)] into {a: [b, c]}
+            d = defaultdict(list)
+            for pair in pairs:
+                d[pair[0]].append(pair[1])
+            return d
+
         # Tables that are closer to the cursor get higher prio
         ref_prio = dict((tbl.ref, num)
                         for num, tbl in enumerate(suggestion.table_refs))
         # Map (schema, table, col) to tables
-        coldict = self.list_dict(
+        coldict = list_dict(
             ((t.schema, t.name, c.name), t) for t, c in cols if t.ref != lref
         )
         # For each fk from the left table, generate a join condition if
@@ -742,89 +740,76 @@ class SQLAutoComplete(object):
             child = col(fk.childschema, fk.childtable, fk.childcolumn)
             par = col(fk.parentschema, fk.parenttable, fk.parentcolumn)
             left, right = (child, par) if left == child else (par, child)
-
             for rtbl in coldict[right]:
-                kwargs = {
-                    "suggestion": suggestion,
-                    "found_conds": found_conds,
-                    "ltbl": ltbl,
-                    "conds": conds,
-                    "ref_prio": ref_prio
-                }
-                self.add_cond(left.col, right.col, rtbl.ref, 2000, 'fk join',
-                              **kwargs)
+                add_cond(left.col, right.col, rtbl.ref, 2000, "fk join")
         # For name matching, use a {(colname, coltype): TableReference} dict
-        coltyp = namedtuple('coltyp', 'name datatype')
-        col_table = self.list_dict(
-            (coltyp(c.name, c.datatype), t) for t, c in cols)
+        coltyp = namedtuple("coltyp", "name datatype")
+        col_table = list_dict((coltyp(c.name, c.datatype), t) for t, c in cols)
         # Find all name-match join conditions
         for c in (coltyp(c.name, c.datatype) for c in lcols):
             for rtbl in (t for t in col_table[c] if t.ref != ltbl.ref):
-                kwargs = {
-                    "suggestion": suggestion,
-                    "found_conds": found_conds,
-                    "ltbl": ltbl,
-                    "conds": conds,
-                    "ref_prio": ref_prio
-                }
                 prio = 1000 if c.datatype in (
-                    'integer', 'bigint', 'smallint') else 0
-                self.add_cond(c.name, c.name, rtbl.ref, prio, 'name join',
-                              **kwargs)
+                    "integer", "bigint", "smallint") else 0
+                add_cond(c.name, c.name, rtbl.ref, prio, "name join")
 
-        return self.find_matches(word_before_cursor, conds,
-                                 mode='strict', meta='join')
+        return self.find_matches(word_before_cursor, conds, meta="join")
 
     def get_function_matches(self, suggestion, word_before_cursor,
                              alias=False):
-        if suggestion.usage == 'from':
+        if suggestion.usage == "from":
             # Only suggest functions allowed in FROM clause
+
             def filt(f):
-                return not f.is_aggregate and not f.is_window
+                return (
+                    not f.is_aggregate and not f.is_window and
+                    not f.is_extension and
+                    (f.is_public or f.schema_name == suggestion.schema)
+                )
+
         else:
             alias = False
 
             def filt(f):
-                return True
+                return not f.is_extension and (
+                    f.is_public or f.schema_name == suggestion.schema
+                )
 
-        arg_mode = {
-            'signature': 'signature',
-            'special': None,
-        }.get(suggestion.usage, 'call')
-        # Function overloading means we way have multiple functions of the same
-        # name at this point, so keep unique names only
-        funcs = set(
-            self._make_cand(f, alias, suggestion, arg_mode)
-            for f in self.populate_functions(suggestion.schema, filt)
+        arg_mode = {"signature": "signature", "special": None}.get(
+            suggestion.usage, "call"
         )
 
-        matches = self.find_matches(word_before_cursor, funcs,
-                                    mode='strict', meta='function')
+        # Function overloading means we way have multiple functions of the same
+        # name at this point, so keep unique names only
+        all_functions = self.populate_functions(suggestion.schema, filt)
+        funcs = set(
+            self._make_cand(f, alias, suggestion, arg_mode)
+            for f in all_functions
+        )
+
+        matches = self.find_matches(word_before_cursor, funcs, meta="function")
 
         return matches
 
     def get_schema_matches(self, suggestion, word_before_cursor):
-        schema_names = self.dbmetadata['tables'].keys()
+        schema_names = self.dbmetadata["tables"].keys()
 
         # Unless we're sure the user really wants them, hide schema names
         # starting with pg_, which are mostly temporary schemas
-        if not word_before_cursor.startswith('pg_'):
-            schema_names = [s
-                            for s in schema_names
-                            if not s.startswith('pg_')]
+        if not word_before_cursor.startswith("pg_"):
+            schema_names = [s for s in schema_names if not s.startswith("pg_")]
 
         if suggestion.quoted:
             schema_names = [self.escape_schema(s) for s in schema_names]
 
         return self.find_matches(word_before_cursor, schema_names,
-                                 mode='strict', meta='schema')
+                                 meta="schema")
 
     def get_from_clause_item_matches(self, suggestion, word_before_cursor):
         alias = self.generate_aliases
         s = suggestion
         t_sug = Table(s.schema, s.table_refs, s.local_tables)
         v_sug = View(s.schema, s.table_refs)
-        f_sug = Function(s.schema, s.table_refs, usage='from')
+        f_sug = Function(s.schema, s.table_refs, usage="from")
         return (
             self.get_table_matches(t_sug, word_before_cursor, alias) +
             self.get_view_matches(v_sug, word_before_cursor, alias) +
@@ -839,42 +824,43 @@ class SQLAutoComplete(object):
 
         """
         template = {
-            'call': self.call_arg_style,
-            'call_display': self.call_arg_display_style,
-            'signature': self.signature_arg_style
+            "call": self.call_arg_style,
+            "call_display": self.call_arg_display_style,
+            "signature": self.signature_arg_style,
         }[usage]
         args = func.args()
-        if not template or (
-            usage == 'call' and (
-                len(args) < 2 or func.has_variadic())):
-            return '()'
-
-        multiline = usage == 'call' and len(args) > self.call_arg_oneliner_max
+        if not template:
+            return "()"
+        elif usage == "call" and len(args) < 2:
+            return "()"
+        elif usage == "call" and func.has_variadic():
+            return "()"
+        multiline = usage == "call" and len(args) > self.call_arg_oneliner_max
         max_arg_len = max(len(a.name) for a in args) if multiline else 0
         args = (
             self._format_arg(template, arg, arg_num + 1, max_arg_len)
             for arg_num, arg in enumerate(args)
         )
         if multiline:
-            return '(' + ','.join('\n    ' + a for a in args if a) + '\n)'
+            return "(" + ",".join("\n    " + a for a in args if a) + "\n)"
         else:
-            return '(' + ', '.join(a for a in args if a) + ')'
+            return "(" + ", ".join(a for a in args if a) + ")"
 
     def _format_arg(self, template, arg, arg_num, max_arg_len):
         if not template:
             return None
         if arg.has_default:
-            arg_default = 'NULL' if arg.default is None else arg.default
+            arg_default = "NULL" if arg.default is None else arg.default
             # Remove trailing ::(schema.)type
-            arg_default = arg_default_type_strip_regex.sub('', arg_default)
+            arg_default = arg_default_type_strip_regex.sub("", arg_default)
         else:
-            arg_default = ''
+            arg_default = ""
         return template.format(
             max_arg_len=max_arg_len,
             arg_name=arg.name,
             arg_num=arg_num,
             arg_type=arg.datatype,
-            arg_default=arg_default
+            arg_default=arg_default,
         )
 
     def _make_cand(self, tbl, do_alias, suggestion, arg_mode=None):
@@ -890,63 +876,60 @@ class SQLAutoComplete(object):
         if do_alias:
             alias = self.alias(cased_tbl, suggestion.table_refs)
         synonyms = (cased_tbl, generate_alias(cased_tbl))
-        maybe_alias = (' ' + alias) if do_alias else ''
-        maybe_schema = (tbl.schema + '.') if tbl.schema else ''
-        suffix = self._arg_list_cache[arg_mode][tbl.meta] if arg_mode else ''
-        if arg_mode == 'call':
-            display_suffix = self._arg_list_cache['call_display'][tbl.meta]
-        elif arg_mode == 'signature':
-            display_suffix = self._arg_list_cache['signature'][tbl.meta]
+        maybe_alias = (" " + alias) if do_alias else ""
+        maybe_schema = (tbl.schema + ".") if tbl.schema else ""
+        suffix = self._arg_list_cache[arg_mode][tbl.meta] if arg_mode else ""
+        if arg_mode == "call":
+            display_suffix = self._arg_list_cache["call_display"][tbl.meta]
+        elif arg_mode == "signature":
+            display_suffix = self._arg_list_cache["signature"][tbl.meta]
         else:
-            display_suffix = ''
+            display_suffix = ""
         item = maybe_schema + cased_tbl + suffix + maybe_alias
         display = maybe_schema + cased_tbl + display_suffix + maybe_alias
         prio2 = 0 if tbl.schema else 1
         return Candidate(item, synonyms=synonyms, prio2=prio2, display=display)
 
     def get_table_matches(self, suggestion, word_before_cursor, alias=False):
-        tables = self.populate_schema_objects(suggestion.schema, 'tables')
+        tables = self.populate_schema_objects(suggestion.schema, "tables")
         tables.extend(
             SchemaObject(tbl.name) for tbl in suggestion.local_tables)
 
         # Unless we're sure the user really wants them, don't suggest the
         # pg_catalog tables that are implicitly on the search path
-        if not suggestion.schema and (
-                not word_before_cursor.startswith('pg_')):
-            tables = [t for t in tables if not t.name.startswith('pg_')]
+        if not suggestion.schema and \
+                (not word_before_cursor.startswith("pg_")):
+            tables = [t for t in tables if not t.name.startswith("pg_")]
         tables = [self._make_cand(t, alias, suggestion) for t in tables]
-        return self.find_matches(word_before_cursor, tables,
-                                 mode='strict', meta='table')
+        return self.find_matches(word_before_cursor, tables, meta="table")
 
     def get_view_matches(self, suggestion, word_before_cursor, alias=False):
-        views = self.populate_schema_objects(suggestion.schema, 'views')
+        views = self.populate_schema_objects(suggestion.schema, "views")
 
         if not suggestion.schema and (
-                not word_before_cursor.startswith('pg_')):
-            views = [v for v in views if not v.name.startswith('pg_')]
+                not word_before_cursor.startswith("pg_")):
+            views = [v for v in views if not v.name.startswith("pg_")]
         views = [self._make_cand(v, alias, suggestion) for v in views]
-        return self.find_matches(word_before_cursor, views,
-                                 mode='strict', meta='view')
+        return self.find_matches(word_before_cursor, views, meta="view")
 
     def get_alias_matches(self, suggestion, word_before_cursor):
         aliases = suggestion.aliases
         return self.find_matches(word_before_cursor, aliases,
-                                 mode='strict', meta='table alias')
+                                 meta="table alias")
 
     def get_database_matches(self, _, word_before_cursor):
         return self.find_matches(word_before_cursor, self.databases,
-                                 mode='strict', meta='database')
+                                 meta="database")
 
     def get_keyword_matches(self, suggestion, word_before_cursor):
         return self.find_matches(word_before_cursor, self.keywords,
-                                 mode='strict', meta='keyword')
+                                 meta="keyword")
 
     def get_datatype_matches(self, suggestion, word_before_cursor):
         # suggest custom datatypes
-        types = self.populate_schema_objects(suggestion.schema, 'datatypes')
+        types = self.populate_schema_objects(suggestion.schema, "datatypes")
         types = [self._make_cand(t, False, suggestion) for t in types]
-        matches = self.find_matches(word_before_cursor, types,
-                                    mode='strict', meta='datatype')
+        matches = self.find_matches(word_before_cursor, types, meta="datatype")
         return matches
 
     def get_word_before_cursor(self, word=False):
@@ -1004,52 +987,6 @@ class SQLAutoComplete(object):
         Datatype: get_datatype_matches,
     }
 
-    def addcols(self, schema, rel, alias, reltype, cols, columns):
-        """
-        Add columns in schema column list.
-        :param schema: Schema for reference.
-        :param rel:
-        :param alias:
-        :param reltype:
-        :param cols:
-        :param columns:
-        :return:
-        """
-        tbl = TableReference(schema, rel, alias, reltype == 'functions')
-        if tbl not in columns:
-            columns[tbl] = []
-        columns[tbl].extend(cols)
-
-    def _get_schema_columns(self, schemas, tbl, meta, columns):
-        """
-        Check and add schema table columns as per table.
-        :param schemas: Schema
-        :param tbl:
-        :param meta:
-        :param columns: column list
-        :return:
-        """
-        for schema in schemas:
-            relname = self.escape_name(tbl.name)
-            schema = self.escape_name(schema)
-            if tbl.is_function:
-                # Return column names from a set-returning function
-                # Get an array of FunctionMetadata objects
-                functions = meta['functions'].get(schema, {}).get(relname)
-                for func in (functions or []):
-                    # func is a FunctionMetadata object
-                    cols = func.fields()
-                    self.addcols(schema, relname, tbl.alias, 'functions', cols,
-                                 columns)
-            else:
-                for reltype in ('tables', 'views'):
-                    cols = meta[reltype].get(schema, {}).get(relname)
-                    if cols:
-                        cols = cols.values()
-                        self.addcols(schema, relname, tbl.alias, reltype, cols,
-                                     columns)
-                        break
-
     def populate_scoped_cols(self, scoped_tbls, local_tbls=()):
         """Find all columns in a set of scoped_tables.
 
@@ -1062,14 +999,37 @@ class SQLAutoComplete(object):
         columns = OrderedDict()
         meta = self.dbmetadata
 
+        def addcols(schema, rel, alias, reltype, cols):
+            tbl = TableReference(schema, rel, alias, reltype == "functions")
+            if tbl not in columns:
+                columns[tbl] = []
+            columns[tbl].extend(cols)
+
         for tbl in scoped_tbls:
             # Local tables should shadow database tables
             if tbl.schema is None and normalize_ref(tbl.name) in ctes:
                 cols = ctes[normalize_ref(tbl.name)]
-                self.addcols(None, tbl.name, 'CTE', tbl.alias, cols, columns)
+                addcols(None, tbl.name, "CTE", tbl.alias, cols)
                 continue
             schemas = [tbl.schema] if tbl.schema else self.search_path
-            self._get_schema_columns(schemas, tbl, meta, columns)
+            for schema in schemas:
+                relname = self.escape_name(tbl.name)
+                schema = self.escape_name(schema)
+                if tbl.is_function:
+                    # Return column names from a set-returning function
+                    # Get an array of FunctionMetadata objects
+                    functions = meta["functions"].get(schema, {}).get(relname)
+                    for func in functions or []:
+                        # func is a FunctionMetadata object
+                        cols = func.fields()
+                        addcols(schema, relname, tbl.alias, "functions", cols)
+                else:
+                    for reltype in ("tables", "views"):
+                        cols = meta[reltype].get(schema, {}).get(relname)
+                        if cols:
+                            cols = cols.values()
+                            addcols(schema, relname, tbl.alias, reltype, cols)
+                            break
 
         return columns
 
@@ -1125,10 +1085,10 @@ class SQLAutoComplete(object):
             SchemaObject(
                 name=func,
                 schema=(self._maybe_schema(schema=sch, parent=schema)),
-                meta=meta
+                meta=meta,
             )
-            for sch in self._get_schemas('functions', schema)
-            for (func, metas) in self.dbmetadata['functions'][sch].items()
+            for sch in self._get_schemas("functions", schema)
+            for (func, metas) in self.dbmetadata["functions"][sch].items()
             for meta in metas
             if filter_func(meta)
         ]
@@ -1234,6 +1194,7 @@ class SQLAutoComplete(object):
                 row['is_aggregate'],
                 row['is_window'],
                 row['is_set_returning'],
+                row['is_extension'],
                 row['arg_defaults'].strip('{}').split(',')
                 if row['arg_defaults'] is not None
                 else row['arg_defaults']

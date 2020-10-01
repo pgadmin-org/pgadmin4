@@ -10,12 +10,11 @@ from .meta import TableMetadata, ColumnMetadata
 # columns: list of column names
 # start: index into the original string of the left parens starting the CTE
 # stop: index into the original string of the right parens ending the CTE
-TableExpression = namedtuple('TableExpression', 'name columns start stop')
+TableExpression = namedtuple("TableExpression", "name columns start stop")
 
 
 def isolate_query_ctes(full_text, text_before_cursor):
-    """Simplify a query by converting CTEs into table metadata objects
-    """
+    """Simplify a query by converting CTEs into table metadata objects"""
 
     if not full_text:
         return full_text, text_before_cursor, tuple()
@@ -30,8 +29,8 @@ def isolate_query_ctes(full_text, text_before_cursor):
     for cte in ctes:
         if cte.start < current_position < cte.stop:
             # Currently editing a cte - treat its body as the current full_text
-            text_before_cursor = full_text[cte.start:current_position]
-            full_text = full_text[cte.start:cte.stop]
+            text_before_cursor = full_text[cte.start: current_position]
+            full_text = full_text[cte.start: cte.stop]
             return full_text, text_before_cursor, meta
 
         # Append this cte to the list of available table metadata
@@ -40,19 +39,19 @@ def isolate_query_ctes(full_text, text_before_cursor):
 
     # Editing past the last cte (ie the main body of the query)
     full_text = full_text[ctes[-1].stop:]
-    text_before_cursor = text_before_cursor[ctes[-1].stop:current_position]
+    text_before_cursor = text_before_cursor[ctes[-1].stop: current_position]
 
     return full_text, text_before_cursor, tuple(meta)
 
 
 def extract_ctes(sql):
-    """ Extract constant table expresseions from a query
+    """Extract constant table expresseions from a query
 
-        Returns tuple (ctes, remainder_sql)
+    Returns tuple (ctes, remainder_sql)
 
-        ctes is a list of TableExpression namedtuples
-        remainder_sql is the text from the original query after the CTEs have
-        been stripped.
+    ctes is a list of TableExpression namedtuples
+    remainder_sql is the text from the original query after the CTEs have
+    been stripped.
     """
 
     p = parse(sql)[0]
@@ -66,7 +65,7 @@ def extract_ctes(sql):
     # Get the next (meaningful) token, which should be the first CTE
     idx, tok = p.token_next(idx)
     if not tok:
-        return ([], '')
+        return ([], "")
     start_pos = token_start_pos(p.tokens, idx)
     ctes = []
 
@@ -87,7 +86,7 @@ def extract_ctes(sql):
     idx = p.token_index(tok) + 1
 
     # Collapse everything after the ctes into a remainder query
-    remainder = ''.join(str(tok) for tok in p.tokens[idx:])
+    remainder = "".join(str(tok) for tok in p.tokens[idx:])
 
     return ctes, remainder
 
@@ -112,15 +111,15 @@ def get_cte_from_token(tok, pos0):
 
 
 def extract_column_names(parsed):
-    # Find the first DML token to check if it's a SELECT or
-    # INSERT/UPDATE/DELETE
+    # Find the first DML token to check if it's a
+    # SELECT or INSERT/UPDATE/DELETE
     idx, tok = parsed.token_next_by(t=DML)
     tok_val = tok and tok.value.lower()
 
-    if tok_val in ('insert', 'update', 'delete'):
+    if tok_val in ("insert", "update", "delete"):
         # Jump ahead to the RETURNING clause where the list of column names is
-        idx, tok = parsed.token_next_by(idx, (Keyword, 'returning'))
-    elif not tok_val == 'select':
+        idx, tok = parsed.token_next_by(idx, (Keyword, "returning"))
+    elif not tok_val == "select":
         # Must be invalid CTE
         return ()
 

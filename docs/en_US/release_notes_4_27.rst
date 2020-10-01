@@ -16,6 +16,7 @@ Housekeeping
 ************
 
 | `Issue #5330 <https://redmine.postgresql.org/issues/5330>`_ -  Improve code coverage and API test cases for Functions.
+| `Issue #5497 <https://redmine.postgresql.org/issues/5497>`_ -  Merged the latest code of 'pgcli' used for the autocomplete feature.
 
 Bug fixes
 *********

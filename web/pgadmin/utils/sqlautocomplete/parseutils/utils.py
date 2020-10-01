@@ -5,17 +5,17 @@ from sqlparse.tokens import Token, Error
 
 cleanup_regex = {
     # This matches only alphanumerics and underscores.
-    'alphanum_underscore': re.compile(r'(\w+)$'),
+    "alphanum_underscore": re.compile(r"(\w+)$"),
     # This matches everything except spaces, parens, colon, and comma
-    'many_punctuations': re.compile(r'([^():,\s]+)$'),
+    "many_punctuations": re.compile(r"([^():,\s]+)$"),
     # This matches everything except spaces, parens, colon, comma, and period
-    'most_punctuations': re.compile(r'([^\.():,\s]+)$'),
+    "most_punctuations": re.compile(r"([^\.():,\s]+)$"),
     # This matches everything except a space.
-    'all_punctuations': re.compile(r'([^\s]+)$'),
+    "all_punctuations": re.compile(r"([^\s]+)$"),
 }
 
 
-def last_word(text, include='alphanum_underscore'):
+def last_word(text, include="alphanum_underscore"):
     r"""
     Find the last word in a sentence.
 
@@ -49,41 +49,42 @@ def last_word(text, include='alphanum_underscore'):
     '"foo*bar'
     """
 
-    if not text:   # Empty string
-        return ''
+    if not text:  # Empty string
+        return ""
 
     if text[-1].isspace():
-        return ''
+        return ""
     else:
         regex = cleanup_regex[include]
         matches = regex.search(text)
         if matches:
             return matches.group(0)
         else:
-            return ''
+            return ""
 
 
 def find_prev_keyword(sql, n_skip=0):
-    """ Find the last sql keyword in an SQL statement
+    """Find the last sql keyword in an SQL statement
 
     Returns the value of the last keyword, and the text of the query with
     everything after the last keyword stripped
     """
     if not sql.strip():
-        return None, ''
+        return None, ""
 
     parsed = sqlparse.parse(sql)[0]
     flattened = list(parsed.flatten())
-    flattened = flattened[:len(flattened) - n_skip]
+    flattened = flattened[: len(flattened) - n_skip]
 
-    logical_operators = ('AND', 'OR', 'NOT', 'BETWEEN')
+    logical_operators = ("AND", "OR", "NOT", "BETWEEN")
 
     for t in reversed(flattened):
-        if t.value == '(' or (t.is_keyword and (
-                              t.value.upper() not in logical_operators)):
+        if t.value == "(" or (
+            t.is_keyword and (t.value.upper() not in logical_operators)
+        ):
             # Find the location of token t in the original parsed statement
             # We can't use parsed.token_index(t) because t may be a child token
-            # inside a TokenList, in which case token_index thows an error
+            # inside a TokenList, in which case token_index throws an error
             # Minimal example:
             #   p = sqlparse.parse('select * from foo where bar')
             #   t = list(p.flatten())[-3]  # The "Where" token
@@ -93,14 +94,14 @@ def find_prev_keyword(sql, n_skip=0):
             # Combine the string values of all tokens in the original list
             # up to and including the target keyword token t, to produce a
             # query string with everything after the keyword token removed
-            text = ''.join(tok.value for tok in flattened[:idx + 1])
+            text = "".join(tok.value for tok in flattened[: idx + 1])
             return t, text
 
-    return None, ''
+    return None, ""
 
 
 # Postgresql dollar quote signs look like `$$` or `$tag$`
-dollar_quote_regex = re.compile(r'^\$[^$]*\$$')
+dollar_quote_regex = re.compile(r"^\$[^$]*\$$")
 
 
 def is_open_quote(sql):

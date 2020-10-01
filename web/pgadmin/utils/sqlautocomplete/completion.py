@@ -1,7 +1,6 @@
 """
 Using Completion class from
-    https://github.com/jonathanslenders/python-prompt-toolkit/
-            blob/master/prompt_toolkit/completion.py
+    https://github.com/prompt-toolkit/python-prompt-toolkit/blob/master/prompt_toolkit/completion/base.py
 """
 
 __all__ = (
@@ -38,7 +37,7 @@ class Completion(object):
         assert self.start_position <= 0
 
     def __repr__(self):
-        return '%s(text=%r, start_position=%r)' % (
+        return "%s(text=%r, start_position=%r)" % (
             self.__class__.__name__, self.text, self.start_position)
 
     def __eq__(self, other):
