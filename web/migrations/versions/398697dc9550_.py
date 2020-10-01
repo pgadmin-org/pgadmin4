@@ -40,14 +40,14 @@ def upgrade():
     """)
 
     db.engine.execute("""
-        INSERT INTO macros (id, alt, control, key, key_code) VALUES (1, false, true, '1', 49),
-        (2, false, true, '2', 50), (3, false, true, '3', 51), (4, false, true, '4', 52),
-        (5, false, true, '5', 53), (6, false, true, '6', 54), (7, false, true, '7', 55),
-        (8, false, true, '8', 56), (9, false, true, '9', 57), (10, false, true, '0', 48),
-        (11, true, false, 'F1', 112), (12, true, false, 'F2', 113), (13, true, false, 'F3', 114),
-        (14, true, false, 'F4', 115), (15, true, false, 'F5', 116), (16, true, false, 'F6', 117),
-        (17, true, false, 'F7', 118), (18, true, false, 'F8', 119), (19, true, false, 'F9', 120),
-        (20, true, false, 'F10', 121), (21, true, false, 'F11', 122), (22, true, false, 'F12', 123);
+        INSERT INTO macros (id, alt, control, key, key_code) VALUES (1, 0, 1, '1', 49),
+        (2, 0, 1, '2', 50), (3, 0, 1, '3', 51), (4, 0, 1, '4', 52),
+        (5, 0, 1, '5', 53), (6, 0, 1, '6', 54), (7, 0, 1, '7', 55),
+        (8, 0, 1, '8', 56), (9, 0, 1, '9', 57), (10, 0, 1, '0', 48),
+        (11, 1, 0, 'F1', 112), (12, 1, 0, 'F2', 113), (13, 1, 0, 'F3', 114),
+        (14, 1, 0, 'F4', 115), (15, 1, 0, 'F5', 116), (16, 1, 0, 'F6', 117),
+        (17, 1, 0, 'F7', 118), (18, 1, 0, 'F8', 119), (19, 1, 0, 'F9', 120),
+        (20, 1, 0, 'F10', 121), (21, 1, 0, 'F11', 122), (22, 1, 0, 'F12', 123);
     """)
 
 
