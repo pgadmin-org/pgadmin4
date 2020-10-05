@@ -143,10 +143,7 @@ define('pgadmin.node.sequence', [
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         },{
           id: 'start', label: gettext('Start'), type: 'int',
-          mode: ['properties', 'create'], group: gettext('Definition'),
-          readonly: function(m) {
-            return !m.isNew();
-          },
+          mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         },{
           id: 'minimum', label: gettext('Minimum'), type: 'int',
           mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
