@@ -690,12 +690,17 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
             sid: Server ID
             did: Database ID
         """
-        sql = render_template("/".join([self.template_path, 'templates.sql']))
-        status, result = self.conn.execute_dict(sql)
-        if not status:
-            return internal_server_error(errormsg=result)
+        data = []
+        if self.manager.version < 130000:
+            sql = render_template("/".join(
+                [self.template_path, 'templates.sql']))
+            status, result = self.conn.execute_dict(sql)
+            if not status:
+                return internal_server_error(errormsg=result)
+            data = result['rows']
+
         return make_json_response(
-            data=result['rows'],
+            data=data,
             status=200
         )
 

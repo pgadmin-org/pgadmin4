@@ -38,6 +38,10 @@ class LanguagesGetFunctionAndTemplateTestCase(BaseTestGenerator):
         self.language_id = language_utils.create_language(self.server,
                                                           self.db_name,
                                                           self.lang_name)
+        if hasattr(self, 'server_max_version'):
+            if self.server_information['server_version'] > \
+                    self.server_max_version:
+                self.skipTest(self.skip_msg)
 
     def runTest(self):
         """This function will get the language under test database."""

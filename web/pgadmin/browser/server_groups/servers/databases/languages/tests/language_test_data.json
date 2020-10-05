@@ -354,6 +354,8 @@
       "name": "Error while getting language template",
       "url": "/browser/language/get_templates/",
       "is_positive_test": false,
+      "server_max_version": 129999,
+      "skip_msg": "Language templates are not supported in PG/EPAS 13.0 and above.",
       "expected_data": {
         "status_code": 500,
         "message": "Error while getting language templates"

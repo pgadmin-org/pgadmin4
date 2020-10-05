@@ -119,6 +119,25 @@ define('pgadmin.node.language', [
 
             return res;
           },
+          visible: function() {
+            if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
+              && !_.isUndefined(this.node_info.server.version) &&
+                this.node_info.server.version < 130000) {
+              return true;
+            }
+            return false;
+          },
+        }, {
+          id: 'name', label: gettext('Name'), type: 'text',
+          mode: ['properties', 'create', 'edit'],
+          visible: function() {
+            if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
+              && !_.isUndefined(this.node_info.server.version) &&
+                this.node_info.server.version >= 130000) {
+              return true;
+            }
+            return false;
+          },
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
           type: 'text',
