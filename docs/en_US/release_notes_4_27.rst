@@ -38,4 +38,5 @@ Bug fixes
 | `Issue #5855 <https://redmine.postgresql.org/issues/5855>`_ -  Ensure that the user should be able to change the start value of the existing sequence.
 | `Issue #5861 <https://redmine.postgresql.org/issues/5861>`_ -  Ensure that the 'Remove Server' option should be visible in the context menu.
 | `Issue #5867 <https://redmine.postgresql.org/issues/5867>`_ -  Fixed an issue where some properties are not being updated correctly for the shared server.
+| `Issue #5882 <https://redmine.postgresql.org/issues/5882>`_ -  Fixed invalid literal issue when fetching dependencies for Materialized View.
 | `Issue #5885 <https://redmine.postgresql.org/issues/5885>`_ -  Fixed an issue where the user is unable to change the macro name.
