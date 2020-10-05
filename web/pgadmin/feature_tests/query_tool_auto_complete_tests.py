@@ -99,7 +99,8 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
 
         print("Auto complete function with argument ... ",
               file=sys.stderr, end="")
-        self._auto_complete("SELECT pg_catalog.pg_st", "pg_stat_file(filename)")
+        self._auto_complete("SELECT pg_catalog.pg_st",
+                            "pg_stat_file(filename)")
         print("OK.", file=sys.stderr)
         self.page.clear_query_tool()
 
