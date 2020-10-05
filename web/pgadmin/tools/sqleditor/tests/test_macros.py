@@ -29,7 +29,7 @@ class TestMacros(BaseTestGenerator):
          dict(
              url='set_macros',
              method='put',
-             operation='update',
+             operation='set',
              data={
                  'changed': [
                      {'id': 1,
@@ -43,6 +43,26 @@ class TestMacros(BaseTestGenerator):
                      {'id': 3,
                       'name': 'Test Macro 3',
                       'sql': 'SELECT 3;'
+                      },
+                 ]
+             }
+         )),
+        ('Update Macros',
+         dict(
+             url='set_macros',
+             method='put',
+             operation='update',
+             data={
+                 'changed': [
+                     {'id': 1,
+                      'name': 'Test Macro 1 updated',
+                      },
+                     {'id': 2,
+                      'sql': 'SELECT 22;'
+                      },
+                     {'id': 3,
+                      'name': 'Test Macro 3 updated',
+                      'sql': 'SELECT 33;'
                       },
                  ]
              }
@@ -113,12 +133,20 @@ class TestMacros(BaseTestGenerator):
 
                 if self.operation == 'clear':
                     self.assertEqual(response.status_code, 410)
-                else:
+                elif self.operation == 'set':
                     self.assertEqual(response.status_code, 200)
 
                     response_data = json.loads(response.data.decode('utf-8'))
                     self.assertEqual(response_data['name'], m['name'])
                     self.assertEqual(response_data['sql'], m['sql'])
+                elif self.operation == 'update':
+                    self.assertEqual(response.status_code, 200)
+
+                    response_data = json.loads(response.data.decode('utf-8'))
+                    if 'name' in m:
+                        self.assertEqual(response_data['name'], m['name'])
+                    if 'sql' in m:
+                        self.assertEqual(response_data['sql'], m['sql'])
 
     def tearDown(self):
         # Disconnect the database

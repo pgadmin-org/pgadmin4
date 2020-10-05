@@ -165,10 +165,10 @@ def update_macro(data, macro):
     name = data.get('name', None)
     sql = data.get('sql', None)
 
-    if name or sql and macro.sql and 'name' in data and name is None:
+    if (name or sql) and macro.sql and 'name' in data and name is None:
         return False, gettext(
             "Could not find the required parameter (name).")
-    elif name or sql and macro.name and 'sql' in data and sql is None:
+    elif (name or sql) and macro.name and 'sql' in data and sql is None:
         return False, gettext(
             "Could not find the required parameter (sql).")
 
