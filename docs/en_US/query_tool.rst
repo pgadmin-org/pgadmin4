@@ -65,7 +65,7 @@ features syntax coloring and autocompletion.
 
 To use autocomplete, begin typing your query; when you would like the Query
 editor to suggest object names or commands that might be next in your query,
-press the Control+Space key combination. For example, type "\*SELECT \* FROM\* "
+press the Control+Space key combination. For example, type "*SELECT \* FROM*"
 (without quotes, but with a trailing space), and then press the Control+Space
 key combination to select from a popup menu of autocomplete options.
 
@@ -321,3 +321,32 @@ User can connect to another server or database from existing open session of que
 
 * A newly created connection will now get listed in the options.
 * To connect, select the newly created connection from the dropdown list.
+
+Macros
+******
+
+Query Tool Macros enable you to execute pre-defined SQL queries with single key press. Pre-defined queries can contain the placeholder $SELECTION$. Upon macro execution, the placeholder will be replaced with the currently selected text in the Query Editor pane of the Query Tool.
+
+To create a macro, select the *Manage Macros* option from the *Macros* menu on the *Query Tool*. Select the key you wish to use, enter the name of the macro, and the query, optionally including the selection placeholder, and then click the Save button to store the macro.
+
+.. image:: images/query_tool_manage_macros_dialog.png
+   :alt: Query Tool Manage Macros dialogue
+   :align: center
+
+To clear a macro, select the macro on the Manage Macros dialogue, and then click the Clear button.
+
+.. image:: images/query_tool_macros_clear_row.png
+   :alt: Query Tool Manage Macros clear the row
+   :align: center
+
+It asks for the confirmation to clear a macro.
+
+.. image:: images/query_tool_macros_clear_confirmation.png
+   :alt: Query Tool Manage Macros Clear row confirmation
+   :align: center
+
+To execute a macro, simply press the appropriate shortcut keys, or select it from the Macros menu.
+
+.. image:: images/query_tool_macros_execution.png
+   :alt: Query Tool Macros Execution
+   :align: center

@@ -184,3 +184,6 @@ Query Execution
    |                      | You can specify the CSV/TXT settings through *Preferences -> SQL Editor -> CSV/TXT output*        |                |
    |                      | dialogue.                                                                                         |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Macros*             | Click the *Macros* icon to manage the macros. You can create, edit or clear the macros through    |                |
+   |                      | *Manage Macros* option.                                                                           |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
