@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #5807 <https://redmine.postgresql.org/issues/5807>`_ -  Fixed an issue where a column is renamed and then removed, then the drop SQL query takes the wrong column name.
 | `Issue #5826 <https://redmine.postgresql.org/issues/5826>`_ -  Fixed an issue where schema diff is showing identical table as different due to default vacuum settings.
 | `Issue #5830 <https://redmine.postgresql.org/issues/5830>`_ -  Fixed reverse engineering SQL where parenthesis is not properly arranged for View/MView definition.
+| `Issue #5835 <https://redmine.postgresql.org/issues/5835>`_ -  Fixed 'can't execute an empty query' message if the user change the option of Auto FK Index.
 | `Issue #5839 <https://redmine.postgresql.org/issues/5839>`_ -  Ensure that multiple extensions can be dropped from the properties tab.
 | `Issue #5841 <https://redmine.postgresql.org/issues/5841>`_ -  Fixed an issue where the server is not able to connect using the service.
 | `Issue #5843 <https://redmine.postgresql.org/issues/5843>`_ -  Fixed an issue where the 'PARALLEL UNSAFE' option is missing from reverse engineering SQL of function/procedure.

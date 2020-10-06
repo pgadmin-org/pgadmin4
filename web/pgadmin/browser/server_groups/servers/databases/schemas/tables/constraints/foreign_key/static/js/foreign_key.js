@@ -814,6 +814,9 @@ define('pgadmin.node.foreign_key', [
             onText: gettext('Yes'),
             offText: gettext('No'),
           },disabled: function(m) {
+            // Don't allow to edit the auto index setting in edit mode
+            if(!m.isNew())
+              return true;
             var index = m.get('coveringindex'),
               autoindex = m.get('autoindex'),
               setIndexName = function() {
