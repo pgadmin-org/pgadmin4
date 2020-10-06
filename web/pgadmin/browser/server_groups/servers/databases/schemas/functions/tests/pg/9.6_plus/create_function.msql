@@ -1,0 +1,14 @@
+CREATE FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(IN param character varying DEFAULT '1')
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE LEAKPROOF STRICT SECURITY DEFINER WINDOW PARALLEL UNSAFE
+    SET enable_sort=true
+AS $BODY$
+begin
+select '1';
+end
+$BODY$;
+
+ALTER FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(character varying)
+    OWNER TO postgres;

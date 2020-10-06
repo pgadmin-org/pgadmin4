@@ -18,7 +18,6 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 
     LANGUAGE {{ data.lanname|qtLiteral }}
 {% if data.procost %}
-
     COST {{data.procost}}
 {% endif %}
     {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %} {% endif %}{% if data.proleakproof %}LEAKPROOF {% endif %}
@@ -26,12 +25,16 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 {% if data.prosecdef %}SECURITY DEFINER {% endif %}
 {% if data.proiswindow %}WINDOW {% endif %}
 {% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's' or data.proparallel == 'u') %}
-{% if data.proparallel == 'r' %} PARALLEL RESTRICTED{% elif data.proparallel == 's' %} PARALLEL SAFE {% elif data.proparallel == 'u' %} PARALLEL UNSAFE{% endif %}{% endif %}
+{% if data.proparallel == 'r' %}PARALLEL RESTRICTED {% elif data.proparallel == 's' %}PARALLEL SAFE {% elif data.proparallel == 'u' %}PARALLEL UNSAFE{% endif %}{% endif %}
 {% if data.prorows and (data.prorows | int) > 0 %}
 
-    ROWS {{data.prorows}}{% endif %}
+    ROWS {{data.prorows}}
+{% endif %}
+{% if data.prosupportfunc %}
 
-    {% if data.prosupportfunc %}SUPPORT {{ data.prosupportfunc }}{% endif -%}{% if data.variables %}{% for v in data.variables %}
+    SUPPORT {{ data.prosupportfunc }}
+{% endif -%}
+{% if data.variables %}{% for v in data.variables %}
 
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor %}
 {% endif %}
