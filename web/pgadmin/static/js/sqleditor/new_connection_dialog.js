@@ -95,7 +95,7 @@ let NewConnectionDialog = {
                 closableByDimmer: false,
                 modal: false,
                 autoReset: false,
-                closable: true,
+                closable: false,
               },
             };
           },
@@ -152,14 +152,18 @@ let NewConnectionDialog = {
                 self.statusBar.removeClass('d-none');
                 $(self.statusBar.find('.alert-text')).html(msg);
                 // Disable Okay button
-                self.__internal.buttons[2].element.disabled = true;
+                if(self.__internal){
+                  self.__internal.buttons[2].element.disabled = true;
+                }
               });
 
               view.listenTo(view.model, 'pgadmin-session:valid', function() {
                 self.statusBar.addClass('d-none');
                 $(self.statusBar.find('.alert-text')).html('');
                 // Enable Okay button
-                self.__internal.buttons[2].element.disabled = false;
+                if(self.__internal) {
+                  self.__internal.buttons[2].element.disabled = false;
+                }
               });
             });
 
@@ -230,15 +234,18 @@ let NewConnectionDialog = {
                   'user': newConnCollectionModel['user'],
                   'role': newConnCollectionModel['role'],
                   'password': response.password,
+                  'server_name': response.server_name,
+                  'database_name': selected_database_name,
                 };
                 handler.gridView.on_change_connection(connection_details, self);
               }
             } else {
-              self.close();
+              Alertify.newConnectionDialog().destroy();
             }
           },
         };
       });
+
       setTimeout(function(){
         Alertify.newConnectionDialog('Connect to server.').resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.md);
       }, 500);

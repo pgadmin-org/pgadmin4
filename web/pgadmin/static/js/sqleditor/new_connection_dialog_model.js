@@ -31,7 +31,6 @@ export default function newConnectionDialogModel(response, sgid, sid) {
       });
 
       $.ajax({
-        async: false,
         url: url,
         headers: {
           'Cache-Control' : 'no-cache',
@@ -52,8 +51,8 @@ export default function newConnectionDialogModel(response, sgid, sid) {
           } else {
             self.field.set('options', []);
           }
-          //alertify.error(res.data.msg);
         }
+        Backform.Select2Control.prototype.render.apply(self, arguments);
       }).fail(function(e){
         let msg = '';
         if(e.status == 404) {
@@ -131,7 +130,8 @@ export default function newConnectionDialogModel(response, sgid, sid) {
                   if (closeEvent.button.text == gettext('OK')) {
                     if(this.submit_password) {
                       var _url = url_for('sqleditor.connect_server', {'sid': this.server_id});
-
+                      var loadingDiv = $('#show_filter_progress');
+                      loadingDiv.removeClass('d-none');
                       $.ajax({
                         type: 'POST',
                         timeout: 30000,
@@ -148,8 +148,10 @@ export default function newConnectionDialogModel(response, sgid, sid) {
                               response.server_name = obj.name;
                             }
                           });
+                          loadingDiv.addClass('d-none');
                         })
                         .fail(function(xhr) {
+                          loadingDiv.addClass('d-none');
                           alertify.connectServer('Connect to server', xhr.responseJSON.result, local_self.getValueFromDOM());
                         });
                     } else {
@@ -182,8 +184,9 @@ export default function newConnectionDialogModel(response, sgid, sid) {
             'sid': self.getValueFromDOM(),
             'usr': self.model.attributes.user,
           });
+          var loadingDiv = $('#show_filter_progress');
+          loadingDiv.removeClass('d-none');
           $.ajax({
-            async: false,
             url: url,
             type: 'POST',
             headers: {
@@ -196,7 +199,9 @@ export default function newConnectionDialogModel(response, sgid, sid) {
                 response.server_name = obj.name;
               }
             });
+            loadingDiv.addClass('d-none');
           }).fail(function(xhr){
+            loadingDiv.addClass('d-none');
             alertify.connectServer('Connect to server', xhr.responseJSON.result, self.getValueFromDOM());
           });
 

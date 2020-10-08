@@ -418,11 +418,13 @@
                 </i>
             </div>
             <div class="connection-info btn-group mr-1" role="group" aria-label="">
-                <div class="editor-title" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                     style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};">&nbsp;
+                <div class="connection-data" data-toggle="dropdown">
+                    <div class="editor-title" aria-haspopup="true" aria-expanded="false"
+                         style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};">&nbsp;
+                    </div>
+                    <span class="conn-info-dd dropdown-toggle dropdown-toggle-split"
+                    aria-haspopup="true" aria-expanded="false"></span>
                 </div>
-                <span class="conn-info-dd dropdown-toggle dropdown-toggle-split"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
                 <ul class="dropdown-menu" id="connections-list">
                 </ul>
             </div>

@@ -182,7 +182,7 @@ define('tools.querytool', [
         });
       } else {
         $('.conn-info-dd').hide();
-        $('.editor-title').css({pointerEvents: 'none'});
+        $('.connection-data').css({pointerEvents: 'none', cursor: 'arrow'});
       }
     },
 
@@ -2122,8 +2122,20 @@ define('tools.querytool', [
       let title = this.$el.find('.editor-title').html();
       if(connection_details['title'] != title) {
         var self = this;
+        var loadingDiv = null;
+        var msgDiv = null;
+        if(ref){
+          loadingDiv = $('#show_filter_progress');
+          loadingDiv.removeClass('d-none');
+          msgDiv = loadingDiv.find('.sql-editor-busy-text');
+          msgDiv.text('Connecting to database...');
+        } else{
+          loadingDiv = $('#fetching_data');
+          loadingDiv.removeClass('d-none');
+          msgDiv = loadingDiv.find('.sql-editor-busy-text');
+        }
+
         $.ajax({
-          async: false,
           url: url_for('datagrid.update_query_tool_connection', {
             'trans_id': self.transId,
             'sgid': connection_details['server_group'],
@@ -2148,7 +2160,8 @@ define('tools.querytool', [
               };
               self.set_editor_title(self.handler.url_params.title);
               self.handler.setTitle(self.handler.url_params.title);
-              alertify.success('connected successfully');
+              let success_msg = connection_details['server_name'] + '/' + connection_details['database_name']+ '- Database connected';
+              alertify.success(success_msg);
               if(ref){
                 let connection_data = {
                   'server_group': self.handler.url_params.sgid,
@@ -2159,39 +2172,27 @@ define('tools.querytool', [
                   'role': connection_details['role'],
                   'password': connection_details['password'],
                   'is_allow_new_connection': true,
+                  'database_name': connection_details['database_name'],
+                  'server_name': connection_details['server_name'],
                 };
                 self.connection_list.unshift(connection_data);
                 self.render_connection(self.connection_list);
+                loadingDiv.addClass('d-none');
+                alertify.newConnectionDialog().destroy();
                 ref.close();
+              } else {
+                loadingDiv.addClass('d-none');
               }
             }
             return true;
           })
           .fail(function(xhr) {
+            loadingDiv.addClass('d-none');
             if(xhr.status == 428) {
               alertify.connectServer('Connect to server', xhr.responseJSON.result, connection_details['server'], false);
             } else {
               alertify.error(xhr.responseJSON['errormsg']);
             }
-            /*let url = url_for('sqleditor.connect_server_with_user', {
-              'sid': newConnCollectionModel['server'],
-              'usr': newConnCollectionModel['user']
-            });
-            $.ajax({
-              async: false,
-              url: url,
-              headers: {
-                'Cache-Control' : 'no-cache',
-              },
-            }).done(function () {
-              Backform.Select2Control.prototype.onChange.apply(self, arguments);
-              response.server_list.forEach(function(obj){
-                if(obj.id==self.model.changed.server) {
-                  response.server_name = obj.name;
-                }
-              });
-            }).fail(function(xhr){});*/
-
           });
       }
     },
@@ -2526,6 +2527,8 @@ define('tools.querytool', [
             'role': null,
             'title': _.unescape(url_params.title),
             'is_allow_new_connection': false,
+            'database_name': url_params.title.split('/')[0],
+            'server_name': url_params.title.split('@')[1],
           };
           self.gridView.connection_list.unshift(connection_data);
           self.gridView.render_connection(self.gridView.connection_list);
