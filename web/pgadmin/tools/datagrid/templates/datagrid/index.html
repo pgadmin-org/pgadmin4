@@ -395,7 +395,7 @@
                     {% for i in macros %}
                     <li>
                         <a class="dropdown-item btn-macro" data-macro-id="{{ i.id }}" href="#" tabindex="0">
-                            <span> {{ _(i.name) }} </span>
+                            <span> {{ _(i.name)|e }} </span>
                             <span> ({{ i.key_label }}) </span>
                         </a>
                     </li>

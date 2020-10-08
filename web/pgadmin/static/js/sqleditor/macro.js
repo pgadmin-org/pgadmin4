@@ -10,6 +10,7 @@
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import $ from 'jquery';
+import _ from 'underscore';
 import Alertify from 'pgadmin.alertifyjs';
 import pgAdmin from 'sources/pgadmin';
 import Backform from 'pgadmin.backform';
@@ -269,16 +270,16 @@ let MacroDialog = {
                     var str = `
                       <li>
                           <a class="dropdown-item" id="btn-manage-macros" href="#" tabindex="0">
-                              <span> Manage Macros... </span>
+                              <span> ${gettext('Manage Macros...')} </span>
                           </a>
                       </li>
                       <li class="dropdown-divider"></li>`;
                     _.each(macros, function(m) {
                       if (m.name) {
                         str += `<li>
-                        <a class="dropdown-item btn-macro" data-macro-id="`+ m.id +`" href="#" tabindex="0">
-                            <span>` + m.name + `</span>
-                            <span> (` + m.key_label + `) </span>
+                        <a class="dropdown-item btn-macro" data-macro-id="${m.id}" href="#" tabindex="0">
+                            <span> ${_.escape(m.name)} </span>
+                            <span> (${m.key_label}) </span>
                         </a>
                        </li>`;
                       }
