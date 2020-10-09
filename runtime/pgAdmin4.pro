@@ -28,6 +28,7 @@ QMAKE_LFLAGS += $$(PGADMIN_LDFLAGS)
 
 # Figure out where/what Python looks like and that it's suitable
 PYTHON_DIR = $$(PGADMIN_PYTHON_DIR)
+PYTHON_EXE_FILE_NAME = $$(PGADMIN_PYTHON_EXE_FILE_NAME)
 
 equals(PYTHON_DIR, "") {
     error(The PGADMIN_PYTHON_DIR environment variable is not set. Please set it to a directory path under which Python 3.4 or later has been installed and try again.)
@@ -42,11 +43,15 @@ win32 {
     } else {
         message(Platform: Linux)
     }
-    PYTHON_EXE = $${PYTHON_DIR}/bin/python3
+    equals(PYTHON_EXE_FILE_NAME, "") {
+        PYTHON_EXE = $${PYTHON_DIR}/bin/python3
+    } else {
+        PYTHON_EXE = $${PYTHON_DIR}/bin/$${PYTHON_EXE_FILE_NAME}
+    }
 }
 
 !exists($$PYTHON_EXE) {
-    error(The Python executable ($$PYTHON_EXE) could not be found. Please ensure the PGADMIN_PYTHON_DIR environment variable is correctly set.)
+    error(The Python executable ($$PYTHON_EXE) could not be found. Please ensure the PGADMIN_PYTHON_DIR environment variable is correctly set. Or set PGADMIN_PYTHON_EXE_FILE_NAME if the executable filename is different from python3)
 }
 message(Python executable: $$PYTHON_EXE)
 
@@ -69,7 +74,7 @@ win32 {
 }
 else {
     # Find the best matching python-config (there may be more than one)
-    exists($PYTHON_DIR/bin/python$${PYTHON_VERSION}-config) {
+    exists($${PYTHON_DIR}/bin/python$${PYTHON_VERSION}-config) {
         PYTHON_CONFIG = $$PYTHON_DIR/bin/python$${PYTHON_VERSION}-config
     } else: exists($${PYTHON_DIR}/bin/python$${PYTHON_MAJOR_VERSION}-config) {
         PYTHON_CONFIG = $${PYTHON_DIR}/bin/python$${PYTHON_MAJOR_VERSION}-config
