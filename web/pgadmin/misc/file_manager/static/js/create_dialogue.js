@@ -157,9 +157,7 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
           sep = '\\';
         }
 
-        if ((!newFile.includes('.') ||
-            newFile.split('.').pop().includes(sep)) &&
-            ext != '*') {
+        if (ext != '*') {
           newFile = newFile + '.' + ext;
           $('.storage_dialog #uploader .input-path').val(newFile);
         }
