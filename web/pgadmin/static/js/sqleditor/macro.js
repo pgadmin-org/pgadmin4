@@ -50,7 +50,7 @@ let MacroDialog = {
                 label: gettext('Help'),
                 'aria-label': gettext('Help'),
                 url: url_for('help.static', {
-                  'filename': 'querytool.html',
+                  'filename': 'query_tool.html',
                 }),
               },
             }, {
