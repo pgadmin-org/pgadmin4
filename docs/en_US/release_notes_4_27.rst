@@ -38,6 +38,7 @@ Bug fixes
 | `Issue #5841 <https://redmine.postgresql.org/issues/5841>`_ -  Fixed an issue where the server is not able to connect using the service.
 | `Issue #5843 <https://redmine.postgresql.org/issues/5843>`_ -  Fixed an issue where the 'PARALLEL UNSAFE' option is missing from reverse engineering SQL of function/procedure.
 | `Issue #5845 <https://redmine.postgresql.org/issues/5845>`_ -  Fixed an issue where the query tool is not fetching more than 1000 rows for the table does not have any primary key.
+| `Issue #5853 <https://redmine.postgresql.org/issues/5853>`_ -  Fixed an issue where 'Rows X' column values were not visible properly for Explain Analyze in Dark theme.
 | `Issue #5855 <https://redmine.postgresql.org/issues/5855>`_ -  Ensure that the user should be able to change the start value of the existing sequence.
 | `Issue #5861 <https://redmine.postgresql.org/issues/5861>`_ -  Ensure that the 'Remove Server' option should be visible in the context menu.
 | `Issue #5867 <https://redmine.postgresql.org/issues/5867>`_ -  Fixed an issue where some properties are not being updated correctly for the shared server.
