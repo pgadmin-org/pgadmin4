@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #1402 <https://redmine.postgresql.org/issues/1402>`_ -  Added Macro support.
+| `Issue #2519 <https://redmine.postgresql.org/issues/2519>`_ -  Added support to view trigger function under the respective trigger node.
 | `Issue #3794 <https://redmine.postgresql.org/issues/3794>`_ -  Allow user to change the database connection from an open query tool tab.
 | `Issue #5200 <https://redmine.postgresql.org/issues/5200>`_ -  Added support to ignore the owner while comparing objects in the Schema Diff tool.
 | `Issue #5857 <https://redmine.postgresql.org/issues/5857>`_ -  Added documentation for Macro support.

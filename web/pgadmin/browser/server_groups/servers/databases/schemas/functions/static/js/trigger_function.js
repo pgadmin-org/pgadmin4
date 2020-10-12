@@ -38,9 +38,26 @@ define('pgadmin.node.trigger_function', [
       dialogHelp: url_for('help.static', {'filename': 'trigger_function_dialog.html'}),
       label: gettext('Trigger function'),
       collection_type: 'coll-trigger_function',
+      canEdit: function(itemData, item) {
+        let node = pgBrowser.treeMenu.findNodeByDomElement(item);
+
+        if (!node || node.parentNode.getData()._type === 'trigger')
+          return false;
+
+        return true;
+      },
       hasSQL: true,
+      showMenu: function(itemData, item) {
+        let node = pgBrowser.treeMenu.findNodeByDomElement(item);
+
+        if (!node || node.parentNode.getData()._type === 'trigger')
+          return false;
+
+        return true;
+      },
       hasDepends: true,
       hasStatistics: true,
+      url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -68,7 +85,6 @@ define('pgadmin.node.trigger_function', [
           enable: 'canCreate',
         },
         ]);
-
       },
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',

@@ -121,7 +121,7 @@ class TriggerModule(CollectionNodeModule):
         """
         Load the module node as a leaf node
         """
-        return False
+        return True
 
     @property
     def module_use_template_javascript(self):
@@ -280,6 +280,11 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             )
             self.template_path = 'triggers/sql/{0}/#{1}#'.format(
                 self.manager.server_type, self.manager.version)
+
+            self.trigger_function_template_path = \
+                'trigger_functions/{0}/sql/#{1}#'.format(
+                    self.manager.server_type, self.manager.version)
+
             # Store server type
             self.server_type = self.manager.server_type
             # We need parent's name eg table name and schema name
@@ -292,6 +297,69 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             return f(*args, **kwargs)
 
         return wrap
+
+    @check_precondition
+    def get_children_nodes(self, manager, **kwargs):
+        """
+        Function is used to get the child nodes.
+        :param manager:
+        :param kwargs:
+        :return:
+        """
+        nodes = []
+        scid = kwargs.get('scid')
+        tid = kwargs.get('tid')
+        trid = kwargs.get('trid')
+
+        try:
+            SQL = render_template(
+                "/".join([self.template_path, 'get_function_oid.sql']),
+                tid=tid, trid=trid
+            )
+            status, rset = self.conn.execute_2darray(SQL)
+            if not status:
+                return internal_server_error(errormsg=rset)
+
+            if len(rset['rows']) == 0:
+                return gone(
+                    gettext("Could not find the specified trigger function"))
+
+            # For language EDB SPL we should not display any node.
+            if rset['rows'][0]['lanname'] != 'edbspl':
+                trigger_function_schema_oid = rset['rows'][0]['tfuncschoid']
+
+                sql = render_template("/".join(
+                    [self.trigger_function_template_path, self._NODE_SQL]),
+                    scid=trigger_function_schema_oid,
+                    fnid=rset['rows'][0]['tfuncoid']
+                )
+                status, res = self.conn.execute_2darray(sql)
+                if not status:
+                    return internal_server_error(errormsg=rset)
+
+                if len(res['rows']) == 0:
+                    return gone(gettext(
+                        "Could not find the specified trigger function"))
+
+                row = res['rows'][0]
+                func_name = row['name']
+                # If trigger function is from another schema then we should
+                # display the name as schema qulified name.
+                if scid != trigger_function_schema_oid:
+                    func_name = \
+                        rset['rows'][0]['tfuncschema'] + '.' + row['name']
+
+                trigger_func = current_app.blueprints['NODE-trigger_function']
+                nodes.append(trigger_func.generate_browser_node(
+                    row['oid'], trigger_function_schema_oid,
+                    gettext(func_name),
+                    icon="icon-trigger_function", funcowner=row['funcowner'],
+                    language=row['lanname'], inode=False)
+                )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+
+        return nodes
 
     @check_precondition
     def get_trigger_functions(self, gid, sid, did, scid, tid, trid=None):

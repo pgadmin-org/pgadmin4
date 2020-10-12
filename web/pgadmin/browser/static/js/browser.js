@@ -404,7 +404,7 @@ define('pgadmin.browser', [
       // Create the object menu dynamically
       if (item && obj.menus['object'] && obj.menus['object'][d._type]) {
         pgAdmin.Browser.MenuCreator(
-          $obj_mnu, obj.menus['object'][d._type], obj.menu_categories, d, item
+          obj.Nodes, $obj_mnu, obj.menus['object'][d._type], obj.menu_categories, d, item
         );
       } else {
         // Create a dummy 'no object seleted' menu
@@ -503,7 +503,7 @@ define('pgadmin.browser', [
             context_menu = {};
 
           pgAdmin.Browser.MenuCreator(
-            $div, menus, obj.menu_categories, d, item, context_menu
+            obj.Nodes, $div, menus, obj.menu_categories, d, item, context_menu
           );
 
           return {
@@ -877,7 +877,7 @@ define('pgadmin.browser', [
         $dropdown.empty();
 
         if (pgAdmin.Browser.MenuCreator(
-          $dropdown, obj.menus[o.menu], obj.menu_categories
+          obj.Nodes, $dropdown, obj.menus[o.menu], obj.menu_categories
         )) {
           $mnu.removeClass('d-none');
         }

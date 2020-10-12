@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 define([
-  'underscore', 'sources/pgadmin', 'jquery', 'sources/utils',
-], function(_, pgAdmin, $, pgadminUtils) {
+  'underscore', 'sources/pgadmin', 'jquery', 'sources/utils', 'sources/gettext',
+], function(_, pgAdmin, $, pgadminUtils, gettext) {
   'use strict';
 
   pgAdmin.Browser = pgAdmin.Browser || {};
@@ -274,20 +274,38 @@ define([
    * menu-items.
    *
    * Arguments:
-   * 1. jQuery Element on which you may want to created the menus
-   * 2. list of menu-items
-   * 3. categories - metadata information about the categories, based on which
+   * 1. nodes_obj - Nodes object contains each node object.
+   * 2. jQuery Element on which you may want to created the menus
+   * 3. list of menu-items
+   * 4. categories - metadata information about the categories, based on which
    *                 the submenu (menu-group) will be created (if any).
-   * 4. d - Data object for the selected browser tree item.
-   * 5. item - The selected browser tree item
-   * 6. menu_items - A empty object on which the context menu for the given
+   * 5. d - Data object for the selected browser tree item.
+   * 6. item - The selected browser tree item
+   * 7. menu_items - A empty object on which the context menu for the given
    *                 list of menu-items.
    *
    * Returns if any menu generated for the given input.
    */
   pgAdmin.Browser.MenuCreator = function(
-    $mnu, menus, categories, d, item, menu_items
+    nodes_obj, $mnu, menus, categories, d, item, menu_items
   ) {
+    let showMenu = true;
+
+    /* We check showMenu function is defined by the respective node, if it is
+     * defined then call the function which will return true or false.
+     */
+    if (d && nodes_obj[d._type] && !_.isUndefined(nodes_obj[d._type].showMenu))
+      showMenu = nodes_obj[d._type].showMenu(d, item);
+
+    if (!showMenu) {
+      menu_items = menu_items || {};
+      menu_items[_.uniqueId('ctx_')+ '1_1_ms'] = {
+        disabled : true,
+        name: gettext('No menu available for this object.'),
+      };
+      return;
+    }
+
     var groups = {
         'common': [],
       },

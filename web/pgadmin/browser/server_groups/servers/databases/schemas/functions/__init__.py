@@ -1151,6 +1151,14 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             object_type = 'function'
 
+            # We are showing trigger functions under the trigger node.
+            # It may possible that trigger is in one schema and trigger
+            # function is in another schema, so to show the SQL we need to
+            # change the schema id i.e scid.
+            if self.node_type == 'trigger_function' and \
+                    scid != resp_data['pronamespace']:
+                scid = resp_data['pronamespace']
+
             # Get Schema Name from its OID.
             self._get_schema_name_from_oid(resp_data)
 

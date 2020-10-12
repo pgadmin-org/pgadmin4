@@ -132,6 +132,10 @@ define('pgadmin.browser.node', [
             'action': 'edit',
           },
           icon: 'fa fa-edit',
+          enable: _.isFunction(self.canEdit) ?
+            function() {
+              return !!(self.canEdit.apply(self, arguments));
+            } : (!!self.canEdit),
         }]);
       }
 
@@ -1233,7 +1237,7 @@ define('pgadmin.browser.node', [
               tooltip: gettext('Edit'),
               extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
               icon: 'fa fa-sm fa-pencil-alt',
-              disabled: !that.canEdit,
+              disabled: _.isFunction(that.canEdit) ? !that.canEdit.apply(that, [d, i]) : !that.canEdit,
               register: function(btn) {
                 btn.on('click',() => {
                   onEdit();
