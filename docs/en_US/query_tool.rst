@@ -325,27 +325,37 @@ User can connect to another server or database from existing open session of que
 Macros
 ******
 
-Query Tool Macros enable you to execute pre-defined SQL queries with single key press. Pre-defined queries can contain the placeholder $SELECTION$. Upon macro execution, the placeholder will be replaced with the currently selected text in the Query Editor pane of the Query Tool.
+Query Tool Macros enable you to execute pre-defined SQL queries with a single key press. Pre-defined queries can contain the placeholder $SELECTION$. Upon macro execution, the placeholder will be replaced with the currently selected text in the Query Editor pane of the Query Tool.
 
-To create a macro, select the *Manage Macros* option from the *Macros* menu on the *Query Tool*. Select the key you wish to use, enter the name of the macro, and the query, optionally including the selection placeholder, and then click the Save button to store the macro.
+.. image:: images/query_tool_manage_macros.png
+   :alt: Query Tool Manage macros
+   :align: center
+
+To create a macro, select the *Manage Macros* option from the *Macros* menu on the *Query Tool*. Select the key you wish to use, enter the name of the macro, and the query, optionally including the selection placeholder, and then click the *Save* button to store the macro.
 
 .. image:: images/query_tool_manage_macros_dialog.png
    :alt: Query Tool Manage Macros dialogue
    :align: center
 
-To clear a macro, select the macro on the Manage Macros dialogue, and then click the Clear button.
+To clear a macro, select the macro on the *Manage Macros* dialogue, and then click the *Clear* button.
 
 .. image:: images/query_tool_macros_clear_row.png
    :alt: Query Tool Manage Macros clear the row
    :align: center
 
-It asks for the confirmation to clear a macro.
+The server will prompt you for confirmation to clear the macro.
 
 .. image:: images/query_tool_macros_clear_confirmation.png
    :alt: Query Tool Manage Macros Clear row confirmation
    :align: center
 
-To execute a macro, simply press the appropriate shortcut keys, or select it from the Macros menu.
+To clear all macros, click on the *Clear* button on left side of the key. The server will prompt you for confirmation to clear all the rows.
+
+.. image:: images/query_tool_macros_clear_all.png
+   :alt: Query Tool Macros Clear All
+   :align: center
+
+To execute a macro, simply select the appropriate shortcut keys, or select it from the *Macros* menu.
 
 .. image:: images/query_tool_macros_execution.png
    :alt: Query Tool Macros Execution
