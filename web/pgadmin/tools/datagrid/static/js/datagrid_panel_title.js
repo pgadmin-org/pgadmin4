@@ -32,7 +32,7 @@ export function getPanelTitle(pgBrowser, selected_item=null) {
 
   const db_label = getDatabaseLabel(parentData);
 
-  return `${db_label}/${parentData.server.user.name}@${parentData.server.label}`;
+  return `${db_label}/${_.escape(parentData.server.user.name)}@${parentData.server.label}`;
 }
 
 export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_file) {

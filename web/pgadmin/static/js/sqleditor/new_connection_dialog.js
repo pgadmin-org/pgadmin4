@@ -208,7 +208,7 @@ let NewConnectionDialog = {
 
               let is_create_connection = true;
 
-              handler.gridView.connection_list.forEach(function(connection_data){
+              handler.gridView.connection_list.forEach(function(connection_data) {
                 if(parseInt(connection_data['server']) == newConnCollectionModel['server']
                 && parseInt(connection_data['database']) == newConnCollectionModel['database']
                 && connection_data['user'] == newConnCollectionModel['user'] && connection_data['role'] == newConnCollectionModel['role']) {
@@ -225,17 +225,17 @@ let NewConnectionDialog = {
               if(!is_create_connection) {
                 let errmsg = 'Connection with this configuration already present.';
                 Alertify.info(errmsg);
-              }else {
+              } else {
                 let connection_details = {
                   'server_group': handler.gridView.handler.url_params.sgid,
                   'server': newConnCollectionModel['server'],
                   'database': newConnCollectionModel['database'],
-                  'title': tab_title,
+                  'title': _.escape(tab_title),
                   'user': newConnCollectionModel['user'],
                   'role': newConnCollectionModel['role'],
                   'password': response.password,
-                  'server_name': response.server_name,
-                  'database_name': selected_database_name,
+                  'server_name': _.escape(response.server_name),
+                  'database_name': _.escape(selected_database_name),
                 };
                 handler.gridView.on_change_connection(connection_details, self);
               }

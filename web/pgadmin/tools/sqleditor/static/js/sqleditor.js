@@ -246,7 +246,7 @@ define('tools.querytool', [
     },
 
     set_editor_title: function(title) {
-      this.$el.find('.editor-title').text(title);
+      this.$el.find('.editor-title').text(_.unescape(title));
       this.render_connection(this.connection_list);
     },
 
@@ -2158,9 +2158,9 @@ define('tools.querytool', [
                 'sid': connection_details['server'],
                 'title': connection_details['title'],
               };
-              self.set_editor_title(self.handler.url_params.title);
-              self.handler.setTitle(self.handler.url_params.title);
-              let success_msg = connection_details['server_name'] + '/' + connection_details['database_name']+ '- Database connected';
+              self.set_editor_title(_.unescape(self.handler.url_params.title));
+              self.handler.setTitle(_.unescape(self.handler.url_params.title));
+              let success_msg = connection_details['server_name'] + '/' + connection_details['database_name'] + '- Database connected';
               alertify.success(success_msg);
               if(ref){
                 let connection_data = {
@@ -2527,8 +2527,8 @@ define('tools.querytool', [
             'role': null,
             'title': _.unescape(url_params.title),
             'is_allow_new_connection': false,
-            'database_name': url_params.title.split('/')[0],
-            'server_name': url_params.title.split('@')[1],
+            'database_name': _.unescape(url_params.title.split('/')[0]),
+            'server_name': _.unescape(url_params.title.split('@')[1]),
           };
           self.gridView.connection_list.unshift(connection_data);
           self.gridView.render_connection(self.gridView.connection_list);
