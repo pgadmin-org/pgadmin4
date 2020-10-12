@@ -95,79 +95,85 @@ export default function newConnectionDialogModel(response, sgid, sid) {
       control: Backform.Select2Control.extend({
         connect: function(self) {
           let local_self = self;
-          if(!alertify.connectServer){
-            alertify.dialog('connectServer', function factory() {
-              return {
-                main: function(
-                  title, message, server_id, submit_password=true
-                ) {
-                  this.set('title', title);
-                  this.message = message;
-                  this.server_id = server_id;
-                  this.submit_password = submit_password;
-                },
-                setup:function() {
-                  return {
-                    buttons:[{
-                      text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
-                      key: 27,
-                    },{
-                      text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
-                    }],
-                    focus: {element: '#password', select: true},
-                    options: {
-                      modal: 0, resizable: false, maximizable: false, pinnable: false,
-                    },
-                  };
-                },
-                build:function() {
-                },
-                prepare:function() {
-                  this.setContent(this.message);
-                },
-                callback: function(closeEvent) {
 
-                  if (closeEvent.button.text == gettext('OK')) {
-                    if(this.submit_password) {
-                      var _url = url_for('sqleditor.connect_server', {'sid': this.server_id});
-                      var loadingDiv = $('#show_filter_progress');
-                      loadingDiv.removeClass('d-none');
-                      $.ajax({
-                        type: 'POST',
-                        timeout: 30000,
-                        url: _url,
-                        data: $('#frmPassword').serialize(),
-                      })
-                        .done(function() {
-                          local_self.model.attributes.database = null;
-                          local_self.model.attributes.user = null;
-                          local_self.model.attributes.role = null;
-                          Backform.Select2Control.prototype.onChange.apply(local_self, arguments);
-                          response.server_list.forEach(function(obj){
-                            if(obj.id==self.model.changed.server) {
-                              response.server_name = obj.name;
-                            }
-                          });
-                          loadingDiv.addClass('d-none');
-                        })
-                        .fail(function(xhr) {
-                          loadingDiv.addClass('d-none');
-                          alertify.connectServer('Connect to server', xhr.responseJSON.result, local_self.getValueFromDOM());
-                        });
-                    } else {
-                      response.password = $('#password').val();
-                    }
-                  } else {
-                    local_self.model.attributes.database = null;
-                    local_self.model.attributes.user = null;
-                    local_self.model.attributes.role = null;
-                    Backform.Select2Control.prototype.onChange.apply(local_self, arguments);
-                  }
-                  closeEvent.close = true;
-                },
-              };
-            });
+          if(alertify.connectServer) {
+            delete alertify.connectServer;
           }
+
+          alertify.dialog('connectServer', function factory() {
+            return {
+              main: function(
+                title, message, server_id, submit_password=true
+              ) {
+                this.set('title', title);
+                this.message = message;
+                this.server_id = server_id;
+                this.submit_password = submit_password;
+              },
+              setup:function() {
+                return {
+                  buttons:[{
+                    text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
+                    key: 27,
+                  },{
+                    text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
+                  }],
+                  focus: {element: '#password', select: true},
+                  options: {
+                    modal: 0, resizable: false, maximizable: false, pinnable: false,
+                  },
+                };
+              },
+              build:function() {
+              },
+              prepare:function() {
+                this.setContent(this.message);
+              },
+              callback: function(closeEvent) {
+
+                if (closeEvent.button.text == gettext('OK')) {
+                  if(this.submit_password) {
+                    var _url = url_for('sqleditor.connect_server', {'sid': this.server_id});
+                    var loadingDiv = $('#show_filter_progress');
+                    loadingDiv.removeClass('d-none');
+                    $.ajax({
+                      type: 'POST',
+                      timeout: 30000,
+                      url: _url,
+                      data: $('#frmPassword').serialize(),
+                    })
+                      .done(function() {
+                        local_self.model.attributes.database = null;
+                        local_self.model.attributes.user = null;
+                        local_self.model.attributes.role = null;
+                        Backform.Select2Control.prototype.onChange.apply(local_self, arguments);
+                        response.server_list.forEach(function(obj){
+                          if(obj.id==self.model.changed.server) {
+                            response.server_name = obj.name;
+                          }
+                        });
+                        loadingDiv.addClass('d-none');
+                        alertify.connectServer().destroy();
+                      })
+                      .fail(function(xhr) {
+                        loadingDiv.addClass('d-none');
+                        alertify.connectServer().destroy();
+                        alertify.connectServer('Connect to server', xhr.responseJSON.result, local_self.getValueFromDOM());
+                      });
+                  } else {
+                    response.password = $('#password').val();
+                  }
+                } else {
+                  local_self.model.attributes.database = null;
+                  local_self.model.attributes.user = null;
+                  local_self.model.attributes.role = null;
+                  Backform.Select2Control.prototype.onChange.apply(local_self, arguments);
+                  alertify.connectServer().destroy();
+                }
+                closeEvent.close = true;
+              },
+            };
+          });
         },
         render: function() {
           let self = this;
