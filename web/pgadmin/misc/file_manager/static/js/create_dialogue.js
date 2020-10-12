@@ -151,7 +151,9 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
            there is a . already but it's not following the last /, AND the
            extension isn't *, then we add the extension.
          */
-        if (ext != '*') {
+        if ((!newFile.includes('.') ||
+            newFile.split('.').pop() != ext) &&
+            ext != '*') {
           newFile = newFile + '.' + ext;
           $('.storage_dialog #uploader .input-path').val(newFile);
         }
