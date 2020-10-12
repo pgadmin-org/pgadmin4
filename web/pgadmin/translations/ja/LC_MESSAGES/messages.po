@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-09 17:59+0530\n"
-"PO-Revision-Date: 2020-09-12 18:00+0900\n"
+"PO-Revision-Date: 2020-10-10 02:18+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -215,7 +215,7 @@ msgstr "システムオブジェクトを表示"
 
 #: pgadmin/browser/register_browser_preferences.py:30
 msgid "Hide shared servers?"
-msgstr ""
+msgstr "共有サーバを隠す"
 
 #: pgadmin/browser/register_browser_preferences.py:31
 #: pgadmin/utils/constants.py:20
@@ -224,7 +224,7 @@ msgstr "ディスプレイ"
 
 #: pgadmin/browser/register_browser_preferences.py:32
 msgid "If set to True, then all shared servers will be hidden from browser tree"
-msgstr ""
+msgstr "True の場合、すべての共有サーバがブラウザツリーに表示されなくなります"
 
 #: pgadmin/browser/register_browser_preferences.py:40
 msgid "Enable browser tree animation?"
@@ -585,7 +585,7 @@ msgstr "サーバに接続している間は、「{0}」は変更できません
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:299
 #: pgadmin/tools/sqleditor/utils/macros.py:139
 msgid "Could not find the required parameter ({})."
-msgstr "要求されたパラメータ（{}）が見つかりません"
+msgstr "必要なパラメータ（{}）が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1028
 msgid "Not a valid Host address"
@@ -665,7 +665,7 @@ msgstr "WAL の適用を一時停止しました"
 #: pgadmin/browser/server_groups/servers/__init__.py:1730
 #: pgadmin/browser/server_groups/servers/__init__.py:1788
 msgid "Please connect the server."
-msgstr "サーバへ接続してください"
+msgstr "サーバに接続してください"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1894
 #: pgadmin/browser/server_groups/servers/__init__.py:1927
@@ -3780,7 +3780,7 @@ msgstr "排他制約が見つかりませんでした"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:526
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:514
 msgid "Could not find required parameter ({})."
-msgstr "要求されたパラメータ（{}）が見つかりません"
+msgstr "必要なパラメータ（{}）が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:690
 msgid "The specified exclusion constraint could not be found.\n"
@@ -4061,7 +4061,7 @@ msgstr "一意性制約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:532
 msgid "Could not find at least one required parameter ({})."
-msgstr "要求されたパラメータ（{}）が1つも見つかりません"
+msgstr "必要なパラメータ（{}）が1つも見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:735
 msgid "The specified constraint could not be found.\n"
@@ -7486,7 +7486,7 @@ msgstr "サーバ %s から切断しますか？"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:273
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:255
 msgid "Ok"
-msgstr ""
+msgstr "OK"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:274
 #: pgadmin/browser/server_groups/servers/static/js/server.js:440
@@ -7645,7 +7645,7 @@ msgstr "いますぐ接続"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:806
 msgid "Shared?"
-msgstr ""
+msgstr "共有"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:837
 #: pgadmin/browser/server_groups/servers/static/js/server.js:858
@@ -7787,7 +7787,7 @@ msgid ""
 "You have connected to a server version that is older than is supported by"
 " pgAdmin. This may cause pgAdmin to break in strange and unpredictable "
 "ways. Or a plague of frogs. Either way, you have been warned!"
-msgstr "pgAdmin がサポートしていない、古いバージョンのサーバへ接続しました。したがって、想定外の挙動やエラーが発生するかもしれません"
+msgstr "pgAdmin がサポートしていない、古いバージョンのサーバに接続しました。したがって、想定外の挙動やエラーが発生するかもしれません"
 
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:201
 msgid "Please select a parameter name."
@@ -7894,7 +7894,7 @@ msgstr "場所は必須です"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:5
 msgid "Please enter the password for the user to connect the server - \"{0}\""
-msgstr ""
+msgstr "ユーザのサーバ「{0}」に接続するためのパスワードを入力してください"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:7
 msgid ""
@@ -7920,7 +7920,7 @@ msgstr "サーバ「{1}」に接続するためのユーザ「{0}」に対する
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:28
 msgid "Database server password for the user to connect the server \"{0}\""
-msgstr ""
+msgstr "サーバ「{0}」に接続するためのユーザに対するデータベースサーバパスワード"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:30
 msgid "Database server password for the user '{0}' to connect the server \"{1}\""
@@ -8545,7 +8545,7 @@ msgstr ""
 
 #: pgadmin/browser/templates/browser/js/messages.js:22
 msgid "Click here for details."
-msgstr ""
+msgstr "詳細はこちらをクリックしてください"
 
 #: pgadmin/browser/templates/browser/js/messages.js:23
 #: pgadmin/static/js/backform.pgadmin.js:1996
@@ -8554,31 +8554,31 @@ msgstr "一般"
 
 #: pgadmin/browser/templates/browser/js/messages.js:25
 msgid "Definition incomplete"
-msgstr ""
+msgstr "定義が不完全です"
 
 #: pgadmin/browser/templates/browser/js/messages.js:26
 msgid "Nothing changed"
-msgstr ""
+msgstr "変更なし"
 
 #: pgadmin/browser/templates/browser/js/messages.js:27
 #, python-format
 msgid "'%s' must be an integer."
-msgstr ""
+msgstr "「%s」は整数にしてください"
 
 #: pgadmin/browser/templates/browser/js/messages.js:28
 #, python-format
 msgid "'%s' must be a numeric."
-msgstr ""
+msgstr "「%s」は数値にしてください"
 
 #: pgadmin/browser/templates/browser/js/messages.js:29
 #, python-format
 msgid "'%s' must be greater than or equal to %s."
-msgstr ""
+msgstr "「%s」は「%s」以上にしてください"
 
 #: pgadmin/browser/templates/browser/js/messages.js:30
 #, python-format
 msgid "'%s' must be less than or equal to %s."
-msgstr ""
+msgstr "「%s」は「%s」以下にしてください"
 
 #: pgadmin/browser/templates/browser/js/messages.js:33
 #: pgadmin/misc/sql/static/js/sql.js:102
@@ -8607,7 +8607,7 @@ msgstr "情報の取得エラー - %s"
 #: pgadmin/browser/templates/browser/js/utils.js:111
 #: pgadmin/browser/templates/browser/js/utils.js:118
 msgid "Error loading script - "
-msgstr ""
+msgstr "スクリプトの読み込みエラー - "
 
 #: pgadmin/dashboard/__init__.py:57
 msgid "Dashboard"
@@ -8696,11 +8696,11 @@ msgstr "失敗しました"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:209
 msgid "Please connect to the selected server to view the graph."
-msgstr ""
+msgstr "グラフを表示するには、選択したサーバに接続してください"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:211
 msgid "An error occurred whilst rendering the graph."
-msgstr ""
+msgstr "グラフの描画中にエラーが発生しました"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:214
 #: pgadmin/dashboard/static/js/dashboard.js:493
@@ -8714,31 +8714,31 @@ msgstr "サーバに接続できなかったか、接続が切断されました
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:286
 msgid " seconds ago"
-msgstr ""
+msgstr " 秒前"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:335
 msgid "Database sessions"
-msgstr ""
+msgstr "データベースセッション"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:335
 msgid "Server sessions"
-msgstr ""
+msgstr "サーバセッション"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:341
 msgid "Transactions per second"
-msgstr ""
+msgstr "秒間トランザクション"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:349
 msgid "Tuples in"
-msgstr ""
+msgstr "書き込み行数"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:355
 msgid "Tuples out"
-msgstr ""
+msgstr "読み取り行数"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:361
 msgid "Block I/O"
-msgstr ""
+msgstr "ブロック I/O"
 
 #: pgadmin/dashboard/static/js/dashboard.js:45
 #: pgadmin/dashboard/static/js/dashboard.js:46
@@ -9767,17 +9767,17 @@ msgstr "行を削除"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:612
 msgid "Are you sure you wish to clear this row?"
-msgstr ""
+msgstr "この行を消去しますか？"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:613
 msgid "Clear Row"
-msgstr ""
+msgstr "行を消去"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:655
 #: pgadmin/static/js/sqleditor/macro_model.js:114
 #: pgadmin/static/js/sqleditor/macro_model.js:145
 msgid "Clear row"
-msgstr ""
+msgstr "行を消去"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:1182
 #: pgadmin/static/js/backgrid.pgadmin.js:1240
@@ -9990,44 +9990,44 @@ msgstr "非 SRID の幾何データ %s は描画されません"
 #: pgadmin/static/js/sqleditor/macro.js:22
 #: pgadmin/static/js/sqleditor/macro.js:35
 msgid "Manage Macros"
-msgstr ""
+msgstr "マクロを管理"
 
 #: pgadmin/static/js/sqleditor/macro.js:291
 msgid "Macro updated successfully"
-msgstr ""
+msgstr "マクロを正常に更新しました"
 
 #: pgadmin/static/js/sqleditor/macro_model.js:67
 msgid "Please enter macro name."
-msgstr ""
+msgstr "マクロ名を入力してください"
 
 #: pgadmin/static/js/sqleditor/macro_model.js:71
 msgid "Please enter macro sql."
-msgstr ""
+msgstr "マクロの SQL を入力してください"
 
 #: pgadmin/static/js/sqleditor/macro_model.js:87
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:383
 msgid "Macros"
-msgstr ""
+msgstr "マクロ"
 
 #: pgadmin/static/js/sqleditor/macro_model.js:130
 msgid "Clear All Rows"
-msgstr ""
+msgstr "すべての行を消去"
 
 #: pgadmin/static/js/sqleditor/macro_model.js:131
 msgid "Are you sure you wish to clear all rows?"
-msgstr ""
+msgstr "すべての行を消去しますか？"
 
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:30
 msgid "Connect to server"
-msgstr ""
+msgstr "サーバに接続"
 
 #: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:325
 msgid "Please select database"
-msgstr ""
+msgstr "データベースを選択してください"
 
 #: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:329
 msgid "Please select user"
-msgstr ""
+msgstr "ユーザを選択してください"
 
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:24
 #: pgadmin/static/js/sqleditor/query_tool_notifications.js:74
@@ -10841,7 +10841,7 @@ msgstr "履歴の消去"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:389
 msgid "Manage Macros..."
-msgstr ""
+msgstr "マクロを管理..."
 
 #: pgadmin/tools/debugger/__init__.py:62
 #: pgadmin/tools/debugger/static/js/debugger.js:187
@@ -11736,13 +11736,13 @@ msgstr "True の場合、スキーマを比較する際に、文字列オブジ�
 
 #: pgadmin/tools/schema_diff/__init__.py:97
 msgid "Ignore owner"
-msgstr ""
+msgstr "所有者を無視"
 
 #: pgadmin/tools/schema_diff/__init__.py:99
 msgid ""
 "If set to True, then the Schema Diff tool ignores the owner while "
 "comparing the objects."
-msgstr ""
+msgstr "True の場合、オブジェクトを比較する際に、所有者の違いを無視します"
 
 #: pgadmin/tools/schema_diff/__init__.py:458
 #: pgadmin/tools/schema_diff/__init__.py:576
@@ -12010,7 +12010,7 @@ msgstr "エラー： {0}"
 
 #: pgadmin/tools/sqleditor/__init__.py:1343
 msgid "Could not find the required parameter (query)."
-msgstr "要求されたパラメータ（クエリ）が見つかりませんでした"
+msgstr "必要なパラメータ（query）が見つかりませんでした"
 
 #: pgadmin/tools/sqleditor/command.py:74
 msgid "This feature has not been implemented for object type '{0}'."
@@ -12030,13 +12030,15 @@ msgstr "更新できない結果セットです"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:83
 msgid "No data output. Execute a query to get output."
-msgstr ""
+msgstr "データの出力がありません。クエリを実行すると結果が出力されます"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:87
 msgid ""
 "Use Explain/Explain analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
 msgstr ""
+"クエリの実行計画を生成するには、実行計画ボタンを押してください。"
+"あるいは、EXPLAIN (FORMAT JSON) [クエリ] を直接発行することもできます"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:286
 msgid "Query Editor"
@@ -12334,19 +12336,19 @@ msgstr "サーバ上のデータ更新に失敗しました"
 
 #: pgadmin/tools/sqleditor/utils/macros.py:35
 msgid "Macro not found."
-msgstr ""
+msgstr "マクロが見つかりませんでした"
 
 #: pgadmin/tools/sqleditor/utils/macros.py:107
 msgid "Nothing to update."
-msgstr ""
+msgstr "更新なし"
 
 #: pgadmin/tools/sqleditor/utils/macros.py:169
 msgid "Could not find the required parameter (name)."
-msgstr ""
+msgstr "必要なパラメータ（name）が見つかりませんでした"
 
 #: pgadmin/tools/sqleditor/utils/macros.py:172
 msgid "Could not find the required parameter (sql)."
-msgstr ""
+msgstr "必要なパラメータ（sql）が見つかりませんでした"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:24
 msgid "Query info notifier timeout"
@@ -12935,7 +12937,7 @@ msgstr "データベースサーバからロール情報を取得中にエラー
 
 #: pgadmin/utils/constants.py:48
 msgid "Unable to fetch data."
-msgstr ""
+msgstr "データを取得できません"
 
 #: pgadmin/utils/exception.py:70
 msgid ""
@@ -13094,7 +13096,7 @@ msgstr ""
 #~ msgstr "サーバグループはすでに存在します"
 
 #~ msgid "Couldn't find the required parameter(s)."
-#~ msgstr "要求されたパラメータが見つかりません"
+#~ msgstr "必要なパラメータが見つかりませんでした"
 
 #~ msgid "{0} Binary Path"
 #~ msgstr "{0} バイナリパス"
@@ -13130,7 +13132,7 @@ msgstr ""
 #~ msgstr "制約検査は必須です"
 
 #~ msgid "Couldn't find the required parameter (%s)."
-#~ msgstr "要求されたパラメータ（%s）が見つかりませんでした"
+#~ msgstr "必要なパラメータ（%s）が見つかりませんでした"
 
 #~ msgid "provide atleast copy config or parser"
 #~ msgstr "コピーする設定かパーサを選択してください"
@@ -13232,10 +13234,10 @@ msgstr ""
 #~ msgstr "検査は必須です"
 
 #~ msgid "Couldn't find required parameter (%s)."
-#~ msgstr "要求されたパラメータ（%s）が見つかりませんでした"
+#~ msgstr "必要なパラメータ（%s）が見つかりませんでした"
 
 #~ msgid "Couldn't find at least one required parameter (%s)."
-#~ msgstr "要求されたパラメータ（%s）が見つかりませんでした"
+#~ msgstr "必要なパラメータ（%s）が1つも見つかりませんでした"
 
 #~ msgid "Please specify columns for "
 #~ msgstr "列を指定してください"
@@ -14439,7 +14441,7 @@ msgstr ""
 #~ msgstr "オブジェクトのプロパティを閉じたり、リセットする前に確認する"
 
 #~ msgid "Could not find the required parameter (%s)."
-#~ msgstr "要求されたパラメータ（%s）が見つかりません"
+#~ msgstr "必要なパラメータ（%s）が見つかりませんでした"
 
 #~ msgid ""
 #~ "Unable to connect to server:\n"
@@ -14463,7 +14465,7 @@ msgstr ""
 #~ msgstr "キャストノードをリバースエンジニアリングした SQL が生成できませんでした\n"
 
 #~ msgid "Could not find the required parameter %s."
-#~ msgstr "要求されたパラメータ %s が見つかりませんでした"
+#~ msgstr "必要なパラメータ %s が見つかりませんでした"
 
 #~ msgid "host %s"
 #~ msgstr "ホスト %s"
@@ -14491,13 +14493,13 @@ msgstr ""
 #~ "            見つかりませんでした"
 
 #~ msgid "Could not find required parameter (%s)."
-#~ msgstr "要求されたパラメータ（%s）が見つかりません"
+#~ msgstr "必要なパラメータ（%s）が見つかりませんでした"
 
 #~ msgid "index_constraint"
 #~ msgstr "インデックス制約"
 
 #~ msgid "Could not find at least one required parameter (%s)."
-#~ msgstr "必須のパラメータが1つも見つかりませんでした（%s）"
+#~ msgstr "必要なパラメータ（%s）が1つも見つかりませんでした"
 
 #~ msgid "Please specify columns for %s"
 #~ msgstr "%sの列を指定してください"
