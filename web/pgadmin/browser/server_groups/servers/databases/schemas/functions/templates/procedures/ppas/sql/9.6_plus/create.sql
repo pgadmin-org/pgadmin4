@@ -14,7 +14,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}{% i
 ){% endif %}
 
 {% endif %}
-    {{ data.provolatile }} {% if data.proleakproof %}LEAKPROOF {% endif %}
+    {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %} {% endif %}{% if data.proleakproof %}LEAKPROOF {% endif %}
 {% if data.proisstrict %}STRICT {% endif %}
 {% if data.prosecdef %}SECURITY DEFINER{% endif %}
 {% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's' or data.proparallel == 'u') %}

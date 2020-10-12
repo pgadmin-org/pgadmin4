@@ -4,7 +4,7 @@
 
 CREATE OR REPLACE PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(
 	i1 integer)
-    STABLE SECURITY DEFINER PARALLEL RESTRICTED
+    VOLATILE SECURITY DEFINER PARALLEL RESTRICTED
     COST 120
     SET application_name='pgadmin'
 AS begin

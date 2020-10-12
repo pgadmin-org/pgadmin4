@@ -119,7 +119,7 @@
         "prorettypename": "trigger",
         "prorows": "4321",
         "prosecdef": true,
-        "provolatile": "s",
+        "provolatile": "v",
         "prosrc": "begin\nselect 1;\nend;",
         "seclabels": [],
         "variables": [{
@@ -170,7 +170,7 @@
         "prorettypename": "event_trigger",
         "prorows": "4321",
         "prosecdef": true,
-        "provolatile": "s",
+        "provolatile": "v",
         "prosrc": "begin\nselect 1;\nend;",
         "seclabels": [],
         "variables": [{

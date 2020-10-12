@@ -310,7 +310,7 @@ define('pgadmin.node.function', [
         },{
           id: 'prorows', label: gettext('Estimated rows'), type: 'text',
           deps: ['proretset'], visible: 'isVisible', readonly: 'isReadonly',
-          group: gettext('Options'),
+          group: gettext('Options'),disabled: 'isDisabled',
         },{
           id: 'proleakproof', label: gettext('Leak proof?'),
           group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
@@ -456,6 +456,9 @@ define('pgadmin.node.function', [
             return !m.isNew();
           case 'prorows':
             if(m.get('proretset') == true) {
+              setTimeout(function() {
+                m.set('prorows', 0);
+              }, 10);
               return false;
             }
             return true;

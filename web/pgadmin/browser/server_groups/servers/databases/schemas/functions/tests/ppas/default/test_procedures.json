@@ -53,7 +53,7 @@
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
       "data": {
-        "provolatile": "s",
+        "provolatile": "v",
         "proparallel": "r",
         "description": "some comment",
         "procost": "120"

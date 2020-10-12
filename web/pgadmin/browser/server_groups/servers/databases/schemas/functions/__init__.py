@@ -1456,12 +1456,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         # Get Schema Name from its OID.
         self._get_schema_name_from_oid(data)
 
-        if 'provolatile' in data:
-            data['provolatile'] = vol_dict[data['provolatile']]\
-                if data['provolatile'] else ''
-
         if fnid is not None:
             # Edit Mode
+            if 'provolatile' in data:
+                data['provolatile'] = vol_dict[data['provolatile']] \
+                    if data['provolatile'] else ''
 
             all_ids_dict = {
                 'gid': gid,

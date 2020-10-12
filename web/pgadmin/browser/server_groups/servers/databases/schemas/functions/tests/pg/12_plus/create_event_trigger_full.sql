@@ -6,7 +6,7 @@ CREATE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     RETURNS SETOF event_trigger
     LANGUAGE 'plpgsql'
     COST 1234
-    VOLATILE LEAKPROOF STRICT SECURITY DEFINER WINDOW
+    STABLE LEAKPROOF STRICT SECURITY DEFINER WINDOW
     ROWS 4321
     SET application_name='appname'
 AS $BODY$
