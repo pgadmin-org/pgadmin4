@@ -417,7 +417,7 @@
                     title="" role="img">
                 </i>
             </div>
-            <div class="connection-info btn-group mr-1" role="group" aria-label="">
+            <div class="connection-info btn-group mr-1" role="group" aria-label="" style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};">
                 <div class="connection-data" data-toggle="dropdown">
                     <div class="editor-title" aria-haspopup="true" aria-expanded="false"
                          style="background-color: {% if fgcolor %}{{ bgcolor or '#FFFFFF' }}{% endif %}; color: {% if fgcolor %}{{ fgcolor }}{% endif %};">&nbsp;
