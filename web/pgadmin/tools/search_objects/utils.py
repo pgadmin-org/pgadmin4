@@ -88,12 +88,6 @@ class SearchObjectsHelper:
             **kwargs
         )
 
-    def finalize_id_path(self, path, base_path):
-        if base_path is not None:
-            path = '{0}/{1}'.format(base_path, path)
-
-        return path
-
     def search(self, text, obj_type=None):
         conn = self.manager.connection(did=self.did)
         last_system_oid = (self.manager.db_info[self.did])['datlastsysoid'] \
@@ -110,7 +104,8 @@ class SearchObjectsHelper:
         # D - Catalog schema with DB support - pg_catalog
         # O - Catalog schema with object support only - info schema, dbo, sys
         status, res = conn.execute_dict(
-            self.get_sql('search.sql', search_text=text, obj_type=obj_type,
+            self.get_sql('search.sql',
+                         search_text=text.lower(), obj_type=obj_type,
                          show_system_objects=self.show_system_objects,
                          show_node_prefs=show_node_prefs, _=gettext,
                          last_system_oid=last_system_oid)
