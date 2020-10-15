@@ -2801,7 +2801,8 @@ define('tools.querytool', [
           .done(function(res) {
             if (res) {
               // Replace the place holder
-              let query = res.sql.replaceAll('$SELECTION$', self.gridView.query_tool_obj.getSelection());
+              const regex = /\$SELECTION\$/gi;
+              let query =  res.sql.replace(regex, self.gridView.query_tool_obj.getSelection());
 
               const executeQuery = new ExecuteQuery.ExecuteQuery(self, pgAdmin.Browser.UserManagement);
               executeQuery.poll = pgBrowser.override_activity_event_decorator(executeQuery.poll).bind(executeQuery);
