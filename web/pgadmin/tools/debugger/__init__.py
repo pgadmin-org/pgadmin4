@@ -85,6 +85,19 @@ class DebuggerModule(PgAdminModule):
                              'will be opened in a new browser tab.')
         )
 
+        self.tab_title = self.preference.register(
+            'display', 'debugger_tab_title_placeholder',
+            gettext("Tab title"),
+            'text', '%FUNCTION%(%ARGS%)',
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext(
+                'Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and'
+                ' %DATABASE%. Users can provide any string with or '
+                'without placeholders of their choice. The blank title will be'
+                ' revert back to the default title with placeholders.'
+            )
+        )
+
         self.preference.register(
             'keyboard_shortcuts', 'btn_start',
             gettext('Accesskey (Continue/Start)'), 'keyboardshortcut',

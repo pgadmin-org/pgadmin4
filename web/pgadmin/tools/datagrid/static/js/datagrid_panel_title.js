@@ -10,7 +10,7 @@
 import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 import gettext from 'sources/gettext';
 
-function getDatabaseLabel(parentData) {
+export function getDatabaseLabel(parentData) {
   return parentData.database ? parentData.database.label
     : parentData.server.db;
 }
@@ -20,6 +20,7 @@ function isServerInformationAvailable(parentData) {
 }
 
 export function getPanelTitle(pgBrowser, selected_item=null) {
+  var preferences = pgBrowser.get_preferences_for_module('sqleditor');
   if(selected_item == null) {
     selected_item = pgBrowser.treeMenu.selected();
   }
@@ -32,7 +33,21 @@ export function getPanelTitle(pgBrowser, selected_item=null) {
 
   const db_label = getDatabaseLabel(parentData);
 
-  return `${db_label}/${_.escape(parentData.server.user.name)}@${parentData.server.label}`;
+  var qt_title_placeholder = preferences['qt_tab_title_placeholder'];
+  var placeholders = qt_title_placeholder.split('%');
+  var title = '';
+  placeholders.forEach(function(placeholder) {
+    if(placeholder == 'DATABASE'){
+      title = title.concat(db_label);
+    } else if(placeholder == 'USERNAME') {
+      title = title.concat(parentData.server.user.name);
+    } else if(placeholder == 'SERVER') {
+      title = title.concat(parentData.server.label);
+    } else{
+      title = title.concat(placeholder);
+    }
+  });
+  return _.escape(title);
 }
 
 export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_file) {

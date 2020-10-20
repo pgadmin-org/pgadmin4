@@ -10,46 +10,55 @@
 import {showDataGrid} from '../../../pgadmin/tools/datagrid/static/js/show_data';
 import {TreeFake} from '../tree/tree_fake';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree';
+import {pgBrowser} from 'pgadmin.browser.preferences';
 
 const context = describe;
 
+var dummy_cache = [
+  {
+    id: 1,
+    mid: 1,
+    module:'sqleditor',
+    name:'vw_edt_tab_title_placeholder',
+    value: '%SCHEMA%.%TABLE%/%DATABASE%/%USERNAME%@%SERVER%',
+  },
+];
+
 describe('#show_data', () => {
   let datagrid;
-  let pgBrowser;
   let alertify;
   let transId = 98765432;
   beforeEach(() => {
+    pgBrowser.preferences_cache = dummy_cache;
     alertify = jasmine.createSpyObj('alertify', ['alert']);
     datagrid = {
       launch_grid: jasmine.createSpy('launch_grid'),
     };
-    pgBrowser = {
-      treeMenu: new TreeFake(),
-      Nodes: {
-        server_group: {
-          _type: 'server_group',
-          hasId: true,
-        },
-        server: {
-          _type: 'server',
-          hasId: true,
-        },
-        database: {
-          _type: 'database',
-          hasId: true,
-        },
-        schema: {
-          _type: 'schema',
-          hasId: true,
-        },
-        view: {
-          _type: 'view',
-          hasId: true,
-        },
-        catalog: {
-          _type: 'catalog',
-          hasId: true,
-        },
+    pgBrowser.treeMenu = new TreeFake();
+    pgBrowser.Nodes = {
+      server_group: {
+        _type: 'server_group',
+        hasId: true,
+      },
+      server: {
+        _type: 'server',
+        hasId: true,
+      },
+      database: {
+        _type: 'database',
+        hasId: true,
+      },
+      schema: {
+        _type: 'schema',
+        hasId: true,
+      },
+      view: {
+        _type: 'view',
+        hasId: true,
+      },
+      catalog: {
+        _type: 'catalog',
+        hasId: true,
       },
     };
     const parent = pgBrowser.treeMenu.addNewNode('parent', {_type: 'parent'}, []);

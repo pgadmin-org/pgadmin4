@@ -10,9 +10,9 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backgrid', 'sources/window', 'wcdocker',
+  'pgadmin.backgrid', 'sources/window', 'pgadmin.tools.debugger.utils', 'wcdocker',
 ], function(
-  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid, pgWindow
+  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid, pgWindow, debuggerUtils
 ) {
 
   var wcDocker = window.wcDocker;
@@ -773,6 +773,7 @@ define([
                         panel = pgBrowser.docker.addPanel(
                           'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                         );
+                      debuggerUtils.setDebuggerTitle(panel, self.preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label);
 
                       panel.focus();
 

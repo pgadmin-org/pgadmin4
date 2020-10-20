@@ -10,36 +10,46 @@
 import {TreeFake} from '../tree/tree_fake';
 import {showQueryTool} from '../../../pgadmin/tools/datagrid/static/js/show_query_tool';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree';
+import {pgBrowser} from 'pgadmin.browser.preferences';
 
 const context = describe;
 
+var dummy_cache = [
+  {
+    id: 1,
+    mid: 1,
+    module:'sqleditor',
+    name:'qt_tab_title_placeholder',
+    value: '%DATABASE%/%USERNAME%@%SERVER%',
+  },
+];
+
 describe('#showQueryTool', () => {
   let queryTool;
-  let pgBrowser;
   let alertify;
   let transId = 98765432;
   beforeEach(() => {
+    pgBrowser.preferences_cache = dummy_cache;
     alertify = jasmine.createSpyObj('alertify', ['alert']);
     queryTool = {
       launch_grid: jasmine.createSpy('launch_grid'),
     };
-    pgBrowser = {
-      treeMenu: new TreeFake(),
-      Nodes: {
-        server_group: {
-          _type: 'server_group',
-          hasId: true,
-        },
-        server: {
-          _type: 'server',
-          hasId: true,
-        },
-        database: {
-          _type: 'database',
-          hasId: true,
-        },
+    pgBrowser.treeMenu = new TreeFake();
+    pgBrowser.Nodes = {
+      server_group: {
+        _type: 'server_group',
+        hasId: true,
+      },
+      server: {
+        _type: 'server',
+        hasId: true,
+      },
+      database: {
+        _type: 'database',
+        hasId: true,
       },
     };
+
     const parent = pgBrowser.treeMenu.addNewNode('parent', {_type: 'parent'});
     const serverGroup1 =  new TreeNode('server_group1', {
       _type: 'server_group',

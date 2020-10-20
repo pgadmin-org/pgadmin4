@@ -10,26 +10,38 @@
 import {getPanelTitle} from '../../../pgadmin/tools/datagrid/static/js/datagrid_panel_title';
 import {TreeFake} from '../tree/tree_fake';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree';
+import {pgBrowser} from 'pgadmin.browser.preferences';
 
 const context = describe;
 
+var dummy_cache = [
+  {
+    id: 1,
+    mid: 1,
+    module:'sqleditor',
+    name:'qt_tab_title_placeholder',
+    value: '%DATABASE%/%USERNAME%@%SERVER%',
+  },
+];
+
 describe('#getPanelTitle', () => {
-  let pgBrowser;
   let tree;
   beforeEach(() => {
+    pgBrowser.preferences_cache = dummy_cache;
     tree = new TreeFake();
-    pgBrowser = {
-      treeMenu: tree,
-      Nodes: {
-        server: {
-          hasId: true,
-          _type: 'server',
-        },
-        database: {
-          hasId: true,
-          _type: 'database',
-        },
+    pgBrowser.Nodes = {
+      server: {
+        hasId: true,
+        _type: 'server',
       },
+      database: {
+        hasId: true,
+        _type: 'database',
+      },
+    };
+    pgBrowser.treeMenu = tree;
+    pgBrowser.preferences = {
+      'qt_tab_title_placeholder': '',
     };
   });
 

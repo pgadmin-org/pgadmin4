@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4232 <https://redmine.postgresql.org/issues/4232>`_ -  Added tab title placeholder for Query Tool, View/Edit Data, and Debugger.
 
 Housekeeping
 ************

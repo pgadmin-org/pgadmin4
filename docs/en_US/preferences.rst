@@ -159,6 +159,8 @@ Expand the *Debugger* node to specify your debugger display preferences.
     :alt: Preferences dialog debugger display options
     :align: center
 
+* Use *Debugger tab title placeholder* field to customize the Debugger tab title.
+
 * When the *Open in new browser tab* switch is set to *True*, the Debugger will
   open in a new browser tab when invoked.
 
@@ -283,6 +285,10 @@ Tool display.
   will disable the notifier, and a value of 0 will display it until clicked. If
   a positive value above zero is specified, the notifier will be displayed for
   the specified number of seconds. The default is *5*.
+
+* Use the *Query tool tab title placeholder* field to customize the query tool tab title.
+
+* Use *View/Edit tab title placeholder* field to customize the View/Edit Data tab title.
 
 .. image:: images/preferences_sql_editor.png
     :alt: Preferences dialog sqleditor editor settings

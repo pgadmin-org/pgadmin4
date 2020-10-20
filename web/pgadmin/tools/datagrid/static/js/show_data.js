@@ -9,7 +9,7 @@
 import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
 import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
-import {getPanelTitle} from './datagrid_panel_title';
+import {getDatabaseLabel} from './datagrid_panel_title';
 import CodeMirror from 'bundled_codemirror';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
 import $ from 'jquery';
@@ -279,16 +279,35 @@ function hasSchemaOrCatalogOrViewInformation(parentData) {
 }
 
 export function generateDatagridTitle(pgBrowser, aciTreeIdentifier) {
-  const baseTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
-
+  //const baseTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
+  var preferences = pgBrowser.get_preferences_for_module('sqleditor');
   const parentData = getTreeNodeHierarchyFromIdentifier.call(
     pgBrowser,
     aciTreeIdentifier
   );
 
   const namespaceName = retrieveNameSpaceName(parentData);
-
+  const db_label = getDatabaseLabel(parentData);
   const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
 
-  return `${namespaceName}.${node.getData().label}/${baseTitle}`;
+  var dtg_title_placeholder = preferences['vw_edt_tab_title_placeholder'];
+  var placeholders = dtg_title_placeholder.split('%');
+  var title = '';
+  placeholders.forEach(function(placeholder) {
+    if(placeholder == 'DATABASE'){
+      title = title.concat(db_label);
+    } else if(placeholder == 'USERNAME') {
+      title = title.concat(parentData.server.user.name);
+    } else if(placeholder == 'SERVER') {
+      title = title.concat(parentData.server.label);
+    } else if(placeholder == 'SCHEMA') {
+      title = title.concat(namespaceName);
+    } else if(placeholder == 'TABLE') {
+      title = title.concat(node.getData().label);
+    } else{
+      title = title.concat(placeholder);
+    }
+  });
+
+  return _.escape(title);
 }

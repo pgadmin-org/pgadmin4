@@ -10,48 +10,60 @@ import SearchObjectsDialog from 'tools/search_objects/static/js/search_objects_d
 import {TreeFake} from '../tree/tree_fake';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
+import {pgBrowser} from 'pgadmin.browser.preferences';
 
 const context = describe;
 
+var dummy_cache = [
+  {
+    id: 1,
+    mid: 1,
+    module:'sqleditor',
+    name:'qt_tab_title_placeholder',
+    value: '%DATABASE%/%USERNAME%@%SERVER%',
+  },
+];
+
 describe('SearchObjectsDialog', () => {
   let soDialog;
-  let pgBrowser;
   let jquerySpy;
   let alertifySpy;
 
   beforeEach(() => {
-    pgBrowser = {
-      treeMenu: new TreeFake(),
-      Nodes: {
-        server: {
-          hasId: true,
-          label: 'server',
-          getTreeNodeHierarchy: jasmine.createSpy('server.getTreeNodeHierarchy'),
-        },
-        database: {
-          hasId: true,
-          label: 'database',
-          getTreeNodeHierarchy: jasmine.createSpy('db.getTreeNodeHierarchy'),
-        },
-        schema: {
-          hasId: true,
-          label: 'schema',
-          getTreeNodeHierarchy: jasmine.createSpy('db.getTreeNodeHierarchy'),
-        },
+    pgBrowser.preferences_cache = dummy_cache;
+    pgBrowser.treeMenu  = new TreeFake();
+    pgBrowser.Nodes  = {
+      server: {
+        hasId: true,
+        label: 'server',
+        getTreeNodeHierarchy: jasmine.createSpy('server.getTreeNodeHierarchy'),
       },
-      stdW: {
-        sm: 500,
-        md: 700,
-        lg: 900,
-        default: 500,
+      database: {
+        hasId: true,
+        label: 'database',
+        getTreeNodeHierarchy: jasmine.createSpy('db.getTreeNodeHierarchy'),
       },
-      stdH: {
-        sm: 200,
-        md: 400,
-        lg: 550,
-        default: 550,
+      schema: {
+        hasId: true,
+        label: 'schema',
+        getTreeNodeHierarchy: jasmine.createSpy('db.getTreeNodeHierarchy'),
       },
     };
+
+    pgBrowser.stdW = {
+      sm: 500,
+      md: 700,
+      lg: 900,
+      default: 500,
+    };
+
+    pgBrowser.stdH = {
+      sm: 200,
+      md: 400,
+      lg: 550,
+      default: 550,
+    };
+
     pgBrowser.Nodes.server.hasId = true;
     pgBrowser.Nodes.database.hasId = true;
     jquerySpy = jasmine.createSpy('jquerySpy');

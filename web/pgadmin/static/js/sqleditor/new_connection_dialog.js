@@ -17,7 +17,7 @@ import newConnectionDialogModel from 'sources/sqleditor/new_connection_dialog_mo
 
 
 let NewConnectionDialog = {
-  'dialog': function(handler, reconnect) {
+  'dialog': function(handler, reconnect, preferences) {
     let url = url_for('sqleditor.get_new_connection_data', {
       'sid': handler.url_params.sid,
       'sgid': handler.url_params.sgid,
@@ -199,10 +199,26 @@ let NewConnectionDialog = {
                 }
               });
               let tab_title = '';
-              if(newConnCollectionModel['role']) {
-                tab_title = selected_database_name + '/' + newConnCollectionModel['role'] + '@' + response.server_name;
-              } else {
-                tab_title = selected_database_name + '/' + newConnCollectionModel['user'] + '@' + response.server_name;
+
+              var qt_title_placeholder = preferences['qt_tab_title_placeholder'];
+              var placeholders = qt_title_placeholder.split('%');
+              placeholders.forEach(function(placeholder) {
+                if(placeholder == 'DATABASE'){
+                  tab_title = tab_title.concat(selected_database_name);
+                } else if(placeholder == 'USERNAME') {
+                  if(newConnCollectionModel['role']) {
+                    tab_title = tab_title.concat(newConnCollectionModel['role']);
+                  } else {
+                    tab_title = tab_title.concat(newConnCollectionModel['user']);
+                  }
+                } else if(placeholder == 'SERVER') {
+                  tab_title = tab_title.concat(response.server_name);
+                } else{
+                  tab_title = tab_title.concat(placeholder);
+                }
+              });
+
+              if(!newConnCollectionModel['role']) {
                 newConnCollectionModel['role'] = null;
               }
 
@@ -212,12 +228,6 @@ let NewConnectionDialog = {
                 if(parseInt(connection_data['server']) == newConnCollectionModel['server']
                 && parseInt(connection_data['database']) == newConnCollectionModel['database']
                 && connection_data['user'] == newConnCollectionModel['user'] && connection_data['role'] == newConnCollectionModel['role']) {
-                  is_create_connection = false;
-                  // break for loop by return false.
-                  return false;
-                }
-
-                if(tab_title == connection_data['title']) {
                   is_create_connection = false;
                   return false;
                 }
@@ -236,6 +246,7 @@ let NewConnectionDialog = {
                   'password': response.password,
                   'server_name': _.escape(response.server_name),
                   'database_name': _.escape(selected_database_name),
+                  'is_selected': false,
                 };
                 handler.gridView.on_change_connection(connection_details, self);
               }

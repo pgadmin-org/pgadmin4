@@ -427,6 +427,7 @@ define([
               panel = pgBrowser.docker.addPanel(
                 'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
               );
+            debuggerUtils.setDebuggerTitle(panel, self.preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label);
 
             panel.focus();
 
@@ -549,6 +550,7 @@ define([
                     panel = pgBrowser.docker.addPanel(
                       'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                     );
+                  debuggerUtils.setDebuggerTitle(panel, self.preferences, newTreeInfo.function.label, newTreeInfo.schema.label, newTreeInfo.database.label);
 
                   panel.focus();
 

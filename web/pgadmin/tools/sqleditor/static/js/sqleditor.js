@@ -2118,10 +2118,20 @@ define('tools.querytool', [
       queryToolActions.executeMacro(this.handler, macroId);
     },
 
+    set_selected_option: function(selected_config) {
+      this.connection_list.forEach(option =>{
+        if(option['server'] == selected_config['server'] && option['database'] == selected_config['database']) {
+          selected_config['is_selected'] = true;
+        } else {
+          option['is_selected'] = false;
+        }
+      });
+    },
+
     on_change_connection: function(connection_details, ref) {
-      let title = this.$el.find('.editor-title').html();
-      if(connection_details['title'] != title) {
+      if(!connection_details['is_selected']) {
         var self = this;
+        self.set_selected_option(connection_details);
         var loadingDiv = null;
         var msgDiv = null;
         if(ref){
@@ -2174,6 +2184,7 @@ define('tools.querytool', [
                   'is_allow_new_connection': true,
                   'database_name': connection_details['database_name'],
                   'server_name': connection_details['server_name'],
+                  'is_selected': true,
                 };
                 self.connection_list.unshift(connection_data);
                 self.render_connection(self.connection_list);
@@ -2518,6 +2529,14 @@ define('tools.querytool', [
           });
 
           $('#btn-conn-status i').removeClass('obtaining-conn');
+
+          var tree_data = pgWindow.default.pgAdmin.Browser.treeMenu.translateTreeNodeIdFromACITree(pgWindow.default.pgAdmin.Browser.treeMenu.selected());
+
+          var server_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,2));
+          var database_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4));
+
+
+
           self.gridView.set_editor_title(_.unescape(url_params.title));
           let connection_data = {
             'server_group': self.gridView.handler.url_params.sgid,
@@ -2527,8 +2546,9 @@ define('tools.querytool', [
             'role': null,
             'title': _.unescape(url_params.title),
             'is_allow_new_connection': false,
-            'database_name': _.unescape(url_params.title.split('/')[0]),
-            'server_name': _.unescape(url_params.title.split('@')[1]),
+            'database_name': _.unescape(database_data.data.label),
+            'server_name': _.unescape(server_data.data.label),
+            'is_selected': true,
           };
           self.gridView.connection_list.unshift(connection_data);
           self.gridView.render_connection(self.gridView.connection_list);
@@ -3862,7 +3882,7 @@ define('tools.querytool', [
         if (arguments.length > 0 && arguments[arguments.length - 1] == 'connect') {
           reconnect = true;
         }
-        newConnectionHandler.dialog(self, reconnect);
+        newConnectionHandler.dialog(self, reconnect, self.preferences);
       },
       // This function will include the filter by selection.
       _include_filter: function() {
