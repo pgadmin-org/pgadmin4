@@ -105,6 +105,7 @@ def get_trigger_function_and_columns(conn, data, tid,
     # with schema name.
     if data['lanname'] == 'edbspl':
         data['tfunction'] = 'Inline EDB-SPL'
+        data['tgargs'] = None
     else:
         SQL = render_template("/".join(
             [template_path, 'get_triggerfunctions.sql']),

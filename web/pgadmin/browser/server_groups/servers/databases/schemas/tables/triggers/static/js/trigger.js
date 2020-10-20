@@ -209,6 +209,9 @@ define('pgadmin.node.trigger', [
           deps: ['is_constraint_trigger'],
           disabled: function(m) {
             // Disabled if table is a partitioned table.
+            if (!m.isNew())
+              return true;
+
             if (_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
               _.has(m.node_info.table, 'is_partitioned') &&
                m.node_info.table.is_partitioned && m.node_info.server.version < 110000
@@ -367,6 +370,8 @@ define('pgadmin.node.trigger', [
           },
           control: 'select2', select2: { allowClear: false, width: '100%' },
           disabled: function(m) {
+            if (!m.isNew())
+              return true;
             // If contraint trigger is set to True then only enable it
             var is_constraint_trigger = m.get('is_constraint_trigger');
             if(!m.inSchemaWithModelCheck.apply(this, [m])) {
@@ -399,7 +404,7 @@ define('pgadmin.node.trigger', [
             controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
             disabled: function(m) {
               var evn_insert = m.get('evnt_insert');
-              if (!_.isUndefined(evn_insert) && m.node_info['server']['server_type'] == 'ppas')
+              if (!_.isUndefined(evn_insert) && m.node_info['server']['server_type'] == 'ppas' && m.isNew())
                 return false;
               return m.inSchemaWithModelCheck.apply(this, [m]);
             },
@@ -412,7 +417,7 @@ define('pgadmin.node.trigger', [
             controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
             disabled: function(m) {
               var evn_update = m.get('evnt_update');
-              if (!_.isUndefined(evn_update) && m.node_info['server']['server_type'] == 'ppas')
+              if (!_.isUndefined(evn_update) && m.node_info['server']['server_type'] == 'ppas' && m.isNew())
                 return false;
               return m.inSchemaWithModelCheck.apply(this, [m]);
             },
@@ -425,13 +430,13 @@ define('pgadmin.node.trigger', [
             controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
             disabled: function(m) {
               var evn_delete = m.get('evnt_delete');
-              if (!_.isUndefined(evn_delete) && m.node_info['server']['server_type'] == 'ppas')
+              if (!_.isUndefined(evn_delete) && m.node_info['server']['server_type'] == 'ppas' && m.isNew())
                 return false;
               return m.inSchemaWithModelCheck.apply(this, [m]);
             },
           },{
             id: 'evnt_truncate', label: gettext('TRUNCATE'),
-            type: 'switch', group: gettext('Events'),
+            type: 'switch', group: gettext('Events'),deps: ['is_row_trigger', 'is_constraint_trigger'],
             extraToggleClasses: 'pg-el-sm-6',
             controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
             controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
@@ -439,18 +444,19 @@ define('pgadmin.node.trigger', [
               var is_constraint_trigger = m.get('is_constraint_trigger'),
                 is_row_trigger = m.get('is_row_trigger'),
                 server_type = m.node_info['server']['server_type'];
-              if(!m.inSchemaWithModelCheck.apply(this, [m])) {
-                // We will enabale truncate only for EDB PPAS
-                // and both triggers row & constarint are set to false
-                return (server_type !== 'ppas' ||
-                _.isUndefined(is_constraint_trigger) ||
-                  _.isUndefined(is_row_trigger) ||
-                  is_constraint_trigger !== false ||
-                  is_row_trigger !== false);
-              } else {
-                // Disable it
+              if (is_row_trigger == true){
+                setTimeout(function(){
+                  m.set('evnt_truncate', false);
+                },10);
                 return true;
               }
+
+              if (server_type === 'ppas' &&
+                  !_.isUndefined(is_constraint_trigger) &&
+                    !_.isUndefined(is_row_trigger) &&
+                    is_constraint_trigger === false && m.isNew())
+                return false;
+              return m.inSchemaWithModelCheck.apply(this, [m]);
             },
           }],
         },{
@@ -588,6 +594,8 @@ define('pgadmin.node.trigger', [
         },
         // Disable/Enable Transition tables
         disableTransition: function(m) {
+          if (!m.isNew())
+            return true;
           var flag = false,
             evnt = null,
             name = this.name,
