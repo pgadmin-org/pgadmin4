@@ -232,6 +232,9 @@ def save(pid):
     setattr(session, 'PGADMIN_LANGUAGE', language)
     response.set_cookie("PGADMIN_LANGUAGE", value=language,
                         path=config.COOKIE_DEFAULT_PATH,
+                        secure=config.SESSION_COOKIE_SECURE,
+                        httponly=config.SESSION_COOKIE_HTTPONLY,
+                        samesite=config.SESSION_COOKIE_SAMESITE,
                         **domain)
 
     return response

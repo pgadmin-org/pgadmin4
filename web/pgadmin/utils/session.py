@@ -311,7 +311,11 @@ class ManagedSessionInterface(SessionInterface):
         response.set_cookie(
             app.session_cookie_name,
             '%s!%s' % (session.sid, session.hmac_digest),
-            expires=cookie_exp, httponly=True, domain=domain
+            expires=cookie_exp,
+            secure=config.SESSION_COOKIE_SECURE,
+            httponly=config.SESSION_COOKIE_HTTPONLY,
+            samesite=config.SESSION_COOKIE_SAMESITE,
+            domain=domain
         )
 
 

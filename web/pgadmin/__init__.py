@@ -12,6 +12,7 @@ such as setup of logging, dynamic loading of modules etc."""
 import logging
 import os
 import sys
+import re
 from types import MethodType
 from collections import defaultdict
 from importlib import import_module
@@ -19,11 +20,13 @@ from importlib import import_module
 from flask import Flask, abort, request, current_app, session, url_for
 from werkzeug.exceptions import HTTPException
 from flask_babelex import Babel, gettext
+from flask_babelex import gettext as _
 from flask_login import user_logged_in, user_logged_out
 from flask_mail import Mail
 from flask_paranoid import Paranoid
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_security.utils import login_user, logout_user
+from netaddr import IPSet
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
@@ -36,9 +39,10 @@ from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
 from datetime import timedelta
 from pgadmin.setup import get_version, set_version
-from pgadmin.utils.ajax import internal_server_error
+from pgadmin.utils.ajax import internal_server_error, make_json_response
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
+from pgadmin.utils.security_headers import SecurityHeaders
 
 winreg = None
 if os.name == 'nt':
@@ -658,6 +662,36 @@ def create_app(app_name=None):
                 request.endpoint not in ('security.login', 'security.logout'):
             logout_user()
 
+    @app.before_request
+    def limit_host_addr():
+        """
+        This function validate the hosts from ALLOWED_HOSTS before allowing
+        HTTP request to avoid Host Header Injection attack
+        :return: None/JSON response with 403 HTTP status code
+        """
+        client_host = str(request.host).split(':')[0]
+        valid = True
+        allowed_hosts = config.ALLOWED_HOSTS
+
+        if len(allowed_hosts) != 0:
+            regex = re.compile(
+                r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:/\d{1,2}|)')
+            # Create separate list for ip addresses and host names
+            ip_set = list(filter(lambda ip: regex.match(ip), allowed_hosts))
+            host_set = list(filter(lambda ip: not regex.match(ip),
+                                   allowed_hosts))
+            is_ip = regex.match(client_host)
+            if is_ip:
+                valid = IPSet(ip_set).__contains__(client_host)
+            else:
+                valid = host_set.__contains__(client_host)
+
+        if not valid:
+            return make_json_response(
+                status=403, success=0,
+                errormsg=_("403 FORBIDDEN")
+            )
+
     @app.after_request
     def after_request(response):
         if 'key' in request.args:
@@ -667,13 +701,12 @@ def create_app(app_name=None):
                 domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
             response.set_cookie('PGADMIN_INT_KEY', value=request.args['key'],
                                 path=config.COOKIE_DEFAULT_PATH,
+                                secure=config.SESSION_COOKIE_SECURE,
+                                httponly=config.SESSION_COOKIE_HTTPONLY,
+                                samesite=config.SESSION_COOKIE_SAMESITE,
                                 **domain)
 
-        # X-Frame-Options for security
-        if config.X_FRAME_OPTIONS != "" and \
-                config.X_FRAME_OPTIONS.lower() != "deny":
-            response.headers["X-Frame-Options"] = config.X_FRAME_OPTIONS
-
+        SecurityHeaders.set_response_headers(response)
         return response
 
     ##########################################################################

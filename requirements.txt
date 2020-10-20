@@ -41,4 +41,5 @@ Flask-Security-Too>=3.0.0
 bcrypt<=3.1.7
 cryptography<=3.0
 sshtunnel>=0.1.5
+netaddr==0.8.0
 ldap3>=2.5.1
