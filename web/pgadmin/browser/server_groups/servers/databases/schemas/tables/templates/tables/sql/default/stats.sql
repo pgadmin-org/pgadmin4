@@ -22,9 +22,9 @@ SELECT
     last_analyze AS {{ conn|qtIdent(_('Last analyze')) }},
     last_autoanalyze AS {{ conn|qtIdent(_('Last autoanalyze')) }},
     pg_relation_size(stat.relid) AS {{ conn|qtIdent(_('Table size')) }},
-    CASE WHEN cl.reltoastrelid = 0 THEN NULL ELSE pg_relation_size(cl.reltoastrelid)
+    CASE WHEN cl.reltoastrelid = 0 THEN NULL ELSE pg_size_pretty(pg_relation_size(cl.reltoastrelid)
         + COALESCE((SELECT SUM(pg_relation_size(indexrelid))
-                        FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0)
+                        FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0))
         END AS {{ conn|qtIdent(_('Toast table size')) }},
     COALESCE((SELECT SUM(pg_relation_size(indexrelid))
                                 FROM pg_index WHERE indrelid=stat.relid)::int8, 0)
