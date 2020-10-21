@@ -371,6 +371,9 @@ div.strikeout:after {
   height: 100%;
 }
 
+.selected-connection {
+  background-color: $color-primary-light;
+}
 
 /* Setting it to hardcoded white as the SVG generated is having white bg
  * Need to check what can be done.

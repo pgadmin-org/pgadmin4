@@ -78,7 +78,6 @@ export default function newConnectionDialogModel(response, sgid, sid) {
       server: parseInt(sid),
       database: null,
       user: null,
-      password: null,
       server_name: server_name,
       database_name: database_name,
     },
@@ -92,7 +91,63 @@ export default function newConnectionDialogModel(response, sgid, sid) {
       select2: {
         allowClear: false,
       },
+      transform: function(data) {
+        let group_template_options = [];
+        for (let key in data) {
+          if (data.hasOwnProperty(key)) {
+            group_template_options.push({'group': key, 'optval': data[key]});
+          }
+        }
+        return group_template_options;
+      },
       control: Backform.Select2Control.extend({
+        template: _.template([
+          '<% if(label == false) {} else {%>',
+          '  <label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+          '<% }%>',
+          '<div class="<%=controlsClassName%>">',
+          ' <select class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
+          '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%>',
+          '  <%=required ? "required" : ""%><%= select2.multiple ? " multiple>" : ">" %>',
+          '  <%=select2.first_empty ? " <option></option>" : ""%>',
+          '  <% for (var i=0; i < options.length; i++) {%>',
+          '   <% if (options[i].group) { %>',
+          '     <% var group = options[i].group; %>',
+          '     <% if (options[i].optval) { %> <% var option_length = options[i].optval.length; %>',
+          '      <optgroup label="<%=group%>">',
+          '      <% for (var subindex=0; subindex < option_length; subindex++) {%>',
+          '        <% var option = options[i].optval[subindex]; %>',
+          '        <option ',
+          '        <% if (option.image) { %> data-image=<%=option.image%> <%}%>',
+          '        <% if (option.connected) { %> data-connected=connected <%}%>',
+          '        value=<%- formatter.fromRaw(option.value) %>',
+          '        <% if (option.selected) {%>selected="selected"<%} else {%>',
+          '        <% if (!select2.multiple && option.value === rawValue) {%>selected="selected"<%}%>',
+          '        <% if (select2.multiple && rawValue && rawValue.indexOf(option.value) != -1){%>selected="selected" data-index="rawValue.indexOf(option.value)"<%}%>',
+          '        <%}%>',
+          '        <%= disabled ? "disabled" : ""%>><%-option.label%></option>',
+          '      <%}%>',
+          '      </optgroup>',
+          '     <%}%>',
+          '   <%} else {%>',
+          '     <% var option = options[i]; %>',
+          '     <option ',
+          '     <% if (option.image) { %> data-image=<%=option.image%> <%}%>',
+          '     <% if (option.connected) { %> data-connected=connected <%}%>',
+          '     value=<%- formatter.fromRaw(option.value) %>',
+          '     <% if (option.selected) {%>selected="selected"<%} else {%>',
+          '     <% if (!select2.multiple && option.value === rawValue) {%>selected="selected"<%}%>',
+          '     <% if (select2.multiple && rawValue && rawValue.indexOf(option.value) != -1){%>selected="selected" data-index="rawValue.indexOf(option.value)"<%}%>',
+          '     <%}%>',
+          '     <%= disabled ? "disabled" : ""%>><%-option.label%></option>',
+          '   <%}%>',
+          '  <%}%>',
+          ' </select>',
+          ' <% if (helpMessage && helpMessage.length) { %>',
+          ' <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+          ' <% } %>',
+          '</div>',
+        ].join('\n')),
         connect: function(self) {
           let local_self = self;
 
@@ -147,11 +202,14 @@ export default function newConnectionDialogModel(response, sgid, sid) {
                         local_self.model.attributes.user = null;
                         local_self.model.attributes.role = null;
                         Backform.Select2Control.prototype.onChange.apply(local_self, arguments);
-                        response.server_list.forEach(function(obj){
-                          if(obj.id==self.model.changed.server) {
-                            response.server_name = obj.name;
-                          }
+                        Object.keys(response.server_list).forEach(key => {
+                          response.server_list[key].forEach(option => {
+                            if (option.value == local_self.getValueFromDOM()) {
+                              response.server_name = option.label;
+                            }
+                          });
                         });
+
                         loadingDiv.addClass('d-none');
                         alertify.connectServer().destroy();
                       })
@@ -160,8 +218,6 @@ export default function newConnectionDialogModel(response, sgid, sid) {
                         alertify.connectServer().destroy();
                         alertify.connectServer('Connect to server', xhr.responseJSON.result, local_self.getValueFromDOM());
                       });
-                  } else {
-                    response.password = $('#password').val();
                   }
                 } else {
                   local_self.model.attributes.database = null;
@@ -178,6 +234,19 @@ export default function newConnectionDialogModel(response, sgid, sid) {
         render: function() {
           let self = this;
           self.connect(self);
+          Object.keys(response.server_list).forEach(key => {
+            response.server_list[key].forEach(option => {
+              if (option.value == parseInt(sid)) {
+                response.server_name = option.label;
+              }
+            });
+          });
+          var transform = self.field.get('transform') || self.defaults.transform;
+          if (transform && _.isFunction(transform)) {
+            self.field.set('options', transform.bind(self, response.server_list));
+          } else {
+            self.field.set('options', response.server_list);
+          }
           return Backform.Select2Control.prototype.render.apply(self, arguments);
         },
         onChange: function() {
@@ -200,10 +269,12 @@ export default function newConnectionDialogModel(response, sgid, sid) {
             },
           }).done(function () {
             Backform.Select2Control.prototype.onChange.apply(self, arguments);
-            response.server_list.forEach(function(obj){
-              if(obj.id==self.model.changed.server) {
-                response.server_name = obj.name;
-              }
+            Object.keys(response.server_list).forEach(key => {
+              response.server_list[key].forEach(option => {
+                if (option.value == self.getValueFromDOM()) {
+                  response.server_name = option.label;
+                }
+              });
             });
             loadingDiv.addClass('d-none');
           }).fail(function(xhr){
@@ -213,17 +284,6 @@ export default function newConnectionDialogModel(response, sgid, sid) {
 
         },
       }),
-      options: function() {
-        return _.map(response.server_list, (obj) => {
-          if (obj.id == parseInt(sid))
-            response.server_name = obj.name;
-
-          return {
-            value: obj.id,
-            label: obj.name,
-          };
-        });
-      },
     },
     {
       id: 'database',
@@ -302,27 +362,6 @@ export default function newConnectionDialogModel(response, sgid, sid) {
       url: 'sqleditor.get_new_connection_role',
       disabled: false,
     },
-    /*{
-      id: 'password',
-      name: 'password',
-      label: gettext('Password'tools/sqleditor/__init__.py),
-      type: 'password',
-      editable: true,
-      disabled: true,
-      deps: ['user'],
-      control: Backform.InputControl.extend({
-        render: function() {
-          let self = this;
-          self.model.attributes.password = null;
-          Backform.InputControl.prototype.render.apply(self, arguments);
-          return self;
-        },
-        onChange: function() {
-          let self = this;
-          Backform.InputControl.prototype.onChange.apply(self, arguments);
-        },
-      }),
-    },*/
     ],
     validate: function() {
       let msg = null;
@@ -336,11 +375,6 @@ export default function newConnectionDialogModel(response, sgid, sid) {
         this.errorModel.set('user', msg);
         return msg;
       }
-      /*else if((this.attributes.password == '' || _.isUndefined(this.get('password')) || _.isNull(this.get('password')))) {
-        msg = gettext('Please enter password');
-        this.errorModel.set('password', msg);
-        return msg;
-      }*/
       return null;
     },
   });

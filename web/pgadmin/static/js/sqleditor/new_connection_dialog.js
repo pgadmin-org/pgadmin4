@@ -243,7 +243,6 @@ let NewConnectionDialog = {
                   'title': _.escape(tab_title),
                   'user': newConnCollectionModel['user'],
                   'role': newConnCollectionModel['role'],
-                  'password': response.password,
                   'server_name': _.escape(response.server_name),
                   'database_name': _.escape(selected_database_name),
                   'is_selected': false,
@@ -260,13 +259,12 @@ let NewConnectionDialog = {
       setTimeout(function(){
         Alertify.newConnectionDialog('Connect to server.').resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.md);
       }, 500);
-    }).fail(function(error) {
+    }).fail(function() {
       Alertify.alert().setting({
         'title': gettext('Connection lost'),
         'label':gettext('Ok'),
         'message': gettext('Connection to the server has been lost.'),
         'onok': function(){
-          alert(error);
           //Close the window after connection is lost
           window.close();
         },

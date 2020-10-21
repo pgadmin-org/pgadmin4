@@ -1310,7 +1310,8 @@ class ServerNode(PGChildNodeView):
 
         # Connect the Server
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        manager.update(server)
+        if not manager.connection().connected():
+            manager.update(server)
         conn = manager.connection()
 
         # Get enc key

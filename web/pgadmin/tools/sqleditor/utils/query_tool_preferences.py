@@ -326,6 +326,29 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.qt_tab_title = self.preference.register(
+        'display', 'qt_tab_title_placeholder',
+        gettext("Query tool tab title placeholder"),
+        'text', '%DATABASE%/%USERNAME%@%SERVER%',
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'Supported placeholders: DATABASE, USERNAME and SERVER. '
+            'You can also provide any string with or without placeholders.'
+        )
+    )
+
+    self.ve_edt_tab_title = self.preference.register(
+        'display', 'vw_edt_tab_title_placeholder',
+        gettext("View/Edit tab title placeholder"),
+        'text', '%SCHEMA%.%TABLE%/%DATABASE%/%USERNAME%@%SERVER%',
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'Supported placeholders: SCHEMA, TABLE, DATABASE, USERNAME and '
+            'SERVER. You can also provide any string with or '
+            'without placeholders.'
+        )
+    )
+
     self.connection_status = self.preference.register(
         'display', 'connection_status_fetch_time',
         gettext("Connection status refresh rate"), 'integer', 2,

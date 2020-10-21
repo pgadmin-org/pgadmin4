@@ -46,7 +46,7 @@ from pgadmin.tools.sqleditor.utils.macros import get_macros,\
     get_user_macros, set_macros
 from pgadmin.utils.constants import MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, ERROR_FETCHING_DATA
-from pgadmin.model import Server
+from pgadmin.model import Server, ServerGroup
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 MODULE_NAME = 'sqleditor'
@@ -1489,10 +1489,14 @@ def get_new_connection_data(sgid, sid=None):
     :extract_sql_from_network_parameters,
     """
     try:
-        # if sid and not did:
+        server_groups = ServerGroup.query.all()
+        server_group_data = {server_group.name: [] for server_group in
+                             server_groups}
         servers = Server.query.all()
-        server_list = [
-            {'name': server.serialize['name'], "id": server.serialize['id']}
+
+        [server_group_data[server.servers.name].append(
+            {'label': server.serialize['name'],
+             "value": server.serialize['id']})
             for server in servers]
 
         msg = "Success"
@@ -1501,7 +1505,7 @@ def get_new_connection_data(sgid, sid=None):
                 'status': True,
                 'msg': msg,
                 'result': {
-                    'server_list': server_list
+                    'server_list': server_group_data
                 }
             }
         )

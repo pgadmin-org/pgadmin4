@@ -173,8 +173,13 @@ define('tools.querytool', [
         var dropdownElement = document.getElementById('connections-list');
         dropdownElement.innerHTML = '';
         data_list.forEach((option, index) => {
-          $('#connections-list').append('<li class="connection-list-item" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.title +'</a></li>');
-
+          var opt = '';
+          if ('is_selected' in option && option['is_selected']) {
+            opt = '<li class="connection-list-item selected-connection" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.title +'</a></li>';
+          } else {
+            opt = '<li class="connection-list-item" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.title +'</a></li>';
+          }
+          $('#connections-list').append(opt);
         });
         var self = this;
         $('.connection-list-item').click(function() {
@@ -2131,7 +2136,6 @@ define('tools.querytool', [
     on_change_connection: function(connection_details, ref) {
       if(!connection_details['is_selected']) {
         var self = this;
-        self.set_selected_option(connection_details);
         var loadingDiv = null;
         var msgDiv = null;
         if(ref){
@@ -2145,66 +2149,78 @@ define('tools.querytool', [
           msgDiv = loadingDiv.find('.sql-editor-busy-text');
         }
 
-        $.ajax({
-          url: url_for('datagrid.update_query_tool_connection', {
-            'trans_id': self.transId,
-            'sgid': connection_details['server_group'],
-            'sid': connection_details['server'],
-            'did': connection_details['database'],
-          }),
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(connection_details),
-        })
-          .done(function(res) {
-            if(res.success) {
-              self.transId = res.data.tran_id;
-              self.handler.transId = res.data.tran_id;
-              self.handler.url_params = {
-                'did': connection_details['database'],
-                'is_query_tool': self.handler.url_params.is_query_tool,
-                'server_type': self.handler.url_params.server_type,
+        alertify.confirm(gettext('Change connection'),
+          gettext('By changing the connection you will lose all your unsaved data for the current connection. <br> Do you want to continue?'),
+          function() {
+            self.set_selected_option(connection_details);
+            $.ajax({
+              url: url_for('datagrid.update_query_tool_connection', {
+                'trans_id': self.transId,
                 'sgid': connection_details['server_group'],
                 'sid': connection_details['server'],
-                'title': connection_details['title'],
-              };
-              self.set_editor_title(_.unescape(self.handler.url_params.title));
-              self.handler.setTitle(_.unescape(self.handler.url_params.title));
-              let success_msg = connection_details['server_name'] + '/' + connection_details['database_name'] + '- Database connected';
-              alertify.success(success_msg);
-              if(ref){
-                let connection_data = {
-                  'server_group': self.handler.url_params.sgid,
-                  'server': connection_details['server'],
-                  'database': connection_details['database'],
-                  'user': connection_details['user'],
-                  'title': connection_details['title'],
-                  'role': connection_details['role'],
-                  'password': connection_details['password'],
-                  'is_allow_new_connection': true,
-                  'database_name': connection_details['database_name'],
-                  'server_name': connection_details['server_name'],
-                  'is_selected': true,
-                };
-                self.connection_list.unshift(connection_data);
-                self.render_connection(self.connection_list);
-                loadingDiv.addClass('d-none');
-                alertify.newConnectionDialog().destroy();
-                ref.close();
-              } else {
-                loadingDiv.addClass('d-none');
-              }
-            }
-            return true;
-          })
-          .fail(function(xhr) {
+                'did': connection_details['database'],
+              }),
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(connection_details),
+            })
+              .done(function(res) {
+                if(res.success) {
+                  self.transId = res.data.tran_id;
+                  self.handler.transId = res.data.tran_id;
+                  self.handler.url_params = {
+                    'did': connection_details['database'],
+                    'is_query_tool': self.handler.url_params.is_query_tool,
+                    'server_type': self.handler.url_params.server_type,
+                    'sgid': connection_details['server_group'],
+                    'sid': connection_details['server'],
+                    'title': connection_details['title'],
+                  };
+                  self.set_editor_title(_.unescape(self.handler.url_params.title));
+                  self.handler.setTitle(_.unescape(self.handler.url_params.title));
+                  let success_msg = connection_details['server_name'] + '/' + connection_details['database_name'] + '- Database connected';
+                  alertify.success(success_msg);
+                  if(ref){
+                    let connection_data = {
+                      'server_group': self.handler.url_params.sgid,
+                      'server': connection_details['server'],
+                      'database': connection_details['database'],
+                      'user': connection_details['user'],
+                      'title': connection_details['title'],
+                      'role': connection_details['role'],
+                      'is_allow_new_connection': true,
+                      'database_name': connection_details['database_name'],
+                      'server_name': connection_details['server_name'],
+                      'is_selected': true,
+                    };
+                    self.connection_list.unshift(connection_data);
+                    self.render_connection(self.connection_list);
+                    loadingDiv.addClass('d-none');
+                    alertify.newConnectionDialog().destroy();
+                    ref.close();
+                  } else {
+                    loadingDiv.addClass('d-none');
+                  }
+                }
+                return true;
+              })
+              .fail(function(xhr) {
+                if(xhr.status == 428) {
+                  alertify.connectServer('Connect to server', xhr.responseJSON.result, connection_details['server'], false);
+                } else {
+                  alertify.error(xhr.responseJSON['errormsg']);
+                }
+              });
+          },
+          function() {
             loadingDiv.addClass('d-none');
-            if(xhr.status == 428) {
-              alertify.connectServer('Connect to server', xhr.responseJSON.result, connection_details['server'], false);
-            } else {
-              alertify.error(xhr.responseJSON['errormsg']);
-            }
-          });
+            alertify.newConnectionDialog().destroy();
+            return true;
+          }
+        ).set('labels', {
+          ok: gettext('Yes'),
+          cancel: gettext('No'),
+        });
       }
     },
   });
@@ -2542,7 +2558,7 @@ define('tools.querytool', [
             'server_group': self.gridView.handler.url_params.sgid,
             'server': self.gridView.handler.url_params.sid,
             'database': self.gridView.handler.url_params.did,
-            'user': null,
+            'user': server_data.data.user.name,
             'role': null,
             'title': _.unescape(url_params.title),
             'is_allow_new_connection': false,
