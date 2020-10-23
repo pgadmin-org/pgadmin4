@@ -141,6 +141,11 @@ class BackupMessage(IProcessDesc):
             # It should never reach here.
             return _("Unknown Backup")
 
+    # @property
+    # def current_storage_dir(self):
+    #     return self.bfile if os.path.isdir(self.bfile) \
+    #         else os.path.dirname(self.bfile)
+
     @property
     def message(self):
         name, host, port = self.get_server_details()

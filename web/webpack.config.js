@@ -500,6 +500,7 @@ module.exports = [{
         ',pgadmin.tools.debugger.direct' +
         ',pgadmin.node.pga_job' +
         ',pgadmin.tools.schema_diff' +
+        ',pgadmin.tools.storage_manager' +
         ',pgadmin.tools.search_objects',
       },
     }, {

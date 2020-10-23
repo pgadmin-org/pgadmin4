@@ -20,6 +20,8 @@ define('misc.bgprocess', [
     return pgBrowser.BackgroundProcessObsorver;
   }
 
+  var isServerMode = (function() { return pgAdmin.server_mode == 'True'; })();
+
   var wcDocker = window.wcDocker;
 
   var BGProcess = function(info, notify) {
@@ -61,6 +63,7 @@ define('misc.bgprocess', [
           curr_status: null,
           state: 0, // 0: NOT Started, 1: Started, 2: Finished, 3: Terminated
           completed: false,
+          current_storage_dir: null,
 
           id: info['id'],
           type_desc: null,
@@ -160,6 +163,9 @@ define('misc.bgprocess', [
 
         if ('process_state' in data)
           self.state = data.process_state;
+
+        if ('current_storage_dir' in data)
+          self.current_storage_dir = data.current_storage_dir;
 
         if ('out' in data) {
           self.out = data.out && data.out.pos;
@@ -325,8 +331,8 @@ define('misc.bgprocess', [
                   </div>
                   <div class="pg-bg-etime my-auto mr-2"></div>
                   <div class="ml-auto">
-                    <button class="btn btn-secondary pg-bg-more-details"><span class="fa fa-info-circle" role="img"></span>&nbsp;` + gettext('More details...') + `</button>
-                    <button class="btn btn-danger bg-process-stop" disabled><span class="fa fa-times-circle" role="img"></span>&nbsp;` + gettext('Stop Process') + `</button>
+                    <button class="btn btn-secondary pg-bg-more-details" title="More Details"><span class="fa fa-info-circle" role="img"></span>&nbsp;` + gettext('More details...') + `</button>
+                    <button class="btn btn-danger bg-process-stop" disabled><span class="fa fa-times-circle" role="img" title="Stop the operation"></span>&nbsp;` + gettext('Stop Process') + `</button>
                   </div>
                 </div>
                 <div class="pg-bg-status py-1">
@@ -387,6 +393,7 @@ define('misc.bgprocess', [
           var $status_bar = $(self.container.find('.pg-bg-status'));
           $status_bar.html(self.curr_status);
           var $btn_stop_process = $(self.container.find('.bg-process-stop'));
+
           // Enable Stop Process button only when process is running
           if (parseInt(self.state) === 1) {
             $btn_stop_process.attr('disabled', false);
@@ -415,7 +422,27 @@ define('misc.bgprocess', [
           $logs = container.find('.bg-process-watcher'),
           $header = container.find('.bg-process-details'),
           $footer = container.find('.bg-process-footer'),
-          $btn_stop_process = container.find('.bg-process-stop');
+          $btn_stop_process = container.find('.bg-process-stop'),
+          $btn_storage_manager = container.find('.bg-process-storage-manager');
+
+        if(self.current_storage_dir && isServerMode) { //for backup & exports with server mode, operate over storage manager
+
+          if($btn_storage_manager.length == 0) {
+            var str_storage_manager_btn = '<button id="bg-process-storage-manager" class="btn btn-secondary bg-process-storage-manager" title="Click to open file location" aria-label="Storage Manager" tabindex="0" disabled><span class="pg-font-icon icon-storage-manager" role="img"></span></button>&nbsp;';
+            container.find('.bg-process-details .bg-btn-section').prepend(str_storage_manager_btn);
+            $btn_storage_manager = container.find('.bg-process-storage-manager');
+          }
+
+          // Disable storage manager button only when process is running
+          if (parseInt(self.state) === 1) {
+            $btn_storage_manager.attr('disabled', true);
+          }
+          else {
+            $btn_storage_manager.attr('disabled', false);
+          }
+          // On Click event for storage manager button.
+          $btn_storage_manager.off('click').on('click', self.storage_manager.bind(this));
+        }
 
         // Enable Stop Process button only when process is running
         if (parseInt(self.state) === 1) {
@@ -526,6 +553,15 @@ define('misc.bgprocess', [
           });
       },
 
+      storage_manager: function() {
+
+        var self = this;
+        if(self.current_storage_dir) {
+          pgBrowser.Events.trigger(
+            'pgadmin:tools:storage_manager', self.current_storage_dir
+          );
+        }
+      },
     });
 
   _.extend(
@@ -634,7 +670,7 @@ define('misc.bgprocess', [
                   '<span>' + gettext('Start time') + ': <span class="bgprocess-start-time"></span>' +
                   '</span>'+
                 '</div>' +
-                '<div class="ml-auto">' +
+                '<div class="ml-auto bg-btn-section">' +
                   '<button type="button" class="btn btn-danger bg-process-stop" disabled><span class="fa fa-times-circle" role="img"></span>&nbsp;' + gettext('Stop Process') + '</button>' +
                 '</div>' +
               '</div>' +

@@ -77,7 +77,8 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
           $($(self.elements.footer).find('.file_manager_ok')).trigger('click');
         });
       }, 200);
-      self.__internal.buttons[1].element.disabled = true;
+      if(self.__internal.buttons[1])
+        self.__internal.buttons[1].element.disabled = true;
     },
     setup: function() {
       return {

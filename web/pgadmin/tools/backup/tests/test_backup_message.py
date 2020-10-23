@@ -14,6 +14,10 @@ from unittest.mock import patch
 
 class BackupMessageTest(BaseTestGenerator):
     """Test the BackupMessage class"""
+
+    expected_storage_dir = '/test_path'
+    pg_dump = "/pg_dump"
+
     scenarios = [
         ('When Backup server',
          dict(
@@ -24,7 +28,7 @@ class BackupMessageTest(BaseTestGenerator):
                  port=5444,
                  host='localhost',
                  database='postgres',
-                 bfile='test_restore',
+                 bfile='/test_path/test_restore.sql',
                  args=[
                      '--file',
                      "backup_file",
@@ -38,14 +42,15 @@ class BackupMessageTest(BaseTestGenerator):
                      '--database',
                      "postgres"
                  ],
-                 cmd="/test_path/pg_dump"
+                 cmd=expected_storage_dir + pg_dump
              ),
              expected_msg="Backing up the server"
                           " 'test_backup_server (localhost:5444)'",
              expected_details_cmd='/test_path/pg_dump --file '
                                   '"backup_file" --host "localhost" '
                                   '--port "5444" --username "postgres" '
-                                  '--no-password --database "postgres"'
+                                  '--no-password --database "postgres"',
+             expected_storage_dir=expected_storage_dir
 
          )),
         ('When Backup global',
@@ -57,7 +62,7 @@ class BackupMessageTest(BaseTestGenerator):
                  port=5444,
                  host='localhost',
                  database='postgres',
-                 bfile='test_backup',
+                 bfile='/test_path/test_backup',
                  args=[
                      '--file',
                      'backup_file',
@@ -71,14 +76,15 @@ class BackupMessageTest(BaseTestGenerator):
                      '--database',
                      'postgres'
                  ],
-                 cmd="/test_path/pg_dump"
+                 cmd=expected_storage_dir + pg_dump
              ),
              expected_msg="Backing up the global objects on the server "
                           "'test_backup_server (localhost:5444)'",
              expected_details_cmd='/test_path/pg_dump --file "backup_file" '
                                   '--host "localhost"'
                                   ' --port "5444" --username "postgres" '
-                                  '--no-password --database "postgres"'
+                                  '--no-password --database "postgres"',
+             expected_storage_dir=expected_storage_dir
 
          )),
         ('When backup object',
@@ -90,7 +96,7 @@ class BackupMessageTest(BaseTestGenerator):
                  port=5444,
                  host='localhost',
                  database='postgres',
-                 bfile='test_backup',
+                 bfile='/test_path/test_backup',
                  args=[
                      '--file',
                      'backup_file',
@@ -104,7 +110,7 @@ class BackupMessageTest(BaseTestGenerator):
                      '--database',
                      'postgres'
                  ],
-                 cmd="/test_path/pg_dump"
+                 cmd=expected_storage_dir + pg_dump
              ),
              expected_msg="Backing up an object on the server "
                           "'test_backup_server (localhost:5444)'"
@@ -112,13 +118,15 @@ class BackupMessageTest(BaseTestGenerator):
              expected_details_cmd='/test_path/pg_dump --file "backup_file" '
                                   '--host "localhost" '
                                   '--port "5444" --username "postgres" '
-                                  '--no-password --database "postgres"'
+                                  '--no-password --database "postgres"',
+             expected_storage_dir=expected_storage_dir
 
          ))
     ]
 
+    @patch('pgadmin.utils.get_storage_directory')
     @patch('pgadmin.tools.backup.BackupMessage.get_server_details')
-    def runTest(self, get_server_details_mock):
+    def runTest(self, get_server_details_mock, get_storage_directory_mock):
         get_server_details_mock.return_value = \
             self.class_params['name'],\
             self.class_params['host'],\
@@ -132,10 +140,16 @@ class BackupMessageTest(BaseTestGenerator):
             **{'database': self.class_params['database']}
         )
 
+        get_storage_directory_mock.return_value = '/'
+
         # Check the expected message returned
         self.assertEqual(backup_obj.message, self.expected_msg)
 
         # Check the command
         obj_details = backup_obj.details(self.class_params['cmd'],
                                          self.class_params['args'])
+
+        storage_dir = backup_obj.current_storage_dir
+
         self.assertIn(self.expected_details_cmd, obj_details)
+        self.assertEqual(self.expected_storage_dir, storage_dir)

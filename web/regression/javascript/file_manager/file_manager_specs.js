@@ -149,4 +149,22 @@ describe('fileSelectDialog', function () {
       expect(Alertify.createModeDlg).toHaveBeenCalled();
     });
   });
+
+  describe('When dialog is called for storage file', () => {
+    it('Storage file dialog', function() {
+      params = {
+        'dialog_title': 'Storage Manager',
+        'dialog_type': 'storage_dialog',
+      };
+
+      spyOn(Alertify, 'fileStorageDlg').and.callFake(function() {
+        this.resizeTo = function() {};
+        return this;
+      });
+
+      pgAdmin.FileManager.show_dialog(params);
+
+      expect(Alertify.fileStorageDlg).toHaveBeenCalled();
+    });
+  });
 });

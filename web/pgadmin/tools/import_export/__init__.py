@@ -23,6 +23,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+import config
 
 MODULE_NAME = 'import_export'
 
@@ -71,16 +72,17 @@ class IEMessage(IProcessDesc):
 
     Defines the message shown for the import/export operation.
     """
-
-    def __init__(self, _sid, _schema, _tbl, _database, _storage, *_args):
-        self.sid = _sid
-        self.schema = _schema
-        self.table = _tbl
-        self.database = _database
+    def __init__(self, *_args, **io_params):
+        self.sid = io_params['sid']
+        self.schema = io_params['schema']
+        self.table = io_params['table']
+        self.database = io_params['database']
         self._cmd = ''
+        self.is_import = io_params['is_import']
+        self.bfile = io_params['filename']
 
-        if _storage:
-            _storage = _storage.replace('\\', '/')
+        if io_params['storage']:
+            io_params['storage'] = io_params['storage'].replace('\\', '/')
 
         def cmd_arg(x):
             if x:
@@ -99,18 +101,24 @@ class IEMessage(IProcessDesc):
                 self._cmd += ' ' + arg
             elif replace_next:
                 arg = cmd_arg(arg)
-                if _storage is not None:
-                    arg = arg.replace(_storage, '<STORAGE_DIR>')
+                if io_params['storage'] is not None:
+                    arg = arg.replace(io_params['storage'], '<STORAGE_DIR>')
                 self._cmd += ' "' + arg + '"'
             else:
                 self._cmd += cmd_arg(arg)
 
-    @property
-    def message(self):
+    def get_server_details(self):
         # Fetch the server details like hostname, port, roles etc
         s = Server.query.filter_by(
             id=self.sid, user_id=current_user.id
         ).first()
+
+        return s.name, s.host, s.port
+
+    @property
+    def message(self):
+        # Fetch the server details like hostname, port, roles etc
+        name, host, port = self.get_server_details()
 
         return _(
             "Copying table data '{0}.{1}' on database '{2}' "
@@ -119,19 +127,39 @@ class IEMessage(IProcessDesc):
             html.safe_str(self.schema),
             html.safe_str(self.table),
             html.safe_str(self.database),
-            html.safe_str(s.host),
-            html.safe_str(s.port)
+            html.safe_str(host),
+            html.safe_str(port)
         )
 
     @property
     def type_desc(self):
-        return _("Copying table data")
+        _type_desc = _("Import - ") if self.is_import else _("Export - ")
+        return _type_desc + _("Copying table data")
+
+    # @property
+    # def current_storage_dir(self):
+    #
+    #     if config.SERVER_MODE:
+    #         path = os.path.realpath(self.bfile)
+    #         if get_storage_directory() < path:
+    #             storage_directory = os.path.basename(get_storage_directory())
+    #             start = path.index(storage_directory)
+    #             end = start + (len(storage_directory))
+    #
+    #             last_dir = os.path.dirname(path[end:])
+    #         else:
+    #             last_dir = '\\'
+    #
+    #     else:
+    #         last_dir = os.path.dirname(self.bfile) \
+    #             if os.path.isfile(self.bfile) \
+    #             else self.bfile
+    #
+    #     return None if self.is_import else last_dir
 
     def details(self, cmd, args):
         # Fetch the server details like hostname, port, roles etc
-        s = Server.query.filter_by(
-            id=self.sid, user_id=current_user.id
-        ).first()
+        name, host, port = self.get_server_details()
 
         res = '<div>'
         res += _(
@@ -142,9 +170,9 @@ class IEMessage(IProcessDesc):
             html.safe_str(self.table),
             html.safe_str(self.database),
             "{0} ({1}:{2})".format(
-                html.safe_str(s.name),
-                html.safe_str(s.host),
-                html.safe_str(s.port)
+                html.safe_str(name),
+                html.safe_str(host),
+                html.safe_str(port)
             )
         )
 
@@ -304,8 +332,7 @@ def create_import_export_job(sid):
 
         if not _file:
             return bad_request(errormsg=_('Please specify a valid file'))
-
-        if IS_WIN:
+        elif IS_WIN:
             _file = _file.replace('\\', '/')
 
         data['filename'] = _file
@@ -328,14 +355,22 @@ def create_import_export_job(sid):
     args = ['--command', query]
 
     try:
+
+        io_params = {
+            'sid': sid,
+            'schema': data['schema'],
+            'table': data['table'],
+            'database': data['database'],
+            'is_import': data['is_import'],
+            'filename': data['filename'],
+            'storage': storage_dir,
+            'utility': utility
+        }
+
         p = BatchProcess(
             desc=IEMessage(
-                sid,
-                data['schema'],
-                data['table'],
-                data['database'],
-                storage_dir,
-                utility, *args
+                *args,
+                **io_params
             ),
             cmd=utility, args=args
         )

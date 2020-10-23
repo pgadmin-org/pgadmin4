@@ -23,6 +23,8 @@ define([
   'sources/csrf', 'tablesorter', 'tablesorter-metric',
 ], function($, _, Alertify, gettext, url_for, Dropzone, pgAdmin, csrf) {
 
+  pgAdmin.Browser = pgAdmin.Browser || {};
+
   /*---------------------------------------------------------
     Define functions used for various operations
   ---------------------------------------------------------*/
@@ -179,14 +181,17 @@ define([
       $('.file_manager').find('button.download').hide();
     } else {
       $('.file_manager').find('button.download').off().on('click', function() {
-        var path;
+        var path,
+          params = {};
+
+        params[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
+
         if ($('.fileinfo').data('view') == 'grid') {
           path = $('.fileinfo li.selected').find('.clip span').attr('data-alt');
-          window.open(pgAdmin.FileUtils.fileConnector + '?_=' + Date.now() + 'mode=download&path=' + path, '_blank');
         } else {
           path = $('.fileinfo').find('table#contents tbody tr.selected td:first-child').attr('title');
-          window.open(pgAdmin.FileUtils.fileConnector + '?_=' + Date.now() + 'mode=download&path=' + path, '_blank');
         }
+        download_file(path);
       });
     }
   };
@@ -1030,10 +1035,13 @@ define([
 
                 $('.file_manager_ok').removeClass('disabled');
                 $('.file_manager_ok').attr('disabled', false);
-                $('.file_manager button.delete, .file_manager button.rename').removeAttr(
+                $('.file_manager button.delete').removeAttr(
                   'disabled', 'disabled'
                 );
                 $('.file_manager button.download').attr(
+                  'disabled', 'disabled'
+                );
+                $('.file_manager button.rename').attr(
                   'disabled', 'disabled'
                 );
                 // set selected folder name in breadcrums
@@ -1078,7 +1086,8 @@ define([
                 $('.file_manager_ok').removeClass('disabled');
                 $('.file_manager_ok').attr('disabled', false);
                 $('.file_manager button.download').attr('disabled', 'disabled');
-                $('.file_manager button.delete, .file_manager button.rename').removeAttr('disabled');
+                $('.file_manager button.rename').attr('disabled', 'disabled');
+                $('.file_manager button.delete').removeAttr('disabled');
 
                 // set selected folder name in breadcrums
                 $('.file_manager #uploader .input-path').hide();
@@ -1166,6 +1175,60 @@ define([
 
     return has_capability(data_cap, 'select_file') &&
       is_protected == undefined;
+  };
+
+  // Download selected file
+  var download_file = function (path) {
+
+    var data = { 'path': path, 'mode': 'download' },
+      params = {};
+
+    params[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
+
+    $.ajax({
+      type: 'POST',
+      url: pgAdmin.FileUtils.fileConnector,
+      contentType: false,
+      headers: params,
+      xhrFields: {
+        responseType: 'blob',
+      },
+      cache: false,
+      data: JSON.stringify(data),
+      success: function (blob, status, xhr) {
+        // check for a filename
+        var filename = xhr.getResponseHeader('filename');
+
+        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+          // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+          window.navigator.msSaveBlob(blob, filename);
+        } else {
+          var URL = window.URL || window.webkitURL;
+          var downloadUrl = URL.createObjectURL(blob);
+
+          if (filename) {
+            // use HTML5 a[download] attribute to specify filename
+            var a = document.createElement('a');
+            // safari doesn't support this yet
+            if (typeof a.download === 'undefined') {
+              window.location.href = downloadUrl;
+            } else {
+              a.href = downloadUrl;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+            }
+          } else {
+            window.location.href = downloadUrl;
+          }
+
+          setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+        }
+      },
+      error: function (error) {
+        Alertify.error(error);
+      },
+    });
   };
 
   /*---------------------------------------------------------
@@ -1446,12 +1509,13 @@ define([
                 ) {
                   $('.file_manager_ok').removeClass('disabled');
                   $('.file_manager_ok').attr('disabled', false);
-                  $('.file_manager button.delete, .file_manager button.rename').removeAttr(
+                  $('.file_manager button.delete').removeAttr(
                     'disabled', 'disabled'
                   );
                   $('.file_manager button.download').attr(
                     'disabled', 'disabled'
                   );
+                  $('.file_manager button.rename').attr('disabled', 'disabled');
                   // set selected folder name in breadcrums
                   $('.file_manager #uploader .input-path').hide();
                   $('.file_manager #uploader .show_selected_file').remove();

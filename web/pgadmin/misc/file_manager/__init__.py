@@ -23,7 +23,7 @@ from werkzeug.exceptions import InternalServerError
 
 import simplejson as json
 from flask import render_template, Response, session, request as req, \
-    url_for, current_app
+    url_for, current_app, send_from_directory
 from flask_babelex import gettext
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
@@ -1214,11 +1214,16 @@ class Filemanager(object):
                 'attachment; filename=' + name
             return resp
 
-        name = path.split('/')[-1]
-        content = open(orig_path, 'rb')
-        resp = Response(content)
-        resp.headers['Content-Disposition'] = 'attachment; filename=' + name
-        return resp
+        name = os.path.basename(path)
+        if orig_path and len(orig_path) > 0:
+            dir_path = os.path.dirname(orig_path)
+        else:
+            dir_path = os.path.dirname(path)
+
+        response = send_from_directory(dir_path, name, as_attachment=True)
+        response.headers["filename"] = name
+
+        return response
 
     def permission(self, path=None, req=None):
         the_dir = self.dir if self.dir is not None else ''

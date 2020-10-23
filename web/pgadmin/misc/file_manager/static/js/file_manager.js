@@ -9,6 +9,7 @@
 
 import './select_dialogue';
 import './create_dialogue';
+import './storage_dialogue';
 
 define('misc.file_manager', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -41,7 +42,10 @@ define('misc.file_manager', [
       let dialogHeight = pgAdmin.Browser.stdH.calc(pgAdmin.Browser.stdH.lg);
       if (params.dialog_type == 'create_file') {
         Alertify.createModeDlg(params).resizeTo(dialogWidth, dialogHeight);
-      } else {
+      } else if(params.dialog_type == 'storage_dialog') {
+        Alertify.fileStorageDlg(params).resizeTo(dialogWidth, dialogHeight);
+      }
+      else {
         Alertify.fileSelectionDlg(params).resizeTo(dialogWidth, dialogHeight);
       }
     },
