@@ -30,6 +30,7 @@ define([
     height: 600,
     showTitle: true,
     isClosable: true,
+    isRenamable: true,
     isPrivate: false,
     url: '',
     icon: '',
@@ -52,6 +53,7 @@ define([
             myPanel.icon(that.icon);
 
             myPanel.closeable(!!that.isCloseable);
+            myPanel.renamable(that.isRenamable);
 
             var $frameArea = $('<div style="position:absolute;top:0 !important;width:100%;height:100%;display:table;z-index:0;">');
             myPanel.layout().addItem($frameArea);

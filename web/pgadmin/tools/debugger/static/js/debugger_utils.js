@@ -42,8 +42,14 @@ function getProcedureId(treeInfoObject) {
   return objectId;
 }
 
-function setDebuggerTitle(panel, preferences, function_name, schema_name, database_name) {
-  var debugger_title_placeholder = preferences['debugger_tab_title_placeholder'];
+function setDebuggerTitle(panel, preferences, function_name, schema_name, database_name, custom_title) {
+  var debugger_title_placeholder = '';
+  if(custom_title) {
+    debugger_title_placeholder = custom_title;
+  } else {
+    debugger_title_placeholder = preferences['debugger_tab_title_placeholder'];
+  }
+
   var placeholders = debugger_title_placeholder.split('%');
 
   var title = '';

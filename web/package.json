@@ -107,7 +107,7 @@
     "tempusdominus-core": "^5.0.3",
     "underscore": "^1.9.1",
     "watchify": "~3.11.1",
-    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#8298a57d875dce51a4d3707c68a1a2b82f2e6c03",
+    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#c4a3398b89588408dc705895675bce7bd7660d36",
     "wkx": "^0.4.6"
   },
   "scripts": {

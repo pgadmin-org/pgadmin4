@@ -278,7 +278,7 @@ function hasSchemaOrCatalogOrViewInformation(parentData) {
     parentData.catalog !== undefined;
 }
 
-export function generateDatagridTitle(pgBrowser, aciTreeIdentifier) {
+export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title=null) {
   //const baseTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
   var preferences = pgBrowser.get_preferences_for_module('sqleditor');
   const parentData = getTreeNodeHierarchyFromIdentifier.call(
@@ -290,7 +290,13 @@ export function generateDatagridTitle(pgBrowser, aciTreeIdentifier) {
   const db_label = getDatabaseLabel(parentData);
   const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
 
-  var dtg_title_placeholder = preferences['vw_edt_tab_title_placeholder'];
+  var dtg_title_placeholder = '';
+  if(custom_title) {
+    dtg_title_placeholder = custom_title;
+  } else {
+    dtg_title_placeholder = preferences['vw_edt_tab_title_placeholder'];
+  }
+
   var placeholders = dtg_title_placeholder.split('%');
   var title = '';
   placeholders.forEach(function(placeholder) {

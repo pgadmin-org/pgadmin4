@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #3318 <https://redmine.postgresql.org/issues/3318>`_ -  Added support to download utility files at the client-side.
+| `Issue #4230 <https://redmine.postgresql.org/issues/4230>`_ -  Added support to rename query tool and debugger tabs title.
 | `Issue #4232 <https://redmine.postgresql.org/issues/4232>`_ -  Added tab title placeholder for Query Tool, View/Edit Data, and Debugger.
 
 Housekeeping
@@ -25,3 +26,4 @@ Bug fixes
 | `Issue #5895 <https://redmine.postgresql.org/issues/5895>`_ -  Fixed an issue where the suffix for Toast table size is not visible in the Statistics tab.
 | `Issue #5911 <https://redmine.postgresql.org/issues/5911>`_ -  Ensure that macros should be run on the older version of Safari and Chrome.
 | `Issue #5919 <https://redmine.postgresql.org/issues/5919>`_ -  Added security related enhancements.
+| `Issue #5923 <https://redmine.postgresql.org/issues/5923>`_ -  Fixed an issue where non-closeable tabs are getting closed.
