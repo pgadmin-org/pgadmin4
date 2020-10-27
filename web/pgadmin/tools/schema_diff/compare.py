@@ -12,12 +12,13 @@
 from flask import render_template
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import internal_server_error
 from pgadmin.tools.schema_diff.directory_compare import compare_dictionaries
 
 
 class SchemaDiffObjectCompare:
 
-    keys_to_ignore = ['oid', 'oid-2', 'is_sys_obj']
+    keys_to_ignore = ['oid', 'oid-2', 'is_sys_obj', 'schema']
 
     @staticmethod
     def get_schema(sid, did, scid):
@@ -62,6 +63,12 @@ class SchemaDiffObjectCompare:
         source = {}
         target = {}
 
+        status, target_schema = self.get_schema(kwargs.get('target_sid'),
+                                                kwargs.get('target_did'),
+                                                kwargs.get('target_scid'))
+        if not status:
+            return internal_server_error(errormsg=target_schema)
+
         if group_name == 'Database Objects':
             source = self.fetch_objects_to_compare(**source_params)
             target = self.fetch_objects_to_compare(**target_params)
@@ -83,6 +90,7 @@ class SchemaDiffObjectCompare:
         return compare_dictionaries(view_object=self,
                                     source_params=source_params,
                                     target_params=target_params,
+                                    target_schema=target_schema,
                                     source_dict=source,
                                     target_dict=target,
                                     node=self.node_type,

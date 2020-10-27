@@ -1085,6 +1085,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             json_resp:
         """
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
 
         resp_data = self._fetch_properties(gid, sid, did, scid, fnid)
         # Most probably this is due to error
@@ -1128,6 +1129,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             status, res = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
+            elif target_schema:
+                res['rows'][0]['nspname'] = target_schema
 
             # Add newline and tab before each argument to format
             name_with_default_args = self.qtIdent(
@@ -1173,6 +1176,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             status, res = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
+            elif target_schema:
+                res['rows'][0]['nspname'] = target_schema
+                resp_data['pronamespace'] = target_schema
 
             # Add newline and tab before each argument to format
             name_with_default_args = self.qtIdent(
@@ -1389,7 +1395,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         fun_change_args = ['lanname', 'prosrc', 'probin', 'prosrc_c',
                            'provolatile', 'proisstrict', 'prosecdef',
                            'proparallel', 'procost', 'proleakproof',
-                           'arguments', 'prorows', 'prosupportfunc']
+                           'arguments', 'prorows', 'prosupportfunc',
+                           'prorettypename']
 
         data['change_func'] = False
         for arg in fun_change_args:
@@ -1828,8 +1835,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
+            if target_schema:
+                data['schema'] = target_schema
             status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
                                         data=data, fnid=oid, is_sql=False,
                                         is_schema_diff=True)
@@ -1843,6 +1853,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, fnid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
+                               target_schema=target_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, fnid=oid,
                                json_resp=False)

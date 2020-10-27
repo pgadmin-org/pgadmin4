@@ -827,6 +827,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             json_resp: True then return json response
         """
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
 
         status, data = self._fetch_properties(gid, sid, did, scid, foid,
                                               inherits=True)
@@ -841,6 +842,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 col_data.append(c)
 
         data['columns'] = col_data
+        if target_schema:
+            data['basensp'] = target_schema
 
         # Parse Privileges
         if 'acl' in data:
@@ -1515,6 +1518,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
             sql, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
@@ -1524,6 +1528,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, foid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, foid=oid,
+                               target_schema=target_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, foid=oid,
                                json_resp=False)

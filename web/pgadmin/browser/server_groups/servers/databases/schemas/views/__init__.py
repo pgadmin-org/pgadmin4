@@ -1371,6 +1371,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         This function will generate sql to render into the sql panel
         """
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
         display_comments = True
 
         if not json_resp:
@@ -1390,6 +1391,10 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             return gone(self.not_found_error_msg())
 
         result = res['rows'][0]
+        if target_schema:
+            result['definition'] = result['definition'].replace(
+                result['schema'], target_schema)
+            result['schema'] = target_schema
 
         # sending result to formtter
         frmtd_reslt = self.formatter(result)
@@ -1689,8 +1694,11 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
+            if target_schema:
+                data['schema'] = target_schema
             sql, name_or_error = self.getSQL(gid, sid, did, data, oid)
             if sql.find('DROP VIEW') != -1:
                 sql = gettext("""
@@ -1703,6 +1711,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, vid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, vid=oid,
+                               target_schema=target_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, vid=oid,
                                json_resp=False)

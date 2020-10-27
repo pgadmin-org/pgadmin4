@@ -43,8 +43,10 @@ export default class SchemaDiffUI {
     this.model = new Backbone.Model({
       source_sid: undefined,
       source_did: undefined,
+      source_scid: undefined,
       target_sid: undefined,
       target_did: undefined,
+      target_scid: undefined,
       source_ddl: undefined,
       target_ddl: undefined,
       diff_ddl: undefined,
@@ -162,7 +164,12 @@ export default class SchemaDiffUI {
       url_params[key] = parseInt(val, 10);
     });
 
-    var baseUrl = url_for('schema_diff.compare', url_params);
+    var baseUrl = url_for('schema_diff.compare_database', url_params);
+    // If compare two schema then change the base url
+    if (url_params['source_scid'] != '' && !_.isUndefined(url_params['source_scid']) &&
+        url_params['target_scid'] != '' && !_.isUndefined(url_params['target_scid'])) {
+      baseUrl = url_for('schema_diff.compare_schema', url_params);
+    }
 
     self.model.set({
       'source_ddl': undefined,
@@ -305,7 +312,7 @@ export default class SchemaDiffUI {
     // Format Schema object title with appropriate icon
     var formatColumnTitle = function (row, cell, value, columnDef, dataContext) {
       let icon = 'icon-' + dataContext.type;
-      return '<i class="ml-3 wcTabIcon '+ icon +'"></i><span>' + value + '</span>';
+      return '<i class="ml-2 wcTabIcon '+ icon +'"></i><span>' + value + '</span>';
     };
 
     // Grid Columns
@@ -649,6 +656,30 @@ export default class SchemaDiffUI {
           self.connect_database(this.model.get('source_sid'), arguments[0], arguments[1]);
         },
       }, {
+        name: 'source_scid',
+        control: SchemaDiffSelect2Control,
+        group: 'source',
+        deps: ['source_sid', 'source_did'],
+        url: function() {
+          if (this.get('source_sid') && this.get('source_did'))
+            return url_for('schema_diff.schemas', {'sid': this.get('source_sid'), 'did': this.get('source_did')});
+          return false;
+        },
+        select2: {
+          allowClear: true,
+          placeholder: gettext('Select schema...'),
+        },
+        disabled: function(m) {
+          if (!_.isUndefined(m.get('source_did')) && !_.isNull(m.get('source_did'))
+              && m.get('source_did') !== '') {
+            return false;
+          }
+          setTimeout(function() {
+            m.set('source_scid', undefined);
+          }, 10);
+          return true;
+        },
+      }, {
         name: 'target_sid', label: false,
         control: SchemaDiffSelect2Control,
         transform: function(data) {
@@ -708,6 +739,30 @@ export default class SchemaDiffUI {
         connect: function() {
           self.connect_database(this.model.get('target_sid'), arguments[0], arguments[1]);
         },
+      }, {
+        name: 'target_scid',
+        control: SchemaDiffSelect2Control,
+        group: 'target',
+        deps: ['target_sid', 'target_did'],
+        url: function() {
+          if (this.get('target_sid') && this.get('target_did'))
+            return url_for('schema_diff.schemas', {'sid': this.get('target_sid'), 'did': this.get('target_did')});
+          return false;
+        },
+        select2: {
+          allowClear: true,
+          placeholder: gettext('Select schema...'),
+        },
+        disabled: function(m) {
+          if (!_.isUndefined(m.get('target_did')) && !_.isNull(m.get('target_did'))
+              && m.get('target_did') !== '') {
+            return false;
+          }
+          setTimeout(function() {
+            m.set('target_scid', undefined);
+          }, 10);
+          return true;
+        },
       }],
     });
 
@@ -739,7 +794,9 @@ export default class SchemaDiffUI {
 
     footer_panel.$container.find('#schema-diff-ddl-comp').append(self.footer.render().$el);
     header_panel.$container.find('#schema-diff-grid').append(`<div class='obj_properties container-fluid'>
-    <div class='pg-panel-message'>` + gettext('Select the server and database for the source and target and click <strong>Compare</strong> to compare them.') + '</div></div>');
+    <div class='pg-panel-message'>` + gettext('<strong>Database Compare:</strong> Select the server and database for the source and target and Click <strong>Compare</strong>.') +
+    gettext('</br><strong>Schema Compare:</strong> Select the server, database and schema for the source and target and Click <strong>Compare</strong>.') +
+    gettext('</br><strong>Note:</strong> The dependencies will not be resolved in the Schema comparison.') + '</div></div>');
 
     self.grid_width = $('#schema-diff-grid').width();
     self.grid_height = this.panel_obj.height();

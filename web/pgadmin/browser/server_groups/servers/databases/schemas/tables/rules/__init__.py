@@ -529,6 +529,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if drop_sql:
             sql = self.delete(gid=gid, sid=sid, did=did,
@@ -551,11 +552,27 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                     data=data, o_data=old_data
                 )
             else:
+                RuleView._check_schema_diff(target_schema, res_data)
                 sql = render_template("/".join(
                     [self.template_path, self._CREATE_SQL]),
                     data=res_data, display_comments=True)
 
         return sql
+
+    @ staticmethod
+    def _check_schema_diff(target_schema, res_data):
+        """
+        Check for schema diff, if yes then replace source schema with target
+        schema.
+        diff_schema: schema diff schema
+        res_data: response from properties sql.
+        """
+        if target_schema and 'statements' in res_data:
+            # Replace the source schema with the target schema
+            res_data['statements'] = \
+                res_data['statements'].replace(
+                    res_data['schema'], target_schema)
+            res_data['schema'] = target_schema
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, tid, rid):

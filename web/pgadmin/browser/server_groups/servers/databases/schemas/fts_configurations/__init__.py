@@ -904,6 +904,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         :param json_resp: True then return json response
         """
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
 
         try:
             sql = render_template(
@@ -927,6 +928,22 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                         "Could not generate reversed engineered query for "
                         "FTS Configuration node.")
                 )
+
+            # Used for schema diff tool
+            if target_schema:
+                data = {'schema': scid}
+                # Fetch schema name from schema oid
+                sql = render_template("/".join([self.template_path,
+                                                'schema.sql']),
+                                      data=data,
+                                      conn=self.conn,
+                                      )
+
+                status, schema = self.conn.execute_scalar(sql)
+                if not status:
+                    return internal_server_error(errormsg=schema)
+
+                res = res.replace(schema, target_schema)
 
             if not json_resp:
                 return res
@@ -1013,6 +1030,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
             sql, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
@@ -1021,6 +1039,9 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, cfgid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, cfgid=oid,
+                               target_schema=target_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, cfgid=oid,
                                json_resp=False)

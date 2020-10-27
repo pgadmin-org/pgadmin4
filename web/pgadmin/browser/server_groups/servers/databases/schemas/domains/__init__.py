@@ -721,6 +721,7 @@ AND relkind != 'c'))"""
             json_resp: True then return json response
         """
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
 
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
@@ -732,6 +733,8 @@ AND relkind != 'c'))"""
             return gone(self.not_found_error_msg())
 
         data = res['rows'][0]
+        if target_schema:
+            data['basensp'] = target_schema
 
         # Get Type Length and Precision
         data.update(self._parse_type(data['fulltype']))
@@ -949,8 +952,11 @@ AND relkind != 'c'))"""
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
+            if target_schema:
+                data['schema'] = target_schema
             sql, name = self.get_sql(gid=gid, sid=sid, scid=scid,
                                      data=data, doid=oid,
                                      is_schema_diff=True)
@@ -958,6 +964,9 @@ AND relkind != 'c'))"""
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, doid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, doid=oid,
+                               target_schema=target_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, doid=oid,
                                json_resp=False)

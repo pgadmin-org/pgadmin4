@@ -181,6 +181,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                                {'get': 'get_target_objects'}]
     })
 
+    keys_to_ignore = ['oid', 'oid-2', 'schema', 'synobjschema']
+
     def check_precondition(f):
         """
         This function will behave as a decorator which will checks
@@ -666,6 +668,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
            json_resp:
         """
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
 
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
@@ -678,6 +681,9 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             data = res['rows'][0]
         else:
             return gone(self.not_found_error_msg())
+
+        if target_schema:
+            data['schema'] = target_schema
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
@@ -768,13 +774,19 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
+            if target_schema:
+                data['schema'] = target_schema
             sql, name = self.get_sql(gid, sid, data, scid, oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, syid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, syid=oid,
+                               target_schema=target_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, syid=oid,
                                json_resp=False)

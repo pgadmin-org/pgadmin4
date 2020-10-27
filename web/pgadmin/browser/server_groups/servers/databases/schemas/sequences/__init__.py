@@ -696,6 +696,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             json_resp: json response or plain text response
         """
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
 
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
@@ -725,6 +726,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             row['cycled'] = rset1['rows'][0]['is_cycled']
 
         result = res['rows'][0]
+        if target_schema:
+            result['schema'] = target_schema
 
         result = self._formatter(result, scid, seid)
         sql, name = self.get_SQL(gid, sid, did, result, scid)
@@ -942,13 +945,19 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
+            if target_schema:
+                data['schema'] = target_schema
             sql, name = self.get_SQL(gid, sid, did, data, scid, oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, seid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, seid=oid,
+                               target_schema=target_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, seid=oid,
                                json_resp=False)

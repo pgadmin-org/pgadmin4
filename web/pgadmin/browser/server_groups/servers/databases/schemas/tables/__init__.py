@@ -1245,12 +1245,13 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         This function will create sql on the basis the difference of 2 tables
         """
         data = dict()
-        res = None
         did = kwargs['did']
         scid = kwargs['scid']
         tid = kwargs['tid']
         diff_data = kwargs['diff_data'] if 'diff_data' in kwargs else None
         json_resp = kwargs['json_resp'] if 'json_resp' in kwargs else True
+        target_schema = kwargs['target_schema'] \
+            if 'target_schema' in kwargs else None
 
         if diff_data:
             return self._fetch_sql(did, scid, tid, diff_data, json_resp)
@@ -1274,6 +1275,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
             # Update autovacuum properties
             self.update_autovacuum_properties(data)
+
+            if target_schema:
+                data['schema'] = target_schema
 
             sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
                 self, did=did, scid=scid, tid=tid, main_sql=main_sql,

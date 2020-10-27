@@ -36,6 +36,7 @@ def _get_source_list(**kwargs):
     node_label = kwargs.get('node_label')
     group_name = kwargs.get('group_name')
     source_schema_name = kwargs.get('source_schema_name')
+    target_schema = kwargs.get('target_schema')
 
     global count
     source_only = []
@@ -50,6 +51,7 @@ def _get_source_list(**kwargs):
             temp_src_params['json_resp'] = False
             source_ddl = \
                 view_object.get_sql_from_table_diff(**temp_src_params)
+            temp_src_params.update({'target_schema': target_schema})
             diff_ddl = view_object.get_sql_from_table_diff(**temp_src_params)
             source_dependencies = \
                 view_object.get_table_submodules_dependencies(
@@ -65,6 +67,7 @@ def _get_source_list(**kwargs):
                 temp_src_params['fsid'] = source_dict[item]['fsid']
 
             source_ddl = view_object.get_sql_from_diff(**temp_src_params)
+            temp_src_params.update({'target_schema': target_schema})
             diff_ddl = view_object.get_sql_from_diff(**temp_src_params)
             source_dependencies = view_object.get_dependencies(
                 view_object.conn, source_object_id, where=None,
@@ -223,6 +226,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
     source_params = kwargs['source_params']
     target_params = kwargs['target_params']
     group_name = kwargs['group_name']
+    target_schema = kwargs.get('target_schema')
     for key in intersect_keys:
         source_object_id, target_object_id = \
             get_source_target_oid(source_dict, target_dict, key)
@@ -281,7 +285,8 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                 diff_ddl = view_object.get_sql_from_submodule_diff(
                     source_params=temp_src_params,
                     target_params=temp_tgt_params,
-                    source=dict1[key], target=dict2[key], diff_dict=diff_dict)
+                    source=dict1[key], target=dict2[key], diff_dict=diff_dict,
+                    target_schema=target_schema)
             else:
                 temp_src_params = copy.deepcopy(source_params)
                 temp_tgt_params = copy.deepcopy(target_params)
@@ -303,7 +308,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                     show_system_objects=None, is_schema_diff=True)
                 target_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
                 temp_tgt_params.update(
-                    {'data': diff_dict})
+                    {'data': diff_dict, 'target_schema': target_schema})
                 diff_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
 
             different.append({
@@ -336,6 +341,7 @@ def compare_dictionaries(**kwargs):
     view_object = kwargs.get('view_object')
     source_params = kwargs.get('source_params')
     target_params = kwargs.get('target_params')
+    target_schema = kwargs.get('target_schema')
     group_name = kwargs.get('group_name')
     source_dict = kwargs.get('source_dict')
     target_dict = kwargs.get('target_dict')
@@ -364,7 +370,8 @@ def compare_dictionaries(**kwargs):
                                    view_object=view_object,
                                    node_label=node_label,
                                    group_name=group_name,
-                                   source_schema_name=source_schema_name)
+                                   source_schema_name=source_schema_name,
+                                   target_schema=target_schema)
 
     target_only = []
     # Keys that are available in target and missing in source.
@@ -389,7 +396,8 @@ def compare_dictionaries(**kwargs):
         "ignore_keys": ignore_keys,
         "source_params": source_params,
         "target_params": target_params,
-        "group_name": group_name
+        "group_name": group_name,
+        "target_schema": target_schema
     }
 
     identical, different = _get_identical_and_different_list(
@@ -507,7 +515,8 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
                 current_app.logger.debug(
                     "Schema Diff: Object name: '{0}', Source Value: '{1}', "
                     "Target Value: '{2}', Key: '{3}'".format(
-                        source_dict['name'], source_value, target_value, key))
+                        source_dict['name'] if 'name' in source_dict else '',
+                        source_value, target_value, key))
                 return False
 
     return True

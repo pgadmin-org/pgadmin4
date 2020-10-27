@@ -5,7 +5,7 @@
 ********************
 
 **Schema Diff** is a feature that allows you to compare objects between
-two databases. Use the *Tools* menu to access Schema Diff.
+two databases or two schemas. Use the *Tools* menu to access Schema Diff.
 
 The Schema Diff feature allows you to:
 
@@ -18,16 +18,21 @@ The Schema Diff feature allows you to:
  * Generate synchronization scripts.
 
 
-**Note** - The source and target database servers must be of the same major
-version.
+**Note:**
 
-Click on *Schema Diff* under the *Tools* menu to open a selection panel. Choose
-the source and target servers, and databases that will be
-compared. After selecting the objects, click on the *Compare* button.
+ * The source and target database servers must be of the same major version.
+
+ * If you compare two **schemas** then dependencies won't be resolved.
+
+Click on *Schema Diff* under the *Tools* menu to open a selection panel.
+To compare **databases** choose the source and target servers, and databases.
+To compare **schemas** choose the source and target servers, databases, and schemas.
+After selecting the objects, click on the *Compare* button.
 
 You can open multiple copies of *Schema Diff* in individual tabs
 simultaneously. To close a copy of Schema Diff, click the *X* in the
-upper-right hand corner of the tab bar.
+upper-right hand corner of the tab bar. You can rename the panel title by
+right-clicking and select the "Rename Panel" option.
 
 .. image:: images/schema_diff_dialog.png
     :alt: schema diff dialog

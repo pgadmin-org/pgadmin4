@@ -30,6 +30,7 @@ from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS,\
 from sqlalchemy import or_
 
 MODULE_NAME = 'schema_diff'
+COMPARE_MSG = gettext("Comparing objects...")
 
 
 class SchemaDiffModule(PgAdminModule):
@@ -64,7 +65,9 @@ class SchemaDiffModule(PgAdminModule):
             'schema_diff.panel',
             'schema_diff.servers',
             'schema_diff.databases',
-            'schema_diff.compare',
+            'schema_diff.schemas',
+            'schema_diff.compare_database',
+            'schema_diff.compare_schema',
             'schema_diff.poll',
             'schema_diff.ddl_compare',
             'schema_diff.connect_server',
@@ -430,32 +433,53 @@ def databases(sid):
 
 
 @blueprint.route(
-    '/compare/<int:trans_id>/<int:source_sid>/<int:source_did>/'
-    '<int:target_sid>/<int:target_did>',
+    '/schemas/<int:sid>/<int:did>',
     methods=["GET"],
-    endpoint="compare"
+    endpoint="schemas"
 )
 @login_required
-def compare(trans_id, source_sid, source_did, target_sid, target_did):
+def schemas(sid, did):
     """
-    This function will compare the two schemas.
+    This function will return the list of schemas for the specified
+    server id and database id.
     """
-    # Check the transaction and connection status
+    res = []
+    try:
+        schemas = get_schemas(sid, did)
+        if schemas is not None:
+            for sch in schemas:
+                res.append({
+                    "value": sch['_id'],
+                    "label": sch['label'],
+                    "_id": sch['_id'],
+                    "image": sch['icon'],
+                })
+    except Exception as e:
+        app.logger.exception(e)
+
+    return make_json_response(data=res)
+
+
+@blueprint.route(
+    '/compare_database/<int:trans_id>/<int:source_sid>/<int:source_did>/'
+    '<int:target_sid>/<int:target_did>',
+    methods=["GET"],
+    endpoint="compare_database"
+)
+@login_required
+def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
+    """
+    This function will compare the two databases.
+    """
+    # Check the pre validation before compare
     status, error_msg, diff_model_obj, session_obj = \
-        check_transaction_status(trans_id)
-
-    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
-        return make_json_response(success=0, errormsg=error_msg, status=404)
-
-    # Server version compatibility check
-    status, msg = check_version_compatibility(source_sid, target_sid)
-
+        compare_pre_validation(trans_id, source_sid, target_sid)
     if not status:
-        return make_json_response(success=0, errormsg=msg, status=428)
+        return error_msg
 
     comparison_result = []
 
-    diff_model_obj.set_comparison_info(gettext("Comparing objects..."), 0)
+    diff_model_obj.set_comparison_info(COMPARE_MSG, 0)
     update_session_diff_transaction(trans_id, session_obj,
                                     diff_model_obj)
 
@@ -553,6 +577,60 @@ def compare(trans_id, source_sid, source_did, target_sid, target_did):
 
 
 @blueprint.route(
+    '/compare_schema/<int:trans_id>/<int:source_sid>/<int:source_did>/'
+    '<int:source_scid>/<int:target_sid>/<int:target_did>/<int:target_scid>',
+    methods=["GET"],
+    endpoint="compare_schema"
+)
+@login_required
+def compare_schema(trans_id, source_sid, source_did, source_scid,
+                   target_sid, target_did, target_scid):
+    """
+    This function will compare the two schema.
+    """
+    # Check the pre validation before compare
+    status, error_msg, diff_model_obj, session_obj = \
+        compare_pre_validation(trans_id, source_sid, target_sid)
+    if not status:
+        return error_msg
+
+    comparison_result = []
+
+    diff_model_obj.set_comparison_info(COMPARE_MSG, 0)
+    update_session_diff_transaction(trans_id, session_obj,
+                                    diff_model_obj)
+    try:
+        all_registered_nodes = SchemaDiffRegistry.get_registered_nodes()
+        node_percent = round(100 / len(all_registered_nodes))
+        total_percent = 0
+
+        comparison_schema_result, total_percent = \
+            compare_schema_objects(
+                trans_id=trans_id, session_obj=session_obj,
+                source_sid=source_sid, source_did=source_did,
+                source_scid=source_scid, target_sid=target_sid,
+                target_did=target_did, target_scid=target_scid,
+                schema_name=gettext('Schema Objects'),
+                diff_model_obj=diff_model_obj,
+                total_percent=total_percent,
+                node_percent=node_percent)
+
+        comparison_result = \
+            comparison_result + comparison_schema_result
+
+        msg = gettext("Successfully compare the specified schemas.")
+        total_percent = 100
+        diff_model_obj.set_comparison_info(msg, total_percent)
+        # Update the message and total percentage done in session object
+        update_session_diff_transaction(trans_id, session_obj, diff_model_obj)
+
+    except Exception as e:
+        app.logger.exception(e)
+
+    return make_json_response(data=comparison_result)
+
+
+@blueprint.route(
     '/poll/<int:trans_id>', methods=["GET"], endpoint="poll"
 )
 @login_required
@@ -573,7 +651,7 @@ def poll(trans_id):
     msg, diff_percentage = diff_model_obj.get_comparison_info()
 
     if diff_percentage == 100:
-        diff_model_obj.set_comparison_info(gettext("Comparing objects..."), 0)
+        diff_model_obj.set_comparison_info(COMPARE_MSG, 0)
         update_session_diff_transaction(trans_id, session_obj,
                                         diff_model_obj)
 
@@ -755,9 +833,13 @@ def compare_schema_objects(**kwargs):
     for node_name, node_view in all_registered_nodes.items():
         view = SchemaDiffRegistry.get_node_view(node_name)
         if hasattr(view, 'compare'):
-            msg = gettext('Comparing {0} of schema \'{1}\''). \
-                format(gettext(view.blueprint.collection_label),
-                       gettext(schema_name))
+            if schema_name == 'Schema Objects':
+                msg = gettext('Comparing {0} '). \
+                    format(gettext(view.blueprint.collection_label))
+            else:
+                msg = gettext('Comparing {0} of schema \'{1}\''). \
+                    format(gettext(view.blueprint.collection_label),
+                           gettext(schema_name))
             app.logger.debug(msg)
             diff_model_obj.set_comparison_info(msg, total_percent)
             # Update the message and total percentage in session object
@@ -832,3 +914,28 @@ def fetch_compare_schemas(source_sid, source_did, target_sid, target_did):
                      'in_both_database': in_both_database}
 
     return schema_result
+
+
+def compare_pre_validation(trans_id, source_sid, target_sid):
+    """
+    This function is used to validate transaction id and version compatibility
+    :param trans_id:
+    :param source_sid:
+    :param target_sid:
+    :return:
+    """
+
+    status, error_msg, diff_model_obj, session_obj = \
+        check_transaction_status(trans_id)
+
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
+        res = make_json_response(success=0, errormsg=error_msg, status=404)
+        return False, res, None, None
+
+    # Server version compatibility check
+    status, msg = check_version_compatibility(source_sid, target_sid)
+    if not status:
+        res = make_json_response(success=0, errormsg=msg, status=428)
+        return False, res, None, None
+
+    return True, '', diff_model_obj, session_obj

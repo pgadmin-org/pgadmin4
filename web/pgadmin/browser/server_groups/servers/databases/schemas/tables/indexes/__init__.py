@@ -844,8 +844,9 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         tid = kwargs.get('tid')
         idx = kwargs.get('idx')
         data = kwargs.get('data', None)
-        create_mode = kwargs.get('create_mode', None)
+        target_schema = kwargs.get('target_schema', None)
         drop_req = kwargs.get('drop_req', False)
+
         sql = ''
 
         if data:
@@ -859,9 +860,9 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql = sql.strip('\n').strip(' ')
 
-        elif create_mode:
+        elif target_schema:
             sql = index_utils.get_reverse_engineered_sql(
-                self.conn, schema=self.schema,
+                self.conn, schema=target_schema,
                 table=self.table, did=did, tid=tid, idx=idx,
                 datlastsysoid=self.datlastsysoid,
                 template_path=None, with_header=False)
@@ -1070,6 +1071,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         source = kwargs.get('source')
         target = kwargs.get('target')
         comp_status = kwargs.get('comp_status')
+        tgt_schema = kwargs.get('target_schema', None)
 
         diff = ''
         if comp_status == 'source_only':
@@ -1078,7 +1080,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                                                 scid=src_params['scid'],
                                                 tid=src_params['tid'],
                                                 idx=source['oid'],
-                                                create_mode=True)
+                                                target_schema=tgt_schema)
         elif comp_status == 'target_only':
             diff = self.delete(gid=1, sid=tgt_params['sid'],
                                did=tgt_params['did'], scid=tgt_params['scid'],
@@ -1104,7 +1106,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                                                     scid=src_params['scid'],
                                                     tid=src_params['tid'],
                                                     idx=source['oid'],
-                                                    create_mode=True,
+                                                    target_schema=tgt_schema,
                                                     drop_req=True)
             else:
                 diff = self.get_sql_from_index_diff(sid=tgt_params['sid'],

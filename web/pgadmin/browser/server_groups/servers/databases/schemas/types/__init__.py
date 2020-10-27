@@ -1373,6 +1373,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
            json_resp: True then return json response
         """
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
 
         SQL = render_template(
             "/".join([self.template_path,
@@ -1390,6 +1391,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             )
         # Making copy of output for future use
         data = dict(res['rows'][0])
+        if target_schema:
+            data['schema'] = target_schema
 
         SQL = render_template("/".join([self.template_path, self._ACL_SQL]),
                               scid=scid, tid=tid)
@@ -1521,14 +1524,20 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
+            if target_schema:
+                data['schema'] = target_schema
             sql, name = self.get_sql(gid=gid, sid=sid, scid=scid,
                                      data=data, tid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, tid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, tid=oid,
+                               target_schema=target_schema, json_resp=False)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, tid=oid,
                                json_resp=False)

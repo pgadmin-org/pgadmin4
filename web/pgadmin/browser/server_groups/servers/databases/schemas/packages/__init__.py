@@ -582,8 +582,12 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         pkgid = kwargs.get('pkgid', None)
         sqltab = kwargs.get('sqltab', False)
         is_schema_diff = kwargs.get('is_schema_diff', None)
+        target_schema = kwargs.get('target_schema', None)
 
-        data['schema'] = self.schema
+        if target_schema:
+            data['schema'] = target_schema
+        else:
+            data['schema'] = self.schema
 
         if pkgid is not None and not sqltab:
             return self.get_sql_with_pkgid(scid, pkgid, data, is_schema_diff)
@@ -687,6 +691,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         is_schema_diff = kwargs.get('is_schema_diff', None)
         json_resp = kwargs.get('json_resp', True)
+        target_schema = kwargs.get('target_schema', None)
 
         try:
             sql = render_template(
@@ -719,10 +724,13 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 res['rows'][0].setdefault(row['deftype'], []).append(priv)
 
             result = res['rows'][0]
+            if target_schema:
+                result['schema'] = target_schema
 
             sql, name = self.getSQL(data=result, scid=scid, pkgid=pkgid,
                                     sqltab=True,
-                                    is_schema_diff=is_schema_diff)
+                                    is_schema_diff=is_schema_diff,
+                                    target_schema=target_schema)
 
             # Most probably this is due to error
             if not isinstance(sql, str):
@@ -847,13 +855,20 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         oid = kwargs.get('oid')
         data = kwargs.get('data', None)
         drop_sql = kwargs.get('drop_sql', False)
+        target_schema = kwargs.get('target_schema', None)
 
         if data:
+            if target_schema:
+                data['schema'] = target_schema
             sql, name = self.getSQL(data=data, scid=scid, pkgid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
                                   scid=scid, pkgid=oid, only_sql=True)
+            elif target_schema:
+                sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, pkgid=oid,
+                               is_schema_diff=True, json_resp=False,
+                               target_schema=target_schema)
             else:
                 sql = self.sql(gid=gid, sid=sid, did=did, scid=scid, pkgid=oid,
                                is_schema_diff=True, json_resp=False)

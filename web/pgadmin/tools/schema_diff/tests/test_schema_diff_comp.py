@@ -25,7 +25,7 @@ class SchemaDiffTestCase(BaseTestGenerator):
     scenarios = [
         # Fetching default URL for database node.
         ('Schema diff comparison', dict(
-            url='schema_diff/compare/{0}/{1}/{2}/{3}/{4}'))
+            url='schema_diff/compare_database/{0}/{1}/{2}/{3}/{4}'))
     ]
 
     def setUp(self):

@@ -105,7 +105,7 @@ let SchemaDiffSelect2Control =
       controlsClassName: 'pgadmin-controls pg-el-sm-11 pg-el-12',
     }),
     className: function() {
-      return 'pgadmin-controls pg-el-sm-6';
+      return 'pgadmin-controls pg-el-sm-4';
     },
     events: {
       'focus select': 'clearInvalid',
