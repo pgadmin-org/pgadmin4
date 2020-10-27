@@ -739,9 +739,9 @@ def register_query_tool_preferences(self):
     self.keyword_case = self.preference.register(
         'editor', 'keyword_case',
         gettext("Keyword case"), 'radioModern', 'upper',
-        options=[{'label': 'Upper case', 'value': 'upper'},
-                 {'label': 'Lower case', 'value': 'lower'},
-                 {'label': 'Capitalized', 'value': 'capitalize'}],
+        options=[{'label': gettext('Upper case'), 'value': 'upper'},
+                 {'label': gettext('Lower case'), 'value': 'lower'},
+                 {'label': gettext('Capitalized'), 'value': 'capitalize'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
             'Convert keywords to upper, lower, or capitalized casing.'
@@ -751,9 +751,9 @@ def register_query_tool_preferences(self):
     self.identifier_case = self.preference.register(
         'editor', 'identifier_case',
         gettext("Identifier case"), 'radioModern', 'upper',
-        options=[{'label': 'Upper case', 'value': 'upper'},
-                 {'label': 'Lower case', 'value': 'lower'},
-                 {'label': 'Capitalized', 'value': 'capitalize'}],
+        options=[{'label': gettext('Upper case'), 'value': 'upper'},
+                 {'label': gettext('Lower case'), 'value': 'lower'},
+                 {'label': gettext('Capitalized'), 'value': 'capitalize'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
             'Convert identifiers to upper, lower, or capitalized casing.'

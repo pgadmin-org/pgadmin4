@@ -203,7 +203,7 @@ define('pgadmin.node.foreign_table', [
     },{
       id: 'typdefault', label: gettext('Default'), type: 'text',
       cell: 'string', min_version: 90300, group: gettext('Definition'),
-      placeholder: 'Enter an expression or a value.',
+      placeholder: gettext('Enter an expression or a value.'),
       cellHeaderClasses: 'width_percent_10',
       editable: function(m) {
         if(!(_.isUndefined(m.get('inheritedid'))

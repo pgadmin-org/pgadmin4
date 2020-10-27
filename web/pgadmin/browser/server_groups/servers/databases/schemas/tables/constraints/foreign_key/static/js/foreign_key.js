@@ -164,7 +164,7 @@ define('pgadmin.node.foreign_key', [
             id: 'references', label:'', type: 'text', cache_level: 'server',
             select2: {
               allowClear: false, width: 'style',
-              placeholder: 'Select foreign table',
+              placeholder: gettext('Select foreign table'),
             }, first_empty: true,
             control: Backform.NodeListByNameControl.extend({
               formatter: Backform.ControlFormatter,

@@ -123,7 +123,7 @@ define('pgadmin.node.row_security_policy', [
         },
         {
           id: 'rls_expression_key_note', label: gettext('RLS policy expression'),
-          type: 'note', group: 'Commands', mode: ['create', 'edit'],
+          type: 'note', group: gettext('Commands'), mode: ['create', 'edit'],
           text: [
             '<ul><li>',
             '<strong>', gettext('Using: '), '</strong>',

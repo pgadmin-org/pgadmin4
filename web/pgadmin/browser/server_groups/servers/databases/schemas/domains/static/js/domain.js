@@ -264,7 +264,7 @@ define('pgadmin.node.domain', [
         },{
           id: 'typdefault', label: gettext('Default'), cell: 'string',
           type: 'text', group: gettext('Definition'),
-          placeholder: 'Enter an expression or a value.',
+          placeholder: gettext('Enter an expression or a value.'),
         },{
           id: 'typnotnull', label: gettext('Not NULL?'), cell: 'boolean',
           type: 'switch', group: gettext('Definition'),

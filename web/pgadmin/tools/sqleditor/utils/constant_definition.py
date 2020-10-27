@@ -8,6 +8,7 @@
 ##########################################################################
 
 """Definition of constants for SQLEditor."""
+from flask_babelex import gettext
 
 # Async Constants
 ASYNC_OK = 1
@@ -24,9 +25,9 @@ TX_STATUS_INERROR = 3
 
 # Connection status codes mapping
 CONNECTION_STATUS_MESSAGE_MAPPING = dict({
-    0: 'The session is idle and there is no current transaction.',
-    1: 'A command is currently in progress.',
-    2: 'The session is idle in a valid transaction block.',
-    3: 'The session is idle in a failed transaction block.',
-    4: 'The connection with the server is bad.'
+    0: gettext('The session is idle and there is no current transaction.'),
+    1: gettext('A command is currently in progress.'),
+    2: gettext('The session is idle in a valid transaction block.'),
+    3: gettext('The session is idle in a failed transaction block.'),
+    4: gettext('The connection with the server is bad.')
 })

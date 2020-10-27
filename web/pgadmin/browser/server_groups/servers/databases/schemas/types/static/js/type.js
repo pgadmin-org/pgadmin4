@@ -344,11 +344,11 @@ define('pgadmin.node.type', [
           select2: { allowClear: false },
           options: function() {
             return [
-              {label: 'Composite', value: 'c'},
-              {label: 'Enumeration', value: 'e'},
-              {label: 'External', value: 'b'},
-              {label: 'Range', value: 'r'},
-              {label: 'Shell', value: 'p'},
+              {label: gettext('Composite'), value: 'c'},
+              {label: gettext('Enumeration'), value: 'e'},
+              {label: gettext('External'), value: 'b'},
+              {label: gettext('Range'), value: 'r'},
+              {label: gettext('Shell'), value: 'p'},
             ];
           },
           // If create mode then by default open composite type

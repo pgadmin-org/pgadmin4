@@ -101,7 +101,7 @@ define('tools.querytool', [
       this.set_server_version(opts.server_ver);
       this.trigger('pgadmin-sqleditor:view:initialised');
       this.connection_list = [
-        {'server_group': null,'server': null, 'database': null, 'user': null, 'role': null, 'title': '&lt;New Connection&gt;'},
+        {'server_group': null,'server': null, 'database': null, 'user': null, 'role': null, 'title': '&lt;' + gettext('New Connection') + '&gt;'},
       ];
     },
 

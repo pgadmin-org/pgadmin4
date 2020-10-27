@@ -358,7 +358,7 @@ define('pgadmin.node.exclusion_constraint', [
             },
             select2: {
               allowClear: false, width: 'style',
-              placeholder: 'Select column',
+              placeholder: gettext('Select column'),
             }, first_empty: !self.model.isNew(),
             readonly: function() {
               return !_.isUndefined(self.model.get('oid'));

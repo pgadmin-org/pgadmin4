@@ -40,7 +40,7 @@ define('pgadmin.node.column', [
       type: 'text', disabled: false, node: 'column',
       options: [['n_distinct', 'n_distinct'],
         ['n_distinct_inherited','n_distinct_inherited']],
-      select2: {placeholder: 'Select variable'},
+      select2: {placeholder: gettext('Select variable')},
       cellHeaderClasses:'width_percent_50',
     },{
       id: 'value', label: gettext('Value'),
@@ -483,7 +483,7 @@ define('pgadmin.node.column', [
           id: 'attstorage', label: gettext('Storage'), group: gettext('Definition'),
           type: 'text', mode: ['properties', 'edit'],
           cell: 'string', disabled: 'inSchemaWithColumnCheck', first_empty: true,
-          control: 'select2', select2: { placeholder: 'Select storage',
+          control: 'select2', select2: { placeholder: gettext('Select storage'),
             allowClear: false,
             width: '100%',
           },
@@ -575,7 +575,7 @@ define('pgadmin.node.column', [
         }, {
           id: 'attidentity', label: gettext('Identity'), control: 'select2',
           cell: 'select2',
-          select2: {placeholder: 'Select identity', allowClear: false, width: '100%'},
+          select2: {placeholder: gettext('Select identity'), allowClear: false, width: '100%'},
           min_version: 100000, group: gettext('Constraints'),
           'options': [
             {label: gettext('ALWAYS'), value: 'a'},
