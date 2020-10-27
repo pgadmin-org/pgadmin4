@@ -201,22 +201,17 @@ let NewConnectionDialog = {
               let tab_title = '';
 
               var qt_title_placeholder = preferences['qt_tab_title_placeholder'];
-              var placeholders = qt_title_placeholder.split('%');
-              placeholders.forEach(function(placeholder) {
-                if(placeholder == 'DATABASE'){
-                  tab_title = tab_title.concat(selected_database_name);
-                } else if(placeholder == 'USERNAME') {
-                  if(newConnCollectionModel['role']) {
-                    tab_title = tab_title.concat(newConnCollectionModel['role']);
-                  } else {
-                    tab_title = tab_title.concat(newConnCollectionModel['user']);
-                  }
-                } else if(placeholder == 'SERVER') {
-                  tab_title = tab_title.concat(response.server_name);
-                } else{
-                  tab_title = tab_title.concat(placeholder);
-                }
-              });
+              qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%DATABASE%'), selected_database_name);
+
+              if(newConnCollectionModel['role']) {
+                qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), newConnCollectionModel['role']);
+              } else {
+                qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), newConnCollectionModel['user']);
+              }
+
+              qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%SERVER%'), response.server_name);
+
+              tab_title = qt_title_placeholder;
 
               if(!newConnCollectionModel['role']) {
                 newConnCollectionModel['role'] = null;

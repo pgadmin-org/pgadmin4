@@ -108,7 +108,6 @@ export default class SchemaDiffUI {
         this.resize_panels();
       }.bind(self), 200);
     });
-
   }
 
   raise_error_on_fail(alert_title, xhr) {

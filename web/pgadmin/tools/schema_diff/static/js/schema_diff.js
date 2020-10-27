@@ -9,9 +9,9 @@
 
 define('pgadmin.schemadiff', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'sources/csrf', 'pgadmin.browser.node',
+  'sources/pgadmin', 'sources/csrf', 'pgadmin.alertifyjs', 'pgadmin.browser.node',
 ], function(
-  gettext, url_for, $, _, pgAdmin, csrfToken
+  gettext, url_for, $, _, pgAdmin, csrfToken, Alertify,
 ) {
 
   var wcDocker = window.wcDocker,
@@ -112,6 +112,21 @@ define('pgadmin.schemadiff', [
 
         var propertiesPanel = pgBrowser.docker.findPanels('properties'),
           schemaDiffPanel = pgBrowser.docker.addPanel('frm_schemadiff', wcDocker.DOCK.STACKED, propertiesPanel[0]);
+
+        // Rename schema diff tab
+        schemaDiffPanel.on(wcDocker.EVENT.RENAME, function(panel_data) {
+          Alertify.prompt('', panel_data.$titleText[0].textContent,
+            // We will execute this function when user clicks on the OK button
+            function(evt, value) {
+              if(value) {
+                schemaDiffPanel.title('<span>'+ _.escape(value) +'</span>');
+              }
+            },
+            // We will execute this function when user clicks on the Cancel
+            // button.  Do nothing just close it.
+            function(evt) { evt.cancel = false; }
+          ).set({'title': gettext('Rename Panel')});
+        });
 
         // Set panel title and icon
         schemaDiffPanel.title('<span title="'+panel_tooltip+'">'+panel_title+'</span>');

@@ -202,6 +202,12 @@ def save(pid):
     """
     data = request.form if request.form else json.loads(request.data.decode())
 
+    if data['name'] in ['vw_edt_tab_title_placeholder',
+                        'qt_tab_title_placeholder',
+                        'debugger_tab_title_placeholder']:
+        if data['value'].isspace():
+            data['value'] = ''
+
     res, msg = Preferences.save(
         data['mid'], data['category_id'], data['id'], data['value'])
     sgm.get_nodes(sgm)

@@ -224,10 +224,11 @@ define('pgadmin.datagrid', [
           queryToolForm +=`<textarea name="sql_filter" hidden>${sql_filter}</textarea>`;
         }
 
+        /* Escape backslashes as it is stripped by back end */
         queryToolForm +=`
           </form>
             <script>
-              document.getElementById("title").value = "${_.escape(panel_title)}";
+              document.getElementById("title").value = "${_.escape(panel_title.replace('\\', '\\\\'))}";
               document.getElementById("queryToolForm").submit();
             </script>
           `;

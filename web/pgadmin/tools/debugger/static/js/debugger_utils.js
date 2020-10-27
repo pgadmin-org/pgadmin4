@@ -50,33 +50,21 @@ function setDebuggerTitle(panel, preferences, function_name, schema_name, databa
     debugger_title_placeholder = preferences['debugger_tab_title_placeholder'];
   }
 
-  var placeholders = debugger_title_placeholder.split('%');
+  var function_data = function_name.split('(');
+  function_name = get_function_name(function_name);
 
-  var title = '';
-  placeholders.forEach(function(placeholder) {
-    if(placeholder == 'FUNCTION'){
-      var func_name = '';
-      func_name = get_function_name(function_name);
+  var args_list = function_data[function_data.length - 1].split(')');
+  var args = '';
+  if(args_list.length > 0) {
+    args = args.concat(args_list[0]);
+  }
 
-      title = title.concat(func_name);
-    } else if(placeholder == 'ARGS') {
-      var args = '';
-      var function_data = function_name.split('(');
-      var args_list = function_data[function_data.length - 1].split(')');
-      if(args_list.length > 0) {
-        args = args.concat(args_list[0]);
-      }
-      function_name = get_function_name(function_name);
-      title = title.concat(args);
-    } else if(placeholder == 'SCHEMA'){
-      title = title.concat(schema_name);
-    } else if(placeholder == 'DATABASE'){
-      title = title.concat(database_name);
-    } else if (placeholder != 'ARGS' ){
-      title = title.concat(placeholder);
-    }
-  });
-  panel.title('<span>'+ _.escape(title) +'</span>');
+  debugger_title_placeholder = debugger_title_placeholder.replace(new RegExp('%FUNCTION%'), function_name);
+  debugger_title_placeholder = debugger_title_placeholder.replace(new RegExp('%ARGS%'), args);
+  debugger_title_placeholder = debugger_title_placeholder.replace(new RegExp('%SCHEMA%'), schema_name);
+  debugger_title_placeholder = debugger_title_placeholder.replace(new RegExp('%DATABASE%'), database_name);
+
+  panel.title('<span>'+ _.escape(debugger_title_placeholder) +'</span>');
 }
 
 function get_function_name(function_name) {

@@ -39,20 +39,11 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null) 
     qt_title_placeholder = preferences['qt_tab_title_placeholder'];
   }
 
-  var placeholders = qt_title_placeholder.split('%');
-  var title = '';
-  placeholders.forEach(function(placeholder) {
-    if(placeholder == 'DATABASE'){
-      title = title.concat(db_label);
-    } else if(placeholder == 'USERNAME') {
-      title = title.concat(parentData.server.user.name);
-    } else if(placeholder == 'SERVER') {
-      title = title.concat(parentData.server.label);
-    } else{
-      title = title.concat(placeholder);
-    }
-  });
-  return _.escape(title);
+  qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%DATABASE%'), db_label);
+  qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), parentData.server.user.name);
+  qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%SERVER%'), parentData.server.label);
+
+  return _.escape(qt_title_placeholder);
 }
 
 export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_file) {

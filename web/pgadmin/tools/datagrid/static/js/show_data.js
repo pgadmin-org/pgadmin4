@@ -297,23 +297,11 @@ export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title
     dtg_title_placeholder = preferences['vw_edt_tab_title_placeholder'];
   }
 
-  var placeholders = dtg_title_placeholder.split('%');
-  var title = '';
-  placeholders.forEach(function(placeholder) {
-    if(placeholder == 'DATABASE'){
-      title = title.concat(db_label);
-    } else if(placeholder == 'USERNAME') {
-      title = title.concat(parentData.server.user.name);
-    } else if(placeholder == 'SERVER') {
-      title = title.concat(parentData.server.label);
-    } else if(placeholder == 'SCHEMA') {
-      title = title.concat(namespaceName);
-    } else if(placeholder == 'TABLE') {
-      title = title.concat(node.getData().label);
-    } else{
-      title = title.concat(placeholder);
-    }
-  });
+  dtg_title_placeholder = dtg_title_placeholder.replace(new RegExp('%DATABASE%'), db_label);
+  dtg_title_placeholder = dtg_title_placeholder.replace(new RegExp('%USERNAME%'), parentData.server.user.name);
+  dtg_title_placeholder = dtg_title_placeholder.replace(new RegExp('%SERVER%'), parentData.server.label);
+  dtg_title_placeholder = dtg_title_placeholder.replace(new RegExp('%SCHEMA%'), namespaceName);
+  dtg_title_placeholder = dtg_title_placeholder.replace(new RegExp('%TABLE%'), node.getData().label);
 
-  return _.escape(title);
+  return _.escape(dtg_title_placeholder);
 }
