@@ -149,7 +149,4 @@ class BackupMessageTest(BaseTestGenerator):
         obj_details = backup_obj.details(self.class_params['cmd'],
                                          self.class_params['args'])
 
-        storage_dir = backup_obj.current_storage_dir
-
         self.assertIn(self.expected_details_cmd, obj_details)
-        self.assertEqual(self.expected_storage_dir, storage_dir)
