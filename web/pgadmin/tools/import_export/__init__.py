@@ -136,27 +136,6 @@ class IEMessage(IProcessDesc):
         _type_desc = _("Import - ") if self.is_import else _("Export - ")
         return _type_desc + _("Copying table data")
 
-    # @property
-    # def current_storage_dir(self):
-    #
-    #     if config.SERVER_MODE:
-    #         path = os.path.realpath(self.bfile)
-    #         if get_storage_directory() < path:
-    #             storage_directory = os.path.basename(get_storage_directory())
-    #             start = path.index(storage_directory)
-    #             end = start + (len(storage_directory))
-    #
-    #             last_dir = os.path.dirname(path[end:])
-    #         else:
-    #             last_dir = '\\'
-    #
-    #     else:
-    #         last_dir = os.path.dirname(self.bfile) \
-    #             if os.path.isfile(self.bfile) \
-    #             else self.bfile
-    #
-    #     return None if self.is_import else last_dir
-
     def details(self, cmd, args):
         # Fetch the server details like hostname, port, roles etc
         name, host, port = self.get_server_details()
