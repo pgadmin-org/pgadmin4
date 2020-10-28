@@ -131,7 +131,7 @@ let NewConnectionDialog = {
               self.showNewConnectionProgress[0]
             ).removeClass('d-none');
 
-            self.newConnCollectionModel = newConnectionDialogModel(response, handler.url_params.sgid, handler.url_params.sid);
+            self.newConnCollectionModel = newConnectionDialogModel(response, handler.url_params.sgid, handler.url_params.sid, handler, self);
             let fields = Backform.generateViewSchema(null, self.newConnCollectionModel, 'create', null, null, true);
 
             let view = this.view = new Backform.Dialog({
@@ -240,6 +240,7 @@ let NewConnectionDialog = {
                   'role': newConnCollectionModel['role'],
                   'server_name': _.escape(response.server_name),
                   'database_name': _.escape(selected_database_name),
+                  'password': response.password,
                   'is_selected': false,
                 };
                 handler.gridView.on_change_connection(connection_details, self);

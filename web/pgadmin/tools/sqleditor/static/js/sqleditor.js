@@ -2125,7 +2125,7 @@ define('tools.querytool', [
 
     set_selected_option: function(selected_config) {
       this.connection_list.forEach(option =>{
-        if(option['server'] == selected_config['server'] && option['database'] == selected_config['database']) {
+        if(option['server'] == selected_config['server'] && option['database'] == selected_config['database'] && option['user'] == selected_config['user'] && option['role'] == selected_config['role']) {
           selected_config['is_selected'] = true;
         } else {
           option['is_selected'] = false;
@@ -2133,95 +2133,114 @@ define('tools.querytool', [
       });
     },
 
-    on_change_connection: function(connection_details, ref) {
+    on_change_connection: function(connection_details, ref, add_new_connection=true) {
       if(!connection_details['is_selected']) {
         var self = this;
-        var loadingDiv = null;
-        var msgDiv = null;
-        if(ref){
-          loadingDiv = $('#show_filter_progress');
-          loadingDiv.removeClass('d-none');
-          msgDiv = loadingDiv.find('.sql-editor-busy-text');
-          msgDiv.text('Connecting to database...');
-        } else{
-          loadingDiv = $('#fetching_data');
-          loadingDiv.removeClass('d-none');
-          msgDiv = loadingDiv.find('.sql-editor-busy-text');
+        if(add_new_connection) {
+          alertify.confirm(gettext('Change connection'),
+            gettext('By changing the connection you will lose all your unsaved data for the current connection. <br> Do you want to continue?'),
+            function() {
+              self.change_connection(connection_details, ref, true);
+            },
+            function() {
+              var loadingDiv = $('#fetching_data');
+              loadingDiv.addClass('d-none');
+              alertify.newConnectionDialog().destroy();
+              return true;
+            }
+          ).set('labels', {
+            ok: gettext('Yes'),
+            cancel: gettext('No'),
+          });
+        } else {
+          self.change_connection(connection_details, ref, false);
         }
-
-        alertify.confirm(gettext('Change connection'),
-          gettext('By changing the connection you will lose all your unsaved data for the current connection. <br> Do you want to continue?'),
-          function() {
-            self.set_selected_option(connection_details);
-            $.ajax({
-              url: url_for('datagrid.update_query_tool_connection', {
-                'trans_id': self.transId,
-                'sgid': connection_details['server_group'],
-                'sid': connection_details['server'],
-                'did': connection_details['database'],
-              }),
-              method: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify(connection_details),
-            })
-              .done(function(res) {
-                if(res.success) {
-                  self.transId = res.data.tran_id;
-                  self.handler.transId = res.data.tran_id;
-                  self.handler.url_params = {
-                    'did': connection_details['database'],
-                    'is_query_tool': self.handler.url_params.is_query_tool,
-                    'server_type': self.handler.url_params.server_type,
-                    'sgid': connection_details['server_group'],
-                    'sid': connection_details['server'],
-                    'title': connection_details['title'],
-                  };
-                  self.set_editor_title(_.unescape(self.handler.url_params.title));
-                  self.handler.setTitle(_.unescape(self.handler.url_params.title));
-                  let success_msg = connection_details['server_name'] + '/' + connection_details['database_name'] + '- Database connected';
-                  alertify.success(success_msg);
-                  if(ref){
-                    let connection_data = {
-                      'server_group': self.handler.url_params.sgid,
-                      'server': connection_details['server'],
-                      'database': connection_details['database'],
-                      'user': connection_details['user'],
-                      'title': connection_details['title'],
-                      'role': connection_details['role'],
-                      'is_allow_new_connection': true,
-                      'database_name': connection_details['database_name'],
-                      'server_name': connection_details['server_name'],
-                      'is_selected': true,
-                    };
-                    self.connection_list.unshift(connection_data);
-                    self.render_connection(self.connection_list);
-                    loadingDiv.addClass('d-none');
-                    alertify.newConnectionDialog().destroy();
-                    ref.close();
-                  } else {
-                    loadingDiv.addClass('d-none');
-                  }
-                }
-                return true;
-              })
-              .fail(function(xhr) {
-                if(xhr.status == 428) {
-                  alertify.connectServer('Connect to server', xhr.responseJSON.result, connection_details['server'], false);
-                } else {
-                  alertify.error(xhr.responseJSON['errormsg']);
-                }
-              });
-          },
-          function() {
-            loadingDiv.addClass('d-none');
-            alertify.newConnectionDialog().destroy();
-            return true;
-          }
-        ).set('labels', {
-          ok: gettext('Yes'),
-          cancel: gettext('No'),
-        });
       }
+    },
+
+    change_connection: function(connection_details, ref, add_new_connection) {
+      var self = this;
+      var loadingDiv = null;
+      var msgDiv = null;
+      if(ref){
+        loadingDiv = $('#show_filter_progress');
+        loadingDiv.removeClass('d-none');
+        msgDiv = loadingDiv.find('.sql-editor-busy-text');
+        msgDiv.text('Connecting to database...');
+      } else{
+        loadingDiv = $('#fetching_data');
+        loadingDiv.removeClass('d-none');
+        msgDiv = loadingDiv.find('.sql-editor-busy-text');
+      }
+      self.set_selected_option(connection_details);
+      $.ajax({
+        url: url_for('datagrid.update_query_tool_connection', {
+          'trans_id': self.transId,
+          'sgid': connection_details['server_group'],
+          'sid': connection_details['server'],
+          'did': connection_details['database'],
+        }),
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(connection_details),
+      })
+        .done(function(res) {
+          if(res.success) {
+            delete connection_details.password;
+            self.transId = res.data.tran_id;
+            self.handler.transId = res.data.tran_id;
+            self.handler.url_params = {
+              'did': connection_details['database'],
+              'is_query_tool': self.handler.url_params.is_query_tool,
+              'server_type': self.handler.url_params.server_type,
+              'sgid': connection_details['server_group'],
+              'sid': connection_details['server'],
+              'title': connection_details['title'],
+            };
+            self.set_editor_title(_.unescape(self.handler.url_params.title));
+            self.handler.setTitle(_.unescape(self.handler.url_params.title));
+            let success_msg = connection_details['server_name'] + '/' + connection_details['database_name'] + '- Database connected';
+            alertify.success(success_msg);
+            if(ref){
+              let connection_data = {
+                'server_group': self.handler.url_params.sgid,
+                'server': connection_details['server'],
+                'database': connection_details['database'],
+                'user': connection_details['user'],
+                'title': connection_details['title'],
+                'role': connection_details['role'],
+                'is_allow_new_connection': true,
+                'database_name': connection_details['database_name'],
+                'server_name': connection_details['server_name'],
+                'is_selected': true,
+              };
+              delete connection_data.password;
+              if(add_new_connection) {
+                self.connection_list.unshift(connection_data);
+              }
+
+              self.render_connection(self.connection_list);
+              loadingDiv.addClass('d-none');
+              alertify.newConnectionDialog().destroy();
+              alertify.connectServer().destroy();
+            } else {
+              loadingDiv.addClass('d-none');
+              alertify.connectServer().destroy();
+            }
+          }
+          return true;
+        })
+        .fail(function(xhr) {
+          if(xhr.status == 428) {
+            var connection_info = connection_details;
+            if(ref) {
+              connection_info = {};
+            }
+            alertify.connectServer('Connect to server', xhr.responseJSON.result, connection_details['server'], false, connection_info);
+          } else {
+            alertify.error(xhr.responseJSON['errormsg']);
+          }
+        });
     },
   });
 
@@ -2566,6 +2585,7 @@ define('tools.querytool', [
             'server_name': _.unescape(server_data.data.label),
             'is_selected': true,
           };
+          delete connection_data.password;
           self.gridView.connection_list.unshift(connection_data);
           self.gridView.render_connection(self.gridView.connection_list);
         };

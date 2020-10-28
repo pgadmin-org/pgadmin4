@@ -15,7 +15,7 @@ import Backform from 'pgadmin.backform';
 import url_for from 'sources/url_for';
 import alertify from 'pgadmin.alertifyjs';
 
-export default function newConnectionDialogModel(response, sgid, sid) {
+export default function newConnectionDialogModel(response, sgid, sid, handler, conn_self) {
 
   let server_name = '';
   let database_name = '';
@@ -158,12 +158,13 @@ export default function newConnectionDialogModel(response, sgid, sid) {
           alertify.dialog('connectServer', function factory() {
             return {
               main: function(
-                title, message, server_id, submit_password=true
+                title, message, server_id, submit_password=true, connect_server=null,
               ) {
                 this.set('title', title);
                 this.message = message;
                 this.server_id = server_id;
                 this.submit_password = submit_password;
+                this.connect_server = connect_server;
               },
               setup:function() {
                 return {
@@ -185,11 +186,11 @@ export default function newConnectionDialogModel(response, sgid, sid) {
                 this.setContent(this.message);
               },
               callback: function(closeEvent) {
-
+                var loadingDiv = $('#show_filter_progress');
                 if (closeEvent.button.text == gettext('OK')) {
                   if(this.submit_password) {
                     var _url = url_for('sqleditor.connect_server', {'sid': this.server_id});
-                    var loadingDiv = $('#show_filter_progress');
+
                     loadingDiv.removeClass('d-none');
                     $.ajax({
                       type: 'POST',
@@ -218,13 +219,26 @@ export default function newConnectionDialogModel(response, sgid, sid) {
                         alertify.connectServer().destroy();
                         alertify.connectServer('Connect to server', xhr.responseJSON.result, local_self.getValueFromDOM());
                       });
+                  } else {
+                    if(Object.keys(this.connect_server).length > 0) {
+                      this.connect_server['password'] = $('#password').val();
+                      this.connect_server['is_selected'] = false;
+                      handler.gridView.on_change_connection(this.connect_server, conn_self, false);
+                      loadingDiv = $('#fetching_data');
+                      loadingDiv.addClass('d-none');
+                    } else {
+                      response.password = $('#password').val();
+                      loadingDiv.addClass('d-none');
+                    }
                   }
                 } else {
                   local_self.model.attributes.database = null;
                   local_self.model.attributes.user = null;
                   local_self.model.attributes.role = null;
                   Backform.Select2Control.prototype.onChange.apply(local_self, arguments);
+                  loadingDiv.addClass('d-none');
                   alertify.connectServer().destroy();
+
                 }
                 closeEvent.close = true;
               },

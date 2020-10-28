@@ -28,3 +28,4 @@ Bug fixes
 | `Issue #5911 <https://redmine.postgresql.org/issues/5911>`_ -  Ensure that macros should be run on the older version of Safari and Chrome.
 | `Issue #5919 <https://redmine.postgresql.org/issues/5919>`_ -  Added security related enhancements.
 | `Issue #5923 <https://redmine.postgresql.org/issues/5923>`_ -  Fixed an issue where non-closeable tabs are getting closed.
+| `Issue #5953 <https://redmine.postgresql.org/issues/5953>`_ -  Fixed an issue where connection to the server is on wait state if a different user is provided.

@@ -466,7 +466,7 @@ def update_query_tool_connection(trans_id, sgid, sid, did):
         new_trans_id = str(random.randint(1, 9999999))
         kwargs = {
             'user': data['user'],
-            'role': data['role'],
+            'role': data['role'] if 'role' in data else None,
             'password': data['password'] if 'password' in data else None
         }
 
