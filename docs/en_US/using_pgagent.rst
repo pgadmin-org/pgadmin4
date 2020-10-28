@@ -7,7 +7,7 @@
 
 pgAgent is a scheduling agent that runs and manages jobs; each job consists of
 one or more steps and schedules.  If two or more jobs are scheduled to execute
-concurrently, pgAgent will execute the jobs in parallel (each with it's own
+concurrently, pgAgent will execute the jobs in parallel (each with its own
 thread).
 
 A step may be a series of SQL statements or an operating system batch/shell
@@ -49,4 +49,3 @@ this, it is essential to maintain control over the users that are able to create
 and modify jobs. By default, only the user that created the pgAgent database
 objects will be able to do this - this will normally be the PostgreSQL
 superuser.
-

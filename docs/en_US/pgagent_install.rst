@@ -13,6 +13,7 @@ same database; individual jobs may be targeted at a particular host, or left
 for execution by any host. Locking prevents execution of the same instance of a
 job by multiple hosts.
 
+
 Database setup
 **************
 
@@ -39,21 +40,6 @@ the *Execute* icon:
 
     CREATE LANGUAGE plpgsql;
 
-If you are using an earlier version of PostgreSQL or pgAgent, use the
-*Open file* icon on the Query Tool toolbar to open a browser window and locate
-the *pgagent.sql* script. The installation script is installed by pgAdmin, and
-the installation location varies from operating system to operating system:
-
-* On Windows, it is usually located under *C:\\Program files\\pgAdmin III* (or
-  *C:\\Program files\\PostgreSQL\\8.x\\pgAdmin III* if installed with the PostgreSQL
-  server installer).
-
-* On Linux, it is usually located under */usr/local/pgadmin3/share/pgadmin3*
-  or */usr/share/pgadmin3*.
-
-After loading the file into the Query Tool, click the *Execute* icon to execute
-the script.  The script will create a number of tables and other objects in a
-schema named *pgagent*.
 
 Daemon installation on Unix
 ***************************
@@ -73,7 +59,7 @@ needed for debugging or specialised configurations::
 
   Usage:
     /path/to/pgagent [options] <connect-string>
-  
+
   options:
     -f run in the foreground (do not detach from the terminal)
     -t <poll time interval in seconds (default 10)>

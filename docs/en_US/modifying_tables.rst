@@ -9,8 +9,8 @@ attributes.
 
 To access a dialog that allows you to create a database object, right-click on
 the object type in the pgAdmin tree control, and select the *Create* option for
-that object.  For example, to create a new database, right-click on the *Casts*
-node, and select *Create Cast...*
+that object.  For example, to create a new table, Select a database from the tree control, select the schema under the database, right-click on the *Tables*
+node, and select *Create Table...*
 
 .. toctree::
    :maxdepth: 1
