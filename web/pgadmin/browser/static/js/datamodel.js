@@ -539,6 +539,8 @@ define([
 
       // Let me listen to the my child invalid/valid messages
       self.on('pgadmin-session:model:invalid', self.onChildInvalid);
+      self.on('pgadmin-session:collection:changed', self.onChildCollectionChanged);
+      self.on('pgadmin-session:model-msg:changed', self.onModelChangedMsg);
       self.on('pgadmin-session:model:valid', self.onChildValid);
       self.on('pgadmin-session:changed', self.onChildChanged);
       self.on('pgadmin-session:added', self.onChildChanged);
@@ -674,9 +676,13 @@ define([
           !validate(self, (objName && [objName]))) {
           if (self.handler) {
             (self.handler).trigger('pgadmin-session:model:valid', self, self.handler);
+            (self.handler).trigger('pgadmin-session:collection:changed', self, self.handler);
           } else {
             self.trigger(
               'pgadmin-session:valid', self.sessChanged(), self
+            );
+            self.trigger(
+              'pgadmin-session:collection:changed', self.sessChanged(), self
             );
           }
         } else {
@@ -686,19 +692,84 @@ define([
             (self.handler).trigger(
               'pgadmin-session:model:invalid', msg, self, self.handler
             );
+            (self.handler).trigger('pgadmin-session:collection:changed', self, self.handler);
           } else {
             self.trigger('pgadmin-session:invalid', msg, self);
+            self.trigger('pgadmin-session:collection:changed', self);
           }
         }
       }
     },
 
-    onChildChanged: function() {
+    onChildCollectionChanged: function(obj, obj_hand) {
+
+      var self = this;
+
+      setTimeout(() => {
+
+        var msg = null,
+          validate = function(m, attrs) {
+            if ('default_validate' in m && typeof(m.default_validate) == 'function') {
+              msg = m.default_validate();
+              if (_.isString(msg)) {
+                return msg;
+              }
+            }
+
+            if ('validate' in m && typeof(m.validate) == 'function') {
+              msg = m.validate(attrs);
+
+              return msg;
+            }
+            return null;
+          };
+
+        let handler, parentTr;
+
+        let collection = self.collection || obj_hand;
+        if(collection) {
+          var collection_selector = collection.attrName || collection.name;
+          let activeTab = $('.show.active div.'+collection_selector);
+          $(activeTab).find('.error-in-grid').removeClass('error-in-grid');
+
+          model_collection_exit : if (collection instanceof Backbone.Collection) {
+
+            for (var cid in collection.models) {
+              let model = collection.models[cid];
+
+              for(let mod_obj of model.objects) {
+                let mod_attr = model.attributes[mod_obj];
+                if (mod_attr && mod_attr.models.length > 0) {
+                  for(let mod_attr_prop in mod_attr.models) {
+                    if(validate(mod_attr.models[mod_attr_prop])) {
+                      handler = mod_attr.models[mod_attr_prop];
+                      parentTr = model.parentTr;
+                      break model_collection_exit;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if(msg && handler) {
+          msg = msg || _.values(handler.errorModel.attributes)[0];
+
+          handler.trigger('pgadmin-session:model:invalid', msg, handler);
+          $(parentTr).addClass('error-in-grid');
+        }
+        return this;
+      }, 120);
+    },
+
+    onChildChanged: function(obj) {
       var self = this;
 
       if (self.trackChanges && self.collection) {
         (self.collection).trigger('change', self);
       }
+      self.trigger('pgadmin-session:collection:changed', self, obj);
     },
 
     stopSession: function() {
@@ -710,6 +781,7 @@ define([
         self.off('pgadmin-session:changed', self.onChildChanged);
         self.off('pgadmin-session:added', self.onChildChanged);
         self.off('pgadmin-session:removed', self.onChildChanged);
+        self.off('pgadmin-session:collection:changed', self.onChildCollectionChanged);
       }
 
       self.trackChanges = false;
@@ -1090,6 +1162,7 @@ define([
 
         // Let the parent/listener know about my status (valid/invalid).
         this.triggerValidationEvent.apply(this);
+        self.trigger('pgadmin-session:collection:changed', self);
       }
 
       return true;

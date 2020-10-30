@@ -1170,6 +1170,7 @@ define([
       var uniqueCol = this.field.get('uniqueCol') || [],
         uniqueChangedAttr = [],
         self = this;
+
       // Check if changed model attributes are also in unique columns. And then only check for uniqueness.
       if (newModel.attributes) {
         _.each(uniqueCol, function(col) {
@@ -1386,6 +1387,10 @@ define([
         },
       });
 
+      for(let i = 0; i < (collection.length); i++) {
+        collection.at(i).parentTr = self.grid.body.rows[i].$el;
+      }
+
       // Render subNode grid
       var subNodeGrid = self.grid.render().$el;
 
@@ -1461,6 +1466,9 @@ define([
             var idx = collection.indexOf(m),
               newRow = self.grid.body.rows[idx].$el;
 
+            collection.get(m).parentTr = newRow;
+            m.parentTr = newRow;
+
             newRow.addClass('new');
             if(!$(newRow).pgMakeBackgridVisible('.backform-tab')){
               // We can have subnode controls in Panels
@@ -1480,25 +1488,11 @@ define([
     },
     updateInvalid: function() {
       var self = this,
-        errorModel = this.model.errorModel;
+        errorModel = self.model.errorModel;
 
       if (!(errorModel instanceof Backbone.Model)) return this;
 
       this.clearInvalid();
-
-      this.$el.find('.subnode-body').each(function() {
-        var error = self.keyPathAccessor(
-          errorModel.toJSON(), self.field.get('name')
-        );
-
-        if (_.isEmpty(error)) return;
-
-        self.$el.addClass('subnode-error').append(
-          $('<div></div>').addClass(
-            'pgadmin-control-error-message pg-el-offset-4 pg-el-8 help-block'
-          ).text(error)
-        );
-      });
     },
   });
 

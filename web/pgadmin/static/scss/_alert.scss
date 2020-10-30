@@ -95,6 +95,12 @@
   z-index: 1;
 }
 
+.error-in-grid {
+    border-radius: $border-radius !important;
+    background: $alert-danger-bg !important;
+    color: $alert-danger-color !important;
+}
+
 .pg-prop-status-bar {
   padding: 5px;
 
