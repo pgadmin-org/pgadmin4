@@ -686,32 +686,34 @@ def validate_debug(conn, debug_type, is_superuser):
     :param is_superuser:
     :return:
     """
-    if debug_type == 'indirect' and not is_superuser:
-        # If user is super user then we should check debugger library is
-        # loaded or not
-        msg = gettext("You must be a superuser to set a global breakpoint"
-                      " and perform indirect debugging.")
-        return False, internal_server_error(errormsg=msg)
+    if debug_type == 'indirect':
+        if not is_superuser:
+            # If user is super user then we should check debugger library is
+            # loaded or not
+            msg = gettext("You must be a superuser to set a global breakpoint"
+                          " and perform indirect debugging.")
+            return False, internal_server_error(errormsg=msg)
 
-    status, rid_pre = conn.execute_scalar(
-        "SHOW shared_preload_libraries"
-    )
-    if not status:
-        return False, internal_server_error(
-            gettext("Could not fetch debugger plugin information.")
+        status, rid_pre = conn.execute_scalar(
+            "SHOW shared_preload_libraries"
         )
 
-    # Need to check if plugin is really loaded or not with
-    # "plugin_debugger" string
-    if debug_type == 'indirect' and "plugin_debugger" not in rid_pre:
-        msg = gettext(
-            "The debugger plugin is not enabled. "
-            "Please add the plugin to the shared_preload_libraries "
-            "setting in the postgresql.conf file and restart the "
-            "database server for indirect debugging."
-        )
-        current_app.logger.debug(msg)
-        return False, internal_server_error(msg)
+        if not status:
+            return False, internal_server_error(
+                gettext("Could not fetch debugger plugin information.")
+            )
+
+        # Need to check if plugin is really loaded or not with
+        # "plugin_debugger" string
+        if "plugin_debugger" not in rid_pre:
+            msg = gettext(
+                "The debugger plugin is not enabled. "
+                "Please add the plugin to the shared_preload_libraries "
+                "setting in the postgresql.conf file and restart the "
+                "database server for indirect debugging."
+            )
+            current_app.logger.debug(msg)
+            return False, internal_server_error(msg)
 
     # Check debugger extension version for EPAS 11 and above.
     # If it is 1.0 then return error to upgrade the extension.

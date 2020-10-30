@@ -23,6 +23,7 @@ Bug fixes
 
 | `Issue #4639 <https://redmine.postgresql.org/issues/4639>`_ -  Ensure that some fields should be disabled for the trigger in edit mode.
 | `Issue #5736 <https://redmine.postgresql.org/issues/5736>`_ -  Fixed an issue where the validation error message is shown twice.
+| `Issue #5760 <https://redmine.postgresql.org/issues/5760>`_ -  Ensure that non-superuser should be able to debug the function.
 | `Issue #5842 <https://redmine.postgresql.org/issues/5842>`_ -  Ensure that query history should be listed by date/time in descending order.
 | `Issue #5858 <https://redmine.postgresql.org/issues/5858>`_ -  Ensure that search object functionality works with case insensitive string.
 | `Issue #5895 <https://redmine.postgresql.org/issues/5895>`_ -  Fixed an issue where the suffix for Toast table size is not visible in the Statistics tab.
