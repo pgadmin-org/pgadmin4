@@ -433,7 +433,11 @@ define('pgadmin.node.function', [
           if (this.name == 'sysproc') { return false; }
           return true;
         },
-        isDisabled: function() {
+        isDisabled: function(m) {
+          //Disable the returns a set and window in edit mode.
+          if((this.name == 'proretset' || this.name == 'proiswindow') && !m.isNew()){
+            return true;
+          }
           if(this.node_info && 'catalog' in this.node_info) {
             return true;
           }
@@ -456,11 +460,11 @@ define('pgadmin.node.function', [
             return !m.isNew();
           case 'prorows':
             if(m.get('proretset') == true) {
-              setTimeout(function() {
-                m.set('prorows', 0);
-              }, 10);
               return false;
             }
+            setTimeout(function() {
+              m.set('prorows', 0);
+            }, 10);
             return true;
           default:
             return false;
