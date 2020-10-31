@@ -120,6 +120,7 @@ The following example shows both a minimally defined and a fully defined server:
                 "SSLRootCert": "/path/to/sslroot.crt",
                 "SSLCrl": "/path/to/sslcrl.crl",
                 "SSLCompression": 1,
+                "Shared": false,
                 "BGColor": "#ff9900",
                 "FGColor": "#000000",
                 "Service": "postgresql-10",

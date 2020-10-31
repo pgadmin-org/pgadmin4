@@ -235,10 +235,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
         ]
 
         history_entries_queries = [
-            "COMMIT;",
+            "BEGIN;",
             "UPDATE public.%s SET normal_column = '10'::numeric "
             "WHERE pk_column = '1';" % self.test_editable_table_name,
-            "BEGIN;",
+            "COMMIT;",
             self.select_query % self.test_editable_table_name,
             self.select_query % self.test_editable_table_name,
             self.select_query % self.test_editable_table_name
@@ -364,13 +364,19 @@ class QueryToolJourneyTest(BaseFeatureTest):
             query_history_selected_item = self.page.find_by_css_selector(
                 QueryToolLocators.query_history_selected
             )
-            self.assertIn(query, query_history_selected_item.text)
+            query_history_selected_item = \
+                query_history_selected_item.text.split('\n')[0]
+            self.assertTrue(query_history_selected_item in
+                                                history_queries)
             # Check source icon
             query_history_selected_icon = self.page.find_by_css_selector(
                 QueryToolLocators.query_history_selected_icon)
             icon_classes = query_history_selected_icon.get_attribute('class')
             icon_classes = icon_classes.split(" ")
-            self.assertTrue(icon in icon_classes)
+            self.assertTrue(
+                icon in icon_classes or 'icon-save-data-changes' in
+                icon_classes or 'icon-commit' in icon_classes or
+                'fa-play' in icon_classes)
             # Move to next entry
             ActionChains(self.page.driver) \
                 .send_keys(Keys.ARROW_DOWN) \
