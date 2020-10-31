@@ -366,8 +366,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
             )
             query_history_selected_item = \
                 query_history_selected_item.text.split('\n')[0]
-            self.assertTrue(query_history_selected_item in
-                                                history_queries)
+            self.assertTrue(query_history_selected_item in history_queries)
             # Check source icon
             query_history_selected_icon = self.page.find_by_css_selector(
                 QueryToolLocators.query_history_selected_icon)
