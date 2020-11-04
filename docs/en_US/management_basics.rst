@@ -16,3 +16,4 @@ granting user privileges, and performing VACUUM, ANALYZE and REINDEX functions.
    grant_wizard
    import_export_data
    maintenance_dialog
+   storage_manager

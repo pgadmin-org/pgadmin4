@@ -114,6 +114,8 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Resume replay of WAL*    | Click to resume the replay of the WAL log.                                                                                                |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Storage Manager*         | Click to open the :ref:`Storage Manager <storage_manager>` to upload, delete, or download the backup files.                               |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
 The Help Menu
 *************
@@ -137,7 +139,3 @@ information about the pgAdmin installation (in alphabetical order):
 +----------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | *PostgreSQL Website* | Click to access the PostgreSQL core documentation hosted at the PostgreSQL site. The site also offers guides, tutorials, and resources. |
 +----------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
-
-
-
-

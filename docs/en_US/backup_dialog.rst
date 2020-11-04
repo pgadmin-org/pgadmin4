@@ -4,7 +4,7 @@
 `Backup Dialog`:index:
 **********************
 
-Using the *pg_dump* utility, *pgAdmin* provides an easy way to create a backup
+*pgAdmin* uses the *pg_dump* utility to provide an easy way to create a backup
 in a plain-text or archived format.  You can then use a client application (like
 *psql* or the *Query Tool*) to restore a plain-text backup file, or use the
 Postgres *pg_restore* utility to restore an archived backup. The *pg_dump*
@@ -205,10 +205,7 @@ command:
 
 Use the **Stop Process** button to stop the Backup process.
 
-If the backup is successful, a popup window will confirm success. Click *Click
-here for details* on the popup window to launch the *Process Watcher*. The
-*Process Watcher* logs all the activity associated with the backup and provides
-additional information for troubleshooting.
+If the backup is successful, a popup window will confirm success. Click *More details* on the popup window to launch the *Process Watcher*. The *Process Watcher* logs all the activity associated with the backup and provides additional information for troubleshooting.
 
 .. image:: images/backup_process_watcher.png
     :alt:  Backup process watcher
@@ -216,3 +213,7 @@ additional information for troubleshooting.
 
 If the backup is unsuccessful, you can review the error messages returned by the
 backup command on the *Process Watcher*.
+
+.. note:: If you are running *pgAdmin* in *Server Mode* you can click on the |sm_icon| icon in the process watcher window to open the file location in the Storage Manager. You can use the :ref:`Storage Manager <storage_manager>` to download the backup file on the client machine .
+
+.. |sm_icon| image:: images/sm_icon.png

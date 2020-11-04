@@ -17,6 +17,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5938 <https://redmine.postgresql.org/issues/5938>`_ -  Documentation of Storage Manager.
 
 Bug fixes
 *********
