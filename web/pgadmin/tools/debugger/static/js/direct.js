@@ -1835,7 +1835,9 @@ define([
               /* If debugger is in a new tab, event fired is not available
                * instead, a poller is set up who will check
                */
-              if(self.preferences.debugger_new_browser_tab) {
+              var browser_preferences = browser.get_preferences_for_module('browser');
+              var open_new_tab = browser_preferences.new_browser_tab_open;
+              if (open_new_tab && open_new_tab.includes('debugger')) {
                 pgBrowser.bind_beforeunload();
                 let pollIntervalId = setInterval(()=>{
                   if(pgWindow.default.pgAdmin) {

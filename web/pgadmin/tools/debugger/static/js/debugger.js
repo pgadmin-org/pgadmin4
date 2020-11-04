@@ -334,8 +334,7 @@ define([
       var t = pgBrowser.tree,
         i = item || t.selected(),
         d = i && i.length == 1 ? t.itemData(i) : undefined,
-        node = d && pgBrowser.Nodes[d._type],
-        self = this;
+        node = d && pgBrowser.Nodes[d._type];
 
       if (!d)
         return;
@@ -410,8 +409,9 @@ define([
           var url = url_for('debugger.direct', {
             'trans_id': res.data.debuggerTransId,
           });
-
-          if (self.preferences.debugger_new_browser_tab) {
+          var browser_preferences = pgBrowser.get_preferences_for_module('browser');
+          var open_new_tab = browser_preferences.new_browser_tab_open;
+          if (open_new_tab && open_new_tab.includes('debugger')) {
             window.open(url, '_blank');
           } else {
             pgBrowser.Events.once(
@@ -427,7 +427,7 @@ define([
               panel = pgBrowser.docker.addPanel(
                 'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
               );
-            debuggerUtils.setDebuggerTitle(panel, self.preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label);
+            debuggerUtils.setDebuggerTitle(panel, browser_preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label);
 
             panel.focus();
 
@@ -448,7 +448,8 @@ define([
                 // We will execute this function when user clicks on the OK button
                 function(evt, value) {
                   if(value) {
-                    debuggerUtils.setDebuggerTitle(panel, self.preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label, value);
+                    let browser_preferences = pgBrowser.get_preferences_for_module('browser');
+                    debuggerUtils.setDebuggerTitle(panel, browser_preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label, value);
                   }
                 },
                 // We will execute this function when user clicks on the Cancel
@@ -478,8 +479,7 @@ define([
       var t = pgBrowser.tree,
         i = item || t.selected(),
         d = i && i.length == 1 ? t.itemData(i) : undefined,
-        node = d && pgBrowser.Nodes[d._type],
-        self = this;
+        node = d && pgBrowser.Nodes[d._type];
 
       if (!d)
         return;
@@ -549,7 +549,9 @@ define([
                   'trans_id': trans_id,
                 });
 
-                if (self.preferences.debugger_new_browser_tab) {
+                var browser_preferences = pgBrowser.get_preferences_for_module('browser');
+                var open_new_tab = browser_preferences.new_browser_tab_open;
+                if (open_new_tab && open_new_tab.includes('debugger')) {
                   window.open(url, '_blank');
                 } else {
                   pgBrowser.Events.once(
@@ -565,7 +567,7 @@ define([
                     panel = pgBrowser.docker.addPanel(
                       'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                     );
-                  debuggerUtils.setDebuggerTitle(panel, self.preferences, newTreeInfo.function.label, newTreeInfo.schema.label, newTreeInfo.database.label);
+                  debuggerUtils.setDebuggerTitle(panel, browser_preferences, newTreeInfo.function.label, newTreeInfo.schema.label, newTreeInfo.database.label);
 
                   panel.focus();
 
@@ -586,7 +588,8 @@ define([
                       // We will execute this function when user clicks on the OK button
                       function(evt, value) {
                         if(value) {
-                          debuggerUtils.setDebuggerTitle(panel, self.preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label, value);
+                          let browser_preferences = pgBrowser.get_preferences_for_module('browser');
+                          debuggerUtils.setDebuggerTitle(panel, browser_preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label, value);
                         }
                       },
                       // We will execute this function when user clicks on the Cancel

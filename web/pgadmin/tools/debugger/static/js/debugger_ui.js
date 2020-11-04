@@ -10,9 +10,11 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backgrid', 'sources/window', 'pgadmin.tools.debugger.utils', 'wcdocker',
+  'pgadmin.backgrid', 'sources/window', 'pgadmin.tools.debugger.utils',
+  'tools/datagrid/static/js/show_query_tool', 'wcdocker',
 ], function(
-  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid, pgWindow, debuggerUtils
+  gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid,
+  pgWindow, debuggerUtils, showQueryTool
 ) {
 
   var wcDocker = window.wcDocker;
@@ -759,7 +761,9 @@ define([
                       }
                     );
 
-                    if (self.preferences.debugger_new_browser_tab) {
+                    var browserPreferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('browser');
+                    var open_new_tab = browserPreferences.new_browser_tab_open;
+                    if (open_new_tab && open_new_tab.includes('debugger')) {
                       window.open(url, '_blank');
                     } else {
                       pgBrowser.Events.once(
@@ -773,7 +777,10 @@ define([
                         panel = pgBrowser.docker.addPanel(
                           'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                         );
-                      debuggerUtils.setDebuggerTitle(panel, self.preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label);
+                      var browser_pref = pgBrowser.get_preferences_for_module('browser');
+                      debuggerUtils.setDebuggerTitle(panel, browser_pref, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label);
+
+                      showQueryTool._set_dynamic_tab(pgBrowser, browser_pref['dynamic_tabs']);
 
                       panel.focus();
 

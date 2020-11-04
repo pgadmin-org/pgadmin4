@@ -106,6 +106,23 @@ Use fields on the *Properties* panel to specify browser properties:
 * Provide a value in the *Maximum job history rows* field to limit the number of
   rows to show on the statistics tab for pgAgent jobs.  The default is 250.
 
+Use field on *Tab settings* panel to specify the tab related properties.
+
+.. image:: images/preferences_browser_tab_settings.png
+    :alt: Preferences dialog browser properties section
+    :align: center
+
+* Use *Debugger tab title placeholder* field to customize the Debugger tab title.
+
+* When the *Dynamic tab size* If set to True, the tabs will take full size as per the title, it will also applicable for already opened tabs
+
+* When the *Open in new browser tab* filed is selected for Query tool, Schema Diff or Debugger, it will
+  open in a new browser tab when invoked.
+
+* Use the *Query tool tab title placeholder* field to customize the query tool tab title.
+
+* Use *View/Edit tab title placeholder* field to customize the View/Edit Data tab title.
+
 The Dashboards Node
 *******************
 
@@ -154,15 +171,6 @@ The Debugger Node
 *****************
 
 Expand the *Debugger* node to specify your debugger display preferences.
-
-.. image:: images/preferences_debugger_display.png
-    :alt: Preferences dialog debugger display options
-    :align: center
-
-* Use *Debugger tab title placeholder* field to customize the Debugger tab title.
-
-* When the *Open in new browser tab* switch is set to *True*, the Debugger will
-  open in a new browser tab when invoked.
 
 Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 debugger window navigation:
@@ -277,18 +285,11 @@ Tool display.
 * Use the *Connection status refresh rate* field to specify the number of
   seconds between connection/transaction status updates.
 
-* When the *Open in new browser tab* switch is set to *True*, each new instance
-  of the Query Tool will open in a new browser tab.
-
 * Use the *Query info notifier timeout* field to control the behaviour of the
   notifier that is displayed when query execution completes. A value of *-1*
   will disable the notifier, and a value of 0 will display it until clicked. If
   a positive value above zero is specified, the notifier will be displayed for
   the specified number of seconds. The default is *5*.
-
-* Use the *Query tool tab title placeholder* field to customize the query tool tab title.
-
-* Use *View/Edit tab title placeholder* field to customize the View/Edit Data tab title.
 
 .. image:: images/preferences_sql_editor.png
     :alt: Preferences dialog sqleditor editor settings
@@ -427,8 +428,6 @@ Use the *Ignore owner* switch to ignores the owner while comparing the objects.
 Use the *Ignore whitespaces* switch to ignores the whitespaces while comparing
 the string objects. Whitespace includes space, tabs, and CRLF.
 
-Use the *Open in new browser tab* switch to indicate if you would like Schema Diff
-to open in a new tab.
 
 The Storage Node
 ****************

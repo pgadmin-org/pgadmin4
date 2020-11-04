@@ -120,6 +120,13 @@ class _Preference(object):
             if self.select2 and self.select2['tags']:
                 return res.value
             return self.default
+        if self._type == 'select2':
+            if res.value:
+                res.value = res.value.replace('[', '')
+                res.value = res.value.replace(']', '')
+                res.value = res.value.replace('\'', '')
+                return [val.strip() for val in res.value.split(',')]
+            return None
         if self._type == 'text' and res.value == '' and not self.allow_blanks:
             return self.default
 
@@ -413,7 +420,7 @@ class Preferences(object):
         assert _type in (
             'boolean', 'integer', 'numeric', 'date', 'datetime',
             'options', 'multiline', 'switch', 'node', 'text', 'radioModern',
-            'keyboardshortcut'
+            'keyboardshortcut', 'select2'
         ), "Type cannot be found in the defined list!"
 
         (cat['preferences'])[name] = res = _Preference(

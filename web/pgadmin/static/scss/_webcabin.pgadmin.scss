@@ -313,6 +313,10 @@
   max-width: 125px;
 }
 
+.wcPanelTab-dynamic {
+  max-width: 100% !important;
+}
+
 .wcPanelTabActive > div {
   width: auto !important;
   max-width: 100%;

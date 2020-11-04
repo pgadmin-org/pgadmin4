@@ -18,7 +18,7 @@ var dummy_cache = [
   {
     id: 1,
     mid: 1,
-    module:'sqleditor',
+    module:'browser',
     name:'qt_tab_title_placeholder',
     value: '%DATABASE%/%USERNAME%@%SERVER%',
   },

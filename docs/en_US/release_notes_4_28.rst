@@ -11,6 +11,7 @@ New features
 
 | `Issue #3318 <https://redmine.postgresql.org/issues/3318>`_ -  Added support to download utility files at the client-side.
 | `Issue #4230 <https://redmine.postgresql.org/issues/4230>`_ -  Added support to rename query tool and debugger tabs title.
+| `Issue #4231 <https://redmine.postgresql.org/issues/4231>`_ -  Added support for dynamic tab size.
 | `Issue #4232 <https://redmine.postgresql.org/issues/4232>`_ -  Added tab title placeholder for Query Tool, View/Edit Data, and Debugger.
 | `Issue #5891 <https://redmine.postgresql.org/issues/5891>`_ -  Added support to compare schemas and databases in schema diff.
 
@@ -32,4 +33,5 @@ Bug fixes
 | `Issue #5914 <https://redmine.postgresql.org/issues/5914>`_ -  Fixed an issue where a mismatch in the value of 'Estimated row' for functions.
 | `Issue #5919 <https://redmine.postgresql.org/issues/5919>`_ -  Added security related enhancements.
 | `Issue #5923 <https://redmine.postgresql.org/issues/5923>`_ -  Fixed an issue where non-closeable tabs are getting closed.
+| `Issue #5950 <https://redmine.postgresql.org/issues/5950>`_ -  Fixed an issue where a long file name is not visible on the process watcher dialog.
 | `Issue #5953 <https://redmine.postgresql.org/issues/5953>`_ -  Fixed an issue where connection to the server is on wait state if a different user is provided.

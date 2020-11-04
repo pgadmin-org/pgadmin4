@@ -106,7 +106,9 @@ define('pgadmin.schemadiff', [
         },
         baseUrl = url_for('schema_diff.panel', url_params);
 
-      if (this.preferences.schema_diff_new_browser_tab) {
+      var browser_preferences = pgBrowser.get_preferences_for_module('browser');
+      var open_new_tab = browser_preferences.new_browser_tab_open;
+      if (open_new_tab && open_new_tab.includes('schema_diff')) {
         window.open(baseUrl, '_blank');
       } else {
 

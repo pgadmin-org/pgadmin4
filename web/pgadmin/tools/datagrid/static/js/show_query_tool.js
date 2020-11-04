@@ -12,6 +12,7 @@ import url_for from '../../../../static/js/url_for';
 import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 import {getPanelTitle} from './datagrid_panel_title';
 import {getRandomInt} from 'sources/utils';
+import $ from 'jquery';
 
 function hasDatabaseInformation(parentData) {
   return parentData.database;
@@ -95,4 +96,25 @@ export function launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL,
       )
     );
   }
+}
+
+export function _set_dynamic_tab(pgBrowser, value){
+  var datagrid_panels = pgBrowser.docker.findPanels('frm_datagrid');
+  datagrid_panels.forEach(panel => {
+    if(value) {
+      $('#' + panel.$title.index() + ' div:first').addClass('wcPanelTab-dynamic');
+    } else {
+      $('#' + panel.$title.index() + ' div:first').removeClass('wcPanelTab-dynamic');
+    }
+  });
+
+  var debugger_panels = pgBrowser.docker.findPanels('frm_debugger');
+  debugger_panels.forEach(panel => {
+    if(value) {
+      $('#' + panel.$title.index() + ' div:first').addClass('wcPanelTab-dynamic');
+    } else {
+      $('#' + panel.$title.index() + ' div:first').removeClass('wcPanelTab-dynamic');
+    }
+  });
+
 }

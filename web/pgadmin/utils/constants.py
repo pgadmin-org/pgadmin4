@@ -24,6 +24,7 @@ PREF_LABEL_EDITOR = gettext('Editor')
 PREF_LABEL_CSV_TXT = gettext('CSV/TXT Output')
 PREF_LABEL_RESULTS_GRID = gettext('Results grid')
 PREF_LABEL_SQL_FORMATTING = gettext('SQL formatting')
+PREF_LABEL_TABS_SETTINGS = gettext('Tab settings')
 
 PGADMIN_NODE = 'pgadmin.node.%s'
 UNAUTH_REQ = "Unauthorized request."

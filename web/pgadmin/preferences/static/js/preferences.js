@@ -11,10 +11,11 @@ define('pgadmin.preferences', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.backform',
   'pgadmin.browser', 'sources/modify_animation',
+  'tools/datagrid/static/js/show_query_tool',
   'sources/tree/pgadmin_tree_save_state',
 ], function(
   gettext, url_for, $, _, Backbone, Alertify, pgAdmin, Backform, pgBrowser,
-  modifyAnimation
+  modifyAnimation, showQueryTool
 ) {
   // This defines the Preference/Options Dialog for pgAdmin IV.
 
@@ -272,6 +273,32 @@ define('pgadmin.preferences', [
               }
               p.options = opts;
               return 'select2';
+            case 'select2':
+              var select_opts = [];
+              _.each(p.options, function(o) {
+                if ('label' in o && 'value' in o) {
+                  let push_var = {
+                    'label': o.label,
+                    'value': o.value,
+                  };
+                  push_var['label'] = o.label;
+                  push_var['value'] = o.value;
+
+                  if('preview_src' in o) {
+                    push_var['preview_src'] = o.preview_src;
+                  }
+                  select_opts.push(push_var);
+                } else {
+                  select_opts.push({
+                    'label': o,
+                    'value': o,
+                  });
+                }
+              });
+
+              p.options = select_opts;
+              return 'select2';
+
             case 'multiline':
               return 'textarea';
             case 'switch':
@@ -470,6 +497,11 @@ define('pgadmin.preferences', [
               let modulesChanged = {};
               _.each(changed, (val, key)=> {
                 let pref = pgBrowser.get_preference_for_id(Number(key));
+
+                if(pref['name'] == 'dynamic_tabs') {
+                  showQueryTool._set_dynamic_tab(pgBrowser, !pref['value']);
+                }
+
                 if(!modulesChanged[pref.module]) {
                   modulesChanged[pref.module] = true;
                 }

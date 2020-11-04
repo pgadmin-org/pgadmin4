@@ -95,7 +95,9 @@ define('tools.querytool', [
       this.handler['col_size'] = {};
       let browser = pgWindow.default.pgAdmin.Browser;
       this.preferences = browser.get_preferences_for_module('sqleditor');
+      this.browser_preferences = browser.get_preferences_for_module('browser');
       this.handler.preferences = this.preferences;
+      this.handler.browser_preferences = this.browser_preferences;
       this.connIntervalId = null;
       this.layout = opts.layout;
       this.set_server_version(opts.server_ver);
@@ -484,7 +486,8 @@ define('tools.querytool', [
         }, 200);
       });
 
-      if (!self.preferences.new_browser_tab) {
+      var open_new_tab = self.browser_preferences.new_browser_tab_open;
+      if (open_new_tab && open_new_tab.includes('qt')) {
         // Listen on the panel closed event and notify user to save modifications.
         _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
           if (p.isVisible()) {
@@ -723,7 +726,9 @@ define('tools.querytool', [
       /* If sql editor is in a new tab, event fired is not available
        * instead, a poller is set up who will check
        */
-      if(self.preferences.new_browser_tab) {
+      //var browser_qt_preferences = pgBrowser.get_preferences_for_module('browser');
+      var open_new_tab_qt = self.browser_preferences.new_browser_tab_open;
+      if(open_new_tab_qt && open_new_tab_qt.includes('qt')) {
         pgBrowser.bind_beforeunload();
         setInterval(()=>{
           if(pgWindow.default.pgAdmin) {
@@ -2394,7 +2399,8 @@ define('tools.querytool', [
         }).fail((xhr, status, error)=>{
           if (xhr.status === 410) {
           //checking for Query tool in new window.
-            if(self.preferences.new_browser_tab) {
+            var open_new_tab = self.browser_preferences.new_browser_tab_open;
+            if(open_new_tab && open_new_tab.includes('qt')) {
               pgBrowser.report_error(gettext('Error fetching rows - %s.', xhr.statusText), xhr.responseJSON.errormsg, undefined, window.close);
             } else {
               pgBrowser.report_error(gettext('Error fetching rows - %s.', xhr.statusText), xhr.responseJSON.errormsg, undefined, self.close.bind(self));
@@ -2635,7 +2641,8 @@ define('tools.querytool', [
                   pgAdmin, self, jqx, null, [], false
                 );
                 if (msg) {
-                  if(self.preferences.new_browser_tab) {
+                  var open_new_tab = self.browser_preferences.new_browser_tab_open;
+                  if(open_new_tab && open_new_tab.includes('qt')) {
                     pgBrowser.report_error(gettext('Error fetching SQL for script - %s.', jqx.statusText), jqx.responseJSON.errormsg, undefined, window.close);
                   } else {
                     pgBrowser.report_error(gettext('Error fetching SQL for script - %s.', jqx.statusText), jqx.responseJSON.errormsg, undefined, self.close.bind(self));
@@ -3687,8 +3694,8 @@ define('tools.querytool', [
       // Set panel title.
       setTitle: function(title, is_file) {
         var self = this;
-
-        if (self.preferences.new_browser_tab) {
+        var open_new_tab = self.browser_preferences.new_browser_tab_open;
+        if(open_new_tab && open_new_tab.includes('qt')) {
           window.document.title = title;
         } else {
           _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
@@ -3850,7 +3857,8 @@ define('tools.querytool', [
             var title = self.gridView.current_file.replace(/^.*[\\\/]/g, '') + ' *';
             self.setTitle(title, true);
           } else {
-            if (self.preferences.new_browser_tab) {
+            var open_new_tab = self.browser_preferences.new_browser_tab_open;
+            if(open_new_tab && open_new_tab.includes('qt')) {
               title = window.document.title + ' *';
             } else {
               // Find the title of the visible panel
@@ -3918,7 +3926,8 @@ define('tools.querytool', [
         if (arguments.length > 0 && arguments[arguments.length - 1] == 'connect') {
           reconnect = true;
         }
-        newConnectionHandler.dialog(self, reconnect, self.preferences);
+
+        newConnectionHandler.dialog(self, reconnect, self.browser_preferences);
       },
       // This function will include the filter by selection.
       _include_filter: function() {
@@ -4570,8 +4579,8 @@ define('tools.querytool', [
 
       _show_query_tool: function() {
         var self = this;
-
-        if(self.preferences.new_browser_tab) {
+        var open_new_tab = self.browser_preferences.new_browser_tab_open;
+        if (open_new_tab && open_new_tab.includes('qt')) {
           is_main_window_alive();
         }
         this._open_query_tool(self);

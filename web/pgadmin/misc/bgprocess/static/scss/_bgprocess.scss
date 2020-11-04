@@ -102,6 +102,7 @@ $bgproc-container-pad: 2px;
   border: $border-width solid $input-border-color;
   border-radius: $input-border-radius;
   background: $input-disabled-bg;
+  word-break: break-word;
 }
 
 .pg-panel-content .bg-process-footer {

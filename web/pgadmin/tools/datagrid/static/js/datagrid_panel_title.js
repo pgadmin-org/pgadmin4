@@ -20,7 +20,7 @@ function isServerInformationAvailable(parentData) {
 }
 
 export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null) {
-  var preferences = pgBrowser.get_preferences_for_module('sqleditor');
+  var preferences = pgBrowser.get_preferences_for_module('browser');
   if(selected_item == null) {
     selected_item = pgBrowser.treeMenu.selected();
   }
@@ -39,11 +39,15 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null) 
     qt_title_placeholder = preferences['qt_tab_title_placeholder'];
   }
 
-  qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%DATABASE%'), db_label);
-  qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), parentData.server.user.name);
-  qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%SERVER%'), parentData.server.label);
+  var title_data = {
+    'database': db_label,
+    'username': parentData.server.user.name,
+    'server': parentData.server.label,
+    'type': 'query_tool',
+  };
+  var title = generateTitle(qt_title_placeholder, title_data);
 
-  return _.escape(qt_title_placeholder);
+  return _.escape(title);
 }
 
 export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_file) {
@@ -65,4 +69,26 @@ export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_fi
 
   panel.title('<span title="'+ _.escape(panel_tooltip) +'">'+ _.escape(panel_title) +'</span>');
   panel.icon(panel_icon);
+}
+
+export function generateTitle(title_placeholder, title_data) {
+
+  if(title_data.type == 'query_tool') {
+    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), title_data.database);
+    title_placeholder = title_placeholder.replace(new RegExp('%USERNAME%'), title_data.username);
+    title_placeholder = title_placeholder.replace(new RegExp('%SERVER%'), title_data.server);
+  } else if(title_data.type == 'datagrid') {
+    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), title_data.database);
+    title_placeholder = title_placeholder.replace(new RegExp('%USERNAME%'), title_data.username);
+    title_placeholder = title_placeholder.replace(new RegExp('%SERVER%'), title_data.server);
+    title_placeholder = title_placeholder.replace(new RegExp('%SCHEMA%'), title_data.schema);
+    title_placeholder = title_placeholder.replace(new RegExp('%TABLE%'), title_data.table);
+  } else if(title_data.type == 'debugger') {
+    title_placeholder = title_placeholder.replace(new RegExp('%FUNCTION%'), title_data.function_name);
+    title_placeholder = title_placeholder.replace(new RegExp('%ARGS%'), title_data.args);
+    title_placeholder = title_placeholder.replace(new RegExp('%SCHEMA%'), title_data.schema);
+    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), title_data.database);
+  }
+
+  return _.escape(title_placeholder);
 }

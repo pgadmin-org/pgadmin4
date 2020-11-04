@@ -6,6 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
+import {generateTitle} from '../../../datagrid/static/js/datagrid_panel_title';
 
 function setFocusToDebuggerEditor(editor, command) {
   const TAB = 9;
@@ -59,12 +60,15 @@ function setDebuggerTitle(panel, preferences, function_name, schema_name, databa
     args = args.concat(args_list[0]);
   }
 
-  debugger_title_placeholder = debugger_title_placeholder.replace(new RegExp('%FUNCTION%'), function_name);
-  debugger_title_placeholder = debugger_title_placeholder.replace(new RegExp('%ARGS%'), args);
-  debugger_title_placeholder = debugger_title_placeholder.replace(new RegExp('%SCHEMA%'), schema_name);
-  debugger_title_placeholder = debugger_title_placeholder.replace(new RegExp('%DATABASE%'), database_name);
-
-  panel.title('<span>'+ _.escape(debugger_title_placeholder) +'</span>');
+  var title_data = {
+    'function_name': function_name,
+    'args': args,
+    'schema': schema_name,
+    'database': database_name,
+    'type': 'debugger',
+  };
+  var title = generateTitle(debugger_title_placeholder, title_data);
+  panel.title('<span>'+ _.escape(title) +'</span>');
 }
 
 function get_function_name(function_name) {

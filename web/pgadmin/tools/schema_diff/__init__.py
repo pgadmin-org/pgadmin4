@@ -77,13 +77,6 @@ class SchemaDiffModule(PgAdminModule):
         ]
 
     def register_preferences(self):
-        self.preference.register(
-            'display', 'schema_diff_new_browser_tab',
-            gettext("Open in new browser tab"), 'boolean', False,
-            category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, the Schema Diff '
-                             'will be opened in a new browser tab.')
-        )
 
         self.preference.register(
             'display', 'ignore_whitespaces',

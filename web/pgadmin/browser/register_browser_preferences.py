@@ -8,7 +8,8 @@
 ##########################################################################
 from flask_babelex import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
-    PREF_LABEL_KEYBOARD_SHORTCUTS
+    PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_TABS_SETTINGS, \
+    PREF_LABEL_OPTIONS
 import config
 
 LOCK_LAYOUT_LEVEL = {
@@ -440,4 +441,71 @@ def register_browser_preferences(self):
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
         fields=fields
+    )
+
+    self.dynamic_tab_title = self.preference.register(
+        'tab settings', 'dynamic_tabs',
+        gettext("Dynamic tab size"), 'boolean', False,
+        category_label=PREF_LABEL_TABS_SETTINGS,
+        help_str=gettext(
+            'If set to True, the tabs will take full size as per the title, '
+            'it will also applicable for already opened tabs')
+    )
+
+    self.qt_tab_title = self.preference.register(
+        'tab settings', 'qt_tab_title_placeholder',
+        gettext("Query tool tab title"),
+        'text', '%DATABASE%/%USERNAME%@%SERVER%',
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. '
+            'Users can provide any string with or without placeholders of'
+            ' their choice. The blank title will be revert back to the'
+            ' default title with placeholders.'
+        )
+    )
+
+    self.ve_edt_tab_title = self.preference.register(
+        'tab settings', 'vw_edt_tab_title_placeholder',
+        gettext("View/Edit data tab title"),
+        'text', '%SCHEMA%.%TABLE%/%DATABASE%/%USERNAME%@%SERVER%',
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, '
+            '%USERNAME%, and %SERVER%. Users can provide any string with or '
+            'without placeholders of their choice. The blank title will be '
+            'revert back to the default title with placeholders.'
+        )
+    )
+
+    self.debugger_tab_title = self.preference.register(
+        'tab settings', 'debugger_tab_title_placeholder',
+        gettext("Debugger tab title"),
+        'text', '%FUNCTION%(%ARGS%)',
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and'
+            ' %DATABASE%. Users can provide any string with or '
+            'without placeholders of their choice. The blank title will be'
+            ' revert back to the default title with placeholders.'
+        )
+    )
+
+    self.open_in_new_tab = self.preference.register(
+        'tab settings', 'new_browser_tab_open',
+        gettext("Open in new browser tab"), 'select2', None,
+        category_label=PREF_LABEL_OPTIONS,
+        options=[{'label': gettext('Query Tool'), 'value': 'qt'},
+                 {'label': gettext('Debugger'), 'value': 'debugger'},
+                 {'label': gettext('Schema Diff'), 'value': 'schema_diff'}],
+        help_str=gettext('Select Query Tool, Debugger, or Schema Diff from '
+                         'the drop-down to set open in new browser tab for '
+                         'that particular module.'),
+        select2={
+            'multiple': True, 'allowClear': False,
+            'tags': True, 'first_empty': False,
+            'selectOnClose': False, 'emptyOptions': True,
+            'tokenSeparators': [','],
+            'placeholder': gettext('Select open new tab...')
+        }
     )

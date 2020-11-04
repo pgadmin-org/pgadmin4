@@ -211,7 +211,6 @@ define('pgadmin.datagrid', [
       },
 
       launch_grid: function(trans_id, panel_url, is_query_tool, panel_title, sURL=null, sql_filter=null) {
-        var self = this;
 
         let queryToolForm = `
           <form id="queryToolForm" action="${panel_url}" method="post">
@@ -233,7 +232,9 @@ define('pgadmin.datagrid', [
             </script>
           `;
 
-        if (self.preferences.new_browser_tab) {
+        var browser_preferences = pgBrowser.get_preferences_for_module('browser');
+        var open_new_tab = browser_preferences.new_browser_tab_open;
+        if (open_new_tab && open_new_tab.includes('qt')) {
           var newWin = window.open('', '_blank');
           if(newWin) {
             newWin.document.write(queryToolForm);
@@ -247,6 +248,8 @@ define('pgadmin.datagrid', [
            */
           var propertiesPanel = pgBrowser.docker.findPanels('properties');
           var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, propertiesPanel[0]);
+
+          showQueryTool._set_dynamic_tab(pgBrowser, browser_preferences['dynamic_tabs']);
 
           // Set panel title and icon
           panelTitleFunc.setQueryToolDockerTitle(queryToolPanel, is_query_tool, _.unescape(panel_title));
