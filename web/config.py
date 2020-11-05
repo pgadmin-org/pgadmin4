@@ -143,17 +143,6 @@ DEFAULT_SERVER = '127.0.0.1'
 # environment by the runtime
 DEFAULT_SERVER_PORT = 5050
 
-# This param is used to validate ALLOWED_HOSTS for the application
-# This will be used to avoid Host Header Injection attack
-# For how to set ALLOWED_HOSTS see netaddr library
-# For more details https://netaddr.readthedocs.io/en/latest/tutorial_03.html
-# e.g. ALLOWED_HOSTS = ['192.0.2.0/28', '::192.0.2.0/124']
-# ALLOWED_HOSTS = ['225.0.0.0/8', '226.0.0.0/7', '228.0.0.0/6']
-# ALLOWED_HOSTS = ['127.0.0.1', '192.168.0.1']
-# if ALLOWED_HOSTS= [] then it will accept all ips (and application will be
-# vulnerable to Host Header Injection attack)
-ALLOWED_HOSTS = []
-
 # This param is used to override the default web server information about
 # the web technology and the frameworks being used in the application
 # An attacker could use this information to fingerprint underlying operating
