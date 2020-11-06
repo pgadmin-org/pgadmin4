@@ -33,21 +33,21 @@ Flask-SQLAlchemy                                                 2.4.1          
 Flask-WTF                                                        0.14.3           BSD                                  https://github.com/lepture/flask-wtf
 Flask-Compress                                                   1.4.0            MIT                                  https://libwilliam.github.io/flask-compress/
 passlib                                                          1.7.2            BSD                                  https://bitbucket.org/ecollins/passlib
-pytz                                                             2020.1           MIT                                  http://pythonhosted.org/pytz
+pytz                                                             2020.4           MIT                                  http://pythonhosted.org/pytz
 simplejson                                                       3.16.0           MIT License                          https://github.com/simplejson/simplejson
 six                                                              1.15.0           MIT                                  https://github.com/benjaminp/six
 speaklater                                                       1.3              UNKNOWN                              http://github.com/mitsuhiko/speaklater
 sqlparse                                                         0.3.1            BSD                                  https://github.com/andialbrecht/sqlparse
 WTForms                                                          2.2.1            BSD                                  https://wtforms.readthedocs.io/
 Flask-Paranoid                                                   0.2.0            MIT                                  http://github.com/miguelgrinberg/flask-paranoid/
-psutil                                                           5.7.2            BSD                                  https://github.com/giampaolo/psutil
+psutil                                                           5.7.3            BSD                                  https://github.com/giampaolo/psutil
 psycopg2                                                         2.8.6            LGPL with exceptions                 https://psycopg.org/
 python-dateutil                                                  2.8.1            Dual License                         https://dateutil.readthedocs.io
-SQLAlchemy                                                       1.3.19           MIT                                  http://www.sqlalchemy.org
+SQLAlchemy                                                       1.3.20           MIT                                  http://www.sqlalchemy.org
 Flask-Security-Too                                               3.4.4            MIT                                  https://github.com/Flask-Middleware/flask-security
 bcrypt                                                           3.1.7            Apache License, Version 2.0          https://github.com/pyca/bcrypt/
 cryptography                                                     3.0              BSD or Apache License, Version 2.0   https://github.com/pyca/cryptography
-sshtunnel                                                        0.1.5            MIT                                  https://github.com/pahaz/sshtunnel
+sshtunnel                                                        0.2.2            MIT                                  https://github.com/pahaz/sshtunnel
 ldap3                                                            2.8.1            LGPL v3                              https://github.com/cannatag/ldap3
 
 28 dependencies listed.
