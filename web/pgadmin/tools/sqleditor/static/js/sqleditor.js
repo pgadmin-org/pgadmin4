@@ -487,7 +487,7 @@ define('tools.querytool', [
       });
 
       var open_new_tab = self.browser_preferences.new_browser_tab_open;
-      if (open_new_tab && open_new_tab.includes('qt')) {
+      if (_.isNull(open_new_tab) || _.isUndefined(open_new_tab) || !open_new_tab.includes('qt')) {
         // Listen on the panel closed event and notify user to save modifications.
         _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
           if (p.isVisible()) {
