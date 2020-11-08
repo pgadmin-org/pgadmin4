@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-06 16:35+0530\n"
-"PO-Revision-Date: 2020-10-10 02:18+0900\n"
+"PO-Revision-Date: 2020-11-07 00:27+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -137,25 +137,31 @@ msgstr "認証ソース「{0}」は実装されていません"
 
 #: pgadmin/browser/__init__.py:65
 msgid "Your password has not been changed."
-msgstr ""
+msgstr "パスワードは変更されませんでした"
 
 #: pgadmin/browser/__init__.py:66
 msgid ""
 "SMTP Socket error: {error}\n"
 " {pass_error}"
 msgstr ""
+"SMTP ソケットエラー： {error}\n"
+" {pass_error}"
 
 #: pgadmin/browser/__init__.py:69
 msgid ""
 "SMTP error: {error}\n"
 " {pass_error}"
 msgstr ""
+"SMTP エラー： {error}\n"
+" {pass_error}"
 
 #: pgadmin/browser/__init__.py:71
 msgid ""
 "Error: {error}\n"
 " {pass_error}"
 msgstr ""
+"エラー： {error}\n"
+" {pass_error}"
 
 #: pgadmin/browser/__init__.py:76 pgadmin/browser/static/js/browser.js:223
 msgid "Browser"
@@ -433,17 +439,19 @@ msgstr "グリッド行を追加"
 
 #: pgadmin/browser/register_browser_preferences.py:448
 msgid "Dynamic tab size"
-msgstr ""
+msgstr "タブ幅の変動"
 
 #: pgadmin/browser/register_browser_preferences.py:450
 msgid ""
 "If set to True, the tabs will take full size as per the title, it will "
 "also applicable for already opened tabs"
 msgstr ""
+"True の場合、タイトルの長さに合わせてタブの幅が伸縮します。（既に"
+"開かれているタブにも効果が適用されます）"
 
 #: pgadmin/browser/register_browser_preferences.py:457
 msgid "Query tool tab title"
-msgstr ""
+msgstr "クエリツールタブのタイトル"
 
 #: pgadmin/browser/register_browser_preferences.py:460
 msgid ""
@@ -451,10 +459,12 @@ msgid ""
 "can provide any string with or without placeholders of their choice. The "
 "blank title will be revert back to the default title with placeholders."
 msgstr ""
+"任意の文字列とプレースホルダ（%DATABASE%, %USERNAME%, %SERVER%）を指定できます。"
+"空欄にすると、デフォルトのタイトルが使用されます"
 
 #: pgadmin/browser/register_browser_preferences.py:470
 msgid "View/Edit data tab title"
-msgstr ""
+msgstr "データの閲覧/編集タブのタイトル"
 
 #: pgadmin/browser/register_browser_preferences.py:473
 msgid ""
@@ -463,10 +473,12 @@ msgid ""
 "their choice. The blank title will be revert back to the default title "
 "with placeholders."
 msgstr ""
+"任意の文字列とプレースホルダ（%SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, %SERVER%）を指定できます。"
+"空欄にすると、デフォルトのタイトルが使用されます"
 
 #: pgadmin/browser/register_browser_preferences.py:483
 msgid "Debugger tab title"
-msgstr ""
+msgstr "デバッガタブのタイトル"
 
 #: pgadmin/browser/register_browser_preferences.py:486
 #, python-format
@@ -476,6 +488,8 @@ msgid ""
 "choice. The blank title will be revert back to the default title with "
 "placeholders."
 msgstr ""
+"任意の文字列とプレースホルダ（%FUNCTION%, %ARGS%, %SCHEMA%, %DATABASE%）を指定できます。"
+"空欄にすると、デフォルトのタイトルが使用されます"
 
 #: pgadmin/browser/register_browser_preferences.py:496
 msgid "Open in new browser tab"
@@ -503,17 +517,17 @@ msgstr "デバッガ"
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:40
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:88
 msgid "Schema Diff"
-msgstr "スキーマ差異"
+msgstr "スキーマ比較"
 
 #: pgadmin/browser/register_browser_preferences.py:501
 msgid ""
 "Select Query Tool, Debugger, or Schema Diff from the drop-down to set "
 "open in new browser tab for that particular module."
-msgstr ""
+msgstr "クエリツール、デバッガ、スキーマ比較ツールのうち、新しいブラウザタブに開くモジュールを選択します"
 
 #: pgadmin/browser/register_browser_preferences.py:509
 msgid "Select open new tab..."
-msgstr ""
+msgstr "モジュールを選択..."
 
 #: pgadmin/browser/utils.py:307
 msgid "Unimplemented method ({0}) for this url ({1})"
@@ -2343,7 +2357,7 @@ msgstr "デフォルト"
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:267
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:206
 msgid "Enter an expression or a value."
-msgstr ""
+msgstr "式か値を入力してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:269
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:219
@@ -3533,7 +3547,7 @@ msgstr "列は削除されています"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:43
 msgid "Select variable"
-msgstr ""
+msgstr "変数を選択"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:56
 msgid "Please provide input for variable."
@@ -3576,7 +3590,7 @@ msgstr "ストレージ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:486
 msgid "Select storage"
-msgstr ""
+msgstr "ストレージを選択"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:539
 msgid "NONE"
@@ -3593,11 +3607,11 @@ msgstr "GENERATED"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:576
 msgid "Identity"
-msgstr "アイデンティティ"
+msgstr "生成 IDENTITY 列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:578
 msgid "Select identity"
-msgstr ""
+msgstr "IDENTITY を選択"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:581
 msgid "ALWAYS"
@@ -4105,7 +4119,7 @@ msgstr "参照先のテーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:167
 msgid "Select foreign table"
-msgstr ""
+msgstr "外部テーブルを選択"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:344
 msgid "Local column"
@@ -5435,7 +5449,7 @@ msgstr "トリガ"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:325
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:341
 msgid "Could not find the specified trigger function"
-msgstr ""
+msgstr "指定されたトリガ関数が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:707
 msgid "Trigger is dropped"
@@ -5591,19 +5605,19 @@ msgstr "データ型..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:347
 msgid "Composite"
-msgstr ""
+msgstr "複合型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:348
 msgid "Enumeration"
-msgstr ""
+msgstr "列挙型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:349
 msgid "External"
-msgstr ""
+msgstr "外部"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:351
 msgid "Shell"
-msgstr ""
+msgstr "シェル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:366
 msgid "Composite Type"
@@ -8379,7 +8393,7 @@ msgstr "レイアウト固定の設定を保存できませんでした"
 
 #: pgadmin/browser/static/js/menu.js:304
 msgid "No menu available for this object."
-msgstr ""
+msgstr "このオブジェクトには利用できるメニューがありません"
 
 #: pgadmin/browser/static/js/node.js:130
 msgid "Properties..."
@@ -10739,7 +10753,7 @@ msgstr "データの閲覧/編集"
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:810
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:130
 msgid "Rename Panel"
-msgstr ""
+msgstr "パネル名を変更"
 
 #: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:57
 msgid "File - "
@@ -11496,11 +11510,11 @@ msgstr "サーバ（{3}:{4}）のデータベース「{2}」内にあるテー�
 
 #: pgadmin/tools/import_export/__init__.py:136
 msgid "Import - "
-msgstr ""
+msgstr "インポート - "
 
 #: pgadmin/tools/import_export/__init__.py:136
 msgid "Export - "
-msgstr ""
+msgstr "エクスポート - "
 
 #: pgadmin/tools/import_export/__init__.py:137
 msgid "Copying table data"
@@ -11897,11 +11911,11 @@ msgstr "指定されたデータベースを正常に比較しました"
 
 #: pgadmin/tools/schema_diff/__init__.py:606
 msgid "Schema Objects"
-msgstr ""
+msgstr "スキーマオブジェクト"
 
 #: pgadmin/tools/schema_diff/__init__.py:614
 msgid "Successfully compare the specified schemas."
-msgstr ""
+msgstr "指定されたスキーマを正常に比較しました"
 
 #: pgadmin/tools/schema_diff/__init__.py:691
 msgid "Selected object is not supported for DDL comparison."
@@ -11915,7 +11929,7 @@ msgstr "サーバへの接続を切断しました"
 msgid ""
 "Schema diff does not support the comparison between Postgres Server and "
 "EDB Postgres Advanced Server."
-msgstr "スキーマ差異ツールは PostgreSQL サーバと EDB Postgres Advanced Server 間の比較をサポートしていません"
+msgstr "スキーマ比較ツールは PostgreSQL サーバと EDB Postgres Advanced Server 間の比較をサポートしていません"
 
 #: pgadmin/tools/schema_diff/__init__.py:732
 msgid "Source and Target database server must be of the same major version."
@@ -11931,7 +11945,7 @@ msgstr "データベースオブジェクト"
 
 #: pgadmin/tools/schema_diff/__init__.py:830
 msgid "Comparing {0} "
-msgstr ""
+msgstr "{0}を比較中 "
 
 #: pgadmin/tools/schema_diff/__init__.py:833
 msgid "Comparing {0} of schema '{1}'"
@@ -11991,7 +12005,7 @@ msgstr "差異"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:94
 msgid "Schema Diff initialize error"
-msgstr "スキーマ差異の初期化エラー"
+msgstr "スキーマ比較の初期化エラー"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:80
 msgid "DDL Comparison"
@@ -12011,7 +12025,7 @@ msgstr "スキーマの比較エラー"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:210
 msgid "-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
-msgstr ""
+msgstr "-- このスクリプトは pgAdmin 4 のスキーマ比較ツールにより生成されたものです。 \n"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:211
 msgid ""
@@ -12063,25 +12077,30 @@ msgstr "データベースを選択..."
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:670
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:754
 msgid "Select schema..."
-msgstr ""
+msgstr "スキーマを選択..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:797
 msgid ""
 "<strong>Database Compare:</strong> Select the server and database for the"
 " source and target and Click <strong>Compare</strong>."
 msgstr ""
+"<strong>データベース比較：</strong> 比較元と比較対象のサーバ・データベースを選択し、"
+"<strong>比較</strong>をクリックしてください"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:798
 msgid ""
 "</br><strong>Schema Compare:</strong> Select the server, database and "
 "schema for the source and target and Click <strong>Compare</strong>."
 msgstr ""
+"</br><strong>スキーマ比較：</strong> 比較元と比較対象のサーバ・データベース・スキーマ"
+"を選択し、<strong>比較</strong>をクリックしてください"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:799
 msgid ""
 "</br><strong>Note:</strong> The dependencies will not be resolved in the "
 "Schema comparison."
 msgstr ""
+"</br><strong>注：</strong> このツールではオブジェクト間の依存関係を解決できません"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:833
 msgid "Failed to connect the database."
@@ -12210,7 +12229,7 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:106
 msgid "New Connection"
-msgstr ""
+msgstr "新しい接続"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:293
 msgid "Query Editor"
@@ -12289,13 +12308,15 @@ msgstr "このデータベースを使用する、すべてのセッションの
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2145
 msgid "Change connection"
-msgstr ""
+msgstr "接続を変更"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2146
 msgid ""
 "By changing the connection you will lose all your unsaved data for the "
 "current connection. <br> Do you want to continue?"
 msgstr ""
+"接続を変更すると、現在の接続で行われている未保存のデータは失われます。 "
+"<br> 続行しますか？"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2275
 msgid ""
@@ -12510,23 +12531,23 @@ msgstr "変更を保存"
 
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:28
 msgid "The session is idle and there is no current transaction."
-msgstr ""
+msgstr "セッションはアイドル状態です。トランザクションは開始していません"
 
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:29
 msgid "A command is currently in progress."
-msgstr ""
+msgstr "コマンドが走行中です"
 
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:30
 msgid "The session is idle in a valid transaction block."
-msgstr ""
+msgstr "セッションはアイドル状態です。トランザクションブロックが正常に進行中です"
 
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:31
 msgid "The session is idle in a failed transaction block."
-msgstr ""
+msgstr "セッションはアイドル状態です。トランザクションブロックが失敗し、ロールバック待ちです"
 
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:32
 msgid "The connection with the server is bad."
-msgstr ""
+msgstr "サーバへの接続に問題があります"
 
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:97
 msgid "Data sorting object updated successfully"
@@ -12863,17 +12884,17 @@ msgstr "キーワードの大文字小文字"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:685
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:697
 msgid "Upper case"
-msgstr ""
+msgstr "大文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:686
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:698
 msgid "Lower case"
-msgstr ""
+msgstr "小文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:687
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:699
 msgid "Capitalized"
-msgstr ""
+msgstr "1文字目だけ大文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:689
 msgid "Convert keywords to upper, lower, or capitalized casing."
@@ -12959,7 +12980,7 @@ msgstr "Tab キー、もしくは自動インデントによるタブの挿入�
 
 #: pgadmin/tools/storage_manager/static/js/storage_manager.js:53
 msgid "Storage Manager..."
-msgstr ""
+msgstr "ストレージマネージャ..."
 
 #: pgadmin/tools/user_management/__init__.py:115
 msgid "Invalid email address."
@@ -13146,7 +13167,7 @@ msgstr "SQL の整形"
 
 #: pgadmin/utils/constants.py:27
 msgid "Tab settings"
-msgstr ""
+msgstr "タブの設定"
 
 #: pgadmin/utils/constants.py:42
 msgid "Transaction ID not found in the session."
@@ -14633,7 +14654,7 @@ msgstr ""
 #~ msgstr "rect 要素"
 
 #~ msgid "-- This script is generated by 'Schema Diff' utility of pgAdmin 4. \n"
-#~ msgstr "-- このスクリプトは pgAdmin 4 の「スキーマ差異」ツールにより生成されたものです \n"
+#~ msgstr "-- このスクリプトは pgAdmin 4 の「スキーマ比較」ツールにより生成されたものです \n"
 
 #~ msgid ""
 #~ "-- It does not include the "
@@ -15302,7 +15323,7 @@ msgstr ""
 #~ msgstr "すべてと共有"
 
 #~ msgid "Schema Diff (Beta)"
-#~ msgstr "スキーマ差異（ベータ版）"
+#~ msgstr "スキーマ比較（ベータ版）"
 
 #~ msgid "Crypt key is missing."
 #~ msgstr "暗号キーが欠けています"
@@ -15311,13 +15332,13 @@ msgstr ""
 #~ msgstr "True の場合、デバッガを新しいブラウザタブに開きます"
 
 #~ msgid "If set to True, the Schema Diff will be opened in a new browser tab."
-#~ msgstr "True の場合、スキーマ差異ツールを新しいブラウザタブに開きます"
+#~ msgstr "True の場合、スキーマ比較ツールを新しいブラウザタブに開きます"
 
 #~ msgid ""
 #~ "-- This script was generated by a"
 #~ " beta version of the Schema Diff "
 #~ "utility in pgAdmin 4. \n"
-#~ msgstr "-- このスクリプトは pgAdmin 4 のスキーマ差異ツール（ベータ版）により生成されたものです。 \n"
+#~ msgstr "-- このスクリプトは pgAdmin 4 のスキーマ比較ツール（ベータ版）により生成されたものです。 \n"
 
 #~ msgid ""
 #~ "Select the server and database for "
