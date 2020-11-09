@@ -508,7 +508,7 @@ msgid ""
 "can provide any string with or without placeholders of their choice. The blank "
 "title will be revert back to the default title with placeholders."
 msgstr ""
-"I segnaposto supportati sono%FUNCTION%,%ARGS%,%SCHEMA% e%DATABASE%. Gli utenti "
+"I segnaposto supportati sono%FUNCTION%,%ARGS%,%SCHEMA% and %DATABASE%. Gli utenti "
 "possono fornire qualsiasi stringa con o senza segnaposto di loro scelta. Il "
 "titolo vuoto verrà ripristinato al titolo predefinito con segnaposto."
 
