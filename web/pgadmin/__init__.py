@@ -13,6 +13,7 @@ import logging
 import os
 import sys
 import re
+import ipaddress
 from types import MethodType
 from collections import defaultdict
 from importlib import import_module
@@ -620,6 +621,41 @@ def create_app(app_name=None):
         app.logger.info('Registering blueprint module: %s' % module)
         app.register_blueprint(module)
         app.register_logout_hook(module)
+
+    @app.before_request
+    def limit_host_addr():
+        """
+        This function validate the hosts from ALLOWED_HOSTS before allowing
+        HTTP request to avoid Host Header Injection attack
+        :return: None/JSON response with 403 HTTP status code
+        """
+        client_host = str(request.host).split(':')[0]
+        valid = True
+        allowed_hosts = config.ALLOWED_HOSTS
+
+        if len(allowed_hosts) != 0:
+            regex = re.compile(
+                r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:/\d{1,2}|)')
+            # Create separate list for ip addresses and host names
+            ip_set = list(filter(lambda ip: regex.match(ip), allowed_hosts))
+            host_set = list(filter(lambda ip: not regex.match(ip),
+                                   allowed_hosts))
+            is_ip = regex.match(client_host)
+            if is_ip:
+                ip_address = []
+                for ip in ip_set:
+                    ip_address.extend(list(ipaddress.ip_network(ip)))
+                valid = ip_address.__contains__(
+                    ipaddress.ip_address(client_host)
+                )
+            else:
+                valid = host_set.__contains__(client_host)
+
+        if not valid:
+            return make_json_response(
+                status=403, success=0,
+                errormsg=_("403 FORBIDDEN")
+            )
 
     ##########################################################################
     # Handle the desktop login

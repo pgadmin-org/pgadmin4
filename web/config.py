@@ -183,6 +183,14 @@ X_CONTENT_TYPE_OPTIONS = "nosniff"
 # response contains the same data. e.g. '1; mode=block'
 X_XSS_PROTECTION = "1; mode=block"
 
+# This param is used to validate ALLOWED_HOSTS for the application
+# This will be used to avoid Host Header Injection attack
+# ALLOWED_HOSTS = ['225.0.0.0/8', '226.0.0.0/7', '228.0.0.0/6']
+# ALLOWED_HOSTS = ['127.0.0.1', '192.168.0.1']
+# if ALLOWED_HOSTS= [] then it will accept all ips (and application will be
+# vulnerable to Host Header Injection attack)
+ALLOWED_HOSTS = []
+
 # Hashing algorithm used for password storage
 SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 
