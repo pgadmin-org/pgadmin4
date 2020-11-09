@@ -243,6 +243,13 @@ def _get_rows_for_type(conn, ntype, server_prop, node_id):
             node_id=node_id, node_type='m')
 
         status, res = conn.execute_dict(sql)
+    # Fetch Foreign tables.
+    elif ntype in ['foreign_table']:
+        sql = render_template("/".join(
+            [server_prop['template_path'], '/sql/foreign_table.sql']),
+            node_id=node_id, node_type='m')
+
+        status, res = conn.execute_dict(sql)
 
     return status, res
 
@@ -327,6 +334,10 @@ def properties(sid, did, node_id, node_type):
             status, res = _get_rows_for_type(
                 conn, 'mview', server_prop, node_id)
             _append_rows(status, res, 'materialized view')
+
+            status, res = _get_rows_for_type(
+                conn, 'foreign_table', server_prop, node_id)
+            _append_rows(status, res, 'foreign table')
         else:
             status, res = _get_rows_for_type(conn, ntype, server_prop, node_id)
             _append_rows(status, res, 'function')
@@ -386,6 +397,10 @@ def msql(sid, did):
                 data['acl'],
                 acls['table']['acl'])
 
+            data['priv']['foreign_table'] = parse_priv_to_db(
+                data['acl'],
+                acls['foreign_table']['acl'])
+
         # Pass database objects and get SQL for privileges
         sql_data = ''
         data_func = {'objects': data['objects'],
@@ -410,6 +425,15 @@ def msql(sid, did):
                       'priv': data['priv']['table']}
         sql = render_template(
             "/".join([server_prop['template_path'], '/sql/grant_table.sql']),
+            data=data_table, conn=conn)
+        if sql and sql.strip('\n') != '':
+            sql_data += sql
+
+        data_table = {'objects': data['objects'],
+                      'priv': data['priv']['foreign_table']}
+        sql = render_template(
+            "/".join([server_prop['template_path'],
+                      '/sql/grant_foreign_table.sql']),
             data=data_table, conn=conn)
         if sql and sql.strip('\n') != '':
             sql_data += sql
@@ -473,6 +497,10 @@ def save(sid, did):
                 data['acl'],
                 acls['table']['acl'])
 
+            data['priv']['foreign_table'] = parse_priv_to_db(
+                data['acl'],
+                acls['foreign_table']['acl'])
+
         # Pass database objects and get SQL for privileges
         # Pass database objects and get SQL for privileges
         sql_data = ''
@@ -498,6 +526,15 @@ def save(sid, did):
                       'priv': data['priv']['table']}
         sql = render_template(
             "/".join([server_prop['template_path'], '/sql/grant_table.sql']),
+            data=data_table, conn=conn)
+        if sql and sql.strip('\n') != '':
+            sql_data += sql
+
+        data_table = {'objects': data['objects'],
+                      'priv': data['priv']['foreign_table']}
+        sql = render_template(
+            "/".join([server_prop['template_path'],
+                      '/sql/grant_foreign_table.sql']),
             data=data_table, conn=conn)
         if sql and sql.strip('\n') != '':
             sql_data += sql

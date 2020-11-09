@@ -15,6 +15,10 @@
         "type": "TABLE",
         "acl": ["a", "r", "w", "d", "D", "x", "t"]
     },
+    "foreign_table": {
+        "type": "FOREIGN TABLE",
+        "acl": ["a", "r", "w","x"]
+    },
     "sequence": {
         "type": "SEQUENCE",
         "acl": ["r", "w", "U"]

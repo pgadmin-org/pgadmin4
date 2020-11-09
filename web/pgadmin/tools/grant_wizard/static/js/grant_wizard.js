@@ -539,6 +539,9 @@ define([
                 case 'Materialized View':
                   object_type = 'table';
                   break;
+                case 'Foreign Table':
+                  object_type = 'foreign_table';
+                  break;
                 default:
                   break;
                 }

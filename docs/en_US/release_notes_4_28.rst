@@ -35,3 +35,4 @@ Bug fixes
 | `Issue #5923 <https://redmine.postgresql.org/issues/5923>`_ -  Fixed an issue where non-closeable tabs are getting closed.
 | `Issue #5950 <https://redmine.postgresql.org/issues/5950>`_ -  Fixed an issue where a long file name is not visible on the process watcher dialog.
 | `Issue #5953 <https://redmine.postgresql.org/issues/5953>`_ -  Fixed an issue where connection to the server is on wait state if a different user is provided.
+| `Issue #5959 <https://redmine.postgresql.org/issues/5959>`_ -  Ensure that Grant Wizard should include foreign tables.
