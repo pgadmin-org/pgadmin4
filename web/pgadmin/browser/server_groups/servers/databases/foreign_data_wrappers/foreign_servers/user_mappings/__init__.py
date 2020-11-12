@@ -663,6 +663,48 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
+    def get_update_sql(self, data, old_data, required_args, fdw_data):
+        """
+        Get update SQL for user mapping.
+        :param data:
+        :param old_data:
+        :param required_args:
+        :param fdw_data:
+        :return: SQL and display name for user mapping.
+        """
+        for arg in required_args:
+            if arg not in data:
+                data[arg] = old_data[arg]
+
+        # Allow user to set the blank value in fdwvalue
+        # field in option model
+        is_valid_added_options = is_valid_changed_options = False
+        if 'umoptions' in data and data['umoptions'] is not None and \
+                'added' in data['umoptions']:
+            is_valid_added_options, data['umoptions']['added'] = \
+                validate_options(
+                    data['umoptions']['added'],
+                    'umoption',
+                    'umvalue')
+        if 'umoptions' in data and data['umoptions'] is not None and \
+                'changed' in data['umoptions']:
+            is_valid_changed_options, data['umoptions']['changed'] = \
+                validate_options(
+                    data['umoptions']['changed'],
+                    'umoption',
+                    'umvalue')
+
+        sql = render_template(
+            "/".join([self.template_path, self._UPDATE_SQL]),
+            data=data,
+            o_data=old_data,
+            is_valid_added_options=is_valid_added_options,
+            is_valid_changed_options=is_valid_changed_options,
+            fdwdata=fdw_data,
+            conn=self.conn
+        )
+        return sql, data['name'] if 'name' in data else old_data['name']
+
     def get_sql(self, **kwargs):
         """
         This function will generate sql from model data.
@@ -703,39 +745,10 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res1)
 
             fdw_data = res1['rows'][0]
-
-            for arg in required_args:
-                if arg not in data:
-                    data[arg] = old_data[arg]
-
-            # Allow user to set the blank value in fdwvalue
-            # field in option model
-            is_valid_added_options = is_valid_changed_options = False
-            if 'umoptions' in data and data['umoptions'] is not None and\
-                    'added' in data['umoptions']:
-                is_valid_added_options, data['umoptions']['added'] =\
-                    validate_options(
-                        data['umoptions']['added'],
-                        'umoption',
-                        'umvalue')
-            if 'umoptions' in data and data['umoptions'] is not None and\
-                    'changed' in data['umoptions']:
-                is_valid_changed_options, data['umoptions']['changed'] =\
-                    validate_options(
-                        data['umoptions']['changed'],
-                        'umoption',
-                        'umvalue')
-
-            sql = render_template(
-                "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data,
-                o_data=old_data,
-                is_valid_added_options=is_valid_added_options,
-                is_valid_changed_options=is_valid_changed_options,
-                fdwdata=fdw_data,
-                conn=self.conn
-            )
-            return sql, data['name'] if 'name' in data else old_data['name']
+            # Get SQL for update.
+            sql, name = self.get_update_sql(data, old_data, required_args,
+                                            fdw_data)
+            return sql, name
         else:
             sql = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),

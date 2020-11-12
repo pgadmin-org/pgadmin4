@@ -135,7 +135,7 @@ function selectDependencies(data, isChecked) {
     return [];
   }
 
-  setDependencies = function(rowData, dependencies, isChecked) {
+  setDependencies = function(rowData, dependencies, is_checked) {
     // Special handling for extension, if extension is present in the
     // dependency list then iterate and select only extension node.
     let extensions = dependencies.filter(item => item.type  == 'extension');
@@ -167,7 +167,7 @@ function selectDependencies(data, isChecked) {
               self.dataView.expandGroup(dependencyData.group_name + ':|:' + dependencyData.type);
           }
 
-          if (isChecked || _.isUndefined(isChecked)) {
+          if (is_checked || _.isUndefined(is_checked)) {
             dependencyData.dependLevel = rowData.dependLevel + 1;
             if (dependencyData.dependentCount.indexOf(rowData.oid) === -1)
               dependencyData.dependentCount.push(rowData.oid);
@@ -187,7 +187,7 @@ function selectDependencies(data, isChecked) {
               dependencyData.orig_dependencies = Object.assign([], dependencyData.dependencies);
             dependencyData.dependencies = depCirRows;
           }
-          setDependencies(dependencyData, dependencyData.dependencies, isChecked);
+          setDependencies(dependencyData, dependencyData.dependencies, is_checked);
         }
       }
     });

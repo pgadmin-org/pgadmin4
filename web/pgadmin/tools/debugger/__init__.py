@@ -313,6 +313,78 @@ def execute_async_search_path(conn, sql, search_path):
     return status, res
 
 
+def check_server_type(server_type, manager):
+    """
+    Check for server is ppas or not and is_proc_supported or not.
+    :param server_type:
+    :param manager:
+    :return:
+    """
+    ppas_server = False
+    is_proc_supported = False
+    if server_type == 'ppas':
+        ppas_server = True
+    else:
+        is_proc_supported = True if manager.version >= 110000 else False
+
+    return ppas_server, is_proc_supported
+
+
+def check_node_type(node_type, fid, trid, conn, ppas_server,
+                    is_proc_supported):
+    """
+    Check node type and return fid.
+    :param node_type:
+    :param fid:
+    :param trid:
+    :param conn:
+    :param ppas_server:
+    :param is_proc_supported:
+    :return:
+    """
+    if node_type == 'trigger':
+        # Find trigger function id from trigger id
+        sql = render_template(
+            "/".join([DEBUGGER_SQL_PATH, 'get_trigger_function_info.sql']),
+            table_id=fid, trigger_id=trid
+        )
+
+        status, tr_set = conn.execute_dict(sql)
+        if not status:
+            current_app.logger.debug(
+                "Error retrieving trigger function information from database")
+            return True, internal_server_error(errormsg=tr_set), None, None
+
+        fid = tr_set['rows'][0]['tgfoid']
+
+    # if ppas server and node type is edb function or procedure then extract
+    # last argument as function id
+    if node_type == 'edbfunc' or node_type == 'edbproc':
+        fid = trid
+
+    sql = ''
+    sql = render_template(
+        "/".join([DEBUGGER_SQL_PATH, 'get_function_debug_info.sql']),
+        is_ppas_database=ppas_server,
+        hasFeatureFunctionDefaults=True,
+        fid=fid,
+        is_proc_supported=is_proc_supported
+
+    )
+    status, r_set = conn.execute_dict(sql)
+    if not status:
+        current_app.logger.debug(
+            "Error retrieving function information from database")
+        return True, internal_server_error(errormsg=r_set), None, None
+
+    if len(r_set['rows']) == 0:
+        return True, gone(
+            gettext("The specified %s could not be found." % node_type)), \
+            None, None
+
+    return False, None, r_set, status
+
+
 @blueprint.route(
     '/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>',
     methods=['GET'], endpoint='init_for_function'
@@ -358,51 +430,14 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
     server_type = manager.server_type
 
     # Check server type is ppas or not
-    ppas_server = False
-    is_proc_supported = False
-    if server_type == 'ppas':
-        ppas_server = True
-    else:
-        is_proc_supported = True if manager.version >= 110000 else False
+    ppas_server, is_proc_supported = check_server_type(server_type, manager)
 
-    if node_type == 'trigger':
-        # Find trigger function id from trigger id
-        sql = render_template(
-            "/".join([DEBUGGER_SQL_PATH, 'get_trigger_function_info.sql']),
-            table_id=fid, trigger_id=trid
-        )
+    is_error, err_msg, r_set, status = check_node_type(node_type, fid, trid,
+                                                       conn, ppas_server,
+                                                       is_proc_supported)
+    if is_error:
+        return err_msg
 
-        status, tr_set = conn.execute_dict(sql)
-        if not status:
-            current_app.logger.debug(
-                "Error retrieving trigger function information from database")
-            return internal_server_error(errormsg=tr_set)
-
-        fid = tr_set['rows'][0]['tgfoid']
-
-    # if ppas server and node type is edb function or procedure then extract
-    # last argument as function id
-    if node_type == 'edbfunc' or node_type == 'edbproc':
-        fid = trid
-
-    sql = ''
-    sql = render_template(
-        "/".join([DEBUGGER_SQL_PATH, 'get_function_debug_info.sql']),
-        is_ppas_database=ppas_server,
-        hasFeatureFunctionDefaults=True,
-        fid=fid,
-        is_proc_supported=is_proc_supported
-
-    )
-    status, r_set = conn.execute_dict(sql)
-    if not status:
-        current_app.logger.debug(
-            "Error retrieving function information from database")
-        return internal_server_error(errormsg=r_set)
-
-    if len(r_set['rows']) == 0:
-        return gone(
-            gettext("The specified %s could not be found." % node_type))
     ret_status = status
 
     # Check that the function is actually debuggable...
@@ -438,40 +473,11 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
                 " and cannot be debugged."
             )
         else:
-            status_in, rid_tar = conn.execute_scalar(
-                "SELECT count(*) FROM pg_proc WHERE "
-                "proname = 'pldbg_get_target_info'"
-            )
-            if not status_in:
-                current_app.logger.debug(
-                    "Failed to find the pldbgapi extension in this database.")
-                return internal_server_error(
-                    gettext("Failed to find the pldbgapi extension in "
-                            "this database.")
-                )
+            is_error, err_msg, ret_status, msg = check_debugger_enabled(
+                conn, ret_status)
 
-            # We also need to check to make sure that the debugger library is
-            # also available.
-            status_in, ret_oid = conn.execute_scalar(
-                "SELECT count(*) FROM pg_proc WHERE "
-                "proname = 'plpgsql_oid_debug'"
-            )
-            if not status_in:
-                current_app.logger.debug(
-                    "Failed to find the pldbgapi extension in this database.")
-                return internal_server_error(
-                    gettext("Failed to find the pldbgapi extension in "
-                            "this database.")
-                )
-
-            # Debugger plugin is configured but pldggapi extension is not
-            # created so return error
-            if rid_tar == '0' or ret_oid == '0':
-                msg = gettext(
-                    "The debugger plugin is not enabled. Please create the "
-                    "pldbgapi extension in this database."
-                )
-                ret_status = False
+            if is_error:
+                return err_msg
     else:
         ret_status = False
         msg = gettext("The function/procedure cannot be debugged")
@@ -489,21 +495,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
     # Below will check do we really required for the user input arguments and
     # show input dialog
-    if not r_set['rows'][0]['proargtypenames']:
-        data['require_input'] = False
-    else:
-        if r_set['rows'][0]['pkg'] != 0 and \
-                r_set['rows'][0]['pkgconsoid'] != 0:
-            data['require_input'] = True
-
-        if r_set['rows'][0]['proargmodes']:
-            pro_arg_modes = r_set['rows'][0]['proargmodes'].split(",")
-            for pr_arg_mode in pro_arg_modes:
-                if pr_arg_mode == 'o' or pr_arg_mode == 't':
-                    data['require_input'] = False
-                else:
-                    data['require_input'] = True
-                    break
+    data['require_input'] = check_user_ip_req(r_set, data)
 
     r_set['rows'][0]['require_input'] = data['require_input']
 
@@ -536,6 +528,77 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         ),
         status=200
     )
+
+
+def check_debugger_enabled(conn, ret_status):
+    """
+    Check debugger enabled or not, also check pldbgapi extension is present
+    or not
+    :param conn:
+    :param ret_status:
+    :return:
+    """
+    status_in, rid_tar = conn.execute_scalar(
+        "SELECT count(*) FROM pg_proc WHERE "
+        "proname = 'pldbg_get_target_info'"
+    )
+    if not status_in:
+        current_app.logger.debug(
+            "Failed to find the pldbgapi extension in this database.")
+        return True, internal_server_error(
+            gettext("Failed to find the pldbgapi extension in "
+                    "this database.")
+        ), None, None
+
+    # We also need to check to make sure that the debugger library is
+    # also available.
+    status_in, ret_oid = conn.execute_scalar(
+        "SELECT count(*) FROM pg_proc WHERE "
+        "proname = 'plpgsql_oid_debug'"
+    )
+    if not status_in:
+        current_app.logger.debug(
+            "Failed to find the pldbgapi extension in this database.")
+        return True, internal_server_error(
+            gettext("Failed to find the pldbgapi extension in "
+                    "this database.")
+        ), None, None
+
+    # Debugger plugin is configured but pldggapi extension is not
+    # created so return error
+    if rid_tar == '0' or ret_oid == '0':
+        msg = gettext(
+            "The debugger plugin is not enabled. Please create the "
+            "pldbgapi extension in this database."
+        )
+        ret_status = False
+    return False, None, ret_status, msg
+
+
+def check_user_ip_req(r_set, data):
+    """
+    Check if user input is required or not for debugger.
+    :param r_set:
+    :param data:
+    :return:
+    """
+    if not r_set['rows'][0]['proargtypenames']:
+        return False
+
+    if r_set['rows'][0]['pkg'] != 0 and \
+            r_set['rows'][0]['pkgconsoid'] != 0:
+        data['require_input'] = True
+
+    if r_set['rows'][0]['proargmodes']:
+        pro_arg_modes = r_set['rows'][0]['proargmodes'].split(",")
+        for pr_arg_mode in pro_arg_modes:
+            if pr_arg_mode == 'o' or pr_arg_mode == 't':
+                data['require_input'] = False
+            else:
+                data['require_input'] = True
+                break
+
+    return data['require_input']
 
 
 @blueprint.route('/direct/<int:trans_id>', methods=['GET'], endpoint='direct')
@@ -1710,6 +1773,32 @@ def get_arguments_sqlite(sid, did, scid, func_id):
         )
 
 
+def get_array_string(data, i):
+    """
+    Get array string.
+    :param data: data.
+    :param i: index
+    :return: Array string.
+    """
+    array_string = ''
+    if data[i]['value'].__class__.__name__ in (
+            'list') and data[i]['value']:
+        for k in range(0, len(data[i]['value'])):
+            if data[i]['value'][k]['value'] is None:
+                array_string += 'NULL'
+            else:
+                array_string += str(data[i]['value'][k]['value'])
+            if k != (len(data[i]['value']) - 1):
+                array_string += ','
+    elif data[i]['value'].__class__.__name__ in (
+            'list') and not data[i]['value']:
+        array_string = ''
+    else:
+        array_string = data[i]['value']
+
+    return array_string
+
+
 @blueprint.route(
     '/set_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
     methods=['POST'], endpoint='set_arguments'
@@ -1749,20 +1838,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
             # handle the Array list sent from the client
             array_string = ''
             if 'value' in data[i]:
-                if data[i]['value'].__class__.__name__ in (
-                        'list') and data[i]['value']:
-                    for k in range(0, len(data[i]['value'])):
-                        if data[i]['value'][k]['value'] is None:
-                            array_string += 'NULL'
-                        else:
-                            array_string += str(data[i]['value'][k]['value'])
-                        if k != (len(data[i]['value']) - 1):
-                            array_string += ','
-                elif data[i]['value'].__class__.__name__ in (
-                        'list') and not data[i]['value']:
-                    array_string = ''
-                else:
-                    array_string = data[i]['value']
+                array_string = get_array_string(data, i)
 
             # Check if data is already available in database then update the
             # existing value otherwise add the new value
@@ -1893,6 +1969,68 @@ def convert_data_to_dict(conn, result):
     return columns, result
 
 
+def get_additional_msgs(conn, statusmsg):
+    additional_msgs = conn.messages()
+    if len(additional_msgs) > 0:
+        additional_msgs = [msg.strip("\n") for msg in additional_msgs]
+        additional_msgs = "\n".join(additional_msgs)
+        if statusmsg:
+            statusmsg = additional_msgs + "\n" + statusmsg
+        else:
+            statusmsg = additional_msgs
+
+    return additional_msgs, statusmsg
+
+
+def poll_data(conn):
+    """
+    poll data.
+    :param conn:
+    :return:
+    """
+    statusmsg = conn.status_message()
+    if statusmsg and statusmsg == 'SELECT 1':
+        statusmsg = ''
+    status, result = conn.poll()
+
+    return status, result, statusmsg
+
+
+def check_result(result, conn, statusmsg):
+    """
+    Check for error and return the final result.
+    :param result:
+    :param conn:
+    :param statusmsg:
+    :return:
+    """
+    if 'ERROR' in result:
+        status = 'ERROR'
+        return make_json_response(
+            info=gettext("Execution completed with an error."),
+            data={
+                'status': status,
+                'status_message': result
+            }
+        )
+    else:
+        status = 'Success'
+        additional_msgs, statusmsg = get_additional_msgs(conn,
+                                                         statusmsg)
+
+        columns, result = convert_data_to_dict(conn, result)
+
+        return make_json_response(
+            success=1,
+            info=gettext("Execution Completed."),
+            data={
+                'status': status,
+                'result': result,
+                'col_info': columns,
+                'status_message': statusmsg}
+        )
+
+
 @blueprint.route(
     '/poll_end_execution_result/<int:trans_id>/',
     methods=["GET"], endpoint='poll_end_execution_result'
@@ -1925,10 +2063,7 @@ def poll_end_execution_result(trans_id):
         conn_id=de_inst.debugger_data['conn_id'])
 
     if conn.connected():
-        statusmsg = conn.status_message()
-        if statusmsg and statusmsg == 'SELECT 1':
-            statusmsg = ''
-        status, result = conn.poll()
+        status, result, statusmsg = poll_data(conn)
         if not status:
             status = 'ERROR'
             return make_json_response(
@@ -1944,14 +2079,7 @@ def poll_end_execution_result(trans_id):
             (de_inst.function_data['language'] == 'edbspl' or
                 de_inst.function_data['language'] == 'plpgsql'):
             status = 'Success'
-            additional_msgs = conn.messages()
-            if len(additional_msgs) > 0:
-                additional_msgs = [msg.strip("\n") for msg in additional_msgs]
-                additional_msgs = "\n".join(additional_msgs)
-                if statusmsg:
-                    statusmsg = additional_msgs + "\n" + statusmsg
-                else:
-                    statusmsg = additional_msgs
+            additional_msgs, statusmsg = get_additional_msgs(conn, statusmsg)
 
             return make_json_response(
                 success=1,
@@ -1962,48 +2090,11 @@ def poll_end_execution_result(trans_id):
                 }
             )
         if result:
-            if 'ERROR' in result:
-                status = 'ERROR'
-                return make_json_response(
-                    info=gettext("Execution completed with an error."),
-                    data={
-                        'status': status,
-                        'status_message': result
-                    }
-                )
-            else:
-                status = 'Success'
-                additional_msgs = conn.messages()
-                if len(additional_msgs) > 0:
-                    additional_msgs = [msg.strip("\n")
-                                       for msg in additional_msgs]
-                    additional_msgs = "\n".join(additional_msgs)
-                    if statusmsg:
-                        statusmsg = additional_msgs + "\n" + statusmsg
-                    else:
-                        statusmsg = additional_msgs
-
-                columns, result = convert_data_to_dict(conn, result)
-
-                return make_json_response(
-                    success=1,
-                    info=gettext("Execution Completed."),
-                    data={
-                        'status': status,
-                        'result': result,
-                        'col_info': columns,
-                        'status_message': statusmsg}
-                )
+            return check_result(result, conn, statusmsg)
         else:
             status = 'Busy'
-            additional_msgs = conn.messages()
-            if len(additional_msgs) > 0:
-                additional_msgs = [msg.strip("\n") for msg in additional_msgs]
-                additional_msgs = "\n".join(additional_msgs)
-                if statusmsg:
-                    statusmsg = additional_msgs + "\n" + statusmsg
-                else:
-                    statusmsg = additional_msgs
+            additional_msgs, statusmsg = get_additional_msgs(conn,
+                                                             statusmsg)
             return make_json_response(
                 data={
                     'status': status,
