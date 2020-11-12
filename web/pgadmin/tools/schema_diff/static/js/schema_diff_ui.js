@@ -156,6 +156,20 @@ export default class SchemaDiffUI {
       return false;
     }
 
+    // Check if user has selected the same options for comparison on the GUI
+    let opts = [['source_sid', 'target_sid'], ['source_did', 'target_did'], ['source_scid', 'target_scid']];
+    let isSameOptsSelected = true;
+    for (let opt of opts) {
+      if (url_params[opt[0]] && url_params[opt[1]] &&
+          (parseInt(url_params[opt[0]]) !== parseInt(url_params[opt[1]]))) {
+        isSameOptsSelected = false;
+      }
+    }
+    if (isSameOptsSelected) {
+      Alertify.alert(gettext('Selection Error'), gettext('Please select the different source and target.'));
+      return false;
+    }
+
     this.selection = JSON.parse(JSON.stringify(url_params));
 
     url_params['trans_id'] = self.trans_id;
