@@ -1489,15 +1489,24 @@ def get_new_connection_data(sgid, sid=None):
     :extract_sql_from_network_parameters,
     """
     try:
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        from pgadmin.browser.server_groups.servers import \
+            server_icon_and_background
         server_groups = ServerGroup.query.all()
         server_group_data = {server_group.name: [] for server_group in
                              server_groups}
         servers = Server.query.all()
 
-        [server_group_data[server.servers.name].append(
-            {'label': server.serialize['name'],
-             "value": server.serialize['id']})
-            for server in servers]
+        for server in servers:
+            manager = driver.connection_manager(server.id)
+            conn = manager.connection()
+            connected = conn.connected()
+            server_group_data[server.servers.name].append({
+                'label': server.serialize['name'],
+                "value": server.serialize['id'],
+                'image': server_icon_and_background(connected, manager,
+                                                    server),
+                'connected': connected})
 
         msg = "Success"
         return make_json_response(

@@ -17,4 +17,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #5983 <https://redmine.postgresql.org/issues/5983>`_ -  Added the appropriate server icon based on the server type in the new connection dialog.
 | `Issue #5985 <https://redmine.postgresql.org/issues/5985>`_ -  Fixed an issue where the process watcher dialog throws an error for the database server which is already removed.

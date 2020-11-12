@@ -15,6 +15,7 @@ import Backform from 'pgadmin.backform';
 import url_for from 'sources/url_for';
 import alertify from 'pgadmin.alertifyjs';
 
+
 export default function newConnectionDialogModel(response, sgid, sid, handler, conn_self) {
 
   let server_name = '';
@@ -72,6 +73,24 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
     },
   });
 
+  var formatNode = function (opt) {
+    if (!opt.id) {
+      return opt.text;
+    }
+
+    var optimage = $(opt.element).data('image');
+
+    if (!optimage) {
+      return opt.text;
+    } else {
+      return $('<span></span>').append(
+        $('<span></span>', {
+          class: 'wcTabIcon ' + optimage,
+        })
+      ).append($('<span></span>').text(opt.text));
+    }
+  };
+
   let newConnectionModel = pgAdmin.Browser.DataModel.extend({
     idAttribute: 'name',
     defaults: {
@@ -90,6 +109,16 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
       disabled: false,
       select2: {
         allowClear: false,
+        width: 'style',
+        templateResult: formatNode,
+        templateSelection: formatNode,
+      },
+      events: {
+        'focus select': 'clearInvalid',
+        'keydown :input': 'processTab',
+        'select2:select': 'onSelect',
+        'select2:selecting': 'beforeSelect',
+        'select2:clear': 'onChange',
       },
       transform: function(data) {
         let group_template_options = [];
@@ -148,6 +177,45 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
           ' <% } %>',
           '</div>',
         ].join('\n')),
+        beforeSelect: function() {
+          var selVal = arguments[0].params.args.data.id;
+
+          if(this.field.get('connect') && this.$el.find('option[value="'+selVal+'"]').attr('data-connected') !== 'connected') {
+            this.field.get('connect').apply(this, [selVal, this.changeIcon.bind(this)]);
+          } else {
+            $(this.$sel).trigger('change');
+            setTimeout(function(){ this.onChange.apply(this); }.bind(this), 200);
+          }
+        },
+        changeIcon: function(data) {
+          let span = this.$el.find('.select2-selection .select2-selection__rendered span.wcTabIcon'),
+            selSpan = this.$el.find('option:selected');
+
+          if (span.hasClass('icon-server-not-connected') || span.hasClass('icon-shared-server-not-connected')) {
+            let icon = (data.icon) ? data.icon : 'icon-pg';
+            span.removeClass('icon-server-not-connected');
+            span.addClass(icon);
+            span.attr('data-connected', 'connected');
+
+            selSpan.data().image = icon;
+            selSpan.attr('data-connected', 'connected');
+            alertify.connectServer().destroy();
+            this.onChange.apply(this);
+          }
+          else if (span.hasClass('icon-database-not-connected')) {
+            let icon = (data.icon) ? data.icon : 'pg-icon-database';
+
+            span.removeClass('icon-database-not-connected');
+            span.addClass(icon);
+            span.attr('data-connected', 'connected');
+
+            selSpan.removeClass('icon-database-not-connected');
+            selSpan.data().image = icon;
+            selSpan.attr('data-connected', 'connected');
+            alertify.connectServer().destroy();
+            this.onChange.apply(this);
+          }
+        },
         connect: function(self) {
           let local_self = self;
 
@@ -198,8 +266,10 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
                       url: _url,
                       data: $('#frmPassword').serialize(),
                     })
-                      .done(function() {
+                      .done(function(res) {
+
                         local_self.model.attributes.database = null;
+                        local_self.changeIcon(res.data);
                         local_self.model.attributes.user = null;
                         local_self.model.attributes.role = null;
                         Backform.Select2Control.prototype.onChange.apply(local_self, arguments);

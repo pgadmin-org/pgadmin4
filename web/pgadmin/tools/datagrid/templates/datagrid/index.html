@@ -11,6 +11,9 @@
     .sql-editor-busy-icon.fa-pulse{-webkit-animation: none;}
     {% endif %}
 </style>
+{% block css_link %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}
 <div id="main-editor_panel">
     <div class="sql-editor">
         <div id="btn-toolbar" class="editor-toolbar" role="toolbar" aria-label="">
