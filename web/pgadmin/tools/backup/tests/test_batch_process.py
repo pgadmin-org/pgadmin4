@@ -199,11 +199,18 @@ class BatchProcessTest(BaseTestGenerator):
 
         self.assertTrue(popen_mock.called)
 
+    @patch('os.path.realpath')
+    @patch('pgadmin.misc.bgprocess.processes.get_storage_directory')
+    @patch('pgadmin.misc.bgprocess.processes.get_complete_file_path')
     @patch('pgadmin.misc.bgprocess.processes.Process')
     @patch('pgadmin.misc.bgprocess.processes.BatchProcess.'
            'update_process_info')
-    def _check_list(self, p, backup_obj, update_process_info_mock,
-                    process_mock):
+    @patch('pgadmin.misc.bgprocess.processes.BatchProcess.'
+           '_operate_orphan_process')
+    def _check_list(self, p, backup_obj, _operate_orphan_process_mock,
+                    update_process_info_mock, process_mock,
+                    get_complete_file_path_mock, get_storage_directory_mock,
+                    realpath_mock):
         class TestMockProcess():
             def __init__(self, desc, args, cmd):
                 self.pid = 1
@@ -222,6 +229,10 @@ class BatchProcessTest(BaseTestGenerator):
                             self.class_params['cmd'])]
 
         update_process_info_mock.return_value = [True, True]
+        get_complete_file_path_mock.return_value = self.class_params['bfile']
+        realpath_mock.return_value = self.class_params['bfile']
+        get_storage_directory_mock.return_value = '//'
+        _operate_orphan_process_mock.return_value = False
 
         ret_value = p.list()
         self.assertEqual(1, len(ret_value))

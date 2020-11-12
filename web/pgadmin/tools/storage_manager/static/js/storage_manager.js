@@ -65,7 +65,7 @@ define([
       var params = {
         supported_types: ['sql', 'csv', '*'],
         dialog_type: 'storage_dialog',
-        dialog_title: 'Storage Manager...',
+        dialog_title: 'Storage Manager',
         btn_primary: undefined,
       };
 

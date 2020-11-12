@@ -23,6 +23,7 @@ import logging
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN
+from pgadmin.browser.server_groups.servers.utils import does_server_exists
 
 import pytz
 from dateutil import parser
@@ -68,9 +69,9 @@ class IProcessDesc(object, metaclass=ABCMeta):
             try:
                 # check if file name is encoded with UTF-8
                 file = self.bfile.decode('utf-8')
-            except Exception as e:
-                str(e)
+            except Exception:
                 # do nothing if bfile is not encoded.
+                pass
 
             path = get_complete_file_path(file)
             path = file if path is None else path
@@ -87,19 +88,22 @@ class IProcessDesc(object, metaclass=ABCMeta):
             else:
                 last_dir = file
 
-            if IS_WIN:
-                if '\\' in last_dir:
-                    if len(last_dir) == 1:
-                        last_dir = last_dir.replace('\\', '\\\\')
-                    else:
-                        last_dir = last_dir.replace('\\', '/')
-                else:
-                    last_dir = last_dir.replace('\\', '/')
+            last_dir = replace_path_for_win(last_dir)
 
             return None if hasattr(self, 'is_import') and self.is_import \
                 else last_dir
 
         return None
+
+
+def replace_path_for_win(last_dir=None):
+    if IS_WIN:
+        if '\\' in last_dir and len(last_dir) == 1:
+            last_dir = last_dir.replace('\\', '\\\\')
+        else:
+            last_dir = last_dir.replace('\\', '/')
+
+    return last_dir
 
 
 class BatchProcess(object):
@@ -625,6 +629,9 @@ class BatchProcess(object):
             ):
                 continue
 
+            if BatchProcess._operate_orphan_process(p):
+                continue
+
             execution_time = None
 
             stime = parser.parse(p.start_time)
@@ -653,6 +660,29 @@ class BatchProcess(object):
             db.session.commit()
 
         return res
+
+    @staticmethod
+    def _operate_orphan_process(p):
+
+        if p and p.desc:
+            desc = loads(p.desc)
+            if does_server_exists(desc.sid, current_user.id) is False:
+                current_app.logger.warning(
+                    _("Server with id '{0}' is either removed or does "
+                      "not exists for the background process "
+                      "'{1}'").format(desc.sid, p.pid)
+                )
+                try:
+                    BatchProcess.acknowledge(p.pid)
+                except LookupError as lerr:
+                    current_app.logger.warning(
+                        _("Status for the background process '{0}' could "
+                          "not be loaded.").format(p.pid)
+                    )
+                    current_app.logger.exception(lerr)
+                return True
+
+        return False
 
     @staticmethod
     def total_seconds(dt):
