@@ -35,6 +35,7 @@ from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
     PREF_LABEL_KEYBOARD_SHORTCUTS, MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED
+from pgadmin.preferences import preferences
 
 MODULE_NAME = 'debugger'
 
@@ -664,10 +665,19 @@ def direct_new(trans_id):
     function_name_with_arguments = \
         de_inst.debugger_data['function_name'] + function_arguments
 
+    manager = get_driver(PG_DEFAULT_DRIVER).get_connection(
+        de_inst.debugger_data['server_id'],
+        database=de_inst.debugger_data['database_id'],
+        conn_id=de_inst.debugger_data['conn_id'])
+    title = get_debugger_title(de_inst.debugger_data['function_name'],
+                               function_arguments,
+                               de_inst.function_data['schema'], manager.db)
+
     return render_template(
         "debugger/direct.html",
         _=gettext,
         function_name=de_inst.debugger_data['function_name'],
+        title=title,
         uniqueId=trans_id,
         debug_type=debug_type,
         is_desktop_mode=current_app.PGADMIN_RUNTIME,
@@ -676,6 +686,19 @@ def direct_new(trans_id):
         function_name_with_arguments=function_name_with_arguments,
         layout=layout
     )
+
+
+def get_debugger_title(function_name, args, schema, database):
+    browser_pref = preferences('browser', 'debugger_tab_title_placeholder')
+    placeholders = browser_pref.json['value']
+    title = placeholders.replace('%FUNCTION%', function_name)
+    if title.find('%ARGS%') != -1:
+        args = args.split('(')[-1][:-1]
+        title = title.replace('%ARGS%', args)
+    title = title.replace('%SCHEMA%', schema)
+    title = title.replace('%DATABASE%', database)
+
+    return title
 
 
 def get_debugger_version(conn, search_path):

@@ -47,7 +47,7 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null) 
   };
   var title = generateTitle(qt_title_placeholder, title_data);
 
-  return _.escape(title);
+  return title;
 }
 
 export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_file) {

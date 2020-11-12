@@ -68,7 +68,7 @@ function setDebuggerTitle(panel, preferences, function_name, schema_name, databa
     'type': 'debugger',
   };
   var title = generateTitle(debugger_title_placeholder, title_data);
-  panel.title('<span>'+ _.escape(title) +'</span>');
+  panel.title('<span>'+ title +'</span>');
 }
 
 function get_function_name(function_name) {

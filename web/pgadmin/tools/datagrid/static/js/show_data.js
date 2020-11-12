@@ -308,5 +308,5 @@ export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title
   };
   var title = generateTitle(dtg_title_placeholder, title_data);
 
-  return _.escape(title);
+  return title;
 }
