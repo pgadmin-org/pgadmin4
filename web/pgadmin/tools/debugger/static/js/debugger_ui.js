@@ -11,10 +11,10 @@ define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.backgrid', 'sources/window', 'pgadmin.tools.debugger.utils',
-  'tools/datagrid/static/js/show_query_tool', 'wcdocker',
+  'wcdocker',
 ], function(
   gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid,
-  pgWindow, debuggerUtils, showQueryTool
+  pgWindow, debuggerUtils,
 ) {
 
   var wcDocker = window.wcDocker;
@@ -778,10 +778,8 @@ define([
                           'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                         );
                       var browser_pref = pgBrowser.get_preferences_for_module('browser');
-                      debuggerUtils.setDebuggerTitle(panel, browser_pref, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label);
-
-                      showQueryTool._set_dynamic_tab(pgBrowser, browser_pref['dynamic_tabs']);
-
+                      var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+                      debuggerUtils.setDebuggerTitle(panel, browser_pref, label, treeInfo.schema.label, treeInfo.database.label, null, pgBrowser);
                       panel.focus();
 
                       // Panel Closed event
@@ -801,7 +799,8 @@ define([
                           // We will execute this function when user clicks on the OK button
                           function(evt, value) {
                             if(value) {
-                              debuggerUtils.setDebuggerTitle(panel, self.preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label, value);
+                              var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+                              debuggerUtils.setDebuggerTitle(panel, self.preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                             }
                           },
                           // We will execute this function when user clicks on the Cancel

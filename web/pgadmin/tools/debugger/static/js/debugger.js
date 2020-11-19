@@ -11,11 +11,13 @@ define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'alertify', 'sources/pgadmin', 'pgadmin.browser',
   'backbone', 'pgadmin.backgrid', 'codemirror', 'pgadmin.backform',
-  'pgadmin.tools.debugger.ui', 'pgadmin.tools.debugger.utils', 'sources/utils',
+  'pgadmin.tools.debugger.ui', 'pgadmin.tools.debugger.utils',
+  'tools/datagrid/static/js/show_query_tool', 'sources/utils',
   'wcdocker', 'pgadmin.browser.frame',
 ], function(
   gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  CodeMirror, Backform, get_function_arguments, debuggerUtils, pgadminUtils,
+  CodeMirror, Backform, get_function_arguments, debuggerUtils, showQueryTool,
+  pgadminUtils,
 ) {
   var pgTools = pgAdmin.Tools = pgAdmin.Tools || {},
     wcDocker = window.wcDocker;
@@ -427,7 +429,8 @@ define([
               panel = pgBrowser.docker.addPanel(
                 'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
               );
-            debuggerUtils.setDebuggerTitle(panel, browser_preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label);
+            var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+            debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, null, pgBrowser);
 
             panel.focus();
 
@@ -449,7 +452,8 @@ define([
                 function(evt, value) {
                   if(value) {
                     let browser_preferences = pgBrowser.get_preferences_for_module('browser');
-                    debuggerUtils.setDebuggerTitle(panel, browser_preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label, value);
+                    var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+                    debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                   }
                 },
                 // We will execute this function when user clicks on the Cancel
@@ -567,7 +571,8 @@ define([
                     panel = pgBrowser.docker.addPanel(
                       'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                     );
-                  debuggerUtils.setDebuggerTitle(panel, browser_preferences, newTreeInfo.function.label, newTreeInfo.schema.label, newTreeInfo.database.label);
+                  var label = newTreeInfo.function ? newTreeInfo.function.label : newTreeInfo.procedure.label;
+                  debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, newTreeInfo.database.label, null, pgBrowser);
 
                   panel.focus();
 
@@ -589,7 +594,8 @@ define([
                       function(evt, value) {
                         if(value) {
                           let browser_preferences = pgBrowser.get_preferences_for_module('browser');
-                          debuggerUtils.setDebuggerTitle(panel, browser_preferences, treeInfo.function.label, treeInfo.schema.label, treeInfo.database.label, value);
+                          var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+                          debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                         }
                       },
                       // We will execute this function when user clicks on the Cancel

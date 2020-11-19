@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 import {generateTitle} from '../../../datagrid/static/js/datagrid_panel_title';
+import {_set_dynamic_tab} from '../../../datagrid/static/js/show_query_tool';
 
 function setFocusToDebuggerEditor(editor, command) {
   const TAB = 9;
@@ -43,7 +44,7 @@ function getProcedureId(treeInfoObject) {
   return objectId;
 }
 
-function setDebuggerTitle(panel, preferences, function_name, schema_name, database_name, custom_title) {
+function setDebuggerTitle(panel, preferences, function_name, schema_name, database_name, custom_title=null, pgBrowser=null) {
   var debugger_title_placeholder = '';
   if(custom_title) {
     debugger_title_placeholder = custom_title;
@@ -68,6 +69,7 @@ function setDebuggerTitle(panel, preferences, function_name, schema_name, databa
     'type': 'debugger',
   };
   var title = generateTitle(debugger_title_placeholder, title_data);
+  _set_dynamic_tab(pgBrowser, preferences['dynamic_tabs']);
   panel.title('<span>'+ title +'</span>');
 }
 

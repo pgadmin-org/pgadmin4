@@ -539,6 +539,7 @@ def check_debugger_enabled(conn, ret_status):
     :param ret_status:
     :return:
     """
+    msg = ''
     status_in, rid_tar = conn.execute_scalar(
         "SELECT count(*) FROM pg_proc WHERE "
         "proname = 'pldbg_get_target_info'"
