@@ -751,7 +751,7 @@ define([
           // if file/folder is protected do nothing
           if ($(this).find('.fa-lock').length)
             return;
-          if ($(this).find('.fa-file-alt').length)
+          if ($(this).find('.fa-file-alt').length || $(this).find('.tbl_folder_rename').length > 0)
             $(this).click();
           // If folder then first select and then double click to open folder/drive
           else if ($(this).find('.fa-folder-open').length || $(this).find('.fa-hdd').length) {
@@ -846,10 +846,17 @@ define([
             $this = $('.fileinfo').find(
               'table#contents tbody tr.selected td.tbl_file'
             );
+            if($this.length == 0) {
+              $this = $('.fileinfo').find(
+                'table#contents tbody tr.selected td.tbl_folder'
+              );
+              // putting temporary class to distiguish between folder rename & double click.
+              $this.addClass('tbl_folder_rename');
+            }
             orig_value = decodeURI($this.find('span.less_text').html());
             newvalue = orig_value.substring(0, orig_value.lastIndexOf('.'));
 
-            if (orig_value.lastIndexOf('/') == orig_value.length - 1 || newvalue === '') {
+            if (orig_value.lastIndexOf('/') == orig_value.length - 1 || (_.isEmpty(newvalue) || _.isUndefined(newvalue) || _.isNull(newvalue))) {
               newvalue = decodeURI(orig_value);
             }
 
@@ -860,9 +867,7 @@ define([
             $('.file_manager').off().on('keyup', function(event) {
               if (event.keyCode == 13) {
                 event.stopPropagation();
-                $('.fileinfo table#contents tr.selected td.tbl_file').find(
-                  'fm_file_rename'
-                ).trigger('blur');
+                $this.find('fm_file_rename').trigger('blur');
               }
             });
           }
@@ -924,22 +929,38 @@ define([
                 $(this).val()
               ) + (last !== '' ? '.' + last : '');
 
-              $(this).toggle();
-              $(this).siblings('span').toggle().html(full_name);
-
-              new_name = decodeURI($(this).val());
-              file_path = decodeURI($(this).parent().parent().find(
-                'span'
-              ).attr('data-alt'));
-              file_data = {
-                'Filename': old_name,
-                'Path': file_path,
-                'NewFilename': new_name,
-              };
-
               if (newvalue !== new_name) {
+
+                $(this).toggle();
+                $(this).siblings('span').toggle().html(full_name);
+
+                //check if user is trying to rename folder
+                let isFolder = $(this).closest('.tbl_folder').length > 0;
+
+                new_name = decodeURI($(this).val());
+                file_path = decodeURI($(this).parent().parent().find(
+                  'span'
+                ).attr('data-alt'));
+                file_data = {
+                  'Filename': old_name,
+                  'Path': file_path,
+                  'NewFilename': new_name,
+                  'isFolder': isFolder,
+                };
+
                 renameItem(file_data);
-                getFolderInfo($('.currentpath').val());
+                let path = $('.currentpath').val();
+                if(isFolder == true) {
+                  // if its folder rename, remove the temporary added class
+                  $(this).closest('.tbl_folder').removeClass('tbl_folder_rename');
+                  if(path.includes('\\')) {
+                    path = $('.currentpath').val().split('\\').slice(0, -2).join('\\')+'\\';
+                  }
+                  else {
+                    path = $('.currentpath').val().split('/').slice(0, -2).join('/')+'/';
+                  }
+                }
+                getFolderInfo(path);
               }
             }
           } else {
@@ -966,20 +987,36 @@ define([
                 var full_name = decodeURI($(this).val()) + (
                   last !== '' ? '.' + last : ''
                 );
-                $(this).toggle();
-                $(this).siblings('span').toggle().html(full_name);
-
-                var new_name = decodeURI($(this).val()),
-                  file_path = decodeURI($(this).parent().parent().attr('title')),
-                  file_data = {
-                    'Filename': old_name,
-                    'Path': file_path,
-                    'NewFilename': new_name,
-                  };
 
                 if (new_value !== new_name) {
+
+                  $(this).toggle();
+                  $(this).siblings('span').toggle().html(full_name);
+
+                  let isFolder = $(this).closest('.tbl_folder').length > 0;
+
+                  var new_name = decodeURI($(this).val()),
+                    file_path = decodeURI($(this).parent().parent().attr('title')),
+                    file_data = {
+                      'Filename': old_name,
+                      'Path': file_path,
+                      'NewFilename': new_name,
+                      'isFolder': isFolder,
+                    };
+
                   renameItem(file_data);
-                  getFolderInfo($('.currentpath').val());
+                  let path = $('.currentpath').val();
+                  if(isFolder == true) {
+                    // if its folder rename, remove the temporary added class
+                    $(this).closest('.tbl_folder').removeClass('tbl_folder_rename');
+                    if(path.includes('\\')) {
+                      path = $('.currentpath').val().split('\\').slice(0, -2).join('\\')+'\\';
+                    }
+                    else {
+                      path = $('.currentpath').val().split('/').slice(0, -2).join('/')+'/';
+                    }
+                  }
+                  getFolderInfo(path);
                 }
               }
             } else {
@@ -1035,13 +1072,10 @@ define([
 
                 $('.file_manager_ok').removeClass('disabled');
                 $('.file_manager_ok').attr('disabled', false);
-                $('.file_manager button.delete').removeAttr(
+                $('.file_manager button.delete, .file_manager button.rename').removeAttr(
                   'disabled', 'disabled'
                 );
                 $('.file_manager button.download').attr(
-                  'disabled', 'disabled'
-                );
-                $('.file_manager button.rename').attr(
                   'disabled', 'disabled'
                 );
                 // set selected folder name in breadcrums
@@ -1086,8 +1120,7 @@ define([
                 $('.file_manager_ok').removeClass('disabled');
                 $('.file_manager_ok').attr('disabled', false);
                 $('.file_manager button.download').attr('disabled', 'disabled');
-                $('.file_manager button.rename').attr('disabled', 'disabled');
-                $('.file_manager button.delete').removeAttr('disabled');
+                $('.file_manager button.delete, .file_manager button.rename').removeAttr('disabled');
 
                 // set selected folder name in breadcrums
                 $('.file_manager #uploader .input-path').hide();
