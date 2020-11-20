@@ -22,11 +22,11 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as views_utils
 
 
-class ViewsGetTestCase(BaseTestGenerator):
-    """This class will fetch the view under schema node."""
+class ViewsSqlTestCase(BaseTestGenerator):
+    """This class will fetch the view/mview sql under schema node."""
 
     # Generates scenarios
-    scenarios = utils.generate_scenarios("view_get", views_utils.test_cases)
+    scenarios = utils.generate_scenarios("view_sql", views_utils.test_cases)
 
     def setUp(self):
         # Load test data
@@ -39,6 +39,20 @@ class ViewsGetTestCase(BaseTestGenerator):
         self.db_id = schema_info["db_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
+
+        # Check DB version
+        if "server_min_version" in self.data:
+            server_con = server_utils.connect_server(self, self.server_id)
+            if not server_con["info"] == "Server connected.":
+                raise Exception("Could not connect to server to check version")
+            if "type" in server_con["data"] and \
+                    server_con["data"]["type"] == "pg":
+                self.skipTest("Compound Triggers are not supported by PG.")
+            elif server_con["data"]["type"] == "ppas" \
+                and server_con["data"]["version"] < self.data[
+                    "server_min_version"]:
+                self.skipTest(self.data["skip_msg"])
+
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to fetch the view.")
 
@@ -54,39 +68,38 @@ class ViewsGetTestCase(BaseTestGenerator):
         # Create view
         query = self.inventory_data['query']
 
-        self.view_name = "test_view_get_%s" % (str(uuid.uuid4())[1:8])
+        self.view_name = "test_view_sql_%s" % (str(uuid.uuid4())[1:8])
 
         self.view_id = views_utils.create_view(self.server,
                                                self.db_name,
                                                self.schema_name,
                                                self.view_name,
                                                query)
-        # In case of multiple views
-        if self.is_list:
-            self.view_name_2 = "test_view_get_%s" % (str(uuid.uuid4())[1:8])
-            self.view_id_2 = views_utils.create_view(self.server,
-                                                     self.db_name,
+
+        if hasattr(self, "trigger_fun_required"):
+            self.func_name = "trigger_func_get_%s" % str(uuid.uuid4())[1:8]
+            self.function_info = views_utils.\
+                create_trigger_function_with_trigger(self.server, self.db_name,
                                                      self.schema_name,
-                                                     self.view_name_2,
-                                                     query)
+                                                     self.func_name)
+            self.trigger_name = \
+                "test_trigger_get_%s" % (str(uuid.uuid4())[1:8])
+            self.trigger_id = views_utils.create_trigger(self.server,
+                                                         self.db_name,
+                                                         self.schema_name,
+                                                         self.view_name,
+                                                         self.trigger_name,
+                                                         self.func_name,
+                                                         "a")
 
     def runTest(self):
-        """This function will fetch the view/mview under schema node."""
+        """This function will fetch the view/mview sql under schema node."""
         if self.is_positive_test:
-            if self.is_list:
-                response = views_utils.api_get(self, '')
-            else:
-                response = views_utils.api_get(self)
+            response = views_utils.api_get(self)
 
             # Assert response
             utils.assert_status_code(self, response)
 
-            # Check definition data
-            test_result_data = self.expected_data["test_result_data"]
-            if bool(test_result_data):
-                response_data = json.loads(response.data.decode('utf-8'))
-                self.assertIn(test_result_data["definition"],
-                              response_data['definition'])
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],

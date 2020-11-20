@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5337 <https://redmine.postgresql.org/issues/5337>`_ -  Improve code coverage and API test cases for Views and Materialized Views.
 
 Bug fixes
 *********

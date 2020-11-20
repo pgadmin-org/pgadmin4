@@ -6,8 +6,11 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+
 import uuid
+import json
 from unittest.mock import patch
+
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
@@ -19,11 +22,11 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as views_utils
 
 
-class ViewsAddTestCase(BaseTestGenerator):
-    """This class will add new view under schema node."""
+class ViewsGetMsqlTestCase(BaseTestGenerator):
+    """This class will fetch the modified view/mview sql under schema node."""
 
     # Generates scenarios
-    scenarios = utils.generate_scenarios("view_create",
+    scenarios = utils.generate_scenarios("view_get_msql",
                                          views_utils.test_cases)
 
     def setUp(self):
@@ -38,7 +41,7 @@ class ViewsAddTestCase(BaseTestGenerator):
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to add view.")
+            raise Exception("Could not connect to database to fetch the view.")
 
         # Create schema
         self.schema_id = schema_info["schema_id"]
@@ -47,49 +50,40 @@ class ViewsAddTestCase(BaseTestGenerator):
                                                       self.db_name,
                                                       self.schema_name)
         if not schema_response:
-            raise Exception("Could not find the schema to add the view.")
+            raise Exception("Could not find the schema to fetch the view.")
+
+        # Create view
+        query = self.inventory_data['query']
+
+        self.view_name = "test_view_get_%s" % (str(uuid.uuid4())[1:8])
+
+        self.view_id = views_utils.create_view(self.server,
+                                               self.db_name,
+                                               self.schema_name,
+                                               self.view_name,
+                                               query)
 
     def runTest(self):
-        """This function will add view under schema node."""
-        db_user = self.server["username"]
-        self.data["schema"] = self.schema_id
-        self.data["owner"] = db_user
-
-        if "name" in self.data:
-            view_name = \
-                self.data["name"] + (str(uuid.uuid4())[1:8])
-            self.data["name"] = view_name
+        """This function will fetch the modified view/mview sql under
+        schema node."""
 
         if self.is_positive_test:
-            response = views_utils.api_create(self)
+            url_encode_data = {"oid": self.view_id,
+                               "comment": self.data['comment']}
+
+            response = views_utils.api_get_msql(self, url_encode_data)
 
             # Assert response
             utils.assert_status_code(self, response)
-
-            # Verify in backend
-            cross_check_res = views_utils.verify_view(self.server,
-                                                      self.db_name,
-                                                      self.data["name"])
-
-            self.assertIsNotNone(cross_check_res, "Could not find the newly"
-                                                  " created check view.")
         else:
-            if self.mocking_required:
-                with patch(self.mock_data["function_name"],
-                           side_effect=eval(self.mock_data["return_value"])):
-                    response = views_utils.api_create(self)
+            if 'view_id' in self.data:
+                # Non-existing view id
+                self.view_id = self.data["view_id"]
+                response = views_utils.api_get(self)
 
-                    # Assert response
-                    utils.assert_status_code(self, response)
-                    utils.assert_error_message(self, response)
-            else:
-                if 'table_id' in self.data:
-                    self.table_id = self.data['table_id']
-                response = views_utils.api_create(self)
-
-                # Assert response
-                utils.assert_status_code(self, response)
-                utils.assert_error_message(self, response)
+            # Assert response
+            utils.assert_status_code(self, response)
+            utils.assert_error_message(self, response)
 
     def tearDown(self):
         # Disconnect the database

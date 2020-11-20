@@ -7,8 +7,9 @@
 #
 ##########################################################################
 
-import json
 import uuid
+import json
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
@@ -21,10 +22,12 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as views_utils
 
 
-class MViewsUpdateParameterTestCase(BaseTestGenerator):
-    """This class will check materialized view refresh functionality."""
+class ViewsDependeciesDependentsGetTestCase(BaseTestGenerator):
+    """This class will fetch dependenciey & dependents for
+    the view under schema node."""
+
     # Generates scenarios
-    scenarios = utils.generate_scenarios("mview_refresh",
+    scenarios = utils.generate_scenarios("view_dependecies_dependents",
                                          views_utils.test_cases)
 
     def setUp(self):
@@ -39,7 +42,7 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
-            raise Exception("Could not connect to database to update a mview.")
+            raise Exception("Could not connect to database to fetch the view.")
 
         # Create schema
         self.schema_id = schema_info["schema_id"]
@@ -48,56 +51,30 @@ class MViewsUpdateParameterTestCase(BaseTestGenerator):
                                                       self.db_name,
                                                       self.schema_name)
         if not schema_response:
-            raise Exception("Could not find the schema to update a mview.")
+            raise Exception("Could not find the schema to fetch the view.")
 
+        # Create view
         query = self.inventory_data['query']
 
-        self.m_view_name = "test_mview_put_%s" % (str(uuid.uuid4())[1:8])
+        self.view_name = "test_view_get_%s" % (str(uuid.uuid4())[1:8])
 
         self.view_id = views_utils.create_view(self.server,
                                                self.db_name,
                                                self.schema_name,
-                                               self.m_view_name,
+                                               self.view_name,
                                                query)
 
     def runTest(self):
-        """This class will check materialized view refresh functionality"""
-        mview_response = views_utils.verify_view(self.server, self.db_name,
-                                                 self.m_view_name)
-        if not mview_response:
-            raise Exception("Could not find the mview to update.")
-
-        if self.is_put_request:
-            # Check utility
-            url_from_test_data = self.url
-            self.url = 'browser/mview/check_utility_exists/'
-            response = views_utils.api_get(self)
-            if response.json['success'] == 0:
-                self.skipTest("Couldn't check materialized view refresh "
-                              "functionality because utility/binary does "
-                              "not exists.")
-            # reset self.url value
-            self.url = url_from_test_data
-
-            if self.is_positive_test:
-                response = views_utils.api_put(self)
-
-                # Assert response
-                utils.assert_status_code(self, response)
-                self.assertTrue('job_id' in response.json['data'])
+        """This function will fetch dependenciey & dependents for
+        the view/mview under schema node."""
+        if self.is_positive_test:
+            if self.is_dependent:
+                self.url = self.url + 'dependent/'
+                response = views_utils.api_get(self)
             else:
-                if 'm_view_id' in self.data:
-                    self.view_id = self.data['m_view_id']
-                    response = views_utils.api_put(self)
-                    # Assert response
-                    utils.assert_status_code(self, response)
-                    utils.assert_error_message(self, response)
+                self.url = self.url + 'dependency/'
+                response = views_utils.api_get(self)
 
-        else:
-            # only check utility
-            response = views_utils.api_get(self)
-
-            # Assert response
             utils.assert_status_code(self, response)
 
     def tearDown(self):

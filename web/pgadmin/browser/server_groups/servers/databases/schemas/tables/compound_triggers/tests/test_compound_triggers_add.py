@@ -73,10 +73,11 @@ class CompoundTriggersAddTestCase(BaseTestGenerator):
                    "ALTER TABLE %s.%s OWNER TO %s"
         self.view_name = \
             "view_compound_trigger_%s" % (str(uuid.uuid4())[1:8])
-        self.view_id = view_utils.create_view(self.server, self.db_name,
-                                              self.schema_name,
-                                              view_sql,
-                                              self.view_name)
+        self.view_id = compound_trigger_utils.create_view(self.server,
+                                                          self.db_name,
+                                                          self.schema_name,
+                                                          view_sql,
+                                                          self.view_name)
 
     def create_compound_trigger(self, object_id):
         return self.tester.post(
