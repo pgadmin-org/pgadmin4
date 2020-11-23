@@ -44,6 +44,13 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
 from pgadmin.utils.security_headers import SecurityHeaders
 
+# Explicitly set the mime-types so that a corrupted windows registry will not
+# affect pgAdmin 4 to be load properly. This will avoid the issues that may
+# occur due to security fix of X_CONTENT_TYPE_OPTIONS = "nosniff".
+import mimetypes
+mimetypes.add_type('text/javascript', '.js')
+mimetypes.add_type('text/css', '.css')
+
 winreg = None
 if os.name == 'nt':
     import winreg
