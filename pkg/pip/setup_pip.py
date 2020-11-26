@@ -32,18 +32,26 @@ builtins.SERVER_MODE = None
 req_file = '../requirements.txt'
 
 with open(req_file, 'r') as req_lines:
-    requires = req_lines.read().splitlines()
+    all_requires = req_lines.read().splitlines()
 
+requires = []
+extras_require = {}
 # Remove any requirements with environment specifiers. These
 # must be explicitly listed in extras_require below.
-for index, req in enumerate(requires):
+for index, req in enumerate(all_requires):
     if ";" in req or req.startswith("#") or req == "":
-        requires.remove(req)
+        # Add the pkgs to extras_require
+        if ";" in req:
+            pkg, env_spec = req.split(";")
+            extras_require[env_spec] = extras_require.get(env_spec, [])
+            extras_require[env_spec].append(pkg)
         continue
 
     # Ensure the Wheel will use psycopg2-binary, not the source distro
     if 'psycopg2' in req:
-        requires[index] = req.replace('psycopg2', 'psycopg2-binary')
+        req = req.replace('psycopg2', 'psycopg2-binary')
+
+    requires.append(req)
 
 # Get the version
 config = load_source('APP_VERSION', '../web/config.py')
@@ -83,6 +91,8 @@ setup(
     include_package_data=True,
 
     install_requires=requires,
+
+    extras_require=extras_require,
 
     entry_points={
         'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4:main'],
