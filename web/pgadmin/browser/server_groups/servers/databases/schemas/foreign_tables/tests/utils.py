@@ -6,19 +6,67 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
-
+import json
 import os
 import sys
 import traceback
+from urllib.parse import urlencode
 
 from regression.python_test_utils.test_utils import get_db_connection
+from regression.python_test_utils import test_utils as utils
+
+# Load test data from json file.
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/foreign_tables_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
 file_name = os.path.basename(__file__)
 
 
+def api_create(self):
+    return self.tester.post("{0}{1}/{2}/{3}/{4}/".
+                            format(self.url, utils.SERVER_GROUP,
+                                   self.server_id, self.db_id, self.schema_id),
+                            data=json.dumps(self.data),
+                            content_type='html/json')
+
+
+def api_get(self, ft_table_id=None):
+    if ft_table_id is None:
+        ft_table_id = self.ft_id
+    return self.tester.get("{0}{1}/{2}/{3}/{4}/{5}".
+                           format(self.url, utils.SERVER_GROUP, self.server_id,
+                                  self.db_id, self.schema_id, ft_table_id),
+                           content_type='html/json')
+
+
+def api_delete(self, ft_tbl_id=''):
+    return self.tester.delete("{0}{1}/{2}/{3}/{4}/{5}".
+                              format(self.url, utils.SERVER_GROUP,
+                                     self.server_id, self.db_id,
+                                     self.schema_id, ft_tbl_id),
+                              data=json.dumps(self.data),
+                              follow_redirects=True)
+
+
+def api_put(self):
+    return self.tester.put("{0}{1}/{2}/{3}/{4}/{5}".
+                           format(self.url, utils.SERVER_GROUP, self.server_id,
+                                  self.db_id, self.schema_id, self.ft_id),
+                           data=json.dumps(self.data),
+                           follow_redirects=True)
+
+
+def api_get_msql(self, url_encode_data):
+    return self.tester.get("{0}{1}/{2}/{3}/{4}/{5}?{6}".
+                           format(self.url, utils.SERVER_GROUP, self.server_id,
+                                  self.db_id, self.schema_id, self.ft_id,
+                                  urlencode(url_encode_data)),
+                           follow_redirects=True)
+
+
 def create_foreign_table(server, db_name, schema_name, fsrv_name,
-                         foreign_table_name):
+                         foreign_table_name, sql_query=None):
     """
     This function will create foreign table under the existing
     dummy schema.
@@ -28,6 +76,12 @@ def create_foreign_table(server, db_name, schema_name, fsrv_name,
     """
 
     try:
+        query = "CREATE FOREIGN TABLE " + schema_name + "." + \
+                foreign_table_name + "(emp_name text NULL) SERVER %s" % \
+                fsrv_name
+
+        if sql_query is not None:
+            query = eval(sql_query)
         connection = get_db_connection(db_name,
                                        server['username'],
                                        server['db_password'],
@@ -36,11 +90,7 @@ def create_foreign_table(server, db_name, schema_name, fsrv_name,
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-
-        pg_cursor.execute(
-            "CREATE FOREIGN TABLE " + schema_name + "." + foreign_table_name +
-            "(emp_name text NULL) SERVER %s" % fsrv_name)
-
+        pg_cursor.execute(query)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
 

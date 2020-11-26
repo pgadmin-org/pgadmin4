@@ -1,0 +1,602 @@
+{
+  "foreign_table_create": [
+    {
+      "name": "Create Foreign Table: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "acl": [],
+        "basensp": "schema_name",
+        "columns": [
+          {
+            "attname": "ename",
+            "datatype": "text",
+            "coloptions": []
+          }
+        ],
+        "constraints": [],
+        "ftoptions": [],
+        "inherits": [],
+        "ftsrvname": "fsrv_name",
+        "name": "ft_name",
+        "owner": "server user name",
+        "relacl": [],
+        "seclabels": [],
+        "stracl": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create Foreign Table: With insufficient data.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "acl": [],
+        "basensp": "schema_name",
+        "columns": [
+          {
+            "attname": "ename",
+            "datatype": "text",
+            "coloptions": []
+          }
+        ],
+        "constraints": [],
+        "ftoptions": [],
+        "inherits": [],
+        "name": "ft_name",
+        "owner": "server user name",
+        "relacl": [],
+        "seclabels": [],
+        "stracl": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the required parameter (ftsrvname).",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create Foreign Table: With valid data while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "acl": [],
+        "basensp": "schema_name",
+        "columns": [
+          {
+            "attname": "ename",
+            "datatype": "text",
+            "coloptions": []
+          }
+        ],
+        "constraints": [],
+        "ftoptions": [],
+        "inherits": [],
+        "ftsrvname": "fsrv_name",
+        "name": "ft_name",
+        "owner": "server user name",
+        "relacl": [],
+        "seclabels": [],
+        "stracl": []
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "foreign_table_get": [
+    {
+      "name": "Get Foreign Table: With existing foreign table having precision data type column.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) NULL COLLATE pg_catalog.default) SERVER %s; \" %(schema_name, foreign_table_name, fsrv_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table  list: With existing foreign table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get Foreign Table: With Non-existing foreign table.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "ft_id": 999999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified foreign table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table: With existing foreign table while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table list: With existing foreign table while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "foreign_table_delete": [
+    {
+      "name": "Delete Foreign Table: With existing foreign table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete Multiple Foreign Tables: With existing foreign tables.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete Foreign Table: With existing foreign table while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "foreign_table_put": [
+    {
+      "name": "Update Foreign Table: With existing foreign table.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) OPTIONS (columnoptionkey 'columnOptionVal') NULL ) SERVER %s;\" %(schema_name, foreign_table_name, fsrv_name)"
+      },
+      "test_data": {
+        "description": "This is foreign table update comment",
+        "fsrvacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        },
+        "columns": {
+          "added": [
+            {
+              "attname": "col2",
+              "datatype": "character varying[]",
+              "coloptions": []
+            }
+          ],
+          "changed": [
+            {
+              "coloptions": [
+                {
+                  "option": "OptionKey",
+                  "value": "OptionValue"
+                }
+              ],
+              "attname": "emp",
+              "datatype": "\"char\"",
+              "typdefault": null,
+              "attnotnull": false,
+              "collname": "pg_catalog.\"default\"",
+              "attnum": 1,
+              "inheritedfrom": null,
+              "inheritedid": null,
+              "attstattarget": -1,
+              "attoptions": null,
+              "attfdwoptions": [
+                "ColOptionKey=ColOptionValue"
+              ],
+              "attndims": 0,
+              "atttypmod": -1,
+              "fulltype": "text",
+              "isdup": false
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Update Foreign Table: With existing foreign table while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "foreign_table_sql": [
+    {
+      "name": "Get Foreign Table Sql: With existing foreign table.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/sql/",
+      "inventory_data": {
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) NULL COLLATE pg_catalog.default) SERVER %s; GRANT SELECT ON TABLE %s.%s TO PUBLIC;\" %(schema_name, foreign_table_name, fsrv_name, schema_name, foreign_table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Sql: With existing foreign table having inheritted table.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/sql/",
+      "inventory_data": {
+        "query": "\"CREATE TABLE %s.toinherittable (col1 character varying(10) NULL); CREATE FOREIGN TABLE  %s.%s () INHERITS (%s.toinherittable) SERVER %s; GRANT SELECT ON TABLE %s.%s TO PUBLIC;\" %(schema_name, schema_name, foreign_table_name, schema_name, fsrv_name, schema_name, foreign_table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Sql: With existing foreign table while server is down.",
+      "is_positive_test": false,
+      "url": "/browser/foreign_table/sql/",
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Sql: With Non-existing foreign table.",
+      "is_positive_test": false,
+      "url": "/browser/foreign_table/sql/",
+      "inventory_data": {},
+      "test_data": {
+        "ft_id": 999999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified foreign table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Insert Sql: With existing foreign table.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/insert_sql/",
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Update Sql: With existing foreign table.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/update_sql/",
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Delete Sql: With existing foreign table.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/delete_sql/",
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Insert Sql: With existing foreign table.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/select_sql/",
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "foreign_table_dependencies_dependents": [
+    {
+      "name": "Get Foreign Table Dependents: With existing foreign table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get Foreign Table Dependency: With existing foreign table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+  ],
+  "foreign_table_get_nodes": [
+    {
+      "name": "Get Foreign Table Nodes: With existing foreign table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table list node: With existing foreign table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "foreign_table_get_msql": [
+    {
+      "name": "Get Foreign Table msql: With existing foreign table.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "description": "Testing Msql API"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table msql: Modify existing foreign table by inheriting.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) NULL COLLATE pg_catalog.default) SERVER %s; \" %(schema_name, foreign_table_name, fsrv_name)"
+      },
+      "test_data": {
+        "description": "Testing Msql API",
+        "inherits": [
+          "table_id"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "foreign_table_get_creation_parameters": [
+    {
+      "name": "Get Foreign Table Pre Creation parameters: Get collation.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/get_collations/",
+      "inventory_data": {
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) NULL COLLATE pg_catalog.default) SERVER %s; GRANT SELECT ON TABLE %s.%s TO PUBLIC;\" %(schema_name, foreign_table_name, fsrv_name, schema_name, foreign_table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Pre Creation parameters: Get tables.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/get_tables/",
+      "inventory_data": {
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) NULL COLLATE pg_catalog.default) SERVER %s; GRANT SELECT ON TABLE %s.%s TO PUBLIC;\" %(schema_name, foreign_table_name, fsrv_name, schema_name, foreign_table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Foreign Table Pre Creation parameters: Get types.",
+      "is_positive_test": true,
+      "url": "/browser/foreign_table/get_types/",
+      "inventory_data": {
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) NULL COLLATE pg_catalog.default) SERVER %s; GRANT SELECT ON TABLE %s.%s TO PUBLIC;\" %(schema_name, foreign_table_name, fsrv_name, schema_name, foreign_table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

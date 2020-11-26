@@ -10,6 +10,7 @@
 
 import json
 import uuid
+from unittest.mock import patch
 
 from pgadmin.browser.server_groups.servers.databases.foreign_data_wrappers. \
     foreign_servers.tests import utils as fsrv_utils
@@ -29,22 +30,30 @@ class ForeignTablePutTestCase(BaseTestGenerator):
     """
     skip_on_database = ['gpdb']
 
-    scenarios = [
-        # Fetching default URL for foreign server node.
-        ('Check foreign table Node', dict(url='/browser/foreign_table/obj/'))
-    ]
+    # url
+    url = '/browser/foreign_table/obj/'
+
+    # Generates scenarios
+    scenarios = utils.generate_scenarios("foreign_table_put",
+                                         ft_utils.test_cases)
 
     def setUp(self):
         """ This function will create foreign data wrapper, foreign server
         and foreign table. """
         super(ForeignTablePutTestCase, self).setUp()
 
+        # Load test data
+        self.data = self.test_data
+
+        # Get parent schema info
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         self.schema_name = self.schema_data['schema_name']
         self.schema_id = self.schema_data['schema_id']
+
+        # Create FDW, server & table
         self.fdw_name = "fdw_%s" % (str(uuid.uuid4())[1:8])
         self.fsrv_name = "fsrv_%s" % (str(uuid.uuid4())[1:8])
         self.ft_name = "ft_%s" % (str(uuid.uuid4())[1:8])
@@ -53,14 +62,23 @@ class ForeignTablePutTestCase(BaseTestGenerator):
                                            self.fdw_name)
         self.fsrv_id = fsrv_utils.create_fsrv(self.server, self.db_name,
                                               self.fsrv_name, self.fdw_name)
-        self.ft_id = ft_utils.create_foreign_table(self.server, self.db_name,
-                                                   self.schema_name,
-                                                   self.fsrv_name,
-                                                   self.ft_name)
+
+        if bool(self.inventory_data):
+            query = self.inventory_data['query']
+            self.ft_id = ft_utils.create_foreign_table(self.server,
+                                                       self.db_name,
+                                                       self.schema_name,
+                                                       self.fsrv_name,
+                                                       self.ft_name, query)
+        else:
+            self.ft_id = ft_utils.create_foreign_table(self.server,
+                                                       self.db_name,
+                                                       self.schema_name,
+                                                       self.fsrv_name,
+                                                       self.ft_name)
 
     def runTest(self):
         """This function will update foreign table under test database."""
-
         db_con = database_utils.connect_database(self,
                                                  utils.SERVER_GROUP,
                                                  self.server_id,
@@ -80,28 +98,27 @@ class ForeignTablePutTestCase(BaseTestGenerator):
         if not ft_response:
             raise Exception("Could not find Foreign Table.")
 
-        data = \
-            {
-                "description": "This is foreign table update comment",
-                "id": self.ft_id,
-            }
+        self.data['id'] = self.ft_id
 
-        put_response = self.tester.put(
-            self.url + str(utils.SERVER_GROUP) + '/' +
-            str(self.server_id) + '/' +
-            str(self.db_id) + '/' +
-            str(self.schema_id) + '/' +
-            str(self.ft_id),
-            data=json.dumps(data),
-            follow_redirects=True)
+        if self.is_positive_test:
+            response = ft_utils.api_put(self)
 
-        self.assertEqual(put_response.status_code, 200)
+            # Assert response
+            utils.assert_status_code(self, response)
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=[eval(self.mock_data["return_value"])]):
+                    response = ft_utils.api_put(self)
+
+            # Assert response
+            utils.assert_status_code(self, response)
+            utils.assert_error_message(self, response)
 
     def tearDown(self):
         """ This function disconnect the test database and delete test
         foreign table object. """
         ft_utils.delete_foregin_table(self.server, self.db_name,
-                                      self.schema_name, self.ft_name
-                                      )
+                                      self.schema_name, self.ft_name)
 
         database_utils.disconnect_database(self, self.server_id, self.db_id)
