@@ -1097,11 +1097,13 @@ define('pgadmin.node.foreign_key', [
 
           var coveringindex = this.get('coveringindex'),
             autoindex = this.get('autoindex');
-          if (autoindex && (_.isUndefined(coveringindex) || _.isNull(coveringindex) ||
-              String(coveringindex).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = gettext('Please specify covering index name.');
-            this.errorModel.set('coveringindex', msg);
-            return msg;
+          if (this.isNew()){
+            if (autoindex && (_.isUndefined(coveringindex) || _.isNull(coveringindex) ||
+                String(coveringindex).replace(/^\s+|\s+$/g, '') == '')) {
+              msg = gettext('Please specify covering index name.');
+              this.errorModel.set('coveringindex', msg);
+              return msg;
+            }
           }
 
           return null;

@@ -20,6 +20,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #5886 <https://redmine.postgresql.org/issues/5886>`_ -  Fixed false error is shown while adding a new foreign key from the table dialog when a foreign key already exists with Auto FK Index set to true.
 | `Issue #5943 <https://redmine.postgresql.org/issues/5943>`_ -  Ensure that folder rename should work properly in Storage Manager.
 | `Issue #5974 <https://redmine.postgresql.org/issues/5974>`_ -  Fixed an issue where the debugger's custom tab title not applied when opened in the new browser tab.
 | `Issue #5978 <https://redmine.postgresql.org/issues/5978>`_ -  Fixed an issue where dynamic tab title has not applied the first time for debugger panel.
