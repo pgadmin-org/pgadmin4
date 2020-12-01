@@ -74,20 +74,20 @@ export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_fi
 export function generateTitle(title_placeholder, title_data) {
 
   if(title_data.type == 'query_tool') {
-    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), title_data.database);
-    title_placeholder = title_placeholder.replace(new RegExp('%USERNAME%'), title_data.username);
-    title_placeholder = title_placeholder.replace(new RegExp('%SERVER%'), title_data.server);
+    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), _.unescape(title_data.database));
+    title_placeholder = title_placeholder.replace(new RegExp('%USERNAME%'), _.unescape(title_data.username));
+    title_placeholder = title_placeholder.replace(new RegExp('%SERVER%'), _.unescape(title_data.server));
   } else if(title_data.type == 'datagrid') {
-    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), title_data.database);
-    title_placeholder = title_placeholder.replace(new RegExp('%USERNAME%'), title_data.username);
-    title_placeholder = title_placeholder.replace(new RegExp('%SERVER%'), title_data.server);
-    title_placeholder = title_placeholder.replace(new RegExp('%SCHEMA%'), title_data.schema);
-    title_placeholder = title_placeholder.replace(new RegExp('%TABLE%'), title_data.table);
+    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), _.unescape(title_data.database));
+    title_placeholder = title_placeholder.replace(new RegExp('%USERNAME%'), _.unescape(title_data.username));
+    title_placeholder = title_placeholder.replace(new RegExp('%SERVER%'), _.unescape(title_data.server));
+    title_placeholder = title_placeholder.replace(new RegExp('%SCHEMA%'), _.unescape(title_data.schema));
+    title_placeholder = title_placeholder.replace(new RegExp('%TABLE%'), _.unescape(title_data.table));
   } else if(title_data.type == 'debugger') {
-    title_placeholder = title_placeholder.replace(new RegExp('%FUNCTION%'), title_data.function_name);
-    title_placeholder = title_placeholder.replace(new RegExp('%ARGS%'), title_data.args);
-    title_placeholder = title_placeholder.replace(new RegExp('%SCHEMA%'), title_data.schema);
-    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), title_data.database);
+    title_placeholder = title_placeholder.replace(new RegExp('%FUNCTION%'), _.unescape(title_data.function_name));
+    title_placeholder = title_placeholder.replace(new RegExp('%ARGS%'), _.unescape(title_data.args));
+    title_placeholder = title_placeholder.replace(new RegExp('%SCHEMA%'), _.unescape(title_data.schema));
+    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), _.unescape(title_data.database));
   }
 
   return _.escape(title_placeholder);
