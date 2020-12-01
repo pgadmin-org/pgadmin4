@@ -15,7 +15,7 @@ JOIN pg_namespace n ON n.nspname=rw.schemaname
 JOIN pg_class rel on rel.relname=rw.tablename
 WHERE
 {% if plid %}
-      pl.oid = {{ plid }} and n.oid = {{ scid }} and rel.relfilenode = {{ policy_table_id }};
+      pl.oid = {{ plid }} and n.oid = {{ scid }} and rel.oid = {{ policy_table_id }};
 {% endif %}
 {% if tid %}
       pl.polrelid = {{ tid }};

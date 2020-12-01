@@ -632,7 +632,8 @@ class RowSecurityView(PGChildNodeView):
 
             sql = row_security_policies_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=self.table, scid=scid,
-                plid=oid, datlastsysoid=self.datlastsysoid, with_header=False)
+                plid=oid, policy_table_id=tid,
+                datlastsysoid=self.datlastsysoid, with_header=False)
 
         drop_sql = ''
         if drop_req:
