@@ -265,11 +265,15 @@ define('pgadmin.datagrid', [
 
           // Listen on the panelRename event.
           queryToolPanel.on(wcDocker.EVENT.RENAME, function(panel_data) {
-            alertify.prompt('', panel_data.$titleText[0].textContent,
+            var temp_title = panel_data.$titleText[0].textContent;
+            var is_dirty_editor = queryToolPanel.is_dirty_editor ? queryToolPanel.is_dirty_editor : false;
+            var title = queryToolPanel.is_dirty_editor ? panel_data.$titleText[0].textContent.replace(/.$/, '') : temp_title;
+            alertify.prompt('', title,
               // We will execute this function when user clicks on the OK button
               function(evt, value) {
+                // Remove the leading and trailing white spaces.
+                value = value.trim();
                 if(value) {
-
                   var is_file = false;
                   if(panel_data.$titleText[0].innerHTML.includes('File - ')) {
                     is_file = true;
@@ -283,6 +287,9 @@ define('pgadmin.datagrid', [
                     panel_titles = showData.generateDatagridTitle(pgBrowser, selected_item, value);
                   }
                   // Set title to the selected tab.
+                  if (is_dirty_editor) {
+                    panel_titles = panel_titles + ' *';
+                  }
                   panelTitleFunc.setQueryToolDockerTitle(queryToolPanel, is_query_tool, _.unescape(panel_titles), is_file);
                 }
               },

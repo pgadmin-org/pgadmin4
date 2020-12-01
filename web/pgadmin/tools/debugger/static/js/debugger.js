@@ -451,6 +451,8 @@ define([
                 // We will execute this function when user clicks on the OK button
                 function(evt, value) {
                   if(value) {
+                    // Remove the leading and trailing white spaces.
+                    value = value.trim();
                     let browser_preferences = pgBrowser.get_preferences_for_module('browser');
                     var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
                     debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
@@ -593,6 +595,8 @@ define([
                       // We will execute this function when user clicks on the OK button
                       function(evt, value) {
                         if(value) {
+                          // Remove the leading and trailing white spaces.
+                          value = value.trim();
                           let browser_preferences = pgBrowser.get_preferences_for_module('browser');
                           var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
                           debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);

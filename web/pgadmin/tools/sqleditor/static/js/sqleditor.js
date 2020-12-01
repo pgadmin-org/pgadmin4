@@ -3692,7 +3692,7 @@ define('tools.querytool', [
       },
 
       // Set panel title.
-      setTitle: function(title, is_file) {
+      setTitle: function(title, is_file, is_dirty_editor=false) {
         var self = this;
         var open_new_tab = self.browser_preferences.new_browser_tab_open;
         if(open_new_tab && open_new_tab.includes('qt')) {
@@ -3700,6 +3700,9 @@ define('tools.querytool', [
         } else {
           _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
             if (p.isVisible()) {
+              if(is_dirty_editor) {
+                p.is_dirty_editor = true;
+              }
               panelTitleFunc.setQueryToolDockerTitle(p, self.is_query_tool, title, is_file);
             }
           });
@@ -3858,6 +3861,7 @@ define('tools.querytool', [
             self.setTitle(title, true);
           } else {
             var open_new_tab = self.browser_preferences.new_browser_tab_open;
+            var is_dirty_editor = false;
             if(open_new_tab && open_new_tab.includes('qt')) {
               title = window.document.title + ' *';
             } else {
@@ -3869,8 +3873,9 @@ define('tools.querytool', [
               });
 
               title = self.gridView.panel_title + ' *';
+              is_dirty_editor = true;
             }
-            self.setTitle(title);
+            self.setTitle(title, false, is_dirty_editor);
           }
 
           $('#btn-save-file').prop('disabled', false);

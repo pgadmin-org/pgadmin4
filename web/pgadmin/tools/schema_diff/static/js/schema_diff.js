@@ -121,6 +121,8 @@ define('pgadmin.schemadiff', [
             // We will execute this function when user clicks on the OK button
             function(evt, value) {
               if(value) {
+                // Remove the leading and trailing white spaces.
+                value = value.trim();
                 schemaDiffPanel.title('<span>'+ _.escape(value) +'</span>');
               }
             },
