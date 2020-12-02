@@ -29,3 +29,4 @@ Bug fixes
 | `Issue #5991 <https://redmine.postgresql.org/issues/5991>`_ -  Ensure that dirty indicator (*) should not be visible when renaming the tabs.
 | `Issue #5992 <https://redmine.postgresql.org/issues/5992>`_ -  Fixed an issue where escape character is shown when the server/database name has some special characters.
 | `Issue #5998 <https://redmine.postgresql.org/issues/5998>`_ -  Fixed an issue where schema diff doesn't show the result of compare if source schema has tables with RLS.
+| `Issue #6003 <https://redmine.postgresql.org/issues/6003>`_ -  Fixed an issue where an illegal argument is showing for trigger SQL when a trigger is created for View.

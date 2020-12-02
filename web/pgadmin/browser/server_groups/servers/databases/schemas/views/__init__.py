@@ -1255,10 +1255,13 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 res_rows['tfunction'] = result['rows'][0]['tfunctions']
 
             # Format arguments
-            if len(res_rows['custom_tgargs']) > 1:
-                formatted_args = ["{0}".format(arg) for arg in
-                                  res_rows['custom_tgargs']]
+            if len(res_rows['custom_tgargs']) > 0:
+                driver = get_driver(PG_DEFAULT_DRIVER)
+                formatted_args = [driver.qtLiteral(arg)
+                                  for arg in res_rows['custom_tgargs']]
                 res_rows['tgargs'] = ', '.join(formatted_args)
+            else:
+                res_rows['tgargs'] = None
 
             SQL = render_template("/".join(
                 [self.trigger_temp_path,
