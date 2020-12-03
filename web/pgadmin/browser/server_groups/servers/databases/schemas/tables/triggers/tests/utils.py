@@ -64,7 +64,7 @@ def create_trigger(server, db_name, schema_name, table_name, trigger_name,
             trigger_id = trigger[0]
         connection.close()
         return trigger_id
-    except Exception:
+    except Exception as e:
         traceback.print_exc(file=sys.stderr)
         raise
 

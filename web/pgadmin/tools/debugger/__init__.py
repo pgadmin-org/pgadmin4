@@ -440,7 +440,7 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
         return err_msg
 
     ret_status = status
-
+    msg = ''
     # Check that the function is actually debuggable...
     if r_set['rows'][0]:
         # If func/proc is not defined in package body
@@ -479,9 +479,6 @@ def init_function(node_type, sid, did, scid, fid, trid=None):
 
             if is_error:
                 return err_msg
-    else:
-        ret_status = False
-        msg = gettext("The function/procedure cannot be debugged")
 
     # Return the response that function cannot be debug...
     if not ret_status:
@@ -1146,76 +1143,68 @@ def start_debugger_listener(trans_id):
             if not status:
                 return internal_server_error(errormsg=result)
         else:
-            if conn.connected():
-                # For indirect debugging first create the listener and then
-                # wait for the target
+
+            sql = render_template(
+                "/".join([template_path, 'create_listener.sql']))
+
+            status, res = execute_dict_search_path(
+                conn, sql, de_inst.debugger_data['search_path'])
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            # Get and store the session variable which is required to fetch
+            # other information during debugging
+            int_session_id = res['rows'][0]['pldbg_create_listener']
+
+            # In EnterpriseDB versions <= 9.1 the
+            # pldbg_set_global_breakpoint function took five arguments,
+            # the 2nd argument being the package's OID, if any. Starting
+            # with 9.2, the package OID argument is gone, and the function
+            # takes four arguments like the community version has always
+            # done.
+            if server_type == 'ppas' and ver <= 90100:
                 sql = render_template(
-                    "/".join([template_path, 'create_listener.sql']))
+                    "/".join([template_path, 'add_breakpoint_edb.sql']),
+                    session_id=int_session_id,
+                    function_oid=de_inst.debugger_data['function_id']
+                )
+
+                status, res = execute_dict_search_path(
+                    conn, sql, de_inst.debugger_data['search_path'])
+                if not status:
+                    return internal_server_error(errormsg=res)
+            else:
+                sql = render_template(
+                    "/".join([template_path, 'add_breakpoint_pg.sql']),
+                    session_id=int_session_id,
+                    function_oid=de_inst.debugger_data['function_id']
+                )
 
                 status, res = execute_dict_search_path(
                     conn, sql, de_inst.debugger_data['search_path'])
                 if not status:
                     return internal_server_error(errormsg=res)
 
-                # Get and store the session variable which is required to fetch
-                # other information during debugging
-                int_session_id = res['rows'][0]['pldbg_create_listener']
+            # wait for the target
+            sql = render_template(
+                "/".join([template_path, 'wait_for_target.sql']),
+                session_id=int_session_id
+            )
 
-                # In EnterpriseDB versions <= 9.1 the
-                # pldbg_set_global_breakpoint function took five arguments,
-                # the 2nd argument being the package's OID, if any. Starting
-                # with 9.2, the package OID argument is gone, and the function
-                # takes four arguments like the community version has always
-                # done.
-                if server_type == 'ppas' and ver <= 90100:
-                    sql = render_template(
-                        "/".join([template_path, 'add_breakpoint_edb.sql']),
-                        session_id=int_session_id,
-                        function_oid=de_inst.debugger_data['function_id']
-                    )
+            status, res = execute_async_search_path(
+                conn, sql, de_inst.debugger_data['search_path'])
+            if not status:
+                return internal_server_error(errormsg=res)
 
-                    status, res = execute_dict_search_path(
-                        conn, sql, de_inst.debugger_data['search_path'])
-                    if not status:
-                        return internal_server_error(errormsg=res)
-                else:
-                    sql = render_template(
-                        "/".join([template_path, 'add_breakpoint_pg.sql']),
-                        session_id=int_session_id,
-                        function_oid=de_inst.debugger_data['function_id']
-                    )
-
-                    status, res = execute_dict_search_path(
-                        conn, sql, de_inst.debugger_data['search_path'])
-                    if not status:
-                        return internal_server_error(errormsg=res)
-
-                # wait for the target
-                sql = render_template(
-                    "/".join([template_path, 'wait_for_target.sql']),
-                    session_id=int_session_id
-                )
-
-                status, res = execute_async_search_path(
-                    conn, sql, de_inst.debugger_data['search_path'])
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                de_inst.debugger_data['exe_conn_id'] = \
-                    de_inst.debugger_data['conn_id']
-                de_inst.debugger_data['restart_debug'] = 1
-                de_inst.debugger_data['frame_id'] = 0
-                de_inst.debugger_data['session_id'] = int_session_id
-                de_inst.update_session()
-                return make_json_response(
-                    data={'status': status, 'result': res}
-                )
-            else:
-                status = False
-                result = SERVER_CONNECTION_CLOSED
-                return make_json_response(
-                    data={'status': status, 'result': result}
-                )
+            de_inst.debugger_data['exe_conn_id'] = \
+                de_inst.debugger_data['conn_id']
+            de_inst.debugger_data['restart_debug'] = 1
+            de_inst.debugger_data['frame_id'] = 0
+            de_inst.debugger_data['session_id'] = int_session_id
+            de_inst.update_session()
+            return make_json_response(
+                data={'status': status, 'result': res}
+            )
     else:
         status = False
         result = SERVER_CONNECTION_CLOSED
@@ -1519,6 +1508,7 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
 
         status, result = execute_dict_search_path(
             conn, sql, de_inst.debugger_data['search_path'])
+        result = result['rows']
         if not status:
             return internal_server_error(errormsg=result)
     else:
@@ -1526,7 +1516,7 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
         result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(
-        data={'status': status, 'result': result['rows']}
+        data={'status': status, 'result': result}
     )
 
 
@@ -1583,6 +1573,7 @@ def clear_all_breakpoint(trans_id):
                     conn, sql, de_inst.debugger_data['search_path'])
                 if not status:
                     return internal_server_error(errormsg=result)
+                result = result['rows']
         else:
             return make_json_response(data={'status': False})
     else:
@@ -1590,7 +1581,7 @@ def clear_all_breakpoint(trans_id):
         result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(
-        data={'status': status, 'result': result['rows']}
+        data={'status': status, 'result': result}
     )
 
 

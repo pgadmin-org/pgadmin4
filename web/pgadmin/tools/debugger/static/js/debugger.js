@@ -429,7 +429,7 @@ define([
               panel = pgBrowser.docker.addPanel(
                 'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
               );
-            var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+            var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
             debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, null, pgBrowser);
 
             panel.focus();
@@ -454,7 +454,7 @@ define([
                     // Remove the leading and trailing white spaces.
                     value = value.trim();
                     let browser_preferences = pgBrowser.get_preferences_for_module('browser');
-                    var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+                    var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
                     debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                   }
                 },
@@ -573,7 +573,7 @@ define([
                     panel = pgBrowser.docker.addPanel(
                       'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                     );
-                  var label = newTreeInfo.function ? newTreeInfo.function.label : newTreeInfo.procedure.label;
+                  var label = newTreeInfo.function ? newTreeInfo.function.label : newTreeInfo.trigger_function ? newTreeInfo.trigger_function.label : newTreeInfo.trigger ? newTreeInfo.trigger.label : newTreeInfo.procedure.label;
                   debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, newTreeInfo.database.label, null, pgBrowser);
 
                   panel.focus();
@@ -598,7 +598,7 @@ define([
                           // Remove the leading and trailing white spaces.
                           value = value.trim();
                           let browser_preferences = pgBrowser.get_preferences_for_module('browser');
-                          var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+                          var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
                           debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                         }
                       },

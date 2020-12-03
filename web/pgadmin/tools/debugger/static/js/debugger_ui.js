@@ -778,7 +778,7 @@ define([
                           'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                         );
                       var browser_pref = pgBrowser.get_preferences_for_module('browser');
-                      var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+                      var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
                       debuggerUtils.setDebuggerTitle(panel, browser_pref, label, treeInfo.schema.label, treeInfo.database.label, null, pgBrowser);
                       panel.focus();
 
@@ -801,7 +801,7 @@ define([
                             if(value) {
                               // Remove the leading and trailing white spaces.
                               value = value.trim();
-                              var label = treeInfo.function ? treeInfo.function.label : treeInfo.procedure.label;
+                              var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
                               debuggerUtils.setDebuggerTitle(panel, self.preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                             }
                           },
