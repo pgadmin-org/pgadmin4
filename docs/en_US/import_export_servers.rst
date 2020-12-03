@@ -103,7 +103,7 @@ The following example shows both a minimally defined and a fully defined server:
                 "MaintenanceDB": "postgres"
             },
             "2": {
-                "Name: "Fully Defined Server",
+                "Name": "Fully Defined Server",
                 "Group": "Server Group 2",
                 "Host": "host.domain.com",
                 "HostAddr": "192.168.1.2",

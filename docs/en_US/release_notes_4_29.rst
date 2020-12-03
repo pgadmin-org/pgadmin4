@@ -25,6 +25,7 @@ Bug fixes
 | `Issue #5943 <https://redmine.postgresql.org/issues/5943>`_ -  Ensure that folder rename should work properly in Storage Manager.
 | `Issue #5974 <https://redmine.postgresql.org/issues/5974>`_ -  Fixed an issue where the debugger's custom tab title not applied when opened in the new browser tab.
 | `Issue #5978 <https://redmine.postgresql.org/issues/5978>`_ -  Fixed an issue where dynamic tab title has not applied the first time for debugger panel.
+| `Issue #5982 <https://redmine.postgresql.org/issues/5982>`_ -  Fixed documentation issue where JSON is not valid.
 | `Issue #5983 <https://redmine.postgresql.org/issues/5983>`_ -  Added the appropriate server icon based on the server type in the new connection dialog.
 | `Issue #5985 <https://redmine.postgresql.org/issues/5985>`_ -  Fixed an issue where the process watcher dialog throws an error for the database server which is already removed.
 | `Issue #5991 <https://redmine.postgresql.org/issues/5991>`_ -  Ensure that dirty indicator (*) should not be visible when renaming the tabs.
