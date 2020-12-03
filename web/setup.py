@@ -346,6 +346,9 @@ def load_servers(args):
             new_server.tunnel_authentication = \
                 obj.get("TunnelAuthentication", None)
 
+            new_server.shared = \
+                obj.get("Shared", None)
+
             db.session.add(new_server)
 
             try:
