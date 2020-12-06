@@ -279,13 +279,16 @@ How to generate code coverage report for API test-suite?
 
 - Run coverage
     With all modules
-        run 'python runtests.py --coverage --exclude feature_tests'
+        run `coverage run ./runtests.py --exclude feature_tests`
     With specific module
-        run 'python runtests.py --pkg browser.server_groups.servers.tests --coverage'
+        run `coverage run ./runtests.py --exclude feature_tests --pkg browser.server_groups.servers.tests`
 
-- After execution of coverage, we will see code coverage report on console.
-  For a nicer presentation, '/regression/covhtml' directory gets created.
-  Open 'index.html' file in browser and you will see detail coverage report.
+- After execution of coverage, you can run the following to see the code coverage report:
+    Normal report:
+        run `coverage report`
+    HTML report:
+        run `coverage html`
+        This will create a directory 'htmlcov'. Open 'index.html' file in browser and you will see detail coverage report.
 
 Javascript Tests:
 

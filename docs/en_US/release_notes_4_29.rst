@@ -17,6 +17,7 @@ Housekeeping
 | `Issue #5337 <https://redmine.postgresql.org/issues/5337>`_ -  Improve code coverage and API test cases for Views and Materialized Views.
 | `Issue #5343 <https://redmine.postgresql.org/issues/5343>`_ -  Improve code coverage and API test cases for Debugger.
 | `Issue #6033 <https://redmine.postgresql.org/issues/6033>`_ -  Update the cryptography python package for Python 3.5 and above.
+| `Issue #6062 <https://redmine.postgresql.org/issues/6062>`_ -  Ensure that code coverage should cover class and function declarations.
 
 Bug fixes
 *********

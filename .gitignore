@@ -52,3 +52,7 @@ auditpy.txt
 /venv/
 .scannerwork/
 web/coverage/
+web/.coverage
+web/regression/.coverage
+web/regression/covhtml/
+web/regression/htmlcov/
