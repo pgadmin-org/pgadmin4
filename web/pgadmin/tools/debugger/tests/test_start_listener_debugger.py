@@ -35,8 +35,8 @@ class DebuggerStartListener(BaseTestGenerator):
 
         local_self = funcs_utils.set_up(self)
 
-        if self.server['type'] == 'pg':
-            self.skipTest('Skipping test case for pg')
+        # if self.server['type'] == 'pg':
+        #     self.skipTest('Skipping test case for pg')
 
         self.test_data['funcowner'] = self.server["username"]
 

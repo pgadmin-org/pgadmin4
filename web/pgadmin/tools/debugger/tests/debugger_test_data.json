@@ -467,7 +467,7 @@
       "url": "debugger/start_listener/",
       "is_positive_test": true,
       "mocking_required": false,
-      "type": "direct",
+      "type": "indirect",
       "invalid_name": false,
       "add_extension": true,
       "init_target": true,
