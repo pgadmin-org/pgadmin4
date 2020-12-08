@@ -34,3 +34,4 @@ Bug fixes
 | `Issue #5998 <https://redmine.postgresql.org/issues/5998>`_ -  Fixed an issue where schema diff doesn't show the result of compare if source schema has tables with RLS.
 | `Issue #6003 <https://redmine.postgresql.org/issues/6003>`_ -  Fixed an issue where an illegal argument is showing for trigger SQL when a trigger is created for View.
 | `Issue #6022 <https://redmine.postgresql.org/issues/6022>`_ -  Fixed an issue where shared servers import is failing.
+| `Issue #6072 <https://redmine.postgresql.org/issues/6072>`_ -  Fixed DLL load failed while importing bcrypt.
