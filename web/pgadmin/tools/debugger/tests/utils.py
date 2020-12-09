@@ -1,5 +1,6 @@
 import os
 import json
+import uuid
 
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -21,6 +22,8 @@ def delete_function(self, utils):
 
 def create_function(self, utils):
     self.test_data['pronamespace'] = self.schema_id
+    self.test_data['name'] = self.test_data['name'] + str(uuid.uuid4())[1:8]
+
     function_url = 'browser/function/obj/{0}/{1}/{2}/{3}/'.format(
         str(utils.SERVER_GROUP), str(self.server_id), str(self.db_id),
         str(self.schema_id))
