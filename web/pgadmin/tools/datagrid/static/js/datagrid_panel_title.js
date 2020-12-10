@@ -9,6 +9,7 @@
 
 import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 import gettext from 'sources/gettext';
+import $ from 'jquery';
 
 export function getDatabaseLabel(parentData) {
   return parentData.database ? parentData.database.label
@@ -52,6 +53,8 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null) 
 
 export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_file) {
   let panel_icon = '', panel_tooltip = '';
+  // Enable/ Disabled the rename panel option if file is open.
+  set_renamable_option(panel, is_file);
 
   if(is_file || is_file == 'true'){
     panel_tooltip = gettext('File - ') + panel_title;
@@ -69,6 +72,17 @@ export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_fi
 
   panel.title('<span title="'+ _.escape(panel_tooltip) +'">'+ _.escape(panel_title) +'</span>');
   panel.icon(panel_icon);
+
+}
+
+export function set_renamable_option(panel, is_file) {
+  if(is_file || is_file == 'true') {
+    panel._isRenamable = false;
+    $('.conn-info-dd').hide();
+    $('.connection-data').css({pointerEvents: 'none', cursor: 'arrow'});
+  } else {
+    panel._isRenamable = true;
+  }
 }
 
 export function generateTitle(title_placeholder, title_data) {
