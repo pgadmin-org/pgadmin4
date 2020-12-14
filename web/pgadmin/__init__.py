@@ -48,7 +48,7 @@ from pgadmin.utils.security_headers import SecurityHeaders
 # affect pgAdmin 4 to be load properly. This will avoid the issues that may
 # occur due to security fix of X_CONTENT_TYPE_OPTIONS = "nosniff".
 import mimetypes
-mimetypes.add_type('text/javascript', '.js')
+mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('text/css', '.css')
 
 winreg = None

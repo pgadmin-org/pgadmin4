@@ -14,6 +14,7 @@ Housekeeping
 ************
 
 | `Issue #6052 <https://redmine.postgresql.org/issues/6052>`_ -  Added connected pgAdmin user and connection name in the log file.
+| `Issue #6079 <https://redmine.postgresql.org/issues/6079>`_ -  Updated mimetype from 'text/javascript' to 'application/javascript' as 'text/javascript' is obsolete.
 
 Bug fixes
 *********
