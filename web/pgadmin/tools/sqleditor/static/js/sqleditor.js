@@ -3783,6 +3783,7 @@ define('tools.querytool', [
           .done(function(res) {
             self.gridView.query_tool_obj.setValue(res);
             self.gridView.current_file = e;
+            self.gridView.query_tool_obj.file_data = res;
             self.setTitle(self.gridView.current_file.split('\\').pop().split('/').pop(), true);
             self.trigger('pgadmin-sqleditor:loading-icon:hide');
             // hide cursor
@@ -3817,6 +3818,7 @@ define('tools.querytool', [
             'file_name': decodeURI(e),
             'file_content': self.gridView.query_tool_obj.getValue(),
           };
+        var file_data = self.gridView.query_tool_obj.getValue();
         self.trigger(
           'pgadmin-sqleditor:loading-icon:show',
           gettext('Saving the queries in the file...')
@@ -3834,6 +3836,7 @@ define('tools.querytool', [
               alertify.success(gettext('File saved successfully.'));
               self.gridView.current_file = e;
               self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''), true);
+              self.gridView.query_tool_obj.file_data = file_data;
               // disable save button on file save
               $('#btn-save-file').prop('disabled', true);
               $('#btn-file-menu-save').css('display', 'none');
@@ -3892,6 +3895,18 @@ define('tools.querytool', [
           $('#btn-save-file').prop('disabled', false);
           $('#btn-file-menu-save').css('display', 'block');
           $('#btn-file-menu-dropdown').prop('disabled', false);
+        } else {
+          if(self.gridView.current_file) {
+            if (self.gridView.query_tool_obj.file_data == self.gridView.query_tool_obj.getValue()) {
+              title = self.gridView.current_file.replace(/^.*[\\\/]/g, '');
+              is_dirty_editor = false;
+            } else {
+              title = self.gridView.current_file.replace(/^.*[\\\/]/g, '') + ' *';
+              is_dirty_editor = true;
+            }
+
+            self.setTitle(title, true, is_dirty_editor);
+          }
         }
       },
 
