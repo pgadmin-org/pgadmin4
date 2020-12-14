@@ -96,7 +96,7 @@ class TestDownloadCSV(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self._db_name = 'download_csv_' + str(random.randint(10000, 65535))
+        self._db_name = 'download_results_' + str(random.randint(10000, 65535))
         self._sid = self.server_information['server_id']
 
         server_con = server_utils.connect_server(self, self._sid)
@@ -104,6 +104,24 @@ class TestDownloadCSV(BaseTestGenerator):
         self._did = test_utils.create_database(
             self.server, self._db_name
         )
+
+    # This method is responsible for initiating query hit at least once,
+    # so that download csv works
+    def initiate_sql_query_tool(self, trans_id, sql_query):
+
+        # This code is to ensure to create a async cursor so that downloading
+        # csv can work.
+        # Start query tool transaction
+        url = '/sqleditor/query_tool/start/{0}'.format(trans_id)
+        response = self.tester.post(url, data=json.dumps({"sql": sql_query}),
+                                    content_type='html/json')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Query tool polling
+        url = '/sqleditor/poll/{0}'.format(trans_id)
+        response = self.tester.get(url)
+        return response
 
     def runTest(self):
 
@@ -121,6 +139,8 @@ class TestDownloadCSV(BaseTestGenerator):
         response = self.tester.post(url)
         self.assertEqual(response.status_code, 200)
 
+        res = self.initiate_sql_query_tool(self.trans_id, self.sql)
+
         # If invalid tx test then make the Tx id invalid so that tests fails
         if not self.is_valid_tx:
             self.trans_id = self.trans_id + '007'
@@ -129,7 +149,11 @@ class TestDownloadCSV(BaseTestGenerator):
         url = self.donwload_url.format(self.trans_id)
         # Disable the console logging from Flask logger
         self.app.logger.disabled = True
-        if self.filename is None:
+        if not self.is_valid and self.is_valid_tx:
+            # When user enters wrong query, poll will throw 500, so expecting
+            # 500, as poll is never called for a wrong query.
+            self.assertEqual(res.status_code, 500)
+        elif self.filename is None:
             if self.download_as_txt:
                 with patch('pgadmin.tools.sqleditor.blueprint.'
                            'csv_field_separator.get', return_value=';'), patch(

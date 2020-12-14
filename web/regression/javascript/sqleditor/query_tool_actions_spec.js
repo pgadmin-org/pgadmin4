@@ -277,7 +277,7 @@ describe('queryToolActions', () => {
       it('does nothing', () => {
         queryToolActions.download(sqlEditorController);
 
-        expect(sqlEditorController.trigger_csv_download).not.toHaveBeenCalled();
+        expect(sqlEditorController.trigger_csv_download).toHaveBeenCalled();
       });
     });
 
@@ -298,21 +298,21 @@ describe('queryToolActions', () => {
           }));
         });
 
-        it('calls trigger_csv_download with the query and the filename with .csv extension', () => {
+        it('calls trigger_csv_download with filename having .csv extension', () => {
           let filename = 'data-' + time + '.csv';
 
           queryToolActions.download(sqlEditorController);
 
-          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(selectedQueryString, filename);
+          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(filename);
         });
 
-        it('calls trigger_csv_download with the query and the filename with .txt extension', () => {
+        it('calls trigger_csv_download filename having .txt extension', () => {
           sqlEditorController.preferences.csv_field_separator = ';';
           let filename = 'data-' + time + '.txt';
 
           queryToolActions.download(sqlEditorController);
 
-          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(selectedQueryString, filename);
+          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(filename);
         });
       });
 
@@ -333,12 +333,12 @@ describe('queryToolActions', () => {
           }));
         });
 
-        it('calls trigger_csv_download with the query and the filename', () => {
+        it('calls trigger_csv_download with filename', () => {
           let filename = 'data-' + time + '.csv';
 
           queryToolActions.download(sqlEditorController);
 
-          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(entireQueryString, filename);
+          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(filename);
         });
       });
     });
@@ -351,7 +351,7 @@ describe('queryToolActions', () => {
 
         queryToolActions.download(sqlEditorController);
 
-        expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(query, 'iAmATable' + '.csv');
+        expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith('iAmATable' + '.csv');
       });
     });
 

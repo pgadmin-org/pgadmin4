@@ -45,6 +45,7 @@ describe('ExecuteQuery', () => {
       'handle_connection_lost',
       'update_notifications',
       'disable_transaction_buttons',
+      'enable_disable_download_btn',
     ]);
     sqlEditorMock.transId = 123;
     sqlEditorMock.rows_affected = 1000;

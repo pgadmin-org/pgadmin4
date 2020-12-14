@@ -191,7 +191,7 @@ function keyboardShortcutsQueryTool(
   let executeKeys = sqlEditorController.preferences.execute_query;
   let explainKeys = sqlEditorController.preferences.explain_query;
   let explainAnalyzeKeys = sqlEditorController.preferences.explain_analyze_query;
-  let downloadCsvKeys = sqlEditorController.preferences.download_csv;
+  let downloadCsvKeys = sqlEditorController.preferences.download_results;
   let nextTabKeys = sqlEditorController.preferences.move_next;
   let previousTabKeys = sqlEditorController.preferences.move_previous;
   let switchPanelKeys = sqlEditorController.preferences.switch_panel;
@@ -211,8 +211,10 @@ function keyboardShortcutsQueryTool(
     this._stopEventPropagation(event);
     queryToolActions.explainAnalyze(sqlEditorController);
   } else if (this.validateShortcutKeys(downloadCsvKeys, event)) {
-    this._stopEventPropagation(event);
-    queryToolActions.download(sqlEditorController);
+    if(!sqlEditorController.is_save_results_to_file_disabled) {
+      this._stopEventPropagation(event);
+      queryToolActions.download(sqlEditorController);
+    }
   } else if (this.validateShortcutKeys(toggleCaseKeys, event)) {
     this._stopEventPropagation(event);
     queryToolActions.toggleCaseOfSelectedText(sqlEditorController);

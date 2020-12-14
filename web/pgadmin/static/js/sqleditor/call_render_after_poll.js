@@ -43,6 +43,7 @@ export function callRenderAfterPoll(sqlEditor, alertify, res) {
     if (isNotificationEnabled(sqlEditor)) {
       alertify.success(msg, sqlEditor.info_notifier_timeout);
     }
+    sqlEditor.enable_disable_download_btn(true);
   }
 
   if (isQueryTool(sqlEditor)) {

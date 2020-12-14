@@ -71,7 +71,7 @@ describe('the keyboard shortcuts', () => {
           key_code: F7_KEY,
         },
       },
-      download_csv: {
+      download_results: {
         alt: false,
         shift: false,
         control: false,

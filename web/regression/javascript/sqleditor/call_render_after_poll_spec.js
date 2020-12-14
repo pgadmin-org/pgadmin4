@@ -24,6 +24,7 @@ describe('#callRenderAfterPoll', () => {
       disable_tool_buttons: jasmine.createSpy('SQLEditor.disable_tool_buttons'),
       disable_transaction_buttons: jasmine.createSpy('SQLEditor.disable_transaction_buttons'),
       reset_data_store: jasmine.createSpy('SQLEditor.reset_data_store'),
+      enable_disable_download_btn: jasmine.createSpy('SQLEditor.enable_disable_download_btn'),
       query_start_time: new Date(),
     };
     alertify = jasmine.createSpyObj('alertify', ['success']);
@@ -114,6 +115,14 @@ describe('#callRenderAfterPoll', () => {
             10
           );
         });
+      });
+
+      it('disables the save results button', () => {
+        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+
+        expect(sqlEditorSpy.enable_disable_download_btn).toHaveBeenCalledWith(true);
+
+        expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });
     });
   });
@@ -211,6 +220,14 @@ describe('#callRenderAfterPoll', () => {
             10
           );
         });
+      });
+
+      it('disables the save results button', () => {
+        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+
+        expect(sqlEditorSpy.enable_disable_download_btn).toHaveBeenCalledWith(true);
+
+        expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });
     });
   });

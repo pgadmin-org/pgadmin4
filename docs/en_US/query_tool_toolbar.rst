@@ -179,10 +179,10 @@ Query Execution
    |                      |                                                                                                   |                |
    |                      |  * Select *Clear History* to erase the content of the *History* tab.                              |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Download as CSV/TXT*| Click the *Download as CSV/TXT* icon to download the result set of the current query as a *.csv*  | F8             |
-   |                      | or as a *.txt* file. if *CSV field seperator* set to comma(,) else as a *.txt* file.              |                |
-   |                      | You can specify the CSV/TXT settings through *Preferences -> SQL Editor -> CSV/TXT output*        |                |
-   |                      | dialogue.                                                                                         |                |
+   | *Save results to*    | Click the Save results to file icon to save the result set of the current query as a delimited    | F8             |
+   |  *file*              | text file (CSV, if the field separator is set to a comma). This button will only be enabled when  |                |
+   |                      | a query has been executed and there are results in the data grid. You can specify the CSV/TXT     |                |
+   |                      | settings in the Preference Dialogue under SQL Editor -> CSV/TXT output.                           |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Macros*             | Click the *Macros* icon to manage the macros. You can create, edit or clear the macros through    |                |
    |                      | the *Manage Macros* option.                                                                       |                |

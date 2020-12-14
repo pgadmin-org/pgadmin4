@@ -377,8 +377,8 @@ def register_query_tool_preferences(self):
 
     self.preference.register(
         'keyboard_shortcuts',
-        'download_csv',
-        gettext('Download CSV'),
+        'download_results',
+        gettext('Download Results'),
         'keyboardshortcut',
         {
             'alt': False,

@@ -81,13 +81,7 @@ let queryToolActions = {
   },
 
   download: function (sqlEditorController) {
-    let sqlQuery = sqlEditorController.gridView.query_tool_obj.getSelection();
 
-    if (!sqlQuery) {
-      sqlQuery = sqlEditorController.gridView.query_tool_obj.getValue();
-    }
-
-    if (!sqlQuery) return;
     let extension = sqlEditorController.preferences.csv_field_separator === ',' ? '.csv': '.txt';
     let filename = 'data-' + new Date().getTime() + extension;
 
@@ -95,7 +89,7 @@ let queryToolActions = {
       filename = sqlEditorController.table_name + extension;
     }
 
-    sqlEditorController.trigger_csv_download(sqlQuery, filename);
+    sqlEditorController.trigger_csv_download(filename);
   },
 
   commentBlockCode: function (sqlEditorController) {

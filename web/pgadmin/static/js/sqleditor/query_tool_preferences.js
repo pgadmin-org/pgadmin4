@@ -112,11 +112,11 @@ function updateUIPreferences(sqlEditor) {
     .attr('aria-label',
       shortcut_title(gettext('Explain Analyze'),preferences.explain_analyze_query));
 
-  $el.find('#btn-download')
+  $el.find('#btn-save-results-to-file')
     .attr('title',
-      shortcut_title(gettext('Download as CSV/TXT'),preferences.download_csv))
+      shortcut_title(gettext('Save results to file'),preferences.download_results))
     .attr('aria-label',
-      shortcut_title(gettext('Download as CSV/TXT'),preferences.download_csv));
+      shortcut_title(gettext('Save results to file'),preferences.download_results));
 
   $el.find('#btn-save-data')
     .attr('title',

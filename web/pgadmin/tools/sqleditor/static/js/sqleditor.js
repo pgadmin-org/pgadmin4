@@ -136,7 +136,7 @@ define('tools.querytool', [
       'click #btn-flash': 'on_flash',
       'click #btn-flash-menu': 'on_flash',
       'click #btn-cancel-query': 'on_cancel_query',
-      'click #btn-download': 'on_download',
+      'click #btn-save-results-to-file': 'on_download',
       'click #btn-clear': 'on_clear',
       'click #btn-auto-commit': 'on_auto_commit',
       'click #btn-auto-rollback': 'on_auto_rollback',
@@ -1358,7 +1358,7 @@ define('tools.querytool', [
       self.handler.fetching_rows = true;
 
       $('#btn-flash').prop('disabled', true);
-      $('#btn-download').prop('disabled', true);
+      $('#btn-save-results-to-file').prop('disabled', true);
 
       if (fetch_all) {
         self.handler.trigger(
@@ -1382,7 +1382,7 @@ define('tools.querytool', [
         .done(function(res) {
           self.handler.has_more_rows = res.data.has_more_rows;
           $('#btn-flash').prop('disabled', false);
-          $('#btn-download').prop('disabled', false);
+          $('#btn-save-results-to-file').prop('disabled', false);
           self.handler.trigger('pgadmin-sqleditor:loading-icon:hide');
           self.update_grid_data(res.data.result);
           self.handler.fetching_rows = false;
@@ -1392,7 +1392,7 @@ define('tools.querytool', [
         })
         .fail(function(e) {
           $('#btn-flash').prop('disabled', false);
-          $('#btn-download').prop('disabled', false);
+          $('#btn-save-results-to-file').prop('disabled', false);
           self.handler.trigger('pgadmin-sqleditor:loading-icon:hide');
           self.handler.has_more_rows = false;
           self.handler.fetching_rows = false;
@@ -2534,6 +2534,7 @@ define('tools.querytool', [
         self.server_type = url_params.server_type;
         self.url_params = url_params;
         self.is_transaction_buttons_disabled = true;
+        self.is_save_results_to_file_disabled = true;
 
         // We do not allow to call the start multiple times.
         if (self.gridView)
@@ -2783,7 +2784,7 @@ define('tools.querytool', [
         );
 
         $('#btn-flash').prop('disabled', true);
-        $('#btn-download').prop('disabled', true);
+        self.enable_disable_download_btn(true);
 
         self.trigger(
           'pgadmin-sqleditor:loading-icon:message',
@@ -3058,7 +3059,12 @@ define('tools.querytool', [
             // Hide the loading icon
             self_col.trigger('pgadmin-sqleditor:loading-icon:hide');
             $('#btn-flash').prop('disabled', false);
-            $('#btn-download').prop('disabled', false);
+            if (!_.isUndefined(data) && Array.isArray(data.result) && data.result.length > 0) {
+              self.enable_disable_download_btn(false);
+            }
+            else {
+              self.enable_disable_download_btn(true);
+            }
           }.bind(self)
         );
       },
@@ -3239,7 +3245,6 @@ define('tools.querytool', [
 
         if (status != 'Busy') {
           $('#btn-flash').prop('disabled', false);
-          $('#btn-download').prop('disabled', false);
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
           if(!self.total_time) {
@@ -3299,6 +3304,12 @@ define('tools.querytool', [
         if (obj instanceof Backbone.Collection)
           return false;
         return (self.get('can_edit'));
+      },
+
+      enable_disable_download_btn: function(is_save_results_to_file_disabled) {
+        var self = this;
+        self.is_save_results_to_file_disabled = is_save_results_to_file_disabled;
+        $('#btn-save-results-to-file').prop('disabled', is_save_results_to_file_disabled);
       },
 
       rows_to_delete: function(data) {
@@ -4373,10 +4384,9 @@ define('tools.querytool', [
             }
             self.disable_tool_buttons(false);
             is_query_running = false;
-            if(!_.isUndefined(self.download_csv_obj)) {
-              self.download_csv_obj.abort();
+            if(!_.isUndefined(self.download_results_obj)) {
+              self.download_results_obj.abort();
               $('#btn-flash').prop('disabled', false);
-              $('#btn-download').prop('disabled', false);
               self.trigger(
                 'pgadmin-sqleditor:loading-icon:hide');
             }
@@ -4394,25 +4404,25 @@ define('tools.querytool', [
       },
 
       // Trigger query result download to csv.
-      trigger_csv_download: function(query, filename) {
+      trigger_csv_download: function(filename) {
         var self = this,
           url = url_for('sqleditor.query_tool_download', {
             'trans_id': self.transId,
           }),
-          data = { query: query, filename: filename };
+          data = { filename: filename };
 
         // Disable the Execute button
         $('#btn-flash').prop('disabled', true);
-        $('#btn-download').prop('disabled', true);
+        self.enable_disable_download_btn(true);
         self.disable_tool_buttons(true);
         self.set_sql_message('');
         self.trigger(
           'pgadmin-sqleditor:loading-icon:show',
-          gettext('Downloading CSV...')
+          gettext('Downloading Results...')
         );
 
         // Get the CSV file
-        self.download_csv_obj = $.ajax({
+        self.download_results_obj = $.ajax({
           type: 'POST',
           url: url,
           data: data,
@@ -4443,19 +4453,19 @@ define('tools.querytool', [
             }
 
             document.body.removeChild(link);
-            self.download_csv_obj = undefined;
+            self.download_results_obj = undefined;
           }
 
           // Enable the execute button
           $('#btn-flash').prop('disabled', false);
-          $('#btn-download').prop('disabled', false);
+          self.enable_disable_download_btn(false);
           self.disable_tool_buttons(false);
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
         }).fail(function(err) {
           let msg = '';
           // Enable the execute button
           $('#btn-flash').prop('disabled', false);
-          $('#btn-download').prop('disabled', false);
+          self.enable_disable_download_btn(false);
           self.disable_tool_buttons(false);
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
 

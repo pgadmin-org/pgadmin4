@@ -1336,7 +1336,7 @@ def start_query_download_tool(trans_id):
         )
 
     data = request.values if request.values else None
-    if data is None or (data and 'query' not in data):
+    if data is None:
         return make_json_response(
             status=410,
             success=0,
@@ -1346,12 +1346,9 @@ def start_query_download_tool(trans_id):
         )
 
     try:
-        sql = data['query']
 
         # This returns generator of records.
-        status, gen = sync_conn.execute_on_server_as_csv(
-            sql, records=2000
-        )
+        status, gen = sync_conn.execute_on_server_as_csv(records=2000)
 
         if not status:
             return make_json_response(
@@ -1362,6 +1359,7 @@ def start_query_download_tool(trans_id):
 
         r = Response(
             gen(
+                trans_obj,
                 quote=blueprint.csv_quoting.get(),
                 quote_char=blueprint.csv_quote_char.get(),
                 field_separator=blueprint.csv_field_separator.get(),

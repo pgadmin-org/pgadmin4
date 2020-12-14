@@ -83,6 +83,7 @@ class ExecuteQuery {
         } else {
           self.loadingScreen.hide();
           self.enableSQLEditorButtons();
+          self.disableDownloadButton();
           // Enable/Disable commit and rollback button.
           if (result.data.data.transaction_status == queryTxnStatus.TRANSACTION_STATUS_INTRANS
             || result.data.data.transaction_status == queryTxnStatus.TRANSACTION_STATUS_INERROR) {
@@ -201,7 +202,7 @@ class ExecuteQuery {
     this.loadingScreen.show(gettext('Running query...'));
 
     $('#btn-flash').prop('disabled', true);
-    $('#btn-download').prop('disabled', true);
+    this.disableDownloadButton();
 
     this.sqlServerObject.query_start_time = new Date();
     if (typeof sqlStatement === 'object') {
@@ -279,6 +280,10 @@ class ExecuteQuery {
       // Remove already existing marker
       this.sqlServerObject.gridView.query_tool_obj.removeLineClass(this.sqlServerObject.marked_line_no, 'wrap', 'CodeMirror-activeline-background');
     }
+  }
+
+  disableDownloadButton() {
+    this.sqlServerObject.enable_disable_download_btn(true);
   }
 
   enableSQLEditorButtons() {
