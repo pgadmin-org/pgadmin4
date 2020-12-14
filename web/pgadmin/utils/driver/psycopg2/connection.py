@@ -758,10 +758,16 @@ WHERE db.datname = current_database()""")
             current_app.logger.warning('Error encoding query')
             pass
 
+        dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
             25,
-            "Execute (with server cursor) for server #{server_id} - "
+            "Execute (with server cursor) by {pga_user} on "
+            "{db_user}@{db_host}/{db_name} #{server_id} -  "
             "{conn_id} (Query-id: {query_id}):\n{query}".format(
+                pga_user=current_user.email,
+                db_user=dsn['user'],
+                db_host=dsn['host'],
+                db_name=dsn['dbname'],
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -905,10 +911,16 @@ WHERE db.datname = current_database()""")
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
+        dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
             25,
-            "Execute (scalar) for server #{server_id} - {conn_id} (Query-id: "
-            "{query_id}):\n{query}".format(
+            "Execute (scalar) by {pga_user} on "
+            "{db_user}@{db_host}/{db_name} #{server_id} - "
+            "{conn_id} (Query-id: {query_id}):\n{query}".format(
+                pga_user=current_user.email,
+                db_user=dsn['user'],
+                db_host=dsn['host'],
+                db_name=dsn['dbname'],
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -1046,10 +1058,16 @@ WHERE db.datname = current_database()""")
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
+        dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
             25,
-            "Execute (void) for server #{server_id} - {conn_id} (Query-id: "
-            "{query_id}):\n{query}".format(
+            "Execute (void) by {pga_user} on "
+            "{db_user}@{db_host}/{db_name} #{server_id} - "
+            "{conn_id} (Query-id: {query_id}):\n{query}".format(
+                pga_user=current_user.email,
+                db_user=dsn['user'],
+                db_host=dsn['host'],
+                db_name=dsn['dbname'],
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -1129,10 +1147,16 @@ WHERE db.datname = current_database()""")
             return False, str(cur)
 
         query_id = random.randint(1, 9999999)
+        dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
             25,
-            "Execute (2darray) for server #{server_id} - {conn_id} "
-            "(Query-id: {query_id}):\n{query}".format(
+            "Execute (2darray) by {pga_user} on "
+            "{db_user}@{db_host}/{db_name} #{server_id} - "
+            "{conn_id} (Query-id: {query_id}):\n{query}".format(
+                pga_user=current_user.email,
+                db_user=dsn['user'],
+                db_host=dsn['host'],
+                db_name=dsn['dbname'],
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,
@@ -1182,10 +1206,16 @@ WHERE db.datname = current_database()""")
         if not status:
             return False, str(cur)
         query_id = random.randint(1, 9999999)
+        dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
             25,
-            "Execute (dict) for server #{server_id} - {conn_id} (Query-id: "
-            "{query_id}):\n{query}".format(
+            "Execute (dict) by {pga_user} on "
+            "{db_user}@{db_host}/{db_name} #{server_id} - "
+            "{conn_id} (Query-id: {query_id}):\n{query}".format(
+                pga_user=current_user.email,
+                db_user=dsn['user'],
+                db_host=dsn['host'],
+                db_name=dsn['dbname'],
                 server_id=self.manager.sid,
                 conn_id=self.conn_id,
                 query=query,

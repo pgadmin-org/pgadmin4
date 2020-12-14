@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #6052 <https://redmine.postgresql.org/issues/6052>`_ -  Added connected pgAdmin user and connection name in the log file.
 
 Bug fixes
 *********
