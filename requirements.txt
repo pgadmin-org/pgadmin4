@@ -30,7 +30,7 @@ pytz>=2020.1,<2021
 simplejson==3.16.0
 six>=1.12.0
 speaklater==1.3
-sqlparse>=0.3.0,<0.4
+sqlparse>=0.3.0,<0.5
 WTForms==2.2.1
 Flask-Paranoid==0.2.0
 psutil>=5.7.0
