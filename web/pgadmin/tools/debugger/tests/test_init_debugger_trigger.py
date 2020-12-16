@@ -62,7 +62,7 @@ class InitDebugger(BaseTestGenerator):
         self.trigger_id = debugger_utils.create_trigger(self, utils)
 
         if self.add_extension:
-            debugger_utils.add_extension(self, utils)
+            debugger_utils.add_extension(self, utils, False, db_utils=db_utils)
 
     def initialize_debugger(self):
         if self.node_type == 'trigger':

@@ -9,7 +9,7 @@
 
 """Implements the pgAgent Jobs Node"""
 from functools import wraps
-import json
+import simplejson as json
 from datetime import datetime, time
 
 from flask import render_template, request, jsonify

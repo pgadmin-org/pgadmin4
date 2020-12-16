@@ -21,7 +21,7 @@
       "mocking_required": true,
       "node_type": "function",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {},
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
@@ -37,7 +37,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "node_type": "function",
       "test_data": {},
       "mock_data": {
@@ -54,7 +54,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "node_type": "function",
       "test_data": {},
       "mock_data": {
@@ -72,7 +72,7 @@
       "mocking_required": true,
       "mock_multiple_calls": true,
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "node_type": "function",
       "test_data": {},
       "mock_data": {
@@ -89,7 +89,7 @@
       "is_positive_test": false,
       "mocking_required": false,
       "invalid_name": true,
-      "add_extension": false,
+      "add_extension": true,
       "node_type": "function",
       "test_data": {},
       "mock_data": {
@@ -105,7 +105,7 @@
       "mocking_required": true,
       "mock_multiple_calls": true,
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "node_type": "function",
       "test_data": {},
       "mock_data": {
@@ -138,14 +138,15 @@
       "expected_data": {
         "status_code": 200
       }
-    },{
+    },
+    {
       "name": "Debugger initialization for trigger: fail",
       "url": "/debugger/init/trigger/",
       "is_positive_test": false,
       "mocking_required": true,
       "node_type": "trigger",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {
         "name": "PLACE_HOLDER",
         "is_row_trigger": true,
@@ -178,7 +179,8 @@
       "expected_data": {
         "status_code": 200
       }
-    },{
+    },
+    {
       "name": "Debugger initialize target direct negative",
       "url": "/debugger/initialize_target/direct/",
       "is_positive_test": false,
@@ -186,7 +188,7 @@
       "node_type": "trigger",
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {},
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
@@ -204,7 +206,7 @@
       "node_type": "trigger",
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {},
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
@@ -222,7 +224,7 @@
       "node_type": "trigger",
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {},
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
@@ -240,7 +242,7 @@
       "node_type": "trigger",
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {},
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connect",
@@ -258,7 +260,7 @@
       "node_type": "trigger",
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {},
       "mock_data": {},
       "expected_data": {
@@ -274,7 +276,7 @@
       "type": "direct",
       "invalid_name": false,
       "create_trigger_func": true,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {
         "name": "PLACE_HOLDER",
         "is_row_trigger": true,
@@ -296,7 +298,7 @@
       "node_type": "trigger",
       "invalid_name": false,
       "create_trigger_func": true,
-      "add_extension": false,
+      "add_extension": true,
       "type": "direct",
       "test_data": {
         "name": "PLACE_HOLDER",
@@ -313,7 +315,8 @@
       "expected_data": {
         "status_code": 500
       }
-    },{
+    },
+    {
       "name": "Debugger initialize target direct with trigger id fail",
       "url": "/debugger/initialize_target/direct/",
       "is_positive_test": false,
@@ -322,7 +325,7 @@
       "type": "direct",
       "invalid_name": false,
       "create_trigger_func": true,
-      "add_extension": false,
+      "add_extension": true,
       "mock_multiple": true,
       "test_data": {
         "name": "PLACE_HOLDER",
@@ -349,7 +352,7 @@
       "type": "direct",
       "invalid_name": false,
       "create_trigger_func": true,
-      "add_extension": false,
+      "add_extension": true,
       "mock_multiple": false,
       "test_data": {
         "name": "PLACE_HOLDER",
@@ -376,7 +379,7 @@
       "type": "direct",
       "invalid_name": false,
       "create_trigger_func": true,
-      "add_extension": false,
+      "add_extension": true,
       "mock_multiple": true,
       "test_data": {
         "name": "PLACE_HOLDER",
@@ -435,7 +438,7 @@
       "type": "trigger",
       "invalid_name": false,
       "init_target": true,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {},
       "mock_data": {},
       "expected_data": {
@@ -450,7 +453,7 @@
       "type": "trigger",
       "invalid_name": false,
       "init_target": true,
-      "add_extension": false,
+      "add_extension": true,
       "test_data": {},
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
@@ -498,7 +501,7 @@
       "mocking_required": false,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": false,
       "test_data": {
         "acl": [],
@@ -527,7 +530,7 @@
       "mocking_required": true,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -559,7 +562,7 @@
       "mocking_required": false,
       "type": "indirect",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -589,7 +592,7 @@
       "mocking_required": true,
       "type": "indirect",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -645,14 +648,15 @@
       "expected_data": {
         "status_code": 200
       }
-    },{
+    },
+    {
       "name": "Debugger Messages: connection fail",
       "url": "debugger/messages/",
       "is_positive_test": false,
       "mocking_required": true,
       "type": "indirect",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -676,14 +680,15 @@
       "expected_data": {
         "status_code": 500
       }
-    },{
+    },
+    {
       "name": "Debugger Messages: debugger instace fail",
       "url": "debugger/messages/",
       "is_positive_test": false,
       "mocking_required": false,
       "type": "indirect",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": false,
       "test_data": {
         "acl": [],
@@ -777,7 +782,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "type": "direct",
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -808,7 +813,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "type": "direct",
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -870,7 +875,7 @@
       "is_positive_test": false,
       "mocking_required": false,
       "type": "direct",
-      "add_extension": false,
+      "add_extension": true,
       "invalid_trans": true,
       "init_target": true,
       "test_data": {
@@ -977,7 +982,7 @@
       "type": "direct",
       "query_type": "wait_for_breakpoint",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "abort_debugger": true,
       "test_data": {
@@ -1011,7 +1016,7 @@
       "type": "direct",
       "query_type": "wait_for_breakpoint",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": false,
       "abort_debugger": true,
       "test_data": {
@@ -1043,7 +1048,7 @@
       "type": "direct",
       "query_type": "continue",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "abort_debugger": false,
       "test_data": {
@@ -1075,7 +1080,7 @@
       "type": "direct",
       "query_type": "wait_for_breakpoint",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "abort_debugger": true,
       "test_data": {
@@ -1109,7 +1114,7 @@
       "type": "direct",
       "query_type": "continue",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "abort_debugger": true,
       "test_data": {
@@ -1166,14 +1171,15 @@
       "expected_data": {
         "status_code": 200
       }
-    },{
+    },
+    {
       "name": "Debugger poll result: Disconnected",
       "url": "debugger/poll_result/",
       "is_positive_test": false,
       "mocking_required": true,
       "type": "indirect",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -1197,14 +1203,15 @@
       "expected_data": {
         "status_code": 200
       }
-    },{
+    },
+    {
       "name": "Debugger poll result: poll error",
       "url": "debugger/poll_result/",
       "is_positive_test": false,
       "mocking_required": true,
       "type": "indirect",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -1228,14 +1235,15 @@
       "expected_data": {
         "status_code": 200
       }
-    },{
+    },
+    {
       "name": "Debugger poll result: Debugger instance fail",
       "url": "debugger/poll_result/",
       "is_positive_test": false,
       "mocking_required": true,
       "type": "indirect",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": false,
       "test_data": {
         "acl": [],
@@ -1300,7 +1308,7 @@
       "mocking_required": false,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": false,
       "query_type": 1,
       "test_data": {
@@ -1331,7 +1339,7 @@
       "mocking_required": true,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "query_type": 1,
       "test_data": {
@@ -1364,7 +1372,7 @@
       "mocking_required": true,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "query_type": 1,
       "test_data": {
@@ -1397,7 +1405,7 @@
       "mocking_required": false,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "query_type": 2,
       "test_data": {
@@ -1460,7 +1468,7 @@
       "mocking_required": false,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": false,
       "test_data": {
         "acl": [],
@@ -1490,7 +1498,7 @@
       "mocking_required": true,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -1522,7 +1530,7 @@
       "mocking_required": true,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "test_data": {
         "acl": [],
@@ -1554,7 +1562,7 @@
       "mocking_required": false,
       "type": "direct",
       "invalid_name": false,
-      "add_extension": false,
+      "add_extension": true,
       "init_target": true,
       "no_breakpoint": true,
       "test_data": {

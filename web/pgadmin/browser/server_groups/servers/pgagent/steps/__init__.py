@@ -9,7 +9,7 @@
 
 """Implements pgAgent Job Step Node"""
 
-import json
+import simplejson as json
 from functools import wraps
 
 from flask import render_template, request, jsonify

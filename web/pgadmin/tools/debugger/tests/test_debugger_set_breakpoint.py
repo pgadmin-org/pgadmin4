@@ -42,7 +42,7 @@ class DebuggerSetBreakpoint(BaseTestGenerator):
         self.func_id = json.loads(function_info.data)['node']['_id']
 
         if self.add_extension:
-            debugger_utils.add_extension(self, utils)
+            debugger_utils.add_extension(self, utils, db_utils=db_utils)
 
         init_debugger = debugger_utils.init_debugger_function(self)
 
@@ -52,7 +52,7 @@ class DebuggerSetBreakpoint(BaseTestGenerator):
             debugger_utils.initialize_target(self, utils)
 
             debugger_utils.start_listener(self)
-            self.port_no = debugger_utils.messages(self)
+            self.port_no = debugger_utils.messages(self, utils, db_utils)
             debugger_utils.start_execution(self)
 
         if self.query_type == 2:

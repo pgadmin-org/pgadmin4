@@ -53,7 +53,7 @@ class InitTargetDebugger(BaseTestGenerator):
         self.func_id = function_info[0]
 
         if self.add_extension:
-            debugger_utils.add_extension(self, utils)
+            debugger_utils.add_extension(self, utils, db_utils=db_utils)
 
         init_debugger = debugger_utils.init_debugger_function(self)
 
@@ -125,7 +125,6 @@ class InitTargetDebugger(BaseTestGenerator):
         actual_response_code = response.status_code
         expected_response_code = self.expected_data['status_code']
         if response.json['errormsg'] == self.debugger_error:
-            print(self.debugger_error)
             self.assertEqual(actual_response_code, actual_response_code)
         else:
             self.assertEqual(actual_response_code, expected_response_code)

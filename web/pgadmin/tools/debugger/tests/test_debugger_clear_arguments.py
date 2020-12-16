@@ -42,7 +42,7 @@ class DebuggerClearArguments(BaseTestGenerator):
         self.func_id = json.loads(function_info.data)['node']['_id']
 
         if self.add_extension:
-            debugger_utils.add_extension(self, utils)
+            debugger_utils.add_extension(self, utils, db_utils=db_utils)
 
         init_debugger = debugger_utils.init_debugger_function(self)
 
