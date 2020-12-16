@@ -344,6 +344,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
+
             # Set template path for sql scripts depending
             # on the server version.
             self.template_path = compile_template_path(
@@ -1140,7 +1145,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         data = res['rows'][0]
         data['is_sys_obj'] = (
-            data['oid'] <= self.datlastsysoid)
+            data['oid'] <= self.datlastsysoid or self.datistemplate)
 
         if self.manager.version >= 90200:
             # Fetch privileges

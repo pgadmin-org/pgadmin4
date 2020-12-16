@@ -182,6 +182,7 @@ class DatabaseView(PGChildNodeView):
                     return gone(errormsg=_("Could not find the server."))
 
                 self.datlastsysoid = 0
+                self.datistemplate = False
                 if action and action in ["drop"]:
                     self.conn = self.manager.connection()
                 elif 'did' in kwargs:
@@ -195,6 +196,11 @@ class DatabaseView(PGChildNodeView):
                         if self._db['datallowconn'] is False:
                             self.conn = self.manager.connection()
                             self.db_allow_connection = False
+
+                        self.datistemplate = \
+                            self.manager.db_info[kwargs['did']][
+                                'datistemplate'] if 'datistemplate' in \
+                            self.manager.db_info[kwargs['did']] else False
                 else:
                     self.conn = self.manager.connection()
 
@@ -225,7 +231,8 @@ class DatabaseView(PGChildNodeView):
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             conn=self.conn,
             last_system_oid=last_system_oid,
-            db_restrictions=db_disp_res
+            db_restrictions=db_disp_res,
+            show_system_objects=self.blueprint.show_system_objects,
         )
         status, res = self.conn.execute_dict(SQL, params)
 
@@ -277,7 +284,8 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             last_system_oid=last_system_oid,
-            db_restrictions=db_disp_res
+            db_restrictions=db_disp_res,
+            show_system_objects=self.blueprint.show_system_objects,
         )
         status, rset = self.conn.execute_dict(SQL, params)
 
@@ -335,6 +343,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             last_system_oid=0,
+            show_system_objects=self.blueprint.show_system_objects,
         )
         status, rset = self.conn.execute_dict(SQL)
 
@@ -353,7 +362,8 @@ class DatabaseView(PGChildNodeView):
     def node(self, gid, sid, did):
         SQL = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
-            did=did, conn=self.conn, last_system_oid=0
+            did=did, conn=self.conn, last_system_oid=0,
+            show_system_objects=self.blueprint.show_system_objects,
         )
         status, rset = self.conn.execute_2darray(SQL)
 
@@ -391,7 +401,8 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            did=did, conn=self.conn, last_system_oid=0
+            did=did, conn=self.conn, last_system_oid=0,
+            show_system_objects=self.blueprint.show_system_objects,
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -425,7 +436,7 @@ class DatabaseView(PGChildNodeView):
 
         result = res['rows'][0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid)
+            result['oid'] <= self.datlastsysoid or self.datistemplate)
         # Fetching variable for database
         SQL = render_template(
             "/".join([self.template_path, 'get_variables.sql']),
@@ -617,7 +628,8 @@ class DatabaseView(PGChildNodeView):
         # We need oid of newly created database
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            name=data['name'], conn=self.conn, last_system_oid=0
+            name=data['name'], conn=self.conn, last_system_oid=0,
+            show_system_objects=self.blueprint.show_system_objects,
         )
         SQL = SQL.strip('\n').strip(' ')
         if SQL and SQL != "":
@@ -693,7 +705,8 @@ class DatabaseView(PGChildNodeView):
             status, rset = self.conn.execute_dict(
                 render_template(
                     "/".join([self.template_path, self._NODES_SQL]),
-                    did=did, conn=self.conn, last_system_oid=0
+                    did=did, conn=self.conn, last_system_oid=0,
+                    show_system_objects=self.blueprint.show_system_objects,
                 )
             )
             if not status:
@@ -797,7 +810,8 @@ class DatabaseView(PGChildNodeView):
         status, rset = self.conn.execute_dict(
             render_template(
                 "/".join([self.template_path, self._NODES_SQL]),
-                did=did, conn=self.conn, last_system_oid=0
+                did=did, conn=self.conn, last_system_oid=0,
+                show_system_objects=self.blueprint.show_system_objects,
             )
         )
         if not status:
@@ -962,7 +976,8 @@ class DatabaseView(PGChildNodeView):
             status, rset = conn.execute_dict(
                 render_template(
                     "/".join([self.template_path, self._NODES_SQL]),
-                    did=did, conn=conn, last_system_oid=0
+                    did=did, conn=conn, last_system_oid=0,
+                    show_system_objects=self.blueprint.show_system_objects,
                 )
             )
             if not status:
@@ -1132,7 +1147,8 @@ class DatabaseView(PGChildNodeView):
         conn = self.manager.connection()
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            did=did, conn=conn, last_system_oid=0
+            did=did, conn=conn, last_system_oid=0,
+            show_system_objects=False,
         )
         status, res = conn.execute_dict(SQL)
 

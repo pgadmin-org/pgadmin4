@@ -201,6 +201,11 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate']\
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
+
             return f(*args, **kwargs)
 
         return wrap
@@ -360,7 +365,9 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 gettext("Could not find the event trigger information."))
 
         result = res['rows'][0]
-        result['is_sys_obj'] = (result['oid'] <= self.datlastsysoid)
+        result['is_sys_obj'] = (
+            result['oid'] <= self.datlastsysoid or
+            self.datistemplate)
         result = self._formatter(result)
 
         return True, result

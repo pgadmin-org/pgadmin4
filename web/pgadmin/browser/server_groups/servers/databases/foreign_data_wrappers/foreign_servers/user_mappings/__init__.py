@@ -229,6 +229,11 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
+
             # Set the template path for the SQL scripts
             self.template_path = 'user_mappings/sql/#{0}#'.format(
                 self.manager.version
@@ -378,7 +383,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
 
         if res['rows'][0]['umoptions'] is not None:
             res['rows'][0]['umoptions'] = tokenize_options(

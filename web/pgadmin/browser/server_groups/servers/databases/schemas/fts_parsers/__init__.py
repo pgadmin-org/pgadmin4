@@ -234,6 +234,10 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                 self.manager.db_info[kwargs['did']]['datlastsysoid'] \
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
             # Set the template path for the SQL scripts
             self.template_path = 'fts_parsers/sql/#{0}#'.format(
                 self.manager.version)
@@ -350,7 +354,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                 _("Could not find the FTS Parser node in the database node."))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
         return True, res['rows'][0]
 
     @check_precondition

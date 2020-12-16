@@ -142,6 +142,10 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     self.manager.db_info[kwargs['did']]['datlastsysoid'] \
                     if self.manager.db_info is not None and \
                     kwargs['did'] in self.manager.db_info else 0
+                self.datistemplate = \
+                    self.manager.db_info[kwargs['did']]['datistemplate'] \
+                    if self.manager.db_info is not None and \
+                    kwargs['did'] in self.manager.db_info else False
 
                 self.template_path = 'sequences/sql/#{0}#'.format(
                     self.manager.version
@@ -306,7 +310,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
 
         for row in res['rows']:
             sql = render_template(

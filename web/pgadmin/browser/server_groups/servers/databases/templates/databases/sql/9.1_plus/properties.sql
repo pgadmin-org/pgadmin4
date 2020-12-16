@@ -40,4 +40,6 @@ AND
 db.datname in ({{db_restrictions}})
 {% endif %}
 
+AND db.datistemplate in (false, {{show_system_objects}})
+
 ORDER BY datname;

@@ -222,6 +222,11 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
+
             # Set the template path for the SQL scripts
             self.template_path = 'foreign_data_wrappers/sql/#{0}#'.format(
                 self.manager.version
@@ -372,7 +377,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
 
         if res['rows'][0]['fdwoptions'] is not None:
             res['rows'][0]['fdwoptions'] = tokenize_options(

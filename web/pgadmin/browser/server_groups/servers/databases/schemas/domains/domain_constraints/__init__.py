@@ -1,3 +1,4 @@
+
 ##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
@@ -264,6 +265,11 @@ class DomainConstraintView(PGChildNodeView):
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
+
             # Set the template path for the SQL scripts
             self.template_path = 'domain_constraints/sql/#{0}#'.format(
                 self.manager.version)
@@ -403,7 +409,7 @@ class DomainConstraintView(PGChildNodeView):
 
         data = res['rows'][0]
         data['is_sys_obj'] = (
-            data['oid'] <= self.datlastsysoid)
+            data['oid'] <= self.datlastsysoid or self.datistemplate)
         return ajax_response(
             response=data,
             status=200

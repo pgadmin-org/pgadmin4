@@ -150,6 +150,12 @@ class CatalogObjectView(PGChildNodeView):
                 self.manager.db_info[kwargs['did']]['datlastsysoid'] \
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
+
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
+
             self.template_path = 'catalog_object/sql/{0}/#{1}#'.format(
                 'ppas' if self.manager.server_type == 'ppas' else 'pg',
                 self.manager.version
@@ -296,7 +302,7 @@ class CatalogObjectView(PGChildNodeView):
                 gettext("""Could not find the specified catalog object."""))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
 
         return ajax_response(
             response=res['rows'][0],

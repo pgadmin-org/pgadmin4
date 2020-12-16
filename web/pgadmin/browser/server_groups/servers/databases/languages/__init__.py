@@ -234,6 +234,10 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
                 self.manager.db_info[kwargs['did']]['datlastsysoid'] \
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
 
             # Set the template path for the SQL scripts
             self.template_path = (
@@ -371,7 +375,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, gone(self._NOT_FOUND_LANG_INFORMATION)
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
 
         sql = render_template(
             "/".join([self.template_path, self._ACL_SQL]),
