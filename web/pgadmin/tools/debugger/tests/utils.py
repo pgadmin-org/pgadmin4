@@ -126,11 +126,16 @@ def initialize_target(self, utils, close_debugger_instance=True):
                       'for indirect debugging.')
 
 
-def start_listener(self):
+def start_listener(self, utils, db_utils):
     response = self.tester.get(
         'debugger/start_listener/' + str(self.trans_id),
         content_type='application/json')
-
+    if response.status_code != 200:
+        close_debugger(self)
+        delete_function(self, utils)
+        db_utils.disconnect_database(
+            self, self.server_id, self.db_id)
+        self.skipTest('Debugger is in Busy state.')
     self.assertEqual(response.status_code, 200)
 
 
@@ -163,10 +168,17 @@ def messages(self, utils, db_utils):
         return port
 
 
-def start_execution(self):
+def start_execution(self, utils, db_utils):
     response = self.tester.get(
         'debugger/start_execution/' + str(self.trans_id) + '/' + str(
             self.port_no), content_type='application/json')
+
+    if response.status_code != 200:
+        close_debugger(self)
+        delete_function(self, utils)
+        db_utils.disconnect_database(
+            self, self.server_id, self.db_id)
+        self.skipTest('Debugger is in Busy state.')
 
     self.assertEqual(response.status_code, 200)
 

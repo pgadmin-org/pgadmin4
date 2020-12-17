@@ -51,7 +51,7 @@ class DebuggerPollResult(BaseTestGenerator):
         if self.init_target:
             debugger_utils.initialize_target(self, utils)
 
-            debugger_utils.start_listener(self)
+            debugger_utils.start_listener(self, utils, db_utils)
 
     def execute_query(self):
         return self.tester.get(

@@ -51,9 +51,9 @@ class DebuggerPollExecutionResult(BaseTestGenerator):
         if self.init_target:
             debugger_utils.initialize_target(self, utils)
 
-            debugger_utils.start_listener(self)
+            debugger_utils.start_listener(self, utils, db_utils)
             self.port_no = debugger_utils.messages(self, utils, db_utils)
-            debugger_utils.start_execution(self)
+            debugger_utils.start_execution(self, utils, db_utils)
 
     def poll_execution_result(self):
         return self.tester.get(
