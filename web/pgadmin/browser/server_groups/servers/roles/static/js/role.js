@@ -413,7 +413,9 @@ define('pgadmin.node.role', [
           id: 'rolvaliduntil', readonly: 'readonly', type: 'text',
           group: gettext('Definition'), label: gettext('Account expires'),
           mode: ['properties', 'edit', 'create'], control: 'datetimepicker',
-          deps: ['rolcanlogin'], options: {format: 'YYYY-MM-DD HH:mm:ss Z'},
+          deps: ['rolcanlogin'],
+          placeholder: gettext('No Expiry'),
+          helpMessage: gettext('Please note that if you leave this field blank, then password will never expire.'),
         },{
           id: 'rolconnlimit',  type: 'int', group: gettext('Definition'),
           label: gettext('Connection limit'), cell: 'integer', min : -1,
