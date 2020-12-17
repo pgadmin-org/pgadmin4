@@ -4286,7 +4286,14 @@ define('tools.querytool', [
         $('#btn-explain-options-dropdown').prop('disabled', mode_disabled);
         $('#btn-edit-dropdown').prop('disabled', mode_disabled);
         $('#btn-load-file').prop('disabled', mode_disabled);
-        $('#btn-save-file').prop('disabled', mode_disabled);
+        if(this.gridView.current_file) {
+          if(this.gridView.query_tool_obj.file_data != this.gridView.query_tool_obj.getValue()) {
+            $('#btn-save-file').prop('disabled', mode_disabled);
+          }
+        } else {
+          $('#btn-save-file').prop('disabled', mode_disabled);
+        }
+
         $('#btn-file-menu-dropdown').prop('disabled', mode_disabled);
         $('#btn-find').prop('disabled', mode_disabled);
         $('#btn-find-menu-dropdown').prop('disabled', mode_disabled);
