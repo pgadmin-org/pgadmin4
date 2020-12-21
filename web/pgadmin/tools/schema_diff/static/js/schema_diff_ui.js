@@ -456,7 +456,9 @@ export default class SchemaDiffUI {
 
     grid.onSelectedRowsChanged.subscribe(self.handleDependencies.bind(this));
 
-    self.model.on('change:diff_ddl', self.handleDependencies.bind(self));
+    self.model.on('change:diff_ddl', function(event) {
+      self.handleDependencies.bind(event, self);
+    });
 
     $('#schema-diff-grid').on('keyup', function() {
       if ((event.keyCode == 38 || event.keyCode ==40) && this.grid.getActiveCell().row) {
@@ -831,8 +833,12 @@ export default class SchemaDiffUI {
         }
       }
     });
-    // Refresh the grid
-    self.dataView.refresh();
+
+    // Check whether comparison data is loaded or not
+    if(!_.isUndefined(self.dataView) && !_.isNull(self.dataView)) {
+      // Refresh the grid
+      self.dataView.refresh();
+    }
   }
 
   connect_database(server_id, db_id, callback) {
