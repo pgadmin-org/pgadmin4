@@ -8,7 +8,7 @@ SELECT
     description AS comment,
     c.reltablespace AS spcoid,
     pg_get_userbyid(c.relowner) AS owner,
-    pg_get_viewdef(c.oid) AS definition,
+    pg_get_viewdef(c.oid, true) AS definition,
     array_to_string(c.relacl::text[], ', ') AS acl,
     {#=============Checks if it is system view================#}
     {% if vid and datlastsysoid %}

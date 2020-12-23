@@ -25,5 +25,6 @@ Bug fixes
 | `Issue #6046 <https://redmine.postgresql.org/issues/6046>`_ -  Fixed an issue where the state of the Save File icon does not match the dirty editor indicator.
 | `Issue #6047 <https://redmine.postgresql.org/issues/6047>`_ -  Fixed an issue where the dirty indicator stays active even if all changes were undone.
 | `Issue #6058 <https://redmine.postgresql.org/issues/6058>`_ -  Ensure that the rename panel should be disabled when the SQL file opened in the query tool.
+| `Issue #6061 <https://redmine.postgresql.org/issues/6061>`_ -  Fixed extra parentheses issue around joins for Views.
 | `Issue #6065 <https://redmine.postgresql.org/issues/6065>`_ -  Fixed accessibility issues in schema diff module.
 | `Issue #6084 <https://redmine.postgresql.org/issues/6084>`_ -  Fixed TypeError exception in schema diff when selected any identical object.

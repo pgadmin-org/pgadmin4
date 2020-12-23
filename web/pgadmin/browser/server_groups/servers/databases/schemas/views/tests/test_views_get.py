@@ -85,8 +85,12 @@ class ViewsGetTestCase(BaseTestGenerator):
             test_result_data = self.expected_data["test_result_data"]
             if bool(test_result_data):
                 response_data = json.loads(response.data.decode('utf-8'))
-                self.assertIn(test_result_data["definition"],
-                              response_data['definition'])
+                if self.server['type'] == 'pg':
+                    self.assertIn(test_result_data["pg_definition"],
+                                  response_data['definition'])
+                else:
+                    self.assertIn(test_result_data["definition"],
+                                  response_data['definition'])
         else:
             if self.mocking_required:
                 with patch(self.mock_data["function_name"],
