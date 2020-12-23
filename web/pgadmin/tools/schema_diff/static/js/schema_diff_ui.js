@@ -396,10 +396,12 @@ export default class SchemaDiffUI {
     self.dataView.onRowCountChanged.subscribe(function () {
       grid.updateRowCount();
       grid.render();
+      self.accessibility_error();
     });
     self.dataView.onRowsChanged.subscribe(function (e, args) {
       grid.invalidateRows(args.rows);
       grid.render();
+      self.accessibility_error();
     });
 
     // Change Row css on the basis of item status
@@ -430,6 +432,7 @@ export default class SchemaDiffUI {
 
     let $data_grid = $('#schema-diff-grid');
     grid = this.grid = new Slick.Grid($data_grid, self.dataView, columns, options);
+    $('label[for='+ columns[0].name.split('\'')[1] +']').append('<span style="display:none">checkbox</span>');
     grid.registerPlugin(groupItemMetadataProvider);
     grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
     grid.registerPlugin(checkboxSelector);
@@ -483,6 +486,18 @@ export default class SchemaDiffUI {
     self.dataView.refresh();
 
     self.resize_grid();
+    self.accessibility_error();
+  }
+
+  accessibility_error() {
+    $('.slick-viewport').scroll(function() {
+      setTimeout(function() {
+        $('span.slick-column-name label').append('<span style="display:none">checkbox</span>');
+        $('div.slick-cell.l0 label').each(function(inx, el) {
+          $(el).append('<span style="display:none">checkbox</span>');
+        });
+      }, 0);
+    });
   }
 
   handle_generate_button(){
@@ -809,6 +824,7 @@ export default class SchemaDiffUI {
       header_panel = self.docker.findPanels('schema_diff_header_panel')[0];
 
     footer_panel.$container.find('#schema-diff-ddl-comp').append(self.footer.render().$el);
+    $('div.CodeMirror div textarea').attr('aria-label', 'textarea');
     header_panel.$container.find('#schema-diff-grid').append(`<div class='obj_properties container-fluid'>
     <div class='pg-panel-message'>` + gettext('<strong>Database Compare:</strong> Select the server and database for the source and target and Click <strong>Compare</strong>.') +
     gettext('</br><strong>Schema Compare:</strong> Select the server, database and schema for the source and target and Click <strong>Compare</strong>.') +

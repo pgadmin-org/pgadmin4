@@ -191,7 +191,7 @@ $color-editor-variable: $color-fg !default;
 $color-editor-variable-2: #05a !default;
 $color-editor-builtin: #30a !default;
 $color-editor-comment: #a50 !default;
-$color-editor-bracket: #997 !default;
+$color-editor-bracket: #737373 !default;
 $color-editor-operator: $color-fg !default;
 $color-editor-foldmarker: #0000FF !default;
 $color-editor-activeline: #50B0F0 !default;
@@ -332,6 +332,7 @@ $select2-container-hover-bg: $tree-bg-hover !default;
 $select2-container-hover-fg: $tree-fg-hover !default;
 $select2-container-bg-selected: $tree-bg-selected !default;
 $select2-container-fg-selected: $tree-fg-selected !default;
+$select2-placeholder: #575757 !default;
 
 $btn-primary-icon-bg: $color-bg !default;
 $btn-primary-icon-fg: $color-fg !default;

@@ -46,7 +46,7 @@ let SchemaDiffSqlControl =
       '<% if (copyRequired) { %><button class="btn btn-secondary ddl-copy d-none">' + gettext('Copy') + '</button> <% } %>',
       '<div class="pgadmin-controls pg-el-9 pg-el-12 sql_field_layout <%=extraClasses.join(\' \')%>">',
       '  <textarea ',
-      '    class="<%=Backform.controlClassName%> " name="<%=name%>"',
+      '    class="<%=Backform.controlClassName%> " name="<%=name%>" aria-label="<%=name%>"',
       '    maxlength="<%=maxlength%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%>',
       '    rows=<%=rows%>',
       '    <%=required ? "required" : ""%>><%-value%></textarea>',
@@ -120,7 +120,7 @@ let SchemaDiffSelect2Control =
       '<% }%>',
       '<div class="<%=controlsClassName%>">',
       ' <select class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>"',
-      '  name="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%>',
+      '  name="<%=name%>" aria-label="<%=name%>" value="<%-value%>" <%=disabled ? "disabled" : ""%>',
       '  <%=required ? "required" : ""%><%= select2.multiple ? " multiple>" : ">" %>',
       '  <%=select2.first_empty ? " <option></option>" : ""%>',
       '  <% for (var i=0; i < options.length; i++) {%>',
@@ -322,15 +322,13 @@ let SchemaDiffHeaderView = Backform.Form.extend({
               <div class="btn-group mr-1" role="group" aria-label="">
                 <button id="btn-filter" type="button" class="btn btn-primary-icon"
                         title=""
-                        accesskey=""
                         tabindex="0"
                         style="pointer-events: none;">
                     <i class="fa fa-filter sql-icon-lg" aria-hidden="true"></i>&nbsp;` + gettext('Filter') + `
                 </button>
                 <button id="btn-filter-dropdown" type="button" class="btn btn-primary-icon dropdown-toggle dropdown-toggle-split"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="filter"
                         title=""
-                        accesskey=""
                         tabindex="0">
                 </button>` +
       [
@@ -492,7 +490,7 @@ let SchemaDiffFooterView = Backform.Form.extend({
       }
       controls.push(cntr);
     });
-
+    $('div.CodeMirror div textarea').attr('aria-label', 'textarea');
     let $diff_sc = this.$el.find('.source_ddl'),
       $diff_tr = this.$el.find('.target_ddl'),
       $diff = this.$el.find('.diff_ddl'),
