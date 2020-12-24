@@ -299,7 +299,7 @@ define('pgadmin.datagrid', [
             ).set({'title': gettext('Rename Panel')});
           });
 
-          var openQueryToolURL = function(j) {
+          var openQueryToolURL = function(j, panel_url) {
             // add spinner element
             let $spinner_el =
               $(`<div class="pg-sp-container">
@@ -315,9 +315,20 @@ define('pgadmin.datagrid', [
               if (frameInitialized) {
                 clearInterval(init_poller_id);
                 var frame = $(j).data('embeddedFrame');
+
                 if (frame) {
                   frame.onLoaded(()=>{
                     $spinner_el.remove();
+                    // Fix for firefox backspace click causes pgadmin Inception - RM4892
+                    // start of code
+                    var current_browser = pgAdmin.Browser.get_browser();
+                    if (current_browser.name === 'Firefox') {
+                      frame.$iFrame[0].contentWindow.history.pushState(null, null, panel_url);
+                      frame.$iFrame[0].contentWindow.onpopstate = function () {
+                        frame.$iFrame[0].contentWindow.history.go(1);
+                      };
+                    }
+                    // end of code
                   });
                   frame.openHTML(queryToolForm);
                 }
@@ -325,7 +336,7 @@ define('pgadmin.datagrid', [
             }, 100);
           };
 
-          openQueryToolURL(queryToolPanel);
+          openQueryToolURL(queryToolPanel, panel_url);
         }
         return true;
       },

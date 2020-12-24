@@ -148,7 +148,8 @@ def check_precondition(f):
         self.datistemplate = \
             self.manager.db_info[kwargs['did']]['datistemplate'] \
             if self.manager.db_info is not None and \
-            kwargs['did'] in self.manager.db_info else False
+            kwargs['did'] in self.manager.db_info and \
+            'datistemplate' in self.manager.db_info[kwargs['did']] else False
 
         # Set the template path for the SQL scripts
         if self.manager.server_type == 'gpdb':
