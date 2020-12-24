@@ -16,7 +16,7 @@
           "cltype": "text"
         }, {
           "name": "col3",
-          "cltype": "integer",
+          "cltype": "integer"
         }],
         "is_partitioned": false,
         "schema": "testschema",
@@ -126,10 +126,13 @@
       "endpoint": "NODE-exclusion_constraint.obj",
       "sql_endpoint": "NODE-exclusion_constraint.sql_id",
       "data": {
-        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#_1",
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#",
         "comment": "Comment for create",
         "fillfactor": "12",
         "amname": "gist",
+        "condeferrable": true,
+        "condeferred": true,
+        "indconstraint": "col1 > 1",
         "columns": [
           {
             "column": "col2",
