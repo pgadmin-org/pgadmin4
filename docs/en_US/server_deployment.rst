@@ -255,7 +255,7 @@ pgAdmin can be hosted by uWSGI, with NGINX in front of it. Note that these
 examples assume pgAdmin was installed using the Python Wheel (you may need to
 adjust the path to suit your installation).
 
-To run with pgAdmin in the root directory of the server, start Gunicorn using a
+To run with pgAdmin in the root directory of the server, start uWSGI using a
 command similar to:
 
 .. code-block:: bash
