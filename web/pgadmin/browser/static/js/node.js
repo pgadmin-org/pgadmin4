@@ -1613,6 +1613,8 @@ define('pgadmin.browser.node', [
 
           // Show contents before buttons
           j.prepend(content);
+          // add required attributes to select2 input to resolve accessibility issue.
+          $('.select2-search__field').attr('aria-label', 'select2');
           view.$el.closest('.wcFloating').find('.wcFrameButtonBar > .wcFrameButton[style!="display: none;"]').on('keydown', function(e) {
 
             if(e.shiftKey && e.keyCode === 9) {

@@ -319,7 +319,7 @@ define('misc.bgprocess', [
               <div class="card-header bg-primary d-flex">
                 <div>${self.type_desc}</div>
                 <div class="ml-auto">
-                  <button class="btn btn-sm-sq btn-primary pg-bg-close"><i class="fa fa-lg fa-times" role="img"></i></button>
+                  <button class="btn btn-sm-sq btn-primary pg-bg-close" aria-label='close'><i class="fa fa-lg fa-times" role="img"></i></button>
                 </div>
               </div>
               <div class="card-body px-2">
