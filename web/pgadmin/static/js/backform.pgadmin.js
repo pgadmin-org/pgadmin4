@@ -259,9 +259,13 @@ define([
    */
   _.extend(
     Backform.InputControl.prototype, {
+      defaults: _.extend(Backform.InputControl.prototype.defaults, {
+        controlLabelClassName: Backform.controlLabelClassName,
+        controlsClassName: Backform.controlsClassName,
+      }),
       template: _.template([
-        '<label class="<%=Backform.controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
-        '<div class="<%=Backform.controlContainerClassName%>">',
+        '<label class="<%=controlLabelClassName%>" for="<%=cId%>"><%=label%></label>',
+        '<div class="<%=controlsClassName%>">',
         '  <input type="<%=type%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> />',
         '  <% if (helpMessage && helpMessage.length) { %>',
         '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',

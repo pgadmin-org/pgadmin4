@@ -1,3 +1,4 @@
+{% if type is not none %}
 SELECT DISTINCT op.oprname as oprname
 FROM pg_operator op,
 ( SELECT oid
@@ -28,3 +29,8 @@ FROM pg_operator op,
       WHERE typname = {{type|qtLiteral}}) AS types
 WHERE oprcom > 0 AND
       (op.oprleft=types.oid OR op.oprright=types.oid)
+{% else %}
+SELECT DISTINCT op.oprname as oprname
+FROM pg_operator op
+WHERE oprcom > 0
+{% endif %}

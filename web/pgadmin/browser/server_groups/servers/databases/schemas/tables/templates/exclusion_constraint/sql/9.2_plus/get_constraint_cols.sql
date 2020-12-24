@@ -10,7 +10,8 @@ SELECT
 ,
   coll.collname,
   nspc.nspname as collnspname,
-  format_type(ty.oid,NULL) AS datatype
+  format_type(ty.oid,NULL) AS datatype,
+  CASE WHEN pg_get_indexdef(i.indexrelid, {{loop.index}}, true) = a.attname THEN FALSE ELSE TRUE END AS is_exp
 FROM pg_index i
 JOIN pg_attribute a ON (a.attrelid = i.indexrelid AND attnum = {{loop.index}})
 JOIN pg_type ty ON ty.oid=a.atttypid

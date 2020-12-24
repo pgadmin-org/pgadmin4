@@ -560,17 +560,16 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         Returns:
 
         """
-        data = request.args if request.args else None
+        data = request.args
         try:
-            if data and 'col_type' in data:
-                result = exclusion_utils.get_operator(
-                    self.conn, data['col_type'],
-                    self.blueprint.show_system_objects)
+            result = exclusion_utils.get_operator(
+                self.conn, data.get('col_type', None),
+                self.blueprint.show_system_objects)
 
-                return make_json_response(
-                    data=result,
-                    status=200
-                )
+            return make_json_response(
+                data=result,
+                status=200
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 

@@ -58,13 +58,15 @@ Click the *Columns* tab to continue.
     :alt: Exclusion constraint dialog columns tab
     :align: center
 
-Use the fields in the *Columns* tab to to specify the column(s) to which the
-constraint applies. Use the drop-down listbox next to *Column* to select a
-column and click the *Add* icon (+) to provide details of the action on the
-column:
+Use the fields in the *Columns* tab to specify the column(s) or expression(s)
+to which the constraint applies. Use the *Is expression ?* switch to enable
+expression text input. Use the drop-down listbox next to *Column*
+to select a column. Once the *Column* is selected or the *Expression* is
+entered then click the *Add* icon (+) to provide details of the action on the
+column/expression:
 
-* The *Column* field is populated with the selection made in the *Column*
-  drop-down listbox.
+* The *Col/Exp* field is populated with the selection made in the *Column*
+  drop-down listbox or the *Expression* entered.
 * If applicable, use the drop-down listbox in the *Operator class* to specify
   the operator class that will be used by the index for the column.
 * Move the *DESC* switch to *DESC* to specify a descending sort order. The

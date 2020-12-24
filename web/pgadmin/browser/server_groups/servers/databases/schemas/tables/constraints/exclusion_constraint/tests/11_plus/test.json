@@ -14,6 +14,9 @@
         }, {
           "name": "col2",
           "cltype": "text"
+        }, {
+          "name": "col3",
+          "cltype": "integer",
         }],
         "is_partitioned": false,
         "schema": "testschema",
@@ -75,6 +78,43 @@
       "endpoint": "NODE-exclusion_constraint.delete_id",
       "data": {
         "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#a"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Exclusion Constraint with expressions",
+      "endpoint": "NODE-exclusion_constraint.obj",
+      "sql_endpoint": "NODE-exclusion_constraint.sql_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#_1",
+        "comment": "Comment for create",
+        "fillfactor": "12",
+        "amname": "gist",
+        "columns": [
+          {
+            "column": "col2",
+            "order": false,
+            "nulls_order": false,
+            "operator": "<>",
+            "is_sort_nulls_applicable": false,
+            "is_exp": false
+          },
+          {
+            "column": "(col1+col3)",
+            "order": false,
+            "nulls_order": false,
+            "operator": "<>",
+            "is_sort_nulls_applicable": false,
+            "is_exp": true
+          }
+        ]
+      },
+      "expected_sql_file": "create_exclusion_constraint_exp.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Exclusion Constraint",
+      "endpoint": "NODE-exclusion_constraint.delete_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#_1a"
       }
     }
   ]

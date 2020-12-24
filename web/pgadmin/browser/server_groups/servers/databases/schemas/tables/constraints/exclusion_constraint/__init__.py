@@ -778,57 +778,17 @@ class ExclusionConstraintView(PGChildNodeView):
 
         """
         try:
-            SQL = render_template(
-                "/".join([self.template_path, self._PROPERTIES_SQL]),
-                did=did, tid=tid, conn=self.conn, cid=exid)
-            status, result = self.conn.execute_dict(SQL)
+            status, rows = exclusion_utils.get_exclusion_constraints(
+                self.conn, did, tid, exid, template_path=self.template_path
+            )
             if not status:
-                return internal_server_error(errormsg=result)
-            if len(result['rows']) == 0:
+                return rows
+            if len(rows) == 0:
                 return gone(_("Could not find the exclusion constraint."))
 
-            data = result['rows'][0]
+            data = rows[0]
             data['schema'] = self.schema
             data['table'] = self.table
-
-            sql = render_template(
-                "/".join([self.template_path, 'get_constraint_cols.sql']),
-                cid=exid,
-                colcnt=data['col_count'])
-            status, res = self.conn.execute_dict(sql)
-
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            columns = []
-            for row in res['rows']:
-                nulls_order = True if (row['options'] & 2) else False
-                order = False if row['options'] & 1 else True
-                columns.append({"column": row['coldef'].strip('"'),
-                                "oper_class": row['opcname'],
-                                "order": order,
-                                "nulls_order": nulls_order,
-                                "operator": row['oprname']
-                                })
-
-            data['columns'] = columns
-
-            # Add Include details of the index supported for PG-11+
-            if self.manager.version >= 110000:
-                sql = render_template(
-                    "/".join(
-                        [self.template_path, 'get_constraint_include.sql']
-                    ),
-                    cid=exid)
-                status, res = self.conn.execute_dict(sql)
-
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-                data['include'] = [col['colname'] for col in res['rows']]
-
-            if data.get('amname', '') == "":
-                data['amname'] = 'btree'
 
             SQL = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]), data=data)

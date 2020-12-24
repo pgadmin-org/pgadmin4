@@ -19,6 +19,7 @@ define('pgadmin.node.exclusion_constraint', [
   var ExclusionConstraintColumnModel = pgBrowser.Node.Model.extend({
     defaults: {
       column: undefined,
+      is_exp: false,
       oper_class: undefined,
       order: false,
       nulls_order: false,
@@ -32,8 +33,20 @@ define('pgadmin.node.exclusion_constraint', [
       return d;
     },
     schema: [{
-      id: 'column', label: gettext('Column'), type:'text', editable: false,
+      id: 'column', label: gettext('Col/Exp'), type:'text', editable: false,
       cell:'string',
+    },{
+      id: 'is_exp', label: '', type:'boolean', editable: false,
+      cell: Backgrid.StringCell.extend({
+        formatter: {
+          fromRaw: function (rawValue) {
+            return rawValue ? 'E' : 'C';
+          },
+          toRaw: function (val) {
+            return val;
+          },
+        },
+      }), visible: false,
     },{
       id: 'oper_class', label: gettext('Operator class'), type:'text',
       node: 'table', url: 'get_oper_class', first_empty: true,
@@ -175,7 +188,7 @@ define('pgadmin.node.exclusion_constraint', [
 
           self.column.set('options', []);
 
-          if (url && !_.isUndefined(col_type) && !_.isNull(col_type) && col_type != '') {
+          if (url) {
             var node = this.column.get('schema_node'),
               eventHandler = m.top || m,
               node_info = this.column.get('node_info'),
@@ -210,9 +223,11 @@ define('pgadmin.node.exclusion_constraint', [
     validate: function() {
       this.errorModel.clear();
       var operator = this.get('operator'),
-        column_name = this.get('column');
+        column_name = this.get('column'),
+        is_exp = this.get('is_exp');
       if (_.isUndefined(operator) || _.isNull(operator)) {
         var msg = gettext('Please specify operator for column: ') + column_name;
+        if(is_exp) msg = gettext('Please specify operator for expression: ') + column_name;
         this.errorModel.set('operator', msg);
         return msg;
       }
@@ -231,8 +246,15 @@ define('pgadmin.node.exclusion_constraint', [
         var self = this,
           node = 'exclusion_constraint',
           headerSchema = [{
-            id: 'column', label:'', type:'text',
-            node: 'column', control: Backform.NodeListByNameControl.extend({
+            id: 'is_exp', label: gettext('Is expression ?'), type: 'switch',
+            control: 'switch', controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-6 pg-el-12',
+          },{
+            id: 'column', label: gettext('Column'), type:'text',
+            controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-6 pg-el-12',
+            node: 'column', deps: ['is_exp'],
+            control: Backform.NodeListByNameControl.extend({
               initialize: function() {
                 // Here we will decide if we need to call URL
                 // Or fetch the data from parent columns collection
@@ -310,7 +332,8 @@ define('pgadmin.node.exclusion_constraint', [
                 }
               },
               template: _.template([
-                '<div class="<%=Backform.controlsClassName%> <%=extraClasses.join(\' \')%>">',
+                '<span class="<%=controlLabelClassName%>"><%=label%></span>',
+                '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
                 '  <select class="pgadmin-node-select form-control" name="<%=name%>" style="width:100%;" value="<%-value%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%> >',
                 '    <% for (var i=0; i < options.length; i++) { %>',
                 '    <% var option = options[i]; %>',
@@ -363,10 +386,21 @@ define('pgadmin.node.exclusion_constraint', [
             readonly: function() {
               return !_.isUndefined(self.model.get('oid'));
             },
+            disabled: function(m) {
+              return m.get('is_exp');
+            },
+          },{
+            id: 'exp', label: gettext('Expression'), type: 'text',
+            editable: true, deps: ['is_exp'],
+            controlLabelClassName: 'control-label pg-el-sm-4 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-6 pg-el-12',
+            disabled: function(m) {
+              return !m.get('is_exp');
+            },
           }],
-          headerDefaults = {column: null},
+          headerDefaults = {is_exp: false, column: null, exp: null},
 
-          gridCols = ['column', 'oper_class', 'order', 'nulls_order', 'operator'];
+          gridCols = ['is_exp', 'column', 'oper_class', 'order', 'nulls_order', 'operator'];
 
         self.headerData = new (Backbone.Model.extend({
           defaults: headerDefaults,
@@ -396,21 +430,15 @@ define('pgadmin.node.exclusion_constraint', [
       },
 
       generateHeader: function(data) {
+        var isNew = _.isUndefined(this.model.get('oid'));
         var header = [
-          '<div class="subnode-header-form">',
+          '<div class="subnode-header-form '+ (isNew ? '' : 'd-none') +'">',
           ' <div>',
-          '  <div class="row">',
-          '   <div class="col-4">',
-          '    <label class="control-label"><%-column_label%></label>',
-          '   </div>',
-          '   <div class="col-4" header="column"></div>',
-          '  </div>',
+          '  <div header="is_exp"></div>',
+          '  <div header="column"></div>',
+          '  <div header="exp"></div>',
           ' </div>',
           '</div>'].join('\n');
-
-        _.extend(data, {
-          column_label: gettext('Column'),
-        });
 
         var self = this,
           headerTmpl = _.template(header),
@@ -514,20 +542,24 @@ define('pgadmin.node.exclusion_constraint', [
         }
 
         if (self.control_data.canAdd) {
-          self.collection.each(function(m) {
-            if (!inSelected) {
-              _.each(checkVars, function(v) {
-                if (!inSelected) {
-                  val = m.get(v);
-                  inSelected = ((
-                    (_.isUndefined(val) || _.isNull(val)) &&
-                      (_.isUndefined(data[v]) || _.isNull(data[v]))
-                  ) ||
-                      (val == data[v]));
-                }
-              });
-            }
-          });
+          if(data['is_exp']) {
+            inSelected = false;
+          } else {
+            self.collection.each(function(m) {
+              if (!inSelected) {
+                _.each(checkVars, function(v) {
+                  if (!inSelected) {
+                    val = m.get(v);
+                    inSelected = ((
+                      (_.isUndefined(val) || _.isNull(val)) &&
+                        (_.isUndefined(data[v]) || _.isNull(data[v]))
+                    ) ||
+                        (val == data[v]));
+                  }
+                });
+              }
+            });
+          }
         }
         else {
           inSelected = true;
@@ -538,23 +570,28 @@ define('pgadmin.node.exclusion_constraint', [
 
       addColumns: function(ev) {
         ev.preventDefault();
-        var self = this,
-          column = self.headerData.get('column');
+        var self = this;
+        let newHeaderData = {
+          is_exp: self.headerData.get('is_exp'),
+          column: self.headerData.get('is_exp') ? self.headerData.get('exp') : self.headerData.get('column'),
+        };
 
-        if (column && column != '') {
+        if (newHeaderData.column && newHeaderData.column != '') {
           var coll = self.model.get(self.field.get('name')),
             m = new (self.field.get('model'))(
-              self.headerData.toJSON(), {
+              newHeaderData, {
                 silent: true, top: self.model.top,
                 collection: coll, handler: coll,
               }),
             col_types =self.field.get('col_types') || [];
 
-          for(var i=0; i < col_types.length; i++) {
-            var col_type = col_types[i];
-            if (col_type['name'] ==  m.get('column')) {
-              m.set({'col_type':col_type['type']});
-              break;
+          if(!m.get('is_exp')) {
+            for(var i=0; i < col_types.length; i++) {
+              var col_type = col_types[i];
+              if (col_type['name'] ==  m.get('column')) {
+                m.set({'col_type':col_type['type']});
+                break;
+              }
             }
           }
 
@@ -786,7 +823,7 @@ define('pgadmin.node.exclusion_constraint', [
                 !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
           },
         },{
-          id: 'columns', label: gettext('Columns'),
+          id: 'columns', label: gettext('Columns/Expressions'),
           type: 'collection', group: gettext('Columns'),
           deps:['amname'], canDelete: true, editable: false,
           canAdd: function(m) {
