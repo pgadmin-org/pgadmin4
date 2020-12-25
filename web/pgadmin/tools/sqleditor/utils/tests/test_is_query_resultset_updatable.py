@@ -146,6 +146,8 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         self._check_editable_columns(response_data)
 
     def tearDown(self):
+        # Close query tool
+        self._close_query_tool()
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
 
@@ -231,6 +233,11 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             create_sql += ';'
 
         utils.create_table_with_query(self.server, self.db_name, create_sql)
+
+    def _close_query_tool(self):
+        url = '/datagrid/close/{0}'.format(self.trans_id)
+        response = self.tester.delete(url)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestTemporaryTable(TestQueryUpdatableResultset):

@@ -239,6 +239,8 @@ class TestTransactionControl(BaseTestGenerator):
             self._check_transaction_status(TX_STATUS_IDLE)
 
     def tearDown(self):
+        # Close query tool
+        self._close_query_tool()
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)
 
@@ -335,3 +337,8 @@ class TestTransactionControl(BaseTestGenerator):
 
         self.select_sql = "SELECT * FROM %s" % test_table_name
         utils.create_table_with_query(self.server, self.db_name, create_sql)
+
+    def _close_query_tool(self):
+        url = '/datagrid/close/{0}'.format(self.trans_id)
+        response = self.tester.delete(url)
+        self.assertEqual(response.status_code, 200)

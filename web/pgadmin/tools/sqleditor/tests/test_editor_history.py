@@ -100,5 +100,10 @@ class TestEditorHistory(BaseTestGenerator):
                              self.expected_len)
 
     def tearDown(self):
+        # Close query tool
+        url = '/datagrid/close/{0}'.format(self.trans_id)
+        response = self.tester.delete(url)
+        self.assertEqual(response.status_code, 200)
+
         # Disconnect the database
         database_utils.disconnect_database(self, self.server_id, self.db_id)

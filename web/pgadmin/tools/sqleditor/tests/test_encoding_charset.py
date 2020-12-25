@@ -276,6 +276,11 @@ class TestEncodingCharset(BaseTestGenerator):
         result = response_data['data']['result'][0][0]
         self.assertEqual(result, self.test_str)
 
+        # Close query tool
+        url = '/datagrid/close/{0}'.format(self.trans_id)
+        response = self.tester.delete(url)
+        self.assertEqual(response.status_code, 200)
+
         database_utils.disconnect_database(self, self.encode_sid,
                                            self.encode_did)
 
