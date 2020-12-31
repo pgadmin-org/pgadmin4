@@ -1,0 +1,1375 @@
+{
+  "pgagent_job_create": [
+    {
+      "name": "Create pgagent job: With valid data.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jobname": "test_job_add%s",
+        "jobenabled": true,
+        "jobhostagent": "",
+        "jobjclid": 1,
+        "jobdesc": "",
+        "jsteps": [
+          {
+            "jstid": null,
+            "jstjobid": null,
+            "jstname": "test_step",
+            "jstdesc": "",
+            "jstenabled": true,
+            "jstkind": true,
+            "jstconntype": true,
+            "jstcode": "SELECT 1;",
+            "jstconnstr": null,
+            "jstdbname": "postgres",
+            "jstonerror": "f",
+            "jstnextrun": ""
+          }
+        ],
+        "jschedules": [
+          {
+            "jscid": null,
+            "jscjobid": null,
+            "jscname": "test_sch",
+            "jscdesc": "",
+            "jscenabled": true,
+            "jscstart": "2050-01-01 12:14:21 +05:30",
+            "jscend": null,
+            "jscminutes": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jschours": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "jscweekdays": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscmonthdays": [
+              false,
+              false,
+              true,
+              false,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscmonths": [
+              false,
+              false,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscexceptions": [
+              {
+                "jexdate": "2050-01-01",
+                "jextime": "14:00"
+              }
+            ]
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create pgagent job: With invalid data.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "jobenabled": true,
+        "jobhostagent": "",
+        "jobjclid": 1,
+        "jobdesc": "",
+        "jsteps": [
+          {
+            "jstid": null,
+            "jstjobid": null,
+            "jstname": "test_step",
+            "jstdesc": "",
+            "jstenabled": true,
+            "jstkind": true,
+            "jstconntype": true,
+            "jstcode": "SELECT 1;",
+            "jstconnstr": null,
+            "jstdbname": "postgres",
+            "jstonerror": "f",
+            "jstnextrun": ""
+          }
+        ],
+        "jschedules": [
+          {
+            "jscid": null,
+            "jscjobid": null,
+            "jscname": "test_sch",
+            "jscdesc": "",
+            "jscenabled": true,
+            "jscstart": "2050-01-01 12:14:21 +05:30",
+            "jscend": null,
+            "jscminutes": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jschours": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "jscweekdays": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscmonthdays": [
+              false,
+              false,
+              true,
+              false,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscmonths": [
+              false,
+              false,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscexceptions": [
+              {
+                "jexdate": "2050-01-01",
+                "jextime": "11:00"
+              }
+            ]
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the required parameter (jobname).",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create pgagent job: With valid data while server down.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "jobname": "test_job_add%s",
+        "jobenabled": true,
+        "jobhostagent": "",
+        "jobjclid": 1,
+        "jobdesc": "",
+        "jsteps": [
+          {
+            "jstid": null,
+            "jstjobid": null,
+            "jstname": "test_step",
+            "jstdesc": "",
+            "jstenabled": true,
+            "jstkind": true,
+            "jstconntype": true,
+            "jstcode": "SELECT 1;",
+            "jstconnstr": null,
+            "jstdbname": "postgres",
+            "jstonerror": "f",
+            "jstnextrun": ""
+          }
+        ],
+        "jschedules": [
+          {
+            "jscid": null,
+            "jscjobid": null,
+            "jscname": "test_sch",
+            "jscdesc": "",
+            "jscenabled": true,
+            "jscstart": "2050-01-01 12:14:21 +05:30",
+            "jscend": null,
+            "jscminutes": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jschours": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "jscweekdays": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscmonthdays": [
+              false,
+              false,
+              true,
+              false,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscmonths": [
+              false,
+              false,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "jscexceptions": [
+              {
+                "jexdate": "2050-01-01",
+                "jextime": "10:00"
+              }
+            ]
+          }
+        ]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_job_get": [
+    {
+      "name": "Get pgagent job: With existing job.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pgagent jobs: With existing job.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get pgagent jobs: With Non-existing job.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "job_id": 99999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the pgAgent job on the server.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pgagent jobs: With existing job while server down.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgagent_job_put": [
+    {
+      "name": "Update pgagent job: With existing job with description.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jobdesc": "This is a test comment"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update pgagent job: With existing job to add schedule.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jschedules": {
+          "added": [
+            {
+              "jscjobid": "",
+              "jscenabled": true,
+              "jscdesc": "This is a test comment",
+              "jscname": "test_sc1",
+              "jscexceptions": [
+                {
+                  "jexdate": "2050-01-01",
+                  "jextime": "12:30"
+                }
+              ],
+              "jscstart": "2050-01-01 12:14:21 +05:30",
+              "jscend": "2050-03-01 12:14:21 +05:30",
+              "jscminutes": [
+                false,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "jscweekdays": [
+                false,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false
+              ],
+              "jscmonthdays": [
+                false,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true
+              ],
+              "jschours": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
+                true,
+                true,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ],
+              "jscmonths": [
+                false,
+                false,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false
+              ]
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update pgagent job: With existing job to add steps with local connection.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jsteps": {
+          "added": [
+            {
+              "jstjobid": "",
+              "jstname": "test_st1",
+              "jstdesc": "",
+              "jstenabled": true,
+              "jstkind": true,
+              "jstconntype": true,
+              "jstcode": "SELECT 1;",
+              "jstconnstr": null,
+              "jstdbname": "postgres",
+              "jstonerror": "f",
+              "jstnextrun": ""
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update pgagent job: With existing job to add steps with remote connection.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jsteps": {
+          "added": [
+            {
+              "jstjobid": "",
+              "jstname": "test_st1",
+              "jstdesc": "",
+              "jstenabled": true,
+              "jstkind": true,
+              "jstconntype": false,
+              "jstcode": "SELECT 1;",
+              "jstconnstr": "host=localhost port=5432 dbname=postgres",
+              "jstdbname": "",
+              "jstonerror": "f",
+              "jstnextrun": ""
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Run pgagent job: Run ith existing job with description while server down.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "jobdesc": "This is a test comment"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Run pgagent job: Run existing job.",
+      "url": "/browser/pga_job/run_now/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_job_delete": [
+    {
+      "name": "Delete pgagent job: With existing job.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete pgagent jobs: With existing jobs.",
+      "url": "/browser/pga_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "pgagent_job_sql": [
+    {
+      "name": "Get pgagent job sql: With existing job.",
+      "url": "/browser/pga_job/sql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get pgagent jobs sql: With Non-existing job.",
+      "url": "/browser/pga_job/sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "job_id": 99999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the object on the server.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get pgagent jobs sql: With existing job while server down.",
+      "url": "/browser/pga_job/sql/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_job_get_nodes": [
+    {
+      "name": "Get pgagent job nodes: With existing job.",
+      "url": "/browser/pga_job/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pgagent jobs nodes: With existing job.",
+      "url": "/browser/pga_job/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get pgagent jobs nodes: With Non-existing job.",
+      "url": "/browser/pga_job/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "job_id": 99999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the pgAgent job on the server.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get pgagent jobs nodes: With existing job while server down.",
+      "url": "/browser/pga_job/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgagent_job_msql": [
+    {
+      "name": "Get pgagent job msql: With existing job with description.",
+      "url": "/browser/pga_job/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jobdesc": "This is a test comment"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get pgagent job msql: With existing job to add schedule.",
+      "url": "/browser/pga_job/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+                "jschedules": {
+          "added": [
+            {
+              "jscid":null,
+              "jscjobid":null,
+              "jscenabled": true,
+              "jscdesc": "This is a test comment",
+              "jscname": "test_sc1",
+              "jscexceptions": [
+                {
+                  "jexdate": "2050-01-01",
+                  "jextime": "12:30"
+                }
+              ],
+              "jscstart": "2050-01-01 12:14:21 +05:30",
+              "jscend": "2050-03-01 12:14:21 +05:30",
+              "jscminutes": [
+                false,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "jscweekdays": [
+                false,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false
+              ],
+              "jscmonthdays": [
+                false,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true
+              ],
+              "jschours": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
+                true,
+                true,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ],
+              "jscmonths": [
+                false,
+                false,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false
+              ]
+            }
+          ]
+      }},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get pgagent job msql: With existing job to add steps with local connection.",
+      "url": "/browser/pga_job/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jsteps": {
+          "added": [
+            {
+              "jstjobid": null,
+              "jstid":null,
+              "jstname": "test_st1",
+              "jstdesc": "",
+              "jstenabled": true,
+              "jstkind": true,
+              "jstconntype": true,
+              "jstcode": "SELECT 1;",
+              "jstconnstr": null,
+              "jstdbname": "postgres",
+              "jstonerror": "f",
+              "jstnextrun": ""
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_job_get_statistics": [
+    {
+      "name": "Get pgagent job stats: With existing job.",
+      "url": "/browser/pga_job/stats/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get pgagent job stats: With existing job while server down.",
+      "url": "/browser/pga_job/stats/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ]
+}

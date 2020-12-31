@@ -1,0 +1,368 @@
+{
+  "pgagent_create_step": [
+    {
+      "name": "Create step: For existing pgAgent job.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jstjobid": "job_id",
+        "jstname": "pgagent_step_name",
+        "jstdesc": "",
+        "jstenabled": true,
+        "jstkind": true,
+        "jstconntype": true,
+        "jstcode": "SELECT 1;",
+        "jstconnstr": null,
+        "jstdbname": "postgres",
+        "jstonerror": "f",
+        "jstnextrun": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create step: For existing pgAgent job while server id down.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "jstjobid": "job_id",
+        "jstname": "pgagent_step_name",
+        "jstdesc": "",
+        "jstenabled": true,
+        "jstkind": true,
+        "jstconntype": true,
+        "jstcode": "SELECT 1;",
+        "jstconnstr": null,
+        "jstdbname": "postgres",
+        "jstonerror": "f",
+        "jstnextrun": ""
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_delete_step": [
+    {
+      "name": "Delete step: For existing pgAgent job.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete multiple steps: For existing pgAgent steps.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "pgagent_put_step": [
+    {
+      "name": "Update step: For existing pgAgent job step with kind, description, code and error.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jstdesc": "Test Steps",
+        "jstkind": false,
+        "jstcode": "SELECT 12345",
+        "jstonerror": "i"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update step: For existing pgAgent job step with connection type and string.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jstconntype": false,
+        "jstconnstr": "host=localhost port=5432 dbname=mydb connect_timeout=10"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update step: For existing pgAgent job step with connection string.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jstconnstr": "host=localhost port=5432 dbname=mydb connect_timeout=10"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update step: For non-existing pgAgent job step.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "step_id": 9999,
+        "jstconnstr": "host=localhost port=5432 dbname=mydb connect_timeout=10"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the specified job step.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update step: For existing pgAgent job step while server is down.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "jstconnstr": "host=localhost port=5432 dbname=mydb connect_timeout=10"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_get_step": [
+    {
+      "name": "Get step: For existing pgAgent job step.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get multiple steps: For existing pgAgent steps.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get step: For existing pgAgent job step while server is down.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get step: For non-existing pgAgent job step.",
+      "url": "/browser/pga_jobstep/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "step_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the specified job step.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgagent_get_nodes_step": [
+    {
+      "name": "Get step nodes: For existing pgAgent job step.",
+      "url": "/browser/pga_jobstep/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get multiple steps nodes: For existing pgAgent steps.",
+      "url": "/browser/pga_jobstep/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get step node: For non-existing pgAgent job step.",
+      "url": "/browser/pga_jobstep/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "step_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the specified job step.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgagent_get_step_stats": [
+    {
+      "name": "Get step stats: For existing pgAgent job step.",
+      "url": "/browser/pga_jobstep/stats/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get step  stats: For existing pgAgent job step while server is down.",
+      "url": "/browser/pga_jobstep/stats/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_get_msql_step": [
+    {
+      "name": "Get step msql: For existing pgAgent job step with kind, description, code and error.",
+      "url": "/browser/pga_jobstep/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jstdesc": "Test Steps",
+        "jstkind": false,
+        "jstcode": "SELECT 12345",
+        "jstonerror": "i"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get step msql: For existing pgAgent job step with connection type and string.",
+      "url": "/browser/pga_jobstep/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jstconntype": false,
+        "jstconnstr": "host=localhost port=5432 dbname=mydb connect_timeout=10"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ]
+}

@@ -9,10 +9,63 @@
 
 import sys
 import traceback
+import os
+import json
+from urllib.parse import urlencode
 
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
 from pgadmin.utils import server_utils as server_utils
+
+# Load test data from json file.
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/pgagent_test_data.json") as data_file:
+    test_cases = json.load(data_file)
+
+
+# api methods
+def api_create(self):
+    return self.tester.post('{0}{1}/{2}/'.
+                            format(self.url, str(utils.SERVER_GROUP),
+                                   str(self.server_id)),
+                            data=json.dumps(self.data),
+                            content_type='html/json')
+
+
+def api_get(self, job_id=None):
+    if job_id is None:
+        job_id = self.job_id
+    return self.tester.get('{0}{1}/{2}/{3}'.
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, job_id),
+                           content_type='html/json')
+
+
+def api_put(self):
+    return self.tester.put('{0}{1}/{2}/{3}'.
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.job_id),
+                           data=json.dumps(self.data),
+                           follow_redirects=True,
+                           content_type='html/json')
+
+
+def api_get_msql(self, url_encode_data):
+    return self.tester.get("{0}{1}/{2}/{3}?{4}".
+                           format(self.url, utils.SERVER_GROUP,
+                                  self.server_id, self.job_id,
+                                  urlencode(url_encode_data)),
+                           follow_redirects=True)
+
+
+def api_delete(self, job_id=None):
+    if job_id is None:
+        job_id = self.job_id
+    return self.tester.delete('{0}{1}/{2}/{3}'.
+                              format(self.url, utils.SERVER_GROUP,
+                                     self.server_id, job_id),
+                              data=json.dumps(self.data),
+                              content_type='html/json')
 
 
 def is_valid_server_to_run_pgagent(self):
@@ -121,10 +174,12 @@ def create_pgagent_job(self, name):
         traceback.print_exc(file=sys.stderr)
 
 
-def delete_pgagent_job(self):
+def delete_pgagent_job(self, job_id=None):
     """
     This function deletes the pgAgent job.
     """
+    if job_id is None:
+        job_id = self.job_id
     try:
         connection = utils.get_db_connection(
             self.server['db'],
@@ -139,7 +194,7 @@ def delete_pgagent_job(self):
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "DELETE FROM pgagent.pga_job "
-            "WHERE jobid = '%s'::integer;" % self.job_id
+            "WHERE jobid = '%s'::integer;" % job_id
         )
         connection.set_isolation_level(old_isolation_level)
         connection.commit()

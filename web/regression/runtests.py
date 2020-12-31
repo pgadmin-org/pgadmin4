@@ -681,10 +681,11 @@ def print_test_results():
         failed_cases, failed_cases_json = test_utils.get_scenario_name(
             failed_cases)
 
-        total_failed = len(dict((key, value) for key, value in
-                                failed_cases.items()).values())
-        total_skipped = len(dict((key, value) for key, value in
-                                 skipped_cases.items()).values())
+        total_failed = sum(list((len(value)) for key, value in
+                                failed_cases.items()))
+        total_skipped = sum(list((len(value)) for key, value in
+                                 skipped_cases.items()))
+
         total_passed_cases = int(
             test_result[server_res][0]) - total_failed - total_skipped
 

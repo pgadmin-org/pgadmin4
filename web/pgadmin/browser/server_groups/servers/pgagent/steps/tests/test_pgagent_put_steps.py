@@ -6,33 +6,21 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+from unittest.mock import patch
 
 import simplejson as json
 import uuid
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
-from . import utils as pgagent_utils
+from pgadmin.browser.server_groups.servers.pgagent.tests import utils as \
+    pgagent_utils
+from . import utils as steps_utils
 
 
 class PgAgentPutStepTestCase(BaseTestGenerator):
     """This class will test the update pgAgent steps API"""
-    scenarios = [
-        ('Update step with kind, description, code and error', dict(
-            url='/browser/pga_jobstep/obj/',
-            data={
-                'jstdesc': 'Test Steps',
-                'jstkind': False,
-                'jstcode': 'SELECT 12345',
-                'jstonerror': 'i'
-            })),
-        ('Update step with connection type and string', dict(
-            url='/browser/pga_jobstep/obj/',
-            data={
-                'jstconntype': False,
-                'jstconnstr':
-                    'host=localhost port=5432 dbname=mydb connect_timeout=10'
-            }))
-    ]
+    scenarios = utils.generate_scenarios("pgagent_put_step",
+                                         steps_utils.test_cases)
 
     def setUp(self):
         flag, msg = pgagent_utils.is_valid_server_to_run_pgagent(self)
@@ -41,25 +29,38 @@ class PgAgentPutStepTestCase(BaseTestGenerator):
         flag, msg = pgagent_utils.is_pgagent_installed_on_server(self)
         if not flag:
             self.skipTest(msg)
+
+        # Load test data
+        self.data = self.test_data
+
         name = "test_job_update%s" % str(uuid.uuid4())[1:8]
         self.job_id = pgagent_utils.create_pgagent_job(self, name)
+
         step_name = "test_step_update%s" % str(uuid.uuid4())[1:8]
         self.step_id = pgagent_utils.create_pgagent_step(
             self, step_name, self.job_id)
 
     def runTest(self):
         """This function will update pgAgent steps"""
-
         self.data['jstid'] = str(self.step_id)
-        response = self.tester.put(
-            '{0}{1}/{2}/{3}/{4}'.format(
-                self.url, str(utils.SERVER_GROUP), str(self.server_id),
-                str(self.job_id), str(self.step_id)
-            ),
-            data=json.dumps(self.data),
-            content_type='html/json'
-        )
-        self.assertEqual(response.status_code, 200)
+
+        if self.is_positive_test:
+            response = steps_utils.api_put(self)
+
+            # Assert response
+            utils.assert_status_code(self, response)
+        else:
+            if self.mocking_required:
+                with patch(self.mock_data["function_name"],
+                           side_effect=[eval(self.mock_data["return_value"])]):
+                    response = steps_utils.api_put(self)
+            else:
+                if "step_id" in self.data:
+                    self.step_id = self.data["step_id"]
+                response = steps_utils.api_put(self)
+            # Assert response
+            utils.assert_status_code(self, response)
+            utils.assert_error_message(self, response)
 
     def tearDown(self):
         """Clean up code"""
