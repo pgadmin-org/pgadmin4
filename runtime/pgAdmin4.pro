@@ -2,7 +2,7 @@ VERSION = 4.29.0.0
 QMAKE_TARGET_COMPANY = "The pgAdmin Development Team"
 QMAKE_TARGET_PRODUCT = "pgAdmin 4"
 QMAKE_TARGET_DESCRIPTION = "pgAdmin 4 Desktop Runtime"
-QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2013 - 2020, The pgAdmin Development Team"
+QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2013 - 2021, The pgAdmin Development Team"
 
 message(==================================)
 message(Configuring the pgAdmin 4 runtime.)

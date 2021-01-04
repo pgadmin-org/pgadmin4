@@ -4,7 +4,7 @@
 `Coding Standards`:index:
 *************************
 
-pgAdmin uses multiple technologies and multiple languages, each of which have 
+pgAdmin uses multiple technologies and multiple languages, each of which have
 their own coding standards.
 
 General
@@ -16,24 +16,24 @@ lines wrapped where appropriate to ensure they can be read on smaller displays
 as it's quite wasteful on modern displays). Typically lines should not be longer
 than 120 characters.
 
-Comments should be included in all code where required to explain its 
+Comments should be included in all code where required to explain its
 purpose or how it works if not obvious from a quick review of the code itself.
 
 CSS 3
 *****
 
 CSS3 is used for styling and layout throughout the application. Extensive use is
-made of the Bootstrap Framework to aid in that process, however additional 
+made of the Bootstrap Framework to aid in that process, however additional
 styles must still be created from time to time.
 
 Most custom styling comes from individual modules which may advertise static
 stylesheets to be included in the module that is loading them via hooks.
 
-Styling overrides (for example, to alter the Bootstrap look and feel) will 
+Styling overrides (for example, to alter the Bootstrap look and feel) will
 typically be found in the **overrides.css** file in the main static file
 directory for the application.
 
-Styling should never be applied inline in HTML, always through an external 
+Styling should never be applied inline in HTML, always through an external
 stylesheet, which should contain comments as appropriate to explain the usage
 or purpose for the style.
 
@@ -48,16 +48,16 @@ Styles should be specified clearly, one per line. For example:
 
     /* Ensure the codemirror editor displays full height gutters when resized */
     .CodeMirror, .CodeMirror-gutters {
-        height: 100% !important; 
-    } 
+        height: 100% !important;
+    }
 
 All stylesheets must be CSS3 compliant.
 
 HTML 5
 ******
 
-HTML 5 is used for page structure throughout the application, in most cases 
-being rendered from templates by the Jinja2 template engine in Flask. 
+HTML 5 is used for page structure throughout the application, in most cases
+being rendered from templates by the Jinja2 template engine in Flask.
 
 All HTML must be HTML 5 compliant.
 
@@ -160,17 +160,17 @@ which may be omitted if on a single statement is present:
 Python
 ******
 
-Python is used for the backend web server. All code must be compatible with 
+Python is used for the backend web server. All code must be compatible with
 Python 2.7 and should include PyDoc comments whilst following the official
-Python coding standards defined in 
-`PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_. An example function along 
+Python coding standards defined in
+`PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_. An example function along
 with the required file header is shown below::
 
     ##########################################################################
     #
     # pgAdmin 4 - PostgreSQL Tools
     #
-    # Copyright (C) 2013 - 2020, The pgAdmin Development Team
+    # Copyright (C) 2013 - 2021, The pgAdmin Development Team
     # This software is released under the PostgreSQL Licence
     #
     ##########################################################################
@@ -185,12 +185,12 @@ with the required file header is shown below::
     def get_nodes():
         """Return a JSON document listing the server groups for the user"""
         groups = ServerGroup.query.filter_by(user_id=current_user.id)
-        
+
         value = ''
         for group in groups:
             value += '{"id":%d,"label":"%s","icon":"icon-server-group","inode":true},' \
                      % (group.id, group.name)
-             
+
         value = value[:-1]
-        
+
         return value
