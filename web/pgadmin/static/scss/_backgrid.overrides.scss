@@ -6,7 +6,7 @@
 .backgrid td {
   font-weight: normal!important;
   &.editable {
-    & .display-text {
+    & > .display-text {
       overflow: hidden;
       text-overflow: ellipsis;
       @extend .form-control;
