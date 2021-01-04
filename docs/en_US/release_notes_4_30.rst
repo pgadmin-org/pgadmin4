@@ -21,6 +21,7 @@ Bug fixes
 *********
 
 | `Issue #4892 <https://redmine.postgresql.org/issues/4892>`_ -  Fixed an issue where pressing the back button will show another instance of the main page inside of the Query Tool tab.
+| `Issue #5282 <https://redmine.postgresql.org/issues/5282>`_ -  Added 'Count Rows' option to the partition sub tables.
 | `Issue #5571 <https://redmine.postgresql.org/issues/5571>`_ -  Added support for expression in exclusion constraints.
 | `Issue #5875 <https://redmine.postgresql.org/issues/5875>`_ -  Ensure that the 'template1' database should not be visible after pg_upgrade.
 | `Issue #5965 <https://redmine.postgresql.org/issues/5965>`_ -  Ensure that the macro query result should be download properly.

@@ -251,9 +251,13 @@ define('pgadmin.node.table', [
           if (!d)
             return false;
 
+          /* Set the type to table so that partition module can call this func */
+          let newD = {
+            ...d, _type: this.type,
+          };
           // Fetch the total rows of a table
           $.ajax({
-            url: obj.generate_url(i, 'count_rows' , d, true),
+            url: obj.generate_url(i, 'count_rows' , newD, true),
             type:'GET',
           })
             .done(function(res) {
