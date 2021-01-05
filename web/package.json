@@ -61,7 +61,7 @@
     "@simonwep/pickr": "^1.5.1",
     "acitree": "git+https://github.com/imsurinder90/jquery-aciTree.git#rc.7",
     "alertifyjs": "git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
     "babel-preset-es2015-without-strict": "~0.0.4",
     "babelify": "~10.0.0",
