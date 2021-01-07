@@ -2,7 +2,7 @@
 Version 4.30
 ************
 
-Release date: 2021-01-07
+Release date: 2021-01-28
 
 This release contains a number of bug fixes and new features since the release of pgAdmin4 4.29.
 
