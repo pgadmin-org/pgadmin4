@@ -108,21 +108,26 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
     },
     callback: function(closeEvent) {
       var innerbody;
-
+      closeEvent.cancel = false;
       if (closeEvent.button.text == gettext('Select')) {
-        var newFile = $('.storage_dialog #uploader .input-path').val(),
-          file_data = {
-            'path': $('.currentpath').val(),
-          };
+        var act_variable = document.activeElement.id;
+        if(act_variable !='refresh_list') {
+          var newFile = $('.storage_dialog #uploader .input-path').val(),
+            file_data = {
+              'path': $('.currentpath').val(),
+            };
 
-        pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:' + this.dialog_type, newFile);
-        innerbody = $(this.elements.body).find('.storage_content');
-        $(innerbody).find('*').off();
-        innerbody.remove();
-        removeTransId(this.trans_id);
-        // Ajax call to store the last directory visited once user press select button
+          pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:' + this.dialog_type, newFile);
+          innerbody = $(this.elements.body).find('.storage_content');
+          $(innerbody).find('*').off();
+          innerbody.remove();
+          removeTransId(this.trans_id);
+          // Ajax call to store the last directory visited once user press select button
 
-        set_last_traversed_dir(file_data, this.trans_id);
+          set_last_traversed_dir(file_data, this.trans_id);
+        } else {
+          closeEvent.cancel = true;
+        }
       } else if (closeEvent.button.text == gettext('Cancel')) {
         innerbody = $(this.elements.body).find('.storage_content');
         $(innerbody).find('*').off();

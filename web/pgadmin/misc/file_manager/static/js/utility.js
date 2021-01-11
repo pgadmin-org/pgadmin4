@@ -1584,12 +1584,14 @@ define([
                   if (config.options.dialog_type == 'create_file') {
                     var status = checkPermission(path);
                     if (status) {
-                      $('.file_manager').trigger('enter-key');
+                      //$('.file_manager').trigger('enter-key');
+                      $('.file_manager_ok').trigger('click');
                     }
                   } else if (config.options.dialog_type == 'select_file') {
                     var file_status = getFileInfo(path);
                     if (file_status) {
-                      $('.file_manager').trigger('enter-key');
+                      $('.file_manager_ok').trigger('click');
+                      //$('.file_manager').trigger('enter-key');
                     }
                   }
                 }

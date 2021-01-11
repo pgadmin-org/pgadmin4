@@ -137,45 +137,51 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
       return permission;
     },
     callback: function(closeEvent) {
+      closeEvent.cancel = false;
       if (closeEvent.button.text == gettext('Create')) {
-        var newFile = $('.storage_dialog #uploader .input-path').val(),
-          file_data = {
-            'path': $('.currentpath').val(),
-          },
-          innerbody,
-          ext = $('.allowed_file_types select').val();
+        var act_variable = document.activeElement.id;
+        if(act_variable != 'refresh_list') {
+          var newFile = $('.storage_dialog #uploader .input-path').val(),
+            file_data = {
+              'path': $('.currentpath').val(),
+            },
+            innerbody,
+            ext = $('.allowed_file_types select').val();
 
-        /*
-           Add the file extension if necessary, and if the file type selector
-           isn't set to "All Files". If there's no . at all in the path, or
-           there is a . already but it's not following the last /, AND the
-           extension isn't *, then we add the extension.
-         */
-        if ((!newFile.includes('.') ||
-            newFile.split('.').pop() != ext) &&
-            ext != '*') {
-          newFile = newFile + '.' + ext;
-          $('.storage_dialog #uploader .input-path').val(newFile);
-        }
+          /*
+             Add the file extension if necessary, and if the file type selector
+             isn't set to "All Files". If there's no . at all in the path, or
+             there is a . already but it's not following the last /, AND the
+             extension isn't *, then we add the extension.
+           */
+          if ((!newFile.includes('.') ||
+              newFile.split('.').pop() != ext) &&
+              ext != '*') {
+            newFile = newFile + '.' + ext;
+            $('.storage_dialog #uploader .input-path').val(newFile);
+          }
 
-        if (!this.check_permission(newFile)) {
-          closeEvent.cancel = true;
-          return;
-        }
+          if (!this.check_permission(newFile)) {
+            closeEvent.cancel = true;
+            return;
+          }
 
-        if (!_.isUndefined(newFile) && newFile !== '' && this.is_file_exist()) {
-          this.replace_file();
-          this.$container.find('.replace_file').find('.btn_yes').trigger('focus');
-          closeEvent.cancel = true;
+          if (!_.isUndefined(newFile) && newFile !== '' && this.is_file_exist()) {
+            this.replace_file();
+            this.$container.find('.replace_file').find('.btn_yes').trigger('focus');
+            closeEvent.cancel = true;
+          } else {
+            pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
+            innerbody = $(this.elements.body).find('.storage_content');
+            $(innerbody).find('*').off();
+            innerbody.remove();
+            removeTransId(this.trans_id);
+          }
+
+          set_last_traversed_dir(file_data, this.trans_id);
         } else {
-          pgAdmin.Browser.Events.trigger('pgadmin-storage:finish_btn:create_file', newFile);
-          innerbody = $(this.elements.body).find('.storage_content');
-          $(innerbody).find('*').off();
-          innerbody.remove();
-          removeTransId(this.trans_id);
+          closeEvent.cancel = true;
         }
-
-        set_last_traversed_dir(file_data, this.trans_id);
       } else if (closeEvent.button.text == gettext('Cancel')) {
         innerbody = $(this.elements.body).find('.storage_content');
         $(innerbody).find('*').off();

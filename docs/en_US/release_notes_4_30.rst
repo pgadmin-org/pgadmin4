@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #6058 <https://redmine.postgresql.org/issues/6058>`_ -  Ensure that the rename panel should be disabled when the SQL file opened in the query tool.
 | `Issue #6061 <https://redmine.postgresql.org/issues/6061>`_ -  Fixed extra parentheses issue around joins for Views.
 | `Issue #6065 <https://redmine.postgresql.org/issues/6065>`_ -  Fixed accessibility issues in schema diff module.
+| `Issue #6069 <https://redmine.postgresql.org/issues/6069>`_ -  Fixed an issue on refreshing files in Query Tool.
 | `Issue #6077 <https://redmine.postgresql.org/issues/6077>`_ -  Fixed accessibility issues in various dialogs.
 | `Issue #6084 <https://redmine.postgresql.org/issues/6084>`_ -  Fixed TypeError exception in schema diff when selected any identical object.
 | `Issue #6096 <https://redmine.postgresql.org/issues/6096>`_ -  Updated deployment documentation, refer correctly to uWSGI where Gunicorn had been referenced.
