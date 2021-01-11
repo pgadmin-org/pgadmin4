@@ -14,6 +14,10 @@ AND
 db.datname in ({{db_restrictions}})
 {% endif %}
 
+{% if show_system_objects %}
 AND db.datistemplate in (false, {{show_system_objects}})
+{% else %}
+AND db.datistemplate in (false)
+{% endif %}
 
 ORDER BY datname;

@@ -35,3 +35,4 @@ Bug fixes
 | `Issue #6077 <https://redmine.postgresql.org/issues/6077>`_ -  Fixed accessibility issues in various dialogs.
 | `Issue #6084 <https://redmine.postgresql.org/issues/6084>`_ -  Fixed TypeError exception in schema diff when selected any identical object.
 | `Issue #6096 <https://redmine.postgresql.org/issues/6096>`_ -  Updated deployment documentation, refer correctly to uWSGI where Gunicorn had been referenced.
+| `Issue #6121 <https://redmine.postgresql.org/issues/6121>`_ -  Fixed an issue where the database list in the new connection window is not visible.
