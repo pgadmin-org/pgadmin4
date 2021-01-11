@@ -426,7 +426,7 @@ class BatchProcess(object):
     def status(self, out=0, err=0):
         import re
 
-        ctime = get_current_time(format='%Y%m%d%H%M%S%f')
+        ctime = get_current_time(format='%y%m%d%H%M%S%f')
 
         stdout = []
         stderr = []
