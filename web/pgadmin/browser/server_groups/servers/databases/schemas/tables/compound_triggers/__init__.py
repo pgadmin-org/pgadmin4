@@ -273,6 +273,15 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             ]['datlastsysoid'] if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
+            self.datistemplate = False
+            if (
+                self.manager.db_info is not None and
+                kwargs['did'] in self.manager.db_info and
+                'datistemplate' in self.manager.db_info[kwargs['did']]
+            ):
+                self.datistemplate = self.manager.db_info[
+                    kwargs['did']]['datistemplate']
+
             self.table_template_path = compile_template_path(
                 'tables/sql',
                 self.manager.server_type,

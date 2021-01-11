@@ -578,6 +578,14 @@ rolmembership:{
                     self.manager.db_info[self.manager.did]['datlastsysoid'] \
                     if self.manager.db_info is not None and \
                     self.manager.did in self.manager.db_info else 0
+                self.datistemplate = False
+                if (
+                    self.manager.db_info is not None and
+                    self.manager.did in self.manager.db_info and
+                    'datistemplate' in self.manager.db_info[self.manager.did]
+                ):
+                    self.datistemplate = self.manager.db_info[
+                        self.manager.did]['datistemplate']
 
                 self.sql_path = 'roles/sql/#{0}#'.format(self.manager.version)
 
@@ -727,7 +735,7 @@ rolmembership:{
             return gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
 
         return ajax_response(
             response=res['rows'][0],

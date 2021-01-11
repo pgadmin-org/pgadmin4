@@ -227,6 +227,15 @@ class ExclusionConstraintView(PGChildNodeView):
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
+            self.datistemplate = False
+            if (
+                self.manager.db_info is not None and
+                kwargs['did'] in self.manager.db_info and
+                'datistemplate' in self.manager.db_info[kwargs['did']]
+            ):
+                self.datistemplate = self.manager.db_info[
+                    kwargs['did']]['datistemplate']
+
             self.template_path = self.EXCLUSION_CONSTRAINT_PATH.format(
                 self.manager.version)
 
@@ -276,7 +285,7 @@ class ExclusionConstraintView(PGChildNodeView):
         if exid:
             result = res[0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid)
+            result['oid'] <= self.datlastsysoid or self.datistemplate)
 
         return ajax_response(
             response=result,

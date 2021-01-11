@@ -223,6 +223,15 @@ class ResourceGroupView(NodeView):
                 if self.manager.db_info is not None and \
                 self.manager.did in self.manager.db_info else 0
 
+            self.datistemplate = False
+            if (
+                self.manager.db_info is not None and
+                self.manager.did in self.manager.db_info and
+                'datistemplate' in self.manager.db_info[self.manager.did]
+            ):
+                self.datistemplate = self.manager.db_info[
+                    self.manager.did]['datistemplate']
+
             if not self.conn.connected():
                 return precondition_required(
                     gettext(
@@ -340,7 +349,7 @@ class ResourceGroupView(NodeView):
             return gone(gettext("""Could not find the resource group."""))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid)
+            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
 
         return ajax_response(
             response=res['rows'][0],

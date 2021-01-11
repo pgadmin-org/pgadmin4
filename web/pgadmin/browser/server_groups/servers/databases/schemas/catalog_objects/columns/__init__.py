@@ -178,10 +178,14 @@ class CatalogObjectColumnsView(PGChildNodeView):
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
-            self.datistemplate = \
-                self.manager.db_info[kwargs['did']]['datistemplate'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else False
+            self.datistemplate = False
+            if (
+                self.manager.db_info is not None and
+                kwargs['did'] in self.manager.db_info and
+                'datistemplate' in self.manager.db_info[kwargs['did']]
+            ):
+                self.datistemplate = self.manager.db_info[
+                    kwargs['did']]['datistemplate']
 
             self.template_path = 'catalog_object_column/sql/#{0}#'.format(
                 self.manager.version)

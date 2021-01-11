@@ -288,6 +288,15 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
+            self.datistemplate = False
+            if (
+                self.manager.db_info is not None and
+                kwargs['did'] in self.manager.db_info and
+                'datistemplate' in self.manager.db_info[kwargs['did']]
+            ):
+                self.datistemplate = self.manager.db_info[
+                    kwargs['did']]['datistemplate']
+
             # we will set template path for sql scripts
             self.template_path = compile_template_path(
                 'domains/sql/',
@@ -450,7 +459,8 @@ It may have been removed by another user or moved to another schema.
 
         # Set System Domain Status
         data['sysdomain'] = False
-        if doid <= self.manager.db_info[did]['datlastsysoid']:
+        if doid <= self.manager.db_info[did]['datlastsysoid'] or \
+                self.datistemplate:
             data['sysdomain'] = True
 
         return True, data
