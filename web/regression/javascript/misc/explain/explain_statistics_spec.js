@@ -18,10 +18,14 @@ describe('ExplainStatistics', () => {
   beforeEach(function() {
     statsModel = new StatisticsModel();
     statsDiv = '<div class="pg-explain-stats-area btn-group d-none"></div>';
-    tooltipContainer = $('<div></div>', {
-      id: 'toolTip',
-      class: 'pgadmin-explain-tooltip',
-    });
+    tooltipContainer = $(
+      `<div class="pgadmin-explain-details d-none">
+       <div class="details-header">
+         <div class="details-title"></div>
+       </div>
+       <div class="details-body"></div>
+     </div>`
+    );
   });
 
   describe('No Statistics', () => {
@@ -49,20 +53,12 @@ describe('ExplainStatistics', () => {
       expect($('.pg-explain-stats-area').hasClass('d-none')).toEqual(false);
     });
 
-    it('Mouse over event should be trigger', () => {
+    it('Mouse click event should be trigger', () => {
       // Trigger mouse over event
-      var hoverEvent = new $.Event('mouseover');
-      $('.pg-explain-stats-area').trigger(hoverEvent);
+      var clickEvent = new $.Event('click');
+      $('.pg-explain-stats-area').trigger(clickEvent);
 
-      expect(tooltipContainer.css('opacity')).toEqual('0.8');
-    });
-
-    it('Mouse out event should be trigger', () => {
-      // Trigger mouse out event
-      var hoverEvent = new $.Event('mouseout');
-      $('.pg-explain-stats-area').trigger(hoverEvent);
-
-      expect(tooltipContainer.css('opacity')).toEqual('0');
+      expect(tooltipContainer.hasClass('d-none')).toBe(false);
     });
   });
 
@@ -78,20 +74,12 @@ describe('ExplainStatistics', () => {
       expect($('.pg-explain-stats-area').hasClass('d-none')).toEqual(false);
     });
 
-    it('Mouse over event should be trigger', () => {
+    it('Mouse click event should be trigger', () => {
       // Trigger mouse over event
-      var hoverEvent = new $.Event('mouseover');
-      $('.pg-explain-stats-area').trigger(hoverEvent);
+      var clickEvent = new $.Event('click');
+      $('.pg-explain-stats-area').trigger(clickEvent);
 
-      expect(tooltipContainer.css('opacity')).toEqual('0.8');
-    });
-
-    it('Mouse out event should be trigger', () => {
-      // Trigger mouse out event
-      var hoverEvent = new $.Event('mouseout');
-      $('.pg-explain-stats-area').trigger(hoverEvent);
-
-      expect(tooltipContainer.css('opacity')).toEqual('0');
+      expect(tooltipContainer.hasClass('d-none')).toBe(false);
     });
   });
 
@@ -111,20 +99,12 @@ describe('ExplainStatistics', () => {
       expect($('.pg-explain-stats-area').hasClass('d-none')).toEqual(false);
     });
 
-    it('Mouse over event should be trigger', () => {
+    it('Mouse click event should be trigger', () => {
       // Trigger mouse over event
-      var hoverEvent = new $.Event('mouseover');
-      $('.pg-explain-stats-area').trigger(hoverEvent);
+      var clickEvent = new $.Event('click');
+      $('.pg-explain-stats-area').trigger(clickEvent);
 
-      expect(tooltipContainer.css('opacity')).toEqual('0.8');
-    });
-
-    it('Mouse out event should be trigger', () => {
-      // Trigger mouse out event
-      var hoverEvent = new $.Event('mouseout');
-      $('.pg-explain-stats-area').trigger(hoverEvent);
-
-      expect(tooltipContainer.css('opacity')).toEqual('0');
+      expect(tooltipContainer.hasClass('d-none')).toBe(false);
     });
   });
 });

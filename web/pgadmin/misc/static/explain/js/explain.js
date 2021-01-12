@@ -753,6 +753,12 @@ define('pgadmin.misc.explain', [
       return data;
     },
 
+    getLabel: function() {
+      return this.get('Schema') == undefined ?
+        this.get('image_text') :
+        (this.get('Schema') + '.' + this.get('image_text'));
+    },
+
     // Draw image, its name and its tooltip
     draw: function(
       s, xpos, ypos, pXpos, pYpos, graphContainer, toolTipContainer,
@@ -802,9 +808,7 @@ define('pgadmin.misc.explain', [
 
 
       // Draw text below the node
-      var node_label = this.get('Schema') == undefined ?
-        this.get('image_text') :
-        (this.get('Schema') + '.' + this.get('image_text'));
+      var node_label = this.getLabel();
       g.multitext(
         currentXpos + (pWIDTH / 2) + TXT_ALIGN,
         currentYpos + pHEIGHT - TXT_ALIGN,
@@ -943,34 +947,29 @@ define('pgadmin.misc.explain', [
         IMAGE_WIDTH,
         IMAGE_HEIGHT
       );
+      image.attr({style: 'cursor: pointer'});
 
       // Draw tooltip
-      var image_data = this.toJSON();
-      var title = '<title>';
-      _.each(image_data, function(value, key) {
-        if (key !== 'image' && key !== 'Plans' &&
-          key !== 'level' && key !== 'image' &&
-          key !== 'image_text' && key !== 'xpos' &&
-          key !== 'ypos' && key !== 'width' &&
-          key !== 'height') {
-          title += `${key}: ${value}\n`;
-        }
-      });
-
-      title += '</title>';
-
-      image.append(Snap.parse(title));
-
-      image.mouseover(() => {
+      var image_data = this.toJSON(),
+        nodeLabel = this.getLabel();
+      image.click(() => {
         // Empty the tooltip content if it has any and add new data
-        toolTipContainer.empty();
+        let toolTipBody = toolTipContainer.find('.details-body');
+        let toolTipTitle = toolTipContainer.find('.details-title');
+        toolTipTitle.text(nodeLabel);
+
+        toolTipBody.empty();
 
         // Remove the title content so that we can show our custom build tooltips.
         image.node.textContent = '';
 
-        var tooltip = $('<table></table>', {
-          class: 'pgadmin-tooltip-table',
-        }).appendTo(toolTipContainer);
+        var tooltipTable = $(`
+          <table class='pgadmin-tooltip-table table table-bordered table-noouter-border table-bottom-border table-hover'>
+            <tbody></tbody>
+          </table>`
+        ).appendTo(toolTipBody);
+        var tooltip = tooltipTable.find('tbody');
+
         _.each(image_data, function(value, key) {
           if (key !== 'image' && key !== 'Plans' &&
             key !== 'level' && key !== 'image' &&
@@ -987,42 +986,8 @@ define('pgadmin.misc.explain', [
             `);
           }
         });
-
-        var zoomFactor = graphContainer.data('zoom-factor');
-
-        // Calculate co-ordinates for tooltip
-        var toolTipX = ((currentXpos + pWIDTH) * zoomFactor - graphContainer.scrollLeft());
-        var toolTipY = ((currentYpos) * zoomFactor - graphContainer.scrollTop());
-
-        toolTipX = toolTipX < 0 ? 0 : (toolTipX);
-        toolTipY = toolTipY < 0 ? 0 : (toolTipY);
-
-        toolTipX = toolTipX > graphContainer.width() - toolTipContainer[0].clientWidth ? toolTipX - (toolTipContainer[0].clientWidth+(pWIDTH* zoomFactor)) : toolTipX;
-        toolTipY = toolTipY > graphContainer.height() - toolTipContainer[0].clientHeight ? graphContainer.height() - toolTipContainer[0].clientHeight : toolTipY;
-
-        // Show toolTip at respective x,y coordinates
-        toolTipContainer.css({
-          'opacity': '0.8',
-        });
-        toolTipContainer.css('left', toolTipX);
-        toolTipContainer.css('top', toolTipY);
-
-        $('.pgadmin-explain-tooltip').css('padding', '5px');
-        $('.pgadmin-explain-tooltip').css('border', '1px solid white');
-      });
-
-      // Remove tooltip when mouse is out from node's area
-      image.mouseout(() => {
-        /* Append the title again which we have removed on mouse over event, so
-         * that our custom tooltip should be visible.
-         */
-        image.append(Snap.parse(title));
-        toolTipContainer.empty();
-        toolTipContainer.css({
-          'opacity': '0',
-        });
-        toolTipContainer.css('left', 0);
-        toolTipContainer.css('top', 0);
+        toolTipContainer.removeClass('d-none');
+        toolTipBody.scrollTop(0);
       });
     },
   });
@@ -1362,15 +1327,22 @@ define('pgadmin.misc.explain', [
 
       // Main div to be drawn all images on
       var planDiv = $('<div></div>', {
-          class: 'pgadmin-explain-container w-100 h-100 overflow-auto',
-        }).appendTo(graphicalContainer),
-        // Div to draw tool-tip on
-        toolTip = $('<div></div>', {
-          id: 'toolTip',
-          class: 'pgadmin-explain-tooltip',
-        }).appendTo(graphicalContainer);
-      toolTip.empty();
+        class: 'pgadmin-explain-container w-100 h-100 overflow-auto',
+      }).appendTo(graphicalContainer);
       planDiv.data('zoom-factor', curr_zoom_factor);
+
+      var explainDetails = $(
+        `<div class="pgadmin-explain-details card d-none" data-bs-backdrop="false" tabindex="-1" aria-hidden="true">
+        <div class="card-header details-header d-flex">
+          <div class="details-title my-auto"></div>
+          <div class="ml-auto"><button class="btn btn-sm fa fa-times ml-auto details-close"/></div>
+        </div>
+        <div class="card-body details-body"></div>
+       </div>`
+      ).appendTo(graphicalContainer);
+      explainDetails.find('.details-close').on('click', ()=>{
+        explainDetails.addClass('d-none');
+      });
 
       var w = 0,
         h = yMargin;
@@ -1420,7 +1392,7 @@ define('pgadmin.misc.explain', [
         var s = Snap(w, h),
           $svg = $(s.node).detach();
         planDiv.append($svg);
-        main_plan.draw(s, w - xMargin, yMargin, planDiv, toolTip, ctx);
+        main_plan.draw(s, w - xMargin, yMargin, planDiv, explainDetails, ctx);
 
         var initPanelWidth = planDiv.width();
 

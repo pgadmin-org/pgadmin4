@@ -30,12 +30,15 @@ let StatisticsModel = Backbone.Model.extend({
       $('.pg-explain-stats-area').removeClass('d-none');
     }
 
-    var tooltip = $('<table></table>', {
-      class: 'pgadmin-tooltip-table',
-    });
+    var tooltipTable = $(`
+      <table class='pgadmin-tooltip-table table table-bordered table-noouter-border table-bottom-border table-hover'>
+        <tbody></tbody>
+      </table>`
+    );
+    var tooltip = tooltipTable.find('tbody');
 
     if (Object.keys(jit_stats).length > 0){
-      tooltip.append('<tr><td class="label explain-tooltip">' + gettext('JIT:') + '</td></tr>');
+      tooltip.append('<tr><td colspan="2" class="label explain-tooltip">' + gettext('JIT:') + '</td></tr>');
       _.each(jit_stats, function(value, key) {
         key = _.escape(key);
         value = _.escape(value);
@@ -49,7 +52,7 @@ let StatisticsModel = Backbone.Model.extend({
     }
 
     if (Object.keys(triggers_stats).length > 0){
-      tooltip.append('<tr><td class="label explain-tooltip">' + gettext('Triggers:') + '</td></tr>');
+      tooltip.append('<tr><td colspan="2" class="label explain-tooltip">' + gettext('Triggers:') + '</td></tr>');
       _.each(triggers_stats, function(triggers, key_id) {
         if (triggers instanceof Object) {
           _.each(triggers, function(value, key) {
@@ -88,7 +91,7 @@ let StatisticsModel = Backbone.Model.extend({
     }
 
     if (Object.keys(summary).length > 0){
-      tooltip.append('<tr><td class="label explain-tooltip">' + gettext('Summary:') + '</td></tr>');
+      tooltip.append('<tr><td colspan="2" class="label explain-tooltip">' + gettext('Summary:') + '</td></tr>');
       _.each(summary, function(value, key) {
         key = _.escape(key);
         value = _.escape(value);
@@ -101,7 +104,7 @@ let StatisticsModel = Backbone.Model.extend({
       });
     }
 
-    $('.pg-explain-stats-area').off('mouseover').on('mouseover', () => {
+    $('.pg-explain-stats-area').off('click').on('click', () => {
       // Empty the tooltip content if it has any and add new data
 
       if (Object.keys(jit_stats).length == 0 &&
@@ -110,30 +113,15 @@ let StatisticsModel = Backbone.Model.extend({
         return;
       }
 
-      toolTipContainer.empty();
-      toolTipContainer.append(tooltip);
+      let toolTipBody = toolTipContainer.find('.details-body');
+      let toolTipTitle = toolTipContainer.find('.details-title');
+      toolTipTitle.text('Statistics');
 
-      // Show toolTip at respective x,y coordinates
-      toolTipContainer.css({
-        'opacity': '0.8',
-        'left': '',
-        'right': '65px',
-        'top': '15px',
-      });
+      toolTipBody.empty();
+      toolTipBody.append(tooltipTable);
 
-      $('.pgadmin-explain-tooltip').css('padding', '5px');
-      $('.pgadmin-explain-tooltip').css('border', '1px solid white');
-    });
-
-    // Remove tooltip when mouse is out from node's area
-    $('.pg-explain-stats-area').off('mouseout').on('mouseout', () => {
-      toolTipContainer.empty();
-      toolTipContainer.css({
-        'opacity': '0',
-        'left': 0,
-        'top': 0,
-        'right': '',
-      });
+      toolTipContainer.removeClass('d-none');
+      toolTipBody.scrollTop(0);
     });
   },
 });

@@ -245,6 +245,7 @@ legend {
 
 .table {
 	margin-bottom: 0rem;
+	user-select: text;
 	th {
 		padding: $table-header-cell-padding $table-cell-padding;
 	}

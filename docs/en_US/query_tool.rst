@@ -186,11 +186,11 @@ under the Explain panel.
 
 * Graphical
 
-Please note that *EXPLAIN VERBOSE* cannot be displayed graphically. Hover over
-an icon on the *Graphical* tab to review information about that item; a popup
-window will display information about the selected object. For information on
-JIT statistics, triggers and a summary, hover over the icon on top-right
-corner; a similar popup window will be displayed when appropriate.
+Please note that *EXPLAIN VERBOSE* cannot be displayed graphically. Click on
+a node icon on the *Graphical* tab to review information about that item; a popup
+window will display on the right side with the information about the selected
+object. For information on JIT statistics, triggers and a summary, click on the
+button on top-right corner; a similar popup window will be displayed when appropriate.
 
 Use the download button on top left corner of the *Explain* canvas to download
 the plan as an SVG file.
