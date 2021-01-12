@@ -709,7 +709,7 @@ def check_version_compatibility(sid, tid):
 
     tar_server = Server.query.filter_by(id=tid).first()
     tar_manager = driver.connection_manager(tar_server.id)
-    target_conn = src_manager.connection()
+    target_conn = tar_manager.connection()
 
     if not (src_conn.connected() and target_conn.connected()):
         return False, gettext('Server(s) disconnected.')
