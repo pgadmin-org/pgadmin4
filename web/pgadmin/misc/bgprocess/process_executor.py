@@ -266,7 +266,7 @@ def _handle_execute_exception(ex, args, _stderr, exit_code=None):
     if _stderr:
         _stderr.log(info)
     else:
-        print("WARNING: ", ex.strerror, file=sys.stderr)
+        print('WARNING: {0}'.format(str(ex)))
     args.update({'end_time': get_current_time()})
     args.update({
         'exit_code': ex.errno if exit_code is None else exit_code})
