@@ -20,7 +20,6 @@ Housekeeping
 Bug fixes
 *********
 
-| `Issue #4892 <https://redmine.postgresql.org/issues/4892>`_ -  Fixed an issue where pressing the back button will show another instance of the main page inside of the Query Tool tab.
 | `Issue #5282 <https://redmine.postgresql.org/issues/5282>`_ -  Added 'Count Rows' option to the partition sub tables.
 | `Issue #5488 <https://redmine.postgresql.org/issues/5488>`_ -  Improve the explain plan details by showing popup instead of tooltip on clicking of the specified node.
 | `Issue #5571 <https://redmine.postgresql.org/issues/5571>`_ -  Added support for expression in exclusion constraints.
