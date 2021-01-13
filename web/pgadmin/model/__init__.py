@@ -379,8 +379,7 @@ class SharedServer(db.Model):
     hostaddr = db.Column(db.String(128), nullable=True)
     port = db.Column(
         db.Integer(),
-        db.CheckConstraint('port >= 1 AND port <= 65534'),
-        nullable=False)
+        nullable=True)
     maintenance_db = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
     password = db.Column(db.String(64), nullable=True)
