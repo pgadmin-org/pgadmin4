@@ -562,6 +562,28 @@ define('pgadmin.node.role', [
             }
           }
 
+          // Check Account expiration date should not be older than current selected date.
+          let currdate = null;
+          let oldDate = null;
+          if(this.get('rolvaliduntil') != this.origSessAttrs.rolvaliduntil && this.get('rolvaliduntil') != '' && this.origSessAttrs.rolvaliduntil != 'infinity') {
+            currdate = new Date(this.get('rolvaliduntil'));
+            oldDate = new Date(this.origSessAttrs.rolvaliduntil);
+          } else if (this.origSessAttrs.rolvaliduntil == 'infinity') {
+            if(this.get('rolvaliduntil') == '') {
+              let $el = this.panelEl.find('.datetimepicker-input');
+              currdate = $el.data('datetimepicker').date().clone()._d;
+            } else {
+              currdate = new Date(this.get('rolvaliduntil'));
+            }
+            oldDate = new Date();
+            oldDate.setHours(0,0,0,0);
+          }
+
+          if(currdate < oldDate) {
+            err['rolvaliduntil'] = gettext('Account expiration date can’t be older than the current date');
+            errmsg = gettext('Account expiration date can’t be older than the current date');
+          }
+
           this.errorModel.clear().set(err);
 
           if (_.size(err)) {
