@@ -35,9 +35,6 @@ else:
 import config
 from pgadmin import create_app
 from pgadmin.utils import u_encode, fs_encoding, file_quote
-from pgadmin.utils.constants import INTERNAL, LDAP,\
-    KERBEROS, SUPPORTED_AUTH_SOURCES
-
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
@@ -99,11 +96,15 @@ if config.SERVER_MODE:
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 # Authentication sources
-
+app.PGADMIN_DEFAULT_AUTH_SOURCE = 'internal'
+app.PGADMIN_SUPPORTED_AUTH_SOURCE = ['internal', 'ldap']
 if len(config.AUTHENTICATION_SOURCES) > 0:
     app.PGADMIN_EXTERNAL_AUTH_SOURCE = config.AUTHENTICATION_SOURCES[0]
 else:
-    app.PGADMIN_EXTERNAL_AUTH_SOURCE = INTERNAL
+    app.PGADMIN_EXTERNAL_AUTH_SOURCE = app.PGADMIN_DEFAULT_AUTH_SOURCE
+
+app.logger.debug(
+    "Authentication Source: %s" % app.PGADMIN_DEFAULT_AUTH_SOURCE)
 
 # Start the web server. The port number should have already been set by the
 # runtime if we're running in desktop mode, otherwise we'll just use the

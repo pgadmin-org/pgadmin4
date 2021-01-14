@@ -11,21 +11,16 @@
 
 import flask
 import pickle
-from flask import current_app, flash, Response, request, url_for,\
-    render_template
+from flask import current_app, flash
 from flask_babelex import gettext
 from flask_security import current_user
 from flask_security.views import _security, _ctx
 from flask_security.utils import config_value, get_post_logout_redirect, \
-    get_post_login_redirect, logout_user
-
+    get_post_login_redirect
 from flask import session
 
 import config
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.constants import KERBEROS
-from pgadmin.utils.csrf import pgCSRFProtect
-
 from .registry import AuthSourceRegistry
 
 MODULE_NAME = 'authenticate'
@@ -33,32 +28,10 @@ MODULE_NAME = 'authenticate'
 
 class AuthenticateModule(PgAdminModule):
     def get_exposed_url_endpoints(self):
-        return ['authenticate.login',
-                'authenticate.kerberos_login',
-                'authenticate.kerberos_logout']
+        return ['authenticate.login']
 
 
 blueprint = AuthenticateModule(MODULE_NAME, __name__, static_url_path='')
-
-
-@blueprint.route("/login/kerberos",
-                 endpoint="kerberos_login", methods=["GET"])
-@pgCSRFProtect.exempt
-def kerberos_login():
-    logout_user()
-    return Response(render_template("browser/kerberos_login.html",
-                                    login_url=url_for('security.login'),
-                                    ))
-
-
-@blueprint.route("/logout/kerberos",
-                 endpoint="kerberos_logout", methods=["GET"])
-@pgCSRFProtect.exempt
-def kerberos_logout():
-    logout_user()
-    return Response(render_template("browser/kerberos_logout.html",
-                                    login_url=url_for('security.login'),
-                                    ))
 
 
 @blueprint.route('/login', endpoint='login', methods=['GET', 'POST'])
@@ -83,24 +56,15 @@ def login():
     if status:
         # Login the user
         status, msg = auth_obj.login()
-        current_auth_obj = auth_obj.as_dict()
         if not status:
-            if current_auth_obj['current_source'] ==\
-                    KERBEROS:
-                return flask.redirect('{0}?next={1}'.format(url_for(
-                    'authenticate.kerberos_login'), url_for('browser.index')))
-
             flash(gettext(msg), 'danger')
             return flask.redirect(get_post_logout_redirect())
 
-        session['_auth_source_manager_obj'] = current_auth_obj
+        session['_auth_source_manager_obj'] = auth_obj.as_dict()
         return flask.redirect(get_post_login_redirect())
 
-    elif isinstance(msg, Response):
-        return msg
     flash(gettext(msg), 'danger')
-    response = flask.redirect(get_post_logout_redirect())
-    return response
+    return flask.redirect(get_post_logout_redirect())
 
 
 class AuthSourceManager():
@@ -111,7 +75,6 @@ class AuthSourceManager():
         self.auth_sources = sources
         self.source = None
         self.source_friendly_name = None
-        self.current_source = None
 
     def as_dict(self):
         """
@@ -121,16 +84,8 @@ class AuthSourceManager():
         res = dict()
         res['source_friendly_name'] = self.source_friendly_name
         res['auth_sources'] = self.auth_sources
-        res['current_source'] = self.current_source
 
         return res
-
-    def set_current_source(self, source):
-        self.current_source = source
-
-    @property
-    def get_current_source(self, source):
-        return self.current_source
 
     def set_source(self, source):
         self.source = source
@@ -160,33 +115,9 @@ class AuthSourceManager():
         msg = None
         for src in self.auth_sources:
             source = get_auth_sources(src)
-            current_app.logger.debug(
-                "Authentication initiated via source: %s" %
-                source.get_source_name())
-
-            if self.form.data['email'] and self.form.data['password'] and \
-                    source.get_source_name() == KERBEROS:
-                continue
-
             status, msg = source.authenticate(self.form)
-
-            # When server sends Unauthorized header to get the ticket over HTTP
-            # OR When kerberos authentication failed while accessing pgadmin,
-            # we need to break the loop as no need to authenticate further
-            # even if the authentication sources set to multiple
-            if not status:
-                if (hasattr(msg, 'status') and
-                    msg.status == '401 UNAUTHORIZED') or\
-                        (source.get_source_name() ==
-                         KERBEROS and
-                         request.method == 'GET'):
-                    break
-
             if status:
                 self.set_source(source)
-                self.set_current_source(source.get_source_name())
-                if msg is not None and 'username' in msg:
-                    self.form._fields['email'].data = msg['username']
                 return status, msg
         return status, msg
 
@@ -194,9 +125,6 @@ class AuthSourceManager():
         status, msg = self.source.login(self.form)
         if status:
             self.set_source_friendly_name(self.source.get_friendly_name())
-            current_app.logger.debug(
-                "Authentication and Login successfully done via source : %s" %
-                self.source.get_source_name())
         return status, msg
 
 

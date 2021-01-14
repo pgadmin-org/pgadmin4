@@ -1,9 +1,8 @@
 import config
-from flask import current_app, session
+from flask import current_app
 from flask_login import current_user
 from pgadmin.model import db, User, Server
 from pgadmin.utils.crypto import encrypt, decrypt
-from pgadmin.utils.constants import KERBEROS
 
 
 MASTERPASS_CHECK_TEXT = 'ideas are bulletproof'
@@ -33,11 +32,6 @@ def get_crypt_key():
     elif config.MASTER_PASSWORD_REQUIRED \
             and not config.SERVER_MODE and enc_key is None:
         return False, None
-    elif config.SERVER_MODE and \
-            session['_auth_source_manager_obj']['source_friendly_name']\
-            == KERBEROS:
-        return True, session['kerberos_key'] if 'kerberos_key' in session \
-            else None
     else:
         return True, enc_key
 

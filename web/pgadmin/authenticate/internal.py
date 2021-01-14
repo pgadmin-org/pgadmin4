@@ -18,7 +18,6 @@ from flask_babelex import gettext
 from .registry import AuthSourceRegistry
 from pgadmin.model import User
 from pgadmin.utils.validation_utils import validate_email
-from pgadmin.utils.constants import INTERNAL
 
 
 @six.add_metaclass(AuthSourceRegistry)
@@ -32,11 +31,7 @@ class BaseAuthentication(object):
         'INVALID_EMAIL': gettext('Email/Username is not valid')
     }
 
-    @abstractmethod
-    def get_source_name(self):
-        pass
-
-    @abstractmethod
+    @abstractproperty
     def get_friendly_name(self):
         pass
 
@@ -86,9 +81,6 @@ class BaseAuthentication(object):
 
 
 class InternalAuthentication(BaseAuthentication):
-
-    def get_source_name(self):
-        return INTERNAL
 
     def get_friendly_name(self):
         return gettext("internal")

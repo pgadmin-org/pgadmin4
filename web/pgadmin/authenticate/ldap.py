@@ -23,7 +23,6 @@ from .internal import BaseAuthentication
 from pgadmin.model import User, ServerGroup, db, Role
 from flask import current_app
 from pgadmin.tools.user_management import create_user
-from pgadmin.utils.constants import LDAP
 
 
 ERROR_SEARCHING_LDAP_DIRECTORY = "Error searching the LDAP directory: {}"
@@ -31,9 +30,6 @@ ERROR_SEARCHING_LDAP_DIRECTORY = "Error searching the LDAP directory: {}"
 
 class LDAPAuthentication(BaseAuthentication):
     """Ldap Authentication Class"""
-
-    def get_source_name(self):
-        return LDAP
 
     def get_friendly_name(self):
         return gettext("ldap")
@@ -155,7 +151,7 @@ class LDAPAuthentication(BaseAuthentication):
                     'email': user_email,
                     'role': 2,
                     'active': True,
-                    'auth_source': LDAP
+                    'auth_source': 'ldap'
                 })
 
         return True, None

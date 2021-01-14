@@ -535,7 +535,7 @@ ENHANCED_COOKIE_PROTECTION = True
 ##########################################################################
 
 # Default setting is internal
-# External Supported Sources: ldap, kerberos
+# External Supported Sources: ldap
 # Multiple authentication can be achieved by setting this parameter to
 # ['ldap', 'internal']. pgAdmin will authenticate the user with ldap first,
 # in case of failure internal authentication will be done.
@@ -617,26 +617,6 @@ LDAP_USE_STARTTLS = False
 LDAP_CA_CERT_FILE = ''
 LDAP_CERT_FILE = ''
 LDAP_KEY_FILE = ''
-
-
-##########################################################################
-# Kerberos Configuration
-##########################################################################
-
-KRB_APP_HOST_NAME = DEFAULT_SERVER
-
-# If the default_keytab_name is not set in krb5.conf or
-# the KRB_KTNAME environment variable is not set then, explicitly set
-# the Keytab file
-
-KRB_KTNAME = '<KRB5_KEYTAB_FILE>'
-
-# After kerberos authentication, user will be added into the SQLite database
-# automatically, if set to True.
-# Set it to False, if user should not be added automatically,
-# in this case Admin has to add the user manually in the SQLite database.
-
-KRB_AUTO_CREATE_USER = True
 
 ##########################################################################
 # Local config settings

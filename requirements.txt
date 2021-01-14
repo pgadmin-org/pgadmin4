@@ -43,4 +43,3 @@ cryptography<=3.0;
 sshtunnel>=0.1.5
 ldap3>=2.5.1
 Flask-BabelEx>=0.9.4
-gssapi>=1.6.11

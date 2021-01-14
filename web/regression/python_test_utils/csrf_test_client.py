@@ -101,8 +101,7 @@ class TestClient(testing.FlaskClient):
 
             return csrf_token
 
-    def login(self, email, password, _follow_redirects=False,
-              headers=None):
+    def login(self, email, password, _follow_redirects=False):
         if config.SERVER_MODE is True:
             res = self.get('/login', follow_redirects=True)
             csrf_token = self.fetch_csrf(res)
@@ -114,8 +113,7 @@ class TestClient(testing.FlaskClient):
                 email=email, password=password,
                 csrf_token=csrf_token,
             ),
-            follow_redirects=_follow_redirects,
-            headers=headers
+            follow_redirects=_follow_redirects
         )
         self.csrf_token = csrf_token
 
