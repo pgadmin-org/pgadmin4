@@ -47,3 +47,12 @@ ERROR_FETCHING_ROLE_INFORMATION = gettext(
     'Error fetching role information from the database server.')
 
 ERROR_FETCHING_DATA = gettext('Unable to fetch data.')
+
+# Authentication Sources
+INTERNAL = 'internal'
+LDAP = 'ldap'
+KERBEROS = 'kerberos'
+
+SUPPORTED_AUTH_SOURCES = [INTERNAL,
+                          LDAP,
+                          KERBEROS]

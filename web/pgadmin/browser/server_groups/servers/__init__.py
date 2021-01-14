@@ -10,7 +10,7 @@
 import simplejson as json
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
-    current_app, url_for
+    current_app, url_for, session
 from flask_babelex import gettext
 from flask_security import current_user, login_required
 from pgadmin.browser.server_groups.servers.types import ServerType
@@ -1822,7 +1822,13 @@ class ServerNode(PGChildNodeView):
                     _=gettext,
                     service=server.service,
                     prompt_tunnel_password=prompt_tunnel_password,
-                    prompt_password=prompt_password
+                    prompt_password=prompt_password,
+                    allow_save_password=True if
+                    config.ALLOW_SAVE_PASSWORD and
+                    session['allow_save_password'] else False,
+                    allow_save_tunnel_password=True if
+                    config.ALLOW_SAVE_TUNNEL_PASSWORD and
+                    session['allow_save_password'] else False
                 )
             )
         else:
@@ -1836,6 +1842,9 @@ class ServerNode(PGChildNodeView):
                     errmsg=errmsg,
                     service=server.service,
                     _=gettext,
+                    allow_save_password=True if
+                    config.ALLOW_SAVE_PASSWORD and
+                    session['allow_save_password'] else False,
                 )
             )
 

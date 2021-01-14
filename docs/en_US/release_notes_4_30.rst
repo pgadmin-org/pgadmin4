@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5457 <https://redmine.postgresql.org/issues/5457>`_ -  Added support for Kerberos authentication, using SPNEGO to forward the Kerberos tickets through a browser.
 
 Housekeeping
 ************
@@ -23,6 +24,7 @@ Bug fixes
 | `Issue #5282 <https://redmine.postgresql.org/issues/5282>`_ -  Added 'Count Rows' option to the partition sub tables.
 | `Issue #5488 <https://redmine.postgresql.org/issues/5488>`_ -  Improve the explain plan details by showing popup instead of tooltip on clicking of the specified node.
 | `Issue #5571 <https://redmine.postgresql.org/issues/5571>`_ -  Added support for expression in exclusion constraints.
+| `Issue #5829 <https://redmine.postgresql.org/issues/5829>`_ -  Fixed incorrect log information for AUTHENTICATION_SOURCES.
 | `Issue #5875 <https://redmine.postgresql.org/issues/5875>`_ -  Ensure that the 'template1' database should not be visible after pg_upgrade.
 | `Issue #5965 <https://redmine.postgresql.org/issues/5965>`_ -  Ensure that the macro query result should be download properly.
 | `Issue #5973 <https://redmine.postgresql.org/issues/5973>`_ -  Added appropriate help message and a placeholder for letting users know about the account password expiry for Login/Group Role.

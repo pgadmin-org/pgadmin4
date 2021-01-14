@@ -117,8 +117,8 @@ if config.SERVER_MODE is True:
 app.config['WTF_CSRF_ENABLED'] = True
 
 # Authentication sources
-app.PGADMIN_DEFAULT_AUTH_SOURCE = 'internal'
 app.PGADMIN_EXTERNAL_AUTH_SOURCE = 'ldap'
+
 
 app.test_client_class = TestClient
 test_client = app.test_client()

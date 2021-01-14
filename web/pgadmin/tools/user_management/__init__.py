@@ -13,7 +13,7 @@ import simplejson as json
 import re
 
 from flask import render_template, request, \
-    url_for, Response, abort, current_app
+    url_for, Response, abort, current_app, session
 from flask_babelex import gettext as _
 from flask_security import login_required, roles_required, current_user
 from flask_security.utils import encrypt_password
@@ -24,7 +24,8 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, bad_request, internal_server_error, forbidden
 from pgadmin.utils.csrf import pgCSRFProtect
-from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL,\
+    SUPPORTED_AUTH_SOURCES, KERBEROS
 from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting
@@ -167,11 +168,13 @@ def current_user_info():
                 config.SERVER_MODE is True
                 else 'postgres'
             ),
-            allow_save_password='true' if config.ALLOW_SAVE_PASSWORD
+            allow_save_password='true' if
+            config.ALLOW_SAVE_PASSWORD and session['allow_save_password']
             else 'false',
-            allow_save_tunnel_password='true'
-            if config.ALLOW_SAVE_TUNNEL_PASSWORD else 'false',
-            auth_sources=config.AUTHENTICATION_SOURCES,
+            allow_save_tunnel_password='true' if
+            config.ALLOW_SAVE_TUNNEL_PASSWORD and session[
+                'allow_save_password'] else 'false',
+            auth_sources=config.AUTHENTICATION_SOURCES
         ),
         status=200,
         mimetype=MIMETYPE_APP_JS
@@ -254,10 +257,10 @@ def _create_new_user(new_data):
     :return: Return new created user.
     """
     auth_source = new_data['auth_source'] if 'auth_source' in new_data \
-        else current_app.PGADMIN_DEFAULT_AUTH_SOURCE
+        else INTERNAL
     username = new_data['username'] if \
         'username' in new_data and auth_source != \
-        current_app.PGADMIN_DEFAULT_AUTH_SOURCE else new_data['email']
+        INTERNAL else new_data['email']
     email = new_data['email'] if 'email' in new_data else None
     password = new_data['password'] if 'password' in new_data else None
 
@@ -279,7 +282,7 @@ def _create_new_user(new_data):
 
 def create_user(data):
     if 'auth_source' in data and data['auth_source'] != \
-            current_app.PGADMIN_DEFAULT_AUTH_SOURCE:
+            INTERNAL:
         req_params = ('username', 'role', 'active', 'auth_source')
     else:
         req_params = ('email', 'role', 'active', 'newPassword',
@@ -380,7 +383,7 @@ def update(uid):
     )
 
     # Username and email can not be changed for internal users
-    if usr.auth_source == current_app.PGADMIN_DEFAULT_AUTH_SOURCE:
+    if usr.auth_source == INTERNAL:
         non_editable_params = ('username', 'email')
 
         for f in non_editable_params:
@@ -463,7 +466,7 @@ def role(rid):
 )
 def auth_sources():
     sources = []
-    for source in current_app.PGADMIN_SUPPORTED_AUTH_SOURCE:
+    for source in SUPPORTED_AUTH_SOURCES:
         sources.append({'label': source, 'value': source})
 
     return ajax_response(
