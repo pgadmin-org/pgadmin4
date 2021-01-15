@@ -39,5 +39,6 @@ Bug fixes
 | `Issue #6096 <https://redmine.postgresql.org/issues/6096>`_ -  Updated deployment documentation, refer correctly to uWSGI where Gunicorn had been referenced.
 | `Issue #6120 <https://redmine.postgresql.org/issues/6120>`_ -  Ensure that the user should be able to specify an older date for the account expiration of the role/user.
 | `Issue #6121 <https://redmine.postgresql.org/issues/6121>`_ -  Fixed an issue where the database list in the new connection window is not visible.
+| `Issue #6122 <https://redmine.postgresql.org/issues/6122>`_ -  Added informative message when there is no difference found for schema diff.
 | `Issue #6128 <https://redmine.postgresql.org/issues/6128>`_ -  Fixed an issue where sequences are not created.
 | `Issue #6140 <https://redmine.postgresql.org/issues/6140>`_ -  Ensure that verbose logs should be visible for Utility(Backup, Maintenance) jobs.

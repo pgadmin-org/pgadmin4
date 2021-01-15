@@ -307,6 +307,18 @@ export default class SchemaDiffUI {
     return false;
   }
 
+  check_empty_diff() {
+    var self = this;
+    this.panel_obj.$container.find('#schema-diff-grid .slick-viewport .pg-panel-message').remove();
+    if (self.dataView.getFilteredItems().length == 0) {
+      let msg = gettext('No difference found');
+      // Make the height to 0px to avoid extra scroll bar, height will be calculated automatically.
+      this.panel_obj.$container.find('#schema-diff-grid .slick-viewport .grid-canvas')[0].style.height = '0px';
+      this.panel_obj.$container.find('#schema-diff-grid .slick-viewport'
+      ).prepend('<div class="pg-panel-message">'+ msg +'</div>');
+    }
+  }
+
   render_grid(data) {
 
     var self = this;
@@ -315,6 +327,7 @@ export default class SchemaDiffUI {
     if (self.grid) {
       // Only render the data
       self.render_grid_data(data);
+      self.check_empty_diff();
       return;
     }
     // Checkbox Column
@@ -854,6 +867,7 @@ export default class SchemaDiffUI {
     if(!_.isUndefined(self.dataView) && !_.isNull(self.dataView)) {
       // Refresh the grid
       self.dataView.refresh();
+      self.check_empty_diff();
     }
   }
 
