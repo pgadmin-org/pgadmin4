@@ -20,16 +20,17 @@ function isServerInformationAvailable(parentData) {
   return parentData.server === undefined;
 }
 
-export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null) {
+export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, parentData=null) {
   var preferences = pgBrowser.get_preferences_for_module('browser');
-  if(selected_item == null) {
+  if(selected_item == null && parentData == null) {
     selected_item = pgBrowser.treeMenu.selected();
   }
 
-  const parentData = getTreeNodeHierarchyFromIdentifier
-    .call(pgBrowser, selected_item);
-  if (isServerInformationAvailable(parentData)) {
-    return;
+  if(parentData == null) {
+    parentData = getTreeNodeHierarchyFromIdentifier.call(pgBrowser, selected_item);
+    if (isServerInformationAvailable(parentData)) {
+      return;
+    }
   }
 
   const db_label = getDatabaseLabel(parentData);

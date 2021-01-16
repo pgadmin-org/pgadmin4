@@ -318,22 +318,23 @@ def _get_sql_for_create_fk_const(data, conn, template_path):
          len(data['columns']) < 1):
         return True, '-- definition incomplete', name, ''
 
-    if data['autoindex'] and \
+    if data.get('autoindex', False) and \
             ('coveringindex' not in data or data['coveringindex'] == ''):
         return True, '-- definition incomplete', name, ''
 
-    # Get the parent schema and table.
-    schema, table = get_parent(conn,
-                               data['columns'][0]['references'])
+    if 'references' in data['columns'][0]:
+        # Get the parent schema and table.
+        schema, table = get_parent(conn,
+                                   data['columns'][0]['references'])
 
-    # Below handling will be used in Schema diff in case
-    # of different database comparison
-    _checks_for_schema_diff(table, schema, data)
+        # Below handling will be used in Schema diff in case
+        # of different database comparison
+        _checks_for_schema_diff(table, schema, data)
 
     sql = render_template("/".join([template_path, 'create.sql']),
                           data=data, conn=conn)
 
-    if data['autoindex']:
+    if data.get('autoindex', False):
         sql += render_template(
             "/".join([template_path, 'create_index.sql']),
             data=data, conn=conn)

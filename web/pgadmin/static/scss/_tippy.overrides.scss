@@ -1,0 +1,9 @@
+@import "~node_modules/tippy.js/dist/tippy.css";
+
+.tippy-box {
+  background-color: $popover-bg;
+  color: $popover-body-color;
+  .tippy-arrow {
+    color: $popover-bg;
+  }
+}

@@ -2651,6 +2651,12 @@ define('tools.querytool', [
                 }
 
               });
+          } else if(url_params.sql_id) {
+            let sqlValue = localStorage.getItem(url_params.sql_id);
+            localStorage.removeItem(url_params.sql_id);
+            if(sqlValue) {
+              self.gridView.query_tool_obj.setValue(sqlValue);
+            }
           }
         }
         else {
@@ -2668,7 +2674,7 @@ define('tools.querytool', [
       },
 
       set_value_to_editor: function(query) {
-        if (this.gridView && this.gridView.query_tool_obj && !_.isUndefined(query)) {
+        if (this.gridView && this.gridView.query_tool_obj && !_.isUndefined(query) && query != '') {
           this.gridView.query_tool_obj.setValue(query);
         }
       },

@@ -82,6 +82,10 @@ define('pgadmin.node.database', [
           applies: ['object', 'context'], callback: 'disconnect_database',
           category: 'drop', priority: 5, label: gettext('Disconnect Database...'),
           icon: 'fa fa-unlink', enable : 'is_connected',
+        },{
+          name: 'generate_erd', node: 'database', module: this,
+          applies: ['object', 'context'], callback: 'generate_erd',
+          category: 'erd', priority: 5, label: gettext('Generate ERD(Beta)...'),
         }]);
 
         _.bindAll(this, 'connection_lost');
@@ -234,6 +238,15 @@ define('pgadmin.node.database', [
           }
 
           return false;
+        },
+
+        /* Generate the ERD */
+        generate_erd: function(args) {
+          var input = args || {},
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
+          pgBrowser.erd.showErdTool(d, i, true);
         },
 
         /* Connect the database (if not connected), before opening this node */

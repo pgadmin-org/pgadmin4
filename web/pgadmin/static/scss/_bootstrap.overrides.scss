@@ -181,6 +181,15 @@ legend {
     }
 }
 
+.btn-warning {
+  @include button-variant($color-warning, $color-warning-fg);
+  border-color: $color-warning;
+  @include hover() {
+    color: $color-warning-fg !important;
+    border-color: $color-warning !important;
+  }
+}
+
 
 .form-group fieldset {
 	background-color: $color-gray-lighter;
@@ -369,6 +378,11 @@ td.switch-cell > div.toggle {
 .btn-sm-sq {
   @extend .btn-sm;
   line-height: 0.7rem;
+}
+
+.btn-xs {
+  @extend .btn-sm;
+  padding: 0.125rem 0.25rem !important;
 }
 
 .btn-toolbar {

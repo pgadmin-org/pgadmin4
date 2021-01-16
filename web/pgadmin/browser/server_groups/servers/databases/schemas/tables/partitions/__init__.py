@@ -175,8 +175,7 @@ class PartitionsModule(CollectionNodeModule):
 blueprint = PartitionsModule(__name__)
 
 
-class PartitionsView(BaseTableView, DataTypeReader, VacuumSettings,
-                     SchemaDiffObjectCompare):
+class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
     """
     This class is responsible for generating routes for Partition node
 

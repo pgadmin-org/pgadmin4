@@ -21,7 +21,6 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from .utils import BaseTableView
-from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.foreign_key import utils as fkey_utils
@@ -134,8 +133,7 @@ class TableModule(SchemaChildModule):
 blueprint = TableModule(__name__)
 
 
-class TableView(BaseTableView, DataTypeReader, VacuumSettings,
-                SchemaDiffTableCompare):
+class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
     """
     This class is responsible for generating routes for Table node
 
@@ -589,7 +587,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         Returns:
             JSON of selected table node
         """
-        status, res = self._fetch_properties(did, scid, tid)
+        status, res = self._fetch_table_properties(did, scid, tid)
         if not status:
             return res
         if not res['rows']:
@@ -599,86 +597,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             gid, sid, did, scid, tid, res=res
         )
 
-    @staticmethod
-    def _check_rlspolicy_support(res):
-        """
-        This function is used to check whether 'rlspolicy' in response
-        as it supported for version 9.5 and above
-        :param res:
-        :return:
-        """
-        if 'rlspolicy' in res['rows'][0]:
-            # Set the value of rls policy
-            if res['rows'][0]['rlspolicy'] == "true":
-                res['rows'][0]['rlspolicy'] = True
-
-            # Set the value of force rls policy for table owner
-            if res['rows'][0]['forcerlspolicy'] == "true":
-                res['rows'][0]['forcerlspolicy'] = True
-
-    def _fetch_properties(self, did, scid, tid):
-        """
-        This function is used to fetch the properties of the specified object
-        :param did:
-        :param scid:
-        :param tid:
-        :return:
-        """
-        sql = render_template(
-            "/".join([self.table_template_path, self._PROPERTIES_SQL]),
-            did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
-        )
-        status, res = self.conn.execute_dict(sql)
-        if not status:
-            return False, internal_server_error(errormsg=res)
-
-        elif len(res['rows']) == 0:
-            return False, gone(
-                gettext(self.not_found_error_msg()))
-
-        # Update autovacuum properties
-        self.update_autovacuum_properties(res['rows'][0])
-
-        # We will check the threshold set by user before executing
-        # the query because that can cause performance issues
-        # with large result set
-        pref = Preferences.module('browser')
-        table_row_count_pref = pref.preference('table_row_count_threshold')
-        table_row_count_threshold = table_row_count_pref.get()
-        estimated_row_count = int(res['rows'][0].get('reltuples', 0))
-
-        # Check whether 'rlspolicy' in response as it supported for
-        # version 9.5 and above
-        TableView._check_rlspolicy_support(res)
-
-        # If estimated rows are greater than threshold then
-        if estimated_row_count and \
-                estimated_row_count > table_row_count_threshold:
-            res['rows'][0]['rows_cnt'] = str(table_row_count_threshold) + '+'
-
-        # If estimated rows is lower than threshold then calculate the count
-        elif estimated_row_count and \
-                table_row_count_threshold >= estimated_row_count:
-            sql = render_template(
-                "/".join(
-                    [self.table_template_path, 'get_table_row_count.sql']
-                ), data=res['rows'][0]
-            )
-
-            status, count = self.conn.execute_scalar(sql)
-
-            if not status:
-                return False, internal_server_error(errormsg=count)
-
-            res['rows'][0]['rows_cnt'] = count
-
-        # If estimated_row_count is zero then set the row count with same
-        elif not estimated_row_count:
-            res['rows'][0]['rows_cnt'] = estimated_row_count
-
-        return True, res
-
     @BaseTableView.check_precondition
     def types(self, gid, sid, did, scid, tid=None, clid=None):
         """
@@ -686,12 +604,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             This function will return list of types available for column node
             for node-ajax-control
         """
-        condition = render_template(
-            "/".join([
-                self.table_template_path, 'get_types_where_condition.sql'
-            ]),
-            show_system_objects=self.blueprint.show_system_objects
-        )
+        condition = self.get_types_condition_sql(
+            self.blueprint.show_system_objects)
 
         status, types = self.get_types(self.conn, condition, True, sid)
 
@@ -1073,7 +987,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data[k] = v
 
         try:
-            status, res = self._fetch_properties(did, scid, tid)
+            status, res = self._fetch_table_properties(did, scid, tid)
             if not status:
                 return res
 
@@ -1314,7 +1228,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         res = None
 
         if tid is not None:
-            status, res = self._fetch_properties(did, scid, tid)
+            status, res = self._fetch_table_properties(did, scid, tid)
             if not status:
                 return res
 
@@ -1378,7 +1292,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         """
         main_sql = []
 
-        status, res = self._fetch_properties(did, scid, tid)
+        status, res = self._fetch_table_properties(did, scid, tid)
         if not status:
             return res
 
@@ -1665,57 +1579,12 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         :return: Table dataset
         """
 
-        if tid:
-            status, data = self._fetch_properties(did, scid, tid)
+        status, res = BaseTableView.fetch_tables(self, sid, did, scid, tid)
+        if not status:
+            current_app.logger.error(res)
+            return False
 
-            if not status:
-                current_app.logger.error(data)
-                return False
-
-            data = super(TableView, self).properties(
-                0, sid, did, scid, tid, res=data, return_ajax_response=False
-            )
-
-            return data
-
-        else:
-            res = dict()
-            sql = render_template("/".join([self.table_template_path,
-                                            self._NODES_SQL]), scid=scid)
-            status, tables = self.conn.execute_2darray(sql)
-            if not status:
-                current_app.logger.error(tables)
-                return False
-
-            for row in tables['rows']:
-                status, data = self._fetch_properties(did, scid, row['oid'])
-
-                if status:
-                    data = super(TableView, self).properties(
-                        0, sid, did, scid, row['oid'], res=data,
-                        return_ajax_response=False
-                    )
-
-                    # Get sub module data of a specified table for object
-                    # comparison
-                    self._get_sub_module_data_for_compare(sid, did, scid, data,
-                                                          row)
-                    res[row['name']] = data
-
-            return res
-
-    def _get_sub_module_data_for_compare(self, sid, did, scid, data, row):
-        # Get sub module data of a specified table for object
-        # comparison
-        for module in self.tables_sub_modules:
-            module_view = SchemaDiffRegistry.get_node_view(module)
-            if module_view.blueprint.server_type is None or \
-                self.manager.server_type in \
-                    module_view.blueprint.server_type:
-                sub_data = module_view.fetch_objects_to_compare(
-                    sid=sid, did=did, scid=scid, tid=row['oid'],
-                    oid=None)
-                data[module] = sub_data
+        return res
 
     def get_submodule_template_path(self, module_name):
         """

@@ -886,6 +886,12 @@ table.table-noouter-border {
       border-bottom: $table-border-width solid transparent;
     }
   }
+
+  &.table-noheader {
+    & > tbody tr:first-of-type td {
+      border-top: none !important;
+    }
+  }
 }
 
 table.table-bottom-border {

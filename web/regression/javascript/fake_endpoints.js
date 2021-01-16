@@ -22,5 +22,11 @@ define(function () {
     'search_objects.types': '/search_objects/types/<int:sid>/<int:did>',
     'search_objects.search': '/search_objects/search/<int:sid>/<int:did>',
     'dashboard.dashboard_stats': '/dashboard/dashboard_stats',
+    'sqleditor.load_file': '/sqleditor/load_file/',
+    'sqleditor.save_file': '/sqleditor/save_file/',
+    'erd.initialize': '/erd/initialize/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    'erd.sql': '/erd/sql/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    'erd.prequisite': '/erd/prequisite/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    'erd.tables': '/erd/tables/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
   };
 });

@@ -497,7 +497,8 @@ def register_browser_preferences(self):
         category_label=PREF_LABEL_OPTIONS,
         options=[{'label': gettext('Query Tool'), 'value': 'qt'},
                  {'label': gettext('Debugger'), 'value': 'debugger'},
-                 {'label': gettext('Schema Diff'), 'value': 'schema_diff'}],
+                 {'label': gettext('Schema Diff'), 'value': 'schema_diff'},
+                 {'label': gettext('ERD Tool'), 'value': 'erd_tool'}],
         help_str=gettext('Select Query Tool, Debugger, or Schema Diff from '
                          'the drop-down to set open in new browser tab for '
                          'that particular module.'),

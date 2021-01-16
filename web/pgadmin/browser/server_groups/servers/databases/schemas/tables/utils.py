@@ -45,9 +45,13 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
 from pgadmin.browser.server_groups.servers.databases.schemas. \
     tables.row_security_policies import \
     utils as row_security_policies_utils
+from pgadmin.utils.preferences import Preferences
+from pgadmin.browser.server_groups.servers.databases.schemas.utils \
+    import VacuumSettings
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 
-class BaseTableView(PGChildNodeView, BasePartitionTable):
+class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
     """
     This class is base class for tables and partitioned tables.
 
@@ -101,7 +105,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             driver = get_driver(PG_DEFAULT_DRIVER)
             did = kwargs['did']
             self.manager = driver.connection_manager(kwargs['sid'])
-            self.conn = self.manager.connection(did=kwargs['did'])
+            if "conn_id" in kwargs:
+                self.conn = self.manager.connection(
+                    did=kwargs['did'], conn_id=kwargs['conn_id'])
+            else:
+                self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
             self.qtTypeIdent = driver.qtTypeIdent
             # We need datlastsysoid to check if current table is system table
@@ -441,6 +449,161 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             data=res,
             status=200
         )
+
+    def get_types_condition_sql(self, show_system_objects):
+        condition = render_template(
+            "/".join([
+                self.table_template_path, 'get_types_where_condition.sql'
+            ]),
+            show_system_objects=show_system_objects
+        )
+
+        return condition
+
+    def fetch_tables(self, sid, did, scid, tid=None):
+        """
+        This function will fetch the list of all the tables
+        and will be used by schema diff.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :param scid: Schema Id
+        :param tid: Table Id
+        :return: Table dataset
+        """
+
+        if tid:
+            status, data = self._fetch_table_properties(did, scid, tid)
+
+            if not status:
+                return False, data
+
+            data = BaseTableView.properties(
+                self, 0, sid, did, scid, tid, res=data,
+                return_ajax_response=False
+            )
+
+            return True, data
+
+        else:
+            res = dict()
+            sql = render_template("/".join([self.table_template_path,
+                                            self._NODES_SQL]), scid=scid)
+            status, tables = self.conn.execute_2darray(sql)
+            if not status:
+                return False, tables
+
+            for row in tables['rows']:
+                status, data = \
+                    self._fetch_table_properties(did, scid, row['oid'])
+
+                if status:
+                    data = BaseTableView.properties(
+                        self, 0, sid, did, scid, row['oid'], res=data,
+                        return_ajax_response=False
+                    )
+
+                    # Get sub module data of a specified table for object
+                    # comparison
+                    BaseTableView._get_sub_module_data_for_compare(
+                        self, sid, did, scid, data, row)
+                    res[row['name']] = data
+                    res[row['name']] = data
+
+            return True, res
+
+    def _get_sub_module_data_for_compare(self, sid, did, scid, data, row):
+        # Get sub module data of a specified table for object
+        # comparison
+        for module in self.tables_sub_modules:
+            module_view = SchemaDiffRegistry.get_node_view(module)
+            if module_view.blueprint.server_type is None or \
+                self.manager.server_type in \
+                    module_view.blueprint.server_type:
+                sub_data = module_view.fetch_objects_to_compare(
+                    sid=sid, did=did, scid=scid, tid=row['oid'],
+                    oid=None)
+                data[module] = sub_data
+
+    @staticmethod
+    def _check_rlspolicy_support(res):
+        """
+        This function is used to check whether 'rlspolicy' in response
+        as it supported for version 9.5 and above
+        :param res:
+        :return:
+        """
+        if 'rlspolicy' in res['rows'][0]:
+            # Set the value of rls policy
+            if res['rows'][0]['rlspolicy'] == "true":
+                res['rows'][0]['rlspolicy'] = True
+
+            # Set the value of force rls policy for table owner
+            if res['rows'][0]['forcerlspolicy'] == "true":
+                res['rows'][0]['forcerlspolicy'] = True
+
+    def _fetch_table_properties(self, did, scid, tid):
+        """
+        This function is used to fetch the properties of the specified object
+        :param did:
+        :param scid:
+        :param tid:
+        :return:
+        """
+        sql = render_template(
+            "/".join([self.table_template_path, self._PROPERTIES_SQL]),
+            did=did, scid=scid, tid=tid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, res = self.conn.execute_dict(sql)
+        if not status:
+            return False, internal_server_error(errormsg=res)
+
+        elif len(res['rows']) == 0:
+            return False, gone(
+                gettext(self.not_found_error_msg()))
+
+        # Update autovacuum properties
+        self.update_autovacuum_properties(res['rows'][0])
+
+        # We will check the threshold set by user before executing
+        # the query because that can cause performance issues
+        # with large result set
+        pref = Preferences.module('browser')
+        table_row_count_pref = pref.preference('table_row_count_threshold')
+        table_row_count_threshold = table_row_count_pref.get()
+        estimated_row_count = int(res['rows'][0].get('reltuples', 0))
+
+        # Check whether 'rlspolicy' in response as it supported for
+        # version 9.5 and above
+        BaseTableView._check_rlspolicy_support(res)
+
+        # If estimated rows are greater than threshold then
+        if estimated_row_count and \
+                estimated_row_count > table_row_count_threshold:
+            res['rows'][0]['rows_cnt'] = str(table_row_count_threshold) + '+'
+
+        # If estimated rows is lower than threshold then calculate the count
+        elif estimated_row_count and \
+                table_row_count_threshold >= estimated_row_count:
+            sql = render_template(
+                "/".join(
+                    [self.table_template_path, 'get_table_row_count.sql']
+                ), data=res['rows'][0]
+            )
+
+            status, count = self.conn.execute_scalar(sql)
+
+            if not status:
+                return False, internal_server_error(errormsg=count)
+
+            res['rows'][0]['rows_cnt'] = count
+
+        # If estimated_row_count is zero then set the row count with same
+        elif not estimated_row_count:
+            res['rows'][0]['rows_cnt'] = estimated_row_count
+
+        return True, res
 
     def _format_column_list(self, data):
         # Now we have all lis of columns which we need

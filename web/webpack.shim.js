@@ -147,6 +147,10 @@ var webpackShimConfig = {
     'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.es5.min'),
     'mousetrap': path.join(__dirname, './node_modules/mousetrap'),
     'tablesorter-metric': path.join(__dirname, './node_modules/tablesorter/dist/js/parsers/parser-metric.min'),
+    'pathfinding':  path.join(__dirname, 'node_modules/pathfinding'),
+    'dagre':  path.join(__dirname, 'node_modules/dagre'),
+    'graphlib': path.join(__dirname, 'node_modules/graphlib'),
+    'react': path.join(__dirname, 'node_modules/react'),
 
     // AciTree
     'jquery.acitree': path.join(__dirname, './node_modules/acitree/js/jquery.aciTree.min'),
@@ -275,6 +279,8 @@ var webpackShimConfig = {
     'pgadmin.tools.schema_diff_ui': path.join(__dirname, './pgadmin/tools/schema_diff/static/js/schema_diff_ui'),
     'pgadmin.tools.search_objects': path.join(__dirname, './pgadmin/tools/search_objects/static/js/search_objects'),
     'pgadmin.tools.storage_manager': path.join(__dirname, './pgadmin/tools/storage_manager/static/js/storage_manager'),
+    'pgadmin.tools.erd_module': path.join(__dirname, './pgadmin/tools/erd/static/js/erd_module'),
+    'pgadmin.tools.erd': path.join(__dirname, './pgadmin/tools/erd/static/js'),
     'pgadmin.search_objects': path.join(__dirname, './pgadmin/tools/search_objects/static/js'),
     'pgadmin.tools.user_management': path.join(__dirname, './pgadmin/tools/user_management/static/js/user_management'),
     'pgadmin.user_management.current_user': '/user_management/current_user',

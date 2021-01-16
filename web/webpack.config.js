@@ -355,6 +355,7 @@ module.exports = [{
     sqleditor: './pgadmin/tools/sqleditor/static/js/sqleditor.js',
     debugger_direct: './pgadmin/tools/debugger/static/js/direct.js',
     schema_diff: './pgadmin/tools/schema_diff/static/js/schema_diff_hook.js',
+    erd_tool: './pgadmin/tools/erd/static/js/erd_tool_hook.js',
     file_utils: './pgadmin/misc/file_manager/static/js/utility.js',
     'pgadmin.style': pgadminCssStyles,
     pgadmin: pgadminScssStyles,
@@ -501,7 +502,8 @@ module.exports = [{
         ',pgadmin.node.pga_job' +
         ',pgadmin.tools.schema_diff' +
         ',pgadmin.tools.storage_manager' +
-        ',pgadmin.tools.search_objects',
+        ',pgadmin.tools.search_objects' +
+        ',pgadmin.tools.erd_module',
       },
     }, {
       test: require.resolve('snapsvg'),

@@ -110,13 +110,15 @@ class DataTypeReader:
         """
         # Check if template path is already set or not
         # if not then we will set the template path here
+        manager = conn.manager if not hasattr(self, 'manager') \
+            else self.manager
         if not hasattr(self, 'data_type_template_path'):
             self.data_type_template_path = 'datatype/sql/' + (
                 '#{0}#{1}#'.format(
-                    self.manager.server_type,
-                    self.manager.version
-                ) if self.manager.server_type == 'gpdb' else
-                '#{0}#'.format(self.manager.version)
+                    manager.server_type,
+                    manager.version
+                ) if manager.server_type == 'gpdb' else
+                '#{0}#'.format(manager.version)
             )
         sql = render_template(
             "/".join([self.data_type_template_path, 'get_types.sql']),
@@ -701,3 +703,23 @@ def get_schema(sid, did, scid):
     )
 
     return status, schema_name
+
+
+def get_schemas(conn, show_system_objects=False):
+    """
+    This function will return the schemas.
+    """
+
+    ver = conn.manager.version
+    server_type = conn.manager.server_type
+
+    SQL = render_template(
+        "/".join(['schemas',
+                  '{0}/#{1}#'.format(server_type, ver),
+                  'sql/nodes.sql']),
+        show_sysobj=show_system_objects,
+        schema_restrictions=None
+    )
+
+    status, rset = conn.execute_2darray(SQL)
+    return status, rset

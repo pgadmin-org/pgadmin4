@@ -1465,6 +1465,10 @@ define([
               collection: collection,
               node_info: self.model.node_info,
             });
+
+            if(data.beforeAdd) {
+              m = data.beforeAdd.apply(self, [m]);
+            }
             collection.add(m);
 
             var idx = collection.indexOf(m),

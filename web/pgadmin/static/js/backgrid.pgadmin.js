@@ -10,10 +10,10 @@
 define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
   'moment', 'bignumber', 'codemirror', 'sources/utils', 'sources/keyboard_shortcuts', 'sources/select2/configure_show_on_scroll',
-  'bootstrap.datetimepicker', 'backgrid.filter', 'bootstrap.toggle',
+  'sources/window', 'bootstrap.datetimepicker', 'backgrid.filter', 'bootstrap.toggle',
 ], function(
   gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber, CodeMirror,
-  commonUtils, keyboardShortcuts, configure_show_on_scroll
+  commonUtils, keyboardShortcuts, configure_show_on_scroll, pgWindow
 ) {
   /*
    * Add mechanism in backgrid to render different types of cells in
@@ -43,7 +43,7 @@ define([
   // bind shortcut in cell edit mode
   _.extend(Backgrid.InputCellEditor.prototype.events, {
     'keydown': function(e) {
-      let preferences = pgBrowser.get_preferences_for_module('browser');
+      let preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('browser');
       if(preferences && keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,e)) {
         pgBrowser.keyboardNavigation.bindAddGridRow();
       } else {
@@ -323,7 +323,7 @@ define([
         },
         events: {
           'keydown': function (event) {
-            let preferences = pgBrowser.get_preferences_for_module('browser');
+            let preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('browser');
             if(preferences && keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,event)) {
               pgBrowser.keyboardNavigation.bindAddGridRow();
             }
@@ -764,7 +764,7 @@ define([
     },
 
     onKeyDown: function(e) {
-      let preferences = pgBrowser.get_preferences_for_module('browser');
+      let preferences = pgWindow.default.pgAdmin.Browser.get_preferences_for_module('browser');
       if(keyboardShortcuts.validateShortcutKeys(preferences.add_grid_row,e)) {
         pgBrowser.keyboardNavigation.bindAddGridRow();
       }

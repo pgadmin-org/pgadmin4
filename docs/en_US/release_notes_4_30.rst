@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #1802 <https://redmine.postgresql.org/issues/1802>`_ -  Added ERD Diagram support with basic table fields, primary key, foreign key, and DDL SQL generation.
 
 Housekeeping
 ************

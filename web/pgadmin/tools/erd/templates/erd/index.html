@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+
+{% block css_link %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}
+{% block body %}
+<style>
+    body {padding: 0px;}
+    {% if is_desktop_mode and is_linux %}
+    .alertify .ajs-dimmer,.alertify .ajs-modal{-webkit-transform: none;}
+    .alertify-notifier{-webkit-transform: none;}
+    .alertify-notifier .ajs-message{-webkit-transform: none;}
+    .alertify .ajs-dialog.ajs-shake{-webkit-animation-name: none;}
+    .sql-editor-busy-icon.fa-pulse{-webkit-animation: none;}
+    {% endif %}
+</style>
+<div id="erd-tool-container" class="d-flex flex-column">
+</div>
+{% endblock %}
+{% block init_script %}
+    try {
+        require(
+            ['sources/generated/browser_nodes', 'sources/generated/codemirror'],
+            function() {
+                require(['sources/generated/erd_tool'], function(erdToolHook) {
+                var erdToolHook = erdToolHook || pgAdmin.Tools.ERDToolHook;
+                erdToolHook.load({{ params|safe }});
+
+                if(window.opener) {
+                    $(window).on('unload', function(ev) {
+                        $.ajax({
+                            method: 'DELETE',
+                            url: '{{close_url}}'
+                        });
+                    });
+                } else {
+                    $(window).on('beforeunload', function(ev) {
+                        $.ajax({
+                            method: 'DELETE',
+                            url: '{{close_url}}'
+                        });
+                    });
+                }
+            }, function() {
+                console.log(arguments);
+            });
+        },
+        function() {
+            console.log(arguments);
+        });
+    } catch (err) {
+        console.log(err);
+    }
+{% endblock %}

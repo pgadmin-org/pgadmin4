@@ -1,0 +1,202 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2020, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
+import React from 'react';
+import { DefaultNodeModel, PortWidget } from '@projectstorm/react-diagrams';
+import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
+import _ from 'lodash';
+import { IconButton, DetailsToggleButton } from '../ui_components/ToolBar';
+
+const TYPE = 'table';
+
+export class TableNodeModel extends DefaultNodeModel {
+  constructor({otherInfo, ...options}) {
+    super({
+      ...options,
+      type: TYPE
+    });
+
+    this._note = otherInfo.note || '';
+
+    this._data = {
+      columns: [],
+      ...otherInfo.data,
+    };
+  }
+
+  getPortName(attnum) {
+    return `coll-port-${attnum}`;
+  }
+
+  setNote(note) {
+    this._note = note;
+  }
+
+  getNote() {
+    return this._note;
+  }
+
+  addColumn(col) {
+    this._data.columns.push(col);
+  }
+
+  getColumnAt(attnum) {
+    return _.find(this.getColumns(), (col)=>col.attnum==attnum);
+  }
+
+  getColumns() {
+    return this._data.columns;
+  }
+
+  setName(name) {
+    this._data['name'] = name;
+  }
+
+  cloneData(name) {
+    let newData = {
+      ...this.getData()
+    };
+    if(name) {
+      newData['name'] = name
+    }
+    return newData;
+  }
+
+  setData(data) {
+    let self = this;
+    /* Remove the links if column dropped */
+    _.differenceWith(this._data.columns, data.columns, function(existing, incoming) {
+      return existing.attnum == incoming.attnum;
+    }).forEach((col)=>{
+      let existPort = self.getPort(self.getPortName(col.attnum));
+      if(existPort) {
+        existPort.removeAllLinks();
+        self.removePort(existPort);
+      }
+    });
+    this._data = data;
+    this.fireEvent({}, 'nodeUpdated');
+  }
+
+  getData() {
+    return this._data;
+  }
+
+  getSchemaTableName() {
+    return [this._data.schema, this._data.name];
+  }
+
+  remove() {
+    Object.values(this.getPorts()).forEach((port)=>{
+      port.removeAllLinks();
+    });
+    super.remove();
+  }
+
+  serializeData() {
+    return this.getData();
+  }
+
+  serialize() {
+    return {
+      ...super.serialize(),
+      otherInfo: {
+        data: this.getData(),
+        note: this.getNote(),
+      }
+    };
+  }
+}
+
+export class TableNodeWidget extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      show_details: true
+    }
+
+    this.props.node.registerListener({
+      toggleDetails: (event) => {
+        this.setState({show_details: event.show_details});
+      },
+    });
+  }
+
+  generateColumn(col) {
+    let port = this.props.node.getPort(this.props.node.getPortName(col.attnum));
+    return (
+      <div className='d-flex col-row' key={col.attnum}>
+        <div className='d-flex col-row-data'>
+          <div><span className={'wcTabIcon ' + (col.is_primary_key?'icon-primary_key':'icon-column')}></span></div>
+          <div>
+            <span className='col-name'>{col.name}</span>&nbsp;
+            {this.state.show_details &&
+            <span className='col-datatype'>{col.cltype}{col.attlen ? ('('+ col.attlen + (col.attprecision ? ','+col.attprecision : '') +')') : ''}</span>}
+          </div>
+        </div>
+        <div className="ml-auto col-row-port">{this.generatePort(port)}</div>
+      </div>
+    )
+  }
+
+  generatePort = port => {
+    if(port) {
+      return (
+        <PortWidget engine={this.props.engine} port={port} key={port.getID()} className={"port-" + port.options.alignment} />
+      );
+    }
+    return <></>;
+  };
+
+  toggleShowDetails = (e) => {
+    e.preventDefault();
+    this.setState((prevState)=>({show_details: !prevState.show_details}));
+  }
+
+  render() {
+    let node_data = this.props.node.getData();
+    return (
+      <div className={"table-node " + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editNode')}}>
+        <div className="table-toolbar">
+          <DetailsToggleButton className='btn-xs' showDetails={this.state.show_details} onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}} />
+          {this.props.node.getNote() &&
+            <IconButton icon="far fa-sticky-note" className="btn-xs btn-warning ml-auto" onClick={()=>{
+              this.props.node.fireEvent({}, 'showNote')
+            }} title="Check note" />}
+        </div>
+        <div className="table-schema">
+          <span className="wcTabIcon icon-schema"></span>
+          {node_data.schema}
+        </div>
+        <div className="table-name">
+          <span className="wcTabIcon icon-table"></span>
+          {node_data.name}
+        </div>
+        <div className="table-cols">
+          {_.map(node_data.columns, (col)=>this.generateColumn(col))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export class TableNodeFactory extends AbstractReactFactory {
+  constructor() {
+    super(TYPE);
+  }
+
+  generateModel(event) {
+    return new TableNodeModel(event.initialConfig);
+  }
+
+  generateReactWidget(event) {
+    return <TableNodeWidget engine={this.engine} node={event.model} />;
+  }
+}

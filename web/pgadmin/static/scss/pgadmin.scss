@@ -13,7 +13,6 @@ $theme-colors: (
 }
 
 @import "node_modules/bootstrap/scss/bootstrap";
-
 @import 'webcabin.pgadmin';
 @import 'bootstrap.overrides';
 @import 'backgrid.overrides';
@@ -27,3 +26,4 @@ $theme-colors: (
 @import 'pgadmin.style';
 @import 'bootstrap4-toggle.overrides';
 @import 'pickr.overrides';
+@import 'tippy.overrides';

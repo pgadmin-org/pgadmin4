@@ -18,7 +18,7 @@ function hasDatabaseInformation(parentData) {
   return parentData.database;
 }
 
-function generateUrl(trans_id, title, parentData) {
+function generateUrl(trans_id, title, parentData, sqlId) {
   let url_endpoint = url_for('datagrid.panel', {
     'trans_id': trans_id,
   });
@@ -30,6 +30,10 @@ function generateUrl(trans_id, title, parentData) {
 
   if (hasDatabaseInformation(parentData)) {
     url_endpoint += `&did=${parentData.database._id}`;
+  }
+
+  if(sqlId) {
+    url_endpoint += `&sql_id=${sqlId}`;
   }
 
   return url_endpoint;
@@ -83,6 +87,25 @@ export function generateScript(parentData, datagrid, alertify) {
     +`&did=${parentData.did}`;
 
   launchDataGrid(datagrid, transId, url_endpoint, queryToolTitle, '', alertify);
+}
+
+export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, datagrid, alertify) {
+  const transId = getRandomInt(1, 9999999);
+  parentData = {
+    server_group: {
+      _id: parentData.sgid,
+    },
+    server: {
+      _id: parentData.sid,
+      server_type: parentData.stype,
+    },
+    database: {
+      _id: parentData.did,
+    },
+  };
+
+  const gridUrl = generateUrl(transId, queryToolTitle, parentData, erdSqlId);
+  launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, '', alertify);
 }
 
 export function launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL, alertify) {
