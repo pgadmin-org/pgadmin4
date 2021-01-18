@@ -720,8 +720,8 @@ def check_version_compatibility(sid, tid):
                               'Advanced Server.')
 
     def get_round_val(x):
-        if x < 10000:
-            return x if x % 100 == 0 else x + 100 - x % 100
+        if x < 100000:
+            return x + 100 - x % 100
         else:
             return x + 10000 - x % 10000
 
