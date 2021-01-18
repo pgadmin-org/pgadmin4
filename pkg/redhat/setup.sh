@@ -35,10 +35,10 @@ echo "Installing build pre-requisites..."
 yum groupinstall -y "Development Tools"
 
 if [ ${OS_VERSION} == 7 ]; then
-    yum install -y expect fakeroot httpd-devel qt5-qtbase-devel postgresql12-devel python3-devel nodejs yarn rpm-build rpm-sign yum-utils
+    yum install -y expect fakeroot httpd-devel qt5-qtbase-devel postgresql12-devel python3-devel nodejs yarn rpm-build rpm-sign yum-utils krb5-devel
     pip3 install sphinx
 else
-    yum install -y expect fakeroot qt5-qtbase-devel postgresql12-devel python3-devel python3-sphinx nodejs yarn rpm-build rpm-sign yum-utils
+    yum install -y expect fakeroot qt5-qtbase-devel postgresql12-devel python3-devel python3-sphinx nodejs yarn rpm-build rpm-sign yum-utils krb5-devel
 fi
 
 # Setup RPM macros for signing

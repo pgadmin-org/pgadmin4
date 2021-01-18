@@ -43,6 +43,7 @@ from pgadmin.utils.ajax import internal_server_error, make_json_response
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
 from pgadmin.utils.security_headers import SecurityHeaders
+from pgadmin.utils.constants import KERBEROS
 
 # Explicitly set the mime-types so that a corrupted windows registry will not
 # affect pgAdmin 4 to be load properly. This will avoid the issues that may
@@ -674,6 +675,7 @@ def create_app(app_name=None):
 
         # Check the auth key is valid, if it's set, and we're not in server
         # mode, and it's not a help file request.
+
         if not config.SERVER_MODE and app.PGADMIN_INT_KEY != '' and ((
             'key' not in request.args or
             request.args['key'] != app.PGADMIN_INT_KEY) and
@@ -695,11 +697,19 @@ def create_app(app_name=None):
                 )
                 abort(401)
             login_user(user)
+        elif config.SERVER_MODE and\
+                app.PGADMIN_EXTERNAL_AUTH_SOURCE ==\
+                KERBEROS and \
+                not current_user.is_authenticated and \
+                request.endpoint in ('redirects.index', 'security.login'):
+            return authenticate.login()
 
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
         # to get the key again when login
         if config.SERVER_MODE and current_user.is_authenticated and \
+                app.PGADMIN_EXTERNAL_AUTH_SOURCE != \
+                KERBEROS and \
                 current_app.keyManager.get() is None and \
                 request.endpoint not in ('security.login', 'security.logout'):
             logout_user()

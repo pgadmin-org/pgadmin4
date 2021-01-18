@@ -157,11 +157,15 @@ RUN apk add --no-cache --virtual \
         build-base \
         postgresql-dev \
         libffi-dev \
+        krb5-dev \
+        e2fsprogs-dev \
+        krb5-server-ldap \
         linux-headers && \
     apk add \
         postfix \
         postgresql-client \
         postgresql-libs \
+        krb5-libs \
         shadow \
         sudo \
         libcap && \

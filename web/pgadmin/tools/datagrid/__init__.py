@@ -25,7 +25,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error, unauthorized
 
-from config import PG_DEFAULT_DRIVER
+from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD
 from pgadmin.model import Server, User
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
@@ -402,6 +402,9 @@ def _init_query_tool(trans_id, connect, sgid, sid, did, **kwargs):
                             username=user,
                             errmsg=msg,
                             _=gettext,
+                            allow_save_password=True if
+                            ALLOW_SAVE_PASSWORD and
+                            session['allow_save_password'] else False,
                         )
                     ), '', ''
                 else:

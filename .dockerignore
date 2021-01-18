@@ -1,0 +1,6 @@
+.git
+web/node_modules
+web/*.log
+web/regression
+web/**/tests/
+.DS_Store

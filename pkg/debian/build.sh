@@ -76,7 +76,7 @@ cat << EOF > "${WEBROOT}/DEBIAN/control"
 Package: ${APP_NAME}-web
 Version: ${APP_LONG_VERSION}
 Architecture: all
-Depends: ${APP_NAME}-server, apache2, libapache2-mod-wsgi-py3
+Depends: ${APP_NAME}-server, apache2, libapache2-mod-wsgi-py3, libgssapi-krb5-2
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The web interface for pgAdmin, hosted under Apache HTTPD. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 EOF

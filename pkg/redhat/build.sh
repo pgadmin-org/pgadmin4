@@ -131,9 +131,9 @@ Summary:	The web interface for pgAdmin, hosted under Apache HTTPD.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
 %if 0%{?rhel} && 0%{?rhel} == 7
-Requires:	${APP_NAME}-server, httpd, pgadmin4-python3-mod_wsgi
+Requires:	${APP_NAME}-server, httpd, pgadmin4-python3-mod_wsgi, krb5-libs
 %else
-Requires:	${APP_NAME}-server, httpd, python3-mod_wsgi
+Requires:	${APP_NAME}-server, httpd, python3-mod_wsgi, krb5-libs
 %endif
 
 %description
