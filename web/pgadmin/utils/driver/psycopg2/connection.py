@@ -757,7 +757,6 @@ WHERE db.datname = current_database()""")
                 if cur and cur.query is not None else None
         except Exception:
             current_app.logger.warning('Error encoding query')
-            pass
 
         dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(

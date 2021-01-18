@@ -949,18 +949,18 @@ define([
                 };
 
                 renameItem(file_data);
-                let path = $('.currentpath').val();
+                let current_path = $('.currentpath').val();
                 if(isFolder == true) {
                   // if its folder rename, remove the temporary added class
                   $(this).closest('.tbl_folder').removeClass('tbl_folder_rename');
-                  if(path.includes('\\')) {
-                    path = $('.currentpath').val().split('\\').slice(0, -2).join('\\')+'\\';
+                  if(current_path.includes('\\')) {
+                    current_path = $('.currentpath').val().split('\\').slice(0, -2).join('\\')+'\\';
                   }
                   else {
-                    path = $('.currentpath').val().split('/').slice(0, -2).join('/')+'/';
+                    current_path = $('.currentpath').val().split('/').slice(0, -2).join('/')+'/';
                   }
                 }
-                getFolderInfo(path);
+                getFolderInfo(current_path);
               }
             }
           } else {
@@ -1005,18 +1005,18 @@ define([
                     };
 
                   renameItem(file_data);
-                  let path = $('.currentpath').val();
+                  let current_path = $('.currentpath').val();
                   if(isFolder == true) {
                     // if its folder rename, remove the temporary added class
                     $(this).closest('.tbl_folder').removeClass('tbl_folder_rename');
-                    if(path.includes('\\')) {
-                      path = $('.currentpath').val().split('\\').slice(0, -2).join('\\')+'\\';
+                    if(current_path.includes('\\')) {
+                      current_path = $('.currentpath').val().split('\\').slice(0, -2).join('\\')+'\\';
                     }
                     else {
-                      path = $('.currentpath').val().split('/').slice(0, -2).join('/')+'/';
+                      current_path = $('.currentpath').val().split('/').slice(0, -2).join('/')+'/';
                     }
                   }
-                  getFolderInfo(path);
+                  getFolderInfo(current_path);
                 }
               }
             } else {

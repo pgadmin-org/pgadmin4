@@ -444,7 +444,7 @@ def register_browser_preferences(self):
     )
 
     self.dynamic_tab_title = self.preference.register(
-        'tab settings', 'dynamic_tabs',
+        'tab_settings', 'dynamic_tabs',
         gettext("Dynamic tab size"), 'boolean', False,
         category_label=PREF_LABEL_TABS_SETTINGS,
         help_str=gettext(
@@ -453,7 +453,7 @@ def register_browser_preferences(self):
     )
 
     self.qt_tab_title = self.preference.register(
-        'tab settings', 'qt_tab_title_placeholder',
+        'tab_settings', 'qt_tab_title_placeholder',
         gettext("Query tool tab title"),
         'text', '%DATABASE%/%USERNAME%@%SERVER%',
         category_label=PREF_LABEL_DISPLAY,
@@ -466,7 +466,7 @@ def register_browser_preferences(self):
     )
 
     self.ve_edt_tab_title = self.preference.register(
-        'tab settings', 'vw_edt_tab_title_placeholder',
+        'tab_settings', 'vw_edt_tab_title_placeholder',
         gettext("View/Edit data tab title"),
         'text', '%SCHEMA%.%TABLE%/%DATABASE%/%USERNAME%@%SERVER%',
         category_label=PREF_LABEL_DISPLAY,
@@ -479,7 +479,7 @@ def register_browser_preferences(self):
     )
 
     self.debugger_tab_title = self.preference.register(
-        'tab settings', 'debugger_tab_title_placeholder',
+        'tab_settings', 'debugger_tab_title_placeholder',
         gettext("Debugger tab title"),
         'text', '%FUNCTION%(%ARGS%)',
         category_label=PREF_LABEL_DISPLAY,
@@ -492,7 +492,7 @@ def register_browser_preferences(self):
     )
 
     self.open_in_new_tab = self.preference.register(
-        'tab settings', 'new_browser_tab_open',
+        'tab_settings', 'new_browser_tab_open',
         gettext("Open in new browser tab"), 'select2', None,
         category_label=PREF_LABEL_OPTIONS,
         options=[{'label': gettext('Query Tool'), 'value': 'qt'},

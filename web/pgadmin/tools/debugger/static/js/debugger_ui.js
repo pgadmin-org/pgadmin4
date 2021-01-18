@@ -801,8 +801,8 @@ define([
                             if(value) {
                               // Remove the leading and trailing white spaces.
                               value = value.trim();
-                              var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
-                              debuggerUtils.setDebuggerTitle(panel, self.preferences, label, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
+                              var name = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
+                              debuggerUtils.setDebuggerTitle(panel, self.preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                             }
                           },
                           // We will execute this function when user clicks on the Cancel

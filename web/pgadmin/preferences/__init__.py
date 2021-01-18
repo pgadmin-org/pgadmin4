@@ -204,9 +204,9 @@ def save(pid):
 
     if data['name'] in ['vw_edt_tab_title_placeholder',
                         'qt_tab_title_placeholder',
-                        'debugger_tab_title_placeholder']:
-        if data['value'].isspace():
-            data['value'] = ''
+                        'debugger_tab_title_placeholder'] \
+            and data['value'].isspace():
+        data['value'] = ''
 
     res, msg = Preferences.save(
         data['mid'], data['category_id'], data['id'], data['value'])

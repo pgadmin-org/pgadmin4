@@ -2175,7 +2175,6 @@ define('tools.querytool', [
       } else{
         loadingDiv = $('#fetching_data');
         loadingDiv.removeClass('d-none');
-        msgDiv = loadingDiv.find('.sql-editor-busy-text');
       }
       self.set_selected_option(connection_details);
       $.ajax({

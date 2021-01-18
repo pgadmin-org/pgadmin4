@@ -76,7 +76,7 @@ function setDebuggerTitle(panel, preferences, function_name, schema_name, databa
 function get_function_name(function_name) {
   var function_data = function_name.split('(');
   function_data.splice(-1, 1);
-  var index = 0;
+  var index = null;
   var func_name = '';
   for(index=0; index < function_data.length; index++) {
     func_name = func_name.concat(function_data[index]);

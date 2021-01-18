@@ -111,22 +111,10 @@ class _Preference(object):
 
         # The data stored in the configuration will be in string format, we
         # need to convert them in proper format.
-        if self._type in ('boolean', 'switch', 'node'):
-            return res.value == 'True'
-        if self._type == 'options':
-            for opt in self.options:
-                if 'value' in opt and opt['value'] == res.value:
-                    return res.value
-            if self.select2 and self.select2['tags']:
-                return res.value
-            return self.default
-        if self._type == 'select2':
-            if res.value:
-                res.value = res.value.replace('[', '')
-                res.value = res.value.replace(']', '')
-                res.value = res.value.replace('\'', '')
-                return [val.strip() for val in res.value.split(',')]
-            return None
+        is_format_data, data = self._get_format_data(res)
+        if is_format_data:
+            return data
+
         if self._type == 'text' and res.value == '' and not self.allow_blanks:
             return self.default
 
@@ -143,6 +131,31 @@ class _Preference(object):
             current_app.logger.exception(e)
             return self.default
         return res.value
+
+    def _get_format_data(self, res):
+        """
+        Configuration data get stored in string format, convert it in to
+        required format.
+        :param res: type value.
+        """
+        if self._type in ('boolean', 'switch', 'node'):
+            return True, res.value == 'True'
+        if self._type == 'options':
+            for opt in self.options:
+                if 'value' in opt and opt['value'] == res.value:
+                    return True, res.value
+            if self.select2 and self.select2['tags']:
+                return True, res.value
+            return True, self.default
+        if self._type == 'select2':
+            if res.value:
+                res.value = res.value.replace('[', '')
+                res.value = res.value.replace(']', '')
+                res.value = res.value.replace('\'', '')
+                return True, [val.strip() for val in res.value.split(',')]
+            return True, None
+
+        return False, None
 
     def set(self, value):
         """
@@ -477,12 +490,6 @@ class Preferences(object):
                          boolean, integer, numeric, date, datetime,
                          options, multiline, switch, node
         :param default:  Default value for the preference/option
-        :param min_val:  Minimum value for integer, and numeric type
-        :param max_val:  Maximum value for integer, and numeric type
-        :param options:  Allowed list of options for 'option' type
-        :param help_str: Help string show for that preference/option.
-        :param module_label: Label for the module
-        :param category_label: Label for the category
         """
         min_val = kwargs.get('min_val', None)
         max_val = kwargs.get('max_val', None)
