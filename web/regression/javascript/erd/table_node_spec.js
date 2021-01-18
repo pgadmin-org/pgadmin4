@@ -271,9 +271,9 @@ describe('ERD TableNodeWidget', ()=>{
 
     it('icons', ()=>{
       let cols = nodeWidget.find('.table-node .table-cols .col-row-data');
-      expect(cols.at(0).find('.wcTabIcon').hasClass('icon-primary_key')).toBeTrue();
-      expect(cols.at(1).find('.wcTabIcon').hasClass('icon-column')).toBeTrue();
-      expect(cols.at(2).find('.wcTabIcon').hasClass('icon-column')).toBeTrue();
+      expect(cols.at(0).find('.wcTabIcon').hasClass('icon-primary_key')).toBeTruthy();
+      expect(cols.at(1).find('.wcTabIcon').hasClass('icon-column')).toBeTruthy();
+      expect(cols.at(2).find('.wcTabIcon').hasClass('icon-column')).toBeTruthy();
     });
 
     it('column names', ()=>{

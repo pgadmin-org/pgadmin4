@@ -16,6 +16,6 @@ describe('ERD OneToManyPortModel', ()=>{
 
   it('createLinkModel', ()=>{
     let portObj = new OneToManyPortModel({options: {}});
-    expect(portObj.createLinkModel()).toBeInstanceOf(OneToManyLinkModel);
+    expect(portObj.createLinkModel() instanceof OneToManyLinkModel).toBeTruthy();
   });
 });
