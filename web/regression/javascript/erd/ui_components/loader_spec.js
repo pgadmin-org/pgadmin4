@@ -12,7 +12,7 @@ describe('ERD Loader', ()=>{
 
   it('<Loader /> comp', ()=>{
     let loaderComp = shallow(<Loader />);
-    expect(loaderComp.isEmptyRender()).toBeTrue();
+    expect(loaderComp.isEmptyRender()).toBeTruthy();
 
     loaderComp.setProps({message: 'test message'});
     expect(loaderComp.find('.pg-sp-text').text()).toBe('test message');
