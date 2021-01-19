@@ -418,18 +418,18 @@ def are_lists_identical(source_list, target_list, ignore_keys):
     if source_list is None or target_list is None or \
             len(source_list) != len(target_list):
         return False
-    else:
-        for index in range(len(source_list)):
-            # Check the type of the value if it is an dictionary then
-            # call are_dictionaries_identical() function.
-            if isinstance(source_list[index], dict):
-                if not are_dictionaries_identical(source_list[index],
-                                                  target_list[index],
-                                                  ignore_keys):
-                    return False
-            else:
-                if source_list[index] != target_list[index]:
-                    return False
+
+    for index in range(len(source_list)):
+        # Check the type of the value if it is an dictionary then
+        # call are_dictionaries_identical() function.
+        if isinstance(source_list[index], dict):
+            if not are_dictionaries_identical(source_list[index],
+                                              target_list[index],
+                                              ignore_keys):
+                return False
+        else:
+            if source_list[index] != target_list[index]:
+                return False
     return True
 
 
@@ -459,15 +459,15 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
         current_app.logger.debug("Schema Diff: Number of keys are different "
                                  "in source and target")
         return False
-    else:
-        # If number of keys are same but key is not present in target then
-        # return False
-        for key in src_only:
-            if key not in tar_only:
-                current_app.logger.debug(
-                    "Schema Diff: Number of keys are same but key is not"
-                    " present in target")
-                return False
+
+    # If number of keys are same but key is not present in target then
+    # return False
+    for key in src_only:
+        if key not in tar_only:
+            current_app.logger.debug(
+                "Schema Diff: Number of keys are same but key is not"
+                " present in target")
+            return False
 
     for key in source_dict.keys():
         # Continue if key is available in ignore_keys
@@ -491,17 +491,9 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
         else:
             source_value = source_dict[key]
             target_value = target_dict[key]
-
-            # If ignore_whitespaces is True then check the source_value and
-            # target_value if of type string. If the values is of type string
-            # then using translate function ignore all the whitespaces.
-            if ignore_whitespaces:
-                if isinstance(source_value, str):
-                    source_value = source_value.translate(
-                        str.maketrans('', '', string.whitespace))
-                if isinstance(target_value, str):
-                    target_value = target_value.translate(
-                        str.maketrans('', '', string.whitespace))
+            # Check if ignore whitespaces or not.
+            source_value, target_value = check_for_ignore_whitespaces(
+                ignore_whitespaces, source_value, target_value)
 
             # We need a proper solution as sometimes we observe that
             # source_value is '' and target_value is None or vice versa
@@ -520,6 +512,28 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
                 return False
 
     return True
+
+
+def check_for_ignore_whitespaces(ignore_whitespaces, source_value,
+                                 target_value):
+    """
+    If ignore_whitespaces is True then check the source_value and
+    target_value if of type string. If the values is of type string
+    then using translate function ignore all the whitespaces.
+    :param ignore_whitespaces: flag to check ignore whitespace.
+    :param source_value: source schema diff value
+    :param target_value: target schema diff value
+    :return: return source and target values.
+    """
+    if ignore_whitespaces:
+        if isinstance(source_value, str):
+            source_value = source_value.translate(
+                str.maketrans('', '', string.whitespace))
+        if isinstance(target_value, str):
+            target_value = target_value.translate(
+                str.maketrans('', '', string.whitespace))
+
+    return source_value, target_value
 
 
 def directory_diff(source_dict, target_dict, ignore_keys=[], difference=None):

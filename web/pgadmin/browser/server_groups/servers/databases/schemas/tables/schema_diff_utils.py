@@ -131,22 +131,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         for source in source_cols:
             if 'name' in source:
                 if isinstance(target_cols, list) and target_cols:
-                    tmp = None
-                    for item in target_cols:
-                        if item['name'] == source['name']:
-                            tmp = copy.deepcopy(item)
-                    if tmp and source != tmp:
-                        tmp_updated = copy.deepcopy(source)
-                        # Preserve the column number
-                        tmp_updated['attnum'] = tmp['attnum']
-                        if item['typname'] not in tmp_updated['edit_types']:
-                            tmp_updated['col_type_conversion'] = False
-                        updated.append(tmp_updated)
-                        target_cols.remove(tmp)
-                    elif tmp and source == tmp:
-                        target_cols.remove(tmp)
-                    elif tmp is None:
-                        added.append(source)
+                    SchemaDiffTableCompare.compare_target_cols(source,
+                                                               target_cols,
+                                                               added, updated)
                 else:
                     added.append(source)
             different['columns']['added'] = added
@@ -156,6 +143,33 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
             different['columns']['deleted'] = target_cols
 
         return different
+
+    @staticmethod
+    def compare_target_cols(source, target_cols, added, updated):
+        """
+        Compare target col with source.
+        :param source:
+        :param target_cols:
+        :param added:
+        :param updated:
+        :return:
+        """
+        tmp = None
+        for item in target_cols:
+            if item['name'] == source['name']:
+                tmp = copy.deepcopy(item)
+        if tmp and source != tmp:
+            tmp_updated = copy.deepcopy(source)
+            # Preserve the column number
+            tmp_updated['attnum'] = tmp['attnum']
+            if item['typname'] not in tmp_updated['edit_types']:
+                tmp_updated['col_type_conversion'] = False
+            updated.append(tmp_updated)
+            target_cols.remove(tmp)
+        elif tmp and source == tmp:
+            target_cols.remove(tmp)
+        elif tmp is None:
+            added.append(source)
 
     @staticmethod
     def table_constraint_comp(source_table, target_table):
