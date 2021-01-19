@@ -91,7 +91,6 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
 
     def tearDown(self):
         self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = 'ldap'
-        self.tester.logout()
 
     @classmethod
     def tearDownClass(cls):
@@ -99,6 +98,5 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         We need to again login the test client as soon as test scenarios
         finishes.
         """
-        cls.tester.logout()
         app_config.AUTHENTICATION_SOURCES = ['internal']
         utils.login_tester_account(cls.tester)
