@@ -88,6 +88,9 @@ def get_python_deps():
 
             # Next one....
             continue
+        except pkg_resources.VersionConflict:
+            # Next one....
+            continue
 
         try:
             metadata = distribution.get_metadata_lines('METADATA')
