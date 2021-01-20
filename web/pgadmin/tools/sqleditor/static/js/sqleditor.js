@@ -3551,7 +3551,7 @@ define('tools.querytool', [
                 } else {
                   dataView.beginUpdate();
                   for (var j = 0; j < rows.length; j++) {
-                    var item = grid.getDataItem(rows[j]);
+                    var item = grid.getData().getItemById(rows[j]);
                     data.push(item);
                     dataView.deleteItem(item[self.client_primary_key]);
                   }

@@ -40,6 +40,7 @@ Bug fixes
 | `Issue #6077 <https://redmine.postgresql.org/issues/6077>`_ -  Fixed accessibility issues in various dialogs.
 | `Issue #6084 <https://redmine.postgresql.org/issues/6084>`_ -  Fixed TypeError exception in schema diff when selected any identical object.
 | `Issue #6096 <https://redmine.postgresql.org/issues/6096>`_ -  Updated deployment documentation, refer correctly to uWSGI where Gunicorn had been referenced.
+| `Issue #6098 <https://redmine.postgresql.org/issues/6098>`_ -  Fixed an issue of deleting records when the user tries to delete multiple records.
 | `Issue #6120 <https://redmine.postgresql.org/issues/6120>`_ -  Ensure that the user should be able to specify an older date for the account expiration of the role/user.
 | `Issue #6121 <https://redmine.postgresql.org/issues/6121>`_ -  Fixed an issue where the database list in the new connection window is not visible.
 | `Issue #6122 <https://redmine.postgresql.org/issues/6122>`_ -  Added informative message when there is no difference found for schema diff.
