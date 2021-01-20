@@ -27,6 +27,10 @@ Bug fixes
 | `Issue #5571 <https://redmine.postgresql.org/issues/5571>`_ -  Added support for expression in exclusion constraints.
 | `Issue #5829 <https://redmine.postgresql.org/issues/5829>`_ -  Fixed incorrect log information for AUTHENTICATION_SOURCES.
 | `Issue #5875 <https://redmine.postgresql.org/issues/5875>`_ -  Ensure that the 'template1' database should not be visible after pg_upgrade.
+| `Issue #5905 <https://redmine.postgresql.org/issues/5905>`_ -  Fixed an issue where the Save button is enabled by default in Macro.
+| `Issue #5906 <https://redmine.postgresql.org/issues/5906>`_ -  Remove extra line after Manage Macros menu while clearing all macros.
+| `Issue #5907 <https://redmine.postgresql.org/issues/5907>`_ -  Ensure that 'Clear All Rows' should not work if there is no existing macro available and the user does not specify any value.
+| `Issue #5929 <https://redmine.postgresql.org/issues/5929>`_ -  Fixed an issue where the server is disconnected error message displayed if the user creates Macro with invalid SQL.
 | `Issue #5965 <https://redmine.postgresql.org/issues/5965>`_ -  Ensure that the macro query result should be download properly.
 | `Issue #5973 <https://redmine.postgresql.org/issues/5973>`_ -  Added appropriate help message and a placeholder for letting users know about the account password expiry for Login/Group Role.
 | `Issue #5997 <https://redmine.postgresql.org/issues/5997>`_ -  Updated Flask-BabelEx to the latest.

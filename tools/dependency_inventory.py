@@ -182,7 +182,7 @@ def dump_header():
     print(textwrap.fill(
         "pgAdmin 4 is built on C++, Python and Javascript, and is "
         "dependent on various third party libraries. These are "
-        "automatically compiled from the system, requirements.txt."
+        "automatically compiled from the system, requirements.txt "
         "and packages.json and listed below.",
         width=79) + "\n")
 

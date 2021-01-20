@@ -126,18 +126,22 @@ export default function macroModel(transId) {
                 var that = this;
                 // We will check if row is deletable or not
 
-                Alertify.confirm(
-                  gettext('Clear All Rows'),
-                  gettext('Are you sure you wish to clear all rows?'),
-                  function() {
-                    _.each(that.collection.toJSON(), function(m) {
-                      that.collection.get(m.id).set({'name': null, 'sql': null});
-                    });
-                  },
-                  function() {
-                    return true;
-                  }
-                );
+                let macros = that.collection.toJSON().filter(m => m.name !== undefined && m.name !== null);
+
+                if (macros.length > 0) {
+                  Alertify.confirm(
+                    gettext('Clear All Rows'),
+                    gettext('Are you sure you wish to clear all rows?'),
+                    function() {
+                      _.each(that.collection.toJSON(), function(m) {
+                        that.collection.get(m.id).set({'name': null, 'sql': null});
+                      });
+                    },
+                    function() {
+                      return true;
+                    }
+                  );
+                }
               },
               render: function() {
                 this.$el.empty();

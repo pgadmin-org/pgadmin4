@@ -4376,6 +4376,8 @@ define('tools.querytool', [
 
           // Find the next space from the character or end of line
           var error_line = self.gridView.query_tool_obj.getLine(error_line_no);
+
+          if (_.isUndefined(error_line)) return;
           end_marker = error_line.indexOf(' ', start_marker);
           if (end_marker < 0)
             end_marker = error_line.length;

@@ -194,6 +194,8 @@ let MacroDialog = {
               // We got the latest attributes of the object. Render the view
               // now.
               $container.append(self.view.render().$el);
+              self.__internal.buttons[2].element.disabled = true;
+
 
               // Enable/disable save button and show/hide statusbar based on session
               self.view.listenTo(self.view.model, 'pgadmin-session:start', function() {
@@ -272,11 +274,12 @@ let MacroDialog = {
                           <a class="dropdown-item" id="btn-manage-macros" href="#" tabindex="0">
                               <span> ${gettext('Manage Macros...')} </span>
                           </a>
-                      </li>
-                      <li class="dropdown-divider"></li>`;
+                      </li>`;
+
+                    let macro_list_tmpl = '';
                     _.each(macros, function(m) {
                       if (m.name) {
-                        str += `<li>
+                        macro_list_tmpl += `<li>
                         <a class="dropdown-item btn-macro" data-macro-id="${m.id}" href="#" tabindex="0">
                             <span> ${_.escape(m.name)} </span>
                             <span> (${m.key_label}) </span>
@@ -285,6 +288,7 @@ let MacroDialog = {
                       }
                     });
 
+                    if (macro_list_tmpl.length > 0) str += '<li class="dropdown-divider"></li>' + macro_list_tmpl;
                     $($.find('div.btn-group.mr-1.user_macros ul.dropdown-menu')).html($(str));
 
                     self.close(); // Close the dialog now
