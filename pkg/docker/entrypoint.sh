@@ -8,7 +8,7 @@ if [ `wc -m /pgadmin4/config_distro.py | awk '{ print $1 }'` = "0" ]; then
     cat << EOF > /pgadmin4/config_distro.py
 HELP_PATH = '../../docs'
 DEFAULT_BINARY_PATHS = {
-        'pg': '/usr/local/pgsql-12'
+        'pg': '/usr/local/pgsql-13'
 }
 EOF
 

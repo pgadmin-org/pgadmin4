@@ -19,6 +19,7 @@ Housekeeping
 | `Issue #5338 <https://redmine.postgresql.org/issues/5338>`_ -  Improve code coverage and API test cases for pgAgent.
 | `Issue #6052 <https://redmine.postgresql.org/issues/6052>`_ -  Added connected pgAdmin user and connection name in the log file.
 | `Issue #6079 <https://redmine.postgresql.org/issues/6079>`_ -  Updated mimetype from 'text/javascript' to 'application/javascript' as 'text/javascript' is obsolete.
+| `Issue #6162 <https://redmine.postgresql.org/issues/6162>`_ -  Include PostgreSQL 13 utilities in the container.
 
 Bug fixes
 *********

@@ -12,7 +12,7 @@
 # and clean up the web/ source code
 #########################################################################
 
-FROM node:12-alpine3.11 AS app-builder
+FROM node:14-alpine3.12 AS app-builder
 
 RUN apk add --no-cache \
     autoconf \
@@ -64,7 +64,7 @@ RUN npm install && \
 # Now, create a documentation build container for the Sphinx docs
 #########################################################################
 
-FROM python:3.8-alpine3.11 as docs-builder
+FROM python:3.9-alpine3.12 as docs-builder
 
 # Install only dependencies absolutely required for documentation building
 RUN apk add --no-cache \
@@ -101,6 +101,7 @@ FROM postgres:9.6-alpine as pg96-builder
 FROM postgres:10-alpine as pg10-builder
 FROM postgres:11-alpine as pg11-builder
 FROM postgres:12-alpine as pg12-builder
+FROM postgres:13-alpine as pg13-builder
 
 FROM alpine:3.11 as tool-builder
 
@@ -130,11 +131,16 @@ COPY --from=pg12-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-12/
 COPY --from=pg12-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-12/
 COPY --from=pg12-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-12/
 
+COPY --from=pg13-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-13/
+COPY --from=pg13-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-13/
+COPY --from=pg13-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-13/
+COPY --from=pg13-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-13/
+
 #########################################################################
 # Assemble everything into the final container.
 #########################################################################
 
-FROM python:3.8-alpine3.11
+FROM python:3.9-alpine3.12
 
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
 
@@ -175,9 +181,9 @@ RUN apk add --no-cache --virtual \
     apk del --no-cache build-deps && \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix
 
-# We need the v12 libpq, which is only in the 'edge' build of Alpine at present
-COPY --from=pg12-builder /usr/local/lib/libpq.so.5.12 /usr/lib/
-RUN ln -sf /usr/lib/libpq.so.5.12 /usr/lib/libpq.so.5
+# We need the v13 libpq
+COPY --from=pg13-builder /usr/local/lib/libpq.so.5.13 /usr/lib/
+RUN ln -sf /usr/lib/libpq.so.5.13 /usr/lib/libpq.so.5
 
 # Copy the runner script
 COPY pkg/docker/run_pgadmin.py /pgadmin4
@@ -195,7 +201,7 @@ RUN groupadd -g 5050 pgadmin && \
     chown pgadmin:pgadmin /var/log/pgadmin && \
     touch /pgadmin4/config_distro.py && \
     chown pgadmin:pgadmin /pgadmin4/config_distro.py && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.8
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.9
 USER pgadmin
 
 # Finish up

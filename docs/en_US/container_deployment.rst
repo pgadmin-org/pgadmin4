@@ -22,6 +22,7 @@ server:
 * PostgreSQL 10: */usr/local/pgsql-10*
 * PostgreSQL 11: */usr/local/pgsql-11*
 * PostgreSQL 12: */usr/local/pgsql-12*
+* PostgreSQL 13: */usr/local/pgsql-13*
 
 The most recent version of the utilities is used by default; this may be
 changed in the :ref:`preferences`.
