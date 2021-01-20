@@ -38,7 +38,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
         applies: ['tools'],
         callback: 'showErdTool',
         priority: 1,
-        label: gettext('New ERD project(Beta)'),
+        label: gettext('New ERD Project (Beta)'),
         enable: this.erdToolEnabled,
       }];
 
