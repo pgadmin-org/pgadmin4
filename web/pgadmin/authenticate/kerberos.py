@@ -35,6 +35,11 @@ except ImportError:
     # Instead throw the runtime error, when the server attempts
     # to use this authentication method.
     KERBEROS_AUTH_AVAILABLE = False
+except OSError:
+    # On Windows, it fails with OSError, when KFW libraries not found.
+    # Instead throw the runtime error, when the server attempts
+    # to use this authentication method.
+    KERBEROS_AUTH_AVAILABLE = False
 
 # Set the Kerberos config file
 if config.KRB_KTNAME and config.KRB_KTNAME != '<KRB5_KEYTAB_FILE>':
