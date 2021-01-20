@@ -53,7 +53,7 @@ define([
             pgAdmin.Browser.add_menus([{
               name: 'show_query_tool', node: this.type, module: this,
               applies: ['context'], callback: 'show_query_tool',
-              priority: 998, label: gettext('Query Tool...'),
+              priority: 998, label: gettext('Query Tool'),
               icon: 'pg-font-icon icon-query-tool',
             }]);
 
