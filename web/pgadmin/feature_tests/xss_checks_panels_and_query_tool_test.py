@@ -313,7 +313,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                     self.driver.find_element_by_css_selector(
                         'div.pgadmin-explain-container > svg > g > g > image'
                     )
-                ).perform()
+                ).click().perform()
                 break
             except Exception:
                 if idx != 2:
@@ -326,8 +326,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                     )
                     raise
 
-        source_code = self.driver.find_element_by_id(
-            'toolTip').get_attribute('innerHTML')
+        source_code = self.driver.find_element_by_css_selector(
+            '.pgadmin-explain-details:not(.d-none)').get_attribute('innerHTML')
 
         self._check_escaped_characters(
             source_code,

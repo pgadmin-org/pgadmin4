@@ -947,7 +947,10 @@ define('pgadmin.misc.explain', [
         IMAGE_WIDTH,
         IMAGE_HEIGHT
       );
-      image.attr({style: 'cursor: pointer'});
+      image.attr({
+        style: 'cursor: pointer',
+        class: 'image-node',
+      });
 
       // Draw tooltip
       var image_data = this.toJSON(),
@@ -1477,6 +1480,10 @@ define('pgadmin.misc.explain', [
               svgDownloader.downloadSVG(s.toString(), filename);
             }
           });
+        });
+        container.find('.image-node').tooltip({
+          title: gettext('Click for details...'),
+          template: '<div class="tooltip" role="tooltip"><div class="arrow d-none"></div><div class="tooltip-inner"></div></div>',
         });
       });
 
