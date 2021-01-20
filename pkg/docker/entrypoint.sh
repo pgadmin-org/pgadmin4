@@ -48,7 +48,9 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
 fi
 
 # Start Postfix to handle password resets etc.
-sudo /usr/sbin/postfix start
+if [ -z ${PGADMIN_DISABLE_POSTFIX} ]; then
+    sudo /usr/sbin/postfix start
+fi
 
 # Get the session timeout from the pgAdmin config. We'll use this (in seconds)
 # to define the Gunicorn worker timeout

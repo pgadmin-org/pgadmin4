@@ -41,6 +41,20 @@ to login to pgAdmin. This variable is required and must be set at launch time.
 This is the password used when setting up the initial administrator account to
 login to pgAdmin. This variable is required and must be set at launch time.
 
+**PGADMIN_DISABLE_POSTFIX**
+
+*Default: <null>*
+
+If left unset, a Postfix server will be started to deliver password reset
+emails.
+
+If set to any value, the Postfix server will not be started, and pgAdmin will
+need to be configured to use an external mail server using the *PGADMIN_CONFIG_*
+options below.
+
+This option is useful if you're running in an environment that prevents the use
+of sudo to start Postfix, or if you wish to use an external mail server.
+
 **PGADMIN_ENABLE_TLS**
 
 *Default: <null>*

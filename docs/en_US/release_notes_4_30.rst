@@ -11,6 +11,7 @@ New features
 
 | `Issue #1802 <https://redmine.postgresql.org/issues/1802>`_ -  Added ERD Diagram support with basic table fields, primary key, foreign key, and DDL SQL generation.
 | `Issue #5457 <https://redmine.postgresql.org/issues/5457>`_ -  Added support for Kerberos authentication, using SPNEGO to forward the Kerberos tickets through a browser.
+| `Issue #6160 <https://redmine.postgresql.org/issues/6160>`_ -  Add a container option (PGADMIN_DISABLE_POSTFIX) to disable the Postfix server.
 
 Housekeeping
 ************
