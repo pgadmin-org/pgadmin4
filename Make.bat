@@ -55,6 +55,7 @@ REM Main build sequence Ends
     ECHO Configuring the environment...
     IF "%PGADMIN_PYTHON_DIR%" == ""   SET "PGADMIN_PYTHON_DIR=C:\Python38"
     IF "%PGADMIN_QT_DIR%" == ""       SET "PGADMIN_QT_DIR=C:\Qt\5.14.2\msvc2017_64"
+    IF "%PGADMIN_KRB5_DIR%" == ""     SET "PGADMIN_KRB5_DIR=C:\Program Files\MIT\Kerberos"
     IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\Program Files (x86)\PostgreSQL\12"
     IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
     IF "%PGADMIN_VCREDIST_DIR%" == "" SET "PGADMIN_VCREDIST_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Redist\MSVC\14.16.27012"
@@ -97,6 +98,7 @@ REM Main build sequence Ends
     ECHO Python version:            %PYTHON_MAJOR%.%PYTHON_MINOR%
     ECHO.
     ECHO Qt directory:              %PGADMIN_QT_DIR%
+    ECHO KRB5 directory:            %PGADMIN_KRB5_DIR%
     ECHO PostgreSQL directory:      %PGADMIN_POSTGRES_DIR%
     ECHO.
     ECHO VC++ redist directory:     %PGADMIN_VCREDIST_DIR%
@@ -126,6 +128,12 @@ REM Main build sequence Ends
     IF NOT EXIST "%PGADMIN_QT_DIR%" (
         ECHO !PGADMIN_QT_DIR! does not exist.
         ECHO Please install Qt and set the PGADMIN_QT_DIR environment variable.
+        EXIT /B 1
+    )
+
+    IF NOT EXIST "%PGADMIN_KRB5_DIR%" (
+        ECHO !PGADMIN_KRB5_DIR! does not exist.
+        ECHO Please install Kfw (Kerberos) and set the PGADMIN_KRB5_DIR environment variable.
         EXIT /B 1
     )
 
@@ -267,6 +275,15 @@ REM Main build sequence Ends
     COPY "%PGADMIN_QT_DIR%\plugins\imageformats\qsvg.dll" "%BUILDROOT%\runtime\imageformats" > nul || EXIT /B 1
     ECHO [Paths] > "%BUILDROOT%\runtime\qt.conf"
     ECHO Plugins=plugins >> "%BUILDROOT%\runtime\qt.conf"
+
+    ECHO Staging Kerberos components...
+    IF "%ARCHITECTURE%" == "x64" (
+        COPY "%PGADMIN_KRB5_DIR%\bin\kinit.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+        COPY "%PGADMIN_KRB5_DIR%\bin\krb5_64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+        COPY "%PGADMIN_KRB5_DIR%\bin\comerr64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+        COPY "%PGADMIN_KRB5_DIR%\bin\k5sprt64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+        COPY "%PGADMIN_KRB5_DIR%\bin\gssapi64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    )
 
     ECHO Staging PostgreSQL components...
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libpq.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
