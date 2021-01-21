@@ -52,5 +52,4 @@ Bug fixes
 | `Issue #6122 <https://redmine.postgresql.org/issues/6122>`_ -  Added informative message when there is no difference found for schema diff.
 | `Issue #6128 <https://redmine.postgresql.org/issues/6128>`_ -  Fixed an issue where sequences are not created.
 | `Issue #6140 <https://redmine.postgresql.org/issues/6140>`_ -  Ensure that verbose logs should be visible for Utility(Backup, Maintenance) jobs.
-| `Issue #6143 <https://redmine.postgresql.org/issues/6143>`_ -  Fixed an issue where shared server entries not getting deleted from SQLite database if the user gets deleted.
 | `Issue #6144 <https://redmine.postgresql.org/issues/6144>`_ -  Ensure that the current value of the sequence should be ignored while comparing using schema diff.

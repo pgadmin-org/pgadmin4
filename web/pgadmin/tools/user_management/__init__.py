@@ -28,7 +28,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL,\
     SUPPORTED_AUTH_SOURCES, KERBEROS
 from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
-    ServerGroup, Process, Setting, SharedServer
+    ServerGroup, Process, Setting
 
 # set template path for sql scripts
 MODULE_NAME = 'user_management'
@@ -346,8 +346,6 @@ def delete(uid):
         ServerGroup.query.filter_by(user_id=uid).delete()
 
         Process.query.filter_by(user_id=uid).delete()
-
-        SharedServer.query.filter_by(user_id=uid).delete()
 
         # Finally delete user
         db.session.delete(usr)
