@@ -118,6 +118,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         'dependent': [{'get': 'dependents'}]
     })
 
+    keys_to_ignore = ['oid', 'oid-2', 'schema', 'current_value']
+
     def check_precondition(action=None):
         """
         This function will behave as a decorator which will checks
