@@ -50,7 +50,7 @@ export default class TableDialog {
     return 'entity_dialog';
   }
 
-  getDataModel(attributes, existingTables, colTypes, schemas, sVersion) {
+  getDataModel(attributes, isNew, allTables, colTypes, schemas, sVersion) {
     let dialogObj = this;
     let columnsModel = this.pgBrowser.DataModel.extend({
       idAttribute: 'attnum',
@@ -694,7 +694,11 @@ export default class TableDialog {
           msg = gettext('Table name cannot be empty.');
           this.errorModel.set('name', msg);
           return msg;
-        } else if(_.findIndex(existingTables, (table)=>table[0]==schema&&table[1]==name) >= 0) {
+        }
+
+        /* Check existing table names */
+        let sameNameCount = _.filter(allTables, (table)=>table[0]==schema&&table[1]==name).length;
+        if(isNew && this.sessAttrs['name'] && sameNameCount > 0 || isNew && sameNameCount > 0) {
           msg = gettext('Table name already exists.');
           this.errorModel.set('name', msg);
           return msg;
@@ -737,9 +741,9 @@ export default class TableDialog {
     return Alertify[dialogName];
   }
 
-  show(title, attributes, existingTables, colTypes, schemas, sVersion, callback) {
+  show(title, attributes, isNew, allTables, colTypes, schemas, sVersion, callback) {
     let dialogTitle = title || gettext('Unknown');
     const dialog = this.createOrGetDialog('table_dialog');
-    dialog(dialogTitle, this.getDataModel(attributes, existingTables, colTypes, schemas, sVersion), callback).resizeTo(this.pgBrowser.stdW.md, this.pgBrowser.stdH.md);
+    dialog(dialogTitle, this.getDataModel(attributes, isNew, allTables, colTypes, schemas, sVersion), callback).resizeTo(this.pgBrowser.stdW.md, this.pgBrowser.stdH.md);
   }
 }

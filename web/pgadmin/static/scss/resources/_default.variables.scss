@@ -324,7 +324,7 @@ $schemadiff-target-row-color: #fbe3bf !default;
 $schema-diff-color-fg: $input-color !default;
 
 /* Custom controls bootstrap changes */
-$custom-forms-transition: none !default;
+$custom-forms-transition: none, none, none;
 $custom-control-indicator-focus-border-color: $input-focus-border-color !default;
 $custom-control-indicator-border-color: $input-border-color !default;
 

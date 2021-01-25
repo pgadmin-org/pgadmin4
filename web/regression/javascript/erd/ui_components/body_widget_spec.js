@@ -252,7 +252,7 @@ describe('ERD BodyWidget', ()=>{
     bodyInstance.addEditNode();
     expect(tableDialog.show).toHaveBeenCalled();
 
-    let saveCallback = tableDialog.show.calls.mostRecent().args[6];
+    let saveCallback = tableDialog.show.calls.mostRecent().args[7];
     let newData = {key: 'value'};
     saveCallback(newData);
     expect(bodyInstance.diagram.addNode).toHaveBeenCalledWith(newData);
@@ -267,7 +267,7 @@ describe('ERD BodyWidget', ()=>{
     bodyInstance.addEditNode(node);
     expect(tableDialog.show).toHaveBeenCalled();
 
-    saveCallback = tableDialog.show.calls.mostRecent().args[6];
+    saveCallback = tableDialog.show.calls.mostRecent().args[7];
     newData = {key: 'value'};
     saveCallback(newData);
     expect(node.setData).toHaveBeenCalledWith(newData);

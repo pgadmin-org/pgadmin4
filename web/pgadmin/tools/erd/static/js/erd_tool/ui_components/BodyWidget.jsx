@@ -301,12 +301,12 @@ export default class BodyWidget extends React.Component {
 
   getDialog(dialogName) {
     if(dialogName === 'entity_dialog') {
-      let existingTables = this.diagram.getModel().getNodes().map((node)=>{
+      let allTables = this.diagram.getModel().getNodes().map((node)=>{
         return node.getSchemaTableName();
       });
-      return (title, attributes, callback)=>{
+      return (title, attributes, isNew, callback)=>{
         this.props.getDialog(dialogName).show(
-          title, attributes, existingTables, this.diagram.getCache('colTypes'), this.diagram.getCache('schemas'), this.state.server_version, callback
+          title, attributes, isNew, allTables, this.diagram.getCache('colTypes'), this.diagram.getCache('schemas'), this.state.server_version, callback
         );
       };
     } else if(dialogName === 'onetomany_dialog' || dialogName === 'manytomany_dialog') {
@@ -335,12 +335,12 @@ export default class BodyWidget extends React.Component {
     let dialog = this.getDialog('entity_dialog');
     if(node) {
       let [schema, table] = node.getSchemaTableName();
-      dialog(_.escape(`Table: ${table} (${schema})`), node.getData(), (newData)=>{
+      dialog(_.escape(`Table: ${table} (${schema})`), node.getData(), false, (newData)=>{
         node.setData(newData);
         this.diagram.repaint();
       });
     } else {
-      dialog('New table', {name: this.diagram.getNextTableName()}, (newData)=>{
+      dialog('New table', {name: this.diagram.getNextTableName()}, true, (newData)=>{
         let newNode = this.diagram.addNode(newData);
         newNode.setSelected(true);
       });
