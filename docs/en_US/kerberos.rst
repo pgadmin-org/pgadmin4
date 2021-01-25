@@ -23,9 +23,9 @@ To configure Kerberos authentication, you must set your Kerberos Server and gene
 Keytab file for HTTP Service
 ============================
 
-* Generate the *Keytab* file for the HTTP service and copy it to the *pgAdmin* webserver machine. Ensure that the operating system user owning the *pgAdmin* webserver is the owner of this file.
+* Generate the *Keytab* file for the HTTP service principal and copy it to the *pgAdmin* webserver machine. Ensure that the operating system user owning the *pgAdmin* webserver is the owner of this file and should be accessible by that user.
 
-* Please note that either you should set *default_keytab_name* parameter in *krb5.conf* file or the environment variable *KRB_KTNAME*. If not set then explicitly set *KRB_KTNAME* to the location of your *Keytab* file in the *config_local.py* or *config_system.py* file.
+* Please note that either you should set *default_keytab_name* parameter in *krb5.conf* file or the environment variable *KRB5_KTNAME*. If not set then explicitly set *KRB_KTNAME* to the location of your *Keytab* file in the *config_local.py* or *config_system.py* file.
 
 Apache HTTPD Configuration
 ==========================
