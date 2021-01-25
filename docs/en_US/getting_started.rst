@@ -36,6 +36,7 @@ Mode is pre-configured for security.
    user_management
    change_user_password
    enabling_ldap_authentication
+   kerberos
 
 
 .. note:: Pre-compiled and configured installation packages are available for
