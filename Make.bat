@@ -133,7 +133,7 @@ REM Main build sequence Ends
 
     IF NOT EXIST "%PGADMIN_KRB5_DIR%" (
         ECHO !PGADMIN_KRB5_DIR! does not exist.
-        ECHO Please install Kfw (Kerberos) and set the PGADMIN_KRB5_DIR environment variable.
+        ECHO Please install MIT Kerberos for Windows and set the PGADMIN_KRB5_DIR environment variable.
         EXIT /B 1
     )
 
