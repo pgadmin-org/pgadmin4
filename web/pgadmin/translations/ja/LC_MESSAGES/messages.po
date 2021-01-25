@@ -1,5 +1,5 @@
 # Japanese translations for pgAdmin 4.
-# Copyright (C) 2020 The pgAdmin Development Team
+# Copyright (C) 2021 The pgAdmin Development Team
 # This file is distributed under the same license as the pgAdmin 4 project.
 # Japan PostgreSQL User Group <www.postgresql.jp>, 2017.
 #
@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-22 20:03+0530\n"
-"PO-Revision-Date: 2020-12-04 23:38+0900\n"
+"PO-Revision-Date: 2021-01-24 03:31+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -135,19 +135,19 @@ msgstr "内部"
 
 #: pgadmin/authenticate/kerberos.py:55
 msgid "kerberos"
-msgstr ""
+msgstr "Kerberos"
 
 #: pgadmin/authenticate/kerberos.py:63
 msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
-msgstr ""
+msgstr "GSSAPI モジュールを読み込めないため、Kerberos 認証は使用できません"
 
 #: pgadmin/authenticate/kerberos.py:103
 msgid "Kerberos authentication failed. Couldn't find kerberos ticket."
-msgstr ""
+msgstr "Kerberos 認証に失敗しました。Kerberos チケットが見つかりません"
 
 #: pgadmin/authenticate/ldap.py:39
 msgid "ldap"
-msgstr "ldap"
+msgstr "LDAP"
 
 #: pgadmin/authenticate/registry.py:50
 msgid "Authentication source '{0}' has not been implemented."
@@ -539,7 +539,7 @@ msgstr "スキーマ比較"
 
 #: pgadmin/browser/register_browser_preferences.py:501
 msgid "ERD Tool"
-msgstr ""
+msgstr "ERD ツール"
 
 #: pgadmin/browser/register_browser_preferences.py:502
 msgid ""
@@ -4007,7 +4007,7 @@ msgstr "排他制約が削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:36
 msgid "Col/Exp"
-msgstr ""
+msgstr "列/式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:97
@@ -4037,11 +4037,11 @@ msgstr "列の演算子を指定してください： "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:230
 msgid "Please specify operator for expression: "
-msgstr ""
+msgstr "式の演算子を指定してください： "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:249
 msgid "Is expression ?"
-msgstr ""
+msgstr "式の使用"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:384
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:156
@@ -4141,7 +4141,7 @@ msgstr "制約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:826
 msgid "Columns/Expressions"
-msgstr ""
+msgstr "列/式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:947
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:423
@@ -6166,7 +6166,7 @@ msgstr "データベースへの接続を切断..."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:96
 msgid "Generate ERD (Beta)"
-msgstr ""
+msgstr "ERD を生成 (ベータ版)"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:160
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1197
@@ -7635,13 +7635,13 @@ msgstr "アカウント期限"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:432
 msgid "No Expiry"
-msgstr ""
+msgstr "無期限"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:433
 msgid ""
 "Please note that if you leave this field blank, then password will never "
 "expire."
-msgstr ""
+msgstr "ここを空欄のままにすると、パスワードはずっと失効しません"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:440
 msgid "Can login?"
@@ -8427,7 +8427,7 @@ msgstr "データがありません"
 #: pgadmin/misc/sql/static/js/sql.js:134
 #: pgadmin/misc/statistics/static/js/statistics.js:247
 msgid "Retrieving data from the server..."
-msgstr "サーバからデータを取得中..."
+msgstr "サーバからデータを取得しています..."
 
 #: pgadmin/browser/static/js/collection.js:291
 #: pgadmin/browser/static/js/node.js:184
@@ -8778,7 +8778,7 @@ msgstr ""
 
 #: pgadmin/browser/templates/browser/index.html:98
 msgid "Loading {0} v{1}..."
-msgstr "{0} v{1} を読み込み中..."
+msgstr "{0} v{1} を読み込んでいます..."
 
 #: pgadmin/browser/templates/browser/index.html:107
 msgid "Toggle navigation"
@@ -8814,11 +8814,11 @@ msgstr "%(appname)s"
 
 #: pgadmin/browser/templates/browser/kerberos_login.html:9
 msgid "Login Failed."
-msgstr ""
+msgstr "ログインに失敗しました"
 
 #: pgadmin/browser/templates/browser/kerberos_logout.html:9
 msgid "Logged out successfully."
-msgstr ""
+msgstr "正常にログアウトしました"
 
 #: pgadmin/browser/templates/browser/upgrade.html:1
 msgid ""
@@ -8887,7 +8887,7 @@ msgstr "選択されたオブジェクトに表示できる統計情報はあり
 #: pgadmin/tools/backup/static/js/backup.js:230
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/FloatingNote.jsx:46
 msgid "Note"
-msgstr "ノート"
+msgstr "メモ"
 
 #: pgadmin/browser/templates/browser/js/messages.js:38
 #: pgadmin/misc/sql/static/js/sql.js:154
@@ -9108,7 +9108,7 @@ msgstr "ダッシュボードの読み込み中にエラーが発生しました
 #: pgadmin/dashboard/static/js/dashboard.js:256
 #: pgadmin/dashboard/static/js/dashboard.js:374
 msgid "Loading dashboard..."
-msgstr "ダッシュボードを読み込み中..."
+msgstr "ダッシュボードを読み込んでいます..."
 
 #: pgadmin/dashboard/static/js/dashboard.js:382
 msgid "Please connect to the selected server to view the dashboard."
@@ -9536,7 +9536,7 @@ msgstr "開始時刻"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:242
 msgid "Running..."
-msgstr "実行中..."
+msgstr "実行しています..."
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:247
 msgid "Terminated by user."
@@ -9553,7 +9553,7 @@ msgstr "失敗しました（終了コード： %s）"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:256
 msgid "Terminating the process..."
-msgstr "プロセスを終了中..."
+msgstr "プロセスを終了しています..."
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:334
 msgid "More details..."
@@ -9576,7 +9576,7 @@ msgstr "プロセスウォッチャー - %s"
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:463
 msgid "Loading process logs..."
-msgstr "プロセスログを読み込み中..."
+msgstr "プロセスログを読み込んでいます..."
 
 #: pgadmin/misc/bgprocess/static/js/bgprocess.js:685
 msgid "Execution time"
@@ -9698,7 +9698,7 @@ msgstr "ファイルを選択"
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:476
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:579
 msgid "Loading..."
-msgstr "読み込み中..."
+msgstr "読み込んでいます..."
 
 #: pgadmin/misc/file_manager/static/js/utility.js:1415
 #: pgadmin/misc/file_manager/static/js/utility.js:1422
@@ -9910,7 +9910,7 @@ msgstr "ダウンロード"
 
 #: pgadmin/misc/static/explain/js/explain.js:1485
 msgid "Click for details..."
-msgstr ""
+msgstr "クリックで詳細を表示..."
 
 #: pgadmin/misc/static/explain/js/explain_statistics.js:50
 msgid "JIT:"
@@ -10236,7 +10236,7 @@ msgstr "クエリが %s で成功しました"
 #: pgadmin/static/js/sqleditor/execute_query.js:202
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3007
 msgid "Running query..."
-msgstr "クエリを実行中..."
+msgstr "クエリを実行しています..."
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:35
 #: pgadmin/static/js/sqleditor/filter_dialog.js:57
@@ -10247,7 +10247,7 @@ msgstr "ソート/フィルタのオプション"
 #: pgadmin/static/js/sqleditor/macro.js:133
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:126
 msgid "Loading data..."
-msgstr "データを読み込み中..."
+msgstr "データを読み込んでいます..."
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:239
 msgid "Filter updated successfully"
@@ -10450,7 +10450,7 @@ msgstr "実行計画（ANALYZE）"
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:117
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:119
 msgid "Save results to file"
-msgstr ""
+msgstr "ファイルに結果を保存"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:123
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:125
@@ -10588,15 +10588,15 @@ msgstr "バックアップ"
 
 #: pgadmin/tools/backup/__init__.py:135
 msgid "Backing up an object on the server"
-msgstr "サーバのオブジェクトをバックアップ中"
+msgstr "サーバのオブジェクトをバックアップしています"
 
 #: pgadmin/tools/backup/__init__.py:137
 msgid "Backing up the global objects"
-msgstr "グローバルオブジェクトをバックアップ中"
+msgstr "グローバルオブジェクトをバックアップしています"
 
 #: pgadmin/tools/backup/__init__.py:139
 msgid "Backing up the server"
-msgstr "サーバをバックアップ中"
+msgstr "サーバをバックアップしています"
 
 #: pgadmin/tools/backup/__init__.py:142
 msgid "Unknown Backup"
@@ -10604,27 +10604,27 @@ msgstr "不明なバックアップ"
 
 #: pgadmin/tools/backup/__init__.py:152
 msgid "Backing up an object on the server '{0}' from database '{1}'"
-msgstr "サーバ「{0}」のデータベース「{1}」からオブジェクトをバックアップ中"
+msgstr "サーバ「{0}」のデータベース「{1}」からオブジェクトをバックアップしています"
 
 #: pgadmin/tools/backup/__init__.py:159
 msgid "Backing up the global objects on the server '{0}'"
-msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップ中"
+msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップしています"
 
 #: pgadmin/tools/backup/__init__.py:166
 msgid "Backing up the server '{0}'"
-msgstr "サーバ「{0}」をバックアップ中"
+msgstr "サーバ「{0}」をバックアップしています"
 
 #: pgadmin/tools/backup/__init__.py:181
 msgid "Backing up an object on the server '{0}' from database '{1}'..."
-msgstr "サーバ「{0}」のデータベース「{1}」からオブジェクトをバックアップ中..."
+msgstr "サーバ「{0}」のデータベース「{1}」からオブジェクトをバックアップしています..."
 
 #: pgadmin/tools/backup/__init__.py:192
 msgid "Backing up the global objects on the server '{0}'..."
-msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップ中..."
+msgstr "サーバ「{0}」のグローバルオブジェクトをバックアップしています..."
 
 #: pgadmin/tools/backup/__init__.py:200
 msgid "Backing up the server '{0}'..."
-msgstr "サーバ「{0}」をバックアップ中..."
+msgstr "サーバ「{0}」をバックアップしています..."
 
 #: pgadmin/tools/backup/__init__.py:211
 #: pgadmin/tools/import_export/__init__.py:159
@@ -11560,159 +11560,161 @@ msgstr "デバッガ - "
 
 #: pgadmin/tools/erd/__init__.py:45
 msgid "ERD tool"
-msgstr ""
+msgstr "ERD ツール"
 
 #: pgadmin/tools/erd/__init__.py:78
 msgid "Open project"
-msgstr ""
+msgstr "プロジェクトを開く"
 
 #: pgadmin/tools/erd/__init__.py:96
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:619
 msgid "Save project"
-msgstr ""
+msgstr "プロジェクトを保存"
 
 #: pgadmin/tools/erd/__init__.py:114
 msgid "Save project as"
-msgstr ""
+msgstr "名前を付けてプロジェクトを保存"
 
 #: pgadmin/tools/erd/__init__.py:132
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:625
 msgid "Generate SQL"
-msgstr ""
+msgstr "SQL を生成"
 
 #: pgadmin/tools/erd/__init__.py:150
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:629
 msgid "Add table"
-msgstr ""
+msgstr "テーブルを追加"
 
 #: pgadmin/tools/erd/__init__.py:168
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:631
 msgid "Edit table"
-msgstr ""
+msgstr "テーブルを編集"
 
 #: pgadmin/tools/erd/__init__.py:186
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:633
 msgid "Clone table"
-msgstr ""
+msgstr "テーブルを複製"
 
 #: pgadmin/tools/erd/__init__.py:204
 msgid "Drop table"
-msgstr ""
+msgstr "テーブルを削除"
 
 #: pgadmin/tools/erd/__init__.py:222
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:639
 msgid "Add/Edit note"
-msgstr ""
+msgstr "メモを追加/編集"
 
 #: pgadmin/tools/erd/__init__.py:240
 msgid "One to many link"
-msgstr ""
+msgstr "一対多のリンク"
 
 #: pgadmin/tools/erd/__init__.py:258
 msgid "Many to many link"
-msgstr ""
+msgstr "多対多のリンク"
 
 #: pgadmin/tools/erd/__init__.py:276
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:647
 msgid "Auto align"
-msgstr ""
+msgstr "自動整列"
 
 #: pgadmin/tools/erd/__init__.py:294
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:652
 msgid "Zoom to fit"
-msgstr ""
+msgstr "画面に合わせてズーム"
 
 #: pgadmin/tools/erd/static/js/erd_module.js:50
 msgid "New ERD Project (Beta)"
-msgstr ""
+msgstr "新しい ERD プロジェクト (ベータ版)"
 
 #: pgadmin/tools/erd/static/js/erd_module.js:115
 #: pgadmin/tools/erd/static/js/erd_module.js:128
 msgid "ERD Error"
-msgstr ""
+msgstr "ERD エラー"
 
 #: pgadmin/tools/erd/static/js/erd_module.js:129
 msgid "Please select a database/database object."
-msgstr ""
+msgstr "データベース/データベースオブジェクトを選択してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:52
 msgid "Left Table"
-msgstr ""
+msgstr "左テーブル"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:63
 msgid "Left table Column"
-msgstr ""
+msgstr "左テーブルの列"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:69
 msgid "Right Table"
-msgstr ""
+msgstr "右テーブル"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:83
 msgid "Right table Column"
-msgstr ""
+msgstr "右テーブルの列"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:105
 msgid "Select the left table column."
-msgstr ""
+msgstr "左テーブルの列を選択してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:110
 msgid "Select the right table."
-msgstr ""
+msgstr "右テーブルを選択してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:115
 msgid "Select the right table column."
-msgstr ""
+msgstr "右テーブルの列を選択してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/OneToManyDialog.js:52
 msgid "Local Table"
-msgstr ""
+msgstr "ローカルのテーブル"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/OneToManyDialog.js:63
 msgid "Local Column"
-msgstr ""
+msgstr "ローカルの列"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/OneToManyDialog.js:83
 msgid "Referenced Column"
-msgstr ""
+msgstr "参照先の列"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/OneToManyDialog.js:105
 msgid "Select the local column."
-msgstr ""
+msgstr "ローカルの列を選択してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/OneToManyDialog.js:110
 msgid "Select the referenced table."
-msgstr ""
+msgstr "参照先のテーブルを選択してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/OneToManyDialog.js:115
 msgid "Select the referenced table column."
-msgstr ""
+msgstr "参照先のテーブルの列を選択してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:186
 msgid "Client error"
-msgstr ""
+msgstr "クライアントエラー"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:299
 msgid "Delete ?"
-msgstr ""
+msgstr "削除しますか？"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:300
 #, python-format
 msgid "You have selected %s tables and %s links."
-msgstr ""
+msgstr "%s個のテーブルと%s個のリンクを選択しました。"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:301
 msgid "Are you sure you want to delete ?"
-msgstr ""
+msgstr "削除してもよろしいですか？"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:389
 msgid "Project saved successfully."
-msgstr ""
+msgstr "プロジェクトを正常に保存しました"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:422
 msgid ""
 "-- This script was generated by a beta version of the ERD tool in pgAdmin"
 " 4.\n"
 msgstr ""
+"-- このスクリプトは pgAdmin 4 の ERD ツール (ベータ版) により生成された"
+"ものです。\n"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:423
 msgid ""
@@ -11720,59 +11722,62 @@ msgid ""
 "https://redmine.postgresql.org/projects/pgadmin4/issues/new if you find "
 "any bugs, including reproduction steps.\n"
 msgstr ""
+"-- 何かバグを発見した場合は、再現手順を添えて "
+"https://redmine.postgresql.org/projects/pgadmin4/issues/new まで"
+"報告してください\n"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:432
 msgid "Preparing the SQL..."
-msgstr ""
+msgstr "SQL を準備しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:536
 msgid "Initializing connection..."
-msgstr ""
+msgstr "接続を初期化しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:566
 msgid "Fetching required data..."
-msgstr ""
+msgstr "必要なデータを取得しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:589
 msgid "Fetching schema data..."
-msgstr ""
+msgstr "スキーマのデータを取得しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:617
 msgid "Load from file"
-msgstr ""
+msgstr "ファイルから読み込み"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:621
 msgid "Save as"
-msgstr ""
+msgstr "名前を付けて保存"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:635
 msgid "Drop table/link"
-msgstr ""
+msgstr "テーブル/リンクを削除"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:641
 msgid "One-to-Many link"
-msgstr ""
+msgstr "一対多のリンク"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:643
 msgid "Many-to-Many link"
-msgstr ""
+msgstr "多対多のリンク"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ConnectionBar.jsx:50
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2762
 msgid "Obtaining connection..."
-msgstr "接続を確立中..."
+msgstr "接続を確立しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ConnectionBar.jsx:51
 msgid "Connection failed"
-msgstr ""
+msgstr "接続に失敗しました"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ToolBar.jsx:111
 msgid "Show fewer details"
-msgstr ""
+msgstr "簡易的な情報を表示"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ToolBar.jsx:111
 msgid "Show more details"
-msgstr ""
+msgstr "具体的な情報を表示"
 
 #: pgadmin/tools/grant_wizard/__init__.py:348
 msgid "Unable to fetch the {} objects"
@@ -11869,7 +11874,7 @@ msgstr "エクスポート - "
 
 #: pgadmin/tools/import_export/__init__.py:137
 msgid "Copying table data"
-msgstr "テーブルデータをコピー中"
+msgstr "テーブルデータをコピーしています"
 
 #: pgadmin/tools/import_export/__init__.py:144
 msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'"
@@ -12155,15 +12160,15 @@ msgstr "リストア"
 
 #: pgadmin/tools/restore/__init__.py:108
 msgid "Restoring backup on the server '{0}'"
-msgstr "サーバ「{0}」のバックアップをリストア中"
+msgstr "サーバ「{0}」のバックアップをリストアしています"
 
 #: pgadmin/tools/restore/__init__.py:118
 msgid "Restoring backup on the server"
-msgstr "サーバのバックアップをリストア中"
+msgstr "サーバのバックアップをリストアしています"
 
 #: pgadmin/tools/restore/__init__.py:125
 msgid "Restoring backup on the server '{0}'..."
-msgstr "サーバ「{0}」のバックアップをリストア中..."
+msgstr "サーバ「{0}」のバックアップをリストアしています..."
 
 #: pgadmin/tools/restore/__init__.py:200
 msgid "File could not be found."
@@ -12234,7 +12239,7 @@ msgstr "リストアジョブが失敗しました"
 #: pgadmin/tools/schema_diff/__init__.py:33
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:90
 msgid "Comparing objects..."
-msgstr "オブジェクトを比較中..."
+msgstr "オブジェクトを比較しています..."
 
 #: pgadmin/tools/schema_diff/__init__.py:83
 msgid "Ignore whitespaces"
@@ -12288,7 +12293,7 @@ msgstr "比較元と比較対象のデータベースサーバは同じメジャ
 
 #: pgadmin/tools/schema_diff/__init__.py:777
 msgid "Comparing {0}"
-msgstr "{0}を比較中"
+msgstr "{0}を比較しています"
 
 #: pgadmin/tools/schema_diff/__init__.py:789
 msgid "Database Objects"
@@ -12300,7 +12305,7 @@ msgstr "{0}を比較中 "
 
 #: pgadmin/tools/schema_diff/__init__.py:833
 msgid "Comparing {0} of schema '{1}'"
-msgstr "スキーマ「{1}」の{0}を比較中"
+msgstr "スキーマ「{1}」の{0}を比較しています"
 
 #: pgadmin/tools/schema_diff/model.py:35
 msgid "Comparision started..."
@@ -12405,7 +12410,7 @@ msgstr "スクリプトの生成エラー"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:314
 msgid "No difference found"
-msgstr ""
+msgstr "差異は見つかりませんでした"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:350
 msgid "Comparison Result"
@@ -12510,7 +12515,7 @@ msgstr ""
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:278
 msgid "Locating..."
-msgstr "検索中..."
+msgstr "検索しています..."
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:285
 msgid "Unable to locate this object in the browser."
@@ -12522,7 +12527,7 @@ msgstr "すべての種類"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:608
 msgid "Searching...."
-msgstr "検索中..."
+msgstr "検索しています..."
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:630
 msgid "No response received"
@@ -12735,7 +12740,7 @@ msgstr "クエリの完了を待機しています..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3219
 msgid "Loading data from the database server and rendering..."
-msgstr "データベースサーバからのデータを読み込み中..."
+msgstr "データベースサーバからのデータを読み込んでいます..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3229
 #, python-format
@@ -12759,7 +12764,7 @@ msgstr "行が削除されました"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3733
 msgid "Saving the updated data..."
-msgstr "更新データを保存中..."
+msgstr "更新データを保存しています..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:3868
 msgid "Data saved successfully."
@@ -12786,11 +12791,11 @@ msgstr "このクエリは pgAdmin が「データを保存」操作の一環と
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4095
 msgid "Loading the file..."
-msgstr "ファイルの読み込み中..."
+msgstr "ファイルを読み込んでいます..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4156
 msgid "Saving the queries in the file..."
-msgstr "ファイル内のクエリを保存中..."
+msgstr "ファイル内のクエリを保存しています..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4169
 msgid "File saved successfully."
@@ -12799,7 +12804,7 @@ msgstr "ファイル保存に成功しました"
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4337
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4403
 msgid "Applying the new filter..."
-msgstr "新しいフィルタを適用中..."
+msgstr "新しいフィルタを適用しています..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4359
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4370
@@ -12813,7 +12818,7 @@ msgstr "フィルタ除外エラー"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4447
 msgid "Removing the filter..."
-msgstr "フィルタを解除中..."
+msgstr "フィルタを解除しています..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4467
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4478
@@ -12822,7 +12827,7 @@ msgstr "フィルタ解除エラー"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4621
 msgid "Setting the limit on the result..."
-msgstr "結果の上限を設定中..."
+msgstr "結果の上限を設定しています..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4642
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4653
@@ -12836,7 +12841,7 @@ msgstr "クエリキャンセルエラー"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4840
 msgid "Downloading Results..."
-msgstr ""
+msgstr "結果をダウンロードしています..."
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:4898
 msgid "CSV Download cancelled."
@@ -13158,7 +13163,7 @@ msgstr "EXPLAIN ANALYZE 実行"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:381
 msgid "Download Results"
-msgstr ""
+msgstr "結果をダウンロード"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:453
 msgid "Accesskey (Open file)"
@@ -13602,7 +13607,7 @@ msgstr ""
 msgid ""
 "Attempting to reconnect to the database server (#{server_id}) for the "
 "connection - '{conn_id}'."
-msgstr "接続「{conn_id}」でデータベースサーバ（#{server_id}）に再接続中"
+msgstr "接続「{conn_id}」でデータベースサーバ（#{server_id}）に再接続しています"
 
 #: pgadmin/utils/driver/psycopg2/connection.py:749
 #: pgadmin/utils/driver/psycopg2/connection.py:1284
@@ -13687,16 +13692,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー： {0}"
-
-#~ msgid "Query Tool..."
-#~ msgstr "クエリツール..."
-
-#~ msgid "Download as CSV/TXT"
-#~ msgstr "CSV/TXT 形式でダウンロード"
-
-#~ msgid "Downloading CSV..."
-#~ msgstr "CSV をダウンロード中..."
-
-#~ msgid "Download CSV"
-#~ msgstr "CSV をダウンロード"
 
