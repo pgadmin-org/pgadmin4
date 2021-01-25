@@ -34,7 +34,7 @@ BaseIconButton.propTypes = {
   text: PropTypes.string,
   className: PropTypes.string,
   ref: CustomPropTypes.ref,
-}
+};
 
 
 /* The tooltip content to show shortcut details */
@@ -47,10 +47,10 @@ export function Shortcut({shortcut}) {
   return (
     <div style={{justifyContent: 'center', marginTop: '0.125rem'}} className="d-flex">
       {keys.map((key, i)=>{
-        return <div key={i} className="shortcut-key">{key}</div>
+        return <div key={i} className="shortcut-key">{key}</div>;
       })}
     </div>
-  )
+  );
 }
 
 const shortcutPropType = PropTypes.shape({
@@ -85,7 +85,7 @@ export const IconButton = forwardRef((props, ref) => {
       </Tippy>
     );
   } else {
-    return <BaseIconButton ref={ref} className='btn btn-sm btn-primary-icon' {...otherProps}/>
+    return <BaseIconButton ref={ref} className='btn btn-sm btn-primary-icon' {...otherProps}/>;
   }
 });
 
@@ -93,21 +93,21 @@ IconButton.propTypes = {
   title: PropTypes.string,
   shortcut: shortcutPropType,
   className: PropTypes.string,
-}
+};
 
 /* Toggle button, icon changes based on value */
 export function DetailsToggleButton({showDetails, ...props}) {
   return (
     <IconButton
       icon={showDetails ? 'far fa-eye' : 'fas fa-low-vision'}
-      title={showDetails ? gettext('Show fewer details') : gettext("Show more details") }
+      title={showDetails ? gettext('Show fewer details') : gettext('Show more details') }
       {...props} />
   );
 }
 
 DetailsToggleButton.propTypes = {
   showDetails: PropTypes.bool,
-}
+};
 
 /* Button group container */
 export function ButtonGroup({className, children}) {
@@ -115,12 +115,12 @@ export function ButtonGroup({className, children}) {
     <div className={'btn-group mr-1 ' + (className ? className : '')} role="group" aria-label="save group">
       {children}
     </div>
-  )
+  );
 }
 
 ButtonGroup.propTypes = {
   className: PropTypes.string,
-}
+};
 
 /* Toolbar container */
 export default function ToolBar({id, children}) {
@@ -128,9 +128,9 @@ export default function ToolBar({id, children}) {
     <div id={id} className="editor-toolbar d-flex" role="toolbar" aria-label="">
       {children}
     </div>
-  )
+  );
 }
 
 ButtonGroup.propTypes = {
   id: PropTypes.string,
-}
+};

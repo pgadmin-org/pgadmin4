@@ -51,13 +51,13 @@ export default function FloatingNote({open, onClose, reference, rows, noteNode, 
           </div>
         </div>
       </div>
-      )}
-      visible={open}
-      interactive={true}
-      animation={false}
-      reference={reference}
-      placement='auto-end'
-      {...tippyProps}
+    )}
+    visible={open}
+    interactive={true}
+    animation={false}
+    reference={reference}
+    placement='auto-end'
+    {...tippyProps}
     />
   );
 }

@@ -30,7 +30,7 @@ define([
     height: 600,
     showTitle: true,
     isClosable: true,
-    isRenamable: true,
+    isRenamable: false,
     isPrivate: false,
     url: '',
     icon: '',

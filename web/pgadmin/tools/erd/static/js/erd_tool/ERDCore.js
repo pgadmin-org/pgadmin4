@@ -212,14 +212,14 @@ export default class ERDCore {
     let sourcePort = sourceNode.getPort(portName);
     /* Create the port if not there */
     if(!sourcePort) {
-      sourcePort = sourceNode.addPort(this.getNewPort(type, null, {name:portName, alignment:PortModelAlignment.RIGHT}));
+      sourcePort = sourceNode.addPort(this.getNewPort(type, null, {name:portName, subtype: 'one', alignment:PortModelAlignment.RIGHT}));
     }
 
     portName = targetNode.getPortName(data.local_column_attnum);
     let targetPort = targetNode.getPort(portName);
     /* Create the port if not there */
     if(!targetPort) {
-      targetPort = targetNode.addPort(this.getNewPort(type, null, {name:portName, alignment:PortModelAlignment.RIGHT}));
+      targetPort = targetNode.addPort(this.getNewPort(type, null, {name:portName, subtype: 'many', alignment:PortModelAlignment.RIGHT}));
     }
 
     /* Link the ports */

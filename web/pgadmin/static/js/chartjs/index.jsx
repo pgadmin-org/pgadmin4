@@ -41,11 +41,11 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
       options: optionsMerged,
     });
     props.onInit && props.onInit(chartObj.current);
-  }
+  };
 
   const destroyChart = function() {
     chartObj.current && chartObj.current.destroy();
-  }
+  };
 
   useEffect(()=>{
     initChart();
@@ -72,7 +72,7 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
       destroyChart();
       initChart();
     }
-  }, [redraw])
+  }, [redraw]);
 
   return (
     <canvas id={id} ref={chartRef}></canvas>

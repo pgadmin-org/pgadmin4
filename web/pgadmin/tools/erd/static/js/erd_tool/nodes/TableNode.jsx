@@ -19,7 +19,7 @@ export class TableNodeModel extends DefaultNodeModel {
   constructor({otherInfo, ...options}) {
     super({
       ...options,
-      type: TYPE
+      type: TYPE,
     });
 
     this._note = otherInfo.note || '';
@@ -60,22 +60,22 @@ export class TableNodeModel extends DefaultNodeModel {
 
   cloneData(name) {
     let newData = {
-      ...this.getData()
+      ...this.getData(),
     };
     if(name) {
-      newData['name'] = name
+      newData['name'] = name;
     }
     return newData;
   }
 
   setData(data) {
     let self = this;
-    /* Remove the links if column dropped */
+    /* Remove the links if column dropped or primary key removed */
     _.differenceWith(this._data.columns, data.columns, function(existing, incoming) {
-      return existing.attnum == incoming.attnum;
+      return existing.attnum == incoming.attnum && incoming.is_primary_key == true;
     }).forEach((col)=>{
       let existPort = self.getPort(self.getPortName(col.attnum));
-      if(existPort) {
+      if(existPort && existPort.getSubtype() == 'one') {
         existPort.removeAllLinks();
         self.removePort(existPort);
       }
@@ -109,7 +109,7 @@ export class TableNodeModel extends DefaultNodeModel {
       otherInfo: {
         data: this.getData(),
         note: this.getNote(),
-      }
+      },
     };
   }
 }
@@ -119,8 +119,8 @@ export class TableNodeWidget extends React.Component {
     super(props);
 
     this.state = {
-      show_details: true
-    }
+      show_details: true,
+    };
 
     this.props.node.registerListener({
       toggleDetails: (event) => {
@@ -143,13 +143,13 @@ export class TableNodeWidget extends React.Component {
         </div>
         <div className="ml-auto col-row-port">{this.generatePort(port)}</div>
       </div>
-    )
+    );
   }
 
   generatePort = port => {
     if(port) {
       return (
-        <PortWidget engine={this.props.engine} port={port} key={port.getID()} className={"port-" + port.options.alignment} />
+        <PortWidget engine={this.props.engine} port={port} key={port.getID()} className={'port-' + port.options.alignment} />
       );
     }
     return <></>;
@@ -163,21 +163,21 @@ export class TableNodeWidget extends React.Component {
   render() {
     let node_data = this.props.node.getData();
     return (
-      <div className={"table-node " + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editNode')}}>
+      <div className={'table-node ' + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editNode');}}>
         <div className="table-toolbar">
           <DetailsToggleButton className='btn-xs' showDetails={this.state.show_details} onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}} />
           {this.props.node.getNote() &&
             <IconButton icon="far fa-sticky-note" className="btn-xs btn-warning ml-auto" onClick={()=>{
-              this.props.node.fireEvent({}, 'showNote')
+              this.props.node.fireEvent({}, 'showNote');
             }} title="Check note" />}
         </div>
-        <div className="table-schema">
-          <span className="wcTabIcon icon-schema"></span>
-          {node_data.schema}
+        <div className="d-flex table-schema-data">
+          <div className="table-icon-schema"></div>
+          <div className="table-schema">{node_data.schema}</div>
         </div>
-        <div className="table-name">
-          <span className="wcTabIcon icon-table"></span>
-          {node_data.name}
+        <div className="d-flex table-name-data">
+          <div><span className="wcTabIcon icon-table"></span></div>
+          <div className="table-name">{node_data.name}</div>
         </div>
         <div className="table-cols">
           {_.map(node_data.columns, (col)=>this.generateColumn(col))}

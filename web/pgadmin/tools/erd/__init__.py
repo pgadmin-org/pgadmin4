@@ -290,6 +290,24 @@ class ERDModule(PgAdminModule):
 
         self.preference.register(
             'keyboard_shortcuts',
+            'show_details',
+            gettext('Show more/fewer details'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': False,
+                'control': True,
+                'key': {
+                    'key_code': 84,
+                    'char': 't'
+                }
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=shortcut_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
             'zoom_to_fit',
             gettext('Zoom to fit'),
             'keyboardshortcut',

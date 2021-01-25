@@ -78,11 +78,11 @@ export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_fi
 
 export function set_renamable_option(panel, is_file) {
   if(is_file || is_file == 'true') {
-    panel._isRenamable = false;
+    panel.renamable(false);
     $('.conn-info-dd').hide();
     $('.connection-data').css({pointerEvents: 'none', cursor: 'arrow'});
   } else {
-    panel._isRenamable = true;
+    panel.renamable(true);
   }
 }
 

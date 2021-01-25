@@ -16,6 +16,7 @@ const TYPE = 'onetomany';
 export default class OneToManyPortModel extends PortModel {
   constructor({options}) {
     super({
+      subtype: 'notset',
       ...options,
       type: TYPE,
     });
@@ -29,6 +30,22 @@ export default class OneToManyPortModel extends PortModel {
 
   createLinkModel() {
     return new OneToManyLinkModel({});
+  }
+
+  getSubtype() {
+    return this.options.subtype;
+  }
+
+  deserialize(event) {
+    super.deserialize(event);
+    this.options.subtype = event.data.subtype || 'notset';
+  }
+
+  serialize() {
+    return {
+      ...super.serialize(),
+      subtype: this.options.subtype,
+    };
   }
 }
 

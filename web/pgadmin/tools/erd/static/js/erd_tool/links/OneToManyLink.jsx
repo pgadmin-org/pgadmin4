@@ -9,12 +9,12 @@
 
 import React from 'react';
 import {
-    RightAngleLinkModel,
-    RightAngleLinkWidget,
-    DefaultLinkFactory,
-    PortModelAlignment,
-    LinkWidget,
-    PointModel
+  RightAngleLinkModel,
+  RightAngleLinkWidget,
+  DefaultLinkFactory,
+  PortModelAlignment,
+  LinkWidget,
+  PointModel,
 } from '@projectstorm/react-diagrams';
 import {Point} from '@projectstorm/geometry';
 import _ from 'lodash';
@@ -24,7 +24,7 @@ export const OneToManyModel = {
   local_column_attnum: undefined,
   referenced_table_uid: undefined,
   referenced_column_attnum: undefined,
-}
+};
 
 export class OneToManyLinkModel extends RightAngleLinkModel {
   constructor({data, ...options}) {
@@ -33,7 +33,7 @@ export class OneToManyLinkModel extends RightAngleLinkModel {
       width: 1,
       class: 'link-onetomany',
       locked: true,
-      ...options
+      ...options,
     });
 
     this._data = {
@@ -62,13 +62,13 @@ export class OneToManyLinkModel extends RightAngleLinkModel {
         'local_column': _.find(target.columns, (col)=>data.local_column_attnum == col.attnum).name,
         'referenced': _.find(source.columns, (col)=>data.referenced_column_attnum == col.attnum).name,
       }],
-    }
+    };
   }
 
   serialize() {
     return {
       ...super.serialize(),
-      data: this.getData()
+      data: this.getData(),
     };
   }
 }
@@ -83,13 +83,13 @@ const CustomLinkEndWidget = props => {
           <circle className="svg-link-ele svg-otom-circle" cx="0" cy="16" r={props.width*1.75} strokeWidth={props.width} />
           <polyline className="svg-link-ele" points="-8,0 0,15 0,0 0,30 0,15 8,0" fill="none" strokeWidth={props.width} />
         </>
-      )
+      );
     } else if (type == 'one') {
       return (
         <polyline className="svg-link-ele" points="-8,15 0,15 0,0 0,30 0,15 8,15" fill="none" strokeWidth={props.width} />
-      )
+      );
     }
-  }
+  };
 
   return (
     <g transform={'translate(' + point.getPosition().x + ', ' + point.getPosition().y + ')'}>
@@ -111,21 +111,21 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
     let degree = 0;
     let tx = 0, ty = 0;
     switch(alignment) {
-      case PortModelAlignment.BOTTOM:
-        ty = -offset;
-        break;
-      case PortModelAlignment.LEFT:
-        degree = 90;
-        tx = offset
-        break;
-      case PortModelAlignment.TOP:
-        degree = 180;
-        ty = offset;
-        break;
-      case PortModelAlignment.RIGHT:
-        degree = -90;
-        tx = -offset;
-        break;
+    case PortModelAlignment.BOTTOM:
+      ty = -offset;
+      break;
+    case PortModelAlignment.LEFT:
+      degree = 90;
+      tx = offset;
+      break;
+    case PortModelAlignment.TOP:
+      degree = 180;
+      ty = offset;
+      break;
+    case PortModelAlignment.RIGHT:
+      degree = -90;
+      tx = -offset;
+      break;
     }
     return [degree, tx, ty];
   }
@@ -146,8 +146,8 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
       point: point,
       rotation: rotation,
       tx: tx,
-      ty: ty
-    }
+      ty: ty,
+    };
   }
 
   generateCustomEndWidget({type, point, rotation, tx, ty}) {
@@ -183,7 +183,7 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
   }
 
   handleMove = function(event) {
-    this.props.link.getTargetPort()
+    this.props.link.getTargetPort();
     this.draggingEvent(event, this.dragging_index);
     this.props.link.fireEvent({}, 'positionChanged');
   }.bind(this);
@@ -220,7 +220,7 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
       this.props.link.addPoint(
         new PointModel({
           link: this.props.link,
-          position: new Point(onePoint.point.getX(), manyPoint.point.getY())
+          position: new Point(onePoint.point.getX(), manyPoint.point.getY()),
         })
       );
     }
@@ -246,7 +246,7 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
             onMouseEnter: (event) => {
               this.setState({ selected: true });
               this.props.link.lastHoverIndexOfPath = j;
-            }
+            },
           },
           j
         )

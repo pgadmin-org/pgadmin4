@@ -41,6 +41,10 @@ let pgAdmin = {
   },
 };
 
+let pgWindow = {
+  pgAdmin: pgAdmin,
+};
+
 let alertify = jasmine.createSpyObj('alertify', {
   'success': null,
   'error': null,
@@ -124,7 +128,7 @@ describe('ERD BodyWidget', ()=>{
 
   beforeEach(()=>{
     jasmineEnzyme();
-    body = mount(<BodyWidget params={params} pgAdmin={pgAdmin} getDialog={getDialog} transformToSupported={()=>{}} alertify={alertify}/>);
+    body = mount(<BodyWidget params={params} pgAdmin={pgAdmin} pgWindow={pgWindow} getDialog={getDialog} transformToSupported={()=>{}} alertify={alertify}/>);
     bodyInstance = body.instance();
   });
 
@@ -248,7 +252,7 @@ describe('ERD BodyWidget', ()=>{
     bodyInstance.addEditNode();
     expect(tableDialog.show).toHaveBeenCalled();
 
-    let saveCallback = tableDialog.show.calls.mostRecent().args[5];
+    let saveCallback = tableDialog.show.calls.mostRecent().args[6];
     let newData = {key: 'value'};
     saveCallback(newData);
     expect(bodyInstance.diagram.addNode).toHaveBeenCalledWith(newData);
@@ -263,7 +267,7 @@ describe('ERD BodyWidget', ()=>{
     bodyInstance.addEditNode(node);
     expect(tableDialog.show).toHaveBeenCalled();
 
-    saveCallback = tableDialog.show.calls.mostRecent().args[5];
+    saveCallback = tableDialog.show.calls.mostRecent().args[6];
     newData = {key: 'value'};
     saveCallback(newData);
     expect(node.setData).toHaveBeenCalledWith(newData);

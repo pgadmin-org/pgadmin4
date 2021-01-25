@@ -180,7 +180,7 @@ define('pgadmin.datagrid', [
           name: 'frm_datagrid',
           showTitle: true,
           isCloseable: true,
-          isRenameable: true,
+          isRenamable: true,
           isPrivate: true,
           url: 'about:blank',
         });

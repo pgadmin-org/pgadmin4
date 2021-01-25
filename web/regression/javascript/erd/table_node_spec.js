@@ -73,7 +73,10 @@ describe('ERD TableNodeModel', ()=>{
   });
 
   describe('setData', ()=>{
-    let existPort = jasmine.createSpyObj('port', ['removeAllLinks']);
+    let existPort = jasmine.createSpyObj('port', {
+      'removeAllLinks': jasmine.createSpy('removeAllLinks'),
+      'getSubtype': 'notset',
+    });
 
     beforeEach(()=>{
       modelObj._data.columns = [
@@ -93,6 +96,7 @@ describe('ERD TableNodeModel', ()=>{
     });
 
     it('add columns', ()=>{
+      spyOn(existPort, 'getSubtype').and.returnValue('many');
       existPort.removeAllLinks.calls.reset();
       modelObj.setData({
         name: 'noname',
@@ -118,29 +122,31 @@ describe('ERD TableNodeModel', ()=>{
     });
 
     it('update columns', ()=>{
+      spyOn(existPort, 'getSubtype').and.returnValue('many');
       existPort.removeAllLinks.calls.reset();
       modelObj.setData({
         name: 'noname',
         schema: 'erd',
         columns: [
-          {name: 'col1', not_null:false, attnum: 0},
-          {name: 'col2updated', not_null:false, attnum: 1},
-          {name: 'col3', not_null:true, attnum: 2},
+          {name: 'col1', not_null:false, attnum: 0, is_primary_key: false},
+          {name: 'col2updated', not_null:false, attnum: 1, is_primary_key: false},
+          {name: 'col3', not_null:true, attnum: 2, is_primary_key: false},
         ],
       });
       expect(modelObj.getData()).toEqual({
         name: 'noname',
         schema: 'erd',
         columns: [
-          {name: 'col1', not_null:false, attnum: 0},
-          {name: 'col2updated', not_null:false, attnum: 1},
-          {name: 'col3', not_null:true, attnum: 2},
+          {name: 'col1', not_null:false, attnum: 0, is_primary_key: false},
+          {name: 'col2updated', not_null:false, attnum: 1, is_primary_key: false},
+          {name: 'col3', not_null:true, attnum: 2, is_primary_key: false},
         ],
       });
       expect(existPort.removeAllLinks).not.toHaveBeenCalled();
     });
 
     it('remove columns', ()=>{
+      spyOn(existPort, 'getSubtype').and.returnValue('one');
       existPort.removeAllLinks.calls.reset();
       modelObj.setData({
         name: 'noname',

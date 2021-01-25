@@ -16,7 +16,7 @@ export const STATUS = {
   DISCONNECTED: 2,
   CONNECTING: 3,
   FAILED: 4,
-}
+};
 
 /* The connection bar component */
 export default function ConnectionBar({statusId, status, bgcolor, fgcolor, title}) {
@@ -33,19 +33,19 @@ export default function ConnectionBar({statusId, status, bgcolor, fgcolor, title
             + (status == STATUS.CONNECTED ? 'icon-query-tool-connected' : '')
             + (status == (STATUS.DISCONNECTED || STATUS.FAILED) ? 'icon-query-tool-disconnected ' : '')
             + (status == STATUS.CONNECTING ? 'obtaining-conn' : '')}
-          aria-hidden="true" title="" role="img">
+        aria-hidden="true" title="" role="img">
         </span>
       </div>
       <div className="connection-info btn-group" role="group" aria-label="">
         <div className="editor-title"
           style={{backgroundColor: bgcolor, color: fgcolor}}>
-            {status == STATUS.CONNECTING ? '(' + gettext('Obtaining connection...') + ') ' : ''}
-            {status == STATUS.FAILED ? '(' + gettext('Connection failed') + ') ' : ''}
-            {title}
+          {status == STATUS.CONNECTING ? '(' + gettext('Obtaining connection...') + ') ' : ''}
+          {status == STATUS.FAILED ? '(' + gettext('Connection failed') + ') ' : ''}
+          {title}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 ConnectionBar.propTypes = {
