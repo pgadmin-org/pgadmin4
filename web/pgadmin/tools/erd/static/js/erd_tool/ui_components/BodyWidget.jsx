@@ -321,7 +321,7 @@ export default class BodyWidget extends React.Component {
   }
 
   onHelpClick() {
-    let url = url_for('help.static', {'filename': 'erd.html'});
+    let url = url_for('help.static', {'filename': 'erd_tool.html'});
     window.open(url, 'pgadmin_help');
   }
 
@@ -624,14 +624,14 @@ export default class BodyWidget extends React.Component {
             shortcut={this.state.preferences.drop_table} disabled={!this.state.any_item_selected}/>
         </ButtonGroup>
         <ButtonGroup>
-          <IconButton id="add-note" icon="fa fa-sticky-note" onClick={this.onNoteClick} title={gettext('Add/Edit note')}
-            shortcut={this.state.preferences.add_edit_note} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
           <IconButton id="add-onetomany" text="1M" onClick={this.onOneToManyClick} title={gettext('One-to-Many link')}
             shortcut={this.state.preferences.one_to_many} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
           <IconButton id="add-manytomany" text="MM" onClick={this.onManyToManyClick} title={gettext('Many-to-Many link')}
             shortcut={this.state.preferences.many_to_many} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
         </ButtonGroup>
         <ButtonGroup>
+          <IconButton id="add-note" icon="fa fa-sticky-note" onClick={this.onNoteClick} title={gettext('Add/Edit note')}
+            shortcut={this.state.preferences.add_edit_note} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
           <IconButton id="auto-align" icon="fa fa-magic" onClick={this.onAutoDistribute} title={gettext('Auto align')}
             shortcut={this.state.preferences.auto_align} />
           <DetailsToggleButton id="more-details" onClick={this.onDetailsToggle} showDetails={this.state.show_details} />

@@ -76,6 +76,9 @@ following options (in alphabetical order):
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *View Data*                 | Click to access a context menu that provides several options for viewing data (see below).                               |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Generate ERD*              | Click to open the ERD tool with automatically generated diagram for the database selected.                               |
+|                             | This option is available only when a database is selected. Options are displayed on the flyout menu.                     |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 
 The Tools Menu
 **************
@@ -115,6 +118,8 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 | *Resume replay of WAL*    | Click to resume the replay of the WAL log.                                                                                                |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Storage Manager*         | Click to open the :ref:`Storage Manager <storage_manager>` to upload, delete, or download the backup files.                               |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *New ERD Project*         | Click to open the :ref:`ERD Tool <erd_tool>` and start designing your database.                                                           |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
 The Help Menu

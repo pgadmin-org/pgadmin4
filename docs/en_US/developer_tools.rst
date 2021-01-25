@@ -15,3 +15,4 @@ PL/SQL code.
    query_tool
    editgrid
    schema_diff
+   erd_tool
