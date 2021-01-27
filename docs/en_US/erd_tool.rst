@@ -183,7 +183,7 @@ The One to Many Link Dialog
 
 The one to many link dialog allows you to:
 
-* Add a foregin key relationship between two tables.
+* Add a foreign key relationship between two tables.
 * *Local Table* is the table that references a table and has the *many* end point.
 * *Local Column* the column that references.
 * *Referenced Table* is the table that is being referred and has the *one* end point.
