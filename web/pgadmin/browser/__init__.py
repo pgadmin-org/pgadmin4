@@ -18,6 +18,7 @@ from socket import error as SOCKETErrorException
 from urllib.request import urlopen
 
 import six
+import time
 from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, after_this_request, redirect, session
 from flask_babelex import gettext
@@ -35,7 +36,7 @@ from werkzeug.datastructures import MultiDict
 
 import config
 from pgadmin import current_blueprint
-from pgadmin.settings import get_setting
+from pgadmin.settings import get_setting, store_setting
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.csrf import pgCSRFProtect
@@ -693,7 +694,11 @@ def index():
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.
     if config.UPGRADE_CHECK_ENABLED:
-        check_browser_upgrade()
+        last_check = get_setting('LastUpdateCheck', default='0')
+        today = time.strftime('%Y%m%d')
+        if int(last_check) < int(today):
+            check_browser_upgrade()
+            store_setting('LastUpdateCheck', today)
 
     auth_only_internal = False
     auth_source = []
