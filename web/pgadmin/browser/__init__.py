@@ -553,7 +553,7 @@ class BrowserPluginModule(PgAdminModule):
         Sets the browser_preference, show_system_objects, show_node preference
         objects for this submodule.
         """
-        # Add the node informaton for browser, not in respective node
+        # Add the node information for browser, not in respective node
         # preferences
         self.browser_preference = blueprint.preference
         self.pref_show_system_objects = blueprint.preference.preference(
