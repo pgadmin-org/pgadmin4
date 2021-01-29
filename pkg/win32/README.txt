@@ -5,38 +5,29 @@ a 32bit build.
 Installing build requirements
 =============================
 
-1) Install Qt 5.14.2: https://www.qt.io/download-qt-installer
-
-Use the MSVC++ 2017 64bit option.
-
-2) Install Visual Studio 2017 Pro: https://my.visualstudio.com/Downloads?q=Visual%20Studio%202017
+1) Install Visual Studio 2017 Pro: https://my.visualstudio.com/Downloads?q=Visual%20Studio%202017
 
 Choose the Desktop development with C++ option.
 
-3) Install Chocolatey: https://chocolatey.org/install#individual
+2) Install Chocolatey: https://chocolatey.org/install#individual
 
-4) Install various command line tools:
+3) Install various command line tools:
 
-choco install -y  bzip2 cmake diffutils gawk gnuwin32-coreutils.install gzip git html-help-workshop innosetup nodejs-lts python sed strawberryperl wget yarn
+choco install -y  bzip2 cmake diffutils dotnet3.5 gzip git innosetup nodejs-lts python strawberryperl wget yarn
 
-5) Upgrade pip (this may give a permissions error that can be ignored):
+4) Upgrade pip (this may give a permissions error that can be ignored):
 
 pip install --upgrade pip
 
-6) Install virtualenv
+5) Install virtualenv
 
 pip install virtualenv
-
-7) Add the following paths to the system PATH:
-
-C:\Program Files (x86)\GnuWin32\bin
-C:\Program Files (x86)\HTML Help Workshop
 
 Building dependencies
 =====================
 
 The following steps should be run from a Visual Studio 2017 64bit command
-prompt (except where noted).
+prompt.
 
 1) Create a directory for the dependencies:
 
@@ -165,9 +156,9 @@ Studio 2017 64bit command prompt. Note that the examples shown below are the
 defaults for the build system, so if they match your requirements you don't
 need to set them:
 
-SET "PGADMIN_POSTGRES_DIR=C:\Program Files\PostgreSQL\12"
-SET "PGADMIN_PYTHON_DIR=C:\Python38"
-SET "PGADMIN_QT_DIR=C:\Qt\5.14.2\msvc2017_64"
+SET "PGADMIN_POSTGRES_DIR=C:\Program Files\PostgreSQL\13"
+SET "PGADMIN_PYTHON_DIR=C:\Python39"
+SET "PGADMIN_KRB5_DIR=C:\jenkins\build64\krb5"
 SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
 SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
 SET "PGADMIN_VCREDIST_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Redist\MSVC\14.16.27012"

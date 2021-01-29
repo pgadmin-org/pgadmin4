@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>pgAdmin4.ico</file>
-        <file>splash.png</file>
-        <file>pgAdmin4.png</file>
-        <file>pgAdmin4-mac.png</file>
-    </qresource>
-</RCC>

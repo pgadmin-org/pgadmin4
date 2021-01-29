@@ -40,13 +40,10 @@ APP_ICON = 'pg-icon'
 # If you change any of APP_RELEASE, APP_REVISION or APP_SUFFIX, then you
 # must also change APP_VERSION_INT to match.
 #
-# Any changes made here must also be made in runtime/pgAdmin4.pro and
-# runtime/Info.plist
-#
 
 # Application version number components
-APP_RELEASE = 4
-APP_REVISION = 30
+APP_RELEASE = 5
+APP_REVISION = 0
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -55,7 +52,7 @@ APP_SUFFIX = ''
 # Numeric application version for upgrade checks. Should be in the format:
 # [X]XYYZZ, where X is the release version, Y is the revision, with a leading
 # zero if needed, and Z represents the suffix, with a leading zero if needed
-APP_VERSION_INT = 43000
+APP_VERSION_INT = 50000
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
@@ -65,7 +62,6 @@ else:
     APP_VERSION = '%s.%s-%s' % (APP_RELEASE, APP_REVISION, APP_SUFFIX)
 
 # Copyright string for display in the app
-# Any changes made here must also be made in runtime/pgAdmin4.pro
 APP_COPYRIGHT = 'Copyright (C) 2013 - 2021, The pgAdmin Development Team'
 
 ##########################################################################

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>pgAdmin 4 Configuration</title>
+  <link rel="stylesheet" href="../css/pgadmin-desktop.css"/>
+  <style>
+    body, html {
+      font-size: 14px;
+      background-color: #ebeef3;
+    }
+  </style>
+</head>
+<body>
+  <div class="card shadow-sm">
+    <div class="card-header h6">Fixed Port</div>
+    <div class="card-body">
+      <div class="form-group">
+        <label>By default, the pgAdmin 4 uses a random port number to ensure it can always run successfully. If you need to use a predictable port number, you can set one here. Note that if the port is already in use, the application will be unable to start.</label>
+      </div>
+      <div class="form-inline">
+        <div class="form-check mr-3">
+          <label class="form-check-label mr-2" for="fixedPortCheck">Fixed port number?</label>
+          <input type="checkbox" class="form-check-input" id="fixedPortCheck"
+            data-name="fixed_port"/>
+        </div>
+        <div class="form-group">
+          <label class="mr-1" for="portNo">Port Number</label>
+          <input type="number" class="form-control" id="portNo" min="1025" max="65535" value="5050" style="min-width: 100px;">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card shadow-sm mt-3">
+    <div class="card-header h6">Connection Timeout</div>
+    <div class="card-body">
+      <div class="form-group">
+        <label>Connection Timeout will define how long to wait for pgAdmin to start before throwing the error. By default, pgAdmin wait for 90 seconds.
+        </label>
+      </div>
+      <div class="form-inline">
+        <div class="form-group">
+          <label class="mr-2">Timeout</label>
+          <input type="number" class="form-control" id="timeOut" min="10" max="600" value="90" style="min-width: 80px;">
+          <label class="ml-1">seconds</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="p-2 d-flex fixed-bottom shadow bg-white">
+    <div class="mr-auto" id="status-text"></div>
+    <div class="ml-auto">
+      <button id="btnSave" type="submit" class="btn btn-primary" disabled>Save</button>
+    </div>
+  </div>
+  <script type="text/javascript" src="../js/configure.js"></script>
+</body>
+</html>

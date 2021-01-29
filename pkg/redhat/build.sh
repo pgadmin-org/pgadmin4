@@ -26,6 +26,12 @@ _build_runtime
 _build_docs "redhat"
 _copy_code
 
+# Get an RPM-compatible version number
+RPM_VERSION=${APP_RELEASE}.${APP_REVISION}
+if [ ! -z ${APP_SUFFIX} ]; then
+    RPM_VERSION=${RPM_VERSION}_${APP_SUFFIX}
+fi
+
 #
 # Server package
 #
@@ -46,7 +52,7 @@ cat << EOF > "${BUILDROOT}/server.spec"
 %undefine __brp_ldconfig
 
 Name:		${APP_NAME}-server
-Version:	${APP_LONG_VERSION}
+Version:	${RPM_VERSION}
 Release:	1%{?dist}
 Summary:	The core server package for pgAdmin.
 License:	PostgreSQL
@@ -84,12 +90,12 @@ cat << EOF > "${BUILDROOT}/desktop.spec"
 %undefine __brp_ldconfig
 
 Name:		${APP_NAME}-desktop
-Version:	${APP_LONG_VERSION}
+Version:	${RPM_VERSION}
 Release:	1%{?dist}
 Summary:	The desktop user interface for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
-Requires:	${APP_NAME}-server, qt5-qtbase, qt5-qtbase-gui
+Requires:	${APP_NAME}-server, libatomic
 
 %description
 The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -99,9 +105,16 @@ The desktop user interface for pgAdmin. pgAdmin is the most popular and feature 
 %install
 cp -rfa %{pga_build_root}/desktop/* \${RPM_BUILD_ROOT}
 
+%post
+/bin/xdg-icon-resource forceupdate
+
 %files
 /usr/pgadmin4/bin/*
-/usr/pgadmin4/share/*
+/usr/share/icons/hicolor/128x128/apps/*
+/usr/share/icons/hicolor/64x64/apps/*
+/usr/share/icons/hicolor/48x48/apps/*
+/usr/share/icons/hicolor/32x32/apps/*
+/usr/share/icons/hicolor/16x16/apps/*
 /usr/share/applications/*
 EOF
 
@@ -124,7 +137,7 @@ cat << EOF > "${BUILDROOT}/web.spec"
 %undefine __brp_ldconfig
 
 Name:		${APP_NAME}-web
-Version:	${APP_LONG_VERSION}
+Version:	${RPM_VERSION}
 Release:	1%{?dist}
 BuildArch:	noarch
 Summary:	The web interface for pgAdmin, hosted under Apache HTTPD.
@@ -171,7 +184,7 @@ cat << EOF > "${BUILDROOT}/meta.spec"
 %undefine __brp_ldconfig
 
 Name:		${APP_NAME}
-Version:	${APP_LONG_VERSION}
+Version:	${RPM_VERSION}
 Release:	1%{?dist}
 BuildArch:	noarch
 Summary:	Installs all required components to run pgAdmin in desktop and web modes.
@@ -209,8 +222,8 @@ yumdownloader --downloadonly --destdir=$DISTROOT postgresql13-libs
 #
 # Get the results!
 #
-cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/${APP_NAME}-*${APP_LONG_VERSION}-*.${OS_ARCH}.rpm "${DISTROOT}/"
-cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*${APP_LONG_VERSION}-*.noarch.rpm "${DISTROOT}/"
+cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/${APP_NAME}-*${RPM_VERSION}-*.${OS_ARCH}.rpm "${DISTROOT}/"
+cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*${RPM_VERSION}-*.noarch.rpm "${DISTROOT}/"
 if [ ${OS_VERSION} == 7 ]; then
     cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.7.1-2.el7.x86_64.rpm "${DISTROOT}/"
 fi

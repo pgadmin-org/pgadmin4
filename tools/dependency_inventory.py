@@ -135,13 +135,18 @@ def get_python_deps():
     print_summary(count)
 
 
-def get_js_deps():
+def get_js_deps(is_runtime=False, hardcoded_deps=0):
     # Get the path to package.json file
-    web_dir = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) +
-                               "/../web/")
+    if is_runtime:
+        web_dir = os.path.realpath(os.path.dirname(
+            os.path.abspath(__file__)) + "/../runtime/")
+    else:
+        web_dir = os.path.realpath(os.path.dirname(
+            os.path.abspath(__file__)) + "/../web/")
 
     # Build the Yarn command
-    cmd = ["yarn", "--cwd", web_dir, "licenses", "list", "--json"]
+    cmd = ["yarn", "--cwd", web_dir, "licenses", "list", "--json",
+           "--production=true"]
 
     # Run the command
     process = Popen(cmd, stdout=PIPE)
@@ -173,28 +178,34 @@ def get_js_deps():
 
             print_row(name, version, licence, url)
 
-    print_summary(len(modules))
+    deps = len(modules)
+    if hardcoded_deps > 0:
+        deps = deps + hardcoded_deps
+
+    print_summary(deps)
 
 
 def dump_header():
     print_title("pgAdmin 4 Dependency Inventory")
 
     print(textwrap.fill(
-        "pgAdmin 4 is built on C++, Python and Javascript, and is "
-        "dependent on various third party libraries. These are "
+        "pgAdmin 4 is built on Python, Javascript and NW.js (node-webkit), "
+        "and is dependent on various third party libraries. These are "
         "automatically compiled from the system, requirements.txt "
         "and packages.json and listed below.",
         width=79) + "\n")
 
 
-def dump_cplusplus():
-    print_title("C++ Dependencies")
+def dump_runtime():
+    print_title("Runtime Dependencies")
     print_table_header()
-    print_row("QT", "5+", "LGPL v2.1/3", "https://www.qt.io/")
-    print_row("QDarkStyleSheet", "2.8.1", "MIT (code), CC BY 4.0 (images)",
-              "https://github.com/ColinDuquesnoy/QDarkStyleSheet")
-    print_row("Python", "3.4+", "PSF", "https://www.python.org/")
-    print_summary(3)
+    print_row("Python", "3.6+", "PSF", "https://www.python.org/")
+    print_row("nw", "0.50.2", "MIT",
+              "git://github.com/nwjs/npm-installer.git")
+
+    # Make sure to change the count of hardcoded_deps if we will
+    # manually add some more dependencies in future.
+    get_js_deps(is_runtime=True, hardcoded_deps=2)
 
 
 def dump_python():
@@ -213,6 +224,6 @@ def dump_js():
 
 # Let's do this thing!
 dump_header()
-dump_cplusplus()
+dump_runtime()
 dump_python()
 dump_js()

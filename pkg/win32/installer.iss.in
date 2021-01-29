@@ -33,6 +33,7 @@ ChangesEnvironment=yes
 ;UninstallFilesDir={app}\{#MyAppVersion}
 ArchitecturesInstallIn64BitMode={#MyAppArchitecturesMode}
 AllowNoIcons=yes
+WizardImageFile=sidebar.bmp
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -288,7 +289,7 @@ begin
 end;
 
 // This function would be called during upgrade mode
-// In upgrade mode - delete venv/* for example
+// In upgrade mode - delete python/* for example
 procedure DelFolder(Path: string);
 var
   FindRec: TFindRec;
@@ -340,7 +341,7 @@ begin
       if (IsUpgradeMode) then
       begin
         DelWebfolder(ExpandConstant('{app}\web'));
-        DelFolder(ExpandConstant('{app}\venv'));
+        DelFolder(ExpandConstant('{app}\python'));
       end;
 	end;
   end;

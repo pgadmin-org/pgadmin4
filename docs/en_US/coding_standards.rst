@@ -109,54 +109,6 @@ names.
 .. note:: From version 3.0 onwards, new or refactored code should be written using
      ES6 features and conventions.
 
-C++
-***
-
-C++ code is used in the desktop runtime for the application, primarily with the
-QT framework and an embedded Python interpreter. Note the use of hanging braces,
-which may be omitted if on a single statement is present:
-
-.. code-block:: c++
-
-    // Ping the application server to see if it's alive
-    bool PingServer(QUrl url)
-    {
-        QNetworkAccessManager manager;
-        QEventLoop loop;
-        QNetworkReply *reply;
-        QVariant redirectUrl;
-
-        url.setPath("/utils/ping");
-
-        do
-        {
-            reply = manager.get(QNetworkRequest(url));
-
-            QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-            loop.exec();
-
-            redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-            url = redirectUrl.toUrl();
-
-            if (!redirectUrl.isNull())
-                delete reply;
-
-        } while (!redirectUrl.isNull());
-
-        if (reply->error() != QNetworkReply::NoError)
-            return false;
-
-        QString response = reply->readAll();
-
-        if (response != "PING")
-        {
-            qDebug() << "Failed to connect, server response: " << response;
-            return false;
-        }
-
-        return true;
-    }
-
 Python
 ******
 

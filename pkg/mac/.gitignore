@@ -1,4 +1,2 @@
 # Global excludes across all subdirectories
 codesign.conf
-debug.pgadmin.Info.plist
-pgadmin.Info.plist

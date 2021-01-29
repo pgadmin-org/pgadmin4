@@ -15,6 +15,7 @@
 #       ignored when building a PIP Wheel.
 ##############################################################################
 blinker==1.4
+cheroot==8.5.1
 Flask==1.0.2
 Werkzeug>=0.15.0
 Flask-Gravatar==0.5.0
@@ -38,8 +39,8 @@ psycopg2>=2.8
 python-dateutil>=2.8.0
 SQLAlchemy>=1.3.13
 Flask-Security-Too>=3.0.0,<4.0.0
-bcrypt<=3.1.7
-cryptography<=3.0
+bcrypt>=3.1.7
+cryptography>=3.0
 sshtunnel>=0.1.5
 ldap3>=2.5.1
 Flask-BabelEx>=0.9.4

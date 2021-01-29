@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>pgAdmin 4</title>
+    <style>
+        body, html {
+          height: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+          font-size: 14px;
+          margin: 0 10px;
+          background-color: #fff;
+        }
+
+        .bg {
+          background-image: url("../../assets/welcome_logo.svg");
+          height: 100%;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: contain;
+          overflow: hidden;
+          display: flex;
+        }
+
+        .loader-text {
+          margin-top: auto;
+          margin-left: auto;
+          margin-right: auto;
+          margin-bottom: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+      let platform = require("os").platform;
+    </script>
+  </head>
+  <body>
+    <div class="bg">
+        <span id="loader-text-status" class="loader-text"></span>
+    </div>
+
+    <script type="text/javascript" src="../js/pgadmin.js"></script>
+  </body>
+</html>

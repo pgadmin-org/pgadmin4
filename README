@@ -17,59 +17,32 @@ utilised.
 
 Although developed using web technologies, pgAdmin 4 can be deployed either on
 a web server using a browser, or standalone on a workstation. The runtime/
-subdirectory contains a QT based runtime application intended to allow this -
-it is essentially a Python application server that runs in the system tray
-and allows the user to connect to the application using their web browser.
+subdirectory contains an NWjs based runtime application intended to allow this,
+which will execute the Python server and display the UI.
 
 Building the Runtime
 --------------------
 
 To build the runtime, the following packages must be installed:
 
-- QT 5 (Use the VC++ build on Windows, not MinGW).
-- Python 3.4+
+- NodeJS 12+
+- Yarn
 
-An environment variable named PGADMIN_PYTHON_DIR must be set to the directory
-in which Python has been installed, for example:
+Change into the runtime directory, and run "yarn install". This will install the
+dependencies required.
 
-- /usr
-- /usr/local/python-3.8
-- C:\Python38
+In order to use the runtime in a development environment, you'll need to copy
+dev_config.json.in file to dev_config.json, and edit the paths to the Python
+executable and pgAdmin.py file, otherwise the runtime will use the default
+paths it would expect to find in the standard package for your platform.
 
-Assuming both qmake is in the path:
+You can then execute the runtime by running something like:
 
-  dpage@hal:~/git/pgadmin4$ cd runtime
-  dpage@hal:~/git/pgadmin4/runtime$ export PGADMIN_PYTHON_DIR=/opt/local
-  dpage@hal:~/git/pgadmin4/runtime$ qmake
-  Project MESSAGE: ==================================
-  Project MESSAGE: Configuring the pgAdmin 4 runtime.
-  Project MESSAGE: ==================================
-  Project MESSAGE: Qt version: 5
-  Project MESSAGE: Platform: macOS
-  Project MESSAGE: Python executable: /opt/local/bin/python3
-  Project MESSAGE: Python version: 3.8 (38)
-  Project MESSAGE: Python config: /opt/local/bin/python3-config
-  Project MESSAGE: CXXFLAGS: -pipe -stdlib=libc++ -I/opt/local/Library/Frameworks/Python.framework/Versions/3.8/include/python3.8 -I/opt/local/Library/Frameworks/Python.framework/Versions/3.8/include/python3.8
-  Project MESSAGE: LDFLAGS: -stdlib=libc++ -L/opt/local/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/config-3.8-darwin -ldl -framework CoreFoundation
-  Project MESSAGE: LIBS: -lpython3.8 -ldl -framework CoreFoundation
-  dpage@hal:~/git/pgadmin4/runtime$ make
-  ...
+node_modules/nw/nwjs/nw .
 
-To build the runtime in debug mode, use the option below with qmake:
-$ qmake CONFIG+=debug
+or on macOS:
 
-To build the runtime in release mode, use the option below with qmake:
-$ qmake CONFIG+=release
-
-By default, the runtime application will be built in release mode.
-
-On Linux, an executable called 'pgAdmin4' will be built, on Windows,
-'pgAdmin4.exe', and on Mac OS X, an app bundle called pgAdmin4.app will be
-created.
-
-You can also use Qt Creator to build, develop and debug the runtime. Simply
-open the $PGADMIN4_SRC/runtime/pgAdmin4.pro project file in Qt Creator and
-configure the project with a supported version of Qt when prompted.
+node_modules/nw/nwjs/nwjs.app/Contents/MacOS/nwjs .
 
 Create Database Migrations
 --------------------------
@@ -92,7 +65,7 @@ Configuring the Python Environment
 ----------------------------------
 
 In order to run the Python code, a suitable runtime environment is required.
-Python version 3.4 and later are currently supported. It is recommended that a
+Python version 3.5 and later are currently supported. It is recommended that a
 Python Virtual Environment is setup for this purpose, rather than using the
 system Python environment. On Linux and Mac systems, the process is fairly
 simple - adapt as required for your distribution:
@@ -230,33 +203,6 @@ entries to make them available in preferences.
 
 The name of the theme is derived from the directory name. Underscores (_) and
 hyphens (-) will be replaced with spaces and the result will be camel cased.
-
-Configuring the Runtime
------------------------
-
-The pgAdmin 4 Runtime maintains it's own Python Path to avoid conflicts with
-packages or other issues in the system Python installation. It will also search
-a number of known locations for the pgAdmin4.py file needed to run pgAdmin
-(including relative locations in a source code tree), however you can specify
-an alternate path if needed.
-
-If either a working environment or pgAdmin4.py cannot be found at startup, the
-runtime will prompt for the locations. Alternatively, you can click the try
-icon and select the Configuration option to open the configuration dialogue.
-
-On a Linux/Mac system, the Python Path will typically consist of a single path
-to the virtual environment's site-packages directory, e.g.
-
-    /Users/<USERNAME>/.virtualenvs/pgadmin4/lib/python3.8/site-packages
-
-On Windows, multiple paths are likely to be required, e.g.
-
-    C:\Users\dpage\.virtualenvs\pgadmin4\Lib\site-packages;C:\Users\dpage\.virtualenvs\pgadmin4\Lib;C:\Users\dpage\.virtualenvs\pgadmin4\Lib\lib-tk;C:\Users\dpage\.virtualenvs\pgadmin4\DLLs
-
-If you wish to specify a specific copy of the Python code to run, you can set
-the  Application Path to a directory containing pgAdmin4.py, e.g.
-
-    /Users/<USERNAME>/git/pgadmin4-test/web/
 
 Building the documentation
 --------------------------

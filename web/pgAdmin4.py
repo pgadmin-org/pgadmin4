@@ -13,6 +13,7 @@ to start a web server."""
 
 
 import sys
+from cheroot.wsgi import Server as CherootServer
 
 if sys.version_info < (3, 4):
     raise RuntimeError('This application must be run under Python 3.4 '
@@ -27,8 +28,11 @@ if sys.path[0] != os.path.dirname(os.path.realpath(__file__)):
     sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 
 # Grab the SERVER_MODE if it's been set by the runtime
-if 'SERVER_MODE' in globals():
-    builtins.SERVER_MODE = globals()['SERVER_MODE']
+if 'PGADMIN_SERVER_MODE' in os.environ:
+    if os.environ['PGADMIN_SERVER_MODE'] == 'OFF':
+        builtins.SERVER_MODE = False
+    else:
+        builtins.SERVER_MODE = True
 else:
     builtins.SERVER_MODE = None
 
@@ -106,18 +110,15 @@ else:
 # runtime if we're running in desktop mode, otherwise we'll just use the
 # Flask default.
 app.PGADMIN_RUNTIME = False
+app.logger.debug(
+    'Server mode: %s, config server mode: %s',
+    SERVER_MODE, config.SERVER_MODE
+)
 config.EFFECTIVE_SERVER_PORT = None
-if 'PGADMIN_INT_PORT' in globals():
-    app.logger.debug(
-        'Running under the desktop runtime, port: %s',
-        globals()['PGADMIN_INT_PORT']
-    )
-    config.EFFECTIVE_SERVER_PORT = int(globals()['PGADMIN_INT_PORT'])
-    app.PGADMIN_RUNTIME = True
-elif 'PGADMIN_INT_PORT' in os.environ:
+if 'PGADMIN_INT_PORT' in os.environ:
     port = os.environ['PGADMIN_INT_PORT']
     app.logger.debug(
-        'Not running under the desktop runtime, port: %s',
+        'Running under the desktop runtime, port: %s',
         port
     )
     config.EFFECTIVE_SERVER_PORT = int(port)
@@ -129,9 +130,10 @@ else:
     config.EFFECTIVE_SERVER_PORT = config.DEFAULT_SERVER_PORT
 
 # Set the key if appropriate
-if 'PGADMIN_INT_KEY' in globals():
-    app.PGADMIN_INT_KEY = globals()['PGADMIN_INT_KEY']
+if 'PGADMIN_INT_KEY' in os.environ:
+    app.PGADMIN_INT_KEY = os.environ['PGADMIN_INT_KEY']
     app.logger.debug("Desktop security key: %s" % app.PGADMIN_INT_KEY)
+    app.PGADMIN_RUNTIME = True
 else:
     app.PGADMIN_INT_KEY = ''
 
@@ -172,7 +174,7 @@ def main():
         )
         sys.stdout.flush()
     else:
-        # For unknown reason the Qt runtime does not pass the environment
+        # For unknown reason the runtime does not pass the environment
         # variables (i.e. PYTHONHOME, and PYTHONPATH), to the Python
         # sub-processes, leading to failures executing background processes.
         #
@@ -192,15 +194,30 @@ def main():
     # Reference:
     # https://github.com/pallets/werkzeug/issues/220#issuecomment-11176538
     try:
-        app.run(
-            host=config.DEFAULT_SERVER,
-            port=config.EFFECTIVE_SERVER_PORT,
-            use_reloader=(
-                (not app.PGADMIN_RUNTIME) and app.debug and
-                os.environ.get("WERKZEUG_RUN_MAIN") is not None
-            ),
-            threaded=config.THREADED_MODE
-        )
+        if config.DEBUG:
+            app.run(
+                host=config.DEFAULT_SERVER,
+                port=config.EFFECTIVE_SERVER_PORT,
+                use_reloader=(
+                    (not app.PGADMIN_RUNTIME) and app.debug and
+                    os.environ.get("WERKZEUG_RUN_MAIN") is not None
+                ),
+                threaded=config.THREADED_MODE
+            )
+        else:
+            # Can use cheroot instead of flask dev server when not in debug
+            # 10 is default thread count in CherootServer
+            num_threads = 10 if config.THREADED_MODE else 1
+            prod_server = CherootServer(
+                (config.DEFAULT_SERVER, config.EFFECTIVE_SERVER_PORT),
+                wsgi_app=app,
+                numthreads=num_threads,
+                server_name=config.APP_NAME)
+            try:
+                print("Using production server...")
+                prod_server.start()
+            except KeyboardInterrupt:
+                prod_server.stop()
 
     except IOError:
         app.logger.error("Error starting the app server: %s", sys.exc_info())

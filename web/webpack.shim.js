@@ -182,6 +182,7 @@ var webpackShimConfig = {
     'pgadmin.browser.frame': path.join(__dirname, './pgadmin/browser/static/js/frame'),
     'pgadmin.browser.keyboard': path.join(__dirname, './pgadmin/browser/static/js/keyboard'),
     'pgadmin.browser.layout': path.join(__dirname, './pgadmin/browser/static/js/layout'),
+    'pgadmin.browser.runtime': path.join(__dirname, './pgadmin/browser/static/js/runtime'),
     'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
     'pgadmin.browser.menu': path.join(__dirname, './pgadmin/browser/static/js/menu'),
     'pgadmin.browser.activity': path.join(__dirname, './pgadmin/browser/static/js/activity'),

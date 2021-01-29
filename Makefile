@@ -20,7 +20,7 @@ APP_REVISION := $(shell grep ^APP_REVISION web/config.py | awk -F"=" '{print $$N
 # Include only platform-independent builds in all
 all: docs pip src runtime
 
-appbundle: docs
+appbundle:
 	./pkg/mac/build.sh
 
 install-node:

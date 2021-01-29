@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Name=pgAdmin 4
 Exec=/usr/pgadmin4/bin/pgadmin4
-Icon=/usr/pgadmin4/share/pgadmin4.ico
+Icon=pgadmin4
 Type=Application
 Categories=Application;Development;
 MimeType=text/html

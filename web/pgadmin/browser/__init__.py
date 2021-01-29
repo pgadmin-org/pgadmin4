@@ -236,7 +236,7 @@ class BrowserModule(PgAdminModule):
         return scripts
 
     def get_own_menuitems(self):
-        return {
+        menus = {
             'file_items': [
                 MenuItem(
                     name='mnu_locklayout',
@@ -269,6 +269,32 @@ class BrowserModule(PgAdminModule):
             ]
         }
 
+        # We need 'Configure...' and 'View log...' Menu only in runtime.
+        if current_app.PGADMIN_RUNTIME:
+            menus['file_items'].append(
+                MenuItem(
+                    name='mnu_runtime',
+                    module=PGADMIN_BROWSER,
+                    label=gettext('Runtime'),
+                    priority=999,
+                    menu_items=[MenuItem(
+                        name='mnu_configure_runtime',
+                        module=PGADMIN_BROWSER,
+                        callback='mnu_configure_runtime',
+                        priority=0,
+                        label=gettext('Configure...')
+                    ), MenuItem(
+                        name='mnu_viewlog_runtime',
+                        module=PGADMIN_BROWSER,
+                        callback='mnu_viewlog_runtime',
+                        priority=1,
+                        label=gettext('View log...')
+                    )]
+                )
+            )
+
+        return menus
+
     def register_preferences(self):
         register_browser_preferences(self)
 
@@ -281,8 +307,8 @@ class BrowserModule(PgAdminModule):
                 'browser.check_master_password',
                 'browser.set_master_password',
                 'browser.reset_master_password',
-                'browser.lock_layout'
-                ]
+                'browser.lock_layout',
+                'browser.signal_runtime']
 
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
@@ -989,6 +1015,28 @@ def lock_layout():
 
     return make_json_response()
 
+
+@blueprint.route("/signal_runtime", endpoint="signal_runtime",
+                 methods=["POST"])
+def signal_runtime():
+    data = None
+
+    if hasattr(request.data, 'decode'):
+        data = request.data.decode('utf-8')
+
+    if data != '':
+        data = json.loads(data)
+
+    # Add Info Handler to current app just to send signal to runtime
+    tmp_handler = logging.StreamHandler()
+    tmp_handler.setLevel(logging.INFO)
+    current_app.logger.addHandler(tmp_handler)
+    # Send signal to runtime
+    current_app.logger.info(data['command'])
+    # Remove the temporary handler
+    current_app.logger.removeHandler(tmp_handler)
+
+    return make_json_response()
 
 # Only register route if SECURITY_CHANGEABLE is set to True
 # We can't access app context here so cannot

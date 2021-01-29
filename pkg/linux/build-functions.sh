@@ -53,7 +53,8 @@ _create_python_virtualenv() {
     python3 -m venv venv
     source venv/bin/activate
 
-    # Make sure we have the wheel package present
+    # Make sure we have the wheel package present, as well as the latest pip
+    pip3 install --upgrade pip
     pip3 install wheel
 
     # Install the requirements
@@ -63,7 +64,7 @@ _create_python_virtualenv() {
     # Use "python3" here as we want the venv path
     PYMODULES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
     DIR_PYMODULES_PATH=`dirname ${PYMODULES_PATH}`
-    
+
     # Use /usr/bin/python3 here as we want the system path
     if [ $1 == "debian" ]; then
         PYSYSLIB_PATH=$(/usr/bin/python3 -c "import sys; print('%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
@@ -105,23 +106,60 @@ _create_python_virtualenv() {
 }
 
 _build_runtime() {
-    echo "Building the desktop runtime..."
-    cd ${SOURCEDIR}/runtime
-    if [ -f Makefile ]; then
-        make clean
-    fi
-    if hash qmake-qt5 2>/dev/null; then
-        PGADMIN_PYTHON_DIR=/usr qmake-qt5
-    else
-        PGADMIN_PYTHON_DIR=/usr qmake
-    fi
-    make
+    echo "Assembling the desktop runtime..."
+
+    # Get a fresh copy of nwjs.
+    # NOTE: The nw download servers seem to be very unreliable, so at the moment we're using wget
+    #       in a retry loop as Yarn/Npm don't seem to like that.
+
+    # YARN:
+    # yarn add --cwd "${BUILDROOT}" nw
+    # YARN END
+
+    # WGET:
+    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    pushd "${BUILDROOT}" > /dev/null
+        while true;do
+            wget https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-linux-x64.tar.gz && break
+            rm nwjs-v${NW_VERSION}-linux-x64.tar.gz
+        done
+        tar -zxvf nwjs-v${NW_VERSION}-linux-x64.tar.gz
+    popd > /dev/null
+    # WGET END
+
+    # Copy nwjs into the staging directory
     mkdir -p "${DESKTOPROOT}/usr/${APP_NAME}/bin"
-    cp pgAdmin4 "${DESKTOPROOT}/usr/${APP_NAME}/bin/pgadmin4"
-    mkdir -p "${DESKTOPROOT}/usr/${APP_NAME}/share"
-    cp pgAdmin4.ico "${DESKTOPROOT}/usr/${APP_NAME}/share/pgadmin4.ico"
+
+    # YARN:
+    # cp -r "${BUILDROOT}/node_modules/nw/nwjs"/* "${DESKTOPROOT}/usr/${APP_NAME}/bin"
+    #  YARN END
+
+    # WGET:
+    cp -r "${BUILDROOT}/nwjs-v${NW_VERSION}-linux-x64"/* "${DESKTOPROOT}/usr/${APP_NAME}/bin"
+    # WGET END
+
+    mv "${DESKTOPROOT}/usr/${APP_NAME}/bin/nw" "${DESKTOPROOT}/usr/${APP_NAME}/bin/${APP_NAME}"
+
+    cp -r "${SOURCEDIR}/runtime/assets" "${DESKTOPROOT}/usr/${APP_NAME}/bin/assets"
+    cp -r "${SOURCEDIR}/runtime/src" "${DESKTOPROOT}/usr/${APP_NAME}/bin/src"
+
+    cp "${SOURCEDIR}/runtime/package.json" "${DESKTOPROOT}/usr/${APP_NAME}/bin/"
+    yarn --cwd "${DESKTOPROOT}/usr/${APP_NAME}/bin" install --production=true
+
+    # Create the icon
+    mkdir -p "${DESKTOPROOT}/usr/share/icons/hicolor/128x128/apps/"
+    cp "${SOURCEDIR}/pkg/linux/pgadmin4-128x128.png" "${DESKTOPROOT}/usr/share/icons/hicolor/128x128/apps/${APP_NAME}.png"
+    mkdir -p "${DESKTOPROOT}/usr/share/icons/hicolor/64x64/apps/"
+    cp "${SOURCEDIR}/pkg/linux/pgadmin4-64x64.png" "${DESKTOPROOT}/usr/share/icons/hicolor/64x64/apps/${APP_NAME}.png"
+    mkdir -p "${DESKTOPROOT}/usr/share/icons/hicolor/48x48/apps/"
+    cp "${SOURCEDIR}/pkg/linux/pgadmin4-48x48.png" "${DESKTOPROOT}/usr/share/icons/hicolor/48x48/apps/${APP_NAME}.png"
+    mkdir -p "${DESKTOPROOT}/usr/share/icons/hicolor/32x32/apps/"
+    cp "${SOURCEDIR}/pkg/linux/pgadmin4-32x32.png" "${DESKTOPROOT}/usr/share/icons/hicolor/32x32/apps/${APP_NAME}.png"
+    mkdir -p "${DESKTOPROOT}/usr/share/icons/hicolor/16x16/apps/"
+    cp "${SOURCEDIR}/pkg/linux/pgadmin4-16x16.png" "${DESKTOPROOT}/usr/share/icons/hicolor/16x16/apps/${APP_NAME}.png"
+
     mkdir -p "${DESKTOPROOT}/usr/share/applications"
-    cp ../pkg/linux/pgadmin4.desktop "${DESKTOPROOT}/usr/share/applications"
+    cp "${SOURCEDIR}/pkg/linux/pgadmin4.desktop" "${DESKTOPROOT}/usr/share/applications"
 }
 
 _build_docs() {

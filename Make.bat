@@ -3,6 +3,7 @@ SETLOCAL
 
 SET WD=%CD%
 SET "BUILDROOT=%WD%\win-build"
+SET "TMPDIR=%WD%\win-temp"
 SET "DISTROOT=%WD%\dist"
 
 SET CMDOPTIONS=""
@@ -18,19 +19,13 @@ IF "%1" == "clean" (
     EXIT /B %ERRORLEVEL%
 )
 
-set "ARCHITECTURE=x64"
-if "%Platform%" == "X86" (
-    set "ARCHITECTURE=x86"
-)
-
 REM Main build sequence
 CALL :SET_ENVIRONMENT
 CALL :VALIDATE_ENVIRONMENT || EXIT /B 1
 CALL :CLEAN || EXIT /B 1
 CALL :CREATE_VIRTUAL_ENV || EXIT /B 1
-CALL :CREATE_RUNTIME_ENV || EXIT /B 1
 CALL :CREATE_PYTHON_ENV || EXIT /B 1
-CALL :CLEANUP_ENV || EXIT /B 1
+CALL :CREATE_RUNTIME_ENV || EXIT /B 1
 CALL :CREATE_INSTALLER || EXIT /B 1
 CALL :SIGN_INSTALLER || EXIT /B 1
 
@@ -42,7 +37,10 @@ REM Main build sequence Ends
     ECHO Removing build directory...
     IF EXIST "%BUILDROOT%" RD "%BUILDROOT%" /S /Q > nul || EXIT /B 1
 
-    ECHO Removing temp build directory...
+    ECHO Removing tmp directory...
+    IF EXIST "%TMPDIR%" RD "%TMPDIR%" /S /Q > nul || EXIT /B 1
+
+    ECHO Removing installer build directory...
     IF EXIST "%WD%\pkg\win32\Output" rd "%WD%\pkg\win32\Output" /S /Q > nul || EXIT /B 1
 
     ECHO Removing installer configuration script...
@@ -54,7 +52,6 @@ REM Main build sequence Ends
 :SET_ENVIRONMENT
     ECHO Configuring the environment...
     IF "%PGADMIN_PYTHON_DIR%" == ""   SET "PGADMIN_PYTHON_DIR=C:\Python38"
-    IF "%PGADMIN_QT_DIR%" == ""       SET "PGADMIN_QT_DIR=C:\Qt\5.14.2\msvc2017_64"
     IF "%PGADMIN_KRB5_DIR%" == ""     SET "PGADMIN_KRB5_DIR=C:\Program Files\MIT\Kerberos"
     IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\Program Files (x86)\PostgreSQL\12"
     IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
@@ -62,7 +59,7 @@ REM Main build sequence Ends
     IF "%PGADMIN_SIGNTOOL_DIR%" == "" SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
 
     REM Set REDIST_NAME (the filename)
-    set "VCREDIST_FILE=vcredist_%ARCHITECTURE%.exe"
+    set "VCREDIST_FILE=vcredist_x64.exe"
 
     REM Set additional variables we need
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')  DO SET APP_MAJOR=%%a
@@ -74,13 +71,13 @@ REM Main build sequence Ends
     FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py') DO SET APP_NAME=%%a
     FOR /f "tokens=1 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "print('%APP_NAME%'.lower().replace(' ', ''))"') DO SET APP_SHORTNAME=%%G
     SET APP_VERSION=%APP_MAJOR%.%APP_MINOR%
-    SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%APP_VERSION_SUFFIX%-%ARCHITECTURE%.exe
-    IF "%APP_VERSION_SUFFIX%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%ARCHITECTURE%.exe
+    SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%APP_VERSION_SUFFIX%-x64.exe
+    IF "%APP_VERSION_SUFFIX%" == "" SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-x64.exe
 
     REM get Python version for the runtime build ex. 2.7.1 will be 27
     FOR /f "tokens=1 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MAJOR=%%G
     FOR /f "tokens=2 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_MINOR=%%G
-    SET "PYTHON_VERSION=%PYTHON_MAJOR%%PYTHON_MINOR%"
+    FOR /f "tokens=3 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "import sys; print(sys.version.split(' ')[0])"') DO SET PYTHON_REVISION=%%G
 
     EXIT /B 0
 
@@ -94,10 +91,8 @@ REM Main build sequence Ends
     ECHO Installer name:            %INSTALLERNAME%
     ECHO.
     ECHO Python directory:          %PGADMIN_PYTHON_DIR%
-    ECHO Python DLL:                %PGADMIN_PYTHON_DIR%\Python%PYTHON_VERSION%.dll
-    ECHO Python version:            %PYTHON_MAJOR%.%PYTHON_MINOR%
+    ECHO Python version:            %PYTHON_MAJOR%.%PYTHON_MINOR%.%PYTHON_REVISION%
     ECHO.
-    ECHO Qt directory:              %PGADMIN_QT_DIR%
     ECHO KRB5 directory:            %PGADMIN_KRB5_DIR%
     ECHO PostgreSQL directory:      %PGADMIN_POSTGRES_DIR%
     ECHO.
@@ -125,33 +120,15 @@ REM Main build sequence Ends
         EXIT /B 1
     )
 
-    IF NOT EXIST "%PGADMIN_QT_DIR%" (
-        ECHO !PGADMIN_QT_DIR! does not exist.
-        ECHO Please install Qt and set the PGADMIN_QT_DIR environment variable.
-        EXIT /B 1
-    )
-
     IF NOT EXIST "%PGADMIN_KRB5_DIR%" (
         ECHO !PGADMIN_KRB5_DIR! does not exist.
         ECHO Please install MIT Kerberos for Windows and set the PGADMIN_KRB5_DIR environment variable.
         EXIT /B 1
     )
 
-    IF NOT EXIST "%PGADMIN_QT_DIR%\bin\qmake.exe" (
-        ECHO !QMAKE! does not exist.
-        ECHO Please install Qt and set the PGADMIN_QT_DIR environment variable.
-        EXIT /B 1
-    )
-
     IF NOT EXIST "%PGADMIN_PYTHON_DIR%" (
         ECHO !PGADMIN_PYTHON_DIR! does not exist.
         ECHO Please install Python and set the PGADMIN_PYTHON_DIR environment variable.
-        EXIT /B 1
-    )
-
-    IF NOT EXIST "%PGADMIN_PYTHON_DIR%\Python%PYTHON_VERSION%.dll" (
-        ECHO !PGADMIN_PYTHON_DIR!\Python!PYTHON_VERSION!.dll does not exist.
-        ECHO Please check your Python installation is complete.
         EXIT /B 1
     )
 
@@ -174,46 +151,74 @@ REM Main build sequence Ends
 
 :CREATE_VIRTUAL_ENV
     ECHO Creating virtual environment...
-    IF NOT EXIST "%BUILDROOT%"  MKDIR "%BUILDROOT%"
-    
-    CD "%BUILDROOT%"
+    IF NOT EXIST "%TMPDIR%"  MKDIR "%TMPDIR%"
+
+    CD "%TMPDIR%"
 
     REM Note that we must use virtualenv.exe here, as the venv module doesn't allow python.exe to relocate.
     "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
 
-    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%BUILDROOT%\venv\DLLs" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%BUILDROOT%\venv\Lib" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%TMPDIR%\venv\DLLs" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" > nul || EXIT /B 1
 
-    ECHO Activating virtual environment -  %BUILDROOT%\venv...
-    CALL "%BUILDROOT%\venv\Scripts\activate" || EXIT /B 1
+    ECHO Activating virtual environment -  %TMPDIR%\venv...
+    CALL "%TMPDIR%\venv\Scripts\activate" || EXIT /B 1
 
     ECHO Installing dependencies...
-    CALL pip install -r "%WD%\requirements.txt" || EXIT /B 1
-    CALL pip install sphinx || EXIT /B 1
-
-    REM If this is Python 3.6+, we need to remove the hack above or it will break qmake. Sigh.
-    IF %PYTHON_VERSION% GEQ 36 SET CL=
+    CALL pip install --upgrade pip
+    CALL pip install --only-binary=cryptography -r "%WD%\requirements.txt" || EXIT /B 1
 
     CD %WD%
     EXIT /B 0
 
 
+:CREATE_PYTHON_ENV
+    ECHO Staging Python...
+    MKDIR "%BUILDROOT%\python\Lib" || EXIT /B 1
+
+    ECHO Downloading embedded Python...
+    REM Get the python embeddable and extract it to %BUILDROOT%\python
+    CD "%TMPDIR%
+    %PGADMIN_PYTHON_DIR%\python -c "import sys; from urllib.request import urlretrieve; urlretrieve('https://www.python.org/ftp/python/' + sys.version.split(' ')[0] + '/python-' + sys.version.split(' ')[0] + '-embed-amd64.zip', 'python-embedded.zip')" || EXIT /B 1
+    %PGADMIN_PYTHON_DIR%\python -c "import zipfile; z = zipfile.ZipFile('python-embedded.zip', 'r'); z.extractall('../win-build/python/')" || EXIT /B 1
+
+    ECHO Copying site-packages...
+    XCOPY /S /I /E /H /Y "%TMPDIR%\venv\Lib\site-packages" "%BUILDROOT%\python\Lib\site-packages" > nul || EXIT /B 1
+
+    REM NOTE: There is intentionally no space after "site" in the line below, to prevent Python barfing if there's one in the file
+    ECHO import site>> "%BUILDROOT%\python\python%PYTHON_MAJOR%%PYTHON_MINOR%._pth"
+
+    ECHO Staging Kerberos components...
+    COPY "%PGADMIN_KRB5_DIR%\bin\kinit.exe" "%BUILDROOT%\python" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\krb5_64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\comerr64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\k5sprt64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
+    COPY "%PGADMIN_KRB5_DIR%\bin\gssapi64.dll" "%BUILDROOT%\python" > nul || EXIT /B 1
+
+    ECHO Cleaning up unnecessary .pyc and .pyo files...
+    FOR /R "%BUILDROOT%\python" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
+    ECHO Removing tests...
+    FOR /R "%BUILDROOT%\python\Lib" %%f in (test tests) do RD /Q /S "%%f" 1> nul 2>&1
+
+    EXIT /B 0
+
+
 :CREATE_RUNTIME_ENV
+    IF NOT EXIST "%BUILDROOT%"  MKDIR "%BUILDROOT%"
     MKDIR "%BUILDROOT%\runtime"
-
-    CD "%WD%\web"
-
-    ECHO Installing javascript dependencies...
-    CALL yarn install || EXIT /B 1
-
-    ECHO Bundling javascript...
-    CALL yarn run bundle || EXIT /B 1
 
     ECHO Removing webpack caches...
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
 
     ECHO Copying web directory...
     XCOPY /S /I /E /H /Y "%WD%\web" "%BUILDROOT%\web" > nul || EXIT /B 1
+
+    ECHO Installing javascript dependencies...
+    CD "%BUILDROOT%\web"
+    CALL yarn install || EXIT /B 1
+
+    ECHO Bundling javascript...
+    CALL yarn run bundle || EXIT /B 1
 
     ECHO Cleaning up unnecessary .pyc and .pyo files...
     FOR /R "%BUILDROOT%\web" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
@@ -240,60 +245,34 @@ REM Main build sequence Ends
     ECHO } >> "%BUILDROOT%\web\config_distro.py"
 
     ECHO Building docs...
+    CALL pip install sphinx || EXIT /B 1
     MKDIR "%BUILDROOT%\docs\en_US\html"
     CD "%WD%\docs\en_US"
-    CALL "%BUILDROOT%\venv\Scripts\python.exe" build_code_snippet.py || EXIT /B 1
-    CALL "%BUILDROOT%\venv\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%BUILDROOT%\docs\en_US\html" || EXIT /B 1
+    CALL "%TMPDIR%\venv\Scripts\python.exe" build_code_snippet.py || EXIT /B 1
+    CALL "%TMPDIR%\venv\Scripts\sphinx-build.exe"   "%WD%\docs\en_US" "%BUILDROOT%\docs\en_US\html" || EXIT /B 1
 
-    ECHO Removing Sphinx
-    CALL pip uninstall -y sphinx Pygments alabaster colorama docutils imagesize requests snowballstemmer
+    ECHO Staging runtime components...
+    XCOPY /S /I /E /H /Y "%WD%\runtime\assets" "%BUILDROOT%\runtime\assets" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%WD%\runtime\src" "%BUILDROOT%\runtime\src" > nul || EXIT /B 1
 
-    ECHO Assembling runtime environment...
-    CD "%WD%\runtime"
+    COPY "%WD%\runtime\package.json" "%BUILDROOT%\runtime\" > nul || EXIT /B 1
+    CD "%BUILDROOT%\runtime\"
+    CALL yarn install --production=true || EXIT /B 1
 
-    ECHO Running qmake...
-    CALL set "PGADMIN_PYTHON_DIR=%PGADMIN_PYTHON_DIR%" && "%PGADMIN_QT_DIR%\bin\qmake.exe" || EXIT /B 1
+    ECHO Downloading NWjs to %TMPDIR%...
+    CALL yarn --cwd "%TMPDIR%" add nw || EXIT /B
 
-    ECHO Cleaning the build directory...
-    CALL nmake clean || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%TMPDIR%\node_modules\nw\nwjs\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    MOVE "%BUILDROOT%\runtime\nw.exe" "%BUILDROOT%\runtime\pgAdmin4.exe"
 
-    ECHO Running make...
-    CALL nmake || EXIT /B 1
-
-    ECHO Staging pgAdmin4.exe...
-    COPY "%WD%\runtime\release\pgAdmin4.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-
-    ECHO Staging Qt components...
-    COPY "%PGADMIN_QT_DIR%\bin\Qt5Core.dll"   "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    COPY "%PGADMIN_QT_DIR%\bin\Qt5Gui.dll"    "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    COPY "%PGADMIN_QT_DIR%\bin\Qt5Widgets.dll" "%BUILDROOT%\runtime" > nul  || EXIT /B 1
-    COPY "%PGADMIN_QT_DIR%\bin\Qt5Network.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    COPY "%PGADMIN_QT_DIR%\bin\Qt5Svg.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    MKDIR "%BUILDROOT%\runtime\platforms" > nul || EXIT /B 1
-    COPY "%PGADMIN_QT_DIR%\plugins\platforms\qwindows.dll" "%BUILDROOT%\runtime\platforms" > nul || EXIT /B 1
-    MKDIR "%BUILDROOT%\runtime\imageformats" > nul || EXIT /B 1
-    COPY "%PGADMIN_QT_DIR%\plugins\imageformats\qsvg.dll" "%BUILDROOT%\runtime\imageformats" > nul || EXIT /B 1
-    ECHO [Paths] > "%BUILDROOT%\runtime\qt.conf"
-    ECHO Plugins=plugins >> "%BUILDROOT%\runtime\qt.conf"
-
-    ECHO Staging Kerberos components...
-    IF "%ARCHITECTURE%" == "x64" (
-        COPY "%PGADMIN_KRB5_DIR%\bin\kinit.exe" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-        COPY "%PGADMIN_KRB5_DIR%\bin\krb5_64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-        COPY "%PGADMIN_KRB5_DIR%\bin\comerr64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-        COPY "%PGADMIN_KRB5_DIR%\bin\k5sprt64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-        COPY "%PGADMIN_KRB5_DIR%\bin\gssapi64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    )
+    ECHO Replacing executable icon...
+    CALL yarn --cwd "%TMPDIR%" add winresourcer || EXIT /B
+    "%TMPDIR%\node_modules\winresourcer\bin\Resourcer.exe" -op:upd -src:"%BUILDROOT%\runtime\pgAdmin4.exe" -type:Icongroup -name:IDR_MAINFRAME -file:"%WD%\pkg\win32\Resources\pgAdmin4.ico"
 
     ECHO Staging PostgreSQL components...
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libpq.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    IF "%ARCHITECTURE%" == "x64" (
-        COPY "%PGADMIN_POSTGRES_DIR%\bin\libcrypto-1_1-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-        COPY "%PGADMIN_POSTGRES_DIR%\bin\libssl-1_1-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    ) ELSE (
-        COPY "%PGADMIN_POSTGRES_DIR%\bin\libcrypto-1_1.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-        COPY "%PGADMIN_POSTGRES_DIR%\bin\libssl-1_1.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    )
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\libcrypto-1_1-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    COPY "%PGADMIN_POSTGRES_DIR%\bin\libssl-1_1-x64.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libintl-*.dll" "%BUILDROOT%\runtime" > nul
     IF EXIST "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" COPY "%PGADMIN_POSTGRES_DIR%\bin\libiconv-*.dll" "%BUILDROOT%\runtime" > nul
     COPY "%PGADMIN_POSTGRES_DIR%\bin\zlib.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
@@ -307,22 +286,6 @@ REM Main build sequence Ends
     COPY "%PGADMIN_VCREDIST_DIR%\%VCREDIST_FILE%" "%BUILDROOT%\installer" > nul || EXIT /B 1
 
     CD %WD%
-    EXIT /B 0
-    
-
-:CREATE_PYTHON_ENV
-    ECHO Staging Python...
-    COPY %PGADMIN_PYTHON_DIR%\python%PYTHON_VERSION%.dll "%BUILDROOT%\runtime"  > nul || EXIT /B 1
-    COPY %PGADMIN_PYTHON_DIR%\python.exe "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    COPY %PGADMIN_PYTHON_DIR%\pythonw.exe "%BUILDROOT%\runtime" > nul || EXIT /B 1
-
-    ECHO Cleaning up unnecessary .pyc and .pyo files...
-    FOR /R "%BUILDROOT%\venv" %%f in (*.pyc *.pyo) do DEL /q "%%f" 1> nul 2>&1
-    ECHO Removing tests...
-    FOR /R "%BUILDROOT%\venv\Lib" %%f in (test tests) do RD /Q /S "%%f" 1> nul 2>&1
-    ECHO Removing TCL...
-    RD /Q /S "%BUILDROOT%\venv\tcl" 1> nul 2>&1
-
     EXIT /B 0
 
 
@@ -339,12 +302,7 @@ REM Main build sequence Ends
     CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in" "-o" "%WD%\pkg\win32\installer.iss.in_stage1" "-s" MYAPP_NAME -r """%APP_NAME%"""
     CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage1" "-o" "%WD%\pkg\win32\installer.iss.in_stage2" "-s" MYAPP_FULLVERSION -r """%APP_VERSION%"""
     CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage2" "-o" "%WD%\pkg\win32\installer.iss.in_stage3" "-s" MYAPP_VERSION -r """v%APP_MAJOR%"""
-
-    SET ARCMODE=
-    IF "%ARCHITECTURE%" == "x64" (
-        set ARCMODE="x64"
-    )
-    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage3" "-o" "%WD%\pkg\win32\installer.iss.in_stage4" "-s" MYAPP_ARCHITECTURESMODE -r """%ARCMODE%"""
+    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage3" "-o" "%WD%\pkg\win32\installer.iss.in_stage4" "-s" MYAPP_ARCHITECTURESMODE -r """x64"""
     CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage4" "-o" "%WD%\pkg\win32\installer.iss" "-s" MYAPP_VCDIST -r """%PGADMIN_VCREDIST_DIRNAME%\%VCREDIST_FILE%"""
 
     ECHO Cleaning up...
@@ -373,14 +331,6 @@ REM Main build sequence Ends
         ECHO ************************************************************
         PAUSE
     )
-
-    EXIT /B 0
-
-
-:CLEANUP_ENV
-    ECHO Cleaning the build environment...
-    RD "%BUILDROOT%\venv\Include" /S /Q 1> nul 2>&1
-    DEL /s "%BUILDROOT%\venv\pip-selfcheck.json" 1> nul 2>&1
 
     EXIT /B 0
 

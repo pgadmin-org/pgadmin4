@@ -19,11 +19,12 @@
 /redhat-build
 /src-build
 /win-build
+/win-temp
 _build
 /build-*
 pgadmin4.log
 pkg/win32/installer.iss
-pkg/mac/codesign.conf
+pkg/mac/codesign.confx
 pkg/mac/framework.conf
 runtime/.qmake.cache
 runtime/.qmake.stash

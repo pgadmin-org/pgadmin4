@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Fatal Error</title>
+  <link rel="stylesheet" href="../css/pgadmin-desktop.css"/>
+  <style>
+    body, html {
+      font-size: 14px;
+      background-color: #ebeef3;
+    }
+  </style>
+</head>
+<body>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <label id="server_error_label" style=" color: red; font-size: large;"></label>
+      <textarea id="server_error_log" style="min-width: 750px; min-height: 300px; resize: none;" readonly></textarea>
+    </div>
+    <div class="p-2 d-flex fixed-bottom shadow bg-white">
+      <div class="mr-auto" id="status-text"></div>
+      <div class="ml-auto">
+        <button id="btnConfigure" class="btn btn-primary">Configure...</button>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="../js/server_error.js"></script>
+</body>
+</html>

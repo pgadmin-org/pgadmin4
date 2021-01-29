@@ -8,13 +8,8 @@ pgAdmin may be deployed as a desktop application by configuring the application
 to run in desktop mode and then utilising the desktop runtime to host the
 program on a supported Windows, Mac OS X or Linux installation.
 
-The desktop runtime is a system-tray application that when launched, runs the
-pgAdmin server and launches a web browser to render the user interface. If
-additional instances of pgAdmin are launched, a new browser tab will be opened
-and be served by the existing instance of the server in order to minimise system
-resource utilisation. Clicking the icon in the system tray will present a menu
-offering options to open a new pgAdmin window, configure the runtime, view the
-server log and shut down the server.
+The desktop runtime is a standalone application that when launched, runs the
+pgAdmin server and opens a window to render the user interface.
 
 .. note:: Pre-compiled and configured installation packages are available for
      a number of platforms. These packages should be used by end-users whereever
@@ -42,19 +37,26 @@ Runtime
 *******
 
 When executed, the runtime will automatically try to execute the pgAdmin Python
-application. If execution fails, it will prompt you to adjust the Python Path
-to include the directories containing the pgAdmin code as well as any additional
-Python dependencies. You can enter a list of paths by separating them with a
-semi-colon character, for example:
+application. If execution fails, it will prompt you with error message
+displaying a *Configure* button at the bottom. You can configure a fixed port
+number to avoid clashes of the default random port number with other
+applications and a connection timeout if desired.
 
-.. code-block:: bash
+If the error is related to Python Path or pgAdmin Python file then you need to
+create a file named 'dev_config.json' and specify the following entries:
 
-     /Users/dpage/.virtualenvs/pgadmin4/lib/python2.7/site-packages/;/Users/dpage/python-libs/
+{
+    "pythonPath": <PATH OF THE PYTHON BINARY> For Example: "../../venv/bin/python3",
+    "pgadminFile": <PATH OF THE pgAdmin4.py> For Example: "../web/pgAdmin4.py"
+}
 
-The configuration settings are stored using the QSettings class in Qt, which
-will use an INI file on Unix systems (~/.config/pgadmin/pgadmin4.conf),
-a plist file on Mac OS X (~/Library/Preferences/org.pgadmin.pgadmin4.plist),
-and the registry on Windows (HKEY_CURRENT_USER\\Software\\pgadmin\\pgadmin4).
+Note that the dev_config.py file should only be required by developers who are
+working outside of a standard installation.
+
+The configuration settings are stored in *runtime_config.json* file, which
+will be available on Unix systems (~/.local/share/pgadmin/),
+on Mac OS X (~/Library/Preferences/pgadmin),
+and on Windows (%APPDATA%/pgadmin).
 
 The configuration settings:
 
@@ -65,18 +67,10 @@ The configuration settings:
    +--------------------------+--------------------+---------------------------------------------------------------+
    | Key                      | Type               | Purpose                                                       |
    +==========================+====================+===============================================================+
-   | ApplicationPath          | String             | The directory containing pgAdmin4.py                          |
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | BrowserCommand           | String             | An alternate command to run instead of the default browser.   |
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | ConnectionTimeout        | Integer            | The number of seconds to wait for application server startup. |
-   +--------------------------+--------------------+---------------------------------------------------------------+
    | FixedPort                | Boolean            | Use a fixed network port number rather than a random one.     |
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | OpenTabAtStartup         | Boolean            | Open a browser tab at startup.                                |
    +--------------------------+--------------------+---------------------------------------------------------------+
    | PortNumber               | Integer            | The port number to use, if using a fixed port.                |
    +--------------------------+--------------------+---------------------------------------------------------------+
-   | PythonPath               | String             | The Python module search path                                 |
+   | ConnectionTimeout        | Integer            | The number of seconds to wait for application server startup. |
    +--------------------------+--------------------+---------------------------------------------------------------+
 

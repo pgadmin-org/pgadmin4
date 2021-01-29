@@ -9,10 +9,12 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5967 <https://redmine.postgresql.org/issues/5967>`_ -  Implemented runtime using NWjs to open pgAdmin4 in a standalone window instead of the system tray and web browser.
 
 Housekeeping
 ************
 
+| `Issue #5017 <https://redmine.postgresql.org/issues/5017>`_ -  Use cheroot as the default production server for pgAdmin4.
 
 Bug fixes
 *********
@@ -25,8 +27,3 @@ Bug fixes
 | `Issue #6177 <https://redmine.postgresql.org/issues/6177>`_ -  Fixed an issue while downloading ERD images in Safari and Firefox.
 | `Issue #6179 <https://redmine.postgresql.org/issues/6179>`_ -  Fixed an issue where Generate SQL displayed twice in the ERD tool.
 | `Issue #6180 <https://redmine.postgresql.org/issues/6180>`_ -  Updated missing documentation for the 'Download Image' option in ERD.
-
-. Documentation missing for 'Download Image' option in ERD. Fixes #6180.
-2. Generate SQL displayed twice in ERD tool. Fixes #6179.
-3. Zooming out too far makes the diagram vanish entirely. Fixes #6164.
-4. Zoom to fit button only works if the diagram is larger than the canvas. Fixes #6163.

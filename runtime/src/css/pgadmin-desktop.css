@@ -1,0 +1,44 @@
+@import "../../node_modules/bootstrap/dist/css/bootstrap.css";
+
+.card {
+    margin: 0.25rem !important;
+}
+
+#status-text {
+  font-size: medium;
+  align-self: center;
+}
+
+#server_log_label {
+  font-weight: 500;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #326690;
+    border-color: #326690;
+  }
+  .btn-primary:hover {
+    color: #fff;
+    background-color: #285274;
+    border-color: #254b6a;
+  }
+  .btn-primary:focus, .btn-primary.focus {
+    color: #fff;
+    background-color: #285274;
+    border-color: #254b6a;
+    box-shadow: 0 0 0 0 rgba(81, 125, 161, 0.5);
+  }
+  .btn-primary.disabled, .btn-primary:disabled {
+    color: #fff;
+    background-color: #326690;
+    border-color: #326690;
+  }
+  .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #254b6a;
+    border-color: #224461;
+  }
+  .btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus, .show > .btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0 rgba(81, 125, 161, 0.5);
+  }
