@@ -1105,7 +1105,7 @@ class SQLAutoComplete(object):
         query = ''
 
         if schema:
-            in_clause = '\'' + schema + '\''
+            in_clause = '\'' + schema.replace("'", "''") + '\''
         else:
             for r in self.search_path:
                 in_clause += '\'' + r + '\','
