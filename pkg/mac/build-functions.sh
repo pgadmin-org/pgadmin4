@@ -44,7 +44,7 @@ _create_python_env() {
     LD_LIBRARY_PATH=${PGADMIN_POSTGRES_DIR}/lib:${LD_LIBRARY_PATH}
 
     git clone https://github.com/gregneagle/relocatable-python.git "${BUILD_ROOT}/relocatable_python"
-    PATH=$PATH:/usr/local/pgsql/bin "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" --upgrade-pip --python-version ${PGADMIN_PYTHON_VERSION} --pip-requirements "${SOURCE_DIR}/requirements.txt" --destination "${BUNDLE_DIR}/Contents/Frameworks/"
+    PATH=$PATH:/usr/local/pgsql/bin python3 "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" --upgrade-pip --python-version ${PGADMIN_PYTHON_VERSION} --pip-requirements "${SOURCE_DIR}/requirements.txt" --destination "${BUNDLE_DIR}/Contents/Frameworks/"
 
     # Remove some things we don't need
     cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework"
