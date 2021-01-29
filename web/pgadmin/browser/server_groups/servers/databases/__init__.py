@@ -21,7 +21,8 @@ import pgadmin.browser.server_groups.servers as servers
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.utils import \
-    parse_sec_labels_from_db, parse_variables_from_db
+    parse_sec_labels_from_db, parse_variables_from_db, \
+    get_attributes_from_db_info
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
@@ -191,16 +192,15 @@ class DatabaseView(PGChildNodeView):
                     # If connection to database is not allowed then
                     # provide generic connection
                     if kwargs['did'] in self.manager.db_info:
-                        self._db = self.manager.db_info[kwargs['did']]
-                        self.datlastsysoid = self._db['datlastsysoid']
-                        if self._db['datallowconn'] is False:
+
+                        self.datlastsysoid, self.datistemplate, \
+                            datallowconn = \
+                            get_attributes_from_db_info(self.manager, kwargs)
+
+                        if datallowconn is False:
                             self.conn = self.manager.connection()
                             self.db_allow_connection = False
 
-                        self.datistemplate = \
-                            self.manager.db_info[kwargs['did']][
-                                'datistemplate'] if 'datistemplate' in \
-                            self.manager.db_info[kwargs['did']] else False
                 else:
                     self.conn = self.manager.connection()
 

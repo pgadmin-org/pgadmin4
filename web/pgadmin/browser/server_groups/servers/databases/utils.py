@@ -105,3 +105,26 @@ def _check_var_type(var_value, var_name, row):
         var_dict['database'] = row['db_name']
 
     return var_dict
+
+
+def get_attributes_from_db_info(manager, kwargs):
+
+    """
+    Function to get attributes from db_info, send default values if not found.
+    :param manager: DB manager
+    :param kwargs: user input
+    :return: db_info attributes
+    """
+
+    if 'did' in kwargs and kwargs['did'] in manager.db_info:
+
+        datlastsysoid = manager.db_info[kwargs['did']]['datlastsysoid'] \
+            if 'datlastsysoid' in manager.db_info[kwargs['did']] else 0
+        datistemplate = manager.db_info[kwargs['did']]['datistemplate'] \
+            if 'datistemplate' in manager.db_info[kwargs['did']] else False
+        datallowconn = manager.db_info[kwargs['did']]['datallowconn'] \
+            if 'datallowconn' in manager.db_info[kwargs['did']] else False
+
+        return datlastsysoid, datistemplate, datallowconn
+    else:
+        return 0, False, True

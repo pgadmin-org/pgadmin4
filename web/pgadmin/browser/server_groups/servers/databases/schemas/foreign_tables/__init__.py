@@ -237,83 +237,30 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         @wraps(f)
         def wrap(self, **kwargs):
 
-            data = {}
-
             if request.data:
                 req = json.loads(request.data, encoding='utf-8')
             else:
                 req = request.args or request.form
 
-            if 'foid' not in kwargs:
-                required_args = [
-                    'name',
-                    'ftsrvname'
-                ]
+            invalid, arg = self._check_valid_foid_input(kwargs, req)
 
-                for arg in required_args:
-                    if arg not in req or req[arg] == '':
-                        return make_json_response(
-                            status=410,
-                            success=0,
-                            errormsg=gettext(
-                                "Could not find the required parameter ({})."
-                            ).format(arg)
-                        )
+            if invalid:
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=gettext(
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
+                )
 
             try:
-                list_params = []
                 if request.method == 'GET':
                     list_params = ['constraints', 'columns', 'ftoptions',
                                    'seclabels', 'inherits', 'acl']
                 else:
                     list_params = ['inherits']
 
-                for key in req:
-                    if (
-                        key in list_params and req[key] != '' and
-                        req[key] is not None
-                    ):
-                        # Coverts string into python list as expected.
-                        data[key] = []
-                        if not isinstance(req[key], list) and req[key]:
-                            data[key] = json.loads(req[key], encoding='utf-8')
-
-                        if key == 'inherits':
-                            # Convert Table ids from unicode/string to int
-                            # and make tuple for 'IN' query.
-                            inherits = tuple([int(x) for x in data[key]])
-
-                            if len(inherits) == 1:
-                                # Python tupple has , after the first param
-                                # in case of single parameter.
-                                # So, we need to make it tuple explicitly.
-                                inherits = "(" + str(inherits[0]) + ")"
-                            if inherits:
-                                # Fetch Table Names from their respective Ids,
-                                # as we need Table names to generate the SQL.
-                                SQL = render_template(
-                                    "/".join([self.template_path,
-                                              self._GET_TABLES_SQL]),
-                                    attrelid=inherits)
-                                status, res = self.conn.execute_dict(SQL)
-
-                                if not status:
-                                    return internal_server_error(errormsg=res)
-
-                                if 'inherits' in res['rows'][0]:
-                                    data[key] = res['rows'][0]['inherits']
-                                else:
-                                    data[key] = []
-
-                    elif key == 'typnotnull':
-                        if req[key] == 'true' or req[key] is True:
-                            data[key] = True
-                        elif req[key] == 'false' or req[key] is False:
-                            data[key] = False
-                        else:
-                            data[key] = ''
-                    else:
-                        data[key] = req[key]
+                data = self._validate_req(req, list_params)
 
             except Exception as e:
                 return internal_server_error(errormsg=str(e))
@@ -322,6 +269,102 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             return f(self, **kwargs)
 
         return wrap
+
+    @staticmethod
+    def _check_valid_foid_input(kwargs, req):
+
+        """
+        check for valid Foreign Table id
+        :param kwargs: user input
+        :param req: request object
+        """
+
+        if 'foid' not in kwargs:
+            required_args = [
+                'name',
+                'ftsrvname'
+            ]
+
+            for arg in required_args:
+                if arg not in req or req[arg] == '':
+                    return True, arg
+        return False, ''
+
+    def _validate_req(self, req, list_params):
+
+        """
+        Validate & convert the string to desired output format
+        :param req: request data
+        :param list_params: prepared list of inherit, constraints, etc.
+        :return: data
+        """
+
+        data = {}
+
+        try:
+            for key in req:
+                if (
+                    key in list_params and req[key] != '' and
+                    req[key] is not None
+                ):
+                    # Coverts string into python list as expected.
+                    data[key] = []
+                    self._convert_string_to_list(req, data, key)
+
+                elif key == 'typnotnull':
+                    if req[key] == 'true' or req[key] is True:
+                        data[key] = True
+                    elif req[key] == 'false' or req[key] is False:
+                        data[key] = False
+                    else:
+                        data[key] = ''
+                else:
+                    data[key] = req[key]
+
+        except Exception as e:
+            current_app.logger.exception(e)
+            raise e
+
+        return data
+
+    def _convert_string_to_list(self, req, data, key):
+
+        """
+        Convert the string with utf-8 base to list
+        :param req: request data
+        :param data: output
+        :param key: index for data
+        """
+
+        if not isinstance(req[key], list) and req[key]:
+            data[key] = json.loads(req[key], encoding='utf-8')
+
+        if key == 'inherits':
+            # Convert Table ids from unicode/string to int
+            # and make tuple for 'IN' query.
+            inherits = tuple([int(x) for x in data[key]])
+
+            if len(inherits) == 1:
+                # Python tupple has , after the first param
+                # in case of single parameter.
+                # So, we need to make it tuple explicitly.
+                inherits = "(" + str(inherits[0]) + ")"
+            if inherits:
+                # Fetch Table Names from their respective Ids,
+                # as we need Table names to generate the SQL.
+                SQL = render_template(
+                    "/".join([self.template_path,
+                              self._GET_TABLES_SQL]),
+                    attrelid=inherits)
+                status, res = self.conn.execute_dict(SQL)
+
+                if not status:
+                    return internal_server_error(errormsg=res)
+
+                if 'inherits' in res['rows'][0]:
+                    data[key] = res['rows'][0]['inherits']
+                else:
+                    data[key] = []
 
     def check_precondition(f):
         """
@@ -344,14 +387,10 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 if self.manager.db_info is not None and \
                 kwargs['did'] in self.manager.db_info else 0
 
-            self.datistemplate = False
-            if (
-                self.manager.db_info is not None and
-                kwargs['did'] in self.manager.db_info and
-                'datistemplate' in self.manager.db_info[kwargs['did']]
-            ):
-                self.datistemplate = self.manager.db_info[
-                    kwargs['did']]['datistemplate']
+            self.datistemplate = \
+                self.manager.db_info[kwargs['did']]['datistemplate'] \
+                if self.manager.db_info is not None and \
+                kwargs['did'] in self.manager.db_info else False
 
             # Set template path for sql scripts depending
             # on the server version.
