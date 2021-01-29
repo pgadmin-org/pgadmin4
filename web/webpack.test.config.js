@@ -45,6 +45,35 @@ module.exports = {
         test: /\.css$/,
         use: [ 'style-loader', 'raw-loader' ],
       }, {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [{
+          loader: 'url-loader',
+          options: {
+            emitFile: true,
+            name: 'img/[name].[ext]',
+            limit: 4096,
+          },
+        }, {
+          loader: 'image-webpack-loader',
+          query: {
+            bypassOnDebug: true,
+            mozjpeg: {
+              progressive: true,
+            },
+            gifsicle: {
+              interlaced: false,
+            },
+            optipng: {
+              optimizationLevel: 7,
+            },
+            pngquant: {
+              quality: '75-90',
+              speed: 3,
+            },
+          },
+        }],
+        exclude: /vendor/,
+      }, {
         test: /.*slickgrid[\\\/]+slick\.(?!core)*/,
         loader: 'imports-loader?' +
         'jquery.ui' +

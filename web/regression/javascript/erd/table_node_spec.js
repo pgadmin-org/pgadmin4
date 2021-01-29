@@ -275,13 +275,6 @@ describe('ERD TableNodeWidget', ()=>{
       expect(nodeWidget.find('.table-node .table-cols .col-row').length).toBe(3);
     });
 
-    it('icons', ()=>{
-      let cols = nodeWidget.find('.table-node .table-cols .col-row-data');
-      expect(cols.at(0).find('.wcTabIcon').hasClass('icon-primary_key')).toBeTruthy();
-      expect(cols.at(1).find('.wcTabIcon').hasClass('icon-column')).toBeTruthy();
-      expect(cols.at(2).find('.wcTabIcon').hasClass('icon-column')).toBeTruthy();
-    });
-
     it('column names', ()=>{
       let cols = nodeWidget.find('.table-node .table-cols .col-row-data');
       expect(cols.at(0).find('.col-name').text()).toBe('id');

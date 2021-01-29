@@ -303,7 +303,7 @@ export default class ERDCore {
 
       this.addLink(newData, 'onetomany');
     });
-    setTimeout(this.dagreDistributeNodes.bind(this), 0);
+    setTimeout(this.dagreDistributeNodes.bind(this), 250);
   }
 
   repaint() {

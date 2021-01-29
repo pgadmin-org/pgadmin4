@@ -304,7 +304,7 @@ describe('ERDCore', ()=>{
       setTimeout(()=>{
         expect(erdCoreObj.dagreDistributeNodes).toHaveBeenCalled();
         done();
-      }, 10);
+      }, 500);
     });
 
     it('clearSelection', ()=>{

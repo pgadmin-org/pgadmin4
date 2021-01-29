@@ -12,6 +12,11 @@ import { DefaultNodeModel, PortWidget } from '@projectstorm/react-diagrams';
 import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 import { IconButton, DetailsToggleButton } from '../ui_components/ToolBar';
+import SchemaIcon from 'top/browser/server_groups/servers/databases/schemas/static/img/schema.svg';
+import TableIcon from 'top/browser/server_groups/servers/databases/schemas/tables/static/img/table.svg';
+import PrimaryKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/primary_key.svg';
+import ForeignKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/img/foreign_key.svg';
+import ColumnIcon from 'top/browser/server_groups/servers/databases/schemas/tables/columns/static/img/column.svg';
 
 const TYPE = 'table';
 
@@ -114,6 +119,14 @@ export class TableNodeModel extends DefaultNodeModel {
   }
 }
 
+function RowIcon({icon}) {
+  return (
+    <div className="table-icon">
+      <img src={icon} crossOrigin="anonymous"/>
+    </div>
+  );
+}
+
 export class TableNodeWidget extends React.Component {
   constructor(props) {
     super(props);
@@ -131,11 +144,17 @@ export class TableNodeWidget extends React.Component {
 
   generateColumn(col) {
     let port = this.props.node.getPort(this.props.node.getPortName(col.attnum));
+    let icon = ColumnIcon;
+    if(col.is_primary_key) {
+      icon = PrimaryKeyIcon;
+    } else if(port && port.getSubtype() == 'many') {
+      icon = ForeignKeyIcon;
+    }
     return (
       <div className='d-flex col-row' key={col.attnum}>
         <div className='d-flex col-row-data'>
-          <div><span className={'wcTabIcon ' + (col.is_primary_key?'icon-primary_key':'icon-column')}></span></div>
-          <div>
+          <RowIcon icon={icon} />
+          <div className="my-auto">
             <span className='col-name'>{col.name}</span>&nbsp;
             {this.state.show_details &&
             <span className='col-datatype'>{col.cltype}{col.attlen ? ('('+ col.attlen + (col.attprecision ? ','+col.attprecision : '') +')') : ''}</span>}
@@ -172,12 +191,12 @@ export class TableNodeWidget extends React.Component {
             }} title="Check note" />}
         </div>
         <div className="d-flex table-schema-data">
-          <div className="table-icon-schema"></div>
-          <div className="table-schema">{node_data.schema}</div>
+          <RowIcon icon={SchemaIcon}/>
+          <div className="table-schema my-auto">{node_data.schema}</div>
         </div>
         <div className="d-flex table-name-data">
-          <div><span className="wcTabIcon icon-table"></span></div>
-          <div className="table-name">{node_data.name}</div>
+          <RowIcon icon={TableIcon} />
+          <div className="table-name my-auto">{node_data.name}</div>
         </div>
         <div className="table-cols">
           {_.map(node_data.columns, (col)=>this.generateColumn(col))}

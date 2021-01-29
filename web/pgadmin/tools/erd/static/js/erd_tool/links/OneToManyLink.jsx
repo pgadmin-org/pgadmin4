@@ -94,7 +94,7 @@ const CustomLinkEndWidget = props => {
   return (
     <g transform={'translate(' + point.getPosition().x + ', ' + point.getPosition().y + ')'}>
       <g transform={'translate('+tx+','+ty+')'}>
-        <g style={{ transform: 'rotate(' + rotation + 'deg)' }}>
+        <g transform={'rotate(' + rotation + ')' }>
           {svgForType(type)}
         </g>
       </g>
