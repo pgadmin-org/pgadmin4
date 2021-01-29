@@ -355,14 +355,15 @@ export default class ERDCore {
 
   zoomOut() {
     let model = this.getEngine().getModel();
-    if(model) {
-      model.setZoomLevel(model.getZoomLevel() - 25);
+    let zoomLevel = model.getZoomLevel();
+    if(model && zoomLevel > 25) {
+      model.setZoomLevel(zoomLevel - 25);
       this.repaint();
     }
   }
 
   zoomToFit() {
-    this.getEngine().zoomToFit();
+    this.getEngine().zoomToFitNodes();
   }
 
   // Sample call: this.fireAction({ type: 'keydown', ctrlKey: true, code: 'KeyN' });

@@ -37,7 +37,7 @@ describe('ERDCore', ()=>{
       'registerListener': null,
     }),
     'repaintCanvas': null,
-    'zoomToFit': null,
+    'zoomToFitNodes': null,
     'fireEvent': null,
   });
 
@@ -352,7 +352,7 @@ describe('ERDCore', ()=>{
 
     it('zoomToFit', ()=>{
       erdCoreObj.zoomToFit();
-      expect(erdEngine.zoomToFit).toHaveBeenCalled();
+      expect(erdEngine.zoomToFitNodes).toHaveBeenCalled();
     });
 
     it('fireAction', ()=>{

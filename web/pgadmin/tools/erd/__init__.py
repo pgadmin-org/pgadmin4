@@ -146,6 +146,24 @@ class ERDModule(PgAdminModule):
 
         self.preference.register(
             'keyboard_shortcuts',
+            'download_image',
+            gettext('Download image'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': False,
+                'control': True,
+                'key': {
+                    'key_code': 73,
+                    'char': 'i'
+                }
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=shortcut_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
             'add_table',
             gettext('Add table'),
             'keyboardshortcut',

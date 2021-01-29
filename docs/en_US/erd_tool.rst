@@ -62,6 +62,9 @@ Export Options
    | *Generate SQL*       | Click the *Generate SQL* icon to generate the DDL SQL for the diagram and open a query tool       | Option + Ctrl +|
    |                      | with the generated SQL ready for execution.                                                       | S              |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Download image*     | Click the *Download image* icon to save the ERD diagram in a image formate                        | Option + Ctrl +|
+   |                      |                                                                                                   | I              |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 Editing Options
 ***************
