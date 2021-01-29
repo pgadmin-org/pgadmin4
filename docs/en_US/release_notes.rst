@@ -11,6 +11,7 @@ notes for it.
 .. toctree::
    :maxdepth: 1
 
+   release_notes_5_0
    release_notes_4_30
    release_notes_4_29
    release_notes_4_28
