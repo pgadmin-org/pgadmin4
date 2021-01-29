@@ -19,6 +19,7 @@ Bug fixes
 
 | `Issue #5871 <https://redmine.postgresql.org/issues/5871>`_ -  Ensure that username should be visible in the 'Connect to Server' popup when service and user name both specified.
 | `Issue #6045 <https://redmine.postgresql.org/issues/6045>`_ -  Fixed autocomplete issue where it is not showing any suggestions if the schema name contains escape characters.
+| `Issue #6087 <https://redmine.postgresql.org/issues/6087>`_ -  Fixed an issue where the dependencies tab showing multiple owners for the objects having shared dependencies.
 | `Issue #6163 <https://redmine.postgresql.org/issues/6163>`_ -  Fixed an issue where Zoom to fit button only works if the diagram is larger than the canvas.
 | `Issue #6164 <https://redmine.postgresql.org/issues/6164>`_ -  Ensure that the diagram should not vanish entirely if zooming out too far in ERD.
 | `Issue #6179 <https://redmine.postgresql.org/issues/6179>`_ -  Fixed an issue where Generate SQL displayed twice in the ERD tool.

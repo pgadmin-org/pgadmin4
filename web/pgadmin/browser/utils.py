@@ -490,7 +490,7 @@ class PGChildNodeView(NodeView):
         if where_clause.find('subid') < 0:
             sql = render_template(
                 "/".join([sql_path, 'role_dependencies.sql']),
-                where_clause=where_clause)
+                where_clause=where_clause, db_name=conn.db)
 
             status, result = conn.execute_dict(sql)
             if not status:
