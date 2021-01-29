@@ -47,7 +47,9 @@ create a file named 'dev_config.json' and specify the following entries:
 
 {
     "pythonPath": <PATH OF THE PYTHON BINARY> For Example: "../../venv/bin/python3",
+
     "pgadminFile": <PATH OF THE pgAdmin4.py> For Example: "../web/pgAdmin4.py"
+
 }
 
 Note that the dev_config.py file should only be required by developers who are
