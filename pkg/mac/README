@@ -9,6 +9,9 @@ similar):
 2. PostgreSQL installation
   - PostgreSQL 12 or above from http://www.postgresql.org/
 
+3. Python 3.5+ (required for building). The build environment should run this 
+  version of python in response to the "python" command.
+  
 Building:
 
 1. To bundle a different version of Python from the default of 3.9.0, set the
