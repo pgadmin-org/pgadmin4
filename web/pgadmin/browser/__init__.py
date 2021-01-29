@@ -674,7 +674,7 @@ def index():
             base_url=None
         )
 
-    # Check the browser is a support version
+    # Check the browser is a supported version
     # NOTE: If the checks here are updated, make sure the supported versions
     # at https://www.pgadmin.org/faq/#11 are updated to match!
     if config.CHECK_SUPPORTED_BROWSER:
