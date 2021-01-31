@@ -192,7 +192,7 @@ class DatabaseView(PGChildNodeView):
                     # If connection to database is not allowed then
                     # provide generic connection
                     if kwargs['did'] in self.manager.db_info:
-
+                        self._db = self.manager.db_info[kwargs['did']]
                         self.datlastsysoid, self.datistemplate, \
                             datallowconn = \
                             get_attributes_from_db_info(self.manager, kwargs)
