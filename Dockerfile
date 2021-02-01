@@ -88,6 +88,10 @@ RUN rm -rf /pgadmin4/docs/en_US/_build
 # Build the docs
 RUN LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 make -C /pgadmin4/docs/en_US -f Makefile.sphinx html
 
+# Cleanup unwanted files
+RUN rm -rf /pgadmin4/docs/en_US/_build/html/_sources
+RUN rm -rf /pgadmin4/docs/en_US/_build/html/_static/*.png
+
 #########################################################################
 # Create additional builders to get all of the PostgreSQL utilities
 #########################################################################
