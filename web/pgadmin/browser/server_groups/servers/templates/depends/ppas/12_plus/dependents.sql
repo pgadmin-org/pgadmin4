@@ -20,13 +20,14 @@ SELECT DISTINCT dep.deptype, dep.classid, cl.relkind, ad.adbin, pg_get_expr(ad.a
         WHEN ext.oid IS NOT NULL THEN 'Ex'::text
         WHEN syn.oid IS NOT NULL THEN 'Sy'::text
         WHEN pl.oid IS NOT NULL THEN 'Rs'::text
+        WHEN pub_rel.oid IS NOT NULL THEN 'r'::text
     ELSE ''
     END AS type,
     COALESCE(coc.relname, clrw.relname) AS ownertable,
     CASE WHEN cl.relname IS NOT NULL AND att.attname IS NOT NULL THEN cl.relname || COALESCE('.' || att.attname, '')
     ELSE COALESCE(cl.relname, co.conname, pr.proname, tg.tgname, ty.typname, la.lanname, rw.rulename, ns.nspname,
                   fs.srvname, fdw.fdwname, evt.evtname, col.collname, ftsc.cfgname, ftsd.dictname, ftsp.prsname,
-                  ftst.tmplname, ext.extname, syn.synname, pl.polname)
+                  ftst.tmplname, ext.extname, syn.synname, pl.polname, quote_ident(pubns.nspname)||'.'||quote_ident(pubcl.relname))
     END AS refname,
     COALESCE(nsc.nspname, nso.nspname, nsp.nspname, nst.nspname, nsrw.nspname, colns.nspname, ftscns.nspname,
         ftsdns.nspname, ftspns.nspname, ftstns.nspname, synns.nspname) AS nspname,
@@ -70,10 +71,13 @@ LEFT JOIN pg_extension ext ON ext.oid=dep.objid
 LEFT JOIN pg_synonym syn ON syn.oid=dep.objid
 LEFT JOIN pg_namespace synns ON syn.synnamespace=synns.oid
 LEFT JOIN pg_policy pl ON pl.oid=dep.objid
+LEFT JOIN pg_publication_rel pub_rel ON pub_rel.oid = dep.objid
+LEFT JOIN pg_class pubcl ON pubcl.oid = pub_rel.prrelid
+LEFT JOIN pg_namespace pubns ON pubns.oid=pubcl.relnamespace
 {{where_clause}} AND
 classid IN ( SELECT oid FROM pg_class WHERE relname IN
    ('pg_class', 'pg_constraint', 'pg_conversion', 'pg_language', 'pg_proc', 'pg_rewrite', 'pg_namespace',
    'pg_trigger', 'pg_type', 'pg_attrdef', 'pg_event_trigger', 'pg_foreign_server', 'pg_foreign_data_wrapper',
    'pg_collation', 'pg_ts_config', 'pg_ts_dict', 'pg_ts_parser', 'pg_ts_template', 'pg_extension',
-   'pg_synonym', 'pg_policy'))
+   'pg_synonym', 'pg_policy', 'pg_subscription', 'pg_publication_rel'))
 ORDER BY classid, cl.relkind

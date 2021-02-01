@@ -361,6 +361,25 @@ FROM (
 {% if all_obj %}
     UNION
 {% endif %}
+
+{% if all_obj or obj_type in ['publication'] %}
+    SELECT 'publication'::text AS obj_type, pubname AS obj_name, ':publication.'||pub.oid||':/' || pubname AS obj_path, ''::text AS schema_name,
+    {{ show_node_prefs['publication'] }} AS show_node, NULL AS other_info
+    FROM pg_publication pub
+{% endif %}
+{% if all_obj %}
+    UNION
+{% endif %}
+
+{% if all_obj or obj_type in ['subscription'] %}
+    SELECT 'subscription'::text AS obj_type, subname AS obj_name, ':subscription.'||pub.oid||':/' || subname AS obj_path, ''::text AS schema_name,
+    {{ show_node_prefs['subscription'] }} AS show_node, NULL AS other_info
+    FROM pg_subscription pub
+{% endif %}
+{% if all_obj %}
+    UNION
+{% endif %}
+
 {% if all_obj or obj_type in ['language'] %}
     SELECT 'language'::text AS obj_type, lanname AS obj_name, ':language.'||lan.oid||':/' || lanname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['language'] }} AS show_node, NULL AS other_info

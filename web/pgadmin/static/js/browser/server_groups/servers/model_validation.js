@@ -19,7 +19,8 @@ export class ModelValidation {
   }
 
   validate() {
-    const serviceId = this.model.get('service');
+    const serviceId = this.model.get('service'),
+      pub = this.model.get('pub');
 
     if (!this.model.isNew() && 'id' in this.model.sessAttrs) {
       this.err['id'] = gettext('The ID cannot be changed.');
@@ -38,8 +39,14 @@ export class ModelValidation {
       this.checkForEmpty('db', gettext('Maintenance database must be specified.'));
       this.checkForEmpty('username', gettext('Username must be specified.'));
       this.checkForEmpty('port', gettext('Port must be specified.'));
+      if(!_.isUndefined(pub) && pub.length == 0){
+        this.checkForEmpty('pub', gettext('Publication must be specified.'));
+      }
     } else {
       this.checkForEmpty('db', gettext('Maintenance database must be specified.'));
+      if(!_.isUndefined(pub) && pub.length == 0){
+        this.checkForEmpty('pub', gettext('Publication must be specified.'));
+      }
       this.clearHostAddressAndDbErrors();
     }
 
@@ -80,8 +87,17 @@ export class ModelValidation {
   }
 
   checkHostAndHostAddress() {
-    const translatedStr = gettext('Either Host name, Address or Service must ' +
+
+    let pub = this.model.get('pub'),
+      errmsg;
+    if(!_.isUndefined(pub) && pub.length == 0){
+      errmsg = gettext('Host name, Address must ' +
       'be specified.');
+    }else{
+      errmsg = gettext('Either Host name, Address or Service must ' +
+      'be specified.');
+    }
+    const translatedStr = errmsg;
     if (this.checkForEmpty('host', translatedStr) &&
       this.checkForEmpty('hostaddr', translatedStr)) {
       this.errmsg = this.errmsg || translatedStr;

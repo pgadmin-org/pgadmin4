@@ -433,6 +433,8 @@ module.exports = [{
         ',pgadmin.node.database' +
         ',pgadmin.node.role' +
         ',pgadmin.node.cast' +
+        ',pgadmin.node.publication' +
+        ',pgadmin.node.subscription' +
         ',pgadmin.node.tablespace' +
         ',pgadmin.node.resource_group' +
         ',pgadmin.node.event_trigger' +

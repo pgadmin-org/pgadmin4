@@ -99,6 +99,18 @@ define('pgadmin.node.database', [
 
         return server.connected && server.user.can_create_db;
       },
+      canCreate: function(itemData, item) {
+        var treeData = this.getTreeNodeHierarchy(item),
+          server = treeData['server'];
+
+        // If server is less than 10 then do not allow 'create' menu
+        if (server && server.version < 100000)
+          return false;
+
+        // by default we want to allow create menu
+        return true;
+      },
+
       is_not_connected: function(node) {
         return (node && node.connected != true && node.allowConn == true);
       },

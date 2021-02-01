@@ -43,7 +43,8 @@ class SearchObjectsHelper:
             'trigger_function', 'fts_template', 'collation', 'view', 'mview',
             'fts_configuration', 'extension', 'language',
             'event_trigger', 'foreign_server', 'user_mapping',
-            'foreign_data_wrapper', 'row_security_policy'
+            'foreign_data_wrapper', 'row_security_policy',
+            'publication', 'subscription'
         ] if node_types is None else node_types
 
     @property

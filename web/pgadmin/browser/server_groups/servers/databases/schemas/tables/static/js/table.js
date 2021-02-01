@@ -518,6 +518,11 @@ define('pgadmin.node.table', [
           },
         },
         {
+          id: 'replica_identity', label: gettext('Replica Identity'),
+          group: gettext('advanced'), type: 'text',mode: ['edit', 'properties'],
+        },
+
+        {
           id: 'advanced', label: gettext('Advanced'), type: 'group',
           visible: ShowAdvancedTab.show_advanced_tab,
         }, {

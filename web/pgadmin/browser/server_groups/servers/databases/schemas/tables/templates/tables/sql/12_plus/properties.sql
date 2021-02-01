@@ -4,6 +4,12 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
     JOIN pg_tablespace sp ON dtb.dattablespace=sp.oid
     WHERE dtb.oid = {{ did }}::oid)
   END) as spcname,
+  (CASE rel.relreplident
+          WHEN 'd' THEN 'default'
+          WHEN 'n' THEN 'nothing'
+          WHEN 'f' THEN 'full'
+          WHEN 'i' THEN 'index'
+  END) as replica_identity,
   (select nspname FROM pg_namespace WHERE oid = {{scid}}::oid ) as schema,
   pg_get_userbyid(rel.relowner) AS relowner, rel.relkind,
   (CASE WHEN rel.relkind = 'p' THEN true ELSE false END) AS is_partitioned,

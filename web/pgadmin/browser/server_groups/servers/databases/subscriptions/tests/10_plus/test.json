@@ -1,0 +1,70 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create  Subscription",
+      "endpoint": "NODE-subscription.obj",
+      "sql_endpoint": "NODE-subscription.sql_id",
+      "msql_endpoint": "NODE-subscription.msql",
+      "data": {
+          "username": "postgres",
+          "name": "test_create_subscription",
+          "connect": false,
+          "copy_data": false,
+          "create_slot": false,
+          "db": "postgres",
+          "subowner": "postgres",
+          "enabled": false,
+          "host": "localhost",
+          "slot_name": "None",
+          "service": "",
+          "port": 5432,
+          "password": "edb",
+          "sync": "off",
+          "pub": "[\"sample__1\"]"
+      },
+      "expected_sql_file": "create_subscription.sql",
+      "expected_msql_file": "create_subscription_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  Subscription",
+      "endpoint": "NODE-subscription.obj_id",
+      "sql_endpoint": "NODE-subscription.sql_id",
+      "data": {
+          "name": "test_alter_subscription"
+      },
+      "expected_sql_file": "alter_subscription.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  sync of subscription",
+      "endpoint": "NODE-subscription.obj_id",
+      "sql_endpoint": "NODE-subscription.sql_id",
+      "data": {
+          "sync": "remote_apply"
+      },
+      "expected_sql_file": "alter_sync.sql"
+    },
+
+    {
+      "type": "alter",
+      "name": "Alter  maintainance DB in connection string of subscription",
+      "endpoint": "NODE-subscription.obj_id",
+      "sql_endpoint": "NODE-subscription.sql_id",
+      "data": {
+          "db": "edb"
+      },
+      "expected_sql_file": "alter_maintenance_db.sql"
+    },
+
+    {
+      "type": "delete",
+      "name": "Drop subscription",
+      "endpoint": "NODE-subscription.delete_id",
+      "data": {
+        "name": "test_alter_subscription"
+      }
+    }
+  ]
+}
