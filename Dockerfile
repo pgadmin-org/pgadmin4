@@ -66,22 +66,18 @@ RUN npm install && \
 
 FROM python:3.9-alpine3.12 as docs-builder
 
-# Install only dependencies absolutely required for documentation building
+# Install dependencies
+COPY requirements.txt /
 RUN apk add --no-cache \
         make \
         build-base \
         openssl-dev \
-        libffi-dev && \
+        libffi-dev \
+        postgresql-dev \
+        krb5-dev && \
     pip install --no-cache-dir \
-        sphinx \
-        flask_security_too \
-        flask_paranoid \
-        python-dateutil \
-        flask_sqlalchemy \
-        flask_gravatar \
-        flask_migrate \
-        simplejson \
-        cryptography
+        sphinx && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy the docs from the local tree. Explicitly remove any existing builds that
 # may be present
