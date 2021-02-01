@@ -22,10 +22,33 @@ _build_runtime() {
     echo "Assembling the runtime environment..."
     test -d "${BUILD_ROOT}" || mkdir "${BUILD_ROOT}"
 
-    # Copy in the template application
-    cd "${BUILD_ROOT}"
-    yarn --cwd "${BUILD_ROOT}" add nw
-    cp -R "${BUILD_ROOT}/node_modules/nw/nwjs/nwjs.app" "${BUILD_ROOT}/"
+    # Get a fresh copy of nwjs.
+    # NOTE: The nw download servers seem to be very unreliable, so at the moment we're using wget
+    #       in a retry loop as Yarn/Npm don't seem to like that.
+
+    # YARN:
+    # yarn add --cwd "${BUILDROOT}" nw
+    # YARN END
+
+    # WGET:
+    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    pushd "${BUILD_ROOT}" > /dev/null
+        while true;do
+            wget https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-x64.zip && break
+            rm nwjs-v${NW_VERSION}-osx-x64.zip
+        done
+        tar -xvf nwjs-v${NW_VERSION}-osx-x64.zip
+    popd > /dev/null
+    # WGET END
+
+    # YARN:
+    # cp -R "${BUILD_ROOT}/node_modules/nw/nwjs/nwjs.app" "${BUILD_ROOT}/"
+    # YARN END
+
+    # WGET:
+    cp -R "${BUILD_ROOT}/nwjs-v${NW_VERSION}-osx-x64"/nwjs.app "${BUILD_ROOT}/"
+    # WGET END
+
     mv "${BUILD_ROOT}/nwjs.app" "${BUNDLE_DIR}"
 
     # Copy in the runtime code
