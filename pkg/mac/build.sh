@@ -34,8 +34,8 @@ if [ "x${PGADMIN_POSTGRES_DIR}" == "x" ]; then
 fi
 
 if [ "x${PGADMIN_PYTHON_VERSION}" == "x" ]; then
-    echo "PGADMIN_PYTHON_VERSION not set. Setting it to the default: 3.9.0"
-    export PGADMIN_PYTHON_VERSION=3.9.0
+    echo "PGADMIN_PYTHON_VERSION not set. Setting it to the default: 3.9.1"
+    export PGADMIN_PYTHON_VERSION=3.9.1
 fi
 
 source ${SCRIPT_DIR}/build-functions.sh
