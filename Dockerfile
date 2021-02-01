@@ -163,6 +163,7 @@ RUN apk add --no-cache --virtual \
         krb5-server-ldap \
         linux-headers && \
     apk add \
+        logrotate \
         postfix \
         postgresql-client \
         postgresql-libs \
@@ -180,7 +181,8 @@ RUN apk add --no-cache --virtual \
 COPY --from=pg13-builder /usr/local/lib/libpq.so.5.13 /usr/lib/
 RUN ln -sf /usr/lib/libpq.so.5.13 /usr/lib/libpq.so.5
 
-# Copy the runner script
+# Copy the various scripts
+COPY pkg/docker/logrotate.conf /etc/logrotate.d/pgadmin
 COPY pkg/docker/run_pgadmin.py /pgadmin4
 COPY pkg/docker/gunicorn_config.py /pgadmin4
 COPY pkg/docker/entrypoint.sh /entrypoint.sh
