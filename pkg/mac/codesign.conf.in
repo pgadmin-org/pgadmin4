@@ -2,4 +2,4 @@
 # codesign.conf, and edit the values below to reflect your developer ID.
 
 DEVELOPER_ID="Developer ID Application: My Name (12345ABCD)"
-DEVELOPER_BUNDLE_ID="Developer Bundle Identifier (pgadmin4-4)"
+
