@@ -96,7 +96,6 @@ RUN rm -rf /pgadmin4/docs/en_US/_build/html/_static/*.png
 # Create additional builders to get all of the PostgreSQL utilities
 #########################################################################
 
-FROM postgres:9.5-alpine as pg95-builder
 FROM postgres:9.6-alpine as pg96-builder
 FROM postgres:10-alpine as pg10-builder
 FROM postgres:11-alpine as pg11-builder
@@ -106,10 +105,6 @@ FROM postgres:13-alpine as pg13-builder
 FROM alpine:3.11 as tool-builder
 
 # Copy the PG binaries
-COPY --from=pg95-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-9.5/
-COPY --from=pg95-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-9.5/
-COPY --from=pg95-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-9.5/
-COPY --from=pg95-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-9.5/
 
 COPY --from=pg96-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-9.6/
 COPY --from=pg96-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-9.6/
