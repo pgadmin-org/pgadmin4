@@ -172,7 +172,7 @@ RUN apk add --no-cache --virtual \
         libcap && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir gunicorn==19.9.0 && \
+    pip install --no-cache-dir gunicorn && \
     apk del --no-cache build-deps && \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix
 
