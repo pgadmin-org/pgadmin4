@@ -38,7 +38,7 @@ _build_runtime() {
             wget https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-x64.zip && break
             rm nwjs-v${NW_VERSION}-osx-x64.zip
         done
-        tar -xvf nwjs-v${NW_VERSION}-osx-x64.zip
+        unzip nwjs-v${NW_VERSION}-osx-x64.zip
     popd > /dev/null
     # WGET END
 
