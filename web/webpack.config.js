@@ -422,6 +422,7 @@ module.exports = [{
       use: {
         loader: 'imports-loader?' +
         'pgadmin.dashboard' +
+        ',pgadmin.browser.quick_search' +
         ',pgadmin.tools.user_management' +
         ',pgadmin.browser.object_statistics' +
         ',pgadmin.browser.dependencies' +

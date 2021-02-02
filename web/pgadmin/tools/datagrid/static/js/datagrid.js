@@ -113,6 +113,9 @@ define('pgadmin.datagrid', [
           priority: 1,
           label: gettext('Query Tool'),
           icon: 'pg-font-icon icon-query-tool',
+          data:{
+            'data_disabled': gettext('Please select a database from the browser tree to access Query Tool.'),
+          },
         }];
 
         // Create context menu

@@ -1,4 +1,5 @@
 $white: #FFFFFF;
+$black: #000;
 $color-bg: #010B15;
 $color-fg: $white;
 
@@ -200,4 +201,7 @@ $grid-hover-fg-color: #010B15;
 
 $btn-copied-color-fg: #010B15;
 
-
+$span-text-color: #9D9FA1 !default;
+$span-text-color-hover: $black !default;
+$quick-search-a-text-color: $black !default;
+$quick-search-info-icon: #8A8A8A !default;

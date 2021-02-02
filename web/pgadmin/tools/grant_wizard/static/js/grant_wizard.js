@@ -177,6 +177,9 @@ define([
         enable: supportedNodes.enabled.bind(
           null, pgBrowser.treeMenu, menuUtils.supportedNodes
         ),
+        data: {
+          'data_disabled': gettext('Please select any database, schema or schema objects from the browser tree to access Grant Wizard Tool.'),
+        },
       }];
 
       // Add supported menus into the menus list

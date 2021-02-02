@@ -36,6 +36,9 @@ define([
         enable: this.search_objects_enabled,
         priority: 1,
         label: gettext('Search Objects...'),
+        data: {
+          'data_disabled': gettext('Please select a database from the browser tree to search the database objects.'),
+        },
       }, {
         name: 'search_objects',
         module: this,

@@ -4,6 +4,9 @@ $enable-flex: true;
 $white: #fff;
 $black: #000;
 
+$span-text-color: #6B6B6B !default;
+$span-text-color-hover: #6B6B6B !default;
+
 $color-bg: $white !default;
 $color-fg: #222222 !default;
 
@@ -349,6 +352,10 @@ $grid-hover-fg-color: $color-fg !default;
 
 $btn-copied-color-fg: $active-color !default;
 
+$quick-search-a-text-color: $black !default;
+$quick-search-span-text: $span-text-color !default;
+$quick-search-span-text-hover: $span-text-color-hover !default;
+$quick-search-info-icon: #646C82 !default;
 /** ERD **/
 $erd-row-padding: 0.25rem;
 $erd-node-border-color: $border-color !default;

@@ -412,6 +412,9 @@ define([
         enable: supportedNodes.enabled.bind(
           null, pgBrowser.treeMenu, ['table']
         ),
+        data: {
+          'data_disabled': gettext('Please select any table from the browser tree to Import/Export data.'),
+        },
       }]);
     },
 

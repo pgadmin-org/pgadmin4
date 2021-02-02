@@ -67,12 +67,17 @@ define([
         }, this.menu_items);
         this.$el = create_submenu.$el;
       } else {
+        var data_disabled = null;
+        if(this.data != undefined && this.data.data_disabled != undefined){
+          data_disabled = this.data.data_disabled;
+        }
         var url = $('<a></a>', {
           'id': this.name,
           'href': this.url,
           'target': this.target,
           'data-toggle': 'pg-menu',
           'role': 'menuitem',
+          'data-disabled': data_disabled,
         }).data('pgMenu', {
           module: this.module || pgAdmin.Browser,
           cb: this.callback,

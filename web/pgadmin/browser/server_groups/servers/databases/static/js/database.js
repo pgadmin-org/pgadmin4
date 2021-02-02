@@ -76,12 +76,16 @@ define('pgadmin.node.database', [
           name: 'connect_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'connect_database',
           category: 'connect', priority: 4, label: gettext('Connect Database...'),
-          icon: 'fa fa-link', enable : 'is_not_connected',
+          icon: 'fa fa-link', enable : 'is_not_connected', data: {
+            'data_disabled': gettext('Selected database is already connected.'),
+          },
         },{
           name: 'disconnect_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'disconnect_database',
           category: 'drop', priority: 5, label: gettext('Disconnect Database...'),
-          icon: 'fa fa-unlink', enable : 'is_connected',
+          icon: 'fa fa-unlink', enable : 'is_connected',data: {
+            'data_disabled': gettext('Selected database is already disconnected.'),
+          },
         },{
           name: 'generate_erd', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'generate_erd',

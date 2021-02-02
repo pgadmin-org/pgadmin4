@@ -44,6 +44,7 @@ _.extend(pgBrowser.keyboardNavigation, {
         'drop_multiple_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'grid_menu_drop_multiple').value),
         'drop_cascade_multiple_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'grid_menu_drop_cascade_multiple').value),
         'add_grid_row': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'add_grid_row').value),
+        'open_quick_search': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'open_quick_search').value),
 
       };
       this.shortcutMethods = {
@@ -66,6 +67,7 @@ _.extend(pgBrowser.keyboardNavigation, {
         'bindDropMultipleObjects': {'shortcuts': this.keyboardShortcut.drop_multiple_objects}, // Grid Menu Drop Multiple
         'bindDropCascadeMultipleObjects': {'shortcuts': this.keyboardShortcut.drop_cascade_multiple_objects}, // Grid Menu Drop Cascade Multiple
         'bindAddGridRow': {'shortcuts': this.keyboardShortcut.add_grid_row}, // Subnode Grid Add Row
+        'bindOpenQuickSearch': {'shortcuts': this.keyboardShortcut.open_quick_search}, // Subnode Grid Refresh Row
       };
       this.bindShortcuts();
     }
@@ -382,6 +384,9 @@ _.extend(pgBrowser.keyboardNavigation, {
     const forward_shortcut = pgWindow.pgAdmin.Browser.get_preference('browser', 'dialog_tab_forward').value;
 
     return new dialogTabNavigator.dialogTabNavigator(dialogContainer, backward_shortcut, forward_shortcut);
+  },
+  bindOpenQuickSearch: function() {
+    $('#search_icon').trigger('click');
   },
 });
 

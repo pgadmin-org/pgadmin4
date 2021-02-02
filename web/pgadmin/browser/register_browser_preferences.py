@@ -443,6 +443,19 @@ def register_browser_preferences(self):
         fields=fields
     )
 
+    self.preference.register(
+        'keyboard_shortcuts', 'open_quick_search',
+        gettext('Quick Search'), 'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': True,
+            'control': True,
+            'key': {'key_code': 70, 'char': 'f'}
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=fields
+    )
+
     self.dynamic_tab_title = self.preference.register(
         'tab_settings', 'dynamic_tabs',
         gettext("Dynamic tab size"), 'boolean', False,

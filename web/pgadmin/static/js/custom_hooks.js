@@ -27,3 +27,15 @@ export function usePrevious(value) {
   });
   return ref.current;
 }
+
+export function useDelayDebounce(callback, args, delay) {
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (args) {
+        callback(args);
+      }
+    }, delay);
+    return () => clearTimeout(delayDebounceFn);
+  }, [args]);
+}
+

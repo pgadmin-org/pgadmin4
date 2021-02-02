@@ -1129,3 +1129,10 @@ select:-webkit-autofill:focus {
 .pull-left{
   float:left
 }
+
+.menu-groups-a:hover span{
+  color: $white !important;
+}
+
+#myDropdown a:hover {background-color: $dropdown-link-hover-bg; color:$white !important;}
+

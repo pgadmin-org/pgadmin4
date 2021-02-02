@@ -48,7 +48,8 @@ define('pgadmin.node.resource_group', [
           name: 'create_resourcegroup_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
+          icon: 'wcTabIcon icon-resource_group', data: {action: 'create',
+            'data_disabled': gettext('This option is only available on EPAS servers.')},
           /* Function is used to check the server type and version.
            * Resource Group only supported in PPAS 9.4 and above.
            */
@@ -62,12 +63,14 @@ define('pgadmin.node.resource_group', [
           name: 'create_resource_group_on_coll', node: 'coll-resource_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
+          icon: 'wcTabIcon icon-resource_group', data: {action: 'create',
+            'data_disabled': gettext('This option is only available on EPAS servers.')},
         },{
           name: 'create_resource_group', node: 'resource_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
+          icon: 'wcTabIcon icon-resource_group', data: {action: 'create',
+            'data_disabled': gettext('This option is only available on EPAS servers.')},
         },
         ]);
       },

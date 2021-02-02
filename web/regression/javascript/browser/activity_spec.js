@@ -70,7 +70,7 @@ describe('For Activity', function(){
       expect(pgBrowser.get_epoch_now).not.toHaveBeenCalled();
     });
 
-    it('set loggin to false after timeout', function(done){
+    it('set login to false after timeout', function(done){
       pgBrowser.log_activity();
       expect(pgBrowser.logging_activity).toEqual(true);
       setTimeout(()=>{

@@ -150,6 +150,7 @@ define('pgadmin.browser.node', [
           label: (self.dropAsRemove) ? gettext('Remove %s', self.label) : gettext('Delete/Drop'),
           data: {
             'url': 'drop',
+            'data_disabled': gettext('The selected tree node does not support this option.'),
           },
           icon: 'fa fa-trash-alt',
           enable: _.isFunction(self.canDrop) ?
@@ -232,6 +233,7 @@ define('pgadmin.browser.node', [
             category: gettext('Scripts'),
             data: {
               'script': stype,
+              'data_disabled': gettext('The selected tree node does not support this option.'),
             },
             icon: 'fa fa-pencil-alt',
             enable: self.check_user_permission,
