@@ -9,6 +9,7 @@ _setup_env() {
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
     BUNDLE_DIR="${BUILD_ROOT}/${APP_NAME}.app"
+    DMG_NAME="${DIST_ROOT}/$(echo ${APP_NAME} | sed 's/ //g' | awk '{print tolower($0)}')-${APP_LONG_VERSION}.dmg"
 }
 
 _cleanup() {
@@ -317,7 +318,7 @@ _create_dmg() {
         --format UDBZ \
         --skip-jenkins \
         --no-internet-enable \
-        "${DIST_ROOT}/$(echo ${APP_NAME} | sed 's/ //g' | awk '{print tolower($0)}')-${APP_LONG_VERSION}.dmg" \
+        "${DMG_NAME}" \
         "${BUNDLE_DIR}"
 }
 
@@ -328,5 +329,69 @@ _codesign_dmg() {
 
     # Sign the .app
     echo Signing disk image...
-    codesign --force --verify --verbose --timestamp --options runtime -i org.pgadmin.pgadmin4 --sign "${DEVELOPER_ID}" "${DIST_ROOT}/$(echo ${APP_NAME} | sed 's/ //g' | awk '{print tolower($0)}')-${APP_LONG_VERSION}.dmg"
+    codesign --force --verify --verbose --timestamp --options runtime -i org.pgadmin.pgadmin4 --sign "${DEVELOPER_ID}" "${DMG_NAME}"
+}
+
+
+_notarize_pkg() {
+    if [ ${CODESIGN} -eq 0 ]; then
+        return
+    fi
+
+    # Notarize the package. Try three times, to allow for upload issues
+    cmd_status=0
+    for i in {1..3}; do
+        echo "Uploading DMG for notarisation (attempt ${i} of 3)..."
+        STATUS=$(xcrun altool --notarize-app -f "${DMG_NAME}" --asc-provider ${DEVELOPER_NAME} --primary-bundle-id org.pgadmin.pgadmin4 -u ${DEVELOPER_USER} -p ${DEVELOPER_ASP} 2>&1)
+        RETVAL=$?
+
+        if [ ${RETVAL} != 0 ]; then
+            echo "Attempt ${i} failure: ${STATUS}"
+        else
+            # Success!
+            break;
+        fi
+    done
+
+    # print error if above command fails
+    if [ ${RETVAL} != 0 ]; then
+        echo "Notarization failed."
+        exit 1
+    fi
+
+    # Get the request ID
+    REQUEST_UUID=$(echo ${STATUS} | awk '/RequestUUID/ { print $NF; }')
+    echo "Notarization request ID: ${REQUEST_UUID}"
+
+    # Now we need to wait for the results. Try 10 times.
+    for i in {1..10}; do
+        echo "Waiting 30 seconds..."
+        sleep 30
+
+        echo "Requesting notarisation result (attempt ${i} of 10)..."
+        REQUEST_STATUS=$(xcrun altool --notarization-info ${REQUEST_UUID} --username ${DEVELOPER_USER} --password ${DEVELOPER_ASP} 2>&1 | awk -F ': ' '/Status:/ { print $2; }' )
+
+        if [[ "${REQUEST_STATUS}" == "success" ]]; then
+            break
+        fi
+    done
+
+    # Print status information
+    xcrun altool --notarization-info ${REQUEST_UUID} --username ${DEVELOPER_USER} --password ${DEVELOPER_ASP}
+
+    if [[ "${REQUEST_STATUS}" != "success" ]]; then
+	      echo "Notarization failed."
+	      exit 1
+    fi
+
+    # Staple the notarization
+    echo "Stapling the notarization to the pgAdmin DMG..."
+    xcrun stapler staple "${DMG_NAME}"
+
+    if [ $? != 0 ]; then
+	      echo "Stapling failed."
+        exit 1
+    fi
+
+    echo "Notarization completed successfully."
 }

@@ -23,9 +23,22 @@ if [ ! -f ${SCRIPT_DIR}/codesign.conf ]; then
     echo "******************************************************************"
     echo
     CODESIGN=0
-    sleep 5
+    sleep 2
 else
     source ${SCRIPT_DIR}/codesign.conf
+fi
+
+NOTARIZE=1
+if [ ! -f ${SCRIPT_DIR}/notarization.conf ]; then
+    echo
+    echo "******************************************************************"
+    echo "* pkg/mac/notarization.conf not found. NOT notarizing the package."
+    echo "******************************************************************"
+    echo
+    NOTARIZE=0
+    sleep 2
+else
+    source ${SCRIPT_DIR}/notarization.conf
 fi
 
 if [ "x${PGADMIN_POSTGRES_DIR}" == "x" ]; then
@@ -50,3 +63,4 @@ _codesign_binaries
 _codesign_bundle
 _create_dmg
 _codesign_dmg
+_notarize_pkg

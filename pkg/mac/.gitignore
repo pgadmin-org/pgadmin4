@@ -1,2 +1,3 @@
-# Global excludes across all subdirectories
+# Ignore config files
 codesign.conf
+notarization.conf

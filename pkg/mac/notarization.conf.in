@@ -1,0 +1,12 @@
+# In order to enable notarization of the Mac Appbundle, copy this file to
+# notarization.conf, and edit the values below to reflect your Apple
+# Developer User ID, app-specific password and Provider Shortname.
+#
+# You can use the following command to see the available shortnames for your
+# Apple Developer ID (substituting the appropriate username/password):
+#
+# xcrun altool --list-providers -u "APPLE_DEVELOPER_USERNAME" -p "APP_SPECIFIC_PASSWORD"
+
+DEVELOPER_USER=user@example.com
+DEVELOPER_ASP=1234-abcd-5678-efgh
+DEVELOPER_NAME=MyCompany
