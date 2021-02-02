@@ -12,7 +12,7 @@ New features
 | `Issue #5912 <https://redmine.postgresql.org/issues/5912>`_ -  Added support for Logical Replication.
 | `Issue #5967 <https://redmine.postgresql.org/issues/5967>`_ -  Implemented runtime using NWjs to open pgAdmin4 in a standalone window instead of the system tray and web browser.
 | `Issue #6148 <https://redmine.postgresql.org/issues/6148>`_ -  Added Quick Search functionality for menu items and help articles.
-| `Issue #6170 <https://redmine.postgresql.org/issues/6170>`_ -  Rotate the logfile in the container distribution.
+| `Issue #6170 <https://redmine.postgresql.org/issues/6170>`_ -  Ensure logs are not stored in the container, and only sent to the console.
 
 Housekeeping
 ************

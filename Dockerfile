@@ -163,7 +163,6 @@ RUN apk add --no-cache --virtual \
         krb5-server-ldap \
         linux-headers && \
     apk add \
-        logrotate \
         postfix \
         postgresql-client \
         postgresql-libs \
@@ -182,7 +181,6 @@ COPY --from=pg13-builder /usr/local/lib/libpq.so.5.13 /usr/lib/
 RUN ln -sf /usr/lib/libpq.so.5.13 /usr/lib/libpq.so.5
 
 # Copy the various scripts
-COPY pkg/docker/logrotate.conf /etc/logrotate.d/pgadmin
 COPY pkg/docker/run_pgadmin.py /pgadmin4
 COPY pkg/docker/gunicorn_config.py /pgadmin4
 COPY pkg/docker/entrypoint.sh /entrypoint.sh
@@ -194,8 +192,6 @@ RUN groupadd -g 5050 pgadmin && \
     useradd -r -u 5050 -g pgadmin pgadmin && \
     mkdir -p /var/lib/pgadmin && \
     chown pgadmin:pgadmin /var/lib/pgadmin && \
-    mkdir -p /var/log/pgadmin && \
-    chown pgadmin:pgadmin /var/log/pgadmin && \
     touch /pgadmin4/config_distro.py && \
     chown pgadmin:pgadmin /pgadmin4/config_distro.py && \
     setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.9

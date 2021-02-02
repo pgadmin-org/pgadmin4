@@ -7,6 +7,7 @@
 if [ `wc -m /pgadmin4/config_distro.py | awk '{ print $1 }'` = "0" ]; then
     cat << EOF > /pgadmin4/config_distro.py
 CA_FILE = '/etc/ssl/certs/ca-certificates.crt'
+LOG_FILE = '/dev/null'
 HELP_PATH = '../../docs'
 DEFAULT_BINARY_PATHS = {
         'pg': '/usr/local/pgsql-13'
