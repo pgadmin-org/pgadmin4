@@ -355,9 +355,14 @@ export default class ERDCore {
 
   zoomOut() {
     let model = this.getEngine().getModel();
-    let zoomLevel = model.getZoomLevel();
-    if(model && zoomLevel > 25) {
-      model.setZoomLevel(zoomLevel - 25);
+    if(model) {
+      let zoomLevel = model.getZoomLevel();
+      zoomLevel -= 25;
+      /* Don't go belo zoom level 10 */
+      if(zoomLevel <= 10) {
+        zoomLevel = 10;
+      }
+      model.setZoomLevel(zoomLevel);
       this.repaint();
     }
   }

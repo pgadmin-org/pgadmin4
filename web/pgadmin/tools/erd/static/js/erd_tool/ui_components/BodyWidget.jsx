@@ -235,6 +235,12 @@ export default class BodyWidget extends React.Component {
     if(this.props.params.gen) {
       await this.loadTablesData();
     }
+
+    window.addEventListener('beforeunload', this.onBeforeUnload.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.onBeforeUnload.bind(this));
   }
 
   componentDidUpdate() {
@@ -345,6 +351,15 @@ export default class BodyWidget extends React.Component {
         let newNode = this.diagram.addNode(newData);
         newNode.setSelected(true);
       });
+    }
+  }
+
+  onBeforeUnload(e) {
+    if(this.state.dirty) {
+      e.preventDefault();
+      e.returnValue = 'prevent';
+    } else {
+      delete e['returnValue'];
     }
   }
 
