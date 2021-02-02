@@ -364,11 +364,11 @@ _notarize_pkg() {
     echo "Notarization request ID: ${REQUEST_UUID}"
 
     # Now we need to wait for the results. Try 10 times.
-    for i in {1..10}; do
+    for i in {1..20}; do
         echo "Waiting 30 seconds..."
         sleep 30
 
-        echo "Requesting notarisation result (attempt ${i} of 10)..."
+        echo "Requesting notarisation result (attempt ${i} of 20)..."
         REQUEST_STATUS=$(xcrun altool --notarization-info ${REQUEST_UUID} --username ${DEVELOPER_USER} --password ${DEVELOPER_ASP} 2>&1 | awk -F ': ' '/Status:/ { print $2; }' )
 
         if [[ "${REQUEST_STATUS}" == "success" ]]; then
