@@ -63,7 +63,7 @@ class SubscriptionModule(CollectionNodeModule):
             **kwargs:
         """
         super(SubscriptionModule, self).__init__(*args, **kwargs)
-        self.min_ver = 100000
+        self.min_ver = self.min_ppasver = 100000
         self.max_ver = None
 
     def get_nodes(self, gid, sid, did):
