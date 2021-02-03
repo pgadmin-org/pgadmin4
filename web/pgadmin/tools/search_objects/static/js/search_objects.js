@@ -37,7 +37,7 @@ define([
         priority: 1,
         label: gettext('Search Objects...'),
         data: {
-          'data_disabled': gettext('Please select a database from the browser tree to search the database objects.'),
+          data_disabled: gettext('Please select a database from the browser tree to search the database objects.'),
         },
       }, {
         name: 'search_objects',

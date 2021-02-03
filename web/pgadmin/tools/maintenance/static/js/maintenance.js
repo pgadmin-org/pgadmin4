@@ -168,6 +168,9 @@ define([
         enable: supportedNodes.enabled.bind(
           null, pgBrowser.treeMenu, menuUtils.maintenanceSupportedNodes
         ),
+        data: {
+          data_disabled: gettext('Please select any database from the browser tree to do Maintenance.'),
+        },
       }];
 
       // Add supported menus into the menus list
@@ -185,7 +188,7 @@ define([
             null, pgBrowser.treeMenu, menuUtils.maintenanceSupportedNodes
           ),
           data: {
-            'data_disabled': gettext('Please select any database from the browser tree to do Maintenance.'),
+            data_disabled: gettext('Please select any database from the browser tree to do Maintenance.'),
           },
         });
       }

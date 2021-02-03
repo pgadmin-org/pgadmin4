@@ -583,7 +583,7 @@ define([
         icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
         data: {
-          'data_disabled': gettext('Please select any server from the browser tree to take Backup of global objects.'),
+          data_disabled: gettext('Please select any server from the browser tree to take Backup of global objects.'),
         },
       }, {
         name: 'backup_server',
@@ -595,7 +595,7 @@ define([
         icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
         data: {
-          'data_disabled': gettext('Please select any server from the browser tree to take Server Backup.'),
+          data_disabled: gettext('Please select any server from the browser tree to take Server Backup.'),
         },
       }, {
         name: 'backup_global_ctx',
@@ -608,7 +608,7 @@ define([
         icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
         data: {
-          'data_disabled': gettext('Please select any database or schema or table from the browser tree to take Backup.'),
+          data_disabled: gettext('Please select any database or schema or table from the browser tree to take Backup.'),
         },
       }, {
         name: 'backup_server_ctx',
@@ -621,7 +621,7 @@ define([
         icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
         data: {
-          'data_disabled': gettext('Please select any server from the browser tree to take Server Backup.'),
+          data_disabled: gettext('Please select any server from the browser tree to take Server Backup.'),
         },
       }, {
         name: 'backup_object',
@@ -635,7 +635,7 @@ define([
           null, pgBrowser.treeMenu, menuUtils.backupSupportedNodes
         ),
         data: {
-          'data_disabled': gettext('Please select any database or schema or table from the browser tree to take Backup.'),
+          data_disabled: gettext('Please select any database or schema or table from the browser tree to take Backup.'),
         },
       }];
 

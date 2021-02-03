@@ -114,7 +114,7 @@ define('pgadmin.datagrid', [
           label: gettext('Query Tool'),
           icon: 'pg-font-icon icon-query-tool',
           data:{
-            'data_disabled': gettext('Please select a database from the browser tree to access Query Tool.'),
+            data_disabled: gettext('Please select a database from the browser tree to access Query Tool.'),
           },
         }];
 

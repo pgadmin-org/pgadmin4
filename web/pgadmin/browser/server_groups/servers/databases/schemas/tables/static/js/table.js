@@ -95,11 +95,17 @@ define('pgadmin.node.table', [
           applies: ['object', 'context'], callback: 'enable_triggers_on_table',
           category: gettext('Trigger(s)'), priority: 4, label: gettext('Enable All'),
           icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
+          data: {
+            data_disabled: gettext('The selected tree node does not support this option.'),
+          },
         },{
           name: 'disable_all_triggers', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'disable_triggers_on_table',
           category: gettext('Trigger(s)'), priority: 4, label: gettext('Disable All'),
           icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
+          data: {
+            data_disabled: gettext('The selected tree node does not support this option.'),
+          },
         },{
           name: 'reset_table_stats', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'reset_table_stats',

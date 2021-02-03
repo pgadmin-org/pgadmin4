@@ -399,7 +399,7 @@ define('tools.restore', [
           null, pgBrowser.treeMenu, menuUtils.restoreSupportedNodes
         ),
         data: {
-          'data_disabled': gettext('Please select any schema or table from the browser tree to Restore data.'),
+          data_disabled: gettext('Please select any schema or table from the browser tree to Restore data.'),
         },
       }];
 

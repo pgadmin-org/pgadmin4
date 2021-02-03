@@ -167,6 +167,9 @@ export function Search() {
       function handleClickOutside(event) {
         if (ref.current && !ref.current.contains(event.target)) {
           let input_element = document.getElementById('live-search-field');
+          if(input_element == null){
+            return;
+          }
           let input_value = input_element.value;
           if(input_value && input_value.length > 0){
             toggleDropdownMenu();

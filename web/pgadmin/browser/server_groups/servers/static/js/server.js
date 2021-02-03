@@ -90,44 +90,50 @@ define('pgadmin.node.server', [
           name: 'connect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'connect_server',
           category: 'connect', priority: 4, label: gettext('Connect Server'),
-          icon: 'fa fa-link', enable : 'is_not_connected',
+          icon: 'fa fa-link', enable : 'is_not_connected',data: {
+            data_disabled: gettext('Database is already connected.'),
+          },
         },{
           name: 'disconnect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'disconnect_server',
           category: 'drop', priority: 5, label: gettext('Disconnect Server'),
-          icon: 'fa fa-unlink', enable : 'is_connected',
+          icon: 'fa fa-unlink', enable : 'is_connected',data: {
+            data_disabled: gettext('Database is already disconnected.'),
+          },
         },{
           name: 'reload_configuration', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'reload_configuration',
           category: 'reload', priority: 6, label: gettext('Reload Configuration'),
           icon: 'fa fa-redo-alt', enable : 'enable_reload_config',data: {
-            'data_disabled': gettext('Please select a server from the browser tree to reload the configuration files.'),
+            data_disabled: gettext('Please select a server from the browser tree to reload the configuration files.'),
           },
         },{
           name: 'restore_point', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'restore_point',
           category: 'restore', priority: 9, label: gettext('Add Named Restore Point...'),
           icon: 'fa fa-anchor', enable : 'is_applicable',data: {
-            'data_disabled': gettext('Please select any server from the browser tree to Add Named Restore Point.'),
+            data_disabled: gettext('Please select any server from the browser tree to Add Named Restore Point.'),
           },
         },{
           name: 'change_password', node: 'server', module: this,
           applies: ['object'], callback: 'change_password',
           label: gettext('Change Password...'), priority: 10,
-          icon: 'fa fa-lock', enable : 'is_connected',
+          icon: 'fa fa-lock', enable : 'is_connected',data: {
+            data_disabled: gettext('Please connect server to enable change password. '),
+          },
         },{
           name: 'wal_replay_pause', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'pause_wal_replay',
           category: 'wal_replay_pause', priority: 7, label: gettext('Pause Replay of WAL'),
           icon: 'fa fa-pause-circle', enable : 'wal_pause_enabled',data: {
-            'data_disabled': gettext('Please select a connected database as a Super user and run in Recovery mode to Pause Replay of WAL.'),
+            data_disabled: gettext('Please select a connected database as a Super user and run in Recovery mode to Pause Replay of WAL.'),
           },
         },{
           name: 'wal_replay_resume', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'resume_wal_replay',
           category: 'wal_replay_resume', priority: 8, label: gettext('Resume Replay of WAL'),
           icon: 'fa fa-play-circle', enable : 'wal_resume_enabled',data: {
-            'data_disabled': gettext('Please select a connected database as a Super user and run in Recovery mode to Resume Replay of WAL.'),
+            data_disabled: gettext('Please select a connected database as a Super user and run in Recovery mode to Resume Replay of WAL.'),
           },
         },{
           name: 'clear_saved_password', node: 'server', module: this,
@@ -154,7 +160,7 @@ define('pgadmin.node.server', [
             return false;
           },
           data: {
-            'data_disabled': gettext('SSH Tunnel password is not saved for selected server.'),
+            data_disabled: gettext('SSH Tunnel password is not saved for selected server.'),
           },
         }]);
 
