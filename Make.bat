@@ -264,9 +264,30 @@ REM Main build sequence Ends
     CALL yarn install --production=true || EXIT /B 1
 
     ECHO Downloading NWjs to %TMPDIR%...
-    CALL yarn --cwd "%TMPDIR%" add nw || EXIT /B
+    REM Get a fresh copy of nwjs.
+    REM NOTE: The nw download servers seem to be very unreliable, so at the moment we're using wget which retries
 
-    XCOPY /S /I /E /H /Y "%TMPDIR%\node_modules\nw\nwjs\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    REM YARN
+    REM CALL yarn --cwd "%TMPDIR%" add nw || EXIT /B
+    REM YARN END
+
+    REM WGET
+    FOR /f "tokens=2 delims='" %%i IN ('yarn info nw ^| findstr "latest: "') DO SET "NW_VERSION=%%i"
+    :GET_NW
+        wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
+        IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
+
+    tar -C "%TMPDIR%" -xvf "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip" || EXIT /B 1
+    REM WGET END
+
+    REM YARN
+    REM XCOPY /S /I /E /H /Y "%TMPDIR%\node_modules\nw\nwjs\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    REM YARN END
+
+    REM WGET
+    XCOPY /S /I /E /H /Y "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    REM WGET END
+
     MOVE "%BUILDROOT%\runtime\nw.exe" "%BUILDROOT%\runtime\pgAdmin4.exe"
 
     ECHO Replacing executable icon...
