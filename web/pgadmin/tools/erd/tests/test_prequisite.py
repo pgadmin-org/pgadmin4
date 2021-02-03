@@ -8,7 +8,7 @@
 ##########################################################################
 
 import json
-
+import uuid
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -20,7 +20,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 class ERDPrequisite(BaseTestGenerator):
 
     def setUp(self):
-        self.db_name = "erdtestdb"
+        self.db_name = "erdtestdb_{0}".format(str(uuid.uuid4())[1:8])
         self.sid = parent_node_dict["server"][-1]["server_id"]
         self.did = utils.create_database(self.server, self.db_name)
         self.sgid = config_data["server_group"]
