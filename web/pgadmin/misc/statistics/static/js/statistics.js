@@ -116,12 +116,11 @@ define('misc.statistics', [
       this.initialized = true;
       _.bindAll(
         this,
-        'showStatistics', 'panelVisibilityChanged',
+        'showStatistics', 'toggleVisibility',
         '__createMultiLineStatistics', '__createSingleLineStatistics', '__loadMoreRows');
 
       _.extend(
         this, {
-          initialized: true,
           collection: new(Backbone.Collection)(null),
           statistic_columns: [{
             editable: false,
@@ -136,66 +135,49 @@ define('misc.statistics', [
             label: gettext('Value'),
             cell: 'string',
           }],
-          panel: pgBrowser.docker.findPanels('statistics'),
           columns: null,
           grid: null,
         });
 
-      var self = this;
+      this.panel = pgBrowser.docker.findPanels('statistics');
+      if(this.panel.length > 0) this.toggleVisibility(this.panel[0].isVisible());
+    },
 
-      // We will listen to the visibility change of the statistics panel
-      pgBrowser.Events.on(
-        'pgadmin-browser:panel-statistics:' +
-        wcDocker.EVENT.VISIBILITY_CHANGED,
-        this.panelVisibilityChanged
-      );
+    toggleVisibility: function(visible, closed=false) {
+      if (visible) {
+        this.panel = pgBrowser.docker.findPanels('statistics');
+        var t = pgBrowser.tree,
+          i = t.selected(),
+          d = i && t.itemData(i),
+          n = i && d && pgBrowser.Nodes[d._type];
 
-      pgBrowser.Events.on(
-        'pgadmin:browser:node:updated',
-        function() {
-          if (this.panel && this.panel.length) {
-            $(this.panel[0]).data('node-prop', '');
-            this.panelVisibilityChanged(this.panel[0]);
-          }
-        }, this
-      );
+        pgBrowser.NodeStatistics.showStatistics.apply(
+          pgBrowser.NodeStatistics, [i, d, n]
+        );
 
-      // Hmm.. Did we find the statistics panel, and is it visible (openned)?
-      // If that is the case - we need to listen the browser tree selection
-      // events.
-      if (this.panel.length == 0) {
+        // We will start listening the tree selection event.
         pgBrowser.Events.on(
-          'pgadmin-browser:panel-statistics:' + wcDocker.EVENT.INIT,
-          function() {
-            self.panel = pgBrowser.docker.findPanels('statistics');
-            if (self.panel[0].isVisible() ||
-              self.panel.length != 1) {
-              pgBrowser.Events.on(
-                'pgadmin-browser:tree:selected', this.showStatistics
-              );
-              pgBrowser.Events.on(
-                'pgadmin-browser:tree:refreshing', this.refreshStatistics, this
-              );
-            }
-          }.bind(this)
+          'pgadmin-browser:tree:selected',
+          pgBrowser.NodeStatistics.showStatistics
+        );
+        pgBrowser.Events.on(
+          'pgadmin-browser:tree:refreshing',
+          pgBrowser.NodeStatistics.refreshStatistics,
+          this
         );
       } else {
-        if (self.panel[0].isVisible() ||
-          self.panel.length != 1) {
-          pgBrowser.Events.on(
-            'pgadmin-browser:tree:selected', this.showStatistics
-          );
-          pgBrowser.Events.on(
-            'pgadmin-browser:tree:refreshing', this.refreshStatistics, this
-          );
+        if(closed) {
+          $(this.panel[0]).data('node-prop', '');
         }
-      }
-      if (self.panel.length > 0 && self.panel[0].isVisible()) {
-        pgBrowser.Events.on(
-          'pgadmin-browser:tree:selected', this.showStatistics
+        // We don't need to listen the tree item selection event.
+        pgBrowser.Events.off(
+          'pgadmin-browser:tree:selected',
+          pgBrowser.NodeStatistics.showStatistics
         );
-        pgBrowser.Events.on(
-          'pgadmin-browser:tree:refreshing', this.refreshStatistics, this
+        pgBrowser.Events.off(
+          'pgadmin-browser:tree:refreshing',
+          pgBrowser.NodeStatistics.refreshStatistics,
+          this
         );
       }
     },
@@ -439,41 +421,6 @@ define('misc.statistics', [
       }
 
       this.collection.reset(res);
-    },
-
-    panelVisibilityChanged: function(panel) {
-      if (panel.isVisible()) {
-        var t = pgBrowser.tree,
-          i = t.selected(),
-          d = i && t.itemData(i),
-          n = i && d && pgBrowser.Nodes[d._type];
-
-        pgBrowser.NodeStatistics.showStatistics.apply(
-          pgBrowser.NodeStatistics, [i, d, n]
-        );
-
-        // We will start listening the tree selection event.
-        pgBrowser.Events.on(
-          'pgadmin-browser:tree:selected',
-          pgBrowser.NodeStatistics.showStatistics
-        );
-        pgBrowser.Events.on(
-          'pgadmin-browser:tree:refreshing',
-          pgBrowser.NodeStatistics.refreshStatistics,
-          this
-        );
-      } else {
-        // We don't need to listen the tree item selection event.
-        pgBrowser.Events.off(
-          'pgadmin-browser:tree:selected',
-          pgBrowser.NodeStatistics.showStatistics
-        );
-        pgBrowser.Events.off(
-          'pgadmin-browser:tree:refreshing',
-          pgBrowser.NodeStatistics.refreshStatistics,
-          this
-        );
-      }
     },
   });
 

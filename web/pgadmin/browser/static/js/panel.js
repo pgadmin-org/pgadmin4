@@ -183,26 +183,26 @@ define(
         }
       },
       handleVisibility: function(eventName) {
-        // Currently this function only works with dashboard panel but
-        // as per need it can be extended
-        if (this._type != 'dashboard' || _.isUndefined(pgAdmin.Dashboard))
+        // Supported modules
+        let type_module = {
+          'dashboard': pgAdmin.Dashboard,
+          'statistics': pgBrowser.NodeStatistics,
+          'dependencies': pgBrowser.NodeDependencies,
+          'dependents': pgBrowser.NodeDependents,
+        };
+
+        let module = type_module[this._type];
+        if(_.isUndefined(module))
+          return;
+
+        if(_.isUndefined(module.toggleVisibility))
           return;
 
         if (eventName == 'panelClosed') {
           /* Pass the closed flag also */
-          pgAdmin.Dashboard.toggleVisibility(false, true);
+          module.toggleVisibility.call(module, [false, true]);
         } else if (eventName == 'panelVisibilityChanged') {
-          if (pgBrowser.tree) {
-            var selectedNode = pgBrowser.tree.selected();
-            if (!_.isUndefined(pgAdmin.Dashboard)) {
-              pgAdmin.Dashboard.toggleVisibility(pgBrowser.panels.dashboard.panel.isVisible());
-            }
-            // Explicitly trigger tree selected event when we add the tab.
-            if(selectedNode.length) {
-              pgBrowser.Events.trigger('pgadmin-browser:tree:selected', selectedNode,
-                pgBrowser.tree.itemData(selectedNode), pgBrowser.Node);
-            }
-          }
+          module.toggleVisibility.call(module, [pgBrowser.docker.findPanels(this._type)[0].isVisible()]);
         }
       },
 

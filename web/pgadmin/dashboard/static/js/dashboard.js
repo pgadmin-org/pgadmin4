@@ -225,7 +225,6 @@ define('pgadmin.dashboard', [
       var dashboardPanel = pgBrowser.panels['dashboard'].panel;
       if (dashboardPanel) {
         var div = dashboardPanel.layout().scene().find('.pg-panel-content');
-
         if (div) {
           var ajaxHook = function() {
             $.ajax({
@@ -1100,7 +1099,13 @@ define('pgadmin.dashboard', [
       if(closed) {
         this.chartsDomObj && this.chartsDomObj.unmount();
       } else {
+        var t = pgBrowser.tree,
+          i = t.selected(),
+          d = i && t.itemData(i),
+          n = i && d && pgBrowser.Nodes[d._type];
+
         this.chartsDomObj && this.chartsDomObj.setPageVisible(dashboardVisible);
+        this.object_selected(i, d, n);
       }
     },
     can_take_action: function(m) {

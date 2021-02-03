@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5091 <https://redmine.postgresql.org/issues/5091>`_ -  Make Statistics, Dependencies, Dependants tabs closable and the user can add them back using the 'Add panel' option.
 | `Issue #5912 <https://redmine.postgresql.org/issues/5912>`_ -  Added support for Logical Replication.
 | `Issue #5967 <https://redmine.postgresql.org/issues/5967>`_ -  Implemented runtime using NWjs to open pgAdmin4 in a standalone window instead of the system tray and web browser.
 | `Issue #6148 <https://redmine.postgresql.org/issues/6148>`_ -  Added Quick Search functionality for menu items and help articles.
