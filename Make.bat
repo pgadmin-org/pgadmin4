@@ -165,7 +165,7 @@ REM Main build sequence Ends
     CALL "%TMPDIR%\venv\Scripts\activate" || EXIT /B 1
 
     ECHO Installing dependencies...
-    CALL pip install --upgrade pip
+    CALL python -m pip install --upgrade pip || EXIT /B 1
     CALL pip install --only-binary=cryptography -r "%WD%\requirements.txt" || EXIT /B 1
 
     CD %WD%
