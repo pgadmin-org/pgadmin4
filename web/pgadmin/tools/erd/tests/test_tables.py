@@ -9,6 +9,7 @@
 
 import json
 import uuid
+import random
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -64,8 +65,9 @@ class ERDTables(BaseTestGenerator):
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database to add the schema.")
 
+        trans_id = random.randint(1, 9999999)
         url = '/erd/tables/{trans_id}/{sgid}/{sid}/{did}'.format(
-            trans_id=123344, sgid=self.sgid, sid=self.sid, did=self.did)
+            trans_id=trans_id, sgid=self.sgid, sid=self.sid, did=self.did)
 
         response = self.tester.get(url)
         self.assertEqual(response.status_code, 200)

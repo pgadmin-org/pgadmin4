@@ -8,6 +8,7 @@
 ##########################################################################
 
 import uuid
+import random
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -25,9 +26,11 @@ class ERDPanel(BaseTestGenerator):
         self.sgid = config_data["server_group"]
 
     def runTest(self):
+        trans_id = random.randint(1, 9999999)
         url = '/erd/panel/{trans_id}?sgid={sgid}&sid={sid}&server_type=pg' \
               '&did={did}&gen=false'.\
-            format(trans_id=123344, sgid=self.sgid, sid=self.sid, did=self.did)
+            format(trans_id=trans_id, sgid=self.sgid, sid=self.sid,
+                   did=self.did)
 
         response = self.tester.post(
             url, data={"title": "panel_title", "close_url": "the/close/url"},
