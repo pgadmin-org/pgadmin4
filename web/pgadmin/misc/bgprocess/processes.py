@@ -308,7 +308,7 @@ class BatchProcess(object):
             # if in debug mode, wait for process to complete and
             # get the stdout and stderr of popen.
             if config.CONSOLE_LOG_LEVEL <= logging.DEBUG:
-                output, error = self.get_process_output(cmd, env)
+                p = self.get_process_output(cmd, env)
             else:
                 p = Popen(
                     cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
@@ -361,7 +361,7 @@ class BatchProcess(object):
         current_app.logger.debug(
             'Process Watcher Err:{0}'.format(errors))
 
-        return output, errors
+        return p
 
     def preexec_function(self):
         import signal
