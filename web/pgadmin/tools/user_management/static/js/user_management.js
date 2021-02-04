@@ -604,7 +604,223 @@ define([
         }),
         gridSchema = Backform.generateGridColumnsFromModel(
           null, UserModel, 'edit'),
+
+
         deleteUserCell = Backgrid.Extension.DeleteCell.extend({
+          changeOwnership: function(res, uid) {
+            let self = this;
+
+            let ownershipSelect2Control = Backform.Select2Control.extend({
+              fetchData: function(){
+                let self = this;
+                let url = self.field.get('url');
+
+                url = url_for(url, {'uid': uid});
+
+                $.ajax({
+                  url: url,
+                  headers: {
+                    'Cache-Control' : 'no-cache',
+                  },
+                }).done(function (res) {
+                  var transform = self.field.get('transform');
+                  if(res.data.status){
+                    let data = res.data.result.data;
+
+                    if (transform && _.isFunction(transform)) {
+                      self.field.set('options', transform.bind(self, data));
+                    } else {
+                      self.field.set('options', data);
+                    }
+                  } else {
+                    if (transform && _.isFunction(transform)) {
+                      self.field.set('options', transform.bind(self, []));
+                    } else {
+                      self.field.set('options', []);
+                    }
+                  }
+                  Backform.Select2Control.prototype.render.apply(self, arguments);
+                }).fail(function(e){
+                  let msg = '';
+                  if(e.status == 404) {
+                    msg = 'Unable to find url.';
+                  } else {
+                    msg = e.responseJSON.errormsg;
+                  }
+                  alertify.error(msg);
+                });
+              },
+              render: function() {
+                this.fetchData();
+                return Backform.Select2Control.prototype.render.apply(this, arguments);
+              },
+              onChange: function() {
+                Backform.Select2Control.prototype.onChange.apply(this, arguments);
+              },
+            });
+
+            let ownershipModel = pgBrowser.DataModel.extend({
+              schema: [
+                {
+                  id: 'note_text_ch_owner',
+                  control: Backform.NoteControl,
+                  text: 'Select the user that will take ownership of the shared servers created by <b>' + self.model.get('username') + '</b>. <b>' + res['data'].shared_servers + '</b> shared servers are currently owned by this user.',
+                  group: gettext('General'),
+                },
+                {
+                  id: 'user',
+                  name: 'user',
+                  label: gettext('User'),
+                  type: 'text',
+                  editable: true,
+                  select2: {
+                    allowClear: true,
+                    width: '100%',
+                    first_empty: true,
+                  },
+                  control: ownershipSelect2Control,
+                  url: 'user_management.admin_users',
+                  helpMessage: gettext('Note: If no user is selected, the shared servers will be deleted.'),
+                }],
+            });
+            // Change shared server ownership before deleting the admin user
+            if (!alertify.changeOwnershipDialog) {
+              alertify.dialog('changeOwnershipDialog', function factory() {
+                let $container = $('<div class=\'change-ownership\'></div>');
+                return {
+                  main: function(message) {
+                    this.msg = message;
+                  },
+                  build: function() {
+                    this.elements.content.appendChild($container.get(0));
+                    alertify.pgDialogBuild.apply(this);
+                  },
+                  setup: function(){
+                    return {
+                      buttons: [
+                        {
+                          text: gettext('Cancel'),
+                          key: 27,
+                          className: 'btn btn-secondary fa fa-times pg-alertify-button',
+                          'data-btn-name': 'cancel',
+                        }, {
+                          text: gettext('OK'),
+                          key: 13,
+                          className: 'btn btn-primary fa fa-check pg-alertify-button',
+                          'data-btn-name': 'ok',
+                        },
+                      ],
+                      // Set options for dialog
+                      options: {
+                        title: 'Change ownership',
+                        //disable both padding and overflow control.
+                        padding: !1,
+                        overflow: !1,
+                        model: 0,
+                        resizable: true,
+                        maximizable: false,
+                        pinnable: false,
+                        closableByDimmer: false,
+                        modal: false,
+                        autoReset: false,
+                        closable: true,
+                      },
+                    };
+                  },
+                  prepare: function() {
+                    let self = this;
+                    $container.html('');
+
+                    self.ownershipModel = new ownershipModel();
+                    let fields = pgBackform.generateViewSchema(null, self.ownershipModel, 'create', null, null, true, null);
+
+                    let view = this.view = new pgBackform.Dialog({
+                      el: '<div></div>',
+                      model: self.ownershipModel,
+                      schema: fields,
+                    });
+                    //Render change ownership dialog.
+                    $container.append(view.render().$el[0]);
+                  },
+                  callback: function(e) {
+                    if(e.button['data-btn-name'] === 'ok') {
+                      e.cancel = true; // Do not close dialog
+                      let ownershipModel = this.ownershipModel.toJSON();
+                      if (ownershipModel.user == '' || ownershipModel.user == undefined) {
+                        alertify.confirm(
+                          gettext('Delete user?'),
+                          gettext('The shared servers owned by <b>'+ self.model.get('username') +'</b> will be deleted. Do you wish to continue?'),
+                          function() {
+
+                            self.model.destroy({
+                              wait: true,
+                              success: function() {
+                                alertify.success(gettext('User deleted.'));
+                                alertify.changeOwnershipDialog().destroy();
+                                alertify.UserManagement().destroy();
+                              },
+                              error: function() {
+                                alertify.error(
+                                  gettext('Error during deleting user.')
+                                );
+                              },
+                            });
+                            alertify.changeOwnershipDialog().destroy();
+                          },
+                          function() {
+                            return true;
+                          }
+                        );
+                      } else {
+                        self.changeOwner(ownershipModel.user, uid);
+                      }
+                    } else {
+                      alertify.changeOwnershipDialog().destroy();
+                    }
+                  },
+                };
+              });
+            }
+            alertify.changeOwnershipDialog('Change ownership').resizeTo(pgBrowser.stdW.md, pgBrowser.stdH.md);
+          },
+          changeOwner: function(user_id, old_user) {
+            $.ajax({
+              url: url_for('user_management.change_owner'),
+              method: 'POST',
+              data:{'new_owner': user_id, 'old_owner': old_user},
+            })
+              .done(function(res) {
+                alertify.changeOwnershipDialog().destroy();
+                alertify.UserManagement().destroy();
+                alertify.success(gettext(res.info));
+              })
+              .fail(function() {
+                alertify.error(gettext('Unable to change owner.'));
+              });
+          },
+          deleteUser: function() {
+            let self = this;
+            alertify.confirm(
+              gettext('Delete user?'),
+              gettext('Are you sure you wish to delete this user?'),
+              function() {
+                self.model.destroy({
+                  wait: true,
+                  success: function() {
+                    alertify.success(gettext('User deleted.'));
+                  },
+                  error: function() {
+                    alertify.error(
+                      gettext('Error during deleting user.')
+                    );
+                  },
+                });
+              },
+              function() {
+                return true;
+              }
+            );
+          },
           deleteRow: function(e) {
             var self = this;
             e.preventDefault();
@@ -629,26 +845,27 @@ define([
               if (self.model.isNew()) {
                 self.model.destroy();
               } else {
-                alertify.confirm(
-                  gettext('Delete user?'),
-                  gettext('Are you sure you wish to delete this user?'),
-                  function() {
-                    self.model.destroy({
-                      wait: true,
-                      success: function() {
-                        alertify.success(gettext('User deleted.'));
-                      },
-                      error: function() {
-                        alertify.error(
-                          gettext('Error during deleting user.')
-                        );
-                      },
+                if(self.model.get('role') == 1){
+                  $.ajax({
+                    url: url_for('user_management.shared_servers', {'uid': self.model.get('id'),
+                    }),
+                    method: 'GET',
+                    async: false,
+                  })
+                    .done(function(res) {
+                      if(res['data'].shared_servers > 0) {
+                        self.changeOwnership(res, self.model.get('id'));
+                      } else {
+                        self.deleteUser();
+                      }
+                    })
+                    .fail(function() {
+                      self.deleteUser();
                     });
-                  },
-                  function() {
-                    return true;
-                  }
-                );
+                } else {
+                  self.deleteUser();
+                }
+
               }
             } else {
               alertify.alert(

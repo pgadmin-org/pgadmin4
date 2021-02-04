@@ -177,6 +177,17 @@ class ServerGroupView(NodeView):
         # if server group id is 1 we won't delete it.
         sg = groups.first()
 
+        shared_servers = Server.query.filter_by(servergroup_id=sg.id,
+                                                shared=True).all()
+        if shared_servers:
+            return make_json_response(
+                status=417,
+                success=0,
+                errormsg=gettext(
+                    'The specified server group cannot be deleted.'
+                )
+            )
+
         if sg.id == gid:
             return make_json_response(
                 status=417,

@@ -28,7 +28,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL,\
     SUPPORTED_AUTH_SOURCES, KERBEROS
 from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
-    ServerGroup, Process, Setting
+    ServerGroup, Process, Setting, roles_users, SharedServer
 
 # set template path for sql scripts
 MODULE_NAME = 'user_management'
@@ -78,7 +78,9 @@ class UserManagementModule(PgAdminModule):
             'user_management.update_user', 'user_management.delete_user',
             'user_management.create_user', 'user_management.users',
             'user_management.user', current_app.login_manager.login_view,
-            'user_management.auth_sources', 'user_management.auth_sources'
+            'user_management.auth_sources', 'user_management.auth_sources',
+            'user_management.shared_servers', 'user_management.admin_users',
+            'user_management.change_owner',
         ]
 
 
@@ -336,6 +338,8 @@ def delete(uid):
         abort(404)
 
     try:
+        server_groups = ServerGroup.query.filter_by(user_id=uid).all()
+        sg = [server_group.id for server_group in server_groups]
 
         Setting.query.filter_by(user_id=uid).delete()
 
@@ -346,6 +350,11 @@ def delete(uid):
         ServerGroup.query.filter_by(user_id=uid).delete()
 
         Process.query.filter_by(user_id=uid).delete()
+        # Delete Shared servers for current user.
+        SharedServer.query.filter_by(user_id=uid).delete()
+
+        SharedServer.query.filter(SharedServer.servergroup_id.in_(sg)).delete(
+            synchronize_session=False)
 
         # Finally delete user
         db.session.delete(usr)
@@ -359,6 +368,174 @@ def delete(uid):
         )
     except Exception as e:
         return internal_server_error(errormsg=str(e))
+
+
+@blueprint.route('/change_owner', methods=['POST'], endpoint='change_owner')
+@roles_required('Administrator')
+def change_owner():
+    """
+
+    Returns:
+
+    """
+
+    data = request.form if request.form else json.loads(
+        request.data, encoding='utf-8'
+    )
+    try:
+        old_user_servers = Server.query.filter_by(shared=True, user_id=data[
+            'old_owner']).all()
+        server_group_ids = [server.servergroup_id for server in
+                            old_user_servers]
+        server_groups = ServerGroup.query.filter(
+            ServerGroup.id.in_(server_group_ids)).all()
+
+        new_owner_sg = ServerGroup.query.filter_by(
+            user_id=data['new_owner']).all()
+        old_owner_sg = ServerGroup.query.filter_by(
+            user_id=data['old_owner']).all()
+        sg_data = {sg.name: sg.id for sg in new_owner_sg}
+        old_sg_data = {sg.id: sg.name for sg in old_owner_sg}
+
+        deleted_sg = []
+        # Change server user.
+        for server in old_user_servers:
+            if old_sg_data[server.servergroup_id] in sg_data:
+                sh_servers = SharedServer.query.filter_by(
+                    servergroup_id=server.servergroup_id).all()
+                for sh in sh_servers:
+                    sh.servergroup_id = sg_data[
+                        old_sg_data[server.servergroup_id]]
+                # Update Server user and server group to prevent deleting
+                # shared server associated with deleting user.
+                Server.query.filter_by(
+                    servergroup_id=server.servergroup_id, shared=True,
+                    user_id=data['old_owner']
+                ).update(
+                    {
+                        'servergroup_id': sg_data[old_sg_data[
+                            server.servergroup_id]],
+                        'user_id': data['new_owner']
+                    }
+                )
+                ServerGroup.query.filter_by(id=server.servergroup_id).delete()
+                deleted_sg.append(server.servergroup_id)
+            else:
+                server.user_id = data['new_owner']
+
+        # Change server group user.
+        for server_group in server_groups:
+            if server_group.id not in deleted_sg:
+                server_group.user_id = data['new_owner']
+
+        db.session.commit()
+        # Delete old owner records.
+        delete(data['old_owner'])
+
+        return make_json_response(
+            success=1,
+            info=_("Owner changed successfully."),
+            data={}
+        )
+    except Exception as e:
+        return internal_server_error(
+            errormsg='Unable to update shared server owner')
+
+
+@blueprint.route(
+    '/shared_servers/<int:uid>', methods=['GET'], endpoint='shared_servers'
+)
+@roles_required('Administrator')
+def get_shared_servers(uid):
+    """
+
+    Args:
+      uid:
+
+    Returns:
+
+    """
+    usr = User.query.get(uid)
+
+    if not usr:
+        abort(404)
+
+    try:
+        shared_servers_count = 0
+        admin_role = Role.query.filter_by(name='Administrator')[0]
+        # Check user has admin role.
+        for role in usr.roles:
+            if role.id == admin_role.id:
+                # get all server created by user.
+                servers = Server.query.filter_by(user_id=usr.id).all()
+                for server in servers:
+                    if server.shared:
+                        shared_servers_count += 1
+                break
+
+        if shared_servers_count:
+            return make_json_response(
+                success=1,
+                info=_(
+                    "{0} Shared servers are associated with this user."
+                    "".format(shared_servers_count)
+                ),
+                data={
+                    'shared_servers': shared_servers_count
+                }
+            )
+
+        return make_json_response(
+            success=1,
+            info=_("No shared servers found"),
+            data={'shared_servers': 0}
+        )
+    except Exception as e:
+        return internal_server_error(errormsg=str(e))
+
+
+# @blueprint.route(
+#     '/admin_users', methods=['GET'], endpoint='admin_users'
+# )
+@blueprint.route(
+    '/admin_users/<int:uid>', methods=['GET'], endpoint='admin_users'
+)
+@roles_required('Administrator')
+def admin_users(uid=None):
+    """
+
+    Args:
+      uid:
+
+    Returns:
+
+    """
+    admin_role = Role.query.filter_by(name='Administrator')[0]
+
+    admin_users = db.session.query(roles_users).filter_by(
+        role_id=admin_role.id).all()
+
+    if uid:
+        admin_users = [user[0] for user in admin_users if user[0] != uid]
+    else:
+        admin_users = [user[0] for user in admin_users]
+
+    admin_list = User.query.filter(User.id.in_(admin_users)).all()
+
+    user_list = [{'value': admin.id, 'label': admin.username} for admin in
+                 admin_list]
+
+    return make_json_response(
+        success=1,
+        info=_("No shared servers found"),
+        data={
+            'status': 'success',
+            'msg': 'Admin user list',
+            'result': {
+                'data': user_list,
+            }
+        }
+    )
 
 
 @blueprint.route('/user/<int:uid>', methods=['PUT'], endpoint='update_user')
