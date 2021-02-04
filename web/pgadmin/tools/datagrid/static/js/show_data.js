@@ -109,6 +109,7 @@ function generateFilterValidateUrl(nodeData, parentData) {
 
 function initFilterDialog(alertify, pgBrowser) {
   // Create filter dialog using alertify
+  let filter_editor = null;
   if (!alertify.filterDialog) {
     alertify.dialog('filterDialog', function factory() {
       return {
@@ -183,7 +184,7 @@ function initFilterDialog(alertify, pgBrowser) {
           that.__internal.buttons[2].element.disabled = true;
 
           // Apply CodeMirror to filter text area.
-          this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
+          filter_editor = this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
             lineNumbers: true,
             mode: 'text/x-pgsql',
             extraKeys: pgBrowser.editor_shortcut_keys,
@@ -235,10 +236,15 @@ function initFilterDialog(alertify, pgBrowser) {
                   that.close(); // Close the dialog
                 }
                 else {
-                  alertify.alert(
-                    gettext('Validation Error'),
-                    res.data.result
-                  );
+                  alertify.alert()
+                    .setting({
+                      'title': gettext('Validation Error'),
+                      'label':gettext('Ok'),
+                      'message': gettext(res.data.result),
+                      'onok': function(){
+                        filter_editor.focus();
+                      },
+                    }).show();
                 }
               })
               .fail(function(e) {
