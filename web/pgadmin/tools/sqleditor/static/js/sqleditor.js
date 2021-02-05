@@ -1051,6 +1051,15 @@ define('tools.querytool', [
       };
 
       self.handler.slickgrid = grid;
+      // Add listener on data-grid table scroll.
+      self.handler.slickgrid.onScroll.subscribe(function() {
+        if(Object.keys(self.handler.data_store.deleted).length > 0) {
+          setTimeout(() => {
+            $(self.handler.gridView.grid.getCanvasNode()).find('div.selected').removeClass('strikeout');
+            $(self.handler.gridView.grid.getCanvasNode()).find('div.selected').addClass('strikeout');
+          }, 100);
+        }
+      });
       self.handler.slickgrid.CSVOptions = {
         quoting: self.preferences.results_grid_quoting,
         quote_char: self.preferences.results_grid_quote_char,
