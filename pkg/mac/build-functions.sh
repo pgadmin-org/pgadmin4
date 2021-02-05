@@ -83,8 +83,13 @@ _create_python_env() {
     rm -f Versions/Current/lib/Tk.*
     rm -f Versions/Current/lib/libtcl*.dylib
     rm -f Versions/Current/lib/libtk*.dylib
+    rm -f Versions/Current/lib/libtcl*.a
+    rm -f Versions/Current/lib/libtk*.a
     rm -f Versions/Current/lib/tcl*.sh
     rm -f Versions/Current/lib/tk*.sh
+    rm -rf Versions/Current/lib/pkgconfig*
+    rm -rf Versions/Current/lib/sqlite*
+    rm -rf Versions/Current/lib/thread*
     rm -rf Versions/Current/share
 }
 
