@@ -204,7 +204,7 @@ function launchPgAdminWindow() {
     // Set pgAdmin4 Windows Object
     misc.setPgAdminWindowObject(pgadminWindow);
 
-    pgadminWindow.on('close', function() {
+    pgadminWindow.on('closed', function() {
       misc.cleanupAndQuitApp();
     });
 
@@ -295,6 +295,6 @@ splashWindow.on('loaded', function() {
   }
 });
 
-splashWindow.on('close', function() {
+splashWindow.on('closed', function() {
   misc.cleanupAndQuitApp();
 });
