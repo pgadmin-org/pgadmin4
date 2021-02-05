@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #6163 <https://redmine.postgresql.org/issues/6163>`_ -  Fixed an issue where Zoom to fit button only works if the diagram is larger than the canvas.
 | `Issue #6164 <https://redmine.postgresql.org/issues/6164>`_ -  Ensure that the diagram should not vanish entirely if zooming out too far in ERD.
 | `Issue #6177 <https://redmine.postgresql.org/issues/6177>`_ -  Fixed an issue while downloading ERD images in Safari and Firefox.
+| `Issue #6178 <https://redmine.postgresql.org/issues/6178>`_ -  Fixed an issue where the user unable to change the background color for a server.
 | `Issue #6179 <https://redmine.postgresql.org/issues/6179>`_ -  Fixed an issue where Generate SQL displayed twice in the ERD tool.
 | `Issue #6180 <https://redmine.postgresql.org/issues/6180>`_ -  Updated missing documentation for the 'Download Image' option in ERD.
 | `Issue #6187 <https://redmine.postgresql.org/issues/6187>`_ -  Limit the upgrade check to run once per day.

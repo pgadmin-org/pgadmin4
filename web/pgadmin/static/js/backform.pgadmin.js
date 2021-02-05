@@ -3207,12 +3207,12 @@ define([
         });
       }).on('clear', (instance) => {
         this.applyColor(name, instance, null);
-      }).on('change', (color, instance) => {
+      }).on('change', (color, source, instance) => {
         this.applyColor(name, instance, color);
       }).on('show', (color, instance) => {
         const {palette} = instance.getRoot().palette;
         palette.focus();
-      }).on('hide', (color, instance) => {
+      }).on('hide', (instance) => {
         const button = instance.getRoot().button;
         button.focus();
       });
