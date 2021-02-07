@@ -69,9 +69,9 @@ There are 3 ways to configure LDAP:
    searches only for users having HR as their objectClass attribute."
    "LDAP_SEARCH_SCOPE","Indicates the set of entries at or below the Base DN that
    maybe considered as potential matches for a search request. You can specify the
-   scope of a search as either a *base*, *level*, or *subtree* search. A *base* search
-   limits the search to the base object. A *level* search is restricted to the immediate
-   children of a base object, but excludes the base object itself. A *subtree* search
+   scope of a search as either a *BASE*, *LEVEL*, or *SUBTREE* search. A *BASE* search
+   limits the search to the base object. A *LEVEL* search is restricted to the immediate
+   children of a base object, but excludes the base object itself. A *SUBTREE* search
    includes all child objects as well as the base object."
    "LDAP_USE_STARTTLS","Specifies if you want to use Transport Layer Security (TLS)
    for secure communication between LDAP clients and LDAP servers. If you specify
