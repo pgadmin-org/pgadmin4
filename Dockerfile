@@ -64,7 +64,7 @@ RUN npm install && \
 # Now, create a documentation build container for the Sphinx docs
 #########################################################################
 
-FROM python:3.9-alpine3.12 as docs-builder
+FROM python:3.9-alpine3.13 as docs-builder
 
 # Install dependencies
 COPY requirements.txt /
@@ -74,7 +74,9 @@ RUN apk add --no-cache \
         openssl-dev \
         libffi-dev \
         postgresql-dev \
-        krb5-dev && \
+        krb5-dev \
+        rust \
+        cargo && \
     pip install --no-cache-dir \
         sphinx && \
     pip install --no-cache-dir -r requirements.txt
@@ -102,7 +104,7 @@ FROM postgres:11-alpine as pg11-builder
 FROM postgres:12-alpine as pg12-builder
 FROM postgres:13-alpine as pg13-builder
 
-FROM alpine:3.11 as tool-builder
+FROM alpine:3.13 as tool-builder
 
 # Copy the PG binaries
 
@@ -135,7 +137,7 @@ COPY --from=pg13-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-13/
 # Assemble everything into the final container.
 #########################################################################
 
-FROM python:3.9-alpine3.12
+FROM python:3.9-alpine3.13
 
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
 
@@ -161,7 +163,9 @@ RUN apk add --no-cache --virtual \
         krb5-dev \
         e2fsprogs-dev \
         krb5-server-ldap \
-        linux-headers && \
+        linux-headers \
+        rust \
+        cargo && \
     apk add \
         postfix \
         postgresql-client \
