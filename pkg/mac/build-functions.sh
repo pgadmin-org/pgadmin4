@@ -70,6 +70,14 @@ _create_python_env() {
     git clone https://github.com/gregneagle/relocatable-python.git "${BUILD_ROOT}/relocatable_python"
     PATH=$PATH:/usr/local/pgsql/bin python "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" --upgrade-pip --python-version ${PGADMIN_PYTHON_VERSION} --pip-requirements "${SOURCE_DIR}/requirements.txt" --destination "${BUNDLE_DIR}/Contents/Frameworks/"
 
+    # Make sure all the .so's in the Python env have the executable bit set
+    # so they get properly signed later
+    IFS=$'\n'
+    for i in $(find . -type f -name *.so -exec file "{}" \; | grep -v "(for architecture" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | awk -F":" '{print $1}' | uniq)
+    do
+        chmod +x "${i}"
+    done
+
     # Remove some things we don't need
     cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework"
     find . -name test -type d -print0 | xargs -0 rm -rf
@@ -280,7 +288,7 @@ _codesign_binaries() {
 
     echo Signing ${BUNDLE_DIR} binaries...
     IFS=$'\n'
-    for i in $(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | grep -v "(for architecture" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle" | awk -F":" '{print $1}' | uniq)
+    for i in $(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | grep -v "(for architecture" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | awk -F":" '{print $1}' | uniq)
     do
         codesign --deep --force --verify --verbose --timestamp --options runtime --entitlements "${BUILD_ROOT}/entitlements.plist" -i org.pgadmin.pgadmin4 --sign "${DEVELOPER_ID}" "$i"
     done
