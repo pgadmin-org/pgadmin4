@@ -108,25 +108,29 @@ class TreeAreaLocators():
     @staticmethod
     def sub_nodes_of_schemas_node(database_name):
         xpath = "//div[div[div[div[div[span[span[text()='%s']]]]]]]/" \
-                "following-sibling::ul/li[7]/ul/li/div//div/span/" \
-                "span[@class='aciTreeText']" % database_name
+                "following-sibling::ul/li[" \
+                "@role='presentation']/ul/li/div//div/span/span[" \
+                "@class='aciTreeText']" % database_name
         return xpath
 
     @staticmethod
     def sub_nodes_of_schemas_node_exp_status(database_name):
         xpath = "//div[div[div[div[div[span[span[text()='%s']]]]]]]/" \
-                "following-sibling::ul/li[7]/ul/li/div" % database_name
+                "following-sibling::ul/li[@role='presentation']/ul/li/div" \
+                % database_name
         return xpath
 
     @staticmethod
     def sub_nodes_of_schema_node(database_name):
         xpath = "//div[div[div[div[div[span[span[text()='%s']]]]]]]/" \
-                "following-sibling::ul/li[7]/ul/li/ul/li/div//div/" \
-                "span[2]/span[2]" % database_name
+                "following-sibling::ul/li[" \
+                "@role='presentation']/ul/li/ul/li/div//div/span[2]/span[2]" \
+                % database_name
         return xpath
 
     @staticmethod
     def sub_nodes_of_schema_node_exp_status(database_name):
         xpath = "//div[div[div[div[div[span[span[text()='%s']]]]]]]/" \
-                "following-sibling::ul/li[7]/ul/li/ul/li/div" % database_name
+                "following-sibling::ul/li[@role='presentation']" \
+                "/ul/li/ul/li/div" % database_name
         return xpath
