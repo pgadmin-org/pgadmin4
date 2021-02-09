@@ -200,9 +200,9 @@ define(
 
         if (eventName == 'panelClosed') {
           /* Pass the closed flag also */
-          module.toggleVisibility.call(module, [false, true]);
+          module.toggleVisibility.call(module, false, true);
         } else if (eventName == 'panelVisibilityChanged') {
-          module.toggleVisibility.call(module, [pgBrowser.docker.findPanels(this._type)[0].isVisible()]);
+          module.toggleVisibility.call(module, pgBrowser.docker.findPanels(this._type)[0].isVisible(), false);
         }
       },
 
