@@ -4,3 +4,5 @@ web/*.log
 web/regression
 web/**/tests/
 .DS_Store
+web/pgadmin/messages.pot
+web/pgadmin/translations/??/LC_MESSAGES/messages.po

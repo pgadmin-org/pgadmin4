@@ -12,19 +12,21 @@
 # and clean up the web/ source code
 #########################################################################
 
-FROM node:14-alpine3.12 AS app-builder
+FROM alpine:3.13 AS app-builder
 
 RUN apk add --no-cache \
     autoconf \
     automake \
     bash \
     g++ \
+    git \
     libc6-compat \
     libjpeg-turbo-dev \
     libpng-dev \
     make \
     nasm \
-    git \
+    nodejs \
+    yarn \
     zlib-dev
 
 # Create the /pgadmin4 directory and copy the source into it. Explicitly
@@ -41,15 +43,7 @@ RUN rm -rf /pgadmin4/web/*.log \
 WORKDIR /pgadmin4/web
 
 # Build the JS vendor code in the app-builder, and then remove the vendor source.
-RUN npm install && \
-	npm audit fix && \
-	rm -f yarn.lock && \
-	yarn import && \
-# Commented the below line to avoid vulnerability in lodash package.
-# Refer https://www.npmjs.com/advisories/1523.
-# Once fixed we will uncomment it.
-#	yarn audit && \
-	rm -f package-lock.json && \
+RUN yarn install && \
     yarn run bundle && \
     rm -rf node_modules \
            yarn.lock \
@@ -61,25 +55,38 @@ RUN npm install && \
            ./pgadmin/static/js/generated/.cache
 
 #########################################################################
-# Now, create a documentation build container for the Sphinx docs
+# Next, create the base environment for Python
 #########################################################################
 
-FROM python:3.9-alpine3.13 as docs-builder
+FROM alpine:3.13 as env-builder
 
 # Install dependencies
 COPY requirements.txt /
-RUN apk add --no-cache \
+RUN     apk add --no-cache \
         make \
+        python3 \
+        py3-pip && \
+    apk add --no-cache --virtual build-deps \
         build-base \
         openssl-dev \
         libffi-dev \
         postgresql-dev \
         krb5-dev \
         rust \
-        cargo && \
-    pip install --no-cache-dir \
-        sphinx && \
-    pip install --no-cache-dir -r requirements.txt
+        cargo \
+        python3-dev && \
+    python3 -m venv --system-site-packages --without-pip /venv && \
+    /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
+    apk del --no-cache build-deps
+
+#########################################################################
+# Now, create a documentation build container for the Sphinx docs
+#########################################################################
+
+FROM env-builder as docs-builder
+
+# Install Sphinx
+RUN /venv/bin/python3 -m pip install --no-cache-dir sphinx
 
 # Copy the docs from the local tree. Explicitly remove any existing builds that
 # may be present
@@ -88,9 +95,10 @@ COPY web /pgadmin4/web
 RUN rm -rf /pgadmin4/docs/en_US/_build
 
 # Build the docs
-RUN LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 make -C /pgadmin4/docs/en_US -f Makefile.sphinx html
+RUN LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 /venv/bin/sphinx-build /pgadmin4/docs/en_US /pgadmin4/docs/en_US/_build/html
 
 # Cleanup unwanted files
+RUN rm -rf /pgadmin4/docs/en_US/_build/html/.doctrees
 RUN rm -rf /pgadmin4/docs/en_US/_build/html/_sources
 RUN rm -rf /pgadmin4/docs/en_US/_build/html/_static/*.png
 
@@ -107,7 +115,6 @@ FROM postgres:13-alpine as pg13-builder
 FROM alpine:3.13 as tool-builder
 
 # Copy the PG binaries
-
 COPY --from=pg96-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-9.6/
 COPY --from=pg96-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-9.6/
 COPY --from=pg96-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-9.6/
@@ -137,8 +144,12 @@ COPY --from=pg13-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-13/
 # Assemble everything into the final container.
 #########################################################################
 
-FROM python:3.9-alpine3.13
+FROM alpine:3.13
 
+# Copy in the Python packages
+COPY --from=env-builder /venv /venv
+
+# Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
 
 WORKDIR /pgadmin4
@@ -147,58 +158,36 @@ ENV PYTHONPATH=/pgadmin4
 # Copy in the code and docs
 COPY --from=app-builder /pgadmin4/web /pgadmin4
 COPY --from=docs-builder /pgadmin4/docs/en_US/_build/html/ /pgadmin4/docs
-COPY requirements.txt /pgadmin4/requirements.txt
+COPY pkg/docker/run_pgadmin.py /pgadmin4
+COPY pkg/docker/gunicorn_config.py /pgadmin4
+COPY pkg/docker/entrypoint.sh /entrypoint.sh
 
 # License files
 COPY LICENSE /pgadmin4/LICENSE
 COPY DEPENDENCIES /pgadmin4/DEPENDENCIES
 
-# Install build-dependencies, build & install C extensions and purge deps in
-# one RUN step
-RUN apk add --no-cache --virtual \
-        build-deps \
-        build-base \
-        postgresql-dev \
-        libffi-dev \
-        krb5-dev \
-        e2fsprogs-dev \
-        krb5-server-ldap \
-        linux-headers \
-        rust \
-        cargo && \
-    apk add \
+# Install runtime dependencies and configure everything in one RUN step
+RUN apk add \
+        python3 \
+        py3-pip \
         postfix \
-        postgresql-client \
         postgresql-libs \
         krb5-libs \
         shadow \
         sudo \
+        libedit \
         libcap && \
-    pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir gunicorn && \
-    apk del --no-cache build-deps && \
-    echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix
-
-# We need the v13 libpq
-COPY --from=pg13-builder /usr/local/lib/libpq.so.5.13 /usr/lib/
-RUN ln -sf /usr/lib/libpq.so.5.13 /usr/lib/libpq.so.5
-
-# Copy the various scripts
-COPY pkg/docker/run_pgadmin.py /pgadmin4
-COPY pkg/docker/gunicorn_config.py /pgadmin4
-COPY pkg/docker/entrypoint.sh /entrypoint.sh
-
-# Precompile and optimize python code to save time and space on startup
-RUN python -O -m compileall -x node_modules /pgadmin4
-
-RUN groupadd -g 5050 pgadmin && \
+    /venv/bin/python3 -m pip install --no-cache-dir gunicorn && \
+    find / -type d -name '__pycache__' -exec rm -rf {} + && \
+    groupadd -g 5050 pgadmin && \
     useradd -r -u 5050 -g pgadmin pgadmin && \
     mkdir -p /var/lib/pgadmin && \
     chown pgadmin:pgadmin /var/lib/pgadmin && \
     touch /pgadmin4/config_distro.py && \
     chown pgadmin:pgadmin /pgadmin4/config_distro.py && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.9
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3.8 && \
+    echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix
+
 USER pgadmin
 
 # Finish up
