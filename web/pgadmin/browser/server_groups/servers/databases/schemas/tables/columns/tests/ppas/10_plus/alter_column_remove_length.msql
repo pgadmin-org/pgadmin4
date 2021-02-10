@@ -1,0 +1,2 @@
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "new_col_4_$%{}[]()&*^!@""'`\/#" TYPE numeric;

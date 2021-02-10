@@ -14,5 +14,3 @@ ALTER TABLE public."testview_$%{}[]()&*^!@""'`\/#"
     OWNER TO enterprisedb;
 COMMENT ON VIEW public."testview_$%{}[]()&*^!@""'`\/#"
     IS 'Testcomment-updated';
-
-GRANT ALL ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO enterprisedb;

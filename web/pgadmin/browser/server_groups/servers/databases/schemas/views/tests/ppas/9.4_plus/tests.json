@@ -83,6 +83,71 @@
       "expected_sql_file": "alter_view_add_some_priv.sql",
       "expected_msql_file": "alter_view_add_some_priv_msql.sql"
     },
+    {
+      "type": "alter",
+      "name": "Alter View (deleting privileges (PUBLIC))",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":
+          {
+            "deleted":[
+              {
+                "grantee":"PUBLIC",
+                "grantor":"enterprisedb",
+                "privileges":[
+                  {
+                    "privilege_type":"r",
+                    "privilege":true,
+                    "with_grant":false
+                  }
+                ]
+              }
+            ]
+          }
+      }
+    },
+    {
+      "type": "alter",
+      "name": "Alter View (changing privileges (enterprisedb to PUBLIC))",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":
+          {
+            "changed":[
+              {
+                "grantee":"PUBLIC",
+                "grantor":"enterprisedb",
+                "old_grantee": "enterprisedb",
+                "privileges":[
+                  {
+                    "privilege_type":"r",
+                    "privilege":true,
+                    "with_grant":false
+                  }
+                ]
+              }
+            ]
+          }
+      },
+      "expected_sql_file": "alter_view_update_priv.sql",
+      "expected_msql_file": "alter_view_update_priv_msql.sql"
+    },
      {
       "type": "alter",
       "name": "Alter View (deleting privileges)",

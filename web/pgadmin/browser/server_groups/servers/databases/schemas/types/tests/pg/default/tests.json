@@ -1,0 +1,284 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create ENUM type",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
+      "data": {
+        "name": "enum_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"e",
+        "schema":"public",
+        "composite":[],
+        "enum":[{"label":"a"},{"label":"b"},{"label":"c"}],
+        "typacl":[],
+        "seclabels":[],
+        "description":""
+      },
+      "expected_sql_file": "create_enum_type.sql",
+      "expected_msql_file": "create_enum_type.msql"
+    },
+    {
+      "type": "alter",
+      "name": "alter ENUM type and add new label",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "enum": {"added": [{"label": "d"}]}
+      },
+      "expected_sql_file": "alter_enum_type_label.sql",
+      "expected_msql_file": "alter_enum_type_label.msql"
+    },
+    {
+      "type": "alter",
+      "name": "alter ENUM type and add ACL, description",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "description":"this is test",
+        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
+      },
+      "expected_sql_file": "alter_enum_type_acl_description.sql",
+      "expected_msql_file": "alter_enum_type_acl_description.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop ENUM type",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {}
+    },
+
+
+    {
+      "type": "create",
+      "name": "Create Composite type",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
+      "data": {
+        "name": "composite_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"c",
+        "schema":"public",
+        "composite":[
+            {"member_name":"mname1","type":"bigint","is_tlength":false,"is_precision":false},
+            {"member_name":"mname2","type":"character varying","tlength":50,"is_tlength":true,"is_precision":false,"collation":"pg_catalog.\"C\"","min_val":1,"max_val":2147483647,"collspcname":""},
+            {"member_name":"mname3","type":"text[]","is_tlength":false,"is_precision":false,"collation":"pg_catalog.\"C\"","collspcname":""}
+        ],
+        "typacl":[],
+        "seclabels":[],
+        "description":""
+      },
+      "expected_sql_file": "create_composite_type.sql",
+      "expected_msql_file": "create_composite_type.msql"
+    },
+    {
+      "type": "alter",
+      "name": "alter Composite type and add new label",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "composite": {"added": [{"member_name":"mname4","type":"bigint","is_tlength":false,"is_precision":false}]}
+      },
+      "expected_sql_file": "alter_composite_type_add_member.sql",
+      "expected_msql_file": "alter_composite_type_add_member.msql"
+    },
+    {
+      "type": "alter",
+      "name": "alter Composite type and delete label",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "composite": {"deleted":[{"attnum":1,"member_name":"mname1","type":"bigint","tlength":null,"is_tlength":false,"precision":null,"is_precision":false,"collation":"","cltype":"bigint","hasSqrBracket":false,"fulltype":"bigint"}]}
+      },
+      "expected_sql_file": "alter_composite_type_remove_member.sql",
+      "expected_msql_file": "alter_composite_type_remove_member.msql"
+    },
+    {
+      "type": "alter",
+      "name": "alter Composite type and add ACL, description",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "description":"this is test",
+        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
+      },
+      "expected_sql_file": "alter_composite_type_acl_description.sql",
+      "expected_msql_file": "alter_composite_type_acl_description.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Composite type",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {}
+    },
+
+    {
+      "type": "create",
+      "name": "Create Composite type - one field",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {
+        "name": "composite_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"c",
+        "schema":"public",
+        "composite":[
+            {"member_name":"mname1","type":"bigint","is_tlength":false,"is_precision":false}
+        ],
+        "typacl":[],
+        "seclabels":[],
+        "description":""
+      },
+      "expected_sql_file": "create_composite_type_one_field.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Composite type - one field",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {}
+    },
+
+    {
+      "type": "create",
+      "name": "Create SHELL type",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
+      "data": {
+        "name": "shell_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"p",
+        "schema":"public",
+        "composite":[],
+        "enum":[],
+        "typacl":[],
+        "seclabels":[]
+      },
+      "expected_sql_file": "create_shell_type.sql",
+      "expected_msql_file": "create_shell_type.msql"
+    },
+    {
+      "type": "alter",
+      "name": "alter SHELL type and add description",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "description":"this is test"
+      },
+      "expected_sql_file": "alter_shell_type_acl_description.sql",
+      "expected_msql_file": "alter_shell_type_acl_description.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop SHELL type",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {}
+    },
+
+
+    {
+      "type": "create",
+      "name": "Create RANGE type",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
+      "data": {
+        "name": "range_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"r",
+        "schema":"public",
+        "composite":[],
+        "enum":[],
+        "typacl":[],
+        "seclabels":[],
+        "typname":"bool"
+      },
+      "expected_sql_file": "create_range_type.sql",
+      "expected_msql_file": "create_range_type.msql"
+    },
+    {
+      "type": "alter",
+      "name": "alter RANGE type and add ACL, description",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "description":"this is test",
+        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
+      },
+      "expected_sql_file": "alter_range_type_acl_description.sql",
+      "expected_msql_file": "alter_range_type_acl_description.msql"
+    },
+    {
+      "type": "alter",
+      "name": "alter ACL (Remove privilege)",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "typacl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "alter",
+      "name": "alter ACL (change grantee)",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "typacl": {
+            "changed": [
+              {
+                "grantee": "PUBLIC",
+                "grantor": "postgres",
+                "old_grantee": "postgres",
+                "privileges": [
+                  {
+                    "privilege_type": "U",
+                    "privilege": true,
+                    "with_grant": false
+                  }
+                ]
+              }
+            ]
+          }
+      },
+      "expected_sql_file": "alter_acl_grantee_change.sql",
+      "expected_msql_file": "alter_acl_grantee_change_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop RANGE type",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {}
+    }
+  ]
+}

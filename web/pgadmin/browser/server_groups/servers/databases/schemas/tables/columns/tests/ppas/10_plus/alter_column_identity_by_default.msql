@@ -1,0 +1,8 @@
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    RENAME "col_5_$%{}[]()&*^!@""'`\/#" TO "new_col_5_$%{}[]()&*^!@""'`\/#";
+
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "new_col_5_$%{}[]()&*^!@""'`\/#" SET CYCLE SET INCREMENT 2 SET MINVALUE 1 SET MAXVALUE 200 SET CACHE 2;
+
+COMMENT ON COLUMN testschema."table_2_$%{}[]()&*^!@""'`\/#"."new_col_5_$%{}[]()&*^!@""'`\/#"
+    IS 'Comment for alter';

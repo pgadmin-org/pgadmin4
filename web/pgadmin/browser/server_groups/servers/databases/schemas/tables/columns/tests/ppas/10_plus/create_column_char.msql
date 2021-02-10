@@ -1,0 +1,5 @@
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    ADD COLUMN "col_2_$%{}[]()&*^!@""'`\/#" character varying(50, None) COLLATE pg_catalog."C" DEFAULT None;
+
+COMMENT ON COLUMN testschema."table_2_$%{}[]()&*^!@""'`\/#"."col_2_$%{}[]()&*^!@""'`\/#"
+    IS 'Comment for create';

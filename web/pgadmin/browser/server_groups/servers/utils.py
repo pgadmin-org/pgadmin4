@@ -125,12 +125,20 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
             priv_with_grant = ['ALL']
         if len(priv_without_grant) == allowed_acls_len > 1:
             priv_without_grant = ['ALL']
+
+        grantee = driver.qtIdent(None, priv['grantee']) \
+            if priv['grantee'] != 'PUBLIC' else 'PUBLIC'
+
+        old_grantee = driver.qtIdent(None, priv['old_grantee']) \
+            if 'old_grantee' in priv and priv['old_grantee'] != 'PUBLIC' \
+            else grantee
+
         # Appending and returning all ACL
         privileges.append({
-            'grantee': driver.qtIdent(None, priv['grantee'])
-            if priv['grantee'] != 'PUBLIC' else 'PUBLIC',
+            'grantee': grantee,
             'with_grant': priv_with_grant,
-            'without_grant': priv_without_grant
+            'without_grant': priv_without_grant,
+            'old_grantee': old_grantee
         })
 
     return privileges

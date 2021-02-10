@@ -55,10 +55,12 @@ ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{ o_data.proargtyp
 {% endfor %}{% endif %}
 {% if 'changed' in data.acl %}
 {% for priv in data.acl.changed %}
+{% if priv.grantee != priv.old_grantee %}
+{{ PRIVILEGE.UNSETALL(conn, 'FUNCTION', priv.old_grantee, name, o_data.pronamespace, o_data.proargtypenames) }}
+{% else %}
 {{ PRIVILEGE.UNSETALL(conn, 'FUNCTION', priv.grantee, name, o_data.pronamespace, o_data.proargtypenames) }}
-
+{% endif %}
 {{ PRIVILEGE.SET(conn, 'FUNCTION', priv.grantee, name, priv.without_grant, priv.with_grant, o_data.pronamespace, o_data.proargtypenames) }}
-
 {% endfor %}{% endif %}
 {% if 'added' in data.acl %}
 {% for priv in data.acl.added %}

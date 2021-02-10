@@ -1,0 +1,2 @@
+ALTER TYPE public."composite_type_$%{}[]()&*^!@""'`\/#"
+    DROP ATTRIBUTE mname1;

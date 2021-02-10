@@ -1,0 +1,2 @@
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col_6_$%{}[]()&*^!@""'`\/#" SET CYCLE SET INCREMENT 3 RESTART SET START 3 SET MINVALUE 3 SET MAXVALUE 30 SET CACHE 3;

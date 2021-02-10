@@ -133,6 +133,63 @@
     },
     {
       "type": "alter",
+      "name": "Alter Materialised Views (change grantee in privileges)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "datacl": {
+          "changed": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "old_grantee": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "x",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "t",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_mview_change_grantee_priv.sql",
+      "expected_msql_file": "alter_mview_change_grantee_priv_msql.sql"
+    },
+    {
+      "type": "alter",
       "name": "Alter Materialised Views (change definition)",
       "endpoint": "NODE-mview.obj_id",
       "sql_endpoint": "NODE-mview.sql_id",

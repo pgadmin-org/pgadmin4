@@ -78,6 +78,40 @@
       "expected_msql_file": "alter_proc_opt_msql.sql"
     },
     {
+      "type": "alter",
+      "name": "Alter procedure add privileges",
+      "endpoint": "NODE-procedure.obj_id",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "data": {
+        "acl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege": true,
+                  "privilege_type": "X",
+                  "with_grant": false
+                }
+              ]
+            },
+            {
+              "grantee": "enterprisedb",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege": true,
+                  "privilege_type": "X",
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
       "type": "delete",
       "name": "Drop procedure",
       "endpoint": "NODE-procedure.delete_id",

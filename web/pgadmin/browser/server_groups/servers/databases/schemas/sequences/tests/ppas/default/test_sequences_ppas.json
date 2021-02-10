@@ -93,7 +93,51 @@
       },
       "expected_sql_file": "alter_seq_privs_update.sql",
       "expected_msql_file": "alter_seq_privs_update_msql.sql"
-    },{
+    },
+    {
+      "type": "alter",
+      "name": "Alter Sequence remove partial privileges",
+      "endpoint": "NODE-sequence.obj_id",
+      "sql_endpoint": "NODE-sequence.sql_id",
+      "msql_endpoint": "NODE-sequence.msql_id",
+      "data": {
+        "relacl": {
+          "deleted":[{
+            "grantee": "PUBLIC",
+            "grantor": "enterprisedb",
+            "privileges":[{
+              "privilege_type": "r",
+              "privilege": true,
+              "with_grant": false
+            }]
+          }]
+        }
+      }
+    },
+    {
+      "type": "alter",
+      "name": "Alter Sequence change grantee in privileges",
+      "endpoint": "NODE-sequence.obj_id",
+      "sql_endpoint": "NODE-sequence.sql_id",
+      "msql_endpoint": "NODE-sequence.msql_id",
+      "data": {
+        "relacl": {
+          "changed":[{
+            "grantee": "PUBLIC",
+            "grantor": "enterprisedb",
+            "old_grantee": "enterprisedb",
+            "privileges":[{
+              "privilege_type": "r",
+              "privilege": true,
+              "with_grant": false
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_seq_change_grantee_privs.sql",
+      "expected_msql_file": "alter_seq_change_grantee_privs_msql.sql"
+    },
+    {
       "type": "alter",
       "name": "Alter Sequence remove privileges",
       "endpoint": "NODE-sequence.obj_id",

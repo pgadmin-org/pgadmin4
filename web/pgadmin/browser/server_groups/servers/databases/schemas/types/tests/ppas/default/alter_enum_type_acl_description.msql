@@ -1,0 +1,4 @@
+COMMENT ON TYPE public."enum_type_$%{}[]()&*^!@""'`\/#"
+    IS 'this is test';
+
+GRANT USAGE ON TYPE public."enum_type_$%{}[]()&*^!@""'`\/#" TO PUBLIC;

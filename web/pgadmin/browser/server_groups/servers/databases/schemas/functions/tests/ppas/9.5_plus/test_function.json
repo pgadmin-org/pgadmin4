@@ -225,7 +225,58 @@
     },
     {
       "type": "alter",
-      "name": "Alter function add acl.",
+      "name": "Alter function remove partial privileges.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "alter",
+      "name": "Alter function change grantee in privileges.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "changed": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "old_grantee": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_change_grantee_acl.sql",
+      "expected_msql_file": "alter_function_change_grantee_acl.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function delete acl.",
       "endpoint": "NODE-function.obj_id",
       "msql_endpoint": "NODE-function.msql_id",
       "sql_endpoint": "NODE-function.sql_id",

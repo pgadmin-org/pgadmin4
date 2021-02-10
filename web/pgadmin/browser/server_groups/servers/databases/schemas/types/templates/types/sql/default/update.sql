@@ -129,7 +129,11 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% endif %}
 {% if 'changed' in data.typacl %}
 {% for priv in data.typacl.changed %}
+{% if priv.grantee != priv.old_grantee %}
+{{ PRIVILEGE.UNSETALL(conn, 'TYPE', priv.old_grantee, o_data.name, o_data.schema) }}
+{% else %}
 {{ PRIVILEGE.UNSETALL(conn, 'TYPE', priv.grantee, o_data.name, o_data.schema) }}
+{% endif %}
 {{ PRIVILEGE.SET(conn, 'TYPE', priv.grantee, o_data.name, priv.without_grant, priv.with_grant, o_data.schema) }}
 {% endfor %}
 {% endif %}

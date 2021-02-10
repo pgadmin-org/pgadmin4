@@ -8,7 +8,7 @@ CREATE SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT ALL ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#" TO enterprisedb;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
-GRANT SELECT, UPDATE ON TABLES TO PUBLIC;
+GRANT SELECT ON TABLES TO PUBLIC;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT EXECUTE ON FUNCTIONS TO PUBLIC;

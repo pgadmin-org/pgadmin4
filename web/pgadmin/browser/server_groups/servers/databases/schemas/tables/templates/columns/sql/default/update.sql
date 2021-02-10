@@ -104,11 +104,20 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {% endif %}
 {% if 'changed' in data.attacl %}
 {% for priv in data.attacl.changed %}
+{% set is_grantee_changed = (priv.grantee != priv.old_grantee) %}
 {% if data.name %}
+{% if is_grantee_changed %}
+{{ PRIVILEGE.RESETALL(conn, data.schema, data.table, data.name, priv.old_grantee) }}
+{% else %}
 {{ PRIVILEGE.RESETALL(conn, data.schema, data.table, data.name, priv.grantee) }}
+{% endif %}
 {{ PRIVILEGE.APPLY(conn, data.schema, data.table, data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
 {% else %}
+{% if is_grantee_changed %}
+{{ PRIVILEGE.RESETALL(conn, data.schema, data.table, o_data.name, priv.old_grantee) }}
+{% else %}
 {{ PRIVILEGE.RESETALL(conn, data.schema, data.table, o_data.name, priv.grantee) }}
+{% endif %}
 {{ PRIVILEGE.APPLY(conn, data.schema, data.table, o_data.name, priv.grantee, priv.without_grant, priv.with_grant) }}
 {% endif %}
 {% endfor %}

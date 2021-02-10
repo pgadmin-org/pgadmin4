@@ -503,8 +503,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
              */
             collection.each(function(m) {
               m.set(
-                {'privilege': allPrivilege, 'with_grant': allWithGrant},
-                {silent: true}
+                {'privilege': allPrivilege, 'with_grant': allWithGrant}
               );
             });
           } else {
@@ -539,7 +538,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
             } else if (!checked) {
               $allGrants.prop('checked', false);
             }
-            collection.get(privilege_type).set(attrs, {silent: true});
+            collection.get(privilege_type).set(attrs);
 
             if (checked) {
               $allPrivileges = $tbl.find(

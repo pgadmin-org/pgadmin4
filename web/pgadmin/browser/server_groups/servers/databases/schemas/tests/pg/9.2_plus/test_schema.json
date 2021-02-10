@@ -215,6 +215,49 @@
       "expected_msql_file": "alter_schema_add_priv_msql.sql"
     }, {
       "type": "alter",
+      "name": "Alert Schema Update Privileges",
+      "endpoint": "NODE-schema.obj_id",
+      "sql_endpoint": "NODE-schema.sql_id",
+      "msql_endpoint": "NODE-schema.msql_id",
+      "data": {
+        "nspacl": {
+          "changed": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+            }]
+          }]
+        },
+        "deftblacl": {
+          "changed": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        },
+        "defseqacl": {
+          "changed": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_schema_update_priv.sql",
+      "expected_msql_file": "alter_schema_update_priv_msql.sql"
+    }, {
+      "type": "alter",
       "name": "Alert Schema Drop Privileges",
       "endpoint": "NODE-schema.obj_id",
       "sql_endpoint": "NODE-schema.sql_id",
@@ -260,7 +303,8 @@
       },
       "expected_sql_file": "alter_schema_drop_priv.sql",
       "expected_msql_file": "alter_schema_drop_priv_msql.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop Schema",
       "endpoint": "NODE-schema.obj_id",

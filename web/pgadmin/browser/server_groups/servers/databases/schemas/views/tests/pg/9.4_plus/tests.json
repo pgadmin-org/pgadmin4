@@ -32,7 +32,7 @@
         "check_option": "local",
         "security_barrier": false,
         "comment":"Testcomment",
-        "datacl":[{"grantee":"postgres", "grantor":"postgres", "privileges":[{"privilege_type": "a", "privilege": true,
+        "datacl":[{"grantee":"postgres", "old_grantee": "postgres", "grantor":"postgres", "privileges":[{"privilege_type": "a", "privilege": true,
                   "with_grant":false}]}]
       },
       "expected_sql_file": "create_view.sql",
@@ -51,7 +51,7 @@
         "check_option": "cascaded",
         "security_barrier": true,
         "comment":"Testcomment-updated",
-        "datacl":[{"grantee":"postgres", "grantor":"postgres", "privileges":[{"privilege_type": "a", "privilege": true,
+        "datacl":[{"grantee":"postgres", "grantor":"postgres", "old_grantee": "postgres", "privileges":[{"privilege_type": "a", "privilege": true,
                   "with_grant":false}]}]
       },
       "expected_sql_file": "alter_view.sql",
@@ -101,7 +101,72 @@
       "expected_sql_file": "alter_view_add_some_priv.sql",
       "expected_msql_file": "alter_view_add_some_priv_msql.sql"
     },
-     {
+    {
+      "type": "alter",
+      "name": "Alter View (deleting privileges (PUBLIC))",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "postgres",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":
+          {
+            "deleted":[
+              {
+                "grantee":"PUBLIC",
+                "grantor":"postgres",
+                "privileges":[
+                  {
+                    "privilege_type":"r",
+                    "privilege":true,
+                    "with_grant":false
+                  }
+                ]
+              }
+            ]
+          }
+      }
+    },
+    {
+      "type": "alter",
+      "name": "Alter View (changing privileges (postgres to PUBLIC))",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "postgres",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":
+          {
+            "changed":[
+              {
+                "grantee":"PUBLIC",
+                "grantor":"postgres",
+                "old_grantee": "postgres",
+                "privileges":[
+                  {
+                    "privilege_type":"r",
+                    "privilege":true,
+                    "with_grant":false
+                  }
+                ]
+              }
+            ]
+          }
+      },
+      "expected_sql_file": "alter_view_update_priv.sql",
+      "expected_msql_file": "alter_view_update_priv_msql.sql"
+    },
+    {
       "type": "alter",
       "name": "Alter View (deleting privileges)",
       "endpoint": "NODE-view.obj_id",

@@ -28,7 +28,11 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% endif %}
 {% if 'changed' in data.nspacl %}
 {% for priv in data.nspacl.changed %}
+{% if priv.grantee != priv.old_grantee %}
+{{ PRIVILEGE.RESETALL(conn, 'SCHEMA', priv.old_grantee, data.name) }}
+{% else %}
 {{ PRIVILEGE.RESETALL(conn, 'SCHEMA', priv.grantee, data.name) }}
+{% endif %}
 {{ PRIVILEGE.APPLY(conn, 'SCHEMA', priv.grantee, data.name, priv.without_grant, priv.with_grant) }}
 {% endfor %}
 {% endif %}
@@ -51,7 +55,11 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% endif %}
 {% if 'changed' in acl %}
 {% for priv in acl.changed %}
+{% if priv.grantee != priv.old_grantee %}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.old_grantee) }}
+{% else %}
 {{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee) }}
+{% endif %}
 {{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant) }}
 {% endfor %}
 {% endif %}

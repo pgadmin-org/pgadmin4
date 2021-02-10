@@ -999,6 +999,7 @@
             {
               "grantee": "PUBLIC",
               "grantor": "postgres",
+              "old_grantee": "postgres",
               "privileges": [
                 {
                   "privilege_type": "a",

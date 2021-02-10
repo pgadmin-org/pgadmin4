@@ -84,7 +84,11 @@ COMMENT ON SEQUENCE {{ seqname }}
 {% endif %}
 {% if 'changed' in data.relacl %}
 {% for priv in data.relacl.changed %}
+{% if priv.grantee != priv.old_grantee %}
+{{ PRIVILEGE.UNSETALL(conn, 'SEQUENCE', priv.old_grantee, data.name, schema) }}
+{% else %}
 {{ PRIVILEGE.UNSETALL(conn, 'SEQUENCE', priv.grantee, data.name, schema) }}
+{% endif %}
 {{ PRIVILEGE.SET(conn, 'SEQUENCE', priv.grantee, data.name, priv.without_grant, priv.with_grant, schema) }}
 {% endfor %}
 {% endif %}

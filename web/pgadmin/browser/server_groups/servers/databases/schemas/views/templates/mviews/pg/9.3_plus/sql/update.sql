@@ -163,7 +163,11 @@ COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
 {% if 'changed' in data.datacl %}
 {% for priv in data.datacl.changed -%}
+{% if priv.grantee != priv.old_grantee %}
+{{ PRIVILEGE.UNSETALL(conn, 'TABLE', priv.old_grantee, data.name, data.schema) }}
+{% else %}
 {{ PRIVILEGE.UNSETALL(conn, 'TABLE', priv.grantee, data.name, data.schema) }}
+{% endif %}
 {{ PRIVILEGE.SET(conn, 'TABLE', priv.grantee, data.name, priv.without_grant, priv.with_grant, data.schema) }}
 {%- endfor %}
 {% endif %}

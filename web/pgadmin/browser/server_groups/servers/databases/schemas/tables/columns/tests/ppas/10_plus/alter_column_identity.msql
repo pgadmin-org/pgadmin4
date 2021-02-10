@@ -1,0 +1,7 @@
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    RENAME "col_3_$%{}[]()&*^!@""'`\/#" TO "new_col_3_$%{}[]()&*^!@""'`\/#";
+
+COMMENT ON COLUMN testschema."table_2_$%{}[]()&*^!@""'`\/#"."new_col_3_$%{}[]()&*^!@""'`\/#"
+    IS 'Comment for alter';
+
+GRANT INSERT("new_col_3_$%{}[]()&*^!@""'`\/#"), SELECT("new_col_3_$%{}[]()&*^!@""'`\/#"), REFERENCES("new_col_3_$%{}[]()&*^!@""'`\/#") ON testschema."table_2_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
