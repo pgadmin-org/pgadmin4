@@ -80,7 +80,6 @@ const imageMinimizer = new ImageMinimizerPlugin({
     // Lossless optimization with custom option
     // Feel free to experiment with options for better result for you
     plugins: [
-      ['gifsicle', { interlaced: true }],
       ['mozjpeg', { progressive: true }],
       ['optipng', { optimizationLevel: 7 }],
       ['pngquant', {quality: [0.75, .9], speed: 3}],
@@ -161,7 +160,7 @@ fs.readdirSync(all_themes_dir).map(function(curr_dir) {
 
   if(stats.isDirectory()) {
     /* Theme directory found */
-    let cssfile = 'pure|pgadmin.theme.'+curr_dir;
+    let cssfile = 'pgadmin.theme.'+curr_dir;
 
     let disp_name = curr_dir;
 
@@ -384,7 +383,7 @@ module.exports = [{
     //
     // imports-loader: it adds dependent modules(use:imports-loader?module1)
     // at the beginning of module it is dependency of like:
-    // var jQuery = require('jquery'); var browser = require('pure|pgadmin.browser')
+    // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
     // It solves number of problems
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
@@ -430,7 +429,7 @@ module.exports = [{
     }, {
       // imports-loader: it adds dependent modules(use:imports-loader?module1)
       // at the beginning of module it is dependency of like:
-      // var jQuery = require('jquery'); var browser = require('pure|pgadmin.browser')
+      // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
       // It solves number of problems
       // Ref: http:/github.com/webpack-contrib/imports-loader/
       test: require.resolve('./pgadmin/tools/datagrid/static/js/datagrid'),

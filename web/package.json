@@ -29,7 +29,6 @@
     "eslint-plugin-react": "^7.20.5",
     "exports-loader": "^2.0.0",
     "image-minimizer-webpack-plugin": "^2.2.0",
-    "imagemin-gifsicle": "^7.0.0",
     "imagemin-mozjpeg": "^9.0.0",
     "imagemin-optipng": "^8.0.0",
     "imagemin-pngquant": "^9.0.1",
