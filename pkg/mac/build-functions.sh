@@ -72,11 +72,13 @@ _create_python_env() {
 
     # Make sure all the .so's in the Python env have the executable bit set
     # so they get properly signed later
+    OLD_IFS=${IFS}
     IFS=$'\n'
     for i in $(find . -type f -name *.so -exec file "{}" \; | grep -v "(for architecture" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | awk -F":" '{print $1}' | uniq)
     do
         chmod +x "${i}"
     done
+    IFS=${OLD_IFS}
 
     # Remove some things we don't need
     cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework"
@@ -149,6 +151,14 @@ _fixup_imports() {
 		    TODO="" ;
 		    for TODO_OBJ in ${TODO_OLD}; do
 			      echo "Post-processing: ${TODO_OBJ}"
+
+			      # The Rust interface in the Python Cryptography module contains
+			      # a reference to a .so that won't exist. See:
+			      # https://github.com/PyO3/setuptools-rust/issues/106
+			      if [[ "${TODO_OBJ}" =~ cryptography/hazmat/bindings/\_rust\.abi3\.so$ ]]; then
+			          echo "Skipping because of https://github.com/PyO3/setuptools-rust/issues/106."
+			          continue
+			      fi
 
 			      # Figure out the relative path from ${TODO_OBJ} to Contents/Frameworks
 			      FW_RELPATH=$(echo "${TODO_OBJ}" | \
