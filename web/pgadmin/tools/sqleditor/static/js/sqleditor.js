@@ -1057,6 +1057,18 @@ define('tools.querytool', [
       self.handler.slickgrid = grid;
       // Add listener on data-grid table scroll.
       self.handler.slickgrid.onScroll.subscribe(function() {
+        // Mark selected rows cells as selected.
+        setTimeout(() => {
+          // Can't use setSelectedRows as we are using cellSelectionModel.
+          var cellSelectionModel = self.handler.gridView.grid.getSelectionModel();
+          var ranges = cellSelectionModel.getSelectedRanges();
+
+          if (ranges.length > 1) {
+            // Set selected rows cell as selected.
+            cellSelectionModel.setSelectedRanges(ranges);
+          }
+        }, 100);
+
         if(Object.keys(self.handler.data_store.deleted).length > 0) {
           setTimeout(() => {
             $(self.handler.gridView.grid.getCanvasNode()).find('div.selected').removeClass('strikeout');
