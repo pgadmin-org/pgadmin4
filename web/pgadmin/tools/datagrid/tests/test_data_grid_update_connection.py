@@ -117,5 +117,15 @@ class DatagridUpdateConnectionTestCase(BaseTestGenerator):
 
     def tearDown(self):
         """This function disconnect database."""
+        # Delete role of created
+        if self.is_create_role:
+            connection = utils.get_db_connection(self.server['db'],
+                                                 self.server['username'],
+                                                 self.server['db_password'],
+                                                 self.server['host'],
+                                                 self.server['port'],
+                                                 self.server['sslmode'])
+            roles_utils.delete_role(connection, self.role_name)
+
         database_utils.disconnect_database(self, self.sid,
                                            self.did)
