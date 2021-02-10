@@ -198,7 +198,7 @@ define('pgadmin.browser.node', [
           callback: 'show_query_tool',
           priority: 998,
           label: gettext('Query Tool'),
-          icon: 'pg-font-icon icon-query-tool',
+          icon: 'pg-font-icon icon-query_tool',
           enable: enable,
         }]);
 

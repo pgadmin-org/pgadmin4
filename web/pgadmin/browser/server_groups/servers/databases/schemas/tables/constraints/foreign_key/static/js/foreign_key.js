@@ -920,7 +920,7 @@ define('pgadmin.node.foreign_key', [
               self.listenTo(collection, 'remove', self.render);
             },
             formatter: {
-              fromRaw: function (rawValue,model,) {
+              fromRaw: function (rawValue,model) {
                 var remote_tables = [],
                   m = model.get('columns');
                 if (m.length > 0) {

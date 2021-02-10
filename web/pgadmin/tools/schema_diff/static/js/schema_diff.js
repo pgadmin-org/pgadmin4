@@ -134,7 +134,7 @@ define('pgadmin.schemadiff', [
 
         // Set panel title and icon
         schemaDiffPanel.title('<span title="'+panel_tooltip+'">'+panel_title+'</span>');
-        schemaDiffPanel.icon('pg-font-icon icon-schema-diff');
+        schemaDiffPanel.icon('pg-font-icon icon-compare');
         schemaDiffPanel.focus();
 
         var openSchemaDiffURL = function(j) {

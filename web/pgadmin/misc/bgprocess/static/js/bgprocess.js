@@ -428,7 +428,7 @@ define('misc.bgprocess', [
         if(self.current_storage_dir && isServerMode) { //for backup & exports with server mode, operate over storage manager
 
           if($btn_storage_manager.length == 0) {
-            var str_storage_manager_btn = '<button id="bg-process-storage-manager" class="btn btn-secondary bg-process-storage-manager" title="Click to open file location" aria-label="Storage Manager" tabindex="0" disabled><span class="pg-font-icon icon-storage-manager" role="img"></span></button>&nbsp;';
+            var str_storage_manager_btn = '<button id="bg-process-storage-manager" class="btn btn-secondary bg-process-storage-manager" title="Click to open file location" aria-label="Storage Manager" tabindex="0" disabled><span class="pg-font-icon icon-storage_manager" role="img"></span></button>&nbsp;';
             container.find('.bg-process-details .bg-btn-section').prepend(str_storage_manager_btn);
             $btn_storage_manager = container.find('.bg-process-storage-manager');
           }

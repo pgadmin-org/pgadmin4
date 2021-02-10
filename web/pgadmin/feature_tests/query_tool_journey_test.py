@@ -373,7 +373,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
             icon_classes = query_history_selected_icon.get_attribute('class')
             icon_classes = icon_classes.split(" ")
             self.assertTrue(
-                icon in icon_classes or 'icon-save-data-changes' in
+                icon in icon_classes or 'icon-save_data_changes' in
                 icon_classes or 'icon-commit' in icon_classes or
                 'fa-play' in icon_classes)
             # Move to next entry

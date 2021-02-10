@@ -47,16 +47,3 @@
 .pgadmin_header_logo {
   cursor: default;
 }
-
-.icon-drop-cascade:before  {
-  font-icon: url('../img/drop_cascade.svg');
-  font-size: 1.6em !important;
-}
-
-.icon-filter-table-toolbar:before  {
-  font-icon: url('../img/row_filter.svg');
-}
-
-.icon-query-tool:before  {
-  font-icon: url('../img/query_tool.svg');
-}

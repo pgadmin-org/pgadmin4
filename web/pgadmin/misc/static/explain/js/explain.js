@@ -1209,8 +1209,8 @@ define('pgadmin.misc.explain', [
     // Assumption container is a jQuery object
     DrawJSONPlan: function(container, plan, isDownload, _ctx) {
       let self = this;
-      require.ensure(['snapsvg'], function(require) {
-        var module = require('snapsvg');
+      require.ensure(['snap.svg'], function(require) {
+        var module = require('snap.svg');
         initSnap(module);
         self.goForDraw(container, plan, isDownload, _ctx);
       }, function(error){

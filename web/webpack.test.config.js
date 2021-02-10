@@ -10,6 +10,7 @@
 /* eslint-env node */
 const path = require('path');
 const webpack = require('webpack');
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 
 const sourcesDir = path.resolve(__dirname, 'pgadmin/static');
 const nodeModulesDir = path.resolve(__dirname, 'node_modules');
@@ -25,6 +26,21 @@ module.exports = {
       'window.jQuery': 'jquery',
       'moment': 'moment',
       'window.moment':'moment',
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    }),
+    new ImageMinimizerPlugin({
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      minimizerOptions: {
+        // Lossless optimization with custom option
+        // Feel free to experiment with options for better result for you
+        plugins: [
+          ['gifsicle', { interlaced: true }],
+          ['mozjpeg', { progressive: true }],
+          ['optipng', { optimizationLevel: 7 }],
+          ['pngquant', {quality: [0.75, .9], speed: 3}],
+        ],
+      },
     }),
   ],
 
@@ -43,57 +59,76 @@ module.exports = {
         },
       }, {
         test: /\.css$/,
-        use: [ 'style-loader', 'raw-loader' ],
+        type: 'asset/source',
+        use: ['style-loader'],
       }, {
         test: /\.(jpe?g|png|gif|svg)$/i,
-        loaders: [{
-          loader: 'url-loader',
-          options: {
-            emitFile: true,
-            name: 'img/[name].[ext]',
-            limit: 4096,
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 4 * 1024, // 4kb
           },
-        }, {
-          loader: 'image-webpack-loader',
-          query: {
-            bypassOnDebug: true,
-            mozjpeg: {
-              progressive: true,
-            },
-            gifsicle: {
-              interlaced: false,
-            },
-            optipng: {
-              optimizationLevel: 7,
-            },
-            pngquant: {
-              quality: '75-90',
-              speed: 3,
-            },
-          },
-        }],
+        },
+        generator: {
+          filename: 'img/[name].[ext]',
+        },
         exclude: /vendor/,
       }, {
         test: /.*slickgrid[\\\/]+slick\.(?!core)*/,
-        loader: 'imports-loader?' +
-        'jquery.ui' +
-        ',jquery.event.drag' +
-        ',slickgrid',
+        use:[
+          {
+            loader: 'imports-loader',
+            options: {
+              type: 'commonjs',
+              imports: [
+                'pure|jquery.ui',
+                'pure|jquery.event.drag',
+                'pure|slickgrid',
+              ],
+            },
+          },
+        ],
       }, {
         test: /.*slickgrid\.plugins[\\\/]+slick\.cellrangeselector/,
-        loader: 'imports-loader?' +
-        'jquery.ui' +
-        ',jquery.event.drag' +
-        ',slickgrid' +
-        '!exports-loader?' +
-        'Slick.CellRangeSelector',
+        use:[
+          {
+            loader: 'imports-loader',
+            options: {
+              type: 'commonjs',
+              imports: [
+                'pure|jquery.ui',
+                'pure|jquery.event.drag',
+                'pure|slickgrid',
+              ],
+            },
+          }, {
+            loader: 'exports-loader',
+            options: {
+              type: 'commonjs',
+              exports: 'single|Slick.CellRangeSelector',
+            },
+          },
+        ],
       }, {
         test: /.*slickgrid[\\\/]+slick\.core.*/,
-        loader: 'imports-loader?' +
-        'jquery.ui' +
-        ',jquery.event.drag' +
-        '!exports-loader?' +
-        'Slick',
+        use:[
+          {
+            loader: 'imports-loader',
+            options: {
+              type: 'commonjs',
+              imports: [
+                'pure|jquery.ui',
+                'pure|jquery.event.drag',
+              ],
+            },
+          }, {
+            loader: 'exports-loader',
+            options: {
+              type: 'commonjs',
+              exports: 'single|Slick',
+            },
+          },
+        ],
       },
       {
         test: /\.js$|\.jsx$/,
@@ -119,7 +154,7 @@ module.exports = {
       'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.min'),
       'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
       'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
-      'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle'),
+      'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min'),
       'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
       'backform': path.join(__dirname, './node_modules/backform/src/backform'),
       'backgrid': path.join(__dirname, './pgadmin/static/vendor/backgrid/backgrid'),

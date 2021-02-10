@@ -113,11 +113,15 @@ export class ModelValidation {
 
   checkForValidIp(ipAddress, msg) {
     if (ipAddress) {
-      const isIpv6Address = new Address6(ipAddress).isValid();
-      const isIpv4Address = new Address4(ipAddress).isValid();
-      if (!isIpv4Address && !isIpv6Address) {
-        this.err['hostaddr'] = msg;
-        this.errmsg = msg;
+      try {
+        new Address4(ipAddress);
+      } catch(e) {
+        try {
+          new Address6(ipAddress);
+        } catch(e) {
+          this.err['hostaddr'] = msg;
+          this.errmsg = msg;
+        }
       }
     } else {
       this.model.errorModel.unset('hostaddr');

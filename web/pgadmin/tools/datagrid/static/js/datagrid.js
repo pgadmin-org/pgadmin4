@@ -112,7 +112,7 @@ define('pgadmin.datagrid', [
           enable: query_tool_menu_enabled,
           priority: 1,
           label: gettext('Query Tool'),
-          icon: 'pg-font-icon icon-query-tool',
+          icon: 'pg-font-icon icon-query_tool',
           data:{
             data_disabled: gettext('Please select a database from the browser tree to access Query Tool.'),
           },

@@ -20,7 +20,7 @@ let _defaultToolBarButtons = [
   {
     label: gettext('Query Tool'),
     ariaLabel: gettext('Query Tool'),
-    btnClass: 'pg-font-icon icon-query-tool',
+    btnClass: 'pg-font-icon icon-query_tool',
     text: '',
     toggled: false,
     toggleClass: '',
@@ -30,7 +30,7 @@ let _defaultToolBarButtons = [
   {
     label: gettext('View Data'),
     ariaLabel: gettext('View Data'),
-    btnClass: 'pg-font-icon sql-icon-lg icon-view-data',
+    btnClass: 'pg-font-icon sql-icon-lg icon-view_data',
     text: '',
     toggled: false,
     toggleClass: '',
@@ -40,7 +40,7 @@ let _defaultToolBarButtons = [
   {
     label: gettext('Filtered Rows'),
     ariaLabel: gettext('Filtered Rows'),
-    btnClass: 'pg-font-icon icon-filter-table-toolbar',
+    btnClass: 'pg-font-icon icon-row_filter',
     text: '',
     toggled: false,
     toggleClass: '',

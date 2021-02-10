@@ -54,7 +54,7 @@ define([
               name: 'show_query_tool', node: this.type, module: this,
               applies: ['context'], callback: 'show_query_tool',
               priority: 998, label: gettext('Query Tool'),
-              icon: 'pg-font-icon icon-query-tool',
+              icon: 'pg-font-icon icon-query_tool',
             }]);
 
             // show search objects same as query tool
@@ -261,7 +261,7 @@ define([
           type: 'delete',
           tooltip: gettext('Drop Cascade'),
           extraClasses: ['btn-primary-icon m-1', 'delete_multiple_cascade'],
-          icon: 'pg-font-icon icon-drop-cascade',
+          icon: 'pg-font-icon icon-drop_cascade',
           disabled: (_.isFunction(that.canDropCascade)) ? !(that.canDropCascade.apply(self, [data, item])) : (!that.canDropCascade),
           register: function(btn) {
             btn.on('click',() => {

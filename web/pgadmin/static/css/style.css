@@ -1,23 +1,23 @@
-@import '~alertifyjs/build/css/alertify.css';
-@import '~alertifyjs/build/css/themes/bootstrap.css';
-@import '~@fortawesome/fontawesome-free/css/all.css';
-@import '~bootstrap-datepicker/dist/css/bootstrap-datepicker3.css';
-@import '~tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.css';
-@import '~bootstrap4-toggle/css/bootstrap4-toggle.css';
-@import '~backgrid-filter/backgrid-filter.css';
-@import '~jquery-contextmenu/dist/jquery.contextMenu.css';
-@import '~webcabin-docker/Build/wcDocker.css';
-@import '~acitree/css/aciTree.css';
-@import '~leaflet/dist/leaflet.css';
-@import '../../../node_modules/select2/dist/css/select2.css';
+@import 'node_modules/alertifyjs/build/css/alertify.css';
+@import 'node_modules/alertifyjs/build/css/themes/bootstrap.css';
+@import 'node_modules/@fortawesome/fontawesome-free/css/all.css';
+@import 'node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css';
+@import 'node_modules/tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.css';
+@import 'node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css';
+@import 'node_modules/backgrid-filter/backgrid-filter.css';
+@import 'node_modules/jquery-contextmenu/dist/jquery.contextMenu.css';
+@import 'node_modules/webcabin-docker/Build/wcDocker.css';
+@import 'node_modules/acitree/css/aciTree.css';
+@import 'node_modules/select2/dist/css/select2.min.css';
+@import 'node_modules/leaflet/dist/leaflet.css';
 
-@import '~codemirror/lib/codemirror.css';
-@import '~codemirror/addon/dialog/dialog.css';
-@import '~codemirror/addon/scroll/simplescrollbars.css';
+@import 'node_modules/codemirror/lib/codemirror.css';
+@import 'node_modules/codemirror/addon/dialog/dialog.css';
+@import 'node_modules/codemirror/addon/scroll/simplescrollbars.css';
 
-@import '~slickgrid/slick.grid.css';
-@import '~slickgrid/slick-default-theme.css';
-@import '~slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css';
+@import 'node_modules/slickgrid/slick.grid.css';
+@import 'node_modules/slickgrid/slick-default-theme.css';
+@import 'node_modules/slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css';
 
 @import '../vendor/backgrid/backgrid.css';
 @import '../vendor/backgrid/backgrid-select-all.css';

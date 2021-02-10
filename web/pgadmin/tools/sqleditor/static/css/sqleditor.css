@@ -251,30 +251,6 @@ input.editor-checkbox:focus {
   width: 40px;
 }
 
-.icon-query-tool-connected:before {
-  font-icon: url('../img/connect.svg');
-}
-
-.icon-query-tool-disconnected:before {
-  font-icon: url('../img/disconnect.svg');
-}
-
-.icon-commit:before {
-  font-icon: url('../img/commit.svg');
-}
-
-.icon-rollback:before {
-  font-icon: url('../img/rollback.svg');
-}
-
-.icon-save-data-changes:before {
-  font-icon: url('../img/save_data_changes.svg');
-}
-
-.icon-view-data:before {
-  font-icon: url('../img/view_data.svg');
-}
-
 .ajs-body .warn-header {
   font-size: 13px;
   font-weight: bold;

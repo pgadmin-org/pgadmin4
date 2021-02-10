@@ -12,7 +12,7 @@ $theme-colors: (
   --border-color: #{$border-color};
 }
 
-@import "node_modules/bootstrap/scss/bootstrap";
+@import "bootstrap/scss/bootstrap";
 @import 'webcabin.pgadmin';
 @import 'bootstrap.overrides';
 @import 'backgrid.overrides';

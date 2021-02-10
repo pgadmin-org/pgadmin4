@@ -30,8 +30,8 @@ export default function ConnectionBar({statusId, status, bgcolor, fgcolor, title
         data-panel-visible="visible"
         tabIndex="0">
         <span className={'pg-font-icon d-flex m-auto '
-            + (status == STATUS.CONNECTED ? 'icon-query-tool-connected' : '')
-            + (status == (STATUS.DISCONNECTED || STATUS.FAILED) ? 'icon-query-tool-disconnected ' : '')
+            + (status == STATUS.CONNECTED ? 'icon-connected' : '')
+            + (status == (STATUS.DISCONNECTED || STATUS.FAILED) ? 'icon-disconnected ' : '')
             + (status == STATUS.CONNECTING ? 'obtaining-conn' : '')}
         aria-hidden="true" title="" role="img">
         </span>

@@ -47,23 +47,10 @@ _.extend(pgBrowser, {
   /* Get cached preference */
   get_preference: function(module, preference){
     const self = this;
-    // If cache is not yet loaded then keep checking
-    if(_.size(self.preferences_cache) == 0) {
-      var check_preference = function() {
-          if(self.preferences_cache.length > 0) {
-            clearInterval(preferenceTimeout);
-            return _.findWhere(
-              self.preferences_cache, {'module': module, 'name': preference}
-            );
-          }
-        },
-        preferenceTimeout = setInterval(check_preference, 1000);
-    }
-    else {
-      return _.findWhere(
-        self.preferences_cache, {'module': module, 'name': preference}
-      );
-    }
+
+    return _.findWhere(
+      self.preferences_cache, {'module': module, 'name': preference}
+    );
   },
 
   /* Get all the preferences of a module */

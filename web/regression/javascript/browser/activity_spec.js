@@ -7,9 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
+import pgAdmin from 'sources/pgadmin';
 import {pgBrowser} from 'pgadmin.browser.activity';
 import { getEpoch } from 'sources/utils';
-import pgAdmin from 'sources/pgadmin';
 
 describe('For Activity', function(){
   beforeEach(function(){

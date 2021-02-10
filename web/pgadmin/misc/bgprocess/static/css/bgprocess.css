@@ -57,7 +57,3 @@ ol.pg-bg-process-logs {
 .pg-bg-bgprocess:hover .bg-close {
   opacity: 0.95;
 }
-
-.icon-storage-manager:before {
-  font-icon: url('../img/storage_manager.svg');
-}

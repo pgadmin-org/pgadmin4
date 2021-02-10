@@ -21,15 +21,15 @@ export const QuerySources = {
     ICON_CSS_CLASS: 'fa fa-list-alt',
   },
   COMMIT: {
-    ICON_CSS_CLASS: 'icon-commit',
+    ICON_CSS_CLASS: 'pg-font-icon icon-commit',
   },
   ROLLBACK: {
-    ICON_CSS_CLASS: 'icon-rollback',
+    ICON_CSS_CLASS: 'pg-font-icon icon-rollback',
   },
   SAVE_DATA: {
-    ICON_CSS_CLASS: 'icon-save-data-changes',
+    ICON_CSS_CLASS: 'pg-font-icon icon-save_data_changes',
   },
   VIEW_DATA: {
-    ICON_CSS_CLASS: 'icon-view-data',
+    ICON_CSS_CLASS: 'pg-font-icon picon-view_data',
   },
 };

@@ -10,7 +10,6 @@ import SearchObjectsDialog from 'tools/search_objects/static/js/search_objects_d
 import {TreeFake} from '../tree/tree_fake';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
-import {pgBrowser} from 'pgadmin.browser.preferences';
 
 const context = describe;
 
@@ -28,6 +27,7 @@ describe('SearchObjectsDialog', () => {
   let soDialog;
   let jquerySpy;
   let alertifySpy;
+  let pgBrowser = {};
 
   beforeEach(() => {
     pgBrowser.preferences_cache = dummy_cache;
@@ -124,6 +124,10 @@ describe('SearchObjectsDialog', () => {
       );
 
       pgBrowser.get_preference = jasmine.createSpy('get_preferences');
+      pgBrowser.get_preferences_for_module =
+        jasmine.createSpy('get_preferences_for_module').and.returnValue({
+          [dummy_cache[0]['name']]: dummy_cache[0]['value'],
+        });
     });
 
     afterEach(() => {

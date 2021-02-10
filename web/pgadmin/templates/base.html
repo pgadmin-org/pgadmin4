@@ -26,16 +26,14 @@
      <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}
 
-    <script>
+    <script type="application/javascript">
         /* This is used to change publicPath of webpack at runtime */
-        window.getChunkURL = function() {
-            return "{{ url_for('static', filename='js') }}/generated/";
-        };
+        window.resourceBasePath = "{{ url_for('static', filename='js') }}/generated/";
     </script>
     <!-- Base template scripts -->
-    <script type="text/javascript"
+    <script type="application/javascript"
             src="{{ url_for('static', filename='vendor/require/require.js' if config.DEBUG else 'vendor/require/require.min.js') }}"></script>
-    <script type="text/javascript">
+    <script type="application/javascript">
             require.config({
                 baseUrl: '',
 {% if config.APP_VERSION_PARAM is not none and config.APP_VERSION_PARAM != '' %}
@@ -59,9 +57,9 @@
     </script>
 
     <!-- View specified scripts -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/vendor.main.js') }}" ></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/vendor.others.js') }}" ></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.main.js') }}" ></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.others.js') }}" ></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
 
 </head>
 <body>
@@ -71,7 +69,7 @@
 <![endif]-->
 
 {% block body %}{% endblock %}
-<script>
+<script type="application/javascript">
             {% block init_script %}{% endblock %}
 
 </script>

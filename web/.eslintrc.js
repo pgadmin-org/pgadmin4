@@ -18,16 +18,23 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
   ],
-  'parser': 'babel-eslint',
+  'parser': '@babel/eslint-parser',
   'parserOptions': {
+    'requireConfigFile': false,
     'ecmaVersion': 2018,
     'ecmaFeatures': {
-      'jsx': true
+      'jsx': true,
     },
     'sourceType': 'module',
+    'babelOptions': {
+      'plugins': [
+        '@babel/plugin-syntax-jsx',
+      ],
+    },
   },
   'plugins': [
-    'react'
+    'react',
+    '@babel',
   ],
   'globals': {
     '_': true,
@@ -36,28 +43,31 @@ module.exports = {
   'rules': {
     'indent': [
       'error',
-      2
+      2,
     ],
     'linebreak-style': 0,
     'quotes': [
       'error',
-      'single'
+      'single',
     ],
     'semi': [
       'error',
-      'always'
+      'always',
     ],
     'comma-dangle': [
       'error',
-      'always-multiline'
+      'only-multiline',
     ],
-    'no-console': ["error", { allow: ["warn", "error"] }],
+    'no-console': ['error', { allow: ['warn', 'error'] }],
     // We need to exclude below for RegEx case
-    "no-useless-escape": 0,
+    'no-useless-escape': 0,
+    'no-prototype-builtins': 0,
+    'no-global-assign': 0,
+    'no-import-assign': 0,
   },
   'settings': {
     'react': {
       'version': 'detect',
     },
-  }
+  },
 };
