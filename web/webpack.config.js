@@ -69,7 +69,7 @@ const copyFiles = new CopyPlugin({
     pgadminThemesJson,
     {
       from: './pgadmin/static/scss/resources/**/*.png',
-      to: outputPath + '/img',
+      to: 'img/[name].[ext]',
     },
   ],
 });
@@ -326,13 +326,10 @@ var getThemeWebpackConfig = function(theme_name) {
     },
     // Define list of Plugins used in Production or development mode
     // Ref:https://webpack.js.org/concepts/plugins/#components/sidebar/sidebar.jsx
-    plugins: PRODUCTION ? [
+    plugins: [
       extractStyle,
       sourceMapDevToolPlugin,
-    ]: [
-      extractStyle,
-      sourceMapDevToolPlugin,
-    ],
+    ]
   };
 };
 
