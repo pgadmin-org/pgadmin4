@@ -129,7 +129,7 @@ class AuthSourceManager():
         self.current_source = source
 
     @property
-    def get_current_source(self, source):
+    def get_current_source(self):
         return self.current_source
 
     def set_source(self, source):
@@ -174,13 +174,11 @@ class AuthSourceManager():
             # OR When kerberos authentication failed while accessing pgadmin,
             # we need to break the loop as no need to authenticate further
             # even if the authentication sources set to multiple
-            if not status:
-                if (hasattr(msg, 'status') and
-                    msg.status == '401 UNAUTHORIZED') or\
-                        (source.get_source_name() ==
-                         KERBEROS and
-                         request.method == 'GET'):
-                    break
+            if not status and (hasattr(msg, 'status') and
+                               msg.status == '401 UNAUTHORIZED') or \
+                (source.get_source_name() == KERBEROS and
+                 request.method == 'GET'):
+                break
 
             if status:
                 self.set_source(source)

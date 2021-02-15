@@ -286,7 +286,7 @@ splashWindow.on('loaded', function() {
         startDesktopMode();
       })
       .catch((errCode) => {
-        if (fixedPortCheck && errCode == 'EADDRINUSE') {
+        if (errCode == 'EADDRINUSE') {
           alert('The specified fixed port is already in use. Please provide any other valid port.');
         } else {
           alert(errCode);

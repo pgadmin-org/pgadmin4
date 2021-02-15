@@ -111,8 +111,7 @@ else:
 # Flask default.
 app.PGADMIN_RUNTIME = False
 app.logger.debug(
-    'Server mode: %s, config server mode: %s',
-    SERVER_MODE, config.SERVER_MODE
+    'Config server mode: %s', config.SERVER_MODE
 )
 config.EFFECTIVE_SERVER_PORT = None
 if 'PGADMIN_INT_PORT' in os.environ:

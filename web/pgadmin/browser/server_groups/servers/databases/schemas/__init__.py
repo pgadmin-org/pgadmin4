@@ -290,9 +290,8 @@ class SchemaView(PGChildNodeView):
 
         # Privileges
         for aclcol in acls:
-            if specific is not None:
-                if aclcol not in specific:
-                    continue
+            if specific is not None and aclcol not in specific:
+                continue
             if aclcol in data:
                 allowedacl = acls[aclcol]
                 if modified:

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 /* This is used to change publicPath of webpack at runtime for loading chunks */
 /* eslint-disable */
-__webpack_public_path__ = window.resourceBasePath;
+let __webpack_public_path__ = window.resourceBasePath;
 /* eslint-enable */
 
 import {launchDataGrid} from 'tools/datagrid/static/js/show_query_tool';

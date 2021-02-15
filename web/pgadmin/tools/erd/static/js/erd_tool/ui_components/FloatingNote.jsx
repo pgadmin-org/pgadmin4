@@ -11,7 +11,6 @@ import React, { useEffect, useState } from 'react';
 import Tippy from '@tippyjs/react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { TableNodeModel } from '../nodes/TableNode';
 import CustomPropTypes from 'sources/custom_prop_types';
 
 /* The note component of ERD. It uses tippy to create the floating note */

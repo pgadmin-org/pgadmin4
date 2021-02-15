@@ -438,8 +438,9 @@ def change_owner():
             data={}
         )
     except Exception as e:
+        msg = 'Unable to update shared server owner' + _(str(e))
         return internal_server_error(
-            errormsg='Unable to update shared server owner')
+            errormsg=msg)
 
 
 @blueprint.route(
