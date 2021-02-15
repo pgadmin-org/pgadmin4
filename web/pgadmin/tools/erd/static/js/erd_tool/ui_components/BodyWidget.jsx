@@ -87,22 +87,12 @@ export default class BodyWidget extends React.Component {
     this.noteNode = null;
     this.keyboardActionObj = null;
 
-    this.onLoadDiagram = this.onLoadDiagram.bind(this);
-    this.onSaveDiagram = this.onSaveDiagram.bind(this);
-    this.onSaveAsDiagram = this.onSaveAsDiagram.bind(this);
-    this.onSQLClick = this.onSQLClick.bind(this);
-    this.onImageClick = this.onImageClick.bind(this);
-    this.onAddNewNode = this.onAddNewNode.bind(this);
-    this.onEditNode = this.onEditNode.bind(this);
-    this.onCloneNode = this.onCloneNode.bind(this);
-    this.onDeleteNode = this.onDeleteNode.bind(this);
-    this.onNoteClick = this.onNoteClick.bind(this);
-    this.onNoteClose = this.onNoteClose.bind(this);
-    this.onOneToManyClick = this.onOneToManyClick.bind(this);
-    this.onManyToManyClick = this.onManyToManyClick.bind(this);
-    this.onAutoDistribute = this.onAutoDistribute.bind(this);
-    this.onDetailsToggle = this.onDetailsToggle.bind(this);
-    this.onHelpClick = this.onHelpClick.bind(this);
+    _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSaveAsDiagram', 'onSQLClick',
+      'onImageClick', 'onAddNewNode', 'onEditNode', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
+      'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
+      'onDetailsToggle', 'onHelpClick'
+    ]);
+
     this.diagram.zoomToFit = this.diagram.zoomToFit.bind(this.diagram);
     this.diagram.zoomIn = this.diagram.zoomIn.bind(this.diagram);
     this.diagram.zoomOut = this.diagram.zoomOut.bind(this.diagram);
@@ -217,7 +207,7 @@ export default class BodyWidget extends React.Component {
       }, ()=>this.registerKeyboardShortcuts());
     });
 
-    this.props.panel?.on(window.wcDocker?.EVENT.CLOSING, () => {
+    this.props.panel.on(window.wcDocker.EVENT.CLOSING, () => {
       if(this.state.dirty) {
         this.closeOnSave = false;
         this.confirmBeforeClose();
@@ -552,6 +542,30 @@ export default class BodyWidget extends React.Component {
   onImageClick() {
     this.setLoading(gettext('Preparing the image...'));
 
+    /* Move the diagram temporarily to align it to top-left of the canvas so that when
+     * taking the snapshot all the nodes are covered. Once the image is taken, repaint
+     * the canvas back to original state.
+     * Code referred from - zoomToFitNodes function.
+     */
+    let nodesRect = this.diagram.getEngine().getBoundingNodesRect(this.diagram.getModel().getNodes(), 10);
+    let canvasRect = this.canvasEle.getBoundingClientRect();
+    let canvasTopLeftPoint = {
+        x: canvasRect.left,
+        y: canvasRect.top
+    };
+    let nodeLayerTopLeftPoint = {
+        x: canvasTopLeftPoint.x + this.diagram.getModel().getOffsetX(),
+        y: canvasTopLeftPoint.y + this.diagram.getModel().getOffsetY()
+    };
+    let nodesRectTopLeftPoint = {
+        x: nodeLayerTopLeftPoint.x + nodesRect.getTopLeft().x,
+        y: nodeLayerTopLeftPoint.y + nodesRect.getTopLeft().y
+    };
+    let prevTransform = this.canvasEle.querySelector('div').style.transform;
+    this.canvasEle.childNodes.forEach((ele)=>{
+      ele.style.transform = `translate(${nodeLayerTopLeftPoint.x - nodesRectTopLeftPoint.x}px, ${nodeLayerTopLeftPoint.y - nodesRectTopLeftPoint.y}px) scale(1.0)`;
+    });
+
     /* Change the styles for suiting html2canvas */
     this.canvasEle.classList.add('html2canvas-reset');
     this.canvasEle.style.width = this.canvasEle.scrollWidth + 'px';
@@ -567,10 +581,16 @@ export default class BodyWidget extends React.Component {
           'font'
       ];
       let svgElems = Array.from(targetElem.getElementsByTagName("svg"));
-      for (let svgElement of svgElems) {
-          svgElement.setAttribute('width', svgElement.clientWidth);
-          svgElement.setAttribute('height', svgElement.clientHeight);
-          recurseElementChildren(svgElement);
+      for (let svgEle of svgElems) {
+          svgEle.setAttribute('width', svgEle.clientWidth);
+          svgEle.setAttribute('height', svgEle.clientHeight);
+          /* Wrap the SVG in a div tag so that transforms are consistent with html */
+          let wrap = document.createElement('div');
+          wrap.setAttribute('style', svgEle.getAttribute('style'));
+          svgEle.setAttribute('style', null);
+          svgEle.parentNode.appendChild(wrap);
+          wrap.appendChild(svgEle);
+          recurseElementChildren(svgEle);
       }
       function recurseElementChildren(node) {
           if (!node.style)
@@ -586,40 +606,45 @@ export default class BodyWidget extends React.Component {
       }
     }
 
-    html2canvas(this.canvasEle, {
-      width: this.canvasEle.scrollWidth + 10,
-      height: this.canvasEle.scrollHeight + 10,
-      scrollX: 0,
-      scrollY: 0,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: window.getComputedStyle(this.canvasEle).backgroundColor,
-      onclone: (clonedEle)=>{
-        setSvgInlineStyles(clonedEle);
-        return clonedEle;
-      },
-    }).then((canvas)=>{
-      let link = document.createElement('a');
-      link.setAttribute('href', canvas.toDataURL('image/png'));
-      link.setAttribute('download', this.getCurrentProjectName() + '.png');
-      link.click();
-      link.remove();
-    }).catch((err)=>{
-      console.error(err);
-      let msg = gettext('Unknown error. Check console logs');
-      if(err.name) {
-        msg = `${err.name}: ${err.message}`;
-      }
-      this.props.alertify.alert()
-        .set('title', gettext('Error'))
-        .set('message', msg).show();
-    }).then(()=>{
-      /* Revert back to the original CSS styles */
-      this.canvasEle.classList.remove('html2canvas-reset');
-      this.canvasEle.style.width = '';
-      this.canvasEle.style.height = '';
-      this.setLoading(null);
-    });
+    setTimeout(()=>{
+      html2canvas(this.canvasEle, {
+        width: this.canvasEle.scrollWidth + 10,
+        height: this.canvasEle.scrollHeight + 10,
+        scrollX: 0,
+        scrollY: 0,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: window.getComputedStyle(this.canvasEle).backgroundColor,
+        onclone: (clonedEle)=>{
+          setSvgInlineStyles(clonedEle);
+          return clonedEle;
+        },
+      }).then((canvas)=>{
+        let link = document.createElement('a');
+        link.setAttribute('href', canvas.toDataURL('image/png'));
+        link.setAttribute('download', this.getCurrentProjectName() + '.png');
+        link.click();
+        link.remove();
+      }).catch((err)=>{
+        console.error(err);
+        let msg = gettext('Unknown error. Check console logs');
+        if(err.name) {
+          msg = `${err.name}: ${err.message}`;
+        }
+        this.props.alertify.alert()
+          .set('title', gettext('Error'))
+          .set('message', msg).show();
+      }).then(()=>{
+        /* Revert back to the original CSS styles */
+        this.canvasEle.classList.remove('html2canvas-reset');
+        this.canvasEle.style.width = '';
+        this.canvasEle.style.height = '';
+        this.canvasEle.childNodes.forEach((ele)=>{
+          ele.style.transform = prevTransform;
+        });
+        this.setLoading(null);
+      });
+    }, 1000);
   }
 
   onOneToManyClick() {

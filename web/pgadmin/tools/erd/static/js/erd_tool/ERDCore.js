@@ -53,6 +53,8 @@ export default class ERDCore {
     let model = new ERDModel();
     if(data) {
       model.deserializeModel(data, this.engine);
+      this.fireEvent(model.getOptions(), 'offsetUpdated', true);
+      this.fireEvent(model.getOptions(), 'zoomUpdated', true);
     }
 
     const registerNodeEvents = (node) => {
