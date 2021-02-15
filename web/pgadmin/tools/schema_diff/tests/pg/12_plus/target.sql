@@ -1070,9 +1070,6 @@ CREATE PUBLICATION with_one_table_in_target
     WITH (publish = 'insert, delete');
 
 ALTER PUBLICATION with_one_table_in_target
-    OWNER TO managers;
-
-ALTER PUBLICATION with_one_table_in_target
     RENAME TO with_one_table_in_target_alter;
 
 ALTER PUBLICATION with_one_table_in_target_alter SET
