@@ -59,8 +59,7 @@ class SubscriptionAddTestCase(BaseTestGenerator):
         """This function will subscription."""
         self.test_data['name'] = \
             "test_subscription_add_%s" % (str(uuid.uuid4())[1:8])
-
-        self.test_data['pub'] = """["sample__1"]"""
+        self.test_data['slot_name'] = None
 
         data = self.test_data
         if self.is_positive_test:

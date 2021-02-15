@@ -169,7 +169,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
       - This function get the dependents and return ajax response for the
       subscription node.
 
-    * dependencies(self, gid, sid, did, subid):
+    * dependencies(gid, sid, did, subid):
       - This function get the dependencies and return ajax response for the
       subscription node.
     """
@@ -380,27 +380,9 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         return True, res['rows'][0]
 
     @check_precondition
-    def dependents(self, gid, sid, did, subid):
-        """
-        This function gets the dependents and returns an ajax response
-        for the view node.
-
-        Args:
-            gid: Server Group ID
-            sid: Server ID
-            did: Database ID
-            subid: View ID
-        """
-        dependents_result = self.get_dependents(self.conn, subid)
-        return ajax_response(
-            response=dependents_result,
-            status=200
-        )
-
-    @check_precondition
     def statistics(self, gid, sid, did, subid):
         """
-        This function gets the dependents and returns an ajax response
+        This function gets the statistics and returns an ajax response
         for the view node.
 
         Args:
@@ -415,24 +397,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         status, res = self.conn.execute_dict(sql)
         return make_json_response(
             data=res,
-            status=200
-        )
-
-    @check_precondition
-    def dependencies(self, gid, sid, did, subid):
-        """
-        This function gets the dependencies and returns an ajax response
-        for the view node.
-
-        Args:
-            gid: Server Group ID
-            sid: Server ID
-            did: Database ID
-            subid: View ID
-        """
-        dependencies_result = self.get_dependencies(self.conn, subid)
-        return ajax_response(
-            response=dependencies_result,
             status=200
         )
 
@@ -537,7 +501,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, subid=None):
+    def delete(self, gid, sid, did, subid=None, only_sql=False):
         """
         This function will drop the subscription object
 
@@ -574,6 +538,10 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                     "/".join([self.template_path, self._DELETE_SQL]),
                     subname=subname, cascade=cascade, conn=self.conn
                 )
+
+                # Used for schema diff tool
+                if only_sql:
+                    return sql
 
                 status, res = self.conn.execute_scalar(sql)
                 if not status:
@@ -625,26 +593,32 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_details(self, data, old_data):
+    def get_required_details(self, data, old_data):
         """
         This function returns the required data to create subscription
         :param data:
-        :return:
+        :return:data , old_data
 
         """
         required_args = ['name']
 
         required_connection_args = ['host', 'port', 'username', 'db',
                                     'connect_timeout', 'passfile']
+
+        # Set connection time out to zero if initial set
+        # value is replaced to ''
+        if 'connect_timeout' in data and data['connect_timeout'] == '':
+            data['connect_timeout'] = 0
+
         for arg in required_args:
-            if arg not in data and arg in old_data:
+            if arg not in data:
                 data[arg] = old_data[arg]
 
         for arg in required_connection_args:
-            if arg not in data and arg in old_data:
-                data[arg] = old_data[arg]
+            if arg in data:
+                old_data[arg] = data[arg]
 
-        return data
+        return data, old_data
 
     def get_sql(self, data, subid=None, operation=None):
         """
@@ -655,10 +629,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             subid: Subscription ID
         """
 
-        required_args = ['name']
-
-        required_connection_args = ['host', 'port', 'username', 'db',
-                                    'connect_timeout', 'passfile']
         if operation == 'msql':
             dummy = True
         else:
@@ -677,13 +647,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                 return gone(self._NOT_FOUND_PUB_INFORMATION)
 
             old_data = res['rows'][0]
-            for arg in required_args:
-                if arg not in data:
-                    data[arg] = old_data[arg]
-
-            for arg in required_connection_args:
-                if arg in data:
-                    old_data[arg] = data[arg]
+            data, old_data = self.get_required_details(data, old_data)
 
             if 'slot_name' in data and data['slot_name'] == '':
                 data['slot_name'] = 'None'
@@ -702,6 +666,11 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             return sql.strip('\n'), data['name']
 
     def get_connection(self, connection_details):
+        """
+        This function is used to connect to DB and returns the publications
+        :param connection_details:
+        :return: publication list
+        """
 
         passfile = connection_details['passfile'] if \
             'passfile' in connection_details and \
@@ -772,13 +741,13 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
     def sql(self, gid, sid, did, subid, json_resp=True):
         """
         This function will generate sql to show in the sql pane for the
-        selected publication node.
+        selected subscription node.
 
         Args:
             gid: Server Group ID
             sid: Server ID
             did: Database ID
-            subid: Publication ID
+            subid: Subscription ID
             json_resp:
         """
         sql = render_template(
@@ -794,8 +763,11 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # Making copy of output for future use
         old_data = dict(res['rows'][0])
-        if old_data['slot_name'] is None and 'create_slot' not in old_data:
-            old_data['create_slot'] = False
+        old_data['create_slot'] = False
+        if old_data['enabled']:
+            old_data['connect'] = True
+        else:
+            old_data['connect'] = False
 
         sql = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
@@ -856,5 +828,104 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
+    def get_dependencies(self, conn, object_id, where=None,
+                         show_system_objects=None, is_schema_diff=False):
+        """
+        This function gets the dependencies and returns an ajax response
+        for the subscription node.
+        :param conn:
+        :param object_id:
+        :param where:
+        :param show_system_objects:
+        :param is_schema_diff:
+        :return: dependencies result
+        """
 
+        get_name_sql = render_template(
+            "/".join([self.template_path, self._DELETE_SQL]),
+            subid=object_id, conn=self.conn
+        )
+        status, subname = self.conn.execute_scalar(get_name_sql)
+        table_sql = render_template(
+            "/".join([self.template_path, 'dependencies.sql']),
+            subname=subname
+        )
+        status, res = self.conn.execute_dict(table_sql)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        dependencies_result = []
+
+        for publication in res['rows'][0]['pub']:
+            dependencies_result.append(
+                {'type': 'publication',
+                 'name': publication,
+                 'field': 'normal'})
+
+        return dependencies_result
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did):
+        """
+        This function will fetch the list of all the event triggers for
+        specified database id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :return:
+        """
+        res = dict()
+        if self.manager.version < 100000:
+            return res
+
+        last_system_oid = 0
+        if self.manager.db_info is not None and did in self.manager.db_info:
+            last_system_oid = (self.manager.db_info[did])['datlastsysoid']
+
+        sql = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            datlastsysoid=last_system_oid,
+            showsysobj=self.blueprint.show_system_objects,
+            did=did
+        )
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(did, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
+
+    def get_sql_from_diff(self, **kwargs):
+        """
+        This function is used to get the DDL/DML statements.
+        :param kwargs:
+        :return:
+        """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
+        if data:
+            if 'pub' in data and type(data['pub']) == str:
+                # Convert publication details to list
+                data['pub'] = data['pub'].split(',,')
+            sql, name = self.get_sql(data=data, subid=oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  subid=oid, only_sql=True)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, subid=oid,
+                               json_resp=False)
+        return sql
+
+
+SchemaDiffRegistry(blueprint.node_type, SubscriptionView, 'Database')
 SubscriptionView.register_node_view(blueprint)

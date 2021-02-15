@@ -207,7 +207,7 @@ export default class BodyWidget extends React.Component {
       }, ()=>this.registerKeyboardShortcuts());
     });
 
-    this.props.panel.on(window.wcDocker.EVENT.CLOSING, () => {
+    this.props.panel?.on(window.wcDocker?.EVENT.CLOSING, () => {
       if(this.state.dirty) {
         this.closeOnSave = false;
         this.confirmBeforeClose();

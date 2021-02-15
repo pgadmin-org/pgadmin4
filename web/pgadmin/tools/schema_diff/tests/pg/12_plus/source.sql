@@ -1117,3 +1117,53 @@ CREATE USER MAPPING FOR public SERVER test_fs_for_user_mapping;
 
 CREATE USER MAPPING FOR postgres SERVER test_fs_for_user_mapping
     OPTIONS (password 'admin123');
+
+-- Publication scripts
+
+CREATE TABLE test_schema_diff.table_for_publication (
+    col1 integer NOT NULL,
+    col2 text
+);
+
+CREATE TABLE test_schema_diff.table_for_publication_in_target (
+    col1 integer NOT NULL,
+    col2 text
+);
+
+CREATE PUBLICATION for_all_table
+    FOR ALL TABLES
+    WITH (publish = 'insert, delete');
+
+CREATE PUBLICATION with_one_table_in_target
+    FOR TABLE test_schema_diff.table_for_publication_in_target
+    WITH (publish = 'insert, delete');
+
+ALTER PUBLICATION with_one_table_in_target
+    OWNER TO managers;
+
+ALTER PUBLICATION with_one_table_in_target
+    RENAME TO with_one_table_in_target_alter;
+
+ALTER PUBLICATION with_one_table_in_target_alter SET
+    (publish = 'insert, update, truncate');
+
+-- Subscription script
+
+CREATE SUBSCRIPTION "subscription_test1"
+    CONNECTION 'host=localhost port=5432 user=postgres dbname=edb password=samplepassword'
+    PUBLICATION sample_publication
+    WITH (connect = false, enabled = false, create_slot = false, slot_name = None, synchronous_commit = 'off');
+
+ALTER SUBSCRIPTION subscription_test1
+    CONNECTION 'host=localhost port=5432 user=postgres dbname=postgres';
+
+ALTER SUBSCRIPTION subscription_test1
+    SET (synchronous_commit = 'remote_apply');
+
+ALTER SUBSCRIPTION subscription_test1
+    SET PUBLICATION edb WITH (refresh = false);
+
+ALTER SUBSCRIPTION subscription_test1
+    RENAME TO subscription_test;
+
+DROP SUBSCRIPTION subscription_test;

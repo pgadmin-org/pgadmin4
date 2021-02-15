@@ -14,12 +14,12 @@
           "subowner": "postgres",
           "enabled": false,
           "host": "localhost",
-          "slot_name": "NONE",
+          "slot_name": "None",
           "service": "",
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "PLACE_HOLDER"
+          "pub": "[\"sample__1\"]"
       },
       "mocking_required": false,
       "mock_data": {},
@@ -42,12 +42,12 @@
           "subowner": "postgres",
           "enabled": false,
           "host": "localhost",
-          "slot_name": "NONE",
+          "slot_name": "None",
           "service": "",
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "PLACE_HOLDER"
+          "pub": "[\"sample__1\"]"
       },
       "mocking_required": false,
       "mock_data": {},
@@ -70,12 +70,12 @@
           "subowner": "postgres",
           "enabled": false,
           "host": "localhost",
-          "slot_name": "NONE",
+          "slot_name": "None",
           "service": "",
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "PLACE_HOLDER"
+          "pub": "[\"sample__1\"]"
       },
       "mocking_required": false,
       "mock_data": {},
@@ -98,12 +98,12 @@
           "subowner": "postgres",
           "enabled": false,
           "host": "localhost",
-          "slot_name": "NONE",
+          "slot_name": "None",
           "service": "",
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "PLACE_HOLDER"
+          "pub": "[\"sample__1\"]"
       },
       "mocking_required": true,
       "mock_data": {
@@ -128,12 +128,12 @@
           "subowner": "postgres",
           "enabled": false,
           "host": "localhost",
-          "slot_name": "NONE",
+          "slot_name": "None",
           "service": "",
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "PLACE_HOLDER"
+          "pub": "[\"sample__1\"]"
       },
       "mocking_required": true,
       "mock_data": {

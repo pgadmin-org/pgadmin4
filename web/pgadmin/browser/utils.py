@@ -393,6 +393,7 @@ class PGChildNodeView(NodeView):
     _GET_COLUMNS_FOR_TABLE_SQL = 'get_columns_for_table.sql'
     _GET_SUBTYPES_SQL = 'get_subtypes.sql'
     _GET_EXTERNAL_FUNCTIONS_SQL = 'get_external_functions.sql'
+    _GET_TABLE_FOR_PUBLICATION = 'get_tables.sql'
 
     def get_children_nodes(self, manager, **kwargs):
         """
@@ -638,9 +639,7 @@ class PGChildNodeView(NodeView):
                 # if type is present in the types dictionary, but it's
                 # value is None then it requires special handling.
                 if type_str[0] == 'r':
-                    if len(type_str) == 1:
-                        type_name = 'table'
-                    elif (type_str[1].isdigit() and int(type_str[1]) > 0) or \
+                    if (type_str[1].isdigit() and int(type_str[1]) > 0) or \
                         (len(type_str) > 2 and type_str[2].isdigit() and
                          int(type_str[2]) > 0):
                         type_name = 'column'

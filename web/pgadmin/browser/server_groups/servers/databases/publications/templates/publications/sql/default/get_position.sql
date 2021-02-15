@@ -1,1 +1,1 @@
-SELECT oid, pubname AS name FROM pg_publication where pubname = '{{ pubname }}';
+SELECT oid, pubname AS name FROM pg_publication WHERE pubname = '{{ pubname }}';

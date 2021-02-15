@@ -5,7 +5,7 @@
 -- Dumped from database version 10.7
 -- Dumped by pg_dump version 12beta2
 
--- Started on 2019-11-01 12:55:22 IST
+-- Started on 2019-11-01 12:54:15 IST
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,33 +19,49 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 18 (class 2615 OID 139771)
+-- TOC entry 17 (class 2615 OID 139770)
 -- Name: test_schema_diff; Type: SCHEMA; Schema: -; Owner: enterprisedb
 --
 
 CREATE SCHEMA test_schema_diff;
 
+
 ALTER SCHEMA test_schema_diff OWNER TO enterprisedb;
 
 SET default_tablespace = '';
+
 
 CREATE EXTENSION btree_gist
     SCHEMA test_schema_diff;
 
 --
--- TOC entry 12250 (class 1259 OID 139938)
--- Name: MView; Type: MATERIALIZED VIEW; Schema: test_schema_diff; Owner: enterprisedb
+-- TOC entry 12272 (class 1259 OID 149205)
+-- Name: table_for_partition; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
-CREATE MATERIALIZED VIEW test_schema_diff."MView" AS
- SELECT 'tekst'::text AS text
-  WITH NO DATA;
+CREATE TABLE test_schema_diff.table_for_partition (
+    col1 bigint NOT NULL
+)
+PARTITION BY RANGE (col1);
 
 
-ALTER TABLE test_schema_diff."MView" OWNER TO enterprisedb;
+ALTER TABLE test_schema_diff.table_for_partition OWNER TO enterprisedb;
 
 --
--- TOC entry 12277 (class 1259 OID 149234)
+-- TOC entry 12273 (class 1259 OID 149208)
+-- Name: part1; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
+--
+
+CREATE TABLE test_schema_diff.part1 (
+    col1 bigint NOT NULL
+);
+ALTER TABLE ONLY test_schema_diff.table_for_partition ATTACH PARTITION test_schema_diff.part1 FOR VALUES FROM ('1') TO ('23');
+
+
+ALTER TABLE test_schema_diff.part1 OWNER TO enterprisedb;
+
+--
+-- TOC entry 12274 (class 1259 OID 149213)
 -- Name: table_for_partition_1; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -58,41 +74,53 @@ PARTITION BY RANGE (col1);
 ALTER TABLE test_schema_diff.table_for_partition_1 OWNER TO enterprisedb;
 
 --
--- TOC entry 12278 (class 1259 OID 149237)
+-- TOC entry 12275 (class 1259 OID 149216)
 -- Name: part3; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
 CREATE TABLE test_schema_diff.part3 (
     col1 bigint
 );
-ALTER TABLE ONLY test_schema_diff.table_for_partition_1 ATTACH PARTITION test_schema_diff.part3 FOR VALUES FROM ('13') TO ('56');
+ALTER TABLE ONLY test_schema_diff.table_for_partition_1 ATTACH PARTITION test_schema_diff.part3 FOR VALUES FROM ('1') TO ('10');
 
 
 ALTER TABLE test_schema_diff.part3 OWNER TO enterprisedb;
 
 --
--- TOC entry 12259 (class 1259 OID 148971)
+-- TOC entry 12276 (class 1259 OID 149219)
+-- Name: part4; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
+--
+
+CREATE TABLE test_schema_diff.part4 (
+    col1 bigint
+);
+ALTER TABLE ONLY test_schema_diff.table_for_partition_1 ATTACH PARTITION test_schema_diff.part4 FOR VALUES FROM ('11') TO ('20');
+
+
+ALTER TABLE test_schema_diff.part4 OWNER TO enterprisedb;
+
+--
+-- TOC entry 12258 (class 1259 OID 148963)
 -- Name: table_for_column; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
 CREATE TABLE test_schema_diff.table_for_column (
-    col1 bigint,
-    col2 bigint,
-    col4 text
+    col1 bigint NOT NULL,
+    col2 text,
+    col3 text
 );
 
 
 ALTER TABLE test_schema_diff.table_for_column OWNER TO enterprisedb;
 
 --
--- TOC entry 12268 (class 1259 OID 149089)
+-- TOC entry 12256 (class 1259 OID 148895)
 -- Name: table_for_constraints; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
 CREATE TABLE test_schema_diff.table_for_constraints (
     col1 integer NOT NULL,
-    col2 text,
-    CONSTRAINT check_con CHECK ((col1 > 30))
+    col2 text
 );
 
 
@@ -100,7 +128,7 @@ ALTER TABLE test_schema_diff.table_for_constraints OWNER TO enterprisedb;
 
 --
 -- TOC entry 61066 (class 0 OID 0)
--- Dependencies: 12268
+-- Dependencies: 12256
 -- Name: TABLE table_for_constraints; Type: COMMENT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -108,41 +136,7 @@ COMMENT ON TABLE test_schema_diff.table_for_constraints IS 'comments';
 
 
 --
--- TOC entry 61067 (class 0 OID 0)
--- Dependencies: 12268
--- Name: CONSTRAINT check_con ON table_for_constraints; Type: COMMENT; Schema: test_schema_diff; Owner: enterprisedb
---
-
-COMMENT ON CONSTRAINT check_con ON test_schema_diff.table_for_constraints IS 'coment';
-
-
---
--- TOC entry 12257 (class 1259 OID 148960)
--- Name: table_for_del; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
---
-
-CREATE TABLE test_schema_diff.table_for_del (
-);
-
-
-ALTER TABLE test_schema_diff.table_for_del OWNER TO enterprisedb;
-
---
--- TOC entry 12271 (class 1259 OID 149172)
--- Name: table_for_foreign_key; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
---
-
-CREATE TABLE test_schema_diff.table_for_foreign_key (
-    col1 integer NOT NULL,
-    col2 "char",
-    col3 bigint
-);
-
-
-ALTER TABLE test_schema_diff.table_for_foreign_key OWNER TO enterprisedb;
-
---
--- TOC entry 12263 (class 1259 OID 149013)
+-- TOC entry 12262 (class 1259 OID 149004)
 -- Name: table_for_identical; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -155,7 +149,7 @@ CREATE TABLE test_schema_diff.table_for_identical (
 ALTER TABLE test_schema_diff.table_for_identical OWNER TO enterprisedb;
 
 --
--- TOC entry 12261 (class 1259 OID 148986)
+-- TOC entry 12260 (class 1259 OID 148977)
 -- Name: table_for_index; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -168,7 +162,7 @@ CREATE TABLE test_schema_diff.table_for_index (
 ALTER TABLE test_schema_diff.table_for_index OWNER TO enterprisedb;
 
 --
--- TOC entry 12270 (class 1259 OID 149144)
+-- TOC entry 12269 (class 1259 OID 149128)
 -- Name: table_for_primary_key; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -181,7 +175,7 @@ CREATE TABLE test_schema_diff.table_for_primary_key (
 ALTER TABLE test_schema_diff.table_for_primary_key OWNER TO enterprisedb;
 
 --
--- TOC entry 12265 (class 1259 OID 149034)
+-- TOC entry 12264 (class 1259 OID 149024)
 -- Name: table_for_rule; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -194,7 +188,7 @@ CREATE TABLE test_schema_diff.table_for_rule (
 ALTER TABLE test_schema_diff.table_for_rule OWNER TO enterprisedb;
 
 --
--- TOC entry 12267 (class 1259 OID 149066)
+-- TOC entry 12266 (class 1259 OID 149048)
 -- Name: table_for_trigger; Type: TABLE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -206,19 +200,18 @@ CREATE TABLE test_schema_diff.table_for_trigger (
 
 ALTER TABLE test_schema_diff.table_for_trigger OWNER TO enterprisedb;
 
-
 --
--- TOC entry 56906 (class 2606 OID 149097)
+-- TOC entry 56893 (class 2606 OID 148904)
 -- Name: table_for_constraints Exclusion; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
 ALTER TABLE ONLY test_schema_diff.table_for_constraints
-    ADD CONSTRAINT "Exclusion" EXCLUDE USING gist (col2 WITH <>) WITH (fillfactor='15') WHERE ((col1 > 1)) DEFERRABLE INITIALLY DEFERRED;
+    ADD CONSTRAINT "Exclusion" EXCLUDE USING gist (col2 WITH <>) WITH (fillfactor='12') WHERE ((col1 > 1)) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
--- TOC entry 61068 (class 0 OID 0)
--- Dependencies: 56906
+-- TOC entry 61067 (class 0 OID 0)
+-- Dependencies: 56893
 -- Name: CONSTRAINT "Exclusion" ON table_for_constraints; Type: COMMENT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -226,16 +219,43 @@ COMMENT ON CONSTRAINT "Exclusion" ON test_schema_diff.table_for_constraints IS '
 
 
 --
--- TOC entry 56910 (class 2606 OID 149176)
--- Name: table_for_foreign_key table_for_foreign_key_pkey; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
+-- TOC entry 56891 (class 2606 OID 148911)
+-- Name: table_for_constraints check_con; Type: CHECK CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
-ALTER TABLE ONLY test_schema_diff.table_for_foreign_key
-    ADD CONSTRAINT table_for_foreign_key_pkey PRIMARY KEY (col1);
+ALTER TABLE test_schema_diff.table_for_constraints
+    ADD CONSTRAINT check_con CHECK ((col1 > 10)) NOT VALID;
 
 
 --
--- TOC entry 56897 (class 2606 OID 148993)
+-- TOC entry 61068 (class 0 OID 0)
+-- Dependencies: 56891
+-- Name: CONSTRAINT check_con ON table_for_constraints; Type: COMMENT; Schema: test_schema_diff; Owner: enterprisedb
+--
+
+COMMENT ON CONSTRAINT check_con ON test_schema_diff.table_for_constraints IS 'coment';
+
+
+--
+-- TOC entry 56899 (class 2606 OID 148970)
+-- Name: table_for_column table_for_column_pkey; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
+--
+
+ALTER TABLE ONLY test_schema_diff.table_for_column
+    ADD CONSTRAINT table_for_column_pkey PRIMARY KEY (col1);
+
+
+--
+-- TOC entry 56895 (class 2606 OID 148902)
+-- Name: table_for_constraints table_for_constraints_pkey; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
+--
+
+ALTER TABLE ONLY test_schema_diff.table_for_constraints
+    ADD CONSTRAINT table_for_constraints_pkey PRIMARY KEY (col1);
+
+
+--
+-- TOC entry 56904 (class 2606 OID 148984)
 -- Name: table_for_index table_for_index_pkey; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -244,16 +264,16 @@ ALTER TABLE ONLY test_schema_diff.table_for_index
 
 
 --
--- TOC entry 56908 (class 2606 OID 149151)
+-- TOC entry 56913 (class 2606 OID 149135)
 -- Name: table_for_primary_key table_for_primary_key_pkey; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
 ALTER TABLE ONLY test_schema_diff.table_for_primary_key
-    ADD CONSTRAINT table_for_primary_key_pkey PRIMARY KEY (col1);
+    ADD CONSTRAINT table_for_primary_key_pkey PRIMARY KEY (col1, col2);
 
 
 --
--- TOC entry 56902 (class 2606 OID 149041)
+-- TOC entry 56909 (class 2606 OID 149031)
 -- Name: table_for_rule table_for_rule_pkey; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -262,7 +282,7 @@ ALTER TABLE ONLY test_schema_diff.table_for_rule
 
 
 --
--- TOC entry 56900 (class 2606 OID 149020)
+-- TOC entry 56907 (class 2606 OID 149011)
 -- Name: table_for_identical table_for_table_for_identical_pkey; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -271,7 +291,7 @@ ALTER TABLE ONLY test_schema_diff.table_for_identical
 
 
 --
--- TOC entry 56904 (class 2606 OID 149073)
+-- TOC entry 56911 (class 2606 OID 149055)
 -- Name: table_for_trigger table_for_trigger_pkey; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -280,23 +300,33 @@ ALTER TABLE ONLY test_schema_diff.table_for_trigger
 
 
 --
--- TOC entry 56893 (class 1259 OID 148994)
+-- TOC entry 56897 (class 2606 OID 148913)
+-- Name: table_for_constraints unique; Type: CONSTRAINT; Schema: test_schema_diff; Owner: enterprisedb
+--
+
+ALTER TABLE ONLY test_schema_diff.table_for_constraints
+    ADD CONSTRAINT "unique" UNIQUE (col1);
+
+
+--
+-- TOC entry 61069 (class 0 OID 0)
+-- Dependencies: 56897
+-- Name: CONSTRAINT "unique" ON table_for_constraints; Type: COMMENT; Schema: test_schema_diff; Owner: enterprisedb
+--
+
+COMMENT ON CONSTRAINT "unique" ON test_schema_diff.table_for_constraints IS 'cmnt';
+
+
+--
+-- TOC entry 56900 (class 1259 OID 149023)
 -- Name: index1; Type: INDEX; Schema: test_schema_diff; Owner: enterprisedb
 --
 
-CREATE INDEX index1 ON test_schema_diff.table_for_index USING btree (col2 text_pattern_ops);
+CREATE INDEX index1 ON test_schema_diff.table_for_index USING btree (col2 varchar_pattern_ops);
 
 
 --
--- TOC entry 56894 (class 1259 OID 148995)
--- Name: index2; Type: INDEX; Schema: test_schema_diff; Owner: enterprisedb
---
-
-CREATE INDEX index2 ON test_schema_diff.table_for_index USING btree (col2 text_pattern_ops);
-
-
---
--- TOC entry 56898 (class 1259 OID 149021)
+-- TOC entry 56905 (class 1259 OID 149012)
 -- Name: index_identical; Type: INDEX; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -304,7 +334,7 @@ CREATE INDEX index_identical ON test_schema_diff.table_for_identical USING btree
 
 
 --
--- TOC entry 56895 (class 1259 OID 149212)
+-- TOC entry 56901 (class 1259 OID 149211)
 -- Name: index_same; Type: INDEX; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -312,15 +342,15 @@ CREATE INDEX index_same ON test_schema_diff.table_for_index USING btree (col2 te
 
 
 --
--- TOC entry 56892 (class 1259 OID 139945)
--- Name: mview_index; Type: INDEX; Schema: test_schema_diff; Owner: enterprisedb
+-- TOC entry 56902 (class 1259 OID 149022)
+-- Name: index_source; Type: INDEX; Schema: test_schema_diff; Owner: enterprisedb
 --
 
-CREATE INDEX mview_index ON test_schema_diff."MView" USING btree (text text_pattern_ops);
+CREATE INDEX index_source ON test_schema_diff.table_for_index USING btree (col2 text_pattern_ops);
 
 
 --
--- TOC entry 61045 (class 2618 OID 149042)
+-- TOC entry 61044 (class 2618 OID 149032)
 -- Name: table_for_rule rule1; Type: RULE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -329,8 +359,8 @@ CREATE RULE rule1 AS
 
 
 --
--- TOC entry 61069 (class 0 OID 0)
--- Dependencies: 61045
+-- TOC entry 61070 (class 0 OID 0)
+-- Dependencies: 61044
 -- Name: RULE rule1 ON table_for_rule; Type: COMMENT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -338,34 +368,15 @@ COMMENT ON RULE rule1 ON test_schema_diff.table_for_rule IS 'comments';
 
 
 --
--- TOC entry 61046 (class 2618 OID 149043)
+-- TOC entry 61045 (class 2618 OID 149033)
 -- Name: table_for_rule rule2; Type: RULE; Schema: test_schema_diff; Owner: enterprisedb
 --
 
 CREATE RULE rule2 AS
-    ON UPDATE TO test_schema_diff.table_for_rule DO NOTHING;
-
-
---
--- TOC entry 61047 (class 2618 OID 149044)
--- Name: table_for_rule rule3; Type: RULE; Schema: test_schema_diff; Owner: enterprisedb
---
-
-CREATE RULE rule3 AS
     ON INSERT TO test_schema_diff.table_for_rule DO NOTHING;
 
-
 --
--- TOC entry 61050 (class 0 OID 139938)
--- Dependencies: 12250 61062
--- Name: MView; Type: MATERIALIZED VIEW DATA; Schema: test_schema_diff; Owner: enterprisedb
---
-
-REFRESH MATERIALIZED VIEW test_schema_diff."MView";
-
-
---
--- TOC entry 12284 (class 1259 OID 347823)
+-- TOC entry 12283 (class 1259 OID 347818)
 -- Name: test view; Type: VIEW; Schema: test_schema_diff; Owner: enterprisedb
 --
 
@@ -408,256 +419,287 @@ CREATE VIEW test_schema_diff."test view" AS
 ALTER TABLE test_schema_diff."test view" OWNER TO enterprisedb;
 
 --
--- TOC entry 12285 (class 1259 OID 347828)
+-- TOC entry 12286 (class 1259 OID 347832)
 -- Name: test view f; Type: VIEW; Schema: test_schema_diff; Owner: enterprisedb
 --
 
-CREATE VIEW test_schema_diff."test view f" WITH (security_barrier='true') AS
+CREATE VIEW test_schema_diff."test view f" WITH (security_barrier='false') AS
  SELECT 2;
 
 
 ALTER TABLE test_schema_diff."test view f" OWNER TO enterprisedb;
 
 --
--- TOC entry 61105 (class 0 OID 0)
--- Dependencies: 12285
+-- TOC entry 61111 (class 0 OID 0)
+-- Dependencies: 12286
 -- Name: VIEW "test view f"; Type: COMMENT; Schema: test_schema_diff; Owner: enterprisedb
 --
 
 COMMENT ON VIEW test_schema_diff."test view f" IS 'cmn';
 
 -- Collation scripts
-CREATE COLLATION test_schema_diff.coll_tar
+CREATE COLLATION test_schema_diff.coll_src
     FROM pg_catalog."POSIX";
 
-ALTER COLLATION test_schema_diff.coll_tar
+ALTER COLLATION test_schema_diff.coll_src
     OWNER TO enterprisedb;
 
+COMMENT ON COLLATION test_schema_diff.coll_src
+    IS 'Test Comment';
+
 CREATE COLLATION test_schema_diff.coll_diff
-    (LC_COLLATE = 'C', LC_CTYPE = 'C');
+    (LC_COLLATE = 'POSIX', LC_CTYPE = 'POSIX');
 
 ALTER COLLATION test_schema_diff.coll_diff
     OWNER TO enterprisedb;
 
+COMMENT ON COLLATION test_schema_diff.coll_diff
+    IS 'Test Comment';
+
 -- FTS Configuration scripts
-CREATE TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_tar (
+CREATE TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_src (
     COPY=german
 );
 
-ALTER TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_tar OWNER TO enterprisedb;
+ALTER TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_src OWNER TO enterprisedb;
+
+COMMENT ON TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_src
+    IS 'Test Comment';
 
 CREATE TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_diff (
 	PARSER = default
 );
-ALTER TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_diff ADD MAPPING FOR asciiword WITH dutch_stem;
+ALTER TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_diff ADD MAPPING FOR asciiword WITH german_stem;
 ALTER TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_diff ADD MAPPING FOR email WITH simple;
-ALTER TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_diff ADD MAPPING FOR hword WITH german_stem;
+ALTER TEXT SEARCH CONFIGURATION test_schema_diff.fts_con_diff ADD MAPPING FOR hword WITH dutch_stem;
 
 -- FTS Dictionary scripts
-CREATE TEXT SEARCH DICTIONARY test_schema_diff.fts_dict_tar (
+CREATE TEXT SEARCH DICTIONARY test_schema_diff.fts_dict_src (
     TEMPLATE = simple,
     stopwords = 'english'
 );
 
+COMMENT ON TEXT SEARCH DICTIONARY test_schema_diff.fts_dict_src
+    IS 'Test Comment';
+
 CREATE TEXT SEARCH DICTIONARY test_schema_diff.fts_dict_diff (
     TEMPLATE = simple,
-    stopwords = 'german'
+    stopwords = 'english'
 );
 
 COMMENT ON TEXT SEARCH DICTIONARY test_schema_diff.fts_dict_diff
-    IS 'Comment';
+    IS 'Test Comment';
 
 -- FTS Parser scripts
-CREATE TEXT SEARCH PARSER test_schema_diff.fts_par_tar (
+CREATE TEXT SEARCH PARSER test_schema_diff.fts_par_src (
     START = prsd_start,
     GETTOKEN = prsd_nexttoken,
     END = prsd_end,
     LEXTYPES = prsd_lextype);
 
+COMMENT ON TEXT SEARCH PARSER test_schema_diff.fts_par_src
+      IS 'Test Comment';
+
 CREATE TEXT SEARCH PARSER test_schema_diff.fts_par_diff (
-    START = int4_accum,
-    GETTOKEN = inet_gist_penalty,
-    END = btint2sortsupport,
-    LEXTYPES = dispell_init);
+    START = prsd_start,
+    GETTOKEN = prsd_nexttoken,
+    END = prsd_end,
+    LEXTYPES = prsd_lextype);
 
 COMMENT ON TEXT SEARCH PARSER test_schema_diff.fts_par_diff
-      IS 'Comment';
+      IS 'Test Comment';
 
 -- FTS Template scripts
-CREATE TEXT SEARCH TEMPLATE test_schema_diff.fts_templ_tar (
+CREATE TEXT SEARCH TEMPLATE test_schema_diff.fts_templ_src (
     INIT = dispell_init,
     LEXIZE = dispell_lexize
 );
 
+COMMENT ON TEXT SEARCH TEMPLATE test_schema_diff.fts_templ_src IS 'Test Comment';
+
 CREATE TEXT SEARCH TEMPLATE test_schema_diff.fts_templ_diff (
-    INIT = dsimple_init,
-    LEXIZE = dsimple_lexize
+    INIT = dispell_init,
+    LEXIZE = dispell_lexize
 );
 
-COMMENT ON TEXT SEARCH TEMPLATE test_schema_diff.fts_templ_diff IS 'Comment';
+COMMENT ON TEXT SEARCH TEMPLATE test_schema_diff.fts_templ_diff IS 'Test Comment';
 
 -- Domain and Domain Constraint script
-CREATE DOMAIN test_schema_diff.dom_tar
+CREATE DOMAIN test_schema_diff.dom_src
     AS bigint
     DEFAULT 100
     NOT NULL;
 
-ALTER DOMAIN test_schema_diff.dom_tar OWNER TO enterprisedb;
+ALTER DOMAIN test_schema_diff.dom_src OWNER TO enterprisedb;
 
-ALTER DOMAIN test_schema_diff.dom_tar
-    ADD CONSTRAINT con_tar CHECK (VALUE <> 100);
+ALTER DOMAIN test_schema_diff.dom_src
+    ADD CONSTRAINT con_src CHECK (VALUE <> 100);
 
 CREATE DOMAIN test_schema_diff.dom_cons_diff
     AS bigint
-    DEFAULT 400;
+    DEFAULT 100
+    NOT NULL;
 
 ALTER DOMAIN test_schema_diff.dom_cons_diff OWNER TO enterprisedb;
 
 ALTER DOMAIN test_schema_diff.dom_cons_diff
-    ADD CONSTRAINT cons_diff_1 CHECK (VALUE <> 40);
+    ADD CONSTRAINT cons_diff_1 CHECK (VALUE <> 50);
 
 ALTER DOMAIN test_schema_diff.dom_cons_diff
-    ADD CONSTRAINT cons_tar_only CHECK (VALUE <> 25);
+    ADD CONSTRAINT cons_src_only CHECK (VALUE <> 25);
 
 CREATE DOMAIN test_schema_diff.dom_type_diff
-    AS numeric(8,4);
+    AS character varying(40)
+    COLLATE pg_catalog."POSIX";
 
 ALTER DOMAIN test_schema_diff.dom_type_diff OWNER TO enterprisedb;
 
 ALTER DOMAIN test_schema_diff.dom_type_diff
-    ADD CONSTRAINT cons1 CHECK (VALUE <> 45::numeric);
+    ADD CONSTRAINT cons1 CHECK (VALUE::text <> 'pgAdmin3'::text);
 
 ALTER DOMAIN test_schema_diff.dom_type_diff
-    ADD CONSTRAINT cons2 CHECK (VALUE <> 50::numeric);
+    ADD CONSTRAINT cons2 CHECK (VALUE::text <> 'pgAdmin4'::text);
 
 COMMENT ON DOMAIN test_schema_diff.dom_type_diff
-    IS 'Comment';
+    IS 'Test comment';
 
 -- Type Script composite type
-CREATE TYPE test_schema_diff.typ_comp_tar AS
+CREATE TYPE test_schema_diff.typ_comp_src AS
 (
 	m1 bit(5),
 	m2 text COLLATE pg_catalog."POSIX"
 );
-ALTER TYPE test_schema_diff.typ_comp_tar
+ALTER TYPE test_schema_diff.typ_comp_src
     OWNER TO enterprisedb;
+
 CREATE TYPE test_schema_diff.typ_comp_diff AS
 (
-	m1 bit(5),
-	m2 text COLLATE pg_catalog."POSIX"
+	m1 numeric(5,2),
+	m3 character varying(30) COLLATE pg_catalog."C"
 );
 ALTER TYPE test_schema_diff.typ_comp_diff
     OWNER TO enterprisedb;
+COMMENT ON TYPE test_schema_diff.typ_comp_diff
+    IS 'Test Comment';
+GRANT USAGE ON TYPE test_schema_diff.typ_comp_diff TO PUBLIC;
+GRANT USAGE ON TYPE test_schema_diff.typ_comp_diff TO pg_monitor WITH GRANT OPTION;
+GRANT USAGE ON TYPE test_schema_diff.typ_comp_diff TO enterprisedb;
 
 CREATE TYPE test_schema_diff.typ_comp_diff_no_column AS
 (
-	a "char",
-	b "char"
 );
 ALTER TYPE test_schema_diff.typ_comp_diff_no_column
     OWNER TO enterprisedb;
 
 -- Type Script ENUM type
-CREATE TYPE test_schema_diff.typ_enum_tar AS ENUM
+CREATE TYPE test_schema_diff.typ_enum_src AS ENUM
     ('test_enum');
-ALTER TYPE test_schema_diff.typ_enum_tar
+ALTER TYPE test_schema_diff.typ_enum_src
     OWNER TO enterprisedb;
 
 CREATE TYPE test_schema_diff.typ_enum_diff AS ENUM
     ('test_enum', 'test_enum_1');
 ALTER TYPE test_schema_diff.typ_enum_diff
     OWNER TO enterprisedb;
+COMMENT ON TYPE test_schema_diff.typ_enum_diff
+    IS 'Test Comment';
+GRANT USAGE ON TYPE test_schema_diff.typ_enum_src TO pg_monitor WITH GRANT OPTION;
 
 -- Type Script RANGE type
-CREATE TYPE test_schema_diff.typ_range_tar AS RANGE
+CREATE TYPE test_schema_diff.typ_range_src AS RANGE
 (
     SUBTYPE=text,
     COLLATION = pg_catalog."POSIX",
     SUBTYPE_OPCLASS = text_ops
 );
-ALTER TYPE test_schema_diff.typ_range_tar
+ALTER TYPE test_schema_diff.typ_range_src
     OWNER TO enterprisedb;
 
 CREATE TYPE test_schema_diff.typ_range_col_diff AS RANGE
 (
     SUBTYPE=text,
-    COLLATION = pg_catalog."POSIX",
+    COLLATION = pg_catalog."C",
     SUBTYPE_OPCLASS = text_ops
 );
 ALTER TYPE test_schema_diff.typ_range_col_diff
     OWNER TO enterprisedb;
+COMMENT ON TYPE test_schema_diff.typ_range_col_diff
+    IS 'Test Comment';
+GRANT USAGE ON TYPE test_schema_diff.typ_range_col_diff TO PUBLIC;
+GRANT USAGE ON TYPE test_schema_diff.typ_range_col_diff TO enterprisedb WITH GRANT OPTION;
 
 CREATE TYPE test_schema_diff.typ_range_subtype_diff AS RANGE
 (
-    SUBTYPE=bool,
-    SUBTYPE_OPCLASS = bool_ops
+    SUBTYPE=bpchar,
+    COLLATION = pg_catalog."POSIX"
 );
 ALTER TYPE test_schema_diff.typ_range_subtype_diff
     OWNER TO enterprisedb;
 
 -- Type Script SHELL type
-CREATE TYPE test_schema_diff.typ_shell_tar;
-ALTER TYPE test_schema_diff.typ_shell_tar
+CREATE TYPE test_schema_diff.typ_shell_src;
+ALTER TYPE test_schema_diff.typ_shell_src
     OWNER TO enterprisedb;
 
 CREATE TYPE test_schema_diff.typ_shell_diff;
 ALTER TYPE test_schema_diff.typ_shell_diff
     OWNER TO enterprisedb;
+COMMENT ON TYPE test_schema_diff.typ_shell_diff
+    IS 'Test Comment';
 
 -- Type script to test when Type is different
-CREATE TYPE test_schema_diff.typ_comp_range_diff AS RANGE
+CREATE TYPE test_schema_diff.typ_comp_range_diff AS
 (
-    SUBTYPE=text,
-    COLLATION = pg_catalog."C",
-    SUBTYPE_OPCLASS = text_ops
+	m1 bigint,
+	m2 text[] COLLATE pg_catalog."POSIX"
 );
 ALTER TYPE test_schema_diff.typ_comp_range_diff
     OWNER TO enterprisedb;
 
-CREATE TYPE test_schema_diff.typ_comp_enum_diff AS ENUM
-    ('test_enum', 'test_enum_1');
-ALTER TYPE test_schema_diff.typ_comp_enum_diff
-    OWNER TO enterprisedb;
-
-CREATE TYPE test_schema_diff.typ_range_comp_diff AS
+CREATE TYPE test_schema_diff.typ_comp_enum_diff AS
 (
 	m1 bigint,
 	m2 text[] COLLATE pg_catalog."POSIX"
 );
-ALTER TYPE test_schema_diff.typ_range_comp_diff
+ALTER TYPE test_schema_diff.typ_comp_range_diff
     OWNER TO enterprisedb;
 
-CREATE TYPE test_schema_diff.typ_range_enum_diff AS ENUM
-    ('test_enum', 'test_enum_1');
-ALTER TYPE test_schema_diff.typ_range_enum_diff
-    OWNER TO enterprisedb;
-
-CREATE TYPE test_schema_diff.typ_enum_comp_diff AS
-(
-	m1 bigint,
-	m2 text[] COLLATE pg_catalog."POSIX"
-);
-ALTER TYPE test_schema_diff.typ_enum_comp_diff
-    OWNER TO enterprisedb;
-
-CREATE TYPE test_schema_diff.typ_enum_range_diff AS RANGE
+CREATE TYPE test_schema_diff.typ_range_comp_diff AS RANGE
 (
     SUBTYPE=text,
     COLLATION = pg_catalog."C",
     SUBTYPE_OPCLASS = text_ops
 );
+ALTER TYPE test_schema_diff.typ_range_comp_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE test_schema_diff.typ_range_enum_diff AS RANGE
+(
+    SUBTYPE=text,
+    COLLATION = pg_catalog."C",
+    SUBTYPE_OPCLASS = text_ops
+);
+ALTER TYPE test_schema_diff.typ_range_enum_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE test_schema_diff.typ_enum_comp_diff AS ENUM
+    ('test_enum', 'test_enum_1');
+ALTER TYPE test_schema_diff.typ_enum_comp_diff
+    OWNER TO enterprisedb;
+
+CREATE TYPE test_schema_diff.typ_enum_range_diff AS ENUM
+    ('test_enum', 'test_enum_1');
 ALTER TYPE test_schema_diff.typ_enum_range_diff
     OWNER TO enterprisedb;
 
 -- Package script (test_schema_diff only)
-CREATE OR REPLACE PACKAGE test_schema_diff.pkg_tar
+CREATE OR REPLACE PACKAGE test_schema_diff.pkg_src
 IS
     FUNCTION get_dept_name(p_deptno numeric) RETURN character varying;
     PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric);
-END pkg_tar;
+END pkg_src;
 
-
-CREATE OR REPLACE PACKAGE BODY test_schema_diff.pkg_tar
+CREATE OR REPLACE PACKAGE BODY test_schema_diff.pkg_src
 IS
     FUNCTION get_dept_name(p_deptno numeric) RETURN character varying IS
         v_dname         VARCHAR2(14);
@@ -676,15 +718,16 @@ IS
             VALUES(p_empno, p_ename, p_job, p_sal,
                    p_hiredate, p_comm, p_mgr, p_deptno);
     END;
-END pkg_tar;
+END pkg_src;
 
-COMMENT ON PACKAGE test_schema_diff.pkg_tar
-    IS 'test_schema_diff';
+COMMENT ON PACKAGE test_schema_diff.pkg_src
+    IS 'Target';
 
 -- Package script difference in header, acl and comment
 CREATE OR REPLACE PACKAGE test_schema_diff.pkg_header_diff
 IS
     FUNCTION get_dept_name(p_deptno numeric) RETURN character varying;
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric);
 END pkg_header_diff;
 
 CREATE OR REPLACE PACKAGE BODY test_schema_diff.pkg_header_diff
@@ -699,7 +742,20 @@ IS
             DBMS_OUTPUT.PUT_LINE('Invalid department number ' || p_deptno);
             RETURN '';
     END;
+
+    PROCEDURE hire_emp(p_empno numeric, p_ename character varying, p_job character varying, p_sal numeric, p_hiredate timestamp without time zone, p_comm numeric, p_mgr numeric, p_deptno numeric) IS
+    BEGIN
+        INSERT INTO emp(empno, ename, job, sal, hiredate, comm, mgr, deptno)
+            VALUES(p_empno, p_ename, p_job, p_sal,
+                   p_hiredate, p_comm, p_mgr, p_deptno);
+    END;
 END pkg_header_diff;
+
+COMMENT ON PACKAGE test_schema_diff.pkg_header_diff
+    IS 'Header Diff';
+
+GRANT EXECUTE ON PACKAGE test_schema_diff.pkg_header_diff TO PUBLIC;
+GRANT EXECUTE ON PACKAGE test_schema_diff.pkg_header_diff TO enterprisedb WITH GRANT OPTION;
 
 -- Package script difference in body, acl and comment
 CREATE OR REPLACE PACKAGE test_schema_diff.pkg_body_diff
@@ -718,12 +774,6 @@ IS
         DBMS_OUTPUT.PUT_LINE('After Insert ');
     END;
 END pkg_body_diff;
-
-COMMENT ON PACKAGE test_schema_diff.pkg_body_diff
-    IS 'Header Diff';
-
-GRANT EXECUTE ON PACKAGE test_schema_diff.pkg_body_diff TO PUBLIC;
-GRANT EXECUTE ON PACKAGE test_schema_diff.pkg_body_diff TO enterprisedb WITH GRANT OPTION;
 
 -- Synonyms Scripts
 -- Prerequisite for synonyms
@@ -791,26 +841,32 @@ CREATE OR REPLACE SYNONYM test_schema_diff.syn_seq_src
 CREATE OR REPLACE SYNONYM test_schema_diff.syn_table_src
     FOR test_schema_diff.table_for_syn;
 
-CREATE OR REPLACE PROCEDURE public.proc_for_syn()
-    SECURITY DEFINER VOLATILE
-    COST 100
-AS $BODY$BEGIN
-SELECT 1;
-END;$BODY$;
+CREATE TABLE public.table_for_syn
+(
+    id bigint,
+    name text COLLATE pg_catalog."default"
+)
+TABLESPACE pg_default;
+ALTER TABLE public.table_for_syn
+    OWNER to enterprisedb;
 
 CREATE OR REPLACE SYNONYM test_schema_diff.syn_diff
-    FOR public.proc_for_syn;
+    FOR public.table_for_syn;
 
 -- Sequences Script
-CREATE SEQUENCE test_schema_diff.seq_tar
+CREATE SEQUENCE test_schema_diff.seq_src
     CYCLE
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 3
     CACHE 6;
-ALTER SEQUENCE test_schema_diff.seq_tar
+ALTER SEQUENCE test_schema_diff.seq_src
     OWNER TO enterprisedb;
+COMMENT ON SEQUENCE test_schema_diff.seq_src
+    IS 'Test Comment';
+GRANT ALL ON SEQUENCE test_schema_diff.seq_src TO PUBLIC;
+GRANT ALL ON SEQUENCE test_schema_diff.seq_src TO enterprisedb;
 
 CREATE SEQUENCE test_schema_diff.seq_diff_comment_acl
     INCREMENT 1
@@ -818,9 +874,12 @@ CREATE SEQUENCE test_schema_diff.seq_diff_comment_acl
     MINVALUE 1
     MAXVALUE 9223372036854775807
     CACHE 1;
-
 ALTER SEQUENCE test_schema_diff.seq_diff_comment_acl
     OWNER TO enterprisedb;
+COMMENT ON SEQUENCE test_schema_diff.seq_diff_comment_acl
+    IS 'Test Comment';
+GRANT ALL ON SEQUENCE test_schema_diff.seq_diff_comment_acl TO PUBLIC;
+GRANT ALL ON SEQUENCE test_schema_diff.seq_diff_comment_acl TO enterprisedb;
 
 CREATE SEQUENCE test_schema_diff.seq_diff_comment_acl_remove
     INCREMENT 1
@@ -830,25 +889,21 @@ CREATE SEQUENCE test_schema_diff.seq_diff_comment_acl_remove
     CACHE 1;
 ALTER SEQUENCE test_schema_diff.seq_diff_comment_acl_remove
     OWNER TO enterprisedb;
-COMMENT ON SEQUENCE test_schema_diff.seq_diff_comment_acl_remove
-    IS 'Test Comment';
-GRANT ALL ON SEQUENCE test_schema_diff.seq_diff_comment_acl_remove TO PUBLIC;
-GRANT ALL ON SEQUENCE test_schema_diff.seq_diff_comment_acl_remove TO enterprisedb;
 
 CREATE SEQUENCE test_schema_diff.seq_diff
-    INCREMENT 5
+    CYCLE
+    INCREMENT 3
     START 3
     MINVALUE 3
-    MAXVALUE 80
-    CACHE 1;
-
+    MAXVALUE 100
+    CACHE 2;
 ALTER SEQUENCE test_schema_diff.seq_diff
     OWNER TO enterprisedb;
 
 CREATE SEQUENCE test_schema_diff.seq_start_diff
     INCREMENT 5
-    START 1
-    MINVALUE 1
+    START 3
+    MINVALUE 3
     MAXVALUE 20;
 ALTER SEQUENCE test_schema_diff.seq_start_diff
     OWNER TO enterprisedb;
@@ -882,23 +937,24 @@ TABLESPACE pg_default;
 ALTER TABLE public.test_table_for_foreign_table
     OWNER to enterprisedb;
 
-CREATE FOREIGN TABLE test_schema_diff.ft_tar(
+CREATE FOREIGN TABLE test_schema_diff.ft_src(
     fid bigint NULL,
     fname text NULL COLLATE pg_catalog."default"
 )
     SERVER test_fs_for_foreign_table;
-ALTER FOREIGN TABLE test_schema_diff.ft_tar
+ALTER FOREIGN TABLE test_schema_diff.ft_src
     OWNER TO enterprisedb;
-ALTER FOREIGN TABLE test_schema_diff.ft_tar
+ALTER FOREIGN TABLE test_schema_diff.ft_src
     ADD CONSTRAINT fcheck CHECK ((fid > 1000)) NO INHERIT;
-COMMENT ON FOREIGN TABLE test_schema_diff.ft_tar
+COMMENT ON FOREIGN TABLE test_schema_diff.ft_src
     IS 'Test Comment';
-GRANT INSERT ON TABLE test_schema_diff.ft_tar TO PUBLIC;
-GRANT ALL ON TABLE test_schema_diff.ft_tar TO enterprisedb;
+GRANT INSERT ON TABLE test_schema_diff.ft_src TO PUBLIC;
+GRANT ALL ON TABLE test_schema_diff.ft_src TO enterprisedb;
 
 CREATE FOREIGN TABLE test_schema_diff.ft_diff_col(
     fid bigint NULL,
-    fname text NOT NULL COLLATE pg_catalog."default"
+    fname text NULL COLLATE pg_catalog."default",
+    fcity character varying(40) NULL COLLATE pg_catalog."POSIX"
 )
     SERVER test_fs_for_foreign_table;
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_col
@@ -906,9 +962,7 @@ ALTER FOREIGN TABLE test_schema_diff.ft_diff_col
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_col
     ADD CONSTRAINT fcheck CHECK ((fid > 1000)) NO INHERIT;
 COMMENT ON FOREIGN TABLE test_schema_diff.ft_diff_col
-    IS 'Comment';
-GRANT INSERT ON TABLE test_schema_diff.ft_diff_col TO PUBLIC;
-GRANT ALL ON TABLE test_schema_diff.ft_diff_col TO enterprisedb;
+    IS 'Test Comment';
 
 CREATE FOREIGN TABLE test_schema_diff.ft_diff_const(
     fid bigint NULL,
@@ -921,11 +975,11 @@ ALTER FOREIGN TABLE test_schema_diff.ft_diff_const
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_const
     ADD CONSTRAINT fcheck CHECK ((fid > 1000)) NO INHERIT;
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_const
-    ADD CONSTRAINT fcheck1 CHECK ((fid > 50)) NO INHERIT NOT VALID;
+    ADD CONSTRAINT fcheck1 CHECK ((fid > 1000)) NO INHERIT NOT VALID;
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_const
-    ADD CONSTRAINT fcheck2 CHECK ((fid > 20)) NO INHERIT;
+    ADD CONSTRAINT fcheck2 CHECK ((fid > 20));
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_const
-    ADD CONSTRAINT fcheck_tar CHECK ((fid > 50));
+    ADD CONSTRAINT fcheck_src CHECK ((fid > 50));
 
 GRANT INSERT ON TABLE test_schema_diff.ft_diff_const TO PUBLIC;
 GRANT ALL ON TABLE test_schema_diff.ft_diff_const TO enterprisedb;
@@ -935,8 +989,7 @@ CREATE FOREIGN TABLE test_schema_diff.ft_diff_opt(
     fname text NULL COLLATE pg_catalog."default"
 )
     SERVER test_fs_for_foreign_table
-    OPTIONS (debug 'true', opt2 'val30', opt_tar 'val_tar');
-
+    OPTIONS (opt1 'val1', opt2 'val20', opt_src 'val_src');
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_opt
     OWNER TO enterprisedb;
 
@@ -944,20 +997,20 @@ CREATE FOREIGN TABLE test_schema_diff.ft_diff_foreign_server(
     fid bigint NULL,
     fname text NULL COLLATE pg_catalog."default"
 )
-    SERVER test_fs2_for_foreign_table;
+    SERVER test_fs_for_foreign_table;
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_foreign_server
     OWNER TO enterprisedb;
 
 CREATE FOREIGN TABLE test_schema_diff.ft_diff_foreign_server_1(
     fid bigint NULL,
-    fcity text NULL COLLATE pg_catalog."default"
+    fname text NULL COLLATE pg_catalog."default"
 )
-    SERVER test_fs2_for_foreign_table
-    OPTIONS (opt1 'val1', opt2 'val2');
+    SERVER test_fs_for_foreign_table
+    OPTIONS (opt1 'val1');
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_foreign_server_1
     OWNER TO enterprisedb;
 ALTER FOREIGN TABLE test_schema_diff.ft_diff_foreign_server_1
-    ADD CONSTRAINT cs2 CHECK ((fid > 200)) NO INHERIT;
+    ADD CONSTRAINT cs1 CHECK ((fid > 200)) NO INHERIT;
 
 -- Test for RM #5350
 CREATE TABLE test_schema_diff.events_transactions
@@ -967,14 +1020,21 @@ CREATE TABLE test_schema_diff.events_transactions
     account_token text COLLATE pg_catalog."default",
     transaction_dt timestamp without time zone,
     payment_method integer,
+    payment_pin integer,
     approval text COLLATE pg_catalog."default",
     amount integer,
     file_dt timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     file_name character varying(256) COLLATE pg_catalog."default",
-    payment_pin integer,
     transfer_dt timestamp without time zone,
     transaction_type integer
 );
+
+-- Casts script
+CREATE CAST (money AS bigint)
+    WITHOUT FUNCTION
+    AS IMPLICIT;
+
+COMMENT ON CAST (money AS bigint) IS 'money -> bigint';
 
 -- Event Trigger script
 CREATE FUNCTION public.evt_tri_fun()
@@ -989,36 +1049,24 @@ $BODY$;
 ALTER FUNCTION public.evt_tri_fun()
     OWNER TO enterprisedb;
 
-CREATE FUNCTION public.evt_tri_fun2()
-    RETURNS event_trigger
-    LANGUAGE 'plpgsql'
-     NOT LEAKPROOF
-AS $BODY$
-BEGIN
-PERFORM 1;
-END;
-$BODY$;
-ALTER FUNCTION public.evt_tri_fun2()
-    OWNER TO enterprisedb;
-
-CREATE EVENT TRIGGER evt_tri_tar ON DDL_COMMAND_START
+CREATE EVENT TRIGGER evt_tri_src ON DDL_COMMAND_START
     EXECUTE PROCEDURE public.evt_tri_fun();
-COMMENT ON EVENT TRIGGER evt_tri_tar
+COMMENT ON EVENT TRIGGER evt_tri_src
     IS 'Event Trigger Source';
-ALTER EVENT TRIGGER evt_tri_tar
+ALTER EVENT TRIGGER evt_tri_src
     OWNER TO enterprisedb;
 
-CREATE EVENT TRIGGER evt_tri_diff_event1 ON DDL_COMMAND_END
+CREATE EVENT TRIGGER evt_tri_diff_event1 ON DDL_COMMAND_START
     EXECUTE PROCEDURE public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_event1
     OWNER TO enterprisedb;
 
-CREATE EVENT TRIGGER evt_tri_diff_event2 ON DDL_COMMAND_START
+CREATE EVENT TRIGGER evt_tri_diff_event2 ON DDL_COMMAND_END
     EXECUTE PROCEDURE public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_event2
     OWNER TO enterprisedb;
 
-CREATE EVENT TRIGGER evt_tri_diff_event3 ON DDL_COMMAND_START
+CREATE EVENT TRIGGER evt_tri_diff_event3 ON SQL_DROP
     EXECUTE PROCEDURE public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_event3
     OWNER TO enterprisedb;
@@ -1026,39 +1074,54 @@ ALTER EVENT TRIGGER evt_tri_diff_event3
 CREATE EVENT TRIGGER evt_tri_diff_enable_status1 ON DDL_COMMAND_START
     EXECUTE PROCEDURE public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_enable_status1
+    DISABLE;
+ALTER EVENT TRIGGER evt_tri_diff_enable_status1
     OWNER TO enterprisedb;
 
 CREATE EVENT TRIGGER evt_tri_diff_enable_status2 ON DDL_COMMAND_START
     EXECUTE PROCEDURE public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_enable_status2
-    DISABLE;
+    ENABLE REPLICA;
 ALTER EVENT TRIGGER evt_tri_diff_enable_status2
     OWNER TO enterprisedb;
 
 CREATE EVENT TRIGGER evt_tri_diff_enable_status3 ON DDL_COMMAND_START
     EXECUTE PROCEDURE public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_enable_status3
+    ENABLE ALWAYS;
+ALTER EVENT TRIGGER evt_tri_diff_enable_status3
     OWNER TO enterprisedb;
 
 CREATE EVENT TRIGGER evt_tri_diff_func ON DDL_COMMAND_START
-    EXECUTE PROCEDURE public.evt_tri_fun2();
+    EXECUTE PROCEDURE public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_func
     OWNER TO enterprisedb;
 
 -- Extension script
 CREATE EXTENSION adminpack
     SCHEMA pg_catalog
-    VERSION "1.0";
+    VERSION "1.1";
 
 -- Language script
-CREATE TRUSTED PROCEDURAL LANGUAGE tar_language
+CREATE TRUSTED PROCEDURAL LANGUAGE src_trusted_language
     HANDLER plpgsql_call_handler
     INLINE plpgsql_inline_handler
     VALIDATOR plpgsql_validator;
-ALTER LANGUAGE tar_language
+ALTER LANGUAGE src_trusted_language
     OWNER TO enterprisedb;
-GRANT USAGE ON LANGUAGE tar_language TO PUBLIC;
-GRANT USAGE ON LANGUAGE tar_language TO enterprisedb WITH GRANT OPTION;
+COMMENT ON LANGUAGE src_trusted_language
+    IS 'Custom Trusted Language';
+GRANT USAGE ON LANGUAGE src_trusted_language TO PUBLIC;
+GRANT USAGE ON LANGUAGE src_trusted_language TO enterprisedb WITH GRANT OPTION;
+
+CREATE PROCEDURAL LANGUAGE src_proc_language
+    HANDLER plpgsql_call_handler
+    INLINE plpgsql_inline_handler
+    VALIDATOR plpgsql_validator;
+ALTER LANGUAGE src_proc_language
+    OWNER TO enterprisedb;
+COMMENT ON LANGUAGE src_proc_language
+    IS 'Custom Procedural Language';
 
 CREATE TRUSTED PROCEDURAL LANGUAGE lan_diff_acl_add
     HANDLER plpgsql_call_handler
@@ -1066,6 +1129,8 @@ CREATE TRUSTED PROCEDURAL LANGUAGE lan_diff_acl_add
     VALIDATOR plpgsql_validator;
 ALTER LANGUAGE lan_diff_acl_add
     OWNER TO enterprisedb;
+GRANT USAGE ON LANGUAGE lan_diff_acl_add TO PUBLIC;
+GRANT USAGE ON LANGUAGE lan_diff_acl_add TO enterprisedb WITH GRANT OPTION;
 
 CREATE TRUSTED PROCEDURAL LANGUAGE lan_diff_acl_revoke
     HANDLER plpgsql_call_handler
@@ -1073,10 +1138,8 @@ CREATE TRUSTED PROCEDURAL LANGUAGE lan_diff_acl_revoke
     VALIDATOR plpgsql_validator;
 ALTER LANGUAGE lan_diff_acl_revoke
     OWNER TO enterprisedb;
-GRANT USAGE ON LANGUAGE lan_diff_acl_revoke TO PUBLIC;
-GRANT USAGE ON LANGUAGE lan_diff_acl_revoke TO enterprisedb WITH GRANT OPTION;
 
-CREATE PROCEDURAL LANGUAGE lan_diff_type
+CREATE TRUSTED PROCEDURAL LANGUAGE lan_diff_type
     HANDLER plpgsql_call_handler
     INLINE plpgsql_inline_handler
     VALIDATOR plpgsql_validator;
@@ -1085,51 +1148,51 @@ ALTER LANGUAGE lan_diff_type
 
 CREATE TRUSTED PROCEDURAL LANGUAGE lan_diff_inline_validator
     HANDLER plpgsql_call_handler
-    INLINE plpgsql_inline_handler
-    VALIDATOR plpgsql_validator;
+    INLINE prsd_end
+    VALIDATOR pg_stat_reset_single_table_counters;
 ALTER LANGUAGE lan_diff_type
     OWNER TO enterprisedb;
 
 -- Foreign Data Wrapper Script
-CREATE FOREIGN DATA WRAPPER fdw_tar
+CREATE FOREIGN DATA WRAPPER fdw_src
     VALIDATOR pg_catalog.postgresql_fdw_validator;
-ALTER FOREIGN DATA WRAPPER fdw_tar
+ALTER FOREIGN DATA WRAPPER fdw_src
     OWNER TO enterprisedb;
-COMMENT ON FOREIGN DATA WRAPPER fdw_tar
+COMMENT ON FOREIGN DATA WRAPPER fdw_src
     IS 'Foreign Data Wrapper';
 
 CREATE FOREIGN DATA WRAPPER fdw_diff_acl_add
     VALIDATOR pg_catalog.postgresql_fdw_validator;
 ALTER FOREIGN DATA WRAPPER fdw_diff_acl_add
     OWNER TO enterprisedb;
+GRANT USAGE ON FOREIGN DATA WRAPPER fdw_diff_acl_add TO PUBLIC;
+GRANT USAGE ON FOREIGN DATA WRAPPER fdw_diff_acl_add TO enterprisedb WITH GRANT OPTION;
 
 CREATE FOREIGN DATA WRAPPER fdw_diff_acl_revoke
     VALIDATOR pg_catalog.postgresql_fdw_validator;
 ALTER FOREIGN DATA WRAPPER fdw_diff_acl_revoke
     OWNER TO enterprisedb;
-GRANT USAGE ON FOREIGN DATA WRAPPER fdw_diff_acl_revoke TO PUBLIC;
-GRANT USAGE ON FOREIGN DATA WRAPPER fdw_diff_acl_revoke TO enterprisedb WITH GRANT OPTION;
 
-CREATE FOREIGN DATA WRAPPER fdw_diff_add_validator;
+CREATE FOREIGN DATA WRAPPER fdw_diff_add_validator
+    VALIDATOR pg_catalog.postgresql_fdw_validator;
 ALTER FOREIGN DATA WRAPPER fdw_diff_add_validator
     OWNER TO enterprisedb;
 
-CREATE FOREIGN DATA WRAPPER fdw_diff_remove_validator
-    VALIDATOR pg_catalog.postgresql_fdw_validator;
+CREATE FOREIGN DATA WRAPPER fdw_diff_remove_validator;
 ALTER FOREIGN DATA WRAPPER fdw_diff_remove_validator
     OWNER TO enterprisedb;
 
-CREATE FOREIGN DATA WRAPPER fdw_diff_add_options;
+CREATE FOREIGN DATA WRAPPER fdw_diff_add_options
+    OPTIONS (debug 'true');
 ALTER FOREIGN DATA WRAPPER fdw_diff_add_options
     OWNER TO enterprisedb;
 
-CREATE FOREIGN DATA WRAPPER fdw_diff_remove_options
-    OPTIONS (debug 'true');
+CREATE FOREIGN DATA WRAPPER fdw_diff_remove_options;
 ALTER FOREIGN DATA WRAPPER fdw_diff_remove_options
     OWNER TO enterprisedb;
 
 CREATE FOREIGN DATA WRAPPER fdw_diff_options
-    OPTIONS (debug 'true');
+    OPTIONS (debug 'false');
 ALTER FOREIGN DATA WRAPPER fdw_diff_options
     OWNER TO enterprisedb;
 
@@ -1139,61 +1202,61 @@ CREATE FOREIGN DATA WRAPPER test_fdw_for_foreign_server
 ALTER FOREIGN DATA WRAPPER test_fdw_for_foreign_server
     OWNER TO enterprisedb;
 
-CREATE SERVER fs_tar
+CREATE SERVER fs_src
     TYPE 'PG'
     VERSION '10'
     FOREIGN DATA WRAPPER test_fdw_for_foreign_server
     OPTIONS (host '127.0.0.1', port '5432');
-ALTER SERVER fs_tar
+ALTER SERVER fs_src
     OWNER TO enterprisedb;
-COMMENT ON SERVER fs_tar
+COMMENT ON SERVER fs_src
     IS 'Foreign Server';
 
 CREATE SERVER fs_diff_acl_add
     FOREIGN DATA WRAPPER test_fdw_for_foreign_server;
 ALTER SERVER fs_diff_acl_add
     OWNER TO enterprisedb;
+GRANT USAGE ON FOREIGN SERVER fs_diff_acl_add TO PUBLIC;
+GRANT USAGE ON FOREIGN SERVER fs_diff_acl_add TO enterprisedb WITH GRANT OPTION;
 
 CREATE SERVER fs_diff_acl_revoke
     FOREIGN DATA WRAPPER test_fdw_for_foreign_server;
 ALTER SERVER fs_diff_acl_revoke
     OWNER TO enterprisedb;
-GRANT USAGE ON FOREIGN SERVER fs_diff_acl_revoke TO PUBLIC;
-GRANT USAGE ON FOREIGN SERVER fs_diff_acl_revoke TO enterprisedb WITH GRANT OPTION;
 
 CREATE SERVER fs_diff_type_version_add
+    TYPE 'PG'
+    VERSION '10'
     FOREIGN DATA WRAPPER test_fdw_for_foreign_server;
 ALTER SERVER fs_diff_type_version_add
     OWNER TO enterprisedb;
 
 CREATE SERVER fs_diff_type_version_remove
-    TYPE 'PG'
-    VERSION '10'
     FOREIGN DATA WRAPPER test_fdw_for_foreign_server;
 ALTER SERVER fs_diff_type_version_remove
     OWNER TO enterprisedb;
 
 CREATE SERVER fs_diff_type_version_modify
-    TYPE 'EPAS'
-    VERSION '11'
+    TYPE 'PG'
+    VERSION '10'
     FOREIGN DATA WRAPPER test_fdw_for_foreign_server;
 ALTER SERVER fs_diff_type_version_modify
     OWNER TO enterprisedb;
 
 CREATE SERVER fs_diff_options_add
-    FOREIGN DATA WRAPPER test_fdw_for_foreign_server;
+    FOREIGN DATA WRAPPER test_fdw_for_foreign_server
+    OPTIONS (host '127.0.0.1', port '5432');
 ALTER SERVER fs_diff_options_add
     OWNER TO enterprisedb;
 
 CREATE SERVER fs_diff_options_remove
-    FOREIGN DATA WRAPPER test_fdw_for_foreign_server
-    OPTIONS (host '127.0.0.1', port '5432');
+    FOREIGN DATA WRAPPER test_fdw_for_foreign_server;
 ALTER SERVER fs_diff_options_remove
     OWNER TO enterprisedb;
 
 CREATE SERVER fs_diff_options_modify
     FOREIGN DATA WRAPPER test_fdw_for_foreign_server
-    OPTIONS (host '127.0.0.1', port '5432');
+    OPTIONS (host '192.168.1.1', port '8080');
 ALTER SERVER fs_diff_options_modify
     OWNER TO enterprisedb;
 
@@ -1208,19 +1271,14 @@ CREATE SERVER test_fs_for_user_mapping
 ALTER SERVER test_fs_for_user_mapping
     OWNER TO enterprisedb;
 
-CREATE USER MAPPING FOR public SERVER test_fs_for_user_mapping
+CREATE USER MAPPING FOR public SERVER test_fs_for_user_mapping;
+
+CREATE USER MAPPING FOR enterprisedb SERVER test_fs_for_user_mapping
     OPTIONS (password 'admin123');
 
-CREATE USER MAPPING FOR enterprisedb SERVER test_fs_for_user_mapping;
-
--- Publication script
+-- Publication Script
 
 CREATE TABLE test_schema_diff.table_for_publication (
-    col1 integer NOT NULL,
-    col2 text
-);
-
-CREATE TABLE test_schema_diff.table_for_publication_in_target (
     col1 integer NOT NULL,
     col2 text
 );
@@ -1229,33 +1287,33 @@ CREATE PUBLICATION for_all_table
     FOR ALL TABLES
     WITH (publish = 'insert, delete');
 
-CREATE PUBLICATION with_one_table_in_target
-    FOR TABLE test_schema_diff.table_for_publication_in_target
+CREATE PUBLICATION with_one_table
+    FOR TABLE test_schema_diff.table_for_publication
     WITH (publish = 'insert, delete');
 
-ALTER PUBLICATION with_one_table_in_target
-    RENAME TO with_one_table_in_target_alter;
+ALTER PUBLICATION with_one_table
+    RENAME TO with_one_table_alter;
 
-ALTER PUBLICATION with_one_table_in_target_alter SET
-    (publish = 'insert, update');
+ALTER PUBLICATION with_one_table_alter SET
+    (publish = 'insert, update, truncate');
 
 -- Subscription script
 
-CREATE SUBSCRIPTION "subscription_test1_in_target"
+CREATE SUBSCRIPTION "subscription_test1"
     CONNECTION 'host=localhost port=5432 user=postgres dbname=edb password=samplepassword'
     PUBLICATION sample_publication
     WITH (connect = false, enabled = false, create_slot = false, slot_name = None, synchronous_commit = 'off');
 
-ALTER SUBSCRIPTION subscription_test1_in_target
+ALTER SUBSCRIPTION subscription_test1
     CONNECTION 'host=localhost port=5432 user=postgres dbname=postgres';
 
-ALTER SUBSCRIPTION subscription_test1_in_target
+ALTER SUBSCRIPTION subscription_test1
     SET (synchronous_commit = 'remote_apply');
 
-ALTER SUBSCRIPTION subscription_test1_in_target
+ALTER SUBSCRIPTION subscription_test1
     SET PUBLICATION edb WITH (refresh = false);
 
-ALTER SUBSCRIPTION subscription_test1_in_target
-    RENAME TO subscription_test_in_target;
+ALTER SUBSCRIPTION subscription_test1
+    RENAME TO subscription_test;
 
-DROP SUBSCRIPTION subscription_test_in_target;
+DROP SUBSCRIPTION subscription_test;

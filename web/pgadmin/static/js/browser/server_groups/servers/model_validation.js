@@ -39,12 +39,16 @@ export class ModelValidation {
       this.checkForEmpty('db', gettext('Maintenance database must be specified.'));
       this.checkForEmpty('username', gettext('Username must be specified.'));
       this.checkForEmpty('port', gettext('Port must be specified.'));
-      if(!_.isUndefined(pub) && pub.length == 0){
+      if(!_.isUndefined(pub)){
+        if (this.model.isNew())
+          this.checkForEmpty('password', gettext('Password must be specified.'));
         this.checkForEmpty('pub', gettext('Publication must be specified.'));
       }
     } else {
       this.checkForEmpty('db', gettext('Maintenance database must be specified.'));
-      if(!_.isUndefined(pub) && pub.length == 0){
+      if(!_.isUndefined(pub)){
+        if (this.model.isNew())
+          this.checkForEmpty('password', gettext('Password must be specified.'));
         this.checkForEmpty('pub', gettext('Publication must be specified.'));
       }
       this.clearHostAddressAndDbErrors();
@@ -90,7 +94,7 @@ export class ModelValidation {
 
     let pub = this.model.get('pub'),
       errmsg;
-    if(!_.isUndefined(pub) && pub.length == 0){
+    if(!_.isUndefined(pub)){
       errmsg = gettext('Host name, Address must ' +
       'be specified.');
     }else{

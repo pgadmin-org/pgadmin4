@@ -21,6 +21,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from urllib.parse import unquote
 
 
 class PublicationModule(CollectionNodeModule):
@@ -153,16 +155,9 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
       - This function returns the handler and inline functions for the
       selected publication node
 
-    * get_templates(gid, sid, did)
-      - This function returns publication templates.
-
     * sql(gid, sid, did, pbid):
       - This function will generate sql to show it in sql pane for the
       selected publication node.
-
-    * dependents(gid, sid, did, pbid):
-      - This function get the dependents and return ajax response for the
-      publication node.
 
     * dependencies(self, gid, sid, did, pbid):
       - This function get the dependencies and return ajax response for the
@@ -194,7 +189,6 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'get_tables': [{}, {'get': 'get_tables'}],
-        'get_templates': [{}, {'get': 'get_templates'}],
         'delete': [{'delete': 'delete'}, {'delete': 'delete'}]
     })
 
@@ -281,7 +275,8 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
                 status, pname = self.conn.execute_scalar(get_name_sql)
                 table_sql = render_template(
-                    "/".join([self.template_path, 'get_tables.sql']),
+                    "/".join([self.template_path,
+                              self._GET_TABLE_FOR_PUBLICATION]),
                     pname=pname
                 )
 
@@ -412,7 +407,8 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             )
             status, pname = self.conn.execute_scalar(get_name_sql)
             table_sql = render_template(
-                "/".join([self.template_path, 'get_tables.sql']),
+                "/".join([self.template_path,
+                          self._GET_TABLE_FOR_PUBLICATION]),
                 pname=pname
             )
 
@@ -444,6 +440,9 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             data = self._parser_data_input_from_client(data)
 
+            # unquote the table data
+            data = self.unquote_the_table(data)
+
             sql, name = self.get_sql(data, pbid)
 
             # Most probably this is due to error
@@ -464,6 +463,22 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
+
+    def unquote_the_table(self, data):
+        """
+        This function unquote the table value
+        :param data:
+        :return: data
+        """
+        pubtable = []
+
+        # Unquote the values
+        if 'pubtable' in data:
+            for table in data['pubtable']:
+                pubtable.append(unquote(table))
+            data['pubtable'] = pubtable
+
+        return data
 
     @check_precondition
     def create(self, gid, sid, did):
@@ -495,6 +510,9 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             data = self._parser_data_input_from_client(data)
 
+            # unquote the table data
+            data = self.unquote_the_table(data)
+
             sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]),
                                   data=data, conn=self.conn)
@@ -525,7 +543,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, pbid=None):
+    def delete(self, gid, sid, did, pbid=None, only_sql=False):
         """
         This function will drop the publication object
 
@@ -551,6 +569,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                     "/".join([self.template_path, self._DELETE_SQL]),
                     pbid=pbid, conn=self.conn
                 )
+
                 status, pname = self.conn.execute_scalar(sql)
 
                 if not status:
@@ -561,6 +580,10 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                     "/".join([self.template_path, self._DELETE_SQL]),
                     pname=pname, cascade=cascade, conn=self.conn
                 )
+
+                # Used for schema diff tool
+                if only_sql:
+                    return sql
 
                 status, res = self.conn.execute_scalar(sql)
                 if not status:
@@ -598,6 +621,9 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             except ValueError:
                 data[k] = v
         try:
+            # unquote the table data
+            data = self.unquote_the_table(data)
+
             sql, name = self.get_sql(data, pbid)
             # Most probably this is due to error
             if not isinstance(sql, str):
@@ -637,6 +663,31 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return data
 
+    def _get_table_details_to_add_and_delete(self, old_data, data):
+        """
+        This function returns the tables which need to add and delete
+        :param old_data:
+        :param data:
+        :return:
+        """
+        drop_table_data = []
+        add_table_data = []
+        drop_table = False
+        add_table = False
+
+        for table in old_data['pubtable']:
+            if 'pubtable' in data and table not in data['pubtable']:
+                drop_table_data.append(table)
+                drop_table = True
+
+        if 'pubtable' in data:
+            for table in data['pubtable']:
+                if table not in old_data['pubtable']:
+                    add_table_data.append(table)
+                    add_table = True
+
+        return drop_table, add_table, drop_table_data, add_table_data
+
     def get_sql(self, data, pbid=None):
         """
         This function will generate sql from model data.
@@ -648,9 +699,6 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         required_args = [
             'name'
         ]
-        drop_table = False
-        add_table = False
-
         if pbid is not None:
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]), pbid=pbid
@@ -664,20 +712,8 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             old_data = self._get_old_table_data(res['rows'][0]['name'], res)
 
-            drop_table_data = []
-
-            add_table_data = []
-
-            for table in old_data['pubtable']:
-                if 'pubtable' in data and table not in data['pubtable']:
-                    drop_table_data.append(table)
-                    drop_table = True
-
-            if 'pubtable' in data:
-                for table in data['pubtable']:
-                    if table not in old_data['pubtable']:
-                        add_table_data.append(table)
-                        add_table = True
+            drop_table, add_table, drop_table_data, add_table_data = \
+                self._get_table_details_to_add_and_delete(old_data, data)
 
             for arg in required_args:
                 if arg not in data:
@@ -743,7 +779,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         table_sql = render_template(
-            "/".join([self.template_path, 'get_tables.sql']),
+            "/".join([self.template_path, self._GET_TABLE_FOR_PUBLICATION]),
             pname=pname
         )
 
@@ -854,5 +890,102 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
+    def get_dependencies(self, conn, object_id, where=None,
+                         show_system_objects=None, is_schema_diff=False):
+        """
+        This function gets the dependencies and returns an ajax response
+        for the publication node.
+        :param conn:
+        :param object_id:
+        :param where:
+        :param show_system_objects:
+        :param is_schema_diff:
+        :return: dependencies result
+        """
 
+        get_name_sql = render_template(
+            "/".join([self.template_path, self._DELETE_SQL]),
+            pbid=object_id, conn=self.conn
+        )
+        status, pname = self.conn.execute_scalar(get_name_sql)
+        table_sql = render_template(
+            "/".join([self.template_path, 'dependencies.sql']),
+            pname=pname
+        )
+        status, res = self.conn.execute_dict(table_sql)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        dependencies_result = []
+
+        for pub_table in res['rows']:
+            dependencies_result.append(
+                {'type': 'table',
+                 'name': pub_table['pubtable'],
+                 'field': 'normal',
+                 'oid': pub_table['oid']})
+
+        return dependencies_result
+
+    @check_precondition
+    def fetch_objects_to_compare(self, sid, did):
+        """
+        This function will fetch the list of all the event triggers for
+        specified database id.
+
+        :param sid: Server Id
+        :param did: Database Id
+        :return:
+        """
+        res = dict()
+
+        if self.manager.version < 100000:
+            return res
+
+        last_system_oid = 0
+        if self.manager.db_info is not None and did in self.manager.db_info:
+            last_system_oid = (self.manager.db_info[did])['datlastsysoid']
+
+        sql = render_template(
+            "/".join([self.template_path, 'nodes.sql']),
+            datlastsysoid=last_system_oid,
+            showsysobj=self.blueprint.show_system_objects
+        )
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            status, data = self._fetch_properties(did, row['oid'])
+            if status:
+                res[row['name']] = data
+
+        return res
+
+    def get_sql_from_diff(self, **kwargs):
+        """
+        This function is used to get the DDL/DML statements.
+        :param kwargs:
+        :return:
+        """
+        gid = kwargs.get('gid')
+        sid = kwargs.get('sid')
+        did = kwargs.get('did')
+        oid = kwargs.get('oid')
+        data = kwargs.get('data', None)
+        drop_sql = kwargs.get('drop_sql', False)
+
+        if data:
+            sql, name = self.get_sql(data=data, pbid=oid)
+        else:
+            if drop_sql:
+                sql = self.delete(gid=gid, sid=sid, did=did,
+                                  pbid=oid, only_sql=True)
+            else:
+                sql = self.sql(gid=gid, sid=sid, did=did, pbid=oid,
+                               json_resp=False)
+        return sql
+
+
+SchemaDiffRegistry(blueprint.node_type, PublicationView, 'Database')
 PublicationView.register_node_view(blueprint)

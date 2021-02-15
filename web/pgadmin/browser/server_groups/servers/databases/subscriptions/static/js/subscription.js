@@ -77,6 +77,7 @@ define('pgadmin.node.subscription', [
           name: undefined,
           subowner: undefined,
           pubtable: undefined,
+          connect_timeout: undefined,
           pub:[],
           enabled:true,
           create_slot: true,
