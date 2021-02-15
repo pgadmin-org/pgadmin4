@@ -121,6 +121,10 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *New ERD Project*         | Click to open the :ref:`ERD Tool <erd_tool>` and start designing your database.                                                           |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Schema Diff*             | Click to open the :ref:`Schema Diff <schema_diff_feature>` and start comparing two database or two schema.                                |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Search Objects...*       | Click to open the :ref:`Search Objects... <search_objects>` and start searching any kind of objects in a database.                        |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
 The Help Menu
 *************
@@ -135,6 +139,12 @@ information about the pgAdmin installation (in alphabetical order):
 +----------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | Option               | Action                                                                                                                                  |
 +======================+=========================================================================================================================================+
+| *Quick Search*       | Type your keywords in the Quick Search field. Typing at least three characters will display all the matching possibilities under Menu   |
+|                      | items and the relevant documents under Help articles. Click on the options under Menu items to perform action of particular             |
+|                      | functionality or object. Click on any of the Help articles to open the help of that topic with highlighted text in a separate window.   |
+|                      |                                                                                                                                         |
+|                      | **Note**:- If any of the option under Menu items is disabled, then it will provide information via info icon.                           |
++----------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | *About pgAdmin 4*    | Click to open a window where you will find information about pgAdmin; this includes the current version and the current user.           |
 +----------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | *Online Help*        | Click to open documentation support for using pgAdmin utilities, tools and dialogs.                                                     |
