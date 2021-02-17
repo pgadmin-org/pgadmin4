@@ -254,7 +254,7 @@ _complete_bundle() {
         yarn install
         yarn run bundle
 
-        curl https://curl.haxx.se/ca/cacert.pem -o cacert.pem -s
+        curl https://curl.se/ca/cacert.pem -o cacert.pem -s
     popd > /dev/null
 
     # copy the web directory to the bundle as it is required by runtime
