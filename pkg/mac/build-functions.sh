@@ -68,7 +68,12 @@ _create_python_env() {
     LD_LIBRARY_PATH=${PGADMIN_POSTGRES_DIR}/lib:${LD_LIBRARY_PATH}
 
     git clone https://github.com/gregneagle/relocatable-python.git "${BUILD_ROOT}/relocatable_python"
-    PATH=$PATH:/usr/local/pgsql/bin python "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" --upgrade-pip --python-version ${PGADMIN_PYTHON_VERSION} --pip-requirements "${SOURCE_DIR}/requirements.txt" --destination "${BUNDLE_DIR}/Contents/Frameworks/"
+    PATH=$PATH:/usr/local/pgsql/bin python \
+        "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" \
+        --upgrade-pip \
+        --python-version ${PGADMIN_PYTHON_VERSION} \
+        --pip-requirements "${SOURCE_DIR}/requirements.txt" \
+        --destination "${BUNDLE_DIR}/Contents/Frameworks/"
 
     # Make sure all the .so's in the Python env have the executable bit set
     # so they get properly signed later
@@ -126,18 +131,18 @@ _build_docs() {
 }
 
 _fixup_imports() {
-	  local TODO TODO_OLD FW_RELPATH LIB LIB_BN
+    local TODO TODO_OLD FW_RELPATH LIB LIB_BN
 
-	  echo "Fixing imports on the core appbundle..."
-	  pushd "$1" > /dev/null
+    echo "Fixing imports on the core appbundle..."
+    pushd "$1" > /dev/null
 
-	  # Find all the files that may need tweaks
-	  TODO=$(file `find . -perm +0111 -type f` | \
-	      grep -v "Frameworks/Python.framework" | \
-	      grep -v "Frameworks/nwjs" | \
-	      grep -E "Mach-O 64-bit" | \
-	      awk -F ':| ' '{ORS=" "; print $1}' | \
-	      uniq)
+    # Find all the files that may need tweaks
+    TODO=$(file `find . -perm +0111 -type f` | \
+        grep -v "Frameworks/Python.framework" | \
+        grep -v "Frameworks/nwjs" | \
+        grep -E "Mach-O 64-bit" | \
+        awk -F ':| ' '{ORS=" "; print $1}' | \
+        uniq)
 
     # Add anything in the site-packages Python directory
     TODO+=$(file `find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f` | \
@@ -145,71 +150,72 @@ _fixup_imports() {
         awk -F ':| ' '{ORS=" "; print $1}' | \
         uniq)
 
-	  echo "Found executables: ${TODO}"
-	  while test "${TODO}" != ""; do
-		    TODO_OLD=${TODO} ;
-		    TODO="" ;
-		    for TODO_OBJ in ${TODO_OLD}; do
-			      echo "Post-processing: ${TODO_OBJ}"
+    echo "Found executables: ${TODO}"
+    while test "${TODO}" != ""; do
+        TODO_OLD=${TODO} ;
+        TODO="" ;
+        for TODO_OBJ in ${TODO_OLD}; do
+            echo "Post-processing: ${TODO_OBJ}"
 
-			      # The Rust interface in the Python Cryptography module contains
-			      # a reference to a .so that won't exist. See:
-			      # https://github.com/PyO3/setuptools-rust/issues/106
-			      if [[ "${TODO_OBJ}" =~ cryptography/hazmat/bindings/\_rust\.abi3\.so$ ]]; then
-			          echo "Skipping because of https://github.com/PyO3/setuptools-rust/issues/106."
-			          continue
-			      fi
+            # The Rust interface in the Python Cryptography module contains
+            # a reference to a .so that won't exist. See:
+            # https://github.com/PyO3/setuptools-rust/issues/106
+            if [[ "${TODO_OBJ}" =~ cryptography/hazmat/bindings/\_rust\.abi3\.so$ ]]; then
+                echo "Skipping because of https://github.com/PyO3/setuptools-rust/issues/106."
+                continue
+            fi
 
-			      # Figure out the relative path from ${TODO_OBJ} to Contents/Frameworks
-			      FW_RELPATH=$(echo "${TODO_OBJ}" | \
-				        sed -n 's|^\(\.//*\)\(\([^/][^/]*/\)*\)[^/][^/]*$|\2|gp' | \
-				        sed -n 's|[^/][^/]*/|../|gp' \
-			          )"Contents/Frameworks"
+            # Figure out the relative path from ${TODO_OBJ} to Contents/Frameworks
+            FW_RELPATH=$(echo "${TODO_OBJ}" | \
+                sed -n 's|^\(\.//*\)\(\([^/][^/]*/\)*\)[^/][^/]*$|\2|gp' | \
+                sed -n 's|[^/][^/]*/|../|gp' \
+                )"Contents/Frameworks"
 
-			      # Find all libraries ${TODO_OBJ} depends on, but skip system libraries
-			      for LIB in $(
-				        otool -L ${TODO_OBJ} | \
-				        sed -n 's|^.*[[:space:]]\([^[:space:]]*\.dylib\).*$|\1|p' | \
-				        egrep -v '^(/usr/lib)|(/System)|@executable_path' \
-			      ); do
-				        # Copy in any required dependencies
-				        LIB_BN="$(basename "${LIB}")" ;
-				        if ! test -f "Contents/Frameworks/${LIB_BN}"; then
+            # Find all libraries ${TODO_OBJ} depends on, but skip system libraries
+            for LIB in $(
+                otool -L ${TODO_OBJ} | \
+                sed -n 's|^.*[[:space:]]\([^[:space:]]*\.dylib\).*$|\1|p' | \
+                egrep -v '^(/usr/lib)|(/System)|@executable_path' \
+            ); do
+                # Copy in any required dependencies
+                LIB_BN="$(basename "${LIB}")" ;
+                if ! test -f "Contents/Frameworks/${LIB_BN}"; then
                     TARGET_FILE=""
-					          TARGET_PATH=""
-					          echo "Adding symlink: ${LIB_BN} (because of: ${TODO_OBJ})"
-					          cp -R "${LIB}" "Contents/Frameworks/${LIB_BN}"
-					          if ! test -L "Contents/Frameworks/${LIB_BN}"; then
-						            chmod 755 "Contents/Frameworks/${LIB_BN}"
-					          else
-						            TARGET_FILE=$(readlink "${LIB}")
-						            TARGET_PATH=$(dirname "${LIB}")/${TARGET_FILE}
-					              echo "Adding symlink target: ${TARGET_PATH}"
-						            cp "${TARGET_PATH}" "Contents/Frameworks/${TARGET_FILE}"
-						            chmod 755 "Contents/Frameworks/${TARGET_FILE}"
-					          fi
+                    TARGET_PATH=""
+                    echo "Adding symlink: ${LIB_BN} (because of: ${TODO_OBJ})"
+                    cp -R "${LIB}" "Contents/Frameworks/${LIB_BN}"
+                    if ! test -L "Contents/Frameworks/${LIB_BN}"; then
+                        chmod 755 "Contents/Frameworks/${LIB_BN}"
+                    else
+                        TARGET_FILE=$(readlink "${LIB}")
+                        TARGET_PATH=$(dirname "${LIB}")/${TARGET_FILE}
+                        echo "Adding symlink target: ${TARGET_PATH}"
+                        cp "${TARGET_PATH}" "Contents/Frameworks/${TARGET_FILE}"
+                        chmod 755 "Contents/Frameworks/${TARGET_FILE}"
+                    fi
                     echo "Rewriting ID in Contents/Frameworks/${LIB_BN} to ${LIB_BN}"
                     install_name_tool \
                         -id "${LIB_BN}" \
                         "Contents/Frameworks/${LIB_BN}" || exit 1
-					          TODO="${TODO} ./Contents/Frameworks/${LIB_BN}"
-				        fi
-				        # Rewrite the dependency paths
-				        echo "Rewriting library ${LIB} to @loader_path/${FW_RELPATH}/${LIB_BN} in ${TODO_OBJ}"
-				        install_name_tool -change \
-					          "${LIB}" \
-					          "@loader_path/${FW_RELPATH}/${LIB_BN}" \
-					          "${TODO_OBJ}" || exit 1
+                    TODO="${TODO} ./Contents/Frameworks/${LIB_BN}"
+                fi
+
+                # Rewrite the dependency paths
+                echo "Rewriting library ${LIB} to @loader_path/${FW_RELPATH}/${LIB_BN} in ${TODO_OBJ}"
+                install_name_tool -change \
+                    "${LIB}" \
+                    "@loader_path/${FW_RELPATH}/${LIB_BN}" \
+                    "${TODO_OBJ}" || exit 1
                 install_name_tool -change \
                     "${TARGET_PATH}" \
                     "@loader_path/${FW_RELPATH}/${TARGET_FILE}" \
                     "${TODO_OBJ}" || exit 1
-			      done
-		    done
-	  done
+            done
+        done
+    done
 
-	  echo "Imports updated on the core appbundle."
-	  popd > /dev/null
+    echo "Imports updated on the core appbundle."
+    popd > /dev/null
 }
 
 _complete_bundle() {
@@ -247,7 +253,7 @@ _complete_bundle() {
     sed -i '' "s/\"name\": \"pgadmin4\"/\"name\": \"${APP_NAME}\"/g" "${BUNDLE_DIR}/Contents/Resources/app.nw/package.json"
 
     # Import the dependencies, and rewrite any library references
-		_fixup_imports "${BUNDLE_DIR}"
+        _fixup_imports "${BUNDLE_DIR}"
 
     # Build node modules
     pushd "${SOURCE_DIR}/web" > /dev/null
@@ -298,15 +304,29 @@ _codesign_binaries() {
 
     echo Signing ${BUNDLE_DIR} binaries...
     IFS=$'\n'
-    for i in $(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | grep -v "(for architecture" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | awk -F":" '{print $1}' | uniq)
+    for i in $(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | \
+               grep -v "(for architecture" | \
+               grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | \
+               awk -F":" '{print $1}' | \
+               uniq)
     do
-        codesign --deep --force --verify --verbose --timestamp --options runtime --entitlements "${BUILD_ROOT}/entitlements.plist" -i org.pgadmin.pgadmin4 --sign "${DEVELOPER_ID}" "$i"
+        codesign --deep --force --verify --verbose --timestamp \
+                 --options runtime \
+                 --entitlements "${BUILD_ROOT}/entitlements.plist" \
+                 -i org.pgadmin.pgadmin4 \
+                 --sign "${DEVELOPER_ID}" \
+                 "$i"
     done
 
     echo Signing ${BUNDLE_DIR} libraries...
     for i in $(find "${BUNDLE_DIR}" -type f -name "*.dylib*")
     do
-        codesign --deep --force --verify --verbose --timestamp --options runtime --entitlements "${BUILD_ROOT}/entitlements.plist" -i org.pgadmin.pgadmin4 --sign "${DEVELOPER_ID}" "$i"
+        codesign --deep --force --verify --verbose --timestamp \
+                 --options runtime \
+                 --entitlements "${BUILD_ROOT}/entitlements.plist" \
+                 -i org.pgadmin.pgadmin4 \
+                 --sign "${DEVELOPER_ID}" \
+                 "$i"
     done
 }
 
@@ -317,7 +337,12 @@ _codesign_bundle() {
 
     # Sign the .app
     echo Signing ${BUNDLE_DIR}...
-    codesign --deep --force --verify --verbose --timestamp --options runtime --entitlements "${BUILD_ROOT}/entitlements.plist" -i org.pgadmin.pgadmin4 --sign "${DEVELOPER_ID}" "${BUNDLE_DIR}"
+    codesign --deep --force --verify --verbose --timestamp \
+             --options runtime \
+             --entitlements "${BUILD_ROOT}/entitlements.plist" \
+             -i org.pgadmin.pgadmin4 \
+             --sign "${DEVELOPER_ID}" \
+             "${BUNDLE_DIR}"
 }
 
 _create_dmg() {
@@ -352,7 +377,11 @@ _codesign_dmg() {
 
     # Sign the .app
     echo Signing disk image...
-    codesign --force --verify --verbose --timestamp --options runtime -i org.pgadmin.pgadmin4 --sign "${DEVELOPER_ID}" "${DMG_NAME}"
+    codesign --force --verify --verbose --timestamp \
+             --options runtime \
+             -i org.pgadmin.pgadmin4 \
+             --sign "${DEVELOPER_ID}" \
+             "${DMG_NAME}"
 }
 
 
@@ -365,7 +394,12 @@ _notarize_pkg() {
     cmd_status=0
     for i in {1..3}; do
         echo "Uploading DMG for notarisation (attempt ${i} of 3)..."
-        STATUS=$(xcrun altool --notarize-app -f "${DMG_NAME}" --asc-provider ${DEVELOPER_NAME} --primary-bundle-id org.pgadmin.pgadmin4 -u ${DEVELOPER_USER} -p ${DEVELOPER_ASP} 2>&1)
+        STATUS=$(xcrun altool --notarize-app \
+                              -f "${DMG_NAME}" \
+                              --asc-provider ${DEVELOPER_NAME} \
+                              --primary-bundle-id org.pgadmin.pgadmin4 \
+                              -u ${DEVELOPER_USER} \
+                              -p ${DEVELOPER_ASP} 2>&1)
         RETVAL=$?
 
         if [ ${RETVAL} != 0 ]; then
@@ -392,7 +426,10 @@ _notarize_pkg() {
         sleep 30
 
         echo "Requesting notarisation result (attempt ${i} of 60)..."
-        REQUEST_STATUS=$(xcrun altool --notarization-info ${REQUEST_UUID} --username ${DEVELOPER_USER} --password ${DEVELOPER_ASP} 2>&1 | awk -F ': ' '/Status:/ { print $2; }' )
+        REQUEST_STATUS=$(xcrun altool --notarization-info ${REQUEST_UUID} \
+                                      --username ${DEVELOPER_USER} \
+                                      --password ${DEVELOPER_ASP} 2>&1 | \
+                         awk -F ': ' '/Status:/ { print $2; }' )
 
         if [[ "${REQUEST_STATUS}" == "success" ]]; then
             break
@@ -400,11 +437,13 @@ _notarize_pkg() {
     done
 
     # Print status information
-    xcrun altool --notarization-info ${REQUEST_UUID} --username ${DEVELOPER_USER} --password ${DEVELOPER_ASP}
+    xcrun altool --notarization-info ${REQUEST_UUID} \
+                 --username ${DEVELOPER_USER} \
+                 --password ${DEVELOPER_ASP}
 
     if [[ "${REQUEST_STATUS}" != "success" ]]; then
-	      echo "Notarization failed."
-	      exit 1
+          echo "Notarization failed."
+          exit 1
     fi
 
     # Staple the notarization
@@ -412,7 +451,7 @@ _notarize_pkg() {
     xcrun stapler staple "${DMG_NAME}"
 
     if [ $? != 0 ]; then
-	      echo "Stapling failed."
+          echo "Stapling failed."
         exit 1
     fi
 
