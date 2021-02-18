@@ -35,8 +35,10 @@ node, and select *Create Cast...*
    materialized_view_dialog
    package_dialog
    procedure_dialog
+   publication_dialog
    schema_dialog
    sequence_dialog
+   subscription_dialog
    synonym_dialog
    trigger_function_dialog
    type_dialog
