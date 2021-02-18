@@ -5,8 +5,8 @@ Debian and Ubuntu.
 
 ## Supported platforms
 
-* Debian 9 & 10
-* Ubuntu 16.04, 18.04, 19.04 & 19.10
+* Debian 9, 10 & 11 (testing)
+* Ubuntu 18.04, 20.04, 20.10
 
 ## Build configuration
 
