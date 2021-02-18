@@ -561,6 +561,7 @@ def sql(trans_id, sgid, sid, did):
 @login_required
 def tables(trans_id, sgid, sid, did):
     helper = ERDHelper(trans_id, sid, did)
+    _get_connection(sid, did, trans_id)
     status, tables = helper.get_all_tables()
 
     if not status:
