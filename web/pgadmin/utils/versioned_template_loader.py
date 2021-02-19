@@ -84,7 +84,8 @@ def get_version_mapping_directories(server_type):
             {'name': "default", 'number': 0}
         )
 
-    return ({'name': "12_plus", 'number': 120000},
+    return ({'name': "13_plus", 'number': 130000},
+            {'name': "12_plus", 'number': 120000},
             {'name': "11_plus", 'number': 110000},
             {'name': "10_plus", 'number': 100000},
             {'name': "9.6_plus", 'number': 90600},

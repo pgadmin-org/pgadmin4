@@ -80,6 +80,7 @@ define('pgadmin.node.publication', [
           evnt_update:true,
           evnt_truncate:true,
           only_table: undefined,
+          publish_via_partition_root: false,
         },
 
         // Default values!
@@ -173,6 +174,20 @@ define('pgadmin.node.publication', [
               if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
               && !_.isUndefined(m.node_info.server.version) &&
                 m.node_info.server.version >= 110000)
+                return true;
+              return false;
+            },
+
+          },{
+            id: 'publish_via_partition_root', label: gettext('Publish via root?'),
+            type: 'switch', group: gettext('With'),
+            extraToggleClasses: 'pg-el-sm-6',
+            controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
+            controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
+            visible: function(m) {
+              if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+                m.node_info.server.version >= 130000)
                 return true;
               return false;
             },

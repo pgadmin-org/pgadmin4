@@ -261,8 +261,14 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                                         self._PROPERTIES_SQL]), did=did)
         status, res = self.conn.execute_dict(sql)
 
+        # Check for permission denied message
+        if 'permission denied' in res:
+            return internal_server_error(
+                errormsg="Access is revoked for normal users")
+
         if not status:
             return internal_server_error(errormsg=res)
+
         return ajax_response(
             response=res['rows'],
             status=200
@@ -680,14 +686,21 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             host=connection_details['host'],
             database=connection_details['db'],
             user=connection_details['username'],
-            password=connection_details['password'] if
-            connection_details['password'] else None,
+            password=connection_details[
+                'password'] if 'password' in connection_details else None,
             port=connection_details['port'] if
             connection_details['port'] else None,
             passfile=get_complete_file_path(passfile),
             connect_timeout=connection_details['connect_timeout'] if
             'connect_timeout' in connection_details and
-            connection_details['connect_timeout'] else 0
+            connection_details['connect_timeout'] else 0,
+            sslmode=connection_details['sslmode'],
+            sslcert=get_complete_file_path(connection_details['sslcert']),
+            sslkey=get_complete_file_path(connection_details['sslkey']),
+            sslrootcert=get_complete_file_path(
+                connection_details['sslrootcert']),
+            sslcompression=True if connection_details[
+                'sslcompression'] else False,
         )
         # create a cursor
         cur = conn.cursor()
@@ -715,7 +728,9 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             url_params = {k: v for k, v in request.args.items()}
 
         required_connection_args = ['host', 'port', 'username', 'db',
-                                    'connect_timeout', 'passfile']
+                                    'connect_timeout', 'passfile', 'sslmode',
+                                    'sslcompression', 'sslcert', 'sslkey',
+                                    'sslrootcert', 'sslcrl']
 
         if 'oid' in url_params:
             status, params = self._fetch_properties(did, url_params['oid'])

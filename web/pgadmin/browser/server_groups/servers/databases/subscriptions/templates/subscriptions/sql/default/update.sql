@@ -47,9 +47,9 @@ ALTER SUBSCRIPTION {{ conn|qtIdent(o_data.name) }}
 
 {% endif %}
 {###  Alter subscription connection info ###}
-{% if data.host or data.port or data.username or data.password  or data.db or  data.connect_timeout or data.passfile %}
+{% if data.host or data.port or data.username or data.password  or data.db or data.connect_timeout or data.passfile or data.sslmode or data.sslcompression or data.sslcert or data.sslkey or data.sslrootcert or data.sslcrl %}
 ALTER SUBSCRIPTION {{ conn|qtIdent(o_data.name) }}
-    CONNECTION 'host={{ o_data.host}} port={{ o_data.port }} user={{ o_data.username }} dbname={{ o_data.db }}{% if data.connect_timeout %} connect_timeout={{ o_data.connect_timeout }}{% endif %}{% if data.passfile %} passfile={{ o_data.passfile }}{% endif %}{% if data.password %} {% if dummy %}password=xxxxxx{% else %} password={{ data.password}}{% endif %}{% endif %}';
+    CONNECTION 'host={{ o_data.host}} port={{ o_data.port }} user={{ o_data.username }} dbname={{ o_data.db }}{% if data.connect_timeout %} connect_timeout={{ o_data.connect_timeout }}{% endif %}{% if data.passfile %} passfile={{ o_data.passfile }}{% endif %}{% if data.password %} {% if dummy %}password=xxxxxx{% else %} password={{ data.password}}{% endif %}{% endif %}{% if data.sslmode %} sslmode={{ data.sslmode }}{% endif %}{% if data.sslcompression %} sslcompression={{ data.sslcompression }}{% endif %}{% if data.sslcert %} sslcert={{ data.sslcert }}{% endif %}{% if data.sslkey %} sslkey={{ data.sslkey }}{% endif %}{% if data.sslrootcert %} sslrootcert={{ data.sslrootcert }}{% endif %}{% if data.sslcrl %} sslcrl={{ data.sslcrl }}{% endif %}';
 {% endif %}
 {###  Alter subscription name ###}
 {% if data.name and data.name != o_data.name %}

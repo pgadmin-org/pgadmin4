@@ -12,6 +12,7 @@ define('pgadmin.node.subscription', [
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
   'sources/browser/server_groups/servers/model_validation', 'pgadmin.alertifyjs', 'pgadmin.browser.collection',
 ], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, modelValidation, Alertify) {
+  var SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full'];
 
   // Extend the browser's collection class for subscriptions collection
   if (!pgBrowser.Nodes['coll-subscription']) {
@@ -77,7 +78,7 @@ define('pgadmin.node.subscription', [
           name: undefined,
           subowner: undefined,
           pubtable: undefined,
-          connect_timeout: undefined,
+          connect_timeout: 10,
           pub:[],
           enabled:true,
           create_slot: true,
@@ -85,7 +86,18 @@ define('pgadmin.node.subscription', [
           connect:true,
           copy_data_after_refresh:false,
           sync:'off',
-          refresh_pub: undefined,
+          refresh_pub: false,
+          password: '',
+          sslmode: 'prefer',
+          sslcompression: false,
+          sslcert: '',
+          sslkey: '',
+          sslrootcert: '',
+          sslcrl: '',
+          host: '',
+          hostaddr: '',
+          port: 5432,
+          db: 'postgres',
         },
 
         // Default values!
@@ -189,7 +201,7 @@ define('pgadmin.node.subscription', [
           id: 'pub', label: gettext('Publication'), type: 'array', select2: { allowClear: true, multiple: true, width: '92%'},
           group: gettext('Connection'), mode: ['create', 'edit'], controlsClassName: 'pgadmin-controls pg-el-sm-11 pg-el-12',
           deps: ['all_table', 'host', 'port', 'username', 'db', 'password'], disabled: 'isAllConnectionDataEnter',
-          helpMessage: gettext('Click the refresh button to get the publications"'),
+          helpMessage: gettext('Click the refresh button to get the publications'),
           control: Backform.Select2Control.extend({
             defaults: _.extend(Backform.Select2Control.prototype.defaults, {
               select2: {
@@ -281,6 +293,91 @@ define('pgadmin.node.subscription', [
           }),
         },
         {
+          id: 'sslmode', label: gettext('SSL mode'), control: 'select2', group: gettext('SSL'),
+          select2: {
+            allowClear: false,
+            minimumResultsForSearch: Infinity,
+          },
+          mode: ['properties', 'edit', 'create'],
+          'options': [
+            {label: gettext('Allow'), value: 'allow'},
+            {label: gettext('Prefer'), value: 'prefer'},
+            {label: gettext('Require'), value: 'require'},
+            {label: gettext('Disable'), value: 'disable'},
+            {label: gettext('Verify-CA'), value: 'verify-ca'},
+            {label: gettext('Verify-Full'), value: 'verify-full'},
+          ],
+        },{
+          id: 'sslcert', label: gettext('Client certificate'), type: 'text',
+          group: gettext('SSL'), mode: ['edit', 'create'],
+          disabled: 'isSSL', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['sslmode'],
+        },{
+          id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
+          group: gettext('SSL'), mode: ['edit', 'create'],
+          disabled: 'isSSL', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['sslmode'],
+        },{
+          id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
+          group: gettext('SSL'), mode: ['edit', 'create'],
+          disabled: 'isSSL', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['sslmode'],
+        },{
+          id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
+          group: gettext('SSL'), mode: ['edit', 'create'],
+          disabled: 'isSSL', control: Backform.FileControl,
+          dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['sslmode'],
+        },{
+          id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
+          mode: ['edit', 'create'], group: gettext('SSL'),
+          'options': {'size': 'mini'},
+          deps: ['sslmode'], disabled: 'isSSL',
+        },{
+          id: 'sslcert', label: gettext('Client certificate'), type: 'text',
+          group: gettext('SSL'), mode: ['properties'],
+          deps: ['sslmode'],
+          visible: function(model) {
+            var sslcert = model.get('sslcert');
+            return !_.isUndefined(sslcert) && !_.isNull(sslcert);
+          },
+        },{
+          id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
+          group: gettext('SSL'), mode: ['properties'],
+          deps: ['sslmode'],
+          visible: function(model) {
+            var sslkey = model.get('sslkey');
+            return !_.isUndefined(sslkey) && !_.isNull(sslkey);
+          },
+        },{
+          id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
+          group: gettext('SSL'), mode: ['properties'],
+          deps: ['sslmode'],
+          visible: function(model) {
+            var sslrootcert = model.get('sslrootcert');
+            return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
+          },
+        },{
+          id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
+          group: gettext('SSL'), mode: ['properties'],
+          deps: ['sslmode'],
+          visible: function(model) {
+            var sslcrl = model.get('sslcrl');
+            return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
+          },
+        },{
+          id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
+          mode: ['properties'], group: gettext('SSL'),
+          'options': {'size': 'mini'},
+          deps: ['sslmode'], visible: function(model) {
+            var sslmode = model.get('sslmode');
+            return _.indexOf(SSL_MODES, sslmode) != -1;
+          },
+        },
+        {
           id: 'copy_data_after_refresh', label: gettext('Copy data?'),
           type: 'switch', mode: ['edit'],
           group: gettext('With'),
@@ -298,8 +395,8 @@ define('pgadmin.node.subscription', [
           id: 'create_slot', label: gettext('Create slot?'),
           type: 'switch', mode: ['create'],
           group: gettext('With'),
-          disabled: 'isDisable',
-          readonly: 'isConnect', deps :['connect'],
+          disabled: 'isSameDB',
+          readonly: 'isConnect', deps :['connect', 'host'],
           helpMessage: gettext('Specifies whether the command should create the replication slot on the publisher.'),
 
         },
@@ -358,13 +455,21 @@ define('pgadmin.node.subscription', [
             return false;
           return true;
         },
+        isSameDB:function(m){
+          if (m.attributes['host'] == m.node_info.server.host){
+            setTimeout( function() {
+              m.set('create_slot', false);
+            }, 10);
+            return true;
+          }
+          return false;
+        },
         isAllConnectionDataEnter: function(m){
           let host = m.get('host'),
             db   = m.get('db'),
             port = m.get('port'),
-            username = m.get('username'),
-            password = m.get('password');
-          if ((!_.isUndefined(host) && host) && (!_.isUndefined(db) && db) && (!_.isUndefined(port) && port) && (!_.isUndefined(username) && username) && (!_.isUndefined(password) && password))
+            username = m.get('username');
+          if ((!_.isUndefined(host) && host) && (!_.isUndefined(db) && db) && (!_.isUndefined(port) && port) && (!_.isUndefined(username) && username))
             return false;
           return true;
         },
@@ -388,8 +493,12 @@ define('pgadmin.node.subscription', [
           }
           return false;
         },
+        isSSL: function(model) {
+          var ssl_mode = model.get('sslmode');
+          return _.indexOf(SSL_MODES, ssl_mode) == -1;
+        },
         sessChanged: function() {
-          if (_.isEqual(_.omit(this.attributes, ['refresh_pub']), _.omit(this.origSessAttrs, ['refresh_pub'])) && !this.isNew())
+          if (!this.isNew() && _.isUndefined(this.attributes['refresh_pub']))
             return false;
           return pgBrowser.DataModel.prototype.sessChanged.apply(this);
         },
@@ -400,13 +509,22 @@ define('pgadmin.node.subscription', [
         validate: function() {
           var msg;
           this.errorModel.clear();
-          var name = this.get('name');
+          var name = this.get('name'),
+            slot_name = this.get('slot_name');
 
           if (_.isUndefined(name) || _.isNull(name) ||
             String(name).replace(/^\s+|\s+$/g, '') == '') {
             msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
             return msg;
+          }
+
+          if (!_.isUndefined(slot_name) && !_.isNull(slot_name)){
+            if(/^[a-zA-Z0-9_]+$/.test(slot_name) == false){
+              msg = gettext('Replication slot name may only contain lower case letters, numbers, and the underscore character.');
+              this.errorModel.set('name', msg);
+              return msg;
+            }
           }
 
           const validateModel = new modelValidation.ModelValidation(this);

@@ -43,4 +43,6 @@ Bug fixes
 | `Issue #6187 <https://redmine.postgresql.org/issues/6187>`_ -  Limit the upgrade check to run once per day.
 | `Issue #6193 <https://redmine.postgresql.org/issues/6193>`_ -  Ensure that ERD throws a warning before closing unsaved changes if open in a new tab.
 | `Issue #6197 <https://redmine.postgresql.org/issues/6197>`_ -  Fixed an issue where the ERD image is not properly downloaded.
+| `Issue #6201 <https://redmine.postgresql.org/issues/6201>`_ -  Added SSL support for creating a subscription.
 | `Issue #6208 <https://redmine.postgresql.org/issues/6208>`_ -  Fixed an issue where utility(Backup, Maintenance, ...) jobs are failing when the log level is set to DEBUG.
+| `Issue #6230 <https://redmine.postgresql.org/issues/6230>`_ -  Fixed an issue where the user is not able to create the subscription.
