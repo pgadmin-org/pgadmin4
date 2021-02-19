@@ -95,7 +95,7 @@ Release:	1%{?dist}
 Summary:	The desktop user interface for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
-Requires:	${APP_NAME}-server, libatomic
+Requires:	${APP_NAME}-server = ${RPM_VERSION}, libatomic
 
 %description
 The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -144,9 +144,9 @@ Summary:	The web interface for pgAdmin, hosted under Apache HTTPD.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
 %if 0%{?rhel} && 0%{?rhel} == 7
-Requires:	${APP_NAME}-server, httpd, pgadmin4-python3-mod_wsgi
+Requires:	${APP_NAME}-server = ${RPM_VERSION}, httpd, pgadmin4-python3-mod_wsgi
 %else
-Requires:	${APP_NAME}-server, httpd, python3-mod_wsgi
+Requires:	${APP_NAME}-server = ${RPM_VERSION}, httpd, python3-mod_wsgi
 %endif
 
 %description
@@ -190,7 +190,7 @@ BuildArch:	noarch
 Summary:	Installs all required components to run pgAdmin in desktop and web modes.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
-Requires:	${APP_NAME}-server, ${APP_NAME}-desktop, ${APP_NAME}-web
+Requires:	${APP_NAME}-server = ${RPM_VERSION}, ${APP_NAME}-desktop = ${RPM_VERSION}, ${APP_NAME}-web = ${RPM_VERSION}
 
 %description
 Installs all required components to run pgAdmin in desktop and web modes. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.

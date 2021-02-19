@@ -46,3 +46,4 @@ Bug fixes
 | `Issue #6201 <https://redmine.postgresql.org/issues/6201>`_ -  Added SSL support for creating a subscription.
 | `Issue #6208 <https://redmine.postgresql.org/issues/6208>`_ -  Fixed an issue where utility(Backup, Maintenance, ...) jobs are failing when the log level is set to DEBUG.
 | `Issue #6230 <https://redmine.postgresql.org/issues/6230>`_ -  Fixed an issue where the user is not able to create the subscription.
+| `Issue #6250 <https://redmine.postgresql.org/issues/6250>`_ -  Ensure DEB/RPM packages depend on the same version of each other.
