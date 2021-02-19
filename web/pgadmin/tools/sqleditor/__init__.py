@@ -593,7 +593,8 @@ def fetch_pg_types(columns_info, trans_obj):
     # to execute another query otherwise we'll lose query result.
 
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
-    default_conn = manager.connection(did=trans_obj.did)
+    default_conn = manager.connection(conn_id=trans_obj.conn_id,
+                                      did=trans_obj.did)
 
     # Connect to the Server if not connected.
     res = []
