@@ -179,10 +179,12 @@
 
 .CodeMirror-simplescroll-horizontal {
     height: $scrollbar-width;
+    z-index: 1;
 }
 
 .CodeMirror-simplescroll-vertical {
     width: $scrollbar-width;
+    z-index: 1;
 }
 
 .CodeMirror-scrollbar-filler, .CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
@@ -205,4 +207,9 @@
 
 .bg-gray-lighter {
   background-color: $sql-editor-disable-bg !important;
+}
+
+// Set z-index of scroll less than CodeMirror editor
+.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+  z-index:1;
 }
