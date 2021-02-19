@@ -47,6 +47,8 @@ const providePlugin = new webpack.ProvidePlugin({
   pgAdmin: 'pgadmin',
   'moment': 'moment',
   'window.moment':'moment',
+  process: 'process/browser',
+  Buffer: ['buffer', 'Buffer'],
 });
 
 // Helps in debugging each single file, it extracts the module files
@@ -533,11 +535,6 @@ module.exports = [{
             'pure|pgadmin.tools.erd_module',
           ],
         },
-      },
-    }, {
-      test: require.resolve('snapsvg'),
-      use: {
-        loader: 'imports-loader?this=>window,fix=>module.exports=0',
       },
     }].concat(themeCssRules('standard')),
     // Prevent module from parsing through webpack, helps in reducing build time

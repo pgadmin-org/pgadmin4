@@ -6,9 +6,10 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-/* This is used to change publicPath of webpack at runtime for loading chunks */
 /* eslint-disable */
-let __webpack_public_path__ = window.resourceBasePath;
+/* This is used to change publicPath of webpack at runtime for loading chunks */
+/* Do not add let, var, const to this variable */
+__webpack_public_path__ = window.resourceBasePath;
 /* eslint-enable */
 
 import {launchDataGrid} from 'tools/datagrid/static/js/show_query_tool';
