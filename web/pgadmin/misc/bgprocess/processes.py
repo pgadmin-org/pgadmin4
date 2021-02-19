@@ -250,8 +250,20 @@ class BatchProcess(object):
             os.path.dirname(u_encode(__file__)), 'process_executor.py'
         ))
 
+        if os.name == 'nt':
+            paths = os.environ['PATH'].split(os.pathsep)
+
+            current_app.logger.info(
+                "Process Executor: Operating System Path %s",
+                str(paths)
+            )
+
+            interpreter = self.get_interpreter(paths)
+        else:
+            interpreter = sys.executable
+
         cmd = [
-            sys.executable if sys.executable is not None else 'python',
+            interpreter if interpreter is not None else 'python',
             executor, self.cmd
         ]
         cmd.extend(self.args)
@@ -360,6 +372,72 @@ class BatchProcess(object):
         os.setpgrp()
         # Explicitly ignoring signals in the child process
         signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+    def get_interpreter(self, paths):
+        """
+        Get interpreter.
+        :param paths:
+        :return:
+        """
+        paths.insert(0, os.path.join(u_encode(sys.prefix), 'Scripts'))
+        paths.insert(0, u_encode(sys.prefix))
+
+        interpreter = self.which('pythonw.exe', paths)
+        if interpreter is None:
+            interpreter = self.which('python.exe', paths)
+
+        current_app.logger.info(
+            "Process Executor: Interpreter value in path: %s",
+            str(interpreter)
+        )
+        if interpreter is None and current_app.PGADMIN_RUNTIME:
+            # We've faced an issue with Windows 2008 R2 (x86) regarding,
+            # not honouring the environment variables set under the Qt
+            # (e.g. runtime), and also setting PYTHONHOME same as
+            # sys.executable (i.e. pgAdmin4.exe).
+            #
+            # As we know, we're running it under the runtime, we can assume
+            # that 'venv' directory will be available outside of 'bin'
+            # directory.
+            #
+            # We would try out luck to find python executable based on that
+            # assumptions.
+            bin_path = os.path.dirname(sys.executable)
+
+            venv = os.path.realpath(
+                os.path.join(bin_path, '..\\venv')
+            )
+
+            interpreter = self.which('pythonw.exe', [venv])
+            if interpreter is None:
+                interpreter = self.which('python.exe', [venv])
+
+            current_app.logger.info(
+                "Process Executor: Interpreter value in virtual "
+                "environment: %s", str(interpreter)
+            )
+
+            if interpreter is not None:
+                # Our assumptions are proven right.
+                # Let's append the 'bin' directory to the PATH environment
+                # variable. And, also set PYTHONHOME environment variable
+                # to 'venv' directory.
+                os.environ['PATH'] = bin_path + ';' + os.environ['PATH']
+                os.environ['PYTHONHOME'] = venv
+
+        return interpreter
+
+    def which(self, program, paths):
+        def is_exe(fpath):
+            return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+
+        for path in paths:
+            if not os.path.isdir(path):
+                continue
+            exe_file = os.path.join(u_encode(path, fs_encoding), program)
+            if is_exe(exe_file):
+                return file_quote(exe_file)
+        return None
 
     def read_log(self, logfile, log, pos, ctime, ecode=None, enc='utf-8'):
         import re
