@@ -14,7 +14,9 @@ var gui = require('nw.gui');
 var configWindow = gui.Window.get();
 
 function checkConfiguration() {
-  if (document.getElementById('fixedPortCheck').checked) {
+  var configData = misc.ConfigureStore.getConfigData();
+
+  if (document.getElementById('fixedPortCheck').checked && configData['portNo'] != document.getElementById('portNo').value) {
     var fixedPort = parseInt(document.getElementById('portNo').value);
     // get the available TCP port
     misc.getAvailablePort(fixedPort)
