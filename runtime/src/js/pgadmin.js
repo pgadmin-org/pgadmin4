@@ -265,7 +265,7 @@ nw.App.clearCache();
 if (platform() == 'darwin') {
   var macMenu = new  gui.Menu({type: 'menubar'});
   macMenu.createMacBuiltin('pgAdmin 4');
-  gui.Window.get().menu = macMenu;
+  splashWindow.menu = macMenu;
 }
 
 splashWindow.on('loaded', function() {
@@ -295,6 +295,6 @@ splashWindow.on('loaded', function() {
   }
 });
 
-splashWindow.on('closed', function() {
+splashWindow.on('close', function() {
   misc.cleanupAndQuitApp();
 });
