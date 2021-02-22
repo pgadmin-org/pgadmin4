@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 16:01+0530\n"
-"PO-Revision-Date: 2021-01-24 03:31+0900\n"
+"PO-Revision-Date: 2021-02-20 21:35+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -209,19 +209,16 @@ msgid "Full Lock"
 msgstr "完全に固定"
 
 #: pgadmin/browser/__init__.py:279
-#, fuzzy
 msgid "Runtime"
-msgstr "テーブル内容を全消去"
+msgstr "ランタイム"
 
 #: pgadmin/browser/__init__.py:286
-#, fuzzy
 msgid "Configure..."
-msgstr "全文検索設定..."
+msgstr "設定..."
 
 #: pgadmin/browser/__init__.py:292
-#, fuzzy
 msgid "View log..."
-msgstr "ビュー..."
+msgstr "ログを表示..."
 
 #: pgadmin/browser/__init__.py:566 pgadmin/browser/collection.py:257
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:110
@@ -474,7 +471,7 @@ msgstr "グリッド行を追加"
 #: pgadmin/browser/register_browser_preferences.py:448
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:210
 msgid "Quick Search"
-msgstr ""
+msgstr "クイック検索"
 
 #: pgadmin/browser/register_browser_preferences.py:461
 msgid "Dynamic tab size"
@@ -2129,48 +2126,40 @@ msgstr "ハンドラ関数は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:30
-#, fuzzy
 msgid "Publications"
-msgstr "アプリケーション"
+msgstr "パブリケーション"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:168
-#, fuzzy
 msgid "Could not find the publication information."
-msgstr "キャスト情報が見つかりませんでした"
+msgstr "パブリケーション情報が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:359
-#, fuzzy
 msgid "Could not find the specified publication."
-msgstr "指定されたキャストが見つかりませんでした"
+msgstr "指定されたパブリケーションが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:594
-#, fuzzy
 msgid "Publication dropped"
-msgstr "関数が削除されました"
+msgstr "パブリケーションが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:46
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:208
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:216
-#, fuzzy
 msgid "Publication"
-msgstr "アプリケーション"
+msgstr "パブリケーション"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:67
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:73
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:78
-#, fuzzy
 msgid "Publication..."
-msgstr "関数..."
+msgstr "パブリケーション..."
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:137
-#, fuzzy
 msgid "All tables?"
-msgstr "照合順序情報"
+msgstr "すべてのテーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:142
-#, fuzzy
 msgid "Only table?"
-msgstr "照合順序情報"
+msgstr "このテーブルのみ"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:145
 msgid ""
@@ -2178,6 +2167,8 @@ msgid ""
 "the publication. If ONLY is not specified, the table and all its "
 "descendant tables (if any) are added."
 msgstr ""
+"テーブル名の前に ONLY を指定すると、そのテーブルのみがパブリケーションに追加されます。逆に ONLY "
+"を指定しないと、すべての子テーブルも含めて追加されます。"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:148
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:155
@@ -2204,7 +2195,7 @@ msgstr "テーブル"
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:448
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:453
 msgid "With"
-msgstr ""
+msgstr "WITH"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:162
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:222
@@ -2232,7 +2223,7 @@ msgstr "TRUNCATE"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:197
 msgid "Publish via root?"
-msgstr ""
+msgstr "ルート経由でパブリッシュ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:69
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:307
@@ -3364,7 +3355,7 @@ msgstr "パッケージ..."
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:79
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:85
 msgid "This option is only available on EPAS servers."
-msgstr ""
+msgstr "このオプションは EPAS サーバでのみ利用できます"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:160
 msgid "System package?"
@@ -4703,7 +4694,7 @@ msgstr "すべて有効化"
 #: pgadmin/browser/static/js/node.js:187 pgadmin/browser/static/js/node.js:275
 #: pgadmin/tools/erd/static/js/erd_module.js:53
 msgid "The selected tree node does not support this option."
-msgstr ""
+msgstr "選択したツリーノードは、このオプションをサポートしていません"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:91
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:113
@@ -5310,9 +5301,8 @@ msgid "Force RLS Policy?"
 msgstr "RLS ポリシーを強制"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:558
-#, fuzzy
 msgid "Replica Identity"
-msgstr "IDENTITY を選択"
+msgstr "REPLICA IDENTITY"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:850
 msgid "Remove column definitions?"
@@ -6316,18 +6306,16 @@ msgid "Connect Database..."
 msgstr "データベースに接続..."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:88
-#, fuzzy
 msgid "Selected database is already connected."
-msgstr "データベースへはすでに接続されています"
+msgstr "選択したデータベースはすでに接続されています"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:93
 msgid "Disconnect Database..."
 msgstr "データベースへの接続を切断..."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:95
-#, fuzzy
 msgid "Selected database is already disconnected."
-msgstr "データベースへはすでに接続されています"
+msgstr "選択したデータベースはすでに切断されています"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:100
 msgid "Generate ERD (Beta)"
@@ -6418,36 +6406,30 @@ msgstr "エラー： オブジェクトが見つかりません - %s"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:54
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:31
-#, fuzzy
 msgid "Subscriptions"
-msgstr "説明"
+msgstr "サブスクリプション"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:178
-#, fuzzy
 msgid "Could not find the subscription information."
-msgstr "キャスト情報が見つかりませんでした"
+msgstr "サブスクリプション情報が見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:338
-#, fuzzy
 msgid "Could not find the specified subscription."
-msgstr "指定されたユーザマッピングが見つかりませんでした"
+msgstr "指定されたサブスクリプションが見つかりませんでした"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:558
-#, fuzzy
 msgid "Subscription dropped"
-msgstr "パーティションが削除されました"
+msgstr "サブスクリプションが削除されました"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:47
-#, fuzzy
 msgid "Subscription"
-msgstr "説明"
+msgstr "サブスクリプション"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:69
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:75
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:81
-#, fuzzy
 msgid "Subscription..."
-msgstr "関数..."
+msgstr "サブスクリプション..."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:156
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:168
@@ -6482,23 +6464,20 @@ msgid "Password"
 msgstr "パスワード"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:199
-#, fuzzy
 msgid "Connection timeout"
-msgstr "接続制限"
+msgstr "接続のタイムアウト"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:204
-#, fuzzy
 msgid "Passfile"
-msgstr "パスワードファイル"
+msgstr "パスファイル"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:212
-#, fuzzy
 msgid "Current publication"
-msgstr "認証"
+msgstr "現在のパブリケーション"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:219
 msgid "Click the refresh button to get the publications"
-msgstr ""
+msgstr "再読み込みボタンをクリックすると、パブリケーションを取得します"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:226
 #: pgadmin/browser/static/js/node.ui.js:116
@@ -6512,19 +6491,16 @@ msgid "Select an item..."
 msgstr "項目を選択..."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:251
-#, fuzzy
 msgid "Get Publication"
-msgstr "アプリケーション"
+msgstr "パブリケーションを取得"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:296
-#, fuzzy
 msgid "Publication fetched successfully."
-msgstr "パスワードの変更に成功しました"
+msgstr "パブリケーションを正常に取得しました"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:303
-#, fuzzy
 msgid "Check connection?"
-msgstr "接続を変更"
+msgstr "接続を確認"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:311
 #: pgadmin/browser/server_groups/servers/static/js/server.js:961
@@ -6618,47 +6594,43 @@ msgstr "SSL 圧縮"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:396
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:403
-#, fuzzy
 msgid "Copy data?"
-msgstr "データのみ"
+msgstr "データをコピー"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:400
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:407
 msgid ""
 "Specifies whether the existing data in the publications that are being "
 "subscribed to should be copied once the replication starts."
-msgstr ""
+msgstr "このサブスクリプションの対象となるパブリケーションの既存データを、レプリケーション開始時にコピーするかどうか指定します"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:410
-#, fuzzy
 msgid "Create slot?"
-msgstr "ロール作成属性"
+msgstr "スロットを作成"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:415
 msgid ""
 "Specifies whether the command should create the replication slot on the "
 "publisher."
-msgstr ""
+msgstr "パブリッシャー上にレプリケーションスロットを作成するかどうか指定します"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:423
 msgid ""
 "Specifies whether the subscription should be actively replicating, or "
 "whether it should be just setup but not started yet. "
-msgstr ""
+msgstr "サブスクリプションをすぐに処理するか、或いは後で行えるように準備だけしておくかを指定します"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:426
 msgid "Refresh publication?"
-msgstr ""
+msgstr "パブリケーションを再読み込み"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:429
-#, fuzzy
 msgid "Fetch missing table information from publisher. "
-msgstr "サーバから依存情報を取得しています..."
+msgstr "パブリッシャーから足りないテーブル情報を取得します"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:439
-#, fuzzy
 msgid "Connect?"
-msgstr "接続済"
+msgstr "接続"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:443
 msgid ""
@@ -6666,55 +6638,54 @@ msgid ""
 " at all. Setting this to false will change default values of enabled, "
 "create_slot and copy_data to false."
 msgstr ""
+"このコマンドでパブリッシャーに接続するかどうか指定します。これを false にすると、enabled, create_slot, "
+"copy_data の既定値も false になります"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:446
-#, fuzzy
 msgid "Slot name"
-msgstr "ロール名"
+msgstr "スロット名"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:449
 msgid ""
 "Name of the replication slot to use. The default behavior is to use the "
 "name of the subscription for the slot name."
-msgstr ""
+msgstr "レプリケーションスロットの名前です。何も指定しないと、サブスクリプション名と同じものを使用します"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:452
 msgid "Synchronous commit"
-msgstr ""
+msgstr "同期コミット"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:454
 msgid ""
 "The value of this parameter overrides the synchronous_commit setting. The"
 " default value is off."
-msgstr ""
+msgstr "このパラメーターの値は synchronous_commit の設定を上書きします。既定値は off です"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:539
 msgid ""
 "Replication slot name may only contain lower case letters, numbers, and "
 "the underscore character."
-msgstr ""
+msgstr "レプリケーションスロット名には小文字、数字、アンダースコアのみを指定できます"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/templates/subscriptions/sql/default/stats.sql:2
-#, fuzzy
 msgid "Subscription name"
-msgstr "説明"
+msgstr "サブスクリプション名"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/templates/subscriptions/sql/default/stats.sql:3
-#, fuzzy
 msgid "Latest end time"
-msgstr "終了日時"
+msgstr "最新の終了日時"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/templates/subscriptions/sql/default/stats.sql:4
 msgid "Latest end lsn"
-msgstr ""
+msgstr "最新の終端 LSN"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/templates/subscriptions/sql/default/stats.sql:5
 msgid "Last message receipt"
-msgstr ""
+msgstr "最後のメッセージ受信"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/templates/subscriptions/sql/default/stats.sql:6
 msgid "Last message send time"
-msgstr ""
+msgstr "最後のメッセージ送信日時"
 
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:3
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:3
@@ -8179,47 +8150,42 @@ msgid "Connect Server"
 msgstr "サーバに接続"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:102
-#, fuzzy
 msgid "Database is already connected."
-msgstr "データベースへはすでに接続されています"
+msgstr "データベースはすでに接続されています"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:107
 msgid "Disconnect Server"
 msgstr "サーバから切断"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:109
-#, fuzzy
 msgid "Database is already disconnected."
-msgstr "データベースへはすでに接続されています"
+msgstr "データベースはすでに切断されています"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:114
 msgid "Reload Configuration"
 msgstr "設定を再読み込み"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:116
-#, fuzzy
 msgid ""
 "Please select a server from the browser tree to reload the configuration "
 "files."
-msgstr "ブラウザツリーからサーバか子ノードを選択してください"
+msgstr "設定ファイルを再読み込みするサーバを、ブラウザツリーから選択してください"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:121
 msgid "Add Named Restore Point..."
 msgstr "リストアポイントを追加..."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:123
-#, fuzzy
 msgid "Please select any server from the browser tree to Add Named Restore Point."
-msgstr "ブラウザツリーからサーバか子ノードを選択してください"
+msgstr "名前付きリストアポイントを追加するサーバを、ブラウザツリーから選択してください"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:128
 msgid "Change Password..."
 msgstr "パスワードを変更..."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:130
-#, fuzzy
 msgid "Please connect server to enable change password. "
-msgstr "このダッシュボードを表示するには、選択したサーバに接続してください"
+msgstr "パスワードを変更するには、サーバに接続してください "
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:135
 msgid "Pause Replay of WAL"
@@ -8229,7 +8195,7 @@ msgstr "WAL の適用を一時停止"
 msgid ""
 "Please select a connected database as a Super user and run in Recovery "
 "mode to Pause Replay of WAL."
-msgstr ""
+msgstr "WAL の適用を一時停止するには、リカバリモードで実行中のデータベースに、スーパーユーザとして接続してください"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:142
 msgid "Resume Replay of WAL"
@@ -8239,7 +8205,7 @@ msgstr "WAL の適用を再開"
 msgid ""
 "Please select a connected database as a Super user and run in Recovery "
 "mode to Resume Replay of WAL."
-msgstr ""
+msgstr "WAL の適用を再開するには、リカバリモードで実行中のデータベースに、スーパーユーザとして接続してください"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:149
 msgid "Clear Saved Password"
@@ -8251,7 +8217,7 @@ msgstr "SSH トンネルパスワードの消去"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:171
 msgid "SSH Tunnel password is not saved for selected server."
-msgstr ""
+msgstr "選択したサーバには SSH トンネルパスワードが保存されていません"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:297
 msgid "Disconnect server"
@@ -9095,7 +9061,7 @@ msgstr "全解除"
 
 #: pgadmin/browser/static/js/runtime.js:38
 msgid "Failed to send signal to runtime."
-msgstr ""
+msgstr "ランタイムへのシグナル送信に失敗しました"
 
 #: pgadmin/browser/static/js/wizard.js:85
 #: pgadmin/browser/static/js/wizard.js:86
@@ -9166,28 +9132,26 @@ msgid "Finish"
 msgstr "完了"
 
 #: pgadmin/browser/static/js/quick_search/menuitems_help.js:31
-#, fuzzy, python-format
 msgid "About "
-msgstr "%s について"
+msgstr "情報: "
 
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:226
 msgid "MENU ITEMS"
-msgstr ""
+msgstr "メニュー項目"
 
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:231
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:265
-#, fuzzy
 msgid "Searching..."
 msgstr "検索しています..."
 
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:233
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:250
 msgid "No search results"
-msgstr ""
+msgstr "検索結果がありません"
 
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:238
 msgid "HELP ARTICLES"
-msgstr ""
+msgstr "ヘルプ文書"
 
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:242
 #: pgadmin/misc/file_manager/static/js/utility.js:715
@@ -9201,7 +9165,7 @@ msgstr "読み込んでいます..."
 
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:243
 msgid "Show all"
-msgstr ""
+msgstr "すべて表示"
 
 #: pgadmin/browser/templates/browser/browser.html:2
 msgid ""
@@ -10174,7 +10138,7 @@ msgstr "ホーム"
 
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:31
 msgid "Download File"
-msgstr "ダウンロードファイル"
+msgstr "ファイルをダウンロード"
 
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:35
 msgid "Delete File/Folder"
@@ -10592,9 +10556,8 @@ msgstr "ポート番号は必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:52
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:57
-#, fuzzy
 msgid "Publication must be specified."
-msgstr "ポート番号は必須です"
+msgstr "パブリケーションは必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:63
 msgid "SSH Tunnel host must be specified."
@@ -10613,9 +10576,8 @@ msgid "SSH Tunnel identity file must be specified."
 msgstr "SSH トンネル識別情報ファイルは必須です"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:104
-#, fuzzy
 msgid "Host name, Address must be specified."
-msgstr "ホスト名、アドレスもしくはサービスのいずれかを指定する必要があります"
+msgstr "ホスト名、もしくはアドレスを指定する必要があります"
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:107
 msgid "Either Host name, Address or Service must be specified."
@@ -10650,19 +10612,16 @@ msgid "Execute on"
 msgstr "実行時"
 
 #: pgadmin/static/js/generated/vendor.others.js:2
-#, fuzzy
 msgid "delete"
-msgstr "削除"
+msgstr "delete"
 
 #: pgadmin/static/js/generated/vendor.others.js:2
-#, fuzzy
 msgid "has"
-msgstr "スキーマ"
+msgstr "has"
 
 #: pgadmin/static/js/generated/vendor.others.js:2
-#, fuzzy
 msgid "get"
-msgstr "比較対象"
+msgstr "get"
 
 #: pgadmin/static/js/selection/clipboard.js:83
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:170
@@ -11308,11 +11267,10 @@ msgid "Backup Globals..."
 msgstr "グローバルオブジェクトをバックアップ..."
 
 #: pgadmin/tools/backup/static/js/backup.js:601
-#, fuzzy
 msgid ""
 "Please select any server from the browser tree to take Backup of global "
 "objects."
-msgstr "ブラウザツリーからサーバか子ノードを選択してください"
+msgstr "グローバルオブジェクトのバックアップを取るサーバを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/backup/static/js/backup.js:609
 #: pgadmin/tools/backup/static/js/backup.js:635
@@ -11322,17 +11280,15 @@ msgstr "サーバをバックアップ..."
 
 #: pgadmin/tools/backup/static/js/backup.js:613
 #: pgadmin/tools/backup/static/js/backup.js:639
-#, fuzzy
 msgid "Please select any server from the browser tree to take Server Backup."
-msgstr "ブラウザツリーからサーバか子ノードを選択してください"
+msgstr "全体のバックアップを取るサーバを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/backup/static/js/backup.js:626
 #: pgadmin/tools/backup/static/js/backup.js:653
-#, fuzzy
 msgid ""
 "Please select any database or schema or table from the browser tree to "
 "take Backup."
-msgstr "ブラウザからデータベースか子ノードを選択してください"
+msgstr "バックアップを取るデータベース、スキーマまたはテーブルを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/backup/static/js/backup.js:647
 #: pgadmin/tools/backup/static/js/backup.js:665
@@ -11366,9 +11322,8 @@ msgid "Please provide a filename"
 msgstr "ファイル名を指定してください"
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:129
-#, fuzzy
 msgid "Please select a database from the browser tree to access Query Tool."
-msgstr "ブラウザからデータベースか子ノードを選択してください"
+msgstr "クエリツールの接続先となるデータベースを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:148
 msgid "All Rows"
@@ -12087,9 +12042,8 @@ msgstr "SQL を生成"
 
 #: pgadmin/tools/erd/__init__.py:150
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:820
-#, fuzzy
 msgid "Download image"
-msgstr "ダウンロードファイル"
+msgstr "画像をダウンロード"
 
 #: pgadmin/tools/erd/__init__.py:168
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:824
@@ -12129,9 +12083,8 @@ msgid "Auto align"
 msgstr "自動整列"
 
 #: pgadmin/tools/erd/__init__.py:312
-#, fuzzy
 msgid "Show more/fewer details"
-msgstr "簡易的な情報を表示"
+msgstr "簡易/詳細な情報を表示"
 
 #: pgadmin/tools/erd/__init__.py:330
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:848
@@ -12204,18 +12157,16 @@ msgid "Select the referenced table column."
 msgstr "参照先のテーブルの列を選択してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:728
-#, fuzzy, python-format
 msgid "Table name already exists."
-msgstr "ユーザ名 %s はすでに存在します"
+msgstr "テーブル名はすでに存在します"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:177
 msgid "Client error"
 msgstr "クライアントエラー"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:186
-#, fuzzy
 msgid "Preparing..."
-msgstr "検索しています..."
+msgstr "準備しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:258
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:5327
@@ -12228,9 +12179,8 @@ msgid "Save changes?"
 msgstr "変更を保存"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:289
-#, fuzzy
 msgid "The diagram has changed. Do you want to save changes?"
-msgstr "データが変更されています。保存しますか？"
+msgstr "ダイヤグラムが変更されています。保存しますか？"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:379
 msgid "Delete ?"
@@ -12246,14 +12196,12 @@ msgid "Are you sure you want to delete ?"
 msgstr "削除してもよろしいですか？"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:428
-#, fuzzy
 msgid "Loading project..."
-msgstr "オブジェクトを比較しています..."
+msgstr "プロジェクトを読み込んでいます..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:468
-#, fuzzy
 msgid "Saving..."
-msgstr "読み込んでいます..."
+msgstr "保存しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:473
 msgid "Project saved successfully."
@@ -12279,13 +12227,12 @@ msgid "Preparing the SQL..."
 msgstr "SQL を準備しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:543
-#, fuzzy
 msgid "Preparing the image..."
-msgstr "SQL を準備しています..."
+msgstr "画像を準備しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:630
 msgid "Unknown error. Check console logs"
-msgstr ""
+msgstr "不明なエラーです。コンソールのログを確認してください"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:729
 msgid "Initializing connection..."
@@ -12354,11 +12301,10 @@ msgid "Grant Wizard..."
 msgstr "権限付与ウィザード..."
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:200
-#, fuzzy
 msgid ""
 "Please select any database, schema or schema objects from the browser "
 "tree to access Grant Wizard Tool."
-msgstr "ブラウザツリーからサーバか子ノードを選択してください"
+msgstr "権限付与ウィザードを実行するデータベース、スキーマまたはスキーマオブジェクトを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:281
 msgid "Search by object type or name"
@@ -12574,9 +12520,8 @@ msgid "Import/Export..."
 msgstr "インポート/エクスポート..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:432
-#, fuzzy
 msgid "Please select any table from the browser tree to Import/Export data."
-msgstr "ブラウザツリーからサーバか子ノードを選択してください"
+msgstr "データをインポート/エクスポートするテーブルを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:567
 msgid "Import/Export job created."
@@ -12702,9 +12647,8 @@ msgstr "メンテナンス..."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:186
 #: pgadmin/tools/maintenance/static/js/maintenance.js:206
-#, fuzzy
 msgid "Please select any database from the browser tree to do Maintenance."
-msgstr "ブラウザからデータベースか子ノードを選択してください"
+msgstr "メンテナンスを行うデータベースを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:276
 msgid "Maintenance error"
@@ -12791,9 +12735,8 @@ msgid "Restore..."
 msgstr "リストア..."
 
 #: pgadmin/tools/restore/static/js/restore.js:419
-#, fuzzy
 msgid "Please select any schema or table from the browser tree to Restore data."
-msgstr "ブラウザツリーからサーバか子ノードを選択してください"
+msgstr "データをリストアするスキーマまたはテーブルを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/restore/static/js/restore_dialog.js:18
 msgid "Restore Error"
@@ -13051,11 +12994,10 @@ msgid "Failed to connect the database."
 msgstr "データベースへの接続に失敗しました"
 
 #: pgadmin/tools/search_objects/static/js/search_objects.js:49
-#, fuzzy
 msgid ""
 "Please select a database from the browser tree to search the database "
 "objects."
-msgstr "データベース/データベースオブジェクトを選択してください"
+msgstr "データベースオブジェクトを検索するデータベースを、ブラウザツリーから選択してください"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:16
 msgid "Search Objects Error"
@@ -13934,19 +13876,17 @@ msgid "User deleted."
 msgstr "ユーザが削除されました"
 
 #: pgadmin/tools/user_management/__init__.py:437
-#, fuzzy
 msgid "Owner changed successfully."
-msgstr "パスワードの変更に成功しました"
+msgstr "所有者の変更に成功しました"
 
 #: pgadmin/tools/user_management/__init__.py:482
 msgid "{0} Shared servers are associated with this user."
-msgstr ""
+msgstr "このユーザには {0} 個の共有サーバが関連付けられています"
 
 #: pgadmin/tools/user_management/__init__.py:491
 #: pgadmin/tools/user_management/__init__.py:531
-#, fuzzy
 msgid "No shared servers found"
-msgstr "共有サーバを隠す"
+msgstr "共有サーバが見つかりませんでした"
 
 #: pgadmin/tools/user_management/__init__.py:570
 msgid "'{0}' is not allowed to modify."
@@ -14025,7 +13965,7 @@ msgstr "ユーザ名 %s はすでに存在します"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:715
 msgid "Note: If no user is selected, the shared servers will be deleted."
-msgstr ""
+msgstr "注： ユーザが選択されていない場合、共有サーバは削除されます"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:788
 #: pgadmin/tools/user_management/static/js/user_management.js:841
@@ -14036,7 +13976,7 @@ msgstr "ユーザを削除"
 msgid ""
 "The shared servers owned by <b></b> will be deleted. Do you wish to "
 "continue?"
-msgstr ""
+msgstr "<b></b> により所有されている共有サーバは削除されます。よろしいですか？"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:801
 #: pgadmin/tools/user_management/static/js/user_management.js:851
@@ -14045,7 +13985,7 @@ msgstr "ユーザの削除中にエラーが発生しました"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:835
 msgid "Unable to change owner."
-msgstr ""
+msgstr "所有者を変更できません"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:842
 msgid "Are you sure you wish to delete this user?"
