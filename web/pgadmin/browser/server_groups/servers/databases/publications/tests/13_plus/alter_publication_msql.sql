@@ -1,0 +1,1 @@
+ALTER PUBLICATION test_publication_to_alter RENAME TO alterd_publication;

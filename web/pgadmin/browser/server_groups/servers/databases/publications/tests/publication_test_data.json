@@ -10,6 +10,7 @@
         "evnt_update": true,
         "evnt_delete": false,
         "evnt_truncate": false,
+        "publish_via_partition_root": false,
         "pubowner": "postgres",
         "all_table": true,
         "pubtable": ""
@@ -31,6 +32,7 @@
         "evnt_update": true,
         "evnt_delete": false,
         "evnt_truncate": false,
+        "publish_via_partition_root": false,
         "pubowner": "postgres",
         "all_table": false,
         "pubtable": "PLACE_HOLDER"

@@ -1,0 +1,80 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table For publication",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_publication",
+        "columns": [
+          {
+            "name": "emp_id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "name",
+            "cltype": "text"
+          },
+          {
+            "name": "salary",
+            "cltype": "bigint"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create  Publication",
+      "endpoint": "NODE-publication.obj",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "msql_endpoint": "NODE-publication.msql",
+      "data": {
+        "name": "test_publication_create",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "pubowner": "postgres",
+        "publish_via_partition_root": false,
+        "all_table": true,
+        "pubtable": ""
+      },
+      "expected_sql_file": "create_publication.sql",
+      "expected_msql_file": "create_publication_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  Publication name",
+      "endpoint": "NODE-publication.obj_id",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "data": {
+        "name": "alterd_publication"
+      },
+      "expected_sql_file": "alter_publication.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  Publication event",
+      "endpoint": "NODE-publication.obj_id",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "data": {
+        "evnt_delete": true
+      },
+      "expected_sql_file": "alter_publication_event.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop publication",
+      "endpoint": "NODE-publication.delete_id",
+      "data": {
+        "name": "alterd_publication_event"
+      }
+    }
+  ]
+}

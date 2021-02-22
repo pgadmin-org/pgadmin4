@@ -34,6 +34,53 @@ Use the *Connection* tab to define the connection string to the publisher:
 * Use the *Passfile* field to specify the location of a password file (.pgpass). A .pgpass file allows a user to login without providing a password when they connect.  For more information, see `Section 33.15 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgpass.html>`_.
 * Use the *Publication* field to specify the publication name on the publishers to subscribe to. Click on the refresh button at the end to load the names of the existing publications and then select from the list. You can also write the name of the known publication in the field.
 
+Click the *SSL* tab to continue.
+
+.. image:: images/subscription_ssl.png
+    :alt: Subscription dialog ssl tab
+    :align: center
+
+Use the fields in the *SSL* tab to configure SSL:
+
+* Use the drop-down list box in the *SSL* field to select the type of SSL
+  connection the server should use. For more information about using SSL
+  encryption, see
+  `Section 33.18 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-ssl.html>`_.
+
+If pgAdmin is installed in Server mode (the default mode), you can use the
+platform-specific File manager dialog to upload files that support SSL
+encryption to the server.  To access the File manager dialog, click the
+icon that is located to the right of each of the following fields.
+
+* Use the *Client certificate* field to specify the file containing the client
+  SSL certificate.  This file will replace the default
+  *~/.postgresql/postgresql.crt* if pgAdmin is installed in Desktop mode, and
+  *<STORAGE_DIR>/<USERNAME>/.postgresql/postgresql.crt* if pgAdmin is installed
+  in Web mode. This parameter is ignored if an SSL connection is not made.
+* Use the *Client certificate key* field to specify the file containing the
+  secret key used for the client certificate.  This file will replace the
+  default *~/.postgresql/postgresql.key* if pgAdmin is installed in Desktop
+  mode, and *<STORAGE_DIR>/<USERNAME>/.postgresql/postgresql.key* if pgAdmin
+  is installed in Web mode. This parameter is ignored if an SSL connection is
+  not made.
+* Use the *Root certificate* field to specify the file containing the SSL
+  certificate authority.  This file will replace the default
+  *~/.postgresql/root.crt*. This parameter is ignored if an SSL connection is
+  not made.
+* Use the *Certificate revocation list* field to specify the file containing
+  the SSL certificate revocation list.  This list will replace the default list,
+  found in *~/.postgresql/root.crl*. This parameter is ignored if an SSL
+  connection is not made.
+* When *SSL compression?* is set to *True*, data sent over SSL connections will
+  be compressed.  The default value is *False* (compression is disabled).  This
+  parameter is ignored if an SSL connection is not made.
+
+.. warning:: In Server mode, certificates, private keys, and the revocation list
+    are stored in the per-user file storage area on the server, which is owned
+    by the user account under which the pgAdmin server process is run. This
+    means that administrators of the server may be able to access those files;
+    appropriate caution should be taken before choosing to use this feature.
+
 Click the *With* tab to continue.
 
 .. image:: images/subscription_with.png
