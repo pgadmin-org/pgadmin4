@@ -383,6 +383,7 @@ def change_owner():
         request.data, encoding='utf-8'
     )
     try:
+        new_user = User.query.get(data['new_owner'])
         old_user_servers = Server.query.filter_by(shared=True, user_id=data[
             'old_owner']).all()
         server_group_ids = [server.servergroup_id for server in
@@ -400,12 +401,15 @@ def change_owner():
         deleted_sg = []
         # Change server user.
         for server in old_user_servers:
+            sh_servers = SharedServer.query.filter_by(
+                servergroup_id=server.servergroup_id).all()
+
             if old_sg_data[server.servergroup_id] in sg_data:
-                sh_servers = SharedServer.query.filter_by(
-                    servergroup_id=server.servergroup_id).all()
+
                 for sh in sh_servers:
                     sh.servergroup_id = sg_data[
                         old_sg_data[server.servergroup_id]]
+                    sh.server_owner = new_user.username
                 # Update Server user and server group to prevent deleting
                 # shared server associated with deleting user.
                 Server.query.filter_by(
@@ -422,6 +426,8 @@ def change_owner():
                 deleted_sg.append(server.servergroup_id)
             else:
                 server.user_id = data['new_owner']
+                for sh in sh_servers:
+                    sh.server_owner = new_user.username
 
         # Change server group user.
         for server_group in server_groups:
