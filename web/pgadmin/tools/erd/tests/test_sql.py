@@ -45,7 +45,7 @@ class ERDSql(BaseTestGenerator):
                 sql_base_path, version_mapping['name'])
 
             if not path.exists(complete_path):
-                complete_path = path.join(sql_base_path, 'default')
+                continue
             break
 
         data_sql = ''
