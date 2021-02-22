@@ -19,7 +19,7 @@ pgAdmin server and opens a window to render the user interface.
 .. seealso:: For detailed instructions on building and configuring pgAdmin from
     scratch, please see the README file in the top level directory of the source code.
     For convenience, you can find the latest version of the file
-    `here <https://git.postgresql.org/gitweb/?p=pgadmin4.git;a=blob_plain;f=README>`_,
+    `here <https://git.postgresql.org/gitweb/?p=pgadmin4.git;a=blob;f=README.md>`_,
     but be aware that this may differ from the version included with the source code
     for a specific version of pgAdmin.
 
@@ -33,34 +33,36 @@ settings.
 
 See :ref:`config_py` for more information on configuration settings.
 
-Runtime
-*******
+Desktop Runtime Standalone Application
+======================================
 
-When executed, the runtime will automatically try to execute the pgAdmin Python
-application. If execution fails, it will prompt you with error message
-displaying a *Configure* button at the bottom. You can configure a fixed port
-number to avoid clashes of the default random port number with other
-applications and a connection timeout if desired.
+The Desktop Runtime is based on `NWjs <https://nwjs.io/>`_ which integrates a
+browser and the Python server creating a standalone application.
 
-If the error is related to Python Path or pgAdmin Python file then you need to
-create a file named 'dev_config.json' and specify the following entries:
+.. image:: images/runtime_standalone.png
+    :alt: Runtime Standalone
+    :align: center
 
-{
-    "pythonPath": <PATH OF THE PYTHON BINARY> For Example: "../../venv/bin/python3",
+Runtime Menu
+------------
 
-    "pgadminFile": <PATH OF THE pgAdmin4.py> For Example: "../web/pgAdmin4.py"
+Use the *File Menu* to access the *Runtime Menu*:
 
-}
+.. image:: images/runtime_menu.png
+    :alt: Runtime Menu
+    :align: center
 
-Note that the dev_config.py file should only be required by developers who are
-working outside of a standard installation.
+Configuration Dialog
+--------------------
 
-The configuration settings are stored in *runtime_config.json* file, which
-will be available on Unix systems (~/.local/share/pgadmin/),
-on Mac OS X (~/Library/Preferences/pgadmin),
-and on Windows (%APPDATA%/pgadmin).
+Use the *Runtime Menu* to access the *Configuration* dialog:
 
-The configuration settings:
+.. image:: images/runtime_configuration.png
+    :alt: Runtime Configuration
+    :align: center
+
+Following are the details of the *Fixed port number?*, *Port Number*, and *Connection
+Timeout* configuration parameters:
 
 .. table::
    :class: longtable
@@ -76,3 +78,42 @@ The configuration settings:
    | ConnectionTimeout        | Integer            | The number of seconds to wait for application server startup. |
    +--------------------------+--------------------+---------------------------------------------------------------+
 
+Log dialog
+----------
+
+Use the *Runtime Menu* to access the *Log* dialog:
+
+.. image:: images/runtime_view_log.png
+    :alt: Runtime View Log
+    :align: center
+
+Click on the *Reload* button at the bottom to view the latest logs of pgAdmin 4
+Server.
+
+When executed, the runtime will automatically try to execute the pgAdmin Python
+application. If execution fails, it will prompt you with error message
+displaying a *Configure* button at the bottom. You can configure a fixed port
+number to avoid clashes of the default random port number with other
+applications and a connection timeout if desired.
+
+.. image:: images/runtime_error.png
+    :alt: Runtime Error
+    :align: center
+
+If the error is related to Python Path or pgAdmin Python file then you need to
+create a file named 'dev_config.json' and specify the following entries:
+
+.. code-block:: json
+
+    {
+        "pythonPath": "/path/to/python.exe",
+        "pgadminFile": "/path/to/pgAdmin4.py"
+    }
+
+Note that the *dev_config.py* file should only be required by developers who are
+working outside of a standard installation.
+
+The configuration settings are stored in *runtime_config.json* file, which
+will be available on Unix systems (~/.local/share/pgadmin/),
+on Mac OS X (~/Library/Preferences/pgadmin),
+and on Windows (%APPDATA%/pgadmin).
