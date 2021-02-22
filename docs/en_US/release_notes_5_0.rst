@@ -21,6 +21,7 @@ Housekeeping
 
 | `Issue #5017 <https://redmine.postgresql.org/issues/5017>`_ -  Use cheroot as the default production server for pgAdmin4.
 | `Issue #6145 <https://redmine.postgresql.org/issues/6145>`_ -  Documentation of Logical Replication.
+| `Issue #6195 <https://redmine.postgresql.org/issues/6195>`_ -  Documentation of runtime with NWjs.
 | `Issue #6196 <https://redmine.postgresql.org/issues/6196>`_ -  Documentation of Quick Search support.
 | `Issue #6207 <https://redmine.postgresql.org/issues/6207>`_ -  Updated the JS dependencies to the latest.
 
