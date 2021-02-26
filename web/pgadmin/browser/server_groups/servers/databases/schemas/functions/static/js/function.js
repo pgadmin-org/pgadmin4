@@ -179,7 +179,7 @@ define('pgadmin.node.function', [
           proiswindow: undefined, /* Window Function ? */
           proparallel: undefined, /* Parallel mode */
           procost: undefined, /* Estimated execution Cost */
-          prorows: undefined, /* Estimated number of rows */
+          prorows: 0, /* Estimated number of rows */
           proleakproof: undefined,
           prosupportfunc: undefined, /* Support function */
           arguments: [],
@@ -306,7 +306,7 @@ define('pgadmin.node.function', [
           select2: {allowClear: false},
         },{
           id: 'procost', label: gettext('Estimated cost'), group: gettext('Options'),
-          cell:'string', type: 'text', readonly: 'isReadonly', deps: ['lanname'],
+          cell:'string', type: 'text', readonly: 'isReadonly', deps: ['lanname'], disabled: 'isDisabled',
         },{
           id: 'prorows', label: gettext('Estimated rows'), type: 'text',
           deps: ['proretset'], visible: 'isVisible', readonly: 'isReadonly',
@@ -462,9 +462,6 @@ define('pgadmin.node.function', [
             if(m.get('proretset') == true) {
               return false;
             }
-            setTimeout(function() {
-              m.set('prorows', 0);
-            }, 10);
             return true;
           default:
             return false;
