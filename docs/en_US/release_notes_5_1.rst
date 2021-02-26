@@ -17,4 +17,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4959 <https://redmine.postgresql.org/issues/4959>`_ -  Fixed an issue where the properties tab for collection nodes is unresponsive after switching the tabs.
 | `Issue #6159 <https://redmine.postgresql.org/issues/6159>`_ -  Ensure that the user should be able to kill the session from Dashboard if the user has a 'pg_signal_backend' role.

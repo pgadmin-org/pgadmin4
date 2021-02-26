@@ -190,6 +190,14 @@ define([
         gridSchema.columns.forEach((col)=>{
           col.disabled = true;
         });
+
+        // Get the list of selected models, before initializing the grid
+        // again.
+        var selectedModels = [];
+        if(!_.isUndefined(that.grid) && 'collection' in that.grid){
+          selectedModels = that.grid.getSelectedModels();
+        }
+
         // Initialize a new Grid instance
         that.grid = new Backgrid.Grid({
           emptyText: gettext('No data found'),
@@ -213,12 +221,6 @@ define([
         };
 
         if (view) {
-
-          // Avoid unnecessary reloads
-          if (_.isEqual($(panel).data('node-prop'), urlBase)) {
-            return;
-          }
-
           // Cache the current IDs for next time
           $(panel).data('node-prop', urlBase);
 
@@ -316,6 +318,18 @@ define([
 
               // Listen to select all checkbox event
               that.collection.on('backgrid:select-all', that.__loadAllRows.bind(that));
+
+              // Trigger the backgrid:select event for already selected items
+              // as we have created a new grid instance.
+              if(selectedModels.length > 0) {
+                that.collection.each(function (model) {
+                  for(var inx=0; inx < selectedModels.length; inx++){
+                    if (selectedModels[inx].id == model.id){
+                      model.trigger('backgrid:select', model, true);
+                    }
+                  }
+                });
+              }
             } else {
             // Do not listen the scroll event
               $('.pg-prop-content').off('scroll', that.__loadMoreRows);
@@ -323,6 +337,7 @@ define([
               $msgContainer.text(gettext('No properties are available for the selected object.'));
 
             }
+            selectedModels = [];
           }).fail(function(xhr, error) {
             pgBrowser.Events.trigger(
               'pgadmin:node:retrieval:error', 'properties', xhr, error.message, item, that
