@@ -23,7 +23,13 @@ fi
 
 if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
     if [ -z "${PGADMIN_DEFAULT_EMAIL}" -o -z "${PGADMIN_DEFAULT_PASSWORD}" ]; then
-        echo 'You need to specify PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD environment variables'
+        echo 'You need to define the PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD environment variables.'
+        exit 1
+    fi
+
+    echo ${PGADMIN_DEFAULT_EMAIL} | grep -E "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" > /dev/null
+    if [ $? -ne 0 ]; then
+        echo "'${PGADMIN_DEFAULT_EMAIL}' does not appear to be a valid email address. Please reset the PGADMIN_DEFAULT_EMAIL environment variable and try again."
         exit 1
     fi
 
