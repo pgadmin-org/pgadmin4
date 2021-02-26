@@ -1,11 +1,11 @@
-#define MyAppName MYAPP_NAME
+#define MyAppName "pgAdmin 4"
 #define MyAppVersion MYAPP_VERSION
 #define MyAppPublisher "The pgAdmin Development Team"
 #define MyAppURL "www.pgadmin.org"
 #define MyAppExeName "pgAdmin4.exe"
 #define MyAppID "C14F64E7-DCB9-4DE1-8560-16F08FCFF64E"
 #define MyAppFullVersion MYAPP_FULLVERSION
-#define MyAppArchitecturesMode MYAPP_ARCHITECTURESMODE
+#define MyAppArchitecturesMode "x64"
 #define MyAppVCDist MYAPP_VCDIST
 #define MyAppInvalidPath "Please provide a valid path."
 #define MyAppErrorMsgIsWin32 "You already have a 32 bit installation of pgAdmin 4. Please uninstall this before installing the 64 bit version."
@@ -19,12 +19,12 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pf}\{#MyAppName}\{#MyAppVersion}
+DefaultDirName={commonpf}\{#MyAppName}\{#MyAppVersion}
 DefaultGroupName={#MyAppName}
 DisableWelcomePage=no
 DisableProgramGroupPage=auto
 LicenseFile=Resources\license.rtf
-OutputBaseFilename=setup
+OutputBaseFilename=pgadmin4-setup
 SetupIconFile=Resources\pgAdmin4.ico
 Compression=lzma
 SolidCompression=yes
@@ -55,7 +55,6 @@ Source: "..\..\win-build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 
 [Run]
 Filename: "{app}\installer\{#MyAppVCDist}"; StatusMsg: "VC runtime redistributable package"; Parameters: "/passive /verysilent /norestart"; Check: InstallVC;
-Filename: "{app}\runtime\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 
 [Registry]
 Root: HKLM; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; Flags: uninsdeletekeyifempty
