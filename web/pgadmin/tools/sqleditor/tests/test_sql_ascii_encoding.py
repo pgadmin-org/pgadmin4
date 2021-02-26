@@ -55,6 +55,14 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
                 lc_collate='C',
                 test_str='Blob: \xf4\xa5\xa3\xa5'
             )),
+        (
+            'Test SQL_ASCII data with blob string & ascii table name',
+            dict(
+                table_name='ü',
+                db_encoding='SQL_ASCII',
+                lc_collate='C',
+                test_str='Blob: \xf4\xa5\xa3\xa5'
+            )),
     ]
 
     def setUp(self):

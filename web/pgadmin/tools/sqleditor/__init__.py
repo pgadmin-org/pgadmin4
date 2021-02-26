@@ -453,7 +453,9 @@ def poll(trans_id):
                         # Using characters %, (, ) in the argument names is not
                         # supported in psycopg2
                         col_info['pgadmin_alias'] = \
-                            re.sub("[%()]+", "|", col_name)
+                            re.sub("[%()]+", "|", col_name).\
+                            encode('unicode_escape').decode('utf-8')
+
                     session_obj['columns_info'] = columns
 
                 # status of async_fetchmany_2darray is True and result is none

@@ -46,6 +46,13 @@ class TestEncodingCharset(BaseTestGenerator):
                 test_str='Tif'
             )),
         (
+            'With Encoding SQL_ASCII (additional test)',
+            dict(
+                db_encoding='SQL_ASCII',
+                lc_collate='C',
+                test_str='ü'
+            )),
+        (
             'With Encoding LATIN1',
             dict(
                 db_encoding='LATIN1',
