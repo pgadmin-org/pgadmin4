@@ -552,12 +552,20 @@ WHERE db.datname = current_database()""")
         """
         status = self._execute(cur, """
         SELECT
-            oid as id, rolname as name, rolsuper as is_superuser,
-            CASE WHEN rolsuper THEN true ELSE rolcreaterole END as
+            roles.oid as id, roles.rolname as name,
+            roles.rolsuper as is_superuser,
+            CASE WHEN roles.rolsuper THEN true ELSE roles.rolcreaterole END as
             can_create_role,
-            CASE WHEN rolsuper THEN true ELSE rolcreatedb END as can_create_db
+            CASE WHEN roles.rolsuper THEN true
+            ELSE roles.rolcreatedb END as can_create_db,
+            CASE WHEN 'pg_signal_backend'=ANY(ARRAY(
+                SELECT pg_catalog.pg_roles.rolname FROM
+                pg_catalog.pg_auth_members m JOIN pg_catalog.pg_roles ON
+                (m.roleid = pg_catalog.pg_roles.oid) WHERE
+                 m.member = roles.oid)) THEN True
+            ELSE False END as can_signal_backend
         FROM
-            pg_catalog.pg_roles
+            pg_catalog.pg_roles as roles
         WHERE
             rolname = current_user""")
 

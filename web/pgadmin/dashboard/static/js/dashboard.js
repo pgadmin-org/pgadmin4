@@ -30,7 +30,8 @@ define('pgadmin.dashboard', [
     is_super_user = false,
     current_user, maintenance_database,
     is_server_dashboard = false,
-    is_database_dashboard = false;
+    is_database_dashboard = false,
+    can_signal_backend = false;
 
   // Custom BackGrid cell, Responsible for cancelling active sessions
   var customDashboardActionCell = Backgrid.Extension.DeleteCell.extend({
@@ -293,6 +294,7 @@ define('pgadmin.dashboard', [
           // Check if user is super user
           var server = treeHierarchy['server'];
           maintenance_database = (server && server.db) || null;
+          can_signal_backend = server.user.can_signal_backend;
 
           if (server && server.user && server.user.is_superuser) {
             is_super_user = true;
@@ -1149,6 +1151,9 @@ define('pgadmin.dashboard', [
           gettext('The session is already in idle state.')
         );
         return false;
+      } else if (can_signal_backend) {
+        // user with membership of 'pg_signal_backend' can terminate the session of non admin user.
+        return true;
       } else if (is_super_user) {
         // Super user can do anything
         return true;
