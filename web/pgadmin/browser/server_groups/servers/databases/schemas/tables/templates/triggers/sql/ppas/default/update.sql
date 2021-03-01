@@ -3,7 +3,7 @@ ALTER TRIGGER {{ conn|qtIdent(o_data.name) }} ON {{ conn|qtIdent(o_data.nspname,
     RENAME TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}
-{% if ((data.prosrc is defined or data.is_row_trigger is defined or data.evnt_insert is defined or data.evnt_delete is defined or data.evnt_update is defined or data.fires is defined or data.is_constraint_trigger is defined) and (o_data.prosrc != data.prosrc or data.is_row_trigger != o_data.is_row_trigger or data.evnt_insert != o_data.evnt_insert or data.evnt_delete != o_data.evnt_delete or data.evnt_update != o_data.evnt_update or o_data.fires != data.fires or data.is_constraint_trigger != o_data.is_constraint_trigger))  %}
+{% if ((data.prosrc is defined or data.is_row_trigger is defined or data.evnt_insert is defined or data.evnt_delete is defined or data.evnt_update is defined or data.fires is defined or data.is_constraint_trigger is defined or data.whenclause is defined) and (o_data.prosrc != data.prosrc or data.is_row_trigger != o_data.is_row_trigger or data.evnt_insert != o_data.evnt_insert or data.evnt_delete != o_data.evnt_delete or data.evnt_update != o_data.evnt_update or o_data.fires != data.fires or data.is_constraint_trigger != o_data.is_constraint_trigger or data.whenclause != o_data.whenclause))  %}
 {% set or_flag = False %}
 {% if data.lanname == 'edbspl' or data.tfunction == 'Inline EDB-SPL' %}
 CREATE OR REPLACE TRIGGER {{ conn|qtIdent(data.name) }}
