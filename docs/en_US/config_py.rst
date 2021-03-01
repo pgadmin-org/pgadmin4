@@ -5,7 +5,16 @@
 ***************************
 
 There are multiple configuration files that are read at startup by pgAdmin. These
-are as follows:
+files are used for configuration options that:
+
+* may be required to be set prior to startup of pgAdmin as they control how
+  the application will operate.
+* system administrators may wish to control across an organisation to enforce
+  security policies.
+* are so rarely or unlikely to be changed that it doesn't
+  make sense to allow them to be changed through the user interface.
+
+The configuration files are as follows:
 
 * ``config.py``: This is the main configuration file, and should not be modified.
   It can be used as a reference for configuration settings, that may be overridden
@@ -27,11 +36,14 @@ are as follows:
   intended for system administrators to include settings that are configured
   system-wide from a secure location that users cannot normally modify and that
   is outside of the pgAdmin installation. The location for this file varies
-  based on the platform, and only needs to be created if desired:
+  based on the platform, and only needs to be created if desired.
 
-  * Linux: ``/etc/pgadmin/config_system.py``
-  * macOS: ``/Library/Preferences/pgadmin/config_system.py``
-  * Windows: ``%CommonProgramFiles%\pgadmin\config_system.py``
+  .. csv-table::
+     :header: "**Platform**", "**File Location**"
+
+     Linux,/etc/pgadmin/config_system.py
+     macOS,/Library/Preferences/pgadmin/config_system.py
+     Windows,%CommonProgramFiles%\pgadmin\config_system.py
 
 .. note:: If the SERVER_MODE setting is changed in ``config_distro.py``,
      ``config_local.py``, or ``config_system.py`` you will most likely need to

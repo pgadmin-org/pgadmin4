@@ -18,9 +18,10 @@ passwords. This is applicable only for desktop mode users.
     :alt: Set master password
     :align: center
 
-* You can disable the master password by setting the configuration parameter
-  *MASTER_PASSWORD_REQUIRED=False*. See :ref:`Desktop Deployment <desktop_deployment>`
-  for more information.
+.. note:: pgAdmin aims to be **secure by default**, however, you can disable the master
+  password by setting the configuration parameter *MASTER_PASSWORD_REQUIRED=False*.
+  See :ref:`config_py` for more information on configuration parameters and how
+  they can be changed or enforced across an organisation.
 
 .. note:: If the master password is disabled, then all the saved passwords will
     be removed.
