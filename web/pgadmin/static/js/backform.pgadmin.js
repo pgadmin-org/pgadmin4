@@ -1901,8 +1901,8 @@ define([
             'height: ' + ($tabContent.height() + 8) + 'px !important;'
           );
         }
+        this.sqlCtrl.setSize($tabContent.width() + 'px', $tabContent.height() + 'px');
       }
-      this.sqlCtrl.setSize($tabContent.width() + 'px', $tabContent.height() + 'px');
     },
     remove: function() {
       if (this.sqlCtrl) {

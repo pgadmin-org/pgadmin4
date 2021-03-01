@@ -612,8 +612,8 @@ define([
 
             let ownershipSelect2Control = Backform.Select2Control.extend({
               fetchData: function(){
-                let self = this;
-                let url = self.field.get('url');
+                let that = this;
+                let url = that.field.get('url');
 
                 url = url_for(url, {'uid': uid});
 
@@ -622,24 +622,24 @@ define([
                   headers: {
                     'Cache-Control' : 'no-cache',
                   },
-                }).done(function (res) {
-                  var transform = self.field.get('transform');
-                  if(res.data.status){
-                    let data = res.data.result.data;
+                }).done(function (res_data) {
+                  var transform = that.field.get('transform');
+                  if(res_data.data.status){
+                    let data = res_data.data.result.data;
 
                     if (transform && _.isFunction(transform)) {
-                      self.field.set('options', transform.bind(self, data));
+                      that.field.set('options', transform.bind(that, data));
                     } else {
-                      self.field.set('options', data);
+                      that.field.set('options', data);
                     }
                   } else {
                     if (transform && _.isFunction(transform)) {
-                      self.field.set('options', transform.bind(self, []));
+                      that.field.set('options', transform.bind(that, []));
                     } else {
-                      self.field.set('options', []);
+                      that.field.set('options', []);
                     }
                   }
-                  Backform.Select2Control.prototype.render.apply(self, arguments);
+                  Backform.Select2Control.prototype.render.apply(that, arguments);
                 }).fail(function(e){
                   let msg = '';
                   if(e.status == 404) {
@@ -728,15 +728,15 @@ define([
                     };
                   },
                   prepare: function() {
-                    let self = this;
+                    let that = this;
                     $container.html('');
 
-                    self.ownershipModel = new ownershipModel();
-                    let fields = pgBackform.generateViewSchema(null, self.ownershipModel, 'create', null, null, true, null);
+                    that.ownershipModel = new ownershipModel();
+                    let fields = pgBackform.generateViewSchema(null, that.ownershipModel, 'create', null, null, true, null);
 
                     let view = this.view = new pgBackform.Dialog({
                       el: '<div></div>',
-                      model: self.ownershipModel,
+                      model: that.ownershipModel,
                       schema: fields,
                     });
                     //Render change ownership dialog.
@@ -745,8 +745,8 @@ define([
                   callback: function(e) {
                     if(e.button['data-btn-name'] === 'ok') {
                       e.cancel = true; // Do not close dialog
-                      let ownershipModel = this.ownershipModel.toJSON();
-                      if (ownershipModel.user == '' || ownershipModel.user == undefined) {
+                      let newOwnershipModel = this.ownershipModel.toJSON();
+                      if (newOwnershipModel.user == '' || newOwnershipModel.user == undefined) {
                         alertify.confirm(
                           gettext('Delete user?'),
                           gettext('The shared servers owned by <b>'+ self.model.get('username') +'</b> will be deleted. Do you wish to continue?'),
@@ -772,7 +772,7 @@ define([
                           }
                         );
                       } else {
-                        self.changeOwner(ownershipModel.user, uid);
+                        self.changeOwner(newOwnershipModel.user, uid);
                       }
                     } else {
                       alertify.changeOwnershipDialog().destroy();
