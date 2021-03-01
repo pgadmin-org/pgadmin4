@@ -24,3 +24,6 @@ Bug fixes
 | `Issue #6018 <https://redmine.postgresql.org/issues/6018>`_ -  Fixed encoding issue when database encoding set to SQL_ASCII and name of the column is in ASCII character.
 | `Issue #6159 <https://redmine.postgresql.org/issues/6159>`_ -  Ensure that the user should be able to kill the session from Dashboard if the user has a 'pg_signal_backend' role.
 | `Issue #6227 <https://redmine.postgresql.org/issues/6227>`_ -  Ensure PGADMIN_DEFAULT_EMAIL looks sane when initialising a container deployment.
+| `Issue #6253 <https://redmine.postgresql.org/issues/6253>`_ -  Fixed an issue where the user is unable to create a subscription if the host/IP address for connection is 127.0.0.1.
+| `Issue #6259 <https://redmine.postgresql.org/issues/6259>`_ -  Ensure that proper error message should be shown on the properties and statistics tab in case of insufficient privileges for a subscription.
+| `Issue #6260 <https://redmine.postgresql.org/issues/6260>`_ -  Fixed an issue where the 'Create Slot' option is disabled in case of the same IP/host provided but the port is different.

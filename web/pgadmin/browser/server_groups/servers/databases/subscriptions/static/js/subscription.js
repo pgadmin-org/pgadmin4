@@ -396,8 +396,8 @@ define('pgadmin.node.subscription', [
           type: 'switch', mode: ['create'],
           group: gettext('With'),
           disabled: 'isSameDB',
-          readonly: 'isConnect', deps :['connect', 'host'],
-          helpMessage: gettext('Specifies whether the command should create the replication slot on the publisher.'),
+          readonly: 'isConnect', deps :['connect', 'host', 'port'],
+          helpMessage: gettext('Specifies whether the command should create the replication slot on the publisher.This field will be disabled and set to false if subscription connects to same database.Otherwise, the CREATE SUBSCRIPTION call will hang.'),
 
         },
         {
@@ -456,7 +456,14 @@ define('pgadmin.node.subscription', [
           return true;
         },
         isSameDB:function(m){
-          if (m.attributes['host'] == m.node_info.server.host){
+          let host = m.attributes['host'],
+            port = m.attributes['port'];
+
+          if ((m.attributes['host'] == 'localhost' || m.attributes['host'] == '127.0.0.1') &&
+              (m.node_info.server.host == 'localhost' || m.node_info.server.host == '127.0.0.1')){
+            host = m.node_info.server.host;
+          }
+          if (host == m.node_info.server.host && port == m.node_info.server.port){
             setTimeout( function() {
               m.set('create_slot', false);
             }, 10);

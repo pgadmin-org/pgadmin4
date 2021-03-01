@@ -289,7 +289,8 @@ define([
               timer = setTimeout(function() {
                 // notify user if request is taking longer than 1 second
 
-                $msgContainer.text(gettext('Retrieving data from the server...'));
+                if (!$msgContainer.text()== 'Failed to retrieve data from the server.')
+                  $msgContainer.text(gettext('Retrieving data from the server...'));
                 $msgContainer.removeClass('d-none');
                 if (self.grid) {
                   self.grid.remove();

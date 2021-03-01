@@ -245,6 +245,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 in_recovery=in_recovery,
                 wal_pause=wal_paused,
                 host=server.host,
+                port=server.port,
                 is_password_saved=bool(server.save_password),
                 is_tunnel_password_saved=True
                 if server.tunnel_password is not None else False,

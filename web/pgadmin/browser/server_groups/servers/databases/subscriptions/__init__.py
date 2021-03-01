@@ -195,7 +195,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
+        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'get_publications': [{}, {'get': 'get_publications'}],
@@ -260,11 +260,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]), did=did)
         status, res = self.conn.execute_dict(sql)
-
-        # Check for permission denied message
-        if 'permission denied' in res:
-            return internal_server_error(
-                errormsg="Access is revoked for normal users")
 
         if not status:
             return internal_server_error(errormsg=res)
@@ -386,7 +381,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         return True, res['rows'][0]
 
     @check_precondition
-    def statistics(self, gid, sid, did, subid):
+    def statistics(self, gid, sid, did, subid=None):
         """
         This function gets the statistics and returns an ajax response
         for the view node.
@@ -399,7 +394,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         sql = render_template("/".join([self.template_path,
                                         'stats.sql']),
-                              subid=subid, conn=self.conn)
+                              subid=subid, did=did, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
         return make_json_response(
             data=res,
