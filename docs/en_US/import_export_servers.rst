@@ -57,6 +57,9 @@ path) of the JSON file containing the server definitions. Servers will be owned
 by the desktop mode user (pgadmin4@pgadmin.org by default - see the DESKTOP_USER
 setting in ``config.py``). This can be overridden with the ``--user`` command
 line option. There can be multiple configuations of pgAdmin on the same system.
+The default behaviour is for the imported servers to be added to the existent list,
+which might lead to duplicates. This can be overridden with the ``--replace`` command
+line option, which will replace the list of servers with the newly imported one.
 To load the servers into a specific pgAdmin config DB file, ``--sqlite-path`` option
 can be used. It is also recommended to use this option when running pgAdmin in
 desktop mode. By default SQLITE_PATH setting in ``config.py`` is taken. For example:
@@ -64,6 +67,10 @@ desktop mode. By default SQLITE_PATH setting in ``config.py`` is taken. For exam
 .. code-block:: bash
 
     /path/to/python /path/to/setup.py --load-servers input_file.json
+
+    # or, to replace the list of servers with the newly imported one:
+
+    /path/to/python /path/to/setup.py --load-servers input_file.json --replace
 
     # or, to specify a non-default user name to own the new servers:
 
