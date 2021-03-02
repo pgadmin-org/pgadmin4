@@ -188,7 +188,8 @@ class Driver(BaseDriver):
         """
         manager = self.connection_manager(sid)
 
-        return manager.connection(database, conn_id, auto_reconnect)
+        return manager.connection(database=database, conn_id=conn_id,
+                                  auto_reconnect=auto_reconnect)
 
     def release_connection(self, sid, database=None, conn_id=None):
         """

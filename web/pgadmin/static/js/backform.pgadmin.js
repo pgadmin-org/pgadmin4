@@ -557,10 +557,9 @@ define([
       this.updateInvalid();
 
       this.$el.find('.btn').on('keyup', (e)=>{
-        switch(e.keyCode) {
-        case 32: /* Spacebar click */
+        /* Spacebar click */
+        if (e.keyCode == 32) {
           $(e.currentTarget).trigger('click');
-          break;
         }
       });
       return this;

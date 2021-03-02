@@ -294,7 +294,7 @@ define('pgadmin.dashboard', [
           // Check if user is super user
           var server = treeHierarchy['server'];
           maintenance_database = (server && server.db) || null;
-          can_signal_backend = server.user.can_signal_backend;
+          can_signal_backend = (server && server.user) ? server.user.can_signal_backend : false;
 
           if (server && server.user && server.user.is_superuser) {
             is_super_user = true;

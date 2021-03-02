@@ -941,14 +941,14 @@ def set_master_password():
     if not config.SERVER_MODE and config.MASTER_PASSWORD_REQUIRED:
 
         # if master pass is set previously
-        if current_user.masterpass_check is not None:
-            if data.get('button_click') and \
-                    not validate_master_password(data.get('password')):
-                return form_master_password_response(
-                    existing=True,
-                    present=False,
-                    errmsg=gettext("Incorrect master password")
-                )
+        if current_user.masterpass_check is not None and \
+            data.get('button_click') and \
+                not validate_master_password(data.get('password')):
+            return form_master_password_response(
+                existing=True,
+                present=False,
+                errmsg=gettext("Incorrect master password")
+            )
 
         if data != '' and data.get('password', '') != '':
 

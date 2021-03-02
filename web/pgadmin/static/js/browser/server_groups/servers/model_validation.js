@@ -118,7 +118,7 @@ export class ModelValidation {
       } catch(e) {
         try {
           new Address6(ipAddress);
-        } catch(e) {
+        } catch(ex) {
           this.err['hostaddr'] = msg;
           this.errmsg = msg;
         }

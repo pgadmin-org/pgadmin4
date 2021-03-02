@@ -447,8 +447,8 @@ _.extend(DatetimeFormatter.prototype, {
     if ((data + '').trim() === '') return null;
 
     var date, time = null;
+    var jsDate = new Date(data);
     if (_.isNumber(data)) {
-      var jsDate = new Date(data);
       date = lpad(jsDate.getUTCFullYear(), 4, 0) + '-' + lpad(jsDate.getUTCMonth() + 1, 2, 0) + '-' + lpad(jsDate.getUTCDate(), 2, 0);
       time = lpad(jsDate.getUTCHours(), 2, 0) + ':' + lpad(jsDate.getUTCMinutes(), 2, 0) + ':' + lpad(jsDate.getUTCSeconds(), 2, 0);
     }
@@ -469,7 +469,7 @@ _.extend(DatetimeFormatter.prototype, {
       if (!this.includeTime && time) return;
     }
 
-    var jsDate = new Date(Date.UTC(YYYYMMDD[1] * 1 || 0,
+    jsDate = new Date(Date.UTC(YYYYMMDD[1] * 1 || 0,
                                    YYYYMMDD[2] * 1 - 1 || 0,
                                    YYYYMMDD[3] * 1 || 0,
                                    HHmmssSSS[1] * 1 || null,
@@ -1348,16 +1348,17 @@ var BooleanCellEditor = Backgrid.BooleanCellEditor = CellEditor.extend({
     }
 
     var $el = this.$el;
+    var val = null;
     if (command.save() || command.moveLeft() || command.moveRight() || command.moveUp() ||
         command.moveDown()) {
       e.preventDefault();
       e.stopPropagation();
-      var val = formatter.toRaw($el.prop("checked"), model);
+      val = formatter.toRaw($el.prop("checked"), model);
       model.set(column.get("name"), val);
       model.trigger("backgrid:edited", model, column, command);
     }
     else if (e.type == "change") {
-      var val = formatter.toRaw($el.prop("checked"), model);
+      val = formatter.toRaw($el.prop("checked"), model);
       model.set(column.get("name"), val);
       $el.focus();
     }

@@ -17,8 +17,6 @@ export function Search() {
   const wrapperRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isShowMinLengthMsg, setIsShowMinLengthMsg] = useState(false);
-  let helpLinkTitles = [];
-  let helpLinks = [];
   const [isMenuLoading, setIsMenuLoading] = useState(false);
   const [isHelpLoading, setIsHelpLoading] = useState(false);
   const [menuSearchResult, setMenuSearchResult] = useState({
@@ -51,11 +49,6 @@ export function Search() {
 
   // Below will be called when any changes has been made to state
   useEffect(() => {
-    helpLinkTitles = Object.keys(helpSearchResult.data);
-    for(let i = 0; i<helpLinkTitles.length;i++){
-      helpLinks.push(<a href={''} target='_blank' rel='noreferrer'>helpLinkTitles[i]</a>);
-    }
-
     if(menuSearchResult.fetched == true){
       setIsMenuLoading(false);
     }

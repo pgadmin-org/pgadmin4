@@ -19,6 +19,8 @@ import os
 import sys
 import builtins
 
+USER_NOT_FOUND = "The specified user ID (%s) could not be found."
+
 # Grab the SERVER_MODE if it's been set by the runtime
 if 'SERVER_MODE' in globals():
     builtins.SERVER_MODE = globals()['SERVER_MODE']
@@ -77,8 +79,7 @@ def dump_servers(args):
         user = User.query.filter_by(email=dump_user).first()
 
         if user is None:
-            print("The specified user ID (%s) could not be found." %
-                  dump_user)
+            print(USER_NOT_FOUND % dump_user)
             sys.exit(1)
 
         user_id = user.id
@@ -242,8 +243,7 @@ def load_servers(args):
         user = User.query.filter_by(email=load_user).first()
 
         if user is None:
-            print("The specified user ID (%s) could not be found." %
-                  load_user)
+            print(USER_NOT_FOUND % load_user)
             sys.exit(1)
 
         user_id = user.id
@@ -416,8 +416,7 @@ def clear_servers():
         user = User.query.filter_by(email=load_user).first()
 
         if user is None:
-            print("The specified user ID (%s) could not be found." %
-                  load_user)
+            print(USER_NOT_FOUND % load_user)
             sys.exit(1)
 
         user_id = user.id
@@ -439,7 +438,8 @@ def clear_servers():
         try:
             db.session.commit()
         except Exception as e:
-            print("Error clearing server configuration")
+            print("Error clearing server configuration with error (%s)" %
+                  str(e))
 
 
 if __name__ == '__main__':

@@ -145,10 +145,14 @@ class Connection(BaseConnection):
         gettext("Cursor could not be found for the async connection.")
     ARGS_STR = "{0}#{1}"
 
-    def __init__(self, manager, conn_id, db, auto_reconnect=True, async_=0,
-                 use_binary_placeholder=False, array_to_string=False):
+    def __init__(self, manager, conn_id, db, **kwargs):
         assert (manager is not None)
         assert (conn_id is not None)
+
+        auto_reconnect = kwargs.get('auto_reconnect', True)
+        async_ = kwargs.get('async_', 0)
+        use_binary_placeholder = kwargs.get('use_binary_placeholder', False)
+        array_to_string = kwargs.get('array_to_string', False)
 
         self.conn_id = conn_id
         self.manager = manager

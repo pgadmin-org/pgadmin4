@@ -475,7 +475,7 @@ class Preferences(object):
 
     @classmethod
     def register_preference(
-            cls, module, category, name, label, _type, default, **kwargs
+            cls, module, category, name, label, _type, **kwargs
     ):
         """
         register
@@ -489,8 +489,8 @@ class Preferences(object):
                          Allowed type of options are as below:
                          boolean, integer, numeric, date, datetime,
                          options, multiline, switch, node
-        :param default:  Default value for the preference/option
         """
+        default = kwargs.get('default')
         min_val = kwargs.get('min_val', None)
         max_val = kwargs.get('max_val', None)
         options = kwargs.get('options', None)
@@ -498,7 +498,6 @@ class Preferences(object):
         module_label = kwargs.get('module_label', None)
         category_label = kwargs.get('category_label', None)
 
-        m = None
         if module in Preferences.modules:
             m = Preferences.modules[module]
             # Update the label (if not defined yet)

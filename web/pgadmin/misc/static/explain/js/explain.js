@@ -1474,7 +1474,7 @@ define('pgadmin.misc.explain', [
             ctx.totalDownloadedNodes++;
             if (!ctx.isDownloaded && ctx.totalNodes === ctx.totalDownloadedNodes) {
               ctx.isDownloaded = true;
-              var s = Snap('.pgadmin-explain-container svg');
+              s = Snap('.pgadmin-explain-container svg');
               var today  = new Date();
               var filename = 'explain_plan_' + today.getTime() + '.svg';
               svgDownloader.downloadSVG(s.toString(), filename);
