@@ -298,7 +298,7 @@ class DatabaseView(PGChildNodeView):
                 connected = True
                 can_drop = can_dis_conn = False
             else:
-                conn = self.manager.connection(dbname, did=row['did'])
+                conn = self.manager.connection(database=dbname, did=row['did'])
                 connected = conn.connected()
                 can_drop = can_dis_conn = True
 

@@ -365,7 +365,8 @@ WHERE db.oid = {0}""".format(did))
             else:
                 conn = self.connections[conn_info['conn_id']] = Connection(
                     self, conn_info['conn_id'], conn_info['database'],
-                    conn_info['auto_reconnect'], conn_info['async_'],
+                    auto_reconnect=conn_info['auto_reconnect'],
+                    async_=conn_info['async_'],
                     use_binary_placeholder=conn_info[
                         'use_binary_placeholder'],
                     array_to_string=conn_info['array_to_string']

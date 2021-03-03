@@ -796,7 +796,7 @@ class TablespaceView(PGChildNodeView):
             # a new connection to run the query and fetch the dependents.
             is_connected = True
             try:
-                temp_conn = manager.connection(db_row['datname'])
+                temp_conn = manager.connection(database=db_row['datname'])
                 is_connected = temp_conn.connected()
                 if not is_connected:
                     temp_conn.connect()
