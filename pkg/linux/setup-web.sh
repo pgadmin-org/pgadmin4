@@ -14,26 +14,49 @@ if [[ "$#" -ne 0 ]] && ([[ "$#" -eq 1 ]] && [[ "$1" != "--yes" ]]); then
     exit 1
 fi
 
-# Get the distro
 IS_REDHAT=0
 IS_DEBIAN=0
 UNAME=$(uname -a)
+
+# Get the distro from the environment
+if [ "x${PGADMIN_PLATFORM_TYPE}" == "x" ]; then
+    if [ -f /etc/redhat-release ]; then
+        PLATFORM_TYPE=redhat
+    elif [[ ${UNAME} =~ "Ubuntu" ]] || [[ ${UNAME} =~ "Debian" ]] || [ -f /etc/apt/sources.list ]; then
+        PLATFORM_TYPE=debian
+    else
+        echo "Failed to detect the platform. This may mean you're running on a Linux distribution that isn't supported by pgAdmin."
+        echo "Please set the PGADMIN_PLATFORM_TYPE environment variable to one of 'redhat' or 'debian' and try again."
+        exit 1
+    fi
+else
+    PLATFORM_TYPE=${PGADMIN_PLATFORM_TYPE}
+fi
+
+case ${PLATFORM_TYPE} in
+    redhat)
+        echo "Setting up pgAdmin 4 in web mode on a Redhat based platform..."
+        IS_REDHAT=1
+        APACHE=httpd
+        ;;
+
+    debian)
+        echo "Setting up pgAdmin 4 in web mode on a Debian based platform..."
+        IS_DEBIAN=1
+        APACHE=apache2
+        ;;
+
+    *)
+        echo "Invalid value for the PGADMIN_PLATFORM_TYPE environment variable. Please set it to one of 'redhat' or 'debian' and try again."
+        exit 1
+        ;;
+esac
 
 # Is this an automated install?
 AUTOMATED=0
 if [ "$#" -eq 1 ]; then
     AUTOMATED=1
     echo "Running in non-interactive mode..."
-fi
-
-if [ -f /etc/redhat-release ]; then
-    IS_REDHAT=1
-    APACHE=httpd
-    echo "Setting up pgAdmin 4 in web mode on a Redhat platform..."
-elif [[ ${UNAME} =~ "Ubuntu" ]] || [[ ${UNAME} =~ "Debian" ]]; then
-    IS_DEBIAN=1
-    APACHE=apache2
-    echo "Setting up pgAdmin 4 in web mode on a Debian platform..."
 fi
 
 # Run setup script first:
@@ -70,22 +93,16 @@ fi
 # Setup Apache on Debian/Ubuntu
 if [ ${IS_DEBIAN} == 1 ]; then
     if [ ${AUTOMATED} == 1 ]; then
-	RESPONSE=Y
+	      RESPONSE=Y
     else
         read -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
     fi
 
     case ${RESPONSE} in
         y|Y )
-          # Debian uses a different path to Ubuntu
-          if [[ ${UNAME} =~ "Debian" ]]; then
-            /sbin/a2enmod wsgi 1> /dev/null
-            /sbin/a2enconf pgadmin4 1> /dev/null
-          else
-            /usr/sbin/a2enmod wsgi 1> /dev/null
-            /usr/sbin/a2enconf pgadmin4 1> /dev/null
-          fi
-          ;;
+            a2enmod wsgi 1> /dev/null
+            a2enconf pgadmin4 1> /dev/null
+            ;;
         * )
             exit 1;;
     esac
@@ -101,7 +118,7 @@ if [ $? -eq 0 ]; then
 
     case ${RESPONSE} in
         y|Y )
-	    systemctl restart ${APACHE}
+	          systemctl restart ${APACHE}
             if [ $? != 0 ]; then
                 echo "Error restarting ${APACHE}. Please check the systemd logs"
             else
