@@ -9,7 +9,6 @@
 
 import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 import gettext from 'sources/gettext';
-import $ from 'jquery';
 
 export function getDatabaseLabel(parentData) {
   return parentData.database ? parentData.database.label
@@ -79,8 +78,6 @@ export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_fi
 export function set_renamable_option(panel, is_file) {
   if(is_file || is_file == 'true') {
     panel.renamable(false);
-    $('.conn-info-dd').hide();
-    $('.connection-data').css({pointerEvents: 'none', cursor: 'arrow'});
   } else {
     panel.renamable(true);
   }

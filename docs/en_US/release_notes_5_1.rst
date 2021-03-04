@@ -30,4 +30,5 @@ Bug fixes
 | `Issue #6253 <https://redmine.postgresql.org/issues/6253>`_ -  Fixed an issue where the user is unable to create a subscription if the host/IP address for connection is 127.0.0.1.
 | `Issue #6259 <https://redmine.postgresql.org/issues/6259>`_ -  Ensure that proper error message should be shown on the properties and statistics tab in case of insufficient privileges for a subscription.
 | `Issue #6260 <https://redmine.postgresql.org/issues/6260>`_ -  Fixed an issue where the 'Create Slot' option is disabled in case of the same IP/host provided but the port is different.
+| `Issue #6272 <https://redmine.postgresql.org/issues/6272>`_ -  Fixed an issue where the user is not able to change the connection in Query Tool when any SQL file is opened.
 | `Issue #6281 <https://redmine.postgresql.org/issues/6281>`_ -  Fixed an issue where schema diff showing wrong SQL when comparing triggers with different when clause.
