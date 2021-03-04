@@ -214,6 +214,7 @@ import gettext from 'sources/gettext';
       if (!args.column.is_array) {
         if (item[args.column.field] === '') {
           $input.val(defaultValue = '\'\'');
+          $input.trigger('select');
         } else if (item[args.column.field] === '\'\'') {
           $input.val(defaultValue = '\\\'\\\'');
         } else if (item[args.column.field] === '""') {
