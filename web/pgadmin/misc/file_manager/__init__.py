@@ -603,11 +603,13 @@ class Filemanager(object):
             # continue if file/folder is hidden (based on user preference)
             if not show_hidden_files and is_folder_hidden(system_path):
                 continue
-
-            user_path = os.path.join(os.path.join(user_dir, f))
-            created = time.ctime(os.path.getctime(system_path))
-            modified = time.ctime(os.path.getmtime(system_path))
-            file_extension = str(splitext(system_path))
+            try:
+                user_path = os.path.join(os.path.join(user_dir, f))
+                created = time.ctime(os.path.getctime(system_path))
+                modified = time.ctime(os.path.getmtime(system_path))
+                file_extension = str(splitext(system_path))
+            except Exception as e:
+                continue
 
             # set protected to 1 if no write or read permission
             protected = 0
