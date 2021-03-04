@@ -343,7 +343,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             last_system_oid=0,
-            show_system_objects=self.blueprint.show_system_objects,
+            show_system_objects=True,
         )
         status, rset = self.conn.execute_dict(SQL)
 

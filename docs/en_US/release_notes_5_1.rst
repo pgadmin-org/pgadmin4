@@ -33,3 +33,4 @@ Bug fixes
 | `Issue #6260 <https://redmine.postgresql.org/issues/6260>`_ -  Fixed an issue where the 'Create Slot' option is disabled in case of the same IP/host provided but the port is different.
 | `Issue #6272 <https://redmine.postgresql.org/issues/6272>`_ -  Fixed an issue where the user is not able to change the connection in Query Tool when any SQL file is opened.
 | `Issue #6281 <https://redmine.postgresql.org/issues/6281>`_ -  Fixed an issue where schema diff showing wrong SQL when comparing triggers with different when clause.
+| `Issue #6286 <https://redmine.postgresql.org/issues/6286>`_ -  Ensure that the template database should be visible while creating the database.
