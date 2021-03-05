@@ -32,5 +32,6 @@ Bug fixes
 | `Issue #6259 <https://redmine.postgresql.org/issues/6259>`_ -  Ensure that proper error message should be shown on the properties and statistics tab in case of insufficient privileges for a subscription.
 | `Issue #6260 <https://redmine.postgresql.org/issues/6260>`_ -  Fixed an issue where the 'Create Slot' option is disabled in case of the same IP/host provided but the port is different.
 | `Issue #6272 <https://redmine.postgresql.org/issues/6272>`_ -  Fixed an issue where the user is not able to change the connection in Query Tool when any SQL file is opened.
+| `Issue #6279 <https://redmine.postgresql.org/issues/6279>`_ -  Ensure that the venv activation scripts have the correct path in them on Linux.
 | `Issue #6281 <https://redmine.postgresql.org/issues/6281>`_ -  Fixed an issue where schema diff showing wrong SQL when comparing triggers with different when clause.
 | `Issue #6286 <https://redmine.postgresql.org/issues/6286>`_ -  Ensure that the template database should be visible while creating the database.
