@@ -65,6 +65,9 @@ _create_python_virtualenv() {
     sed -i 's/setenv VIRTUAL_ENV .*/setenv VIRTUAL_ENV "\/usr\/pgadmin4\/venv"/g' venv/bin/activate.csh
     sed -i 's/set -gx VIRTUAL_ENV .*/set -gx VIRTUAL_ENV "\/usr\/pgadmin4\/venv"/g' venv/bin/activate.fish
 
+    # Fixup hash bangs
+    sed -i 's/#!.*\/python3/#\!\/usr\/pgadmin4\/venv\/bin\/python3/g' venv/bin/*
+
     # Figure out some paths for use when completing the venv
     # Use "python3" here as we want the venv path
     PYMODULES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
