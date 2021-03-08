@@ -211,5 +211,13 @@ _copy_code() {
     # Web setup script
     mkdir -p "${WEBROOT}/usr/${APP_NAME}/bin/"
     cp "${SOURCEDIR}/pkg/linux/setup-web.sh" "${WEBROOT}/usr/${APP_NAME}/bin/"
+
+    # Ensure our venv will use the correct Python interpretor, even if the
+    # user has configured an alternative default.
+    # DO THIS LAST!
+    cd "${SERVERROOT}/usr/${APP_NAME}/venv/bin"
+    PYTHON_INTERPRETER=$(/usr/bin/python3 -c "import os, sys; print(os.path.realpath(sys.executable))")
+    rm python && ln -s python3 python
+    rm python3 && ln -s "${PYTHON_INTERPRETER}" python3
 }
 
