@@ -8,12 +8,6 @@
 #
 ###############################################################################
 
-
-##############################################################################
-# NOTE: Any requirements with environment specifiers must be explicitly added
-#       to pkg/pip/setup_pip.py (in extras_require), otherwise they will be
-#       ignored when building a PIP Wheel.
-##############################################################################
 cheroot==8.*
 Flask==1.*
 Flask-Gravatar==0.*

@@ -35,23 +35,17 @@ with open(req_file, 'r') as req_lines:
     all_requires = req_lines.read().splitlines()
 
 requires = []
-extras_require = {}
-# Remove any requirements with environment specifiers. These
-# must be explicitly listed in extras_require below.
+kerberos_extras = []
+# Ensure the Wheel will use psycopg2-binary, not the source distro, and stick
+# gssapi in it's own list
 for index, req in enumerate(all_requires):
-    if ";" in req or req.startswith("#") or req == "":
-        # Add the pkgs to extras_require
-        if ";" in req:
-            pkg, env_spec = req.split(";")
-            extras_require[env_spec] = extras_require.get(env_spec, [])
-            extras_require[env_spec].append(pkg)
-        continue
-
-    # Ensure the Wheel will use psycopg2-binary, not the source distro
     if 'psycopg2' in req:
         req = req.replace('psycopg2', 'psycopg2-binary')
 
-    requires.append(req)
+    if 'gssapi' in req:
+        kerberos_extras.append(req)
+    else:
+        requires.append(req)
 
 # Get the version
 config = load_source('APP_VERSION', '../web/config.py')
@@ -77,11 +71,10 @@ setup(
         'Development Status :: 5 - Production/Stable',
 
         # Supported programming languages
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8'
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9'
     ],
 
     keywords='pgadmin4,postgresql,postgres',
@@ -92,7 +85,9 @@ setup(
 
     install_requires=requires,
 
-    extras_require=extras_require,
+    extras_require={
+        "kerberos": kerberos_extras,
+    },
 
     entry_points={
         'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4:main'],

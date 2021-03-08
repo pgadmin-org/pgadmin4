@@ -27,8 +27,3 @@ testtools==2.3.0
 traceback2==1.4.0
 selenium==3.14.0
 coverage==5.0.1
-###############################################################
-# Modules specifically required for Python3.3 or lesser version
-###############################################################
-mock===2.0.0; python_version < '3.3'
-

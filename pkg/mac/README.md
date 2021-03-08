@@ -13,7 +13,7 @@ Either build the sources or get them from macports or similar:
   
 ## Building
 
-1. To bundle a different version of Python from the default of 3.9.0, set the
+1. To bundle a different version of Python from the default of 3.9.2, set the
    *PGADMIN_PYTHON_VERSION* environment variable, e.g:
 
        export PGADMIN_PYTHON_VERSION=3.8.5
