@@ -699,7 +699,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         )
         # create a cursor
         cur = conn.cursor()
-        cur.execute('SELECT pubname from pg_publication')
+        cur.execute('SELECT pubname from pg_catalog.pg_publication')
 
         publications = cur.fetchall()
         # Close the connection

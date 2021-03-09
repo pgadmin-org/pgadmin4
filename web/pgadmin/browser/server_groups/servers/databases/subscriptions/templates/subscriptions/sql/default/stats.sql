@@ -4,7 +4,7 @@ SELECT
     latest_end_lsn AS {{ conn|qtIdent(_('Latest end lsn')) }},
     last_msg_receipt_time AS {{ conn|qtIdent(_('Last message receipt')) }},
     last_msg_send_time AS {{ conn|qtIdent(_('Last message send time'))}}
-FROM pg_stat_subscription
+FROM pg_catalog.pg_stat_subscription
 {% if subid %}
     WHERE subid = {{ subid }};
 {% endif %}

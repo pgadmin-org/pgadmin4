@@ -1,7 +1,7 @@
 SELECT
     'datacl' AS deftype, COALESCE(gt.rolname, 'PUBLIC') AS grantee,
-    g.rolname grantor, array_agg(privilege_type) AS privileges,
-    array_agg(is_grantable) AS grantable
+    g.rolname grantor, pg_catalog.array_agg(privilege_type) AS privileges,
+    pg_catalog.array_agg(is_grantable) AS grantable
 FROM
     (SELECT
         d.grantee, d.grantor, d.is_grantable,
@@ -26,7 +26,7 @@ FROM
             (d).is_grantable AS is_grantable,
             (d).privilege_type AS privilege_type
         FROM
-            (SELECT aclexplode(db.datacl) AS d FROM pg_database db
+            (SELECT pg_catalog.aclexplode(db.datacl) AS d FROM pg_catalog.pg_database db
             WHERE db.oid = {{ did|qtLiteral }}::OID) a
         ) d
     ) d

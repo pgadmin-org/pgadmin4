@@ -1,7 +1,7 @@
 SELECT
     oid, tmplname as name, tmpl.tmplnamespace AS schema
 FROM
-    pg_ts_template tmpl
+    pg_catalog.pg_ts_template tmpl
 WHERE
 {% if scid %}
     tmpl.tmplnamespace = {{scid}}::OID

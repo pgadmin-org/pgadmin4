@@ -1,7 +1,7 @@
 {# REVERSED ENGINEERED SQL FOR FTS CONFIGURATION #}
 {% if cfgid and scid %}
 SELECT
-    array_to_string(array_agg(sql), E'\n\n') as sql
+    pg_catalog.array_to_string(array_agg(sql), E'\n\n') as sql
 FROM
     (
     SELECT
@@ -21,19 +21,19 @@ FROM
             ELSE ''
         END || E'\n' ||
 
-        array_to_string(
+        pg_catalog.array_to_string(
          array(
 	        SELECT
 	            'ALTER TEXT SEARCH CONFIGURATION ' || quote_ident(b.nspname) ||
 	            E'.' || quote_ident(cfg.cfgname) || ' ADD MAPPING FOR ' ||
 	            t.alias  || ' WITH ' ||
-                array_to_string(array_agg(
+                pg_catalog.array_to_string(array_agg(
                     CASE WHEN (pg_ns.nspname != 'pg_catalog') THEN
-                        CONCAT(pg_ns.nspname, '.', dict.dictname)
+                        pg_catalog.CONCAT(pg_ns.nspname, '.', dict.dictname)
                     ELSE
                         dict.dictname END), ', ') || ';'
             FROM
-                pg_ts_config_map map
+                pg_catalog.pg_ts_config_map map
                 LEFT JOIN (
                           SELECT
                               tokid,
@@ -41,21 +41,21 @@ FROM
                           FROM
                               pg_catalog.ts_token_type(cfg.cfgparser)
                           ) t ON (t.tokid = map.maptokentype)
-                LEFT OUTER JOIN pg_ts_dict dict ON (map.mapdict = dict.oid)
-                LEFT OUTER JOIN pg_namespace pg_ns ON (pg_ns.oid = dict.dictnamespace)
+                LEFT OUTER JOIN pg_catalog.pg_ts_dict dict ON (map.mapdict = dict.oid)
+                LEFT OUTER JOIN pg_catalog.pg_namespace pg_ns ON (pg_ns.oid = dict.dictnamespace)
             WHERE
                 map.mapcfg = cfg.oid
             GROUP BY t.alias
             ORDER BY t.alias)
         , E'\n') as sql
     FROM
-        pg_ts_config cfg
+        pg_catalog.pg_ts_config cfg
     LEFT JOIN (
         SELECT
             des.description as description,
             des.objoid as descoid
         FROM
-            pg_description des
+            pg_catalog.pg_description des
         WHERE
             des.objoid={{cfgid}}::OID AND des.classoid='pg_ts_config'::regclass
     ) a ON (a.descoid = cfg.oid)
@@ -64,7 +64,7 @@ FROM
             nspname,
             nsp.oid as noid
         FROM
-            pg_namespace nsp
+            pg_catalog.pg_namespace nsp
         WHERE
             oid = {{scid}}::OID
     ) b ON (b.noid = cfg.cfgnamespace)
@@ -73,7 +73,7 @@ FROM
             prs.prsname as parsername,
             prs.oid as oid
         FROM
-            pg_ts_parser prs
+            pg_catalog.pg_ts_parser prs
     )c ON (c.oid = cfg.cfgparser)
     WHERE
        cfg.oid={{cfgid}}::OID

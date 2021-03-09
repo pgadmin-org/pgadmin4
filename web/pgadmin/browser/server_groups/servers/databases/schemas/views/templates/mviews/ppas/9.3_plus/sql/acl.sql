@@ -4,8 +4,8 @@ SELECT
     'datacl' as deftype,
     COALESCE(gt.rolname, 'PUBLIC') grantee,
     g.rolname grantor,
-    array_agg(privilege_type) as privileges,
-    array_agg(is_grantable) as grantable
+    pg_catalog.array_agg(privilege_type) as privileges,
+    pg_catalog.array_agg(is_grantable) as grantable
 FROM
     (SELECT
         d.grantee,
@@ -25,13 +25,13 @@ FROM
         (SELECT
             relacl
          FROM
-            pg_class cl
-         LEFT OUTER JOIN pg_shdescription descr ON
+            pg_catalog.pg_class cl
+         LEFT OUTER JOIN pg_catalog.pg_shdescription descr ON
             (cl.oid=descr.objoid AND descr.classoid='pg_class'::regclass)
          WHERE
             cl.oid = {{ vid }}::OID AND relkind = 'm'
         ) acl,
-        aclexplode(relacl) d
+        pg_catalog.aclexplode(relacl) d
     ) d
 LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)
 LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)

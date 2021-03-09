@@ -3,18 +3,18 @@ SELECT
     2 AS nsptyp,
     nsp.nspname AS name,
     nsp.oid,
-    array_to_string(nsp.nspacl::text[], ', ') as acl,
+    pg_catalog.array_to_string(nsp.nspacl::text[], ', ') as acl,
     r.rolname AS namespaceowner, description,
-    has_schema_privilege(nsp.oid, 'CREATE') AS can_create,
-    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'r' AND defaclnamespace = nsp.oid) AS tblacl,
-    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'S' AND defaclnamespace = nsp.oid) AS seqacl,
-    (SELECT array_to_string(defaclacl::text[], ', ') FROM pg_default_acl WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid) AS funcacl,
-    (SELECT array_agg(provider || '=' || label) FROM pg_seclabels sl1 WHERE sl1.objoid=nsp.oid) AS seclabels
+    pg_catalog.has_schema_privilege(nsp.oid, 'CREATE') AS can_create,
+    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ') FROM pg_catalog.pg_default_acl WHERE defaclobjtype = 'r' AND defaclnamespace = nsp.oid) AS tblacl,
+    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ') FROM pg_catalog.pg_default_acl WHERE defaclobjtype = 'S' AND defaclnamespace = nsp.oid) AS seqacl,
+    (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ') FROM pg_catalog.pg_default_acl WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid) AS funcacl,
+    (SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=nsp.oid) AS seclabels
 FROM
     pg_namespace nsp
-    LEFT OUTER JOIN pg_description des ON
+    LEFT OUTER JOIN pg_catalog.pg_description des ON
         (des.objoid=nsp.oid AND des.classoid='pg_namespace'::regclass)
-    LEFT JOIN pg_roles r ON (r.oid = nsp.nspowner)
+    LEFT JOIN pg_catalog.pg_roles r ON (r.oid = nsp.nspowner)
 WHERE
     {% if scid %}
     nsp.oid={{scid}}::oid AND

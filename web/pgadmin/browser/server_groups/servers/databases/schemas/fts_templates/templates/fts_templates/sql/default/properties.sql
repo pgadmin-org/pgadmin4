@@ -7,8 +7,8 @@ SELECT
     description,
     tmpl.tmplnamespace AS schema
 FROM
-    pg_ts_template tmpl
-    LEFT OUTER JOIN pg_description des
+    pg_catalog.pg_ts_template tmpl
+    LEFT OUTER JOIN pg_catalog.pg_description des
 ON
     (
     des.objoid=tmpl.oid

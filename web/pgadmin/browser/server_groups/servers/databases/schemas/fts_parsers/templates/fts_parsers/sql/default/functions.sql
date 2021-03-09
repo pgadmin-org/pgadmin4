@@ -3,7 +3,7 @@
 SELECT
     proname, nspname
 FROM
-    pg_proc JOIN pg_namespace n ON n.oid=pronamespace
+    pg_catalog.pg_proc JOIN pg_catalog.pg_namespace n ON n.oid=pronamespace
 WHERE
     proargtypes='2281 23'
 ORDER BY proname;
@@ -14,7 +14,7 @@ ORDER BY proname;
 SELECT
     proname, nspname
 FROM
-    pg_proc JOIN pg_namespace n ON n.oid=pronamespace
+    pg_catalog.pg_proc JOIN pg_catalog.pg_namespace n ON n.oid=pronamespace
 WHERE
     proargtypes='2281 2281 2281'
 ORDER BY
@@ -26,7 +26,7 @@ ORDER BY
 SELECT
     proname, nspname
 FROM
-    pg_proc JOIN pg_namespace n ON n.oid=pronamespace
+    pg_catalog.pg_proc JOIN pg_catalog.pg_namespace n ON n.oid=pronamespace
 WHERE
     prorettype=2278 and proargtypes='2281'
 ORDER BY
@@ -38,7 +38,7 @@ ORDER BY
 SELECT
     proname, nspname
 FROM
-    pg_proc JOIN pg_namespace n ON n.oid=pronamespace
+    pg_catalog.pg_proc JOIN pg_catalog.pg_namespace n ON n.oid=pronamespace
 WHERE
     prorettype=2281 and proargtypes='2281'
 ORDER BY
@@ -50,7 +50,7 @@ ORDER BY
 SELECT
     proname, nspname
 FROM
-    pg_proc JOIN pg_namespace n ON n.oid=pronamespace
+    pg_catalog.pg_proc JOIN pg_catalog.pg_namespace n ON n.oid=pronamespace
 WHERE
     proargtypes='2281 2281 3615'
 ORDER BY

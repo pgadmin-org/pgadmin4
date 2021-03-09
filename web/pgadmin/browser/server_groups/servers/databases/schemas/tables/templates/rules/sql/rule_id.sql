@@ -3,7 +3,7 @@
 SELECT
     rw.oid
 FROM
-    pg_rewrite rw
+    pg_catalog.pg_rewrite rw
 WHERE
     rw.rulename={{ rule_name|qtLiteral }}
 {% endif %}

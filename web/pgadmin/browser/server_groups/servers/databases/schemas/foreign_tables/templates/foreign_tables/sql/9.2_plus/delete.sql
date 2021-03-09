@@ -2,9 +2,9 @@
 SELECT
     c.relname AS name, nspname as basensp
 FROM
-    pg_class c
+    pg_catalog.pg_class c
 LEFT OUTER JOIN
-    pg_namespace nsp ON (nsp.oid=c.relnamespace)
+    pg_catalog.pg_namespace nsp ON (nsp.oid=c.relnamespace)
 WHERE
     c.relnamespace = {{scid}}::oid
 AND

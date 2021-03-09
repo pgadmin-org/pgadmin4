@@ -1,6 +1,6 @@
-SELECT oid, quote_ident(nspname)||'.'||quote_ident(relname) AS table_name FROM
+SELECT oid, pg_catalog.quote_ident(nspname)||'.'||pg_catalog.quote_ident(relname) AS table_name FROM
 (SELECT
-	r.oid, r.relname, n.nspname, array_agg(a.attname) attnames, array_agg(a.atttypid) atttypes
+	r.oid, r.relname, n.nspname, pg_catalog.array_agg(a.attname) attnames, pg_catalog.array_agg(a.atttypid) atttypes
 FROM
 	(SELECT oid, relname, relnamespace FROM pg_catalog.pg_class
 	  WHERE relkind in ('r', 'p') AND NOT relispartition) r
@@ -13,7 +13,7 @@ FROM
 GROUP BY r.oid, r.relname, r.relnamespace, n.nspname) all_tables
 JOIN
 (SELECT
-	attrelid, array_agg(attname) attnames, array_agg(atttypid) atttypes
+	attrelid, pg_catalog.array_agg(attname) attnames, pg_catalog.array_agg(atttypid) atttypes
 FROM
 	(SELECT * FROM pg_catalog.pg_attribute
 	  WHERE attrelid = {{ tid }} AND attnum > 0

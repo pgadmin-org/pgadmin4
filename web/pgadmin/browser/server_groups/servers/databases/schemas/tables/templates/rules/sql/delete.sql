@@ -5,9 +5,9 @@ SELECT
     cl.relname,
     nsp.nspname
 FROM
-    pg_rewrite rw
-JOIN pg_class cl ON cl.oid=rw.ev_class
-JOIN pg_namespace nsp ON nsp.oid=cl.relnamespace
+    pg_catalog.pg_rewrite rw
+JOIN pg_catalog.pg_class cl ON cl.oid=rw.ev_class
+JOIN pg_catalog.pg_namespace nsp ON nsp.oid=cl.relnamespace
 WHERE
     rw.oid={{ rid }};
 {% endif %}

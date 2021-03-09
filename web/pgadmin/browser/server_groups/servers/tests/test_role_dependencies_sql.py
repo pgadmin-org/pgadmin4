@@ -8,6 +8,7 @@
 ##########################################################################
 import os
 
+import jinja2
 from regression.python_test_utils import test_utils
 from regression.python_test_utils.template_helper import file_as_template
 from regression.python_test_utils.sql_template_test_base import \
@@ -68,6 +69,7 @@ class TestRoleDependenciesSql(SQLTemplateTestBase):
                                  "depends", self.server['type'])
         template_file = self.get_template_file(version, file_path,
                                                "role_dependencies.sql")
+        jinja2.filters.FILTERS['qtLiteral'] = lambda value: "NULL"
         template = file_as_template(template_file)
         sql = template.render(
             where_clause="WHERE dep.objid=%s::oid" % self.table_id)

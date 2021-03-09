@@ -1,6 +1,6 @@
 SELECT c.oid, conname as name,
     NOT convalidated as convalidated
-    FROM pg_constraint c
+    FROM pg_catalog.pg_constraint c
 WHERE contype = 'c'
     AND conrelid = {{ tid }}::oid
 {% if cid %}

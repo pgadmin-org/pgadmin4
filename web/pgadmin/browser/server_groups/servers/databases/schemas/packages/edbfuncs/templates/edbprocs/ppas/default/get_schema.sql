@@ -1,6 +1,6 @@
 SELECT
     nspname
 FROM
-    pg_namespace
+    pg_catalog.pg_namespace
 WHERE
     oid = {{ scid }}::oid;

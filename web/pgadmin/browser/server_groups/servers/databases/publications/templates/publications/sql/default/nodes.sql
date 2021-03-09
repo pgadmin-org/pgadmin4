@@ -1,1 +1,1 @@
-SELECT oid , pubname AS name FROM pg_publication;
+SELECT oid , pubname AS name FROM pg_catalog.pg_publication;

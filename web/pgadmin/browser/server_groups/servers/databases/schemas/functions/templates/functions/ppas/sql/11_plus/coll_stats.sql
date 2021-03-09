@@ -4,15 +4,15 @@ SELECT
     total_time AS {{ conn|qtIdent(_('Total time')) }},
     self_time AS {{ conn|qtIdent(_('Self time')) }}
 FROM
-    pg_stat_user_functions
+    pg_catalog.pg_stat_user_functions
 WHERE
     schemaname = {{schema_name|qtLiteral}}
     AND funcid IN (
         SELECT p.oid
         FROM
-            pg_proc p
+            pg_catalog.pg_proc p
         JOIN
-            pg_type typ ON typ.oid=p.prorettype
+            pg_catalog.pg_type typ ON typ.oid=p.prorettype
         WHERE
             p.prokind IN ('f', 'w')
             AND typname NOT IN ('trigger', 'event_trigger')

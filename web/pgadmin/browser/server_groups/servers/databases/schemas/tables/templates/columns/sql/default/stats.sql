@@ -7,7 +7,7 @@ SELECT
     histogram_bounds AS {{ conn|qtIdent(_('Histogram bounds')) }},
     correlation AS {{ conn|qtIdent(_('Correlation')) }}
 FROM
-    pg_stats
+    pg_catalog.pg_stats
 WHERE
     schemaname = {{schema|qtLiteral}}
     AND tablename = {{table|qtLiteral}}

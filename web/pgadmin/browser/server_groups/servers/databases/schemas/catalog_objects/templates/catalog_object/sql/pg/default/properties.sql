@@ -1,10 +1,10 @@
 SELECT
     c.oid, c.relname as name, r.rolname AS owner, description
 FROM
-    pg_class c
-    LEFT OUTER JOIN pg_description d
+    pg_catalog.pg_class c
+    LEFT OUTER JOIN pg_catalog.pg_description d
         ON d.objoid=c.oid AND d.classoid='pg_class'::regclass
-    LEFT JOIN pg_roles r ON c.relowner = r.oid
+    LEFT JOIN pg_catalog.pg_roles r ON c.relowner = r.oid
 WHERE
     relnamespace = {{scid}}::oid
 {% if coid %} AND

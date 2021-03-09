@@ -1,7 +1,7 @@
 SELECT
     rel.relname AS name
 FROM
-    pg_class rel
+    pg_catalog.pg_class rel
 WHERE
     rel.relkind IN ('r','s','t','p')
     AND rel.relnamespace = {{ scid }}::oid

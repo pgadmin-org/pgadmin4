@@ -5,7 +5,7 @@ SELECT
     nspname,
     n.oid as schemaoid
 FROM
-    pg_ts_template JOIN pg_namespace n ON n.oid=tmplnamespace
+    pg_catalog.pg_ts_template JOIN pg_catalog.pg_namespace n ON n.oid=tmplnamespace
 ORDER BY
     tmplname
 {% endif %}

@@ -4,7 +4,7 @@ SELECT
     idx_tup_fetch AS {{ conn|qtIdent(_('Index tuples fetched')) }},
     idx_blks_read AS {{ conn|qtIdent(_('Index blocks read')) }},
     idx_blks_hit AS {{ conn|qtIdent(_('Index blocks hit')) }},
-    pg_relation_size({{ exid }}::OID) AS {{ conn|qtIdent(_('Index size')) }}
+    pg_catalog.pg_relation_size({{ exid }}::OID) AS {{ conn|qtIdent(_('Index size')) }}
 {#=== Extended stats ===#}
 {% if is_pgstattuple %}
     ,version AS {{ conn|qtIdent(_('Version')) }},
@@ -18,11 +18,11 @@ SELECT
     avg_leaf_density AS {{ conn|qtIdent(_('Average leaf density')) }},
     leaf_fragmentation AS {{ conn|qtIdent(_('Leaf fragmentation')) }}
 FROM
-    pgstatindex('{{conn|qtIdent(schema)}}.{{conn|qtIdent(name)}}'), pg_stat_all_indexes stat
+    pgstatindex('{{conn|qtIdent(schema)}}.{{conn|qtIdent(name)}}'), pg_catalog.pg_stat_all_indexes stat
 {% else %}
 FROM
-    pg_stat_all_indexes stat
+    pg_catalog.pg_stat_all_indexes stat
 {% endif %}
-    JOIN pg_statio_all_indexes statio ON stat.indexrelid = statio.indexrelid
-    JOIN pg_class cl ON cl.oid=stat.indexrelid
+    JOIN pg_catalog.pg_statio_all_indexes statio ON stat.indexrelid = statio.indexrelid
+    JOIN pg_catalog.pg_class cl ON cl.oid=stat.indexrelid
     WHERE stat.indexrelid = {{ exid }}::OID

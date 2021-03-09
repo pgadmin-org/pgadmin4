@@ -1,4 +1,4 @@
-SELECT oid, sub.subname AS name FROM pg_subscription sub
+SELECT oid, sub.subname AS name FROM pg_catalog.pg_subscription sub
 WHERE
 {% if subid %}
     sub.oid = {{ subid }};

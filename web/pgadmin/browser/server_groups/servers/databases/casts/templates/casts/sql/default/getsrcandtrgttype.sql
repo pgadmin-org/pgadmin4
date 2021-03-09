@@ -1,8 +1,8 @@
 SELECT
     *
 FROM (
-    SELECT 
-        format_type(t.oid,NULL) AS typname,
+    SELECT
+        pg_catalog.format_type(t.oid,NULL) AS typname,
         CASE
             WHEN typelem > 0 THEN typelem
             ELSE t.oid
@@ -11,10 +11,10 @@ FROM (
         typtype,
         t.oid,
         nspname,
-        (SELECT COUNT(1) FROM pg_type t2 WHERE t2.typname = t.typname) > 1 AS isdup
+        (SELECT COUNT(1) FROM pg_catalog.pg_type t2 WHERE t2.typname = t.typname) > 1 AS isdup
     FROM
-        pg_type t
-        JOIN pg_namespace nsp ON typnamespace=nsp.oid
+        pg_catalog.pg_type t
+        JOIN pg_catalog.pg_namespace nsp ON typnamespace=nsp.oid
     WHERE
         (NOT (typname = 'unknown'
         AND nspname = 'pg_catalog'))
@@ -24,7 +24,7 @@ FROM (
             SELECT
                 1
             FROM
-                 pg_class
+                 pg_catalog.pg_class
             WHERE
                  relnamespace = typnamespace
                  AND relname = typname
@@ -34,7 +34,7 @@ FROM (
                          SELECT
                              1
                          FROM
-                              pg_class
+                              pg_catalog.pg_class
                          WHERE
                              relnamespace = typnamespace
                              AND relname = SUBSTRING(typname FROM 2)::name

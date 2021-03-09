@@ -831,7 +831,7 @@ rolmembership:{
             )
 
         status, rid = self.conn.execute_scalar(
-            "SELECT oid FROM pg_roles WHERE rolname = %(rolname)s",
+            "SELECT oid FROM pg_catalog.pg_roles WHERE rolname = %(rolname)s",
             {'rolname': self.request['rolname']}
         )
 

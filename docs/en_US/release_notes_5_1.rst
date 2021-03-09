@@ -15,6 +15,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #3976 <https://redmine.postgresql.org/issues/3976>`_ -  Use schema qualification while accessing the catalog objects.
 
 Bug fixes
 *********

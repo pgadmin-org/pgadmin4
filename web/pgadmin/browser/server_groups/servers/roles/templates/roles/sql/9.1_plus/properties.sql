@@ -1,16 +1,16 @@
 SELECT
 	r.oid, r.*,
 	pg_catalog.shobj_description(r.oid, 'pg_authid') AS description,
-	ARRAY(
+	pg_catalog.ARRAY(
 		SELECT
 			CASE WHEN am.admin_option THEN '1' ELSE '0' END || rm.rolname
 		FROM
-			(SELECT * FROM pg_auth_members WHERE member = r.oid) am
+			(SELECT * FROM pg_catalog.pg_auth_members WHERE member = r.oid) am
 			LEFT JOIN pg_catalog.pg_roles rm ON (rm.oid = am.roleid)
 	) rolmembership,
-	(SELECT array_agg(provider || '=' || label) FROM pg_shseclabel sl1 WHERE sl1.objoid=r.oid) AS seclabels
+	(SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_shseclabel sl1 WHERE sl1.objoid=r.oid) AS seclabels
 FROM
-	pg_roles r
+	pg_catalog.pg_roles r
 {% if rid %}
 WHERE r.oid = {{ rid|qtLiteral }}::oid
 {% endif %}

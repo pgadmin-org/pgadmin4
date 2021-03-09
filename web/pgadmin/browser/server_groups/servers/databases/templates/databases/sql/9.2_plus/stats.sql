@@ -21,10 +21,10 @@ SELECT
     deadlocks AS {{ conn|qtIdent(_("Deadlocks")) }},
     blk_read_time AS {{ conn|qtIdent(_("Block read time")) }},
     blk_write_time AS {{ conn|qtIdent(_("Block write time")) }},
-    pg_database_size(db.datid) AS {{ conn|qtIdent(_('Size')) }}
+    pg_catalog.pg_database_size(db.datid) AS {{ conn|qtIdent(_('Size')) }}
 FROM
-    pg_stat_database db
-    LEFT JOIN pg_stat_database_conflicts slave ON db.datid=slave.datid
+    pg_catalog.pg_stat_database db
+    LEFT JOIN pg_catalog.pg_stat_database_conflicts slave ON db.datid=slave.datid
 WHERE {% if did %}
 db.datid = {{ did|qtLiteral }}::OID{% else %}
 db.datid > {{ last_system_oid|qtLiteral }}::OID

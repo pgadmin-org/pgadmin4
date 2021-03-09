@@ -10,8 +10,8 @@ SELECT
     description,
     prs.prsnamespace AS schema
 FROM
-    pg_ts_parser prs
-    LEFT OUTER JOIN pg_description des
+    pg_catalog.pg_ts_parser prs
+    LEFT OUTER JOIN pg_catalog.pg_description des
 ON
     (
     des.objoid=prs.oid

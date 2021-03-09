@@ -1,8 +1,8 @@
 SELECT 'attacl' as deftype,
     COALESCE(gt.rolname, 'PUBLIC') grantee,
     g.rolname grantor,
-    array_agg(privilege_type order by privilege_type) as privileges,
-    array_agg(is_grantable) as grantable
+    pg_catalog.array_agg(privilege_type order by privilege_type) as privileges,
+    pg_catalog.array_agg(is_grantable) as grantable
 FROM
   (SELECT
     d.grantee, d.grantor, d.is_grantable,
@@ -23,13 +23,13 @@ FROM
     END AS privilege_type
   FROM
     (SELECT attacl
-        FROM pg_attribute att
+        FROM pg_catalog.pg_attribute att
         WHERE att.attrelid = {{tid}}::oid
         AND att.attnum = {{clid}}::int
     ) acl,
     (SELECT (d).grantee AS grantee, (d).grantor AS grantor, (d).is_grantable
         AS is_grantable, (d).privilege_type AS privilege_type FROM (SELECT
-        aclexplode(attacl) as d FROM pg_attribute att
+        pg_catalog.aclexplode(attacl) as d FROM pg_catalog.pg_attribute att
         WHERE att.attrelid = {{tid}}::oid
         AND att.attnum = {{clid}}::int) a) d
     ) d

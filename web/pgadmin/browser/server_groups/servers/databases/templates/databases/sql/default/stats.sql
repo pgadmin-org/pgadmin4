@@ -10,9 +10,9 @@ SELECT
     tup_inserted AS {{ conn|qtIdent(_('Tuples inserted')) }},
     tup_updated AS {{ conn|qtIdent(_('Tuples updated')) }},
     tup_deleted AS {{ conn|qtIdent(_('Tuples deleted')) }},
-    pg_database_size(db.datid) AS {{ conn|qtIdent(_('Size')) }}
+    pg_catalog.pg_database_size(db.datid) AS {{ conn|qtIdent(_('Size')) }}
 FROM
-    pg_stat_database db
+    pg_catalog.pg_stat_database db
 WHERE {% if did %}
 db.datid = {{ did|qtLiteral }}::OID{% else %}
 db.datid > {{ last_system_oid|qtLiteral }}::OID

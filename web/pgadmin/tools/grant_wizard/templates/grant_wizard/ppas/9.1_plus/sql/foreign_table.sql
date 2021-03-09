@@ -6,8 +6,8 @@ SELECT
     'Foreign Table' AS object_type,
     'icon-coll-foreign_table' AS icon
 FROM
-    pg_class rel
-JOIN pg_namespace nsp ON nsp.oid=rel.relnamespace
+    pg_catalog.pg_class rel
+JOIN pg_catalog.pg_namespace nsp ON nsp.oid=rel.relnamespace
 
 WHERE
     rel.relkind IN ('f') AND rel.relnamespace = {{ node_id }}::oid

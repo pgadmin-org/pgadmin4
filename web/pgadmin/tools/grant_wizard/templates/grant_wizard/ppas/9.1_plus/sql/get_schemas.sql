@@ -4,7 +4,7 @@ SELECT
     nsp.oid,
     nsp.nspname as name
 FROM
-    pg_namespace nsp
+    pg_catalog.pg_namespace nsp
 WHERE
     nsp.nspparent = 0 AND
     {% if nspid %}

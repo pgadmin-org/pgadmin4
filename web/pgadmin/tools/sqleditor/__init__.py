@@ -609,8 +609,8 @@ def fetch_pg_types(columns_info, trans_obj):
 
     if oids:
         status, res = default_conn.execute_dict(
-            "SELECT oid, format_type(oid, NULL) AS typname FROM pg_type "
-            "WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
+            "SELECT oid, pg_catalog.format_type(oid, NULL) AS typname FROM "
+            "pg_catalog.pg_type WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
         )
 
         if not status:

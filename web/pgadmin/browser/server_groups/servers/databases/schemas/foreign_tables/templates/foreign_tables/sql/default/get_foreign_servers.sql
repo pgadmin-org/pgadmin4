@@ -1,5 +1,5 @@
 SELECT
     srvname
 FROM
-    pg_foreign_server
+    pg_catalog.pg_foreign_server
 ORDER BY srvname;

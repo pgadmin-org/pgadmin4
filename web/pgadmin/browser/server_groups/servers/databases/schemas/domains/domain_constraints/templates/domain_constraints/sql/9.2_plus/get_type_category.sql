@@ -1,5 +1,5 @@
 SELECT
     typcategory
 FROM
-    pg_type
+    pg_catalog.pg_type
 WHERE typname = {{datatype}};

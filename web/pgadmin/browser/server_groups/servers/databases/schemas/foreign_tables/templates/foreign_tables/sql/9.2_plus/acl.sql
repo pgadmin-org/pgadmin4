@@ -1,7 +1,7 @@
 SELECT
     COALESCE(gt.rolname, 'PUBLIC') AS grantee,
-    g.rolname AS grantor, array_agg(privilege_type) AS privileges,
-    array_agg(is_grantable) AS grantable
+    g.rolname AS grantor, pg_catalog.array_agg(privilege_type) AS privileges,
+    pg_catalog.array_agg(is_grantable) AS grantable
 FROM
     (SELECT
         d.grantee, d.grantor, d.is_grantable,
@@ -26,7 +26,7 @@ FROM
             (d).is_grantable AS is_grantable,
             (d).privilege_type AS privilege_type
         FROM
-            (SELECT aclexplode(db.relacl) AS d FROM pg_class db
+            (SELECT pg_catalog.aclexplode(db.relacl) AS d FROM pg_catalog.pg_class db
             WHERE db.oid = {{foid}}::OID) a ORDER BY privilege_type
         ) d
     ) d

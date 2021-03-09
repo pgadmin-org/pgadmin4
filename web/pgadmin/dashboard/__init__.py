@@ -440,7 +440,7 @@ def cancel_query(sid=None, did=None, pid=None):
     :param pid: session/process id
     :return: Response
     """
-    sql = "SELECT pg_cancel_backend({0});".format(pid)
+    sql = "SELECT pg_catalog.pg_cancel_backend({0});".format(pid)
     status, res = g.conn.execute_scalar(sql)
     if not status:
         return internal_server_error(errormsg=res)
@@ -467,7 +467,7 @@ def terminate_session(sid=None, did=None, pid=None):
     :param pid: session/process id
     :return: Response
     """
-    sql = "SELECT pg_terminate_backend({0});".format(pid)
+    sql = "SELECT pg_catalog.pg_terminate_backend({0});".format(pid)
     status, res = g.conn.execute_scalar(sql)
     if not status:
         return internal_server_error(errormsg=res)

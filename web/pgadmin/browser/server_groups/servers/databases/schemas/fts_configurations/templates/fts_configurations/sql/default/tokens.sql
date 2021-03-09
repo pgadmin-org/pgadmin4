@@ -4,7 +4,7 @@
 SELECT
     alias
 FROM
-    ts_token_type({{parseroid}}::OID)
+    pg_catalog.ts_token_type({{parseroid}}::OID)
 ORDER BY
     alias
 {% endif %}

@@ -6,6 +6,6 @@ SELECT
     unit,
     short_desc
 FROM
-    pg_settings
+    pg_catalog.pg_settings
 ORDER BY
     category

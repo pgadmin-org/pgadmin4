@@ -19,9 +19,9 @@ SELECT
     query_start AS {{ conn|qtIdent(_('Query start')) }},
     xact_start AS {{ conn|qtIdent(_('Xact start')) }}
 FROM
-    pg_stat_activity sa
+    pg_catalog.pg_stat_activity sa
 WHERE
-    (SELECT r.rolsuper OR r.oid = sa.usesysid  FROM pg_roles r WHERE r.rolname = current_user)
+    (SELECT r.rolsuper OR r.oid = sa.usesysid  FROM pg_catalog.pg_roles r WHERE r.rolname = current_user)
 UNION
 SELECT
     pid AS "PID",
@@ -44,6 +44,6 @@ SELECT
     null AS {{ conn|qtIdent(_('Query start')) }},
     null AS {{ conn|qtIdent(_('Xact start')) }}
 FROM
-    pg_stat_replication sa
+    pg_catalog.pg_stat_replication sa
 WHERE
-    (SELECT r.rolsuper OR r.oid = sa.usesysid  FROM pg_roles r WHERE r.rolname = current_user)
+    (SELECT r.rolsuper OR r.oid = sa.usesysid  FROM pg_catalog.pg_roles r WHERE r.rolname = current_user)

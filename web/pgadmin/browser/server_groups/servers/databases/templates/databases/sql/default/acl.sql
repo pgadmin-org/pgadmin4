@@ -1,7 +1,7 @@
 SELECT
     'datacl' AS deftype, COALESCE(gt.rolname, 'PUBLIC') AS grantee,
-    g.rolname AS grantor, array_agg(privilege_type) AS privileges,
-    array_agg(is_grantable) AS grantable
+    g.rolname AS grantor, pg_catalog.array_agg(privilege_type) AS privileges,
+    pg_catalog.array_agg(is_grantable) AS grantable
 FROM
     (SELECT
         d.grantee,
@@ -27,10 +27,10 @@ FROM
             u_grantor.oid AS grantor,
             grantee.oid AS grantee,
             pr.type AS privilege_type,
-            aclcontains(c.datacl, makeaclitem(grantee.oid, u_grantor.oid, pr.type, true)) AS is_grantable
-        FROM pg_database c, pg_authid u_grantor, (
+            pg_catalog.aclcontains(c.datacl, pg_catalog.makeaclitem(grantee.oid, u_grantor.oid, pr.type, true)) AS is_grantable
+        FROM pg_catalog.pg_database c, pg_authid u_grantor, (
             SELECT pg_authid.oid, pg_authid.rolname
-            FROM pg_authid
+            FROM pg_catalog.pg_authid
                 UNION ALL
             SELECT 0::oid AS oid, 'PUBLIC') grantee(oid, rolname),
             (     SELECT 'SELECT'
@@ -46,8 +46,8 @@ FROM
                   SELECT 'REFERENCES'
                           UNION ALL
                   SELECT 'TRIGGER') pr(type)
-        WHERE aclcontains(c.datacl, makeaclitem(grantee.oid, u_grantor.oid, pr.type, false))
-        AND (pg_has_role(u_grantor.oid, 'USAGE'::text) OR pg_has_role(grantee.oid, 'USAGE'::text)
+        WHERE pg_catalog.aclcontains(c.datacl, pg_catalog.makeaclitem(grantee.oid, u_grantor.oid, pr.type, false))
+        AND (pg_catalog.pg_has_role(u_grantor.oid, 'USAGE'::text) OR pg_catalog.pg_has_role(grantee.oid, 'USAGE'::text)
         OR grantee.rolname = 'PUBLIC'::name)
         AND c.oid = {{ did|qtLiteral }}::OID
         ) d

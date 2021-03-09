@@ -2,7 +2,7 @@ SELECT
     rw.oid AS oid,
     rw.rulename AS name
 FROM
-    pg_rewrite rw
+    pg_catalog.pg_rewrite rw
 WHERE
 {% if tid %}
     rw.ev_class = {{ tid }}

@@ -835,8 +835,8 @@ class ExclusionConstraintView(PGChildNodeView):
         # Check if pgstattuple extension is already created?
         # if created then only add extended stats
         status, is_pgstattuple = self.conn.execute_scalar("""
-        SELECT (count(extname) > 0) AS is_pgstattuple
-        FROM pg_extension
+        SELECT (pg_catalog.count(extname) > 0) AS is_pgstattuple
+        FROM pg_catalog.pg_extension
         WHERE extname='pgstattuple'
         """)
         if not status:

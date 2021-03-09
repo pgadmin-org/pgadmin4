@@ -2,16 +2,16 @@
 {% if subtype %}
 SELECT DISTINCT typ.typname AS stype,
     (CASE WHEN typ.typcollation > 0 THEN true ELSE false END) AS is_collate
-FROM pg_opclass opc
-    JOIN pg_type typ ON opc.opcintype = typ.oid
+FROM pg_catalog.pg_opclass opc
+    JOIN pg_catalog.pg_type typ ON opc.opcintype = typ.oid
 WHERE opc.opcmethod = 403
 ORDER BY 1
 {% endif %}
 {### To fill subtype opclass combobox ###}
 {% if subtype_opclass and data and data.typname %}
 SELECT opc.opcname
-FROM pg_opclass opc
-    JOIN pg_type typ ON opc.opcintype=typ.oid
+FROM pg_catalog.pg_opclass opc
+    JOIN pg_catalog.pg_type typ ON opc.opcintype=typ.oid
     AND typ.typname = {{ data.typname|qtLiteral }}
 WHERE opc.opcmethod = 403
 ORDER BY opcname;
@@ -19,8 +19,8 @@ ORDER BY opcname;
 {### To fetch opcinttype from subtype opclass ###}
 {% if get_opcintype and data and data.typname and data.opcname %}
 SELECT opc.opcintype
-FROM pg_opclass opc
-    JOIN pg_type typ ON opc.opcintype=typ.oid
+FROM pg_catalog.pg_opclass opc
+    JOIN pg_catalog.pg_type typ ON opc.opcintype=typ.oid
     AND typ.typname = {{ data.typname|qtLiteral }}
 WHERE opc.opcmethod = 403
     AND opc.opcname = {{ data.opcname|qtLiteral }}
@@ -30,26 +30,26 @@ ORDER BY opcname;
 {% if opcintype %}
 SELECT proname, nspname,
     CASE WHEN length(nspname::text) > 0 AND length(proname::text) > 0  THEN
-        concat(quote_ident(nspname), '.', quote_ident(proname))
+        pg_catalog.concat(quote_ident(nspname), '.', pg_catalog.quote_ident(proname))
     ELSE '' END AS stypdiff
-FROM pg_proc
-    JOIN pg_namespace n ON n.oid=pronamespace
+FROM pg_catalog.pg_proc
+    JOIN pg_catalog.pg_namespace n ON n.oid=pronamespace
 WHERE prorettype = 701
     AND proargtypes = '{{opcintype}} {{opcintype}}'
 ORDER BY proname;
 {% endif %}
 {### To fill canonical combobox ###}
 {% if getoid %}
-SELECT oid FROM pg_type
+SELECT oid FROM pg_catalog.pg_type
 WHERE typname = {{ data.name|qtLiteral }}
 {% endif %}
 {% if canonical and oid %}
 SELECT proname, nspname,
     CASE WHEN length(nspname::text) > 0 AND length(proname::text) > 0  THEN
-        concat(quote_ident(nspname), '.', quote_ident(proname))
+        pg_catalog.concat(quote_ident(nspname), '.', pg_catalog.quote_ident(proname))
     ELSE '' END AS canonical
-FROM pg_proc
-    JOIN pg_namespace n ON n.oid=pronamespace
+FROM pg_catalog.pg_proc
+    JOIN pg_catalog.pg_namespace n ON n.oid=pronamespace
 WHERE prorettype= {{ oid }}
     AND proargtypes = '{{ oid }}'
 ORDER BY proname;

@@ -2,7 +2,7 @@
 {% if srctyp and trgtyp %}
     SELECT
         ca.oid
-    FROM pg_cast ca
+    FROM pg_catalog.pg_cast ca
     WHERE ca.castsource = (SELECT t.oid FROM pg_type t WHERE format_type(t.oid, NULL) = {{srctyp|qtLiteral}})
     AND ca.casttarget = (SELECT t.oid FROM pg_type t WHERE format_type(t.oid, NULL) = {{trgtyp|qtLiteral}})
     {% if datlastsysoid %}
@@ -27,21 +27,21 @@
         ELSE proname || '(' || pg_catalog.pg_get_function_identity_arguments(pr.oid) || ')'
     END AS proname,
         ca.castfunc,
-        format_type(st.oid,NULL) AS srctyp,
-        format_type(tt.oid,tt.typtypmod) AS trgtyp,
+        pg_catalog.format_type(st.oid,NULL) AS srctyp,
+        pg_catalog.format_type(tt.oid,tt.typtypmod) AS trgtyp,
         ns.nspname AS srcnspname,
         nt.nspname AS trgnspname,
         np.nspname AS pronspname,
         description,
-        concat(format_type(st.oid,NULL),'->',format_type(tt.oid,tt.typtypmod)) as name
-    FROM pg_cast ca
-    JOIN pg_type st ON st.oid=castsource
-    JOIN pg_namespace ns ON ns.oid=st.typnamespace
-    JOIN pg_type tt ON tt.oid=casttarget
-    JOIN pg_namespace nt ON nt.oid=tt.typnamespace
-    LEFT JOIN pg_proc pr ON pr.oid=castfunc
-    LEFT JOIN pg_namespace np ON np.oid=pr.pronamespace
-    LEFT OUTER JOIN pg_description des ON (des.objoid=ca.oid AND des.objsubid=0 AND des.classoid='pg_cast'::regclass)
+        pg_catalog.concat(pg_catalog.format_type(st.oid,NULL),'->',pg_catalog.format_type(tt.oid,tt.typtypmod)) as name
+    FROM pg_catalog.pg_cast ca
+    JOIN pg_catalog.pg_type st ON st.oid=castsource
+    JOIN pg_catalog.pg_namespace ns ON ns.oid=st.typnamespace
+    JOIN pg_catalog.pg_type tt ON tt.oid=casttarget
+    JOIN pg_catalog.pg_namespace nt ON nt.oid=tt.typnamespace
+    LEFT JOIN pg_catalog.pg_proc pr ON pr.oid=castfunc
+    LEFT JOIN pg_catalog.pg_namespace np ON np.oid=pr.pronamespace
+    LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=ca.oid AND des.objsubid=0 AND des.classoid='pg_cast'::regclass)
 
     {% if cid %}
         WHERE ca.oid={{cid}}::oid

@@ -1,5 +1,5 @@
 SELECT e.oid, e.evtname AS name
-FROM pg_event_trigger e
+FROM pg_catalog.pg_event_trigger e
 {% if etid %}
 WHERE e.oid={{etid}}::oid
 {% endif %}

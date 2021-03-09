@@ -2,7 +2,7 @@
 SELECT
     oid, cfgname as name
 FROM
-    pg_ts_config cfg
+    pg_catalog.pg_ts_config cfg
 WHERE
 {% if scid %}
     cfg.cfgnamespace = {{scid}}::OID

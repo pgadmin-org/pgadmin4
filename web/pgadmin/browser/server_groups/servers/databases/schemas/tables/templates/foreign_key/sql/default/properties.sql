@@ -18,12 +18,12 @@ SELECT
       nr.nspname as refnsp,
       cr.relname as reftab,
       description as comment
-FROM pg_constraint ct
-JOIN pg_class cl ON cl.oid=conrelid
-JOIN pg_namespace nl ON nl.oid=cl.relnamespace
-JOIN pg_class cr ON cr.oid=confrelid
-JOIN pg_namespace nr ON nr.oid=cr.relnamespace
-LEFT OUTER JOIN pg_description des ON (des.objoid=ct.oid AND des.classoid='pg_constraint'::regclass)
+FROM pg_catalog.pg_constraint ct
+JOIN pg_catalog.pg_class cl ON cl.oid=conrelid
+JOIN pg_catalog.pg_namespace nl ON nl.oid=cl.relnamespace
+JOIN pg_catalog.pg_class cr ON cr.oid=confrelid
+JOIN pg_catalog.pg_namespace nr ON nr.oid=cr.relnamespace
+LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=ct.oid AND des.classoid='pg_constraint'::regclass)
 WHERE contype='f' AND
 conrelid = {{tid}}::oid
 {% if cid %}

@@ -1,7 +1,7 @@
 SELECT
     nsp.oid, nspname AS name
 FROM
-    pg_namespace nsp
+    pg_catalog.pg_namespace nsp
 WHERE nspparent = {{scid}}::oid
 {% if pkgid %}
 AND nsp.oid = {{pkgid}}::oid

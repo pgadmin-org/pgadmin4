@@ -30,44 +30,44 @@ SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin,
         ftsdns.nspname, ftspns.nspname, ftstns.nspname, synns.nspname) AS nspname,
     CASE WHEN inhits.inhparent IS NOT NULL THEN '1' ELSE '0' END AS is_inherits,
     CASE WHEN inhed.inhparent IS NOT NULL THEN '1' ELSE '0' END AS is_inherited
-FROM pg_depend dep
-LEFT JOIN pg_class cl ON dep.refobjid=cl.oid
-LEFT JOIN pg_attribute att ON dep.refobjid=att.attrelid AND dep.refobjsubid=att.attnum
-LEFT JOIN pg_namespace nsc ON cl.relnamespace=nsc.oid
-LEFT JOIN pg_proc pr ON dep.refobjid=pr.oid
-LEFT JOIN pg_namespace nsp ON pr.pronamespace=nsp.oid
-LEFT JOIN pg_trigger tg ON dep.refobjid=tg.oid
-LEFT JOIN pg_type ty ON dep.refobjid=ty.oid
-LEFT JOIN pg_namespace nst ON ty.typnamespace=nst.oid
-LEFT JOIN pg_constraint co ON dep.refobjid=co.oid
-LEFT JOIN pg_class coc ON co.conrelid=coc.oid
-LEFT JOIN pg_namespace nso ON co.connamespace=nso.oid
-LEFT JOIN pg_rewrite rw ON dep.refobjid=rw.oid
-LEFT JOIN pg_class clrw ON clrw.oid=rw.ev_class
-LEFT JOIN pg_namespace nsrw ON clrw.relnamespace=nsrw.oid
-LEFT JOIN pg_language la ON dep.refobjid=la.oid
-LEFT JOIN pg_namespace ns ON dep.refobjid=ns.oid
-LEFT JOIN pg_attrdef ad ON ad.adrelid=att.attrelid AND ad.adnum=att.attnum
-LEFT JOIN pg_foreign_server fs ON fs.oid=dep.refobjid
-LEFT JOIN pg_foreign_data_wrapper fdw ON fdw.oid=dep.refobjid
-LEFT JOIN pg_type prtyp ON prtyp.oid = pr.prorettype
-LEFT JOIN pg_inherits inhits ON (inhits.inhrelid=dep.refobjid)
-LEFT JOIN pg_inherits inhed ON (inhed.inhparent=dep.refobjid)
-LEFT JOIN pg_collation col ON col.oid=dep.refobjid
-LEFT JOIN pg_namespace colns ON col.collnamespace=colns.oid
-LEFT JOIN pg_ts_config ftsc ON ftsc.oid=dep.refobjid
-LEFT JOIN pg_namespace ftscns ON ftsc.cfgnamespace=ftscns.oid
-LEFT JOIN pg_ts_dict ftsd ON ftsd.oid=dep.refobjid
-LEFT JOIN pg_namespace ftsdns ON ftsd.dictnamespace=ftsdns.oid
-LEFT JOIN pg_ts_parser ftsp ON ftsp.oid=dep.refobjid
-LEFT JOIN pg_namespace ftspns ON ftsp.prsnamespace=ftspns.oid
-LEFT JOIN pg_ts_template ftst ON ftst.oid=dep.refobjid
-LEFT JOIN pg_namespace ftstns ON ftst.tmplnamespace=ftstns.oid
-LEFT JOIN pg_extension ext ON ext.oid=dep.refobjid
-LEFT JOIN pg_synonym syn ON syn.oid=dep.refobjid
-LEFT JOIN pg_namespace synns ON syn.synnamespace=synns.oid
+FROM pg_catalog.pg_depend dep
+LEFT JOIN pg_catalog.pg_class cl ON dep.refobjid=cl.oid
+LEFT JOIN pg_catalog.pg_attribute att ON dep.refobjid=att.attrelid AND dep.refobjsubid=att.attnum
+LEFT JOIN pg_catalog.pg_namespace nsc ON cl.relnamespace=nsc.oid
+LEFT JOIN pg_catalog.pg_proc pr ON dep.refobjid=pr.oid
+LEFT JOIN pg_catalog.pg_namespace nsp ON pr.pronamespace=nsp.oid
+LEFT JOIN pg_catalog.pg_trigger tg ON dep.refobjid=tg.oid
+LEFT JOIN pg_catalog.pg_type ty ON dep.refobjid=ty.oid
+LEFT JOIN pg_catalog.pg_namespace nst ON ty.typnamespace=nst.oid
+LEFT JOIN pg_catalog.pg_constraint co ON dep.refobjid=co.oid
+LEFT JOIN pg_catalog.pg_class coc ON co.conrelid=coc.oid
+LEFT JOIN pg_catalog.pg_namespace nso ON co.connamespace=nso.oid
+LEFT JOIN pg_catalog.pg_rewrite rw ON dep.refobjid=rw.oid
+LEFT JOIN pg_catalog.pg_class clrw ON clrw.oid=rw.ev_class
+LEFT JOIN pg_catalog.pg_namespace nsrw ON clrw.relnamespace=nsrw.oid
+LEFT JOIN pg_catalog.pg_language la ON dep.refobjid=la.oid
+LEFT JOIN pg_catalog.pg_namespace ns ON dep.refobjid=ns.oid
+LEFT JOIN pg_catalog.pg_attrdef ad ON ad.adrelid=att.attrelid AND ad.adnum=att.attnum
+LEFT JOIN pg_catalog.pg_foreign_server fs ON fs.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_foreign_data_wrapper fdw ON fdw.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_type prtyp ON prtyp.oid = pr.prorettype
+LEFT JOIN pg_catalog.pg_inherits inhits ON (inhits.inhrelid=dep.refobjid)
+LEFT JOIN pg_catalog.pg_inherits inhed ON (inhed.inhparent=dep.refobjid)
+LEFT JOIN pg_catalog.pg_collation col ON col.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_namespace colns ON col.collnamespace=colns.oid
+LEFT JOIN pg_catalog.pg_ts_config ftsc ON ftsc.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_namespace ftscns ON ftsc.cfgnamespace=ftscns.oid
+LEFT JOIN pg_catalog.pg_ts_dict ftsd ON ftsd.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_namespace ftsdns ON ftsd.dictnamespace=ftsdns.oid
+LEFT JOIN pg_catalog.pg_ts_parser ftsp ON ftsp.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_namespace ftspns ON ftsp.prsnamespace=ftspns.oid
+LEFT JOIN pg_catalog.pg_ts_template ftst ON ftst.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_namespace ftstns ON ftst.tmplnamespace=ftstns.oid
+LEFT JOIN pg_catalog.pg_extension ext ON ext.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_synonym syn ON syn.oid=dep.refobjid
+LEFT JOIN pg_catalog.pg_namespace synns ON syn.synnamespace=synns.oid
 {{where_clause}} AND
-refclassid IN ( SELECT oid FROM pg_class WHERE relname IN
+refclassid IN ( SELECT oid FROM pg_catalog.pg_class WHERE relname IN
    ('pg_class', 'pg_constraint', 'pg_conversion', 'pg_language', 'pg_proc', 'pg_rewrite', 'pg_namespace',
    'pg_trigger', 'pg_type', 'pg_attrdef', 'pg_foreign_server', 'pg_foreign_data_wrapper',
    'pg_collation', 'pg_ts_config', 'pg_ts_dict', 'pg_ts_parser', 'pg_ts_template', 'pg_extension',
@@ -80,10 +80,10 @@ SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin,
 	CASE WHEN cl.relname IS NOT NULL OR att.attname IS NOT NULL THEN cl.relname || COALESCE('.' || att.attname, '')
     ELSE cl.relname END AS refname,
     nsc.nspname AS nspname, '0' AS is_inherits, '0' AS is_inherited
-FROM pg_depend dep
-LEFT JOIN pg_class cl ON dep.refobjid=cl.oid
-LEFT JOIN pg_attribute att ON dep.refobjid=att.attrelid AND dep.refobjsubid=att.attnum
-LEFT JOIN pg_namespace nsc ON cl.relnamespace=nsc.oid
-LEFT JOIN pg_attrdef ad ON ad.adrelid=att.attrelid AND ad.adnum=att.attnum
-WHERE dep.objid IN (SELECT oid FROM pg_rewrite WHERE ev_class={{object_id}}) AND cl.relkind not in ('v', 'm')
+FROM pg_catalog.pg_depend dep
+LEFT JOIN pg_catalog.pg_class cl ON dep.refobjid=cl.oid
+LEFT JOIN pg_catalog.pg_attribute att ON dep.refobjid=att.attrelid AND dep.refobjsubid=att.attnum
+LEFT JOIN pg_catalog.pg_namespace nsc ON cl.relnamespace=nsc.oid
+LEFT JOIN pg_catalog.pg_attrdef ad ON ad.adrelid=att.attrelid AND ad.adnum=att.attnum
+WHERE dep.objid IN (SELECT oid FROM pg_catalog.pg_rewrite WHERE ev_class={{object_id}}) AND cl.relkind not in ('v', 'm')
 ORDER BY refclassid, relkind

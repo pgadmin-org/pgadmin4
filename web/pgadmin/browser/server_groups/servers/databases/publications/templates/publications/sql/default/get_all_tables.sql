@@ -1,4 +1,4 @@
-SELECT quote_ident(c.table_schema)||'.'||quote_ident(c.table_name) AS table
+SELECT pg_catalog.quote_ident(c.table_schema)||'.'||pg_catalog.quote_ident(c.table_name) AS table
 FROM information_schema.tables c
 WHERE c.table_type = 'BASE TABLE'
       AND c.table_schema NOT LIKE 'pg\_%'

@@ -7,16 +7,16 @@ SELECT  pg_proc.oid,
         oidvectortypes(proargtypes) AS proargtypenames,
         proargmodes,
         proargnames,
-        pg_get_expr(proargdefaults, 'pg_catalog.pg_class'::regclass) AS proargdefaultvals,
-        pg_get_userbyid(proowner) AS funcowner,
-        pg_get_function_result(pg_proc.oid) AS prorettypename,
+        pg_catalog.pg_get_expr(proargdefaults, 'pg_catalog.pg_class'::regclass) AS proargdefaultvals,
+        pg_catalog.pg_get_userbyid(proowner) AS funcowner,
+        pg_catalog.pg_get_function_result(pg_proc.oid) AS prorettypename,
         prosrc,
         lanname,
         CASE
         WHEN proaccess = '+' THEN 'Public'
         WHEN proaccess = '-' THEN 'Private'
         ELSE 'Unknown' END AS visibility
-FROM pg_proc, pg_namespace, pg_language lng
+FROM pg_catalog.pg_proc, pg_catalog.pg_namespace, pg_catalog.pg_language lng
 WHERE protype = '1'::char
 AND pronamespace = {{pkgid}}::oid
 AND pg_proc.pronamespace = pg_namespace.oid

@@ -6,12 +6,12 @@ SELECT
     SELECT
         nspname
     FROM
-        pg_namespace
+        pg_catalog.pg_namespace
     WHERE
         oid = t.tmplnamespace
     ) as schema
 FROM
-    pg_ts_template t LEFT JOIN pg_description d
+    pg_catalog.pg_ts_template t LEFT JOIN pg_catalog.pg_description d
     ON d.objoid=t.oid AND d.classoid='pg_ts_template'::regclass
 WHERE
     t.oid = {{tid}}::OID;

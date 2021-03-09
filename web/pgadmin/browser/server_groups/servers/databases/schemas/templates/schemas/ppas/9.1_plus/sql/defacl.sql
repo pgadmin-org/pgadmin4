@@ -5,7 +5,7 @@ SELECT
     WHEN 'f' THEN 'deffuncacl'
     ELSE 'UNKNOWN - ' || a.deftype
     END AS deftype,
-    COALESCE(gt.rolname, 'PUBLIC') grantee, g.rolname grantor, array_agg(a.privilege_type) as privileges, array_agg(a.is_grantable) as grantable
+    COALESCE(gt.rolname, 'PUBLIC') grantee, g.rolname grantor, pg_catalog.array_agg(a.privilege_type) as privileges, pg_catalog.array_agg(a.is_grantable) as grantable
 FROM
     (SELECT
         (acl).grantee as grantee, (acl).grantor AS grantor, (acl).is_grantable AS is_grantable,
@@ -26,9 +26,9 @@ FROM
         END AS privilege_type,
         defaclobjtype as deftype
     FROM
-        (SELECT defaclobjtype, aclexplode(defaclacl) as acl
+        (SELECT defaclobjtype, pg_catalog.aclexplode(defaclacl) as acl
             FROM
-                pg_namespace nsp
+                pg_catalog.pg_namespace nsp
                 LEFT OUTER JOIN pg_catalog.pg_default_acl dacl ON (dacl.defaclnamespace = nsp.oid)
             WHERE
                 nsp.oid={{scid}}::oid

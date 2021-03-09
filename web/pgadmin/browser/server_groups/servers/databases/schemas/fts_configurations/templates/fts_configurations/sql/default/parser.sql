@@ -3,7 +3,7 @@
 SELECT
     cfgparser
 FROM
-    pg_ts_config
+    pg_catalog.pg_ts_config
 where
     oid = {{cfgid}}::OID
 {% endif %}
@@ -16,8 +16,8 @@ SELECT
     nspname,
     n.oid as schemaoid
 FROM
-    pg_ts_parser
-    JOIN pg_namespace n
+    pg_catalog.pg_ts_parser
+    JOIN pg_catalog.pg_namespace n
     ON n.oid=prsnamespace
 ORDER BY
     prsname;

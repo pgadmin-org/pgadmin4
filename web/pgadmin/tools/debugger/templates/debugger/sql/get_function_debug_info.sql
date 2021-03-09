@@ -30,7 +30,7 @@ SELECT
     {% if is_ppas_database %}
         CASE WHEN n.nspparent <> 0 THEN n.oid ELSE 0 END AS pkg,
         CASE WHEN n.nspparent <> 0 THEN n.nspname ELSE '' END AS pkgname,
-        CASE WHEN n.nspparent <> 0 THEN (SELECT oid FROM pg_proc WHERE pronamespace=n.oid AND proname='cons') ELSE 0 END AS pkgconsoid,
+        CASE WHEN n.nspparent <> 0 THEN (SELECT oid FROM pg_catalog.pg_proc WHERE pronamespace=n.oid AND proname='cons') ELSE 0 END AS pkgconsoid,
         CASE WHEN n.nspparent <> 0 THEN g.oid ELSE n.oid END AS schema,
         CASE WHEN n.nspparent <> 0 THEN g.nspname ELSE n.nspname END AS schemaname,
         NOT (l.lanname = 'edbspl' AND protype = '1') AS isfunc,

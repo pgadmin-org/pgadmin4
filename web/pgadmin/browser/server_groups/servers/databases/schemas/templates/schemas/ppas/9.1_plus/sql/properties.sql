@@ -6,32 +6,32 @@ SELECT
     ELSE 3 END AS nsptyp,
     nsp.nspname AS name,
     nsp.oid,
-    array_to_string(nsp.nspacl::text[], ', ') as acl,
+    pg_catalog.array_to_string(nsp.nspacl::text[], ', ') as acl,
     r.rolname AS namespaceowner, description,
-    has_schema_privilege(nsp.oid, 'CREATE') AS can_create,
+    pg_catalog.has_schema_privilege(nsp.oid, 'CREATE') AS can_create,
     {### Default ACL for Tables ###}
-    (SELECT array_to_string(ARRAY(
-        SELECT array_to_string(defaclacl::text[], ', ')
-            FROM pg_default_acl
+    (SELECT pg_catalog.array_to_string(ARRAY(
+        SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
+            FROM pg_catalog.pg_default_acl
         WHERE defaclobjtype = 'r' AND defaclnamespace = nsp.oid
     ), ', ')) AS tblacl,
     {### Default ACL for Sequnces ###}
-    (SELECT array_to_string(ARRAY(
-        SELECT array_to_string(defaclacl::text[], ', ')
-            FROM pg_default_acl
+    (SELECT pg_catalog.array_to_string(ARRAY(
+        SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
+            FROM pg_catalog.pg_default_acl
         WHERE defaclobjtype = 'S' AND defaclnamespace = nsp.oid
     ), ', ')) AS seqacl,
     {### Default ACL for Functions ###}
-    (SELECT array_to_string(ARRAY(
-        SELECT array_to_string(defaclacl::text[], ', ')
-            FROM pg_default_acl
+    (SELECT pg_catalog.array_to_string(ARRAY(
+        SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
+            FROM pg_catalog.pg_default_acl
         WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid
     ), ', ')) AS funcacl
 FROM
-    pg_namespace nsp
-    LEFT OUTER JOIN pg_description des ON
+    pg_catalog.pg_namespace nsp
+    LEFT OUTER JOIN pg_catalog.pg_description des ON
         (des.objoid=nsp.oid AND des.classoid='pg_namespace'::regclass)
-    LEFT JOIN pg_roles r ON (r.oid = nsp.nspowner)
+    LEFT JOIN pg_catalog.pg_roles r ON (r.oid = nsp.nspowner)
 WHERE
     {% if scid %}
     nsp.oid={{scid}}::oid AND

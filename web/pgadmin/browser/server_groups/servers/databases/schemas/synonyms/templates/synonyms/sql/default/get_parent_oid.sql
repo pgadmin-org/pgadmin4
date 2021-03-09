@@ -1,5 +1,5 @@
 SELECT s.oid as syid, synnamespace as scid
-    FROM pg_synonym s
+    FROM pg_catalog.pg_synonym s
 WHERE synname = {{ data.name|qtLiteral }}
 AND synnamespace IN
-    ( SELECT oid FROM pg_namespace WHERE nspname = {{ data.schema|qtLiteral }} );
+    ( SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = {{ data.schema|qtLiteral }} );

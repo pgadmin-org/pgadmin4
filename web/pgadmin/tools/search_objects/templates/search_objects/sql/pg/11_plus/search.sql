@@ -4,7 +4,7 @@
 {% set all_obj = true %}
 {% endif %}
 SELECT obj_type, obj_name,
-    REPLACE(obj_path, '/'||sn.schema_name||'/', '/'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'/') AS obj_path,
+    pg_catalog.REPLACE(obj_path, '/'||sn.schema_name||'/', '/'||{{ CATALOGS.LABELS_SCHEMACOL('sn.schema_name', _) }}||'/') AS obj_path,
     schema_name, show_node, other_info,
     CASE
         WHEN {{ CATALOGS.IS_CATALOG_SCHEMA('sn.schema_name') }} THEN
@@ -33,8 +33,8 @@ FROM (
         WHEN c.relkind = 'm' THEN {{ show_node_prefs['mview'] }}
         ELSE False
     END AS show_node, NULL AS other_info
-    FROM pg_class c
-    LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
+    FROM pg_catalog.pg_class c
+    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
     {% if all_obj %}
     WHERE c.relkind in ('S','v','m')
     {% elif obj_type == 'sequence' %}
@@ -59,8 +59,8 @@ FROM (
 			select rel.oid, pt.height+1 as height, rel.relkind,
 				CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
 				|| rel.oid || ':/' || rel.relname || '/' || pt.path as path
-			from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-			join pg_inherits inh ON inh.inhparent = rel.oid
+			from pg_catalog.pg_class rel JOIN pg_catalog.pg_namespace nsp ON rel.relnamespace = nsp.oid
+			join pg_catalog.pg_inherits inh ON inh.inhparent = rel.oid
 			join table_path_data pt ON inh.inhrelid = pt.oid
 		)
 		select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || c.oid || ':/' || c.relname END AS path
@@ -69,8 +69,8 @@ FROM (
 	CASE WHEN c.relispartition THEN {{ show_node_prefs['partition'] }}
 	    ELSE {{ show_node_prefs['table'] }} END AS show_node,
     NULL AS other_info
-    FROM pg_class c
-    LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
+    FROM pg_catalog.pg_class c
+    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
     WHERE c.relkind in ('p','r','t')
     {% if obj_type == 'table' %}
     AND NOT c.relispartition
@@ -95,8 +95,8 @@ FROM (
                         select rel.oid, pt.height+1 as height, rel.relkind,
                             CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
                             || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                        from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-                        join pg_inherits inh ON inh.inhparent = rel.oid
+                        from pg_catalog.pg_class rel JOIN pg_catalog.pg_namespace nsp ON rel.relnamespace = nsp.oid
+                        join pg_catalog.pg_inherits inh ON inh.inhparent = rel.oid
                         join table_path_data pt ON inh.inhrelid = pt.oid
                     )
                     select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || tab.oid || ':/' || tab.relname END AS path
@@ -105,14 +105,14 @@ FROM (
         end
         || '/:index.'|| cls.oid ||':/' || cls.relname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['index'] }} AS show_node, NULL AS other_info
-    FROM pg_index idx
-    JOIN pg_class cls ON cls.oid=indexrelid
-    JOIN pg_class tab ON tab.oid=indrelid
-    JOIN pg_namespace n ON n.oid=tab.relnamespace
-    LEFT JOIN pg_depend dep ON (dep.classid = cls.tableoid AND dep.objid = cls.oid AND dep.refobjsubid = '0' AND dep.refclassid=(SELECT oid FROM pg_class WHERE relname='pg_constraint') AND dep.deptype='i')
-    LEFT OUTER JOIN pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)
-    LEFT OUTER JOIN pg_description des ON des.objoid=cls.oid
-    LEFT OUTER JOIN pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0)
+    FROM pg_catalog.pg_index idx
+    JOIN pg_catalog.pg_class cls ON cls.oid=indexrelid
+    JOIN pg_catalog.pg_class tab ON tab.oid=indrelid
+    JOIN pg_catalog.pg_namespace n ON n.oid=tab.relnamespace
+    LEFT JOIN pg_catalog.pg_depend dep ON (dep.classid = cls.tableoid AND dep.objid = cls.oid AND dep.refobjsubid = '0' AND dep.refclassid=(SELECT oid FROM pg_catalog.pg_class WHERE relname='pg_constraint') AND dep.deptype='i')
+    LEFT OUTER JOIN pg_catalog.pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)
+    LEFT OUTER JOIN pg_catalog.pg_description des ON des.objoid=cls.oid
+    LEFT OUTER JOIN pg_catalog.pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0)
     WHERE contype IS NULL
     AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
@@ -138,9 +138,9 @@ FROM (
             ELSE {{ show_node_prefs['function'] }}
         END AS show_node,
         pg_catalog.pg_get_function_identity_arguments(p.oid) AS other_info
-    from pg_proc p join pg_namespace n
-    on p.pronamespace = n.oid join pg_type t
-    on p.prorettype = t.oid join pg_language lng
+    from pg_catalog.pg_proc p join pg_catalog.pg_namespace n
+    on p.pronamespace = n.oid join pg_catalog.pg_type t
+    on p.prorettype = t.oid join pg_catalog.pg_language lng
     ON lng.oid=p.prolang
     WHERE p.prokind IN ('f', 'w', 'p')
     AND CASE
@@ -178,9 +178,9 @@ FROM (
         else 'should not happen'
     end || t.oid || ':/' || t.relname || '/:column.'|| a.attnum ||':/' || a.attname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['column'] }} AS show_node, NULL AS other_info
-    from pg_attribute a
-    inner join pg_class t on a.attrelid = t.oid and t.relkind in ('r','t','p','v','m')
-    left join pg_namespace n on t.relnamespace = n.oid where a.attnum > 0
+    from pg_catalog.pg_attribute a
+    inner join pg_catalog.pg_class t on a.attrelid = t.oid and t.relkind in ('r','t','p','v','m')
+    left join pg_catalog.pg_namespace n on t.relnamespace = n.oid where a.attnum > 0
     and not t.relispartition
 {% endif %}
 {% if all_obj %}
@@ -205,8 +205,8 @@ FROM (
 			select rel.oid, pt.height+1 as height, rel.relkind,
 				CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
 				|| rel.oid || ':/' || rel.relname || '/' || pt.path as path
-			from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-			join pg_inherits inh ON inh.inhparent = rel.oid
+			from pg_catalog.pg_class rel JOIN pg_catalog.pg_namespace nsp ON rel.relnamespace = nsp.oid
+			join pg_catalog.pg_inherits inh ON inh.inhparent = rel.oid
 			join table_path_data pt ON inh.inhrelid = pt.oid
 		)
 		select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
@@ -220,10 +220,10 @@ FROM (
         WHEN c.contype = 'x' THEN  '/:exclusion_constraint.' ||c.conindid
     END ||':/'|| case when tf.relname is null then c.conname else c.conname || ' -> ' || tf.relname end AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['constraints'] }} AS show_node, NULL AS other_info
-    from pg_constraint c
-    left join pg_class t on c.conrelid = t.oid
-    left join pg_class tf on c.confrelid = tf.oid
-    left join pg_namespace n on t.relnamespace = n.oid
+    from pg_catalog.pg_constraint c
+    left join pg_catalog.pg_class t on c.conrelid = t.oid
+    left join pg_catalog.pg_class tf on c.confrelid = tf.oid
+    left join pg_catalog.pg_namespace n on t.relnamespace = n.oid
     where c.contypid = 0
     {% if obj_type == 'check_constraint' %}
     AND c.contype = 'c'
@@ -256,8 +256,8 @@ FROM (
                             select rel.oid, pt.height+1 as height, rel.relkind,
                                 CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
                                 || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                            from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-                            join pg_inherits inh ON inh.inhparent = rel.oid
+                            from pg_catalog.pg_class rel JOIN pg_catalog.pg_namespace nsp ON rel.relnamespace = nsp.oid
+                            join pg_catalog.pg_inherits inh ON inh.inhparent = rel.oid
                             join table_path_data pt ON inh.inhrelid = pt.oid
                         )
                         select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
@@ -267,9 +267,9 @@ FROM (
             ||'/:rule.'||r.oid||':/'|| r.rulename AS obj_path,
             n.nspname AS schema_name,
             {{ show_node_prefs['rule'] }} AS show_node, NULL AS other_info
-            from pg_rewrite r
-    inner join pg_class t on r.ev_class = t.oid and t.relkind in ('r','t','p','v')
-    left join pg_namespace n on t.relnamespace = n.oid
+            from pg_catalog.pg_rewrite r
+    inner join pg_catalog.pg_class t on r.ev_class = t.oid and t.relkind in ('r','t','p','v')
+    left join pg_catalog.pg_namespace n on t.relnamespace = n.oid
     where {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
@@ -288,8 +288,8 @@ FROM (
                     select rel.oid, pt.height+1 as height, rel.relkind,
                         CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
                         || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                    from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-                    join pg_inherits inh ON inh.inhparent = rel.oid
+                    from pg_catalog.pg_class rel JOIN pg_catalog.pg_namespace nsp ON rel.relnamespace = nsp.oid
+                    join pg_catalog.pg_inherits inh ON inh.inhparent = rel.oid
                     join table_path_data pt ON inh.inhrelid = pt.oid
                 )
                 select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
@@ -297,9 +297,9 @@ FROM (
             )
         end || '/:trigger.'|| tr.oid || ':/' || tr.tgname AS obj_path, n.nspname AS schema_name,
         {{ show_node_prefs['trigger'] }} AS show_node, NULL AS other_info
-        from pg_trigger tr
-    inner join pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 't', 'p', 'v')
-    left join pg_namespace n on t.relnamespace = n.oid
+        from pg_catalog.pg_trigger tr
+    inner join pg_catalog.pg_class t on tr.tgrelid = t.oid and t.relkind in ('r', 't', 'p', 'v')
+    left join pg_catalog.pg_namespace n on t.relnamespace = n.oid
     where tr.tgisinternal = false
     and {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
@@ -310,10 +310,10 @@ FROM (
     SELECT 'type'::text AS obj_type, t.typname AS obj_name, ':schema.'||n.oid||':/' || n.nspname ||
         '/:type.'|| t.oid ||':/' || t.typname AS obj_path, n.nspname AS schema_name,
         {{ show_node_prefs['type'] }} AS show_node, NULL AS other_info
-    FROM pg_type t
-    LEFT OUTER JOIN pg_type e ON e.oid=t.typelem
-    LEFT OUTER JOIN pg_class ct ON ct.oid=t.typrelid AND ct.relkind <> 'c'
-    LEFT OUTER JOIN pg_namespace n on t.typnamespace = n.oid
+    FROM pg_catalog.pg_type t
+    LEFT OUTER JOIN pg_catalog.pg_type e ON e.oid=t.typelem
+    LEFT OUTER JOIN pg_catalog.pg_class ct ON ct.oid=t.typrelid AND ct.relkind <> 'c'
+    LEFT OUTER JOIN pg_catalog.pg_namespace n on t.typnamespace = n.oid
     WHERE t.typtype != 'd' AND t.typname NOT LIKE E'\\_%'
     {% if not show_system_objects %}
         AND ct.oid is NULL
@@ -327,9 +327,9 @@ FROM (
     SELECT 'cast'::text AS obj_type, format_type(st.oid,NULL) ||'->'|| format_type(tt.oid,tt.typtypmod) AS obj_name,
     ':cast.'||ca.oid||':/' || format_type(st.oid,NULL) ||'->'|| format_type(tt.oid,tt.typtypmod) AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['cast'] }} AS show_node, NULL AS other_info
-    FROM pg_cast ca
-    JOIN pg_type st ON st.oid=castsource
-    JOIN pg_type tt ON tt.oid=casttarget
+    FROM pg_catalog.pg_cast ca
+    JOIN pg_catalog.pg_type st ON st.oid=castsource
+    JOIN pg_catalog.pg_type tt ON tt.oid=casttarget
     {% if not show_system_objects %}
     WHERE ca.oid > {{last_system_oid}}::OID
     {% endif %}
@@ -341,7 +341,7 @@ FROM (
 {% if all_obj or obj_type in ['publication'] %}
     SELECT 'publication'::text AS obj_type, pubname AS obj_name, ':publication.'||pub.oid||':/' || pubname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['publication'] }} AS show_node, NULL AS other_info
-    FROM pg_publication pub
+    FROM pg_catalog.pg_publication pub
 {% endif %}
 {% if all_obj %}
     UNION
@@ -350,7 +350,7 @@ FROM (
 {% if all_obj or obj_type in ['subscription'] %}
     SELECT 'subscription'::text AS obj_type, subname AS obj_name, ':subscription.'||pub.oid||':/' || subname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['subscription'] }} AS show_node, NULL AS other_info
-    FROM pg_subscription pub
+    FROM pg_catalog.pg_subscription pub
 {% endif %}
 {% if all_obj %}
     UNION
@@ -358,7 +358,7 @@ FROM (
 {% if all_obj or obj_type in ['language'] %}
     SELECT 'language'::text AS obj_type, lanname AS obj_name, ':language.'||lan.oid||':/' || lanname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['language'] }} AS show_node, NULL AS other_info
-    FROM pg_language lan
+    FROM pg_catalog.pg_language lan
     WHERE lanispl IS TRUE
 {% endif %}
 {% if all_obj %}
@@ -367,8 +367,8 @@ FROM (
 {% if all_obj or obj_type in ['fts_configuration'] %}
     SELECT 'fts_configuration'::text AS obj_type, cfg.cfgname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:fts_configuration.'||cfg.oid||':/' || cfg.cfgname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['fts_configuration'] }} AS show_node, NULL AS other_info
-    FROM pg_ts_config cfg
-    left join pg_namespace n on cfg.cfgnamespace = n.oid
+    FROM pg_catalog.pg_ts_config cfg
+    left join pg_catalog.pg_namespace n on cfg.cfgnamespace = n.oid
     WHERE {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
@@ -377,8 +377,8 @@ FROM (
 {% if all_obj or obj_type in ['fts_dictionary'] %}
     SELECT 'fts_dictionary' AS obj_type, dict.dictname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_dictionary.'||dict.oid||':/' || dict.dictname AS obj_path, ns.nspname AS schema_name,
     {{ show_node_prefs['fts_dictionary'] }} AS show_node, NULL AS other_info
-    FROM pg_ts_dict dict
-    left join pg_namespace ns on dict.dictnamespace = ns.oid
+    FROM pg_catalog.pg_ts_dict dict
+    left join pg_catalog.pg_namespace ns on dict.dictnamespace = ns.oid
     WHERE {{ CATALOGS.DB_SUPPORT('ns') }}
 {% endif %}
 {% if all_obj %}
@@ -387,8 +387,8 @@ FROM (
 {% if all_obj or obj_type in ['fts_parser'] %}
     SELECT 'fts_parser' AS obj_type, prs.prsname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_parser.'||prs.oid||':/' || prs.prsname AS obj_path, ns.nspname AS schema_name,
     {{ show_node_prefs['fts_parser'] }} AS show_node, NULL AS other_info
-    FROM pg_ts_parser prs
-    left join pg_namespace ns on prs.prsnamespace = ns.oid
+    FROM pg_catalog.pg_ts_parser prs
+    left join pg_catalog.pg_namespace ns on prs.prsnamespace = ns.oid
     WHERE {{ CATALOGS.DB_SUPPORT('ns') }}
 {% endif %}
 {% if all_obj %}
@@ -397,8 +397,8 @@ FROM (
 {% if all_obj or obj_type in ['fts_template'] %}
     SELECT 'fts_template' AS obj_type, tmpl.tmplname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:fts_template.'||tmpl.oid||':/' || tmpl.tmplname AS obj_path, ns.nspname AS schema_name,
     {{ show_node_prefs['fts_template'] }} AS show_node, NULL AS other_info
-    FROM pg_ts_template tmpl
-    left join pg_namespace ns on tmpl.tmplnamespace = ns.oid
+    FROM pg_catalog.pg_ts_template tmpl
+    left join pg_catalog.pg_namespace ns on tmpl.tmplnamespace = ns.oid
     AND {{ CATALOGS.DB_SUPPORT('ns') }}
 {% endif %}
 {% if all_obj %}
@@ -407,8 +407,8 @@ FROM (
 {% if all_obj or obj_type in ['domain'] %}
     select 'domain' AS obj_type, t.typname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:domain.'||t.oid||':/' || t.typname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['domain'] }} AS show_node, NULL AS other_info
-    from pg_type t
-    inner join pg_namespace n on t.typnamespace = n.oid
+    from pg_catalog.pg_type t
+    inner join pg_catalog.pg_namespace n on t.typnamespace = n.oid
     where t.typtype = 'd'
     AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
@@ -420,8 +420,8 @@ FROM (
         c.conname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:domain.'||t.oid||':/' || t.typname || '/:domain_constraints.'||c.oid||':/' || c.conname AS obj_path,
         n.nspname AS schema_name,
         {{ show_node_prefs['domain_constraints'] }} AS show_node, NULL AS other_info
-    FROM pg_constraint c JOIN pg_type t
-    ON t.oid=contypid JOIN pg_namespace n
+    FROM pg_catalog.pg_constraint c JOIN pg_catalog.pg_type t
+    ON t.oid=contypid JOIN pg_catalog.pg_namespace n
     ON n.oid=t.typnamespace
     WHERE t.typtype = 'd'
     AND {{ CATALOGS.DB_SUPPORT('n') }}
@@ -432,7 +432,7 @@ FROM (
 {% if all_obj or obj_type in ['foreign_data_wrapper'] %}
     select 'foreign_data_wrapper' AS obj_type, fdwname AS obj_name, ':foreign_data_wrapper.'||oid||':/' || fdwname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['foreign_data_wrapper'] }} AS show_node, NULL AS other_info
-    from pg_foreign_data_wrapper
+    from pg_catalog.pg_foreign_data_wrapper
 {% endif %}
 {% if all_obj %}
     UNION
@@ -440,8 +440,8 @@ FROM (
 {% if all_obj or obj_type in ['foreign_server'] %}
     select 'foreign_server' AS obj_type, sr.srvname AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['foreign_server'] }} AS show_node, NULL AS other_info
-    from pg_foreign_server sr
-    inner join pg_foreign_data_wrapper fdw on sr.srvfdw = fdw.oid
+    from pg_catalog.pg_foreign_server sr
+    inner join pg_catalog.pg_foreign_data_wrapper fdw on sr.srvfdw = fdw.oid
 {% endif %}
 {% if all_obj %}
     UNION
@@ -449,9 +449,9 @@ FROM (
 {% if all_obj or obj_type in ['user_mapping'] %}
     select 'user_mapping' AS obj_type, um.usename AS obj_name, ':foreign_data_wrapper.'||fdw.oid||':/' || fdw.fdwname || '/:foreign_server.'||sr.oid||':/' || sr.srvname || '/:user_mapping.'||um.umid||':/' || um.usename AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['user_mapping'] }} AS show_node, NULL AS other_info
-    from pg_user_mappings um
-    inner join pg_foreign_server sr on um.srvid = sr.oid
-    inner join pg_foreign_data_wrapper fdw on sr.srvfdw = fdw.oid
+    from pg_catalog.pg_user_mappings um
+    inner join pg_catalog.pg_foreign_server sr on um.srvid = sr.oid
+    inner join pg_catalog.pg_foreign_data_wrapper fdw on sr.srvfdw = fdw.oid
 {% endif %}
 {% if all_obj %}
     UNION
@@ -459,9 +459,9 @@ FROM (
 {% if all_obj or obj_type in ['foreign_table'] %}
     select 'foreign_table' AS obj_type, c.relname AS obj_name, ':schema.'||ns.oid||':/' || ns.nspname || '/:foreign_table.'||c.oid||':/' || c.relname AS obj_path, ns.nspname AS schema_name,
     {{ show_node_prefs['foreign_table'] }} AS show_node, NULL AS other_info
-    from pg_foreign_table ft
-    inner join pg_class c on ft.ftrelid = c.oid
-    inner join pg_namespace ns on c.relnamespace = ns.oid
+    from pg_catalog.pg_foreign_table ft
+    inner join pg_catalog.pg_class c on ft.ftrelid = c.oid
+    inner join pg_catalog.pg_namespace ns on c.relnamespace = ns.oid
     AND {{ CATALOGS.DB_SUPPORT('ns') }}
 {% endif %}
 {% if all_obj %}
@@ -470,9 +470,9 @@ FROM (
 {% if all_obj or obj_type in ['extension'] %}
     select 'extension' AS obj_type, x.extname AS obj_name, ':extension.'||x.oid||':/' || x.extname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['extension'] }} AS show_node, NULL AS other_info
-    FROM pg_extension x
-    JOIN pg_namespace n on x.extnamespace=n.oid
-    join pg_available_extensions() e(name, default_version, comment) ON x.extname=e.name
+    FROM pg_catalog.pg_extension x
+    JOIN pg_catalog.pg_namespace n on x.extnamespace=n.oid
+    join pg_catalog.pg_available_extensions() e(name, default_version, comment) ON x.extname=e.name
 {% endif %}
 {% if all_obj %}
     UNION
@@ -480,8 +480,8 @@ FROM (
 {% if all_obj or obj_type in ['collation'] %}
     SELECT 'collation' AS obj_type, c.collname AS obj_name, ':schema.'||n.oid||':/' || n.nspname || '/:collation.'||c.oid||':/' || c.collname AS obj_path, n.nspname AS schema_name,
     {{ show_node_prefs['collation'] }} AS show_node, NULL AS other_info
-    FROM pg_collation c
-    JOIN pg_namespace n ON n.oid=c.collnamespace
+    FROM pg_catalog.pg_collation c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.collnamespace
     WHERE {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 {% if all_obj %}
@@ -499,8 +499,8 @@ FROM (
                             select rel.oid, pt.height+1 as height, rel.relkind,
                                 CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
                                 || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                            from pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
-                            join pg_inherits inh ON inh.inhparent = rel.oid
+                            from pg_catalog.pg_class rel JOIN pg_catalog.pg_namespace nsp ON rel.relnamespace = nsp.oid
+                            join pg_catalog.pg_inherits inh ON inh.inhparent = rel.oid
                             join table_path_data pt ON inh.inhrelid = pt.oid
                         )
                         select CASE WHEN relkind = 'p' THEN path ELSE ':table.' || t.oid || ':/' || t.relname END AS path
@@ -509,10 +509,10 @@ FROM (
             end
             ||'/:row_security_policy.'|| pl.oid ||':/'|| pl.polname AS obj_path, n.nspname AS schema_name,
             {{ show_node_prefs['row_security_policy'] }} AS show_node, NULL AS other_info
-            FROM pg_policy pl
-    JOIN pg_class t on pl.polrelid = t.oid and t.relkind in ('r','t','p')
-    JOIN pg_policies rw ON (pl.polname=rw.policyname AND t.relname=rw.tablename)
-    JOIN pg_namespace n on t.relnamespace = n.oid
+            FROM pg_catalog.pg_policy pl
+    JOIN pg_catalog.pg_class t on pl.polrelid = t.oid and t.relkind in ('r','t','p')
+    JOIN pg_catalog.pg_policies rw ON (pl.polname=rw.policyname AND t.relname=rw.tablename)
+    JOIN pg_catalog.pg_namespace n on t.relnamespace = n.oid
     where {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
 

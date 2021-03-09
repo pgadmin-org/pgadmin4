@@ -1,8 +1,8 @@
 SELECT
-    split_part(rolconfig, '=', 1) AS name, replace(rolconfig, split_part(rolconfig, '=', 1) || '=', '') AS value, NULL::text AS database
+    pg_catalog.split_part(rolconfig, '=', 1) AS name, pg_catalog.replace(rolconfig, pg_catalog.split_part(rolconfig, '=', 1) || '=', '') AS value, NULL::text AS database
 FROM
     (SELECT
-            unnest(rolconfig) AS rolconfig, rolcanlogin, rolname
+            pg_catalog.unnest(rolconfig) AS rolconfig, rolcanlogin, rolname
     FROM
         pg_catalog.pg_roles
     WHERE
@@ -11,10 +11,10 @@ FROM
 
 UNION ALL
 SELECT
-    split_part(rolconfig, '=', 1) AS name, replace(rolconfig, split_part(rolconfig, '=', 1) || '=', '') AS value, datname AS database
+    pg_catalog.split_part(rolconfig, '=', 1) AS name, pg_catalog.replace(rolconfig, pg_catalog.split_part(rolconfig, '=', 1) || '=', '') AS value, datname AS database
 FROM
     (SELECT
-        d.datname, unnest(c.setconfig) AS rolconfig
+        d.datname, pg_catalog.unnest(c.setconfig) AS rolconfig
     FROM
         (SELECT *
         FROM pg_catalog.pg_db_role_setting dr
