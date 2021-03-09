@@ -375,7 +375,7 @@ class DatabaseView(PGChildNodeView):
             if self.manager.db == db:
                 connected = True
             else:
-                conn = self.manager.connection(row['name'])
+                conn = self.manager.connection(database=row['name'])
                 connected = conn.connected()
             icon_css_class = "pg-icon-database"
             if not connected:
