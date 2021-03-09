@@ -639,7 +639,8 @@ class PGChildNodeView(NodeView):
                 # if type is present in the types dictionary, but it's
                 # value is None then it requires special handling.
                 if type_str[0] == 'r':
-                    if (type_str[1].isdigit() and int(type_str[1]) > 0) or \
+                    if (len(type_str) > 1 and type_str[1].isdigit() and
+                        int(type_str[1]) > 0) or \
                         (len(type_str) > 2 and type_str[2].isdigit() and
                          int(type_str[2]) > 0):
                         type_name = 'column'

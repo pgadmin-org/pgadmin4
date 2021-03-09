@@ -39,4 +39,5 @@ Bug fixes
 | `Issue #6279 <https://redmine.postgresql.org/issues/6279>`_ -  Ensure that the venv activation scripts have the correct path in them on Linux.
 | `Issue #6281 <https://redmine.postgresql.org/issues/6281>`_ -  Fixed an issue where schema diff showing wrong SQL when comparing triggers with different when clause.
 | `Issue #6286 <https://redmine.postgresql.org/issues/6286>`_ -  Ensure that the template database should be visible while creating the database.
+| `Issue #6292 <https://redmine.postgresql.org/issues/6292>`_ -  Fixed string index out of range error where the dependent tab is in focus and selecting any publication or table.
 | `Issue #6294 <https://redmine.postgresql.org/issues/6294>`_ -  Fixed an issue where the dependent tab throwing an error when selecting any login/group role.
