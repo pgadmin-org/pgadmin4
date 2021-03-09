@@ -16,6 +16,7 @@ Housekeeping
 ************
 
 | `Issue #3976 <https://redmine.postgresql.org/issues/3976>`_ -  Use schema qualification while accessing the catalog objects.
+| `Issue #6176 <https://redmine.postgresql.org/issues/6176>`_ -  Make the 'Save Data Changes' icon to be more intuitive.
 
 Bug fixes
 *********
