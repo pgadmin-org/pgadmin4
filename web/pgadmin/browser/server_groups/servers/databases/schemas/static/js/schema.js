@@ -120,7 +120,9 @@ define('pgadmin.node.schema', [
     case 'integer':
       return Backgrid.IntegerCell;
     case 'number':
-      return Backgrid.NumberCell;
+      return Backgrid.NumberCell.extend({
+        decimals: this.get('decimals') || Backgrid.NumberFormatter.prototype.defaults.decimals,
+      });
     case 'string':
       return Backgrid.StringCell;
     default:
@@ -210,6 +212,7 @@ define('pgadmin.node.schema', [
         {
           name: 'value', label: gettext('Value'),
           cellHeaderClasses:'width_percent_30',
+          decimals: 5,
           cellFunction: Backform.cellFunction, editable: function(m) {
             return m.handler.get('autovacuum_custom');
           }, headerCell: Backgrid.Extension.CustomHeaderCell,
@@ -284,6 +287,7 @@ define('pgadmin.node.schema', [
           name: 'value', label: gettext('Value'),
           cellHeaderClasses:'width_percent_30',
           headerCell: Backgrid.Extension.CustomHeaderCell,
+          decimals: 5,
           cellFunction: Backform.cellFunction, editable: function(m) {
             return m.handler.get('toast_autovacuum');
           },
