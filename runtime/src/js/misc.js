@@ -152,7 +152,7 @@ const readServerLog = () => {
   if (fs.existsSync(serverLogFile)) {
     data = fs.readFileSync(serverLogFile, 'utf8');
   } else {
-    var errMsg = 'Unable to read file ' + serverLogFile + ' not found.';
+    var errMsg = 'Unable to read file ' + serverLogFile + '.';
     console.warn(errMsg);
     return errMsg;
   }

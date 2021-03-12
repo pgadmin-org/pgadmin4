@@ -50,14 +50,14 @@ function createUUID() {
 // This functions is used to start the pgAdmin4 server by spawning a
 // separate process.
 function startDesktopMode() {
-  // Return if pgadmin server process is already spawned
+  // Return if pgAdmin server process is already spawned
   // Added check for debugging purpose.
   if (pgadminServerProcess != null)
     return;
 
   var UUID = createUUID();
-  // Set the environment variable so that pgAdmn 4 server
-  // start listening on that port.
+  // Set the environment variables so that pgAdmin 4 server
+  // starts listening on the appropriate port.
   process.env.PGADMIN_INT_PORT = serverPort;
   process.env.PGADMIN_INT_KEY = UUID;
   process.env.PGADMIN_SERVER_MODE = 'OFF';
@@ -80,7 +80,7 @@ function startDesktopMode() {
   pgadminServerProcess = spawn(pythonPath, [pgadminFile]);
   pgadminServerProcess.on('error', function(err) {
     // Log the error into the log file if process failed to launch
-    misc.writeServerLog('Failed to lauch pgAdmin4 with below error:');
+    misc.writeServerLog('Failed to launch pgAdmin4. Error:');
     misc.writeServerLog(err);
   });
 
@@ -287,7 +287,7 @@ splashWindow.on('loaded', function() {
       })
       .catch((errCode) => {
         if (errCode == 'EADDRINUSE') {
-          alert('The specified fixed port is already in use. Please provide any other valid port.');
+          alert('The port specified is already in use. Please enter a free port number.');
         } else {
           alert(errCode);
         }
