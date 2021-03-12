@@ -36,8 +36,6 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
     operations = ('added', 'updated', 'deleted')
     list_of_sql = {}
     _rowid = None
-    # Replace '%' with '%%' as python use '%' as string formatting.
-    command_obj.object_name = command_obj.object_name.replace('%', '%%')
 
     pgadmin_alias = {
         col_name: col_info['pgadmin_alias']

@@ -1970,5 +1970,9 @@ Failed to reset the connection to the server due to following error:
         if not status:
             return None
         else:
-            mogrified_sql = cursor.mogrify(query, parameters)
-            return mogrified_sql
+
+            if parameters:
+                mogrified_sql = cursor.mogrify(query, parameters)
+                return mogrified_sql
+            else:
+                return query
