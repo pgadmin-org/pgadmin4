@@ -1,8 +1,8 @@
 .. _kerberos:
 
-*******************************************************
-`Configure Kerberos Authentication for pgAdmin4`:index:
-*******************************************************
+*****************************************
+`Enabling Kerberos Authentication`:index:
+*****************************************
 
 To configure Kerberos authentication, you must set your Kerberos Server and generate the *kinit* ticket on the client. To enable the Kerberos authentication for pgAdmin, you must configure the Kerberos settings in *config_local.py* or *config_system.py* (see the :ref:`config.py <config_py>` documentation) on the system where pgAdmin is installed in Server mode. You can copy these settings from *config.py* file and modify the values for the following parameters.
 

@@ -1,7 +1,7 @@
 .. _enabling_ldap_authentication:
 
 **************************************************
-`Enabling LDAP Authentication for pgAdmin`:index:
+`Enabling LDAP Authentication`:index:
 **************************************************
 
 To enable LDAP authentication for pgAdmin, you must configure the LDAP
