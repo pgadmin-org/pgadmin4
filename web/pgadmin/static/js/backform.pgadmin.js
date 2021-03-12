@@ -1950,7 +1950,7 @@ define([
       helpMessage: null,
     },
     template: _.template([
-      '<label for="<%=cId%>" class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<label for="<%=cId%>" class="<%=Backform.controlLabelClassName%> text-wrap"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
       '  <input type="<%=type%>" id="<%=cId%>" class="<%=Backform.controlClassName%> <%=extraClasses.join(\' \')%>" name="<%=name%>" min="<%=min%>" max="<%=max%>"maxlength="<%=maxlength%>" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly aria-readonly=true" : ""%> <%=required ? "required" : ""%> />',
       '  <% if (helpMessage && helpMessage.length) { %>',
