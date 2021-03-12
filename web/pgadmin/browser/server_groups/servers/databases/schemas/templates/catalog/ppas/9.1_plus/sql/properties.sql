@@ -11,7 +11,7 @@ SELECT
     (SELECT pg_catalog.array_to_string(defaclacl::text[], ', ') FROM pg_catalog.pg_default_acl WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid) AS funcacl,
     (SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=nsp.oid) AS seclabels
 FROM
-    pg_namespace nsp
+    pg_catalog.pg_namespace nsp
     LEFT OUTER JOIN pg_catalog.pg_description des ON
         (des.objoid=nsp.oid AND des.classoid='pg_namespace'::regclass)
     LEFT JOIN pg_catalog.pg_roles r ON (r.oid = nsp.nspowner)

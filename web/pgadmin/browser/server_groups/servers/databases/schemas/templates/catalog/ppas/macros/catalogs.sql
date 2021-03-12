@@ -1,16 +1,16 @@
 {% macro LIST(tbl) -%}
     ({{ tbl }}.nspname = 'pg_catalog' AND EXISTS
-        (SELECT 1 FROM pg_class
+        (SELECT 1 FROM pg_catalog.pg_class
         WHERE relname = 'pg_class' AND relnamespace = {{ tbl }}.oid LIMIT 1)) OR
     ({{ tbl }}.nspname = 'pgagent' AND EXISTS
-        (SELECT 1 FROM pg_class
+        (SELECT 1 FROM pg_catalog.pg_class
         WHERE relname = 'pga_job' AND relnamespace = {{ tbl }}.oid LIMIT 1)) OR
     ({{ tbl }}.nspname = 'information_schema' AND EXISTS
-        (SELECT 1 FROM pg_class
+        (SELECT 1 FROM pg_catalog.pg_class
         WHERE relname = 'tables' AND relnamespace = {{ tbl }}.oid LIMIT 1)) OR
     ({{ tbl }}.nspname = 'dbo' OR {{ tbl }}.nspname = 'sys') OR
     ({{ tbl }}.nspname = 'dbms_job_procedure' AND EXISTS
-       (SELECT 1 FROM pg_proc
+       (SELECT 1 FROM pg_catalog.pg_proc
         WHERE pronamespace = {{ tbl }}.oid and proname = 'run_job' LIMIT 1))
 {%- endmacro %}
 {% macro IS_CATALOG_SCHEMA(schema_col_name) -%}

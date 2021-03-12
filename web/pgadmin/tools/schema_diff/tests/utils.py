@@ -47,7 +47,7 @@ def restore_schema(server, db_name, schema_name, sql_path):
         SQL = """SELECT
         nsp.oid
     FROM
-        pg_namespace nsp
+        pg_catalog.pg_namespace nsp
         WHERE nsp.nspname = '{0}'""".format(schema_name)
 
         pg_cursor.execute(SQL)
@@ -101,7 +101,8 @@ def create_table(server, db_name, schema_id, table_name, query):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created table
-        pg_cursor.execute("SELECT oid FROM pg_class WHERE relname='{0}'"
+        pg_cursor.execute("SELECT oid "
+                          "FROM pg_catalog.pg_class WHERE relname='{0}'"
                           " AND relnamespace = {1}".format(table_name,
                                                            schema_id))
         table = pg_cursor.fetchone()

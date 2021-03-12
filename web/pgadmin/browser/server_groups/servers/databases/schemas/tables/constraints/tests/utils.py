@@ -59,7 +59,7 @@ def verify_constraint(server, db_name, constraint_name):
                                              server['port'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            "SELECT oid FROM pg_constraint where conname='%s'" %
+            "SELECT oid FROM pg_catalog.pg_constraint where conname='%s'" %
             constraint_name)
         chk_constraint_record = pg_cursor.fetchone()
         connection.close()

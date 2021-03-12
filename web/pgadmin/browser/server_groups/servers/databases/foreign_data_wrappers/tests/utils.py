@@ -74,7 +74,8 @@ def create_fdw(server, db_name, fdw_name):
         connection.commit()
         # Get 'oid' from newly created foreign data wrapper
         pg_cursor.execute(
-            "SELECT oid FROM pg_foreign_data_wrapper WHERE fdwname = '%s'"
+            "SELECT oid FROM pg_catalog.pg_foreign_data_wrapper "
+            "WHERE fdwname = '%s'"
             % fdw_name)
         oid = pg_cursor.fetchone()
         fdw_id = ''
@@ -107,7 +108,8 @@ def verify_fdw(server, db_name, fdw_name):
                                        server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            "SELECT oid FROM pg_foreign_data_wrapper WHERE fdwname = '%s'"
+            "SELECT oid FROM pg_catalog.pg_foreign_data_wrapper "
+            "WHERE fdwname = '%s'"
             % fdw_name)
         fdw = pg_cursor.fetchone()
         connection.close()

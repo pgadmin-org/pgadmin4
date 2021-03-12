@@ -80,7 +80,7 @@ END %s;""" % (self.schema_name, self.pkg_name, self.proc_name,
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created package
-        pg_cursor.execute("SELECT oid FROM pg_namespace"
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_namespace"
                           " WHERE nspname='%s'" %
                           self.pkg_name)
         self.package_id = pg_cursor.fetchone()[0]

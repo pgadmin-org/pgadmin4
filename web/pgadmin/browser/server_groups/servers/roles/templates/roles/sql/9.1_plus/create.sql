@@ -33,7 +33,7 @@ CREATE ROLE {{ conn|qtIdent(data.rolname) }} WITH{% if data.rolcanlogin and data
 	PASSWORD {% if data.rolpassword is none %}NULL{% else %}{% if dummy %}'xxxxxx'{% else %} {{ data.rolpassword | qtLiteral }}{% endif %}{% endif %}{% endif %};{% if data.rolsuper and data.rolcatupdate is sameas false %}
 
 
-UPDATE pg_authid SET rolcatupdate=false WHERE rolname = {{ data.rolname|qtLiteral }};{% endif %}{% if data.members and data.members|length > 0 %}
+UPDATE pg_catalog.pg_authid SET rolcatupdate=false WHERE rolname = {{ data.rolname|qtLiteral }};{% endif %}{% if data.members and data.members|length > 0 %}
 
 
 GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(data.rolname) }};{% endif %}{% if data.admins and data.admins|length > 0 %}

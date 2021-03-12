@@ -2,14 +2,14 @@ SELECT
     c.oid, c.relname AS name, c.relacl, pg_catalog.pg_get_userbyid(relowner) AS owner,
     ftoptions, srvname AS ftsrvname, description, nspname AS basensp,
     (SELECT
-        array_agg(provider || '=' || label)
+        pg_catalog.array_agg(provider || '=' || label)
     FROM
         pg_catalog.pg_seclabel sl1
     WHERE
         sl1.objoid=c.oid) AS seclabels
     {% if foid %},
     (SELECT
-        array_agg(i.inhparent) FROM pg_inherits i
+        pg_catalog.array_agg(i.inhparent) FROM pg_catalog.pg_inherits i
     WHERE
         i.inhrelid = {{foid}}::oid GROUP BY i.inhrelid) AS inherits
     {% endif %}

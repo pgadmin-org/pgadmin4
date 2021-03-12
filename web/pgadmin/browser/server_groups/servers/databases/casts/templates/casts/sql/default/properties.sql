@@ -3,8 +3,8 @@
     SELECT
         ca.oid
     FROM pg_catalog.pg_cast ca
-    WHERE ca.castsource = (SELECT t.oid FROM pg_type t WHERE format_type(t.oid, NULL) = {{srctyp|qtLiteral}})
-    AND ca.casttarget = (SELECT t.oid FROM pg_type t WHERE format_type(t.oid, NULL) = {{trgtyp|qtLiteral}})
+    WHERE ca.castsource = (SELECT t.oid FROM pg_catalog.pg_type t WHERE pg_catalog.format_type(t.oid, NULL) = {{srctyp|qtLiteral}})
+    AND ca.casttarget = (SELECT t.oid FROM pg_catalog.pg_type t WHERE pg_catalog.format_type(t.oid, NULL) = {{trgtyp|qtLiteral}})
     {% if datlastsysoid %}
      AND ca.oid > {{datlastsysoid}}::OID
     {% endif %}

@@ -26,7 +26,7 @@ FROM
             (d).is_grantable AS is_grantable,
             (d).privilege_type AS privilege_type
         FROM
-            (SELECT pg_catalog.aclexplode(db.proacl) AS d FROM pg_proc db
+            (SELECT pg_catalog.aclexplode(db.proacl) AS d FROM pg_catalog.pg_proc db
             WHERE db.oid = {{fnid}}::OID) a ORDER BY privilege_type
         ) d
     ) d

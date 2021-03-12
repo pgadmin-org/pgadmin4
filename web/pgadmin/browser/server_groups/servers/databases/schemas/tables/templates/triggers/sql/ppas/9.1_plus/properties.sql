@@ -1,7 +1,7 @@
 SELECT t.oid,t.tgname AS name, t.xmin, t.tgenabled AS is_enable_trigger, t.*, relname, CASE WHEN relkind = 'r' THEN TRUE ELSE FALSE END AS parentistable,
     nspname, des.description, l.lanname, p.prosrc, p.proname AS tfunction,
     COALESCE(substring(pg_catalog.pg_get_triggerdef(t.oid, true), 'WHEN (.*) EXECUTE PROCEDURE'),
-    substring(pg_catalog.pg_get_triggerdef(t.oid, true), 'WHEN (.*)  \$trigger')) AS whenclause,
+    pg_catalog.substring(pg_catalog.pg_get_triggerdef(t.oid, true), 'WHEN (.*)  \$trigger')) AS whenclause,
     -- We need to convert tgargs column bytea datatype to array datatype
     (pg_catalog.string_to_array(encode(tgargs, 'escape'), E'\\000')::text[])[1:tgnargs] AS custom_tgargs,
 {% if datlastsysoid %}

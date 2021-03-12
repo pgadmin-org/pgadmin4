@@ -6,7 +6,7 @@ SELECT
     ELSE 3 END AS nsptyp,
     nsp.nspname AS name,
     nsp.oid,
-    array_to_string(nsp.nspacl::text[], ', ') as acl,
+    pg_catalog.array_to_string(nsp.nspacl::text[], ', ') as acl,
     r.rolname AS namespaceowner, description,
     pg_catalog.has_schema_privilege(nsp.oid, 'CREATE') AS can_create,
     {### Default ACL for Tables ###}

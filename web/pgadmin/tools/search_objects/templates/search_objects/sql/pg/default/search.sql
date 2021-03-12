@@ -215,8 +215,8 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['cast'] %}
-    SELECT 'cast'::text AS obj_type, format_type(st.oid,NULL) ||'->'|| format_type(tt.oid,tt.typtypmod) AS obj_name,
-    ':cast.'||ca.oid||':/' || format_type(st.oid,NULL) ||'->'|| format_type(tt.oid,tt.typtypmod) AS obj_path, ''::text AS schema_name,
+    SELECT 'cast'::text AS obj_type, pg_catalog.format_type(st.oid,NULL) ||'->'|| pg_catalog.format_type(tt.oid,tt.typtypmod) AS obj_name,
+    ':cast.'||ca.oid||':/' || pg_catalog.format_type(st.oid,NULL) ||'->'|| pg_catalog.format_type(tt.oid,tt.typtypmod) AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['cast'] }} AS show_node, NULL AS other_info
     FROM pg_catalog.pg_cast ca
     JOIN pg_catalog.pg_type st ON st.oid=castsource
@@ -294,7 +294,7 @@ FROM (
         n.nspname AS schema_name,
         {{ show_node_prefs['domain_constraints'] }} AS show_node, NULL AS other_info
     FROM pg_catalog.pg_constraint c JOIN pg_catalog.pg_type t
-    ON t.oid=contypid JOIN pg_namespace n
+    ON t.oid=contypid JOIN pg_catalog.pg_namespace n
     ON n.oid=t.typnamespace
     WHERE t.typtype = 'd'
     AND {{ CATALOGS.DB_SUPPORT('n') }}

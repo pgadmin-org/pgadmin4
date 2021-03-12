@@ -65,8 +65,8 @@ def create_type(server, db_name, schema_name, type_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created type
-        pg_cursor.execute(
-            "select oid from pg_type where typname='%s'" % type_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_type "
+                          "where typname='%s'" % type_name)
         schema_type = pg_cursor.fetchone()
         type_id = schema_type[0]
         connection.close()
@@ -94,8 +94,8 @@ def verify_type(server, db_name, type_name):
                                              server['host'],
                                              server['port'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute(
-            "select oid from pg_type where typname='%s'" % type_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_type "
+                          "where typname='%s'" % type_name)
         schema_type = pg_cursor.fetchone()
         connection.close()
         return schema_type

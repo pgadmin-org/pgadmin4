@@ -32,7 +32,7 @@ class TestColumnForeignKeyGetConstraintCols(BaseTestGenerator):
             cursor = connection.cursor()
             cursor.execute("SELECT pg_class.oid as table_id, "
                            "pg_attribute.attnum as column_id "
-                           "FROM pg_class join pg_attribute on "
+                           "FROM pg_catalog.pg_class join pg_attribute on "
                            "attrelid=pg_class.oid "
                            "where pg_class.relname='test_table'"
                            " and pg_attribute.attname = 'some_column'")

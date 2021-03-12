@@ -7,7 +7,7 @@ SELECT
     cfg.cfgnamespace as schema,
     CASE WHEN (np.nspname not in ('public', 'pg_catalog') AND length(parser.prsname::text) > 0
     AND parser.prsname != 'default') THEN
-        pg_catalog.concat(quote_ident(np.nspname), '.', quote_ident(parser.prsname))
+        pg_catalog.concat(pg_catalog.quote_ident(np.nspname), '.', pg_catalog.quote_ident(parser.prsname))
     ELSE parser.prsname END AS prsname,
     description
 FROM

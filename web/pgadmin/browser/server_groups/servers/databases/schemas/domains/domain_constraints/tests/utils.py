@@ -57,7 +57,7 @@ def create_domain_constraints(server, db_name, schema_name,
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created domain
-        pg_cursor.execute("SELECT oid FROM pg_constraint WHERE"
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_constraint WHERE"
                           " conname='%s'" %
                           domain_constraint_name)
         oid = pg_cursor.fetchone()
@@ -88,7 +88,7 @@ def verify_domain_constraint(server, db_name, domain_constraint_name):
                                              server['host'], server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT oid FROM pg_constraint WHERE"
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_constraint WHERE"
                           " conname='%s'" %
                           domain_constraint_name)
         domain_con_id = pg_cursor.fetchone()
@@ -132,8 +132,8 @@ def create_domain(server, db_name, schema_name,
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created domain
-        pg_cursor.execute("SELECT d.oid, d.typname FROM pg_type d WHERE"
-                          " d.typname='%s' AND d.typnamespace='%s'" %
+        pg_cursor.execute("SELECT d.oid, d.typname FROM pg_catalog.pg_type d "
+                          "WHERE d.typname='%s' AND d.typnamespace='%s'" %
                           (domain_name, schema_id))
         domains = pg_cursor.fetchone()
         connection.close()
@@ -161,7 +161,7 @@ def verify_domain(server, db_name, schema_id, domain_name):
                                          server['host'],
                                          server['port'])
     pg_cursor = connection.cursor()
-    pg_cursor.execute("SELECT d.oid, d.typname FROM pg_type d WHERE"
+    pg_cursor.execute("SELECT d.oid, d.typname FROM pg_catalog.pg_type d WHERE"
                       " d.typname='%s' AND d.typnamespace='%s'" %
                       (domain_name, schema_id))
     domains = pg_cursor.fetchone()
@@ -207,7 +207,7 @@ def create_domain_constraints_invalid(server, db_name, schema_name,
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created domain
-        pg_cursor.execute("SELECT oid FROM pg_constraint WHERE"
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_constraint WHERE"
                           " conname='%s'" %
                           domain_constraint_name)
         oid = pg_cursor.fetchone()

@@ -81,7 +81,7 @@ FROM
 			datname, pg_catalog.split_part(rolconfig, '=', 1) AS param, pg_catalog.replace(rolconfig, pg_catalog.split_part(rolconfig, '=', 1) || '=', '') AS value
 		FROM
 			(SELECT
-				d.datname, unnest(c.setconfig) AS rolconfig
+				d.datname, pg_catalog.unnest(c.setconfig) AS rolconfig
 			FROM
 				(SELECT *
 				FROM

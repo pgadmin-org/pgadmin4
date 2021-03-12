@@ -5,18 +5,18 @@ SELECT
 FROM
     (
     SELECT
-        E'-- Text Search CONFIGURATION: ' || quote_ident(nspname) || E'.'
+        E'-- Text Search CONFIGURATION: ' || pg_catalog.quote_ident(nspname) || E'.'
         || (cfg.cfgname) ||
-        E'\n\n-- DROP TEXT SEARCH CONFIGURATION ' || quote_ident(nspname) ||
-        E'.' || quote_ident(cfg.cfgname) ||
-        E'\n\nCREATE TEXT SEARCH CONFIGURATION ' || quote_ident(nspname) ||
-        E'.' ||  quote_ident(cfg.cfgname) || E' (\n' ||
+        E'\n\n-- DROP TEXT SEARCH CONFIGURATION ' || pg_catalog.quote_ident(nspname) ||
+        E'.' || pg_catalog.quote_ident(cfg.cfgname) ||
+        E'\n\nCREATE TEXT SEARCH CONFIGURATION ' || pg_catalog.quote_ident(nspname) ||
+        E'.' ||  pg_catalog.quote_ident(cfg.cfgname) || E' (\n' ||
         E'\tPARSER = ' || parsername ||
         E'\n);' ||
         CASE
             WHEN description IS NOT NULL THEN
                 E'\n\nCOMMENT ON TEXT SEARCH CONFIGURATION ' ||
-                quote_ident(nspname) || E'.' || quote_ident(cfg.cfgname) ||
+                pg_catalog.quote_ident(nspname) || E'.' || pg_catalog.quote_ident(cfg.cfgname) ||
                 E' IS ' || pg_catalog.quote_literal(description) || E';'
             ELSE ''
         END || E'\n' ||
@@ -24,8 +24,8 @@ FROM
         pg_catalog.array_to_string(
          array(
 	        SELECT
-	            'ALTER TEXT SEARCH CONFIGURATION ' || quote_ident(b.nspname) ||
-	            E'.' || quote_ident(cfg.cfgname) || ' ADD MAPPING FOR ' ||
+	            'ALTER TEXT SEARCH CONFIGURATION ' || pg_catalog.quote_ident(b.nspname) ||
+	            E'.' || pg_catalog.quote_ident(cfg.cfgname) || ' ADD MAPPING FOR ' ||
 	            t.alias  || ' WITH ' ||
                 pg_catalog.array_to_string(array_agg(
                     CASE WHEN (pg_ns.nspname != 'pg_catalog') THEN

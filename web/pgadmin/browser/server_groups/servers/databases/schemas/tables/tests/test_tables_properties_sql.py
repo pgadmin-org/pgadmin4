@@ -56,10 +56,11 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
             SELECT
                 db.oid as did, datlastsysoid
             FROM
-                pg_database db
+                pg_catalog.pg_database db
             WHERE db.datname = '{0}'""".format(self.database_name)
                        )
         self.database_id, self.last_system_oid = cursor.fetchone()
 
-        cursor.execute("SELECT oid FROM pg_class where relname='test_table'")
+        cursor.execute("SELECT oid FROM pg_catalog.pg_class where relname="
+                       "'test_table'")
         self.table_id = cursor.fetchone()[0]

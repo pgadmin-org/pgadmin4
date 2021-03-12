@@ -11,7 +11,7 @@ FROM    pg_catalog.pg_attribute att
             ON att.attrelid = cls.oid
         INNER JOIN pg_catalog.pg_namespace nsp
             ON cls.relnamespace = nsp.oid
-        LEFT OUTER JOIN pg_attrdef def
+        LEFT OUTER JOIN pg_catalog.pg_attrdef def
             ON def.adrelid = att.attrelid
             AND def.adnum = att.attnum
 WHERE   nsp.nspname IN ({{schema_names}})
@@ -32,7 +32,7 @@ FROM    pg_catalog.pg_attribute att
             ON att.attrelid = cls.oid
         INNER JOIN pg_catalog.pg_namespace nsp
             ON cls.relnamespace = nsp.oid
-        LEFT OUTER JOIN pg_attrdef def
+        LEFT OUTER JOIN pg_catalog.pg_attrdef def
             ON def.adrelid = att.attrelid
             AND def.adnum = att.attnum
 WHERE   nsp.nspname IN ({{schema_names}})

@@ -133,9 +133,8 @@ def create_foreignkey(server, db_name, schema_name, local_table_name,
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get oid of newly added foreign key
-        pg_cursor.execute(
-            "SELECT oid FROM pg_constraint where conname='%s_id_fkey'" %
-            local_table_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_constraint "
+                          "where conname='%s_id_fkey'" % local_table_name)
         fk_record = pg_cursor.fetchone()
         connection.close()
         fk_id = fk_record[0]
@@ -168,8 +167,8 @@ def verify_foreignkey(server, db_name, local_table_name, fk_name=None):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute(
-            "SELECT oid FROM pg_constraint where conname='%s'" % conname)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_constraint "
+                          "where conname='%s'" % conname)
         fk_record = pg_cursor.fetchone()
         connection.close()
         return fk_record

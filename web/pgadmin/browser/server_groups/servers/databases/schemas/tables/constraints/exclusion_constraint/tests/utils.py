@@ -112,8 +112,8 @@ def create_exclusion_constraint(server, db_name, schema_name, table_name,
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get oid of newly added index constraint
-        pg_cursor.execute(
-            "SELECT conindid FROM pg_constraint where conname='%s'" % key_name)
+        pg_cursor.execute("SELECT conindid FROM pg_catalog.pg_constraint "
+                          "where conname='%s'" % key_name)
         index_constraint = pg_cursor.fetchone()
         connection.close()
         oid = index_constraint[0]
@@ -142,8 +142,8 @@ def verify_exclusion_constraint(server, db_name, index_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select * from pg_class where relname='%s'" %
-                          index_name)
+        pg_cursor.execute("select * from pg_catalog.pg_class "
+                          "where relname='%s'" % index_name)
         index_record = pg_cursor.fetchone()
         connection.close()
         return index_record

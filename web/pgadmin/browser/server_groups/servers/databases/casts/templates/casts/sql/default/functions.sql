@@ -4,7 +4,7 @@ SELECT
     nspname,
     proargtypes
 FROM
-    pg_catalog.pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
 WHERE
     proargtypes[0] = (SELECT t.oid FROM pg_catalog.pg_type t WHERE pg_catalog.format_type(t.oid, NULL) = {{srctyp|qtLiteral}})
     AND prorettype = (SELECT t.oid FROM pg_catalog.pg_type t WHERE pg_catalog.format_type(t.oid, NULL) = {{trgtyp|qtLiteral}})

@@ -374,7 +374,7 @@ ROLLBACK;"""
 -- 2. (Done) Create table in public schema.
 -- 3. (Done) ROLLBACK transaction.
 -- 4. Check if table is *NOT* created.
-SELECT relname FROM pg_class
+SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
 
         self.page.execute_query(query)
@@ -458,7 +458,7 @@ ROLLBACK;"""
 -- 3. (Done) Create table in public schema.
 -- 4. (Done) ROLLBACK transaction
 -- 5. Check if table is created event after ROLLBACK.
-SELECT relname FROM pg_class
+SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
 
         self.page.execute_query(query)
@@ -553,7 +553,7 @@ END;"""
 -- 4. (Done) Generate error in transaction.
 -- 5. (Done) END transaction.
 -- 6. Check if table is *NOT* created after ending transaction.
-SELECT relname FROM pg_class
+SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -687,7 +687,8 @@ SELECT 1, pg_sleep(300)"""
         self.page.execute_query("SET jit_above_cost=10;")
         self.page.clear_query_tool()
 
-        self.page.fill_codemirror_area_with("SELECT count(*) FROM pg_class;")
+        self.page.fill_codemirror_area_with(
+            "SELECT count(*) FROM pg_catalog.pg_class;")
         explain_op = self.page.find_by_css_selector(
             QueryToolLocators.btn_explain_options_dropdown)
         explain_op.click()

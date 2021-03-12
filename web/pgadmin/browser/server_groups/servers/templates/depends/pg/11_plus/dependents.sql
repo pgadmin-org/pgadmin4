@@ -68,7 +68,7 @@ LEFT JOIN pg_catalog.pg_namespace ftstns ON ftst.tmplnamespace=ftstns.oid
 LEFT JOIN pg_catalog.pg_extension ext ON ext.oid=dep.objid
 LEFT JOIN pg_catalog.pg_policy pl ON pl.oid=dep.objid
 {{where_clause}} AND
-classid IN ( SELECT oid FROM pg_class WHERE relname IN
+classid IN ( SELECT oid FROM pg_catalog.pg_class WHERE relname IN
    ('pg_class', 'pg_constraint', 'pg_conversion', 'pg_language', 'pg_proc', 'pg_rewrite', 'pg_namespace',
    'pg_trigger', 'pg_type', 'pg_attrdef', 'pg_event_trigger', 'pg_foreign_server', 'pg_foreign_data_wrapper',
    'pg_collation', 'pg_ts_config', 'pg_ts_dict', 'pg_ts_parser', 'pg_ts_template', 'pg_extension', 'pg_policy'))

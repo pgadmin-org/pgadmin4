@@ -526,7 +526,7 @@ SELECT
     has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid,
     datistemplate
 FROM
-    pg_database db
+    pg_catalog.pg_database db
 WHERE db.datname = current_database()""")
 
         if status is None:

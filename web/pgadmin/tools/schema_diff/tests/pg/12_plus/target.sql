@@ -378,7 +378,7 @@ CREATE VIEW test_schema_diff."test view" AS
     pg_class.relfilenode,
     pg_class.reltablespace,
     pg_class.relpages
-   FROM pg_class
+   FROM pg_catalog.pg_class
  LIMIT 10;
 
 

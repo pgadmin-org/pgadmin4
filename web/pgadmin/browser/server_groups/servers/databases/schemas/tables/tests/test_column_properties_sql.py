@@ -25,7 +25,8 @@ class TestColumnPropertiesSql(SQLTemplateTestBase):
         self.table_id = -1
 
     def test_setup(self, connection, cursor):
-        cursor.execute("SELECT oid FROM pg_class where relname='test_table'")
+        cursor.execute("SELECT oid FROM pg_catalog.pg_class "
+                       "where relname='test_table'")
 
         self.table_id = cursor.fetchone()[0]
 

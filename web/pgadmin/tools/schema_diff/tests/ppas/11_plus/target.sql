@@ -401,7 +401,7 @@ CREATE VIEW test_schema_diff."test view" AS
     pg_class.relacl,
     pg_class.reloptions,
     pg_class.relpartbound
-   FROM pg_class
+   FROM pg_catalog.pg_class
  LIMIT 10;
 
 

@@ -7,7 +7,7 @@ SELECT attnum, attname, pg_catalog.format_type(t.oid,NULL) AS typname, attndims,
     CASE WHEN t.typelem > 0 THEN t.typelem ELSE t.oid END as elemoid
 FROM pg_catalog.pg_attribute att
     JOIN pg_catalog.pg_type t ON t.oid=atttypid
-    JOIN pg_namespace nsp ON t.typnamespace=nsp.oid
+    JOIN pg_catalog.pg_namespace nsp ON t.typnamespace=nsp.oid
     LEFT OUTER JOIN pg_catalog.pg_type b ON t.typelem=b.oid
     LEFT OUTER JOIN pg_catalog.pg_collation c ON att.attcollation=c.oid
     LEFT OUTER JOIN pg_catalog.pg_namespace nspc ON c.collnamespace=nspc.oid
@@ -30,7 +30,7 @@ SELECT rngsubtype, st.typname,
     CASE WHEN n.nspname IS NOT NULL THEN pg_catalog.concat(pg_catalog.quote_ident(n.nspname), '.', pg_catalog.quote_ident(col.collname)) ELSE col.collname END AS collname,
     rngsubopc, opc.opcname,
     rngcanonical, rngsubdiff
-FROM pg_range
+FROM pg_catalog.pg_range
     LEFT JOIN pg_catalog.pg_type st ON st.oid=rngsubtype
     LEFT JOIN pg_catalog.pg_collation col ON col.oid=rngcollation
     LEFT JOIN pg_catalog.pg_namespace n ON col.collnamespace=n.oid

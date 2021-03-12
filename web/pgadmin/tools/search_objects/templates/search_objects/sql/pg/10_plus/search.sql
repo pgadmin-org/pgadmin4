@@ -293,7 +293,7 @@ FROM (
     SELECT 'type'::text AS obj_type, t.typname AS obj_name, ':schema.'||n.oid||':/' || n.nspname ||
         '/:type.'|| t.oid ||':/' || t.typname AS obj_path, n.nspname AS schema_name,
         {{ show_node_prefs['type'] }} AS show_node, NULL AS other_info
-    FROM pg_type t
+    FROM pg_catalog.pg_type t
     LEFT OUTER JOIN pg_catalog.pg_type e ON e.oid=t.typelem
     LEFT OUTER JOIN pg_catalog.pg_class ct ON ct.oid=t.typrelid AND ct.relkind <> 'c'
     LEFT OUTER JOIN pg_catalog.pg_namespace n on t.typnamespace = n.oid
@@ -307,8 +307,8 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['cast'] %}
-    SELECT 'cast'::text AS obj_type, format_type(st.oid,NULL) ||'->'|| format_type(tt.oid,tt.typtypmod) AS obj_name,
-    ':cast.'||ca.oid||':/' || format_type(st.oid,NULL) ||'->'|| format_type(tt.oid,tt.typtypmod) AS obj_path, ''::text AS schema_name,
+    SELECT 'cast'::text AS obj_type, pg_catalog.format_type(st.oid,NULL) ||'->'|| pg_catalog.format_type(tt.oid,tt.typtypmod) AS obj_name,
+    ':cast.'||ca.oid||':/' || pg_catalog.format_type(st.oid,NULL) ||'->'|| pg_catalog.format_type(tt.oid,tt.typtypmod) AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['cast'] }} AS show_node, NULL AS other_info
     FROM pg_catalog.pg_cast ca
     JOIN pg_catalog.pg_type st ON st.oid=castsource
@@ -482,7 +482,7 @@ FROM (
                             select rel.oid, pt.height+1 as height, rel.relkind,
                                 CASE rel.relispartition WHEN true THEN ':partition.' ELSE ':table.' END
                                 || rel.oid || ':/' || rel.relname || '/' || pt.path as path
-                            from pg_catalog.pg_class rel JOIN pg_namespace nsp ON rel.relnamespace = nsp.oid
+                            from pg_catalog.pg_class rel JOIN pg_catalog.pg_namespace nsp ON rel.relnamespace = nsp.oid
                             join pg_catalog.pg_inherits inh ON inh.inhparent = rel.oid
                             join table_path_data pt ON inh.inhrelid = pt.oid
                         )

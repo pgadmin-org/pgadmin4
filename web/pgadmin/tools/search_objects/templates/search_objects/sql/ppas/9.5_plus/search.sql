@@ -128,7 +128,7 @@ FROM (
 {% endif %}
 {% if all_obj or obj_type in ['event_trigger'] %}
     select 'event_trigger'::text AS obj_type, evtname AS obj_name, ':event_trigger.'||oid||':/' || evtname AS obj_path, ''::text AS schema_name,
-    {{ show_node_prefs['index'] }} AS show_node, NULL AS other_info from pg_event_trigger
+    {{ show_node_prefs['index'] }} AS show_node, NULL AS other_info from pg_catalog.pg_event_trigger
 {% endif %}
 {% if all_obj %}
     UNION
@@ -136,7 +136,7 @@ FROM (
 {% if all_obj or obj_type in ['schema'] %}
     select 'schema'::text AS obj_type, n.nspname AS obj_name,
     ':schema.'||n.oid||':/' || n.nspname as obj_path, n.nspname AS schema_name,
-    {{ show_node_prefs['schema'] }} AS show_node, NULL AS other_info from pg_namespace n
+    {{ show_node_prefs['schema'] }} AS show_node, NULL AS other_info from pg_catalog.pg_namespace n
     where n.nspparent = 0
     AND {{ CATALOGS.DB_SUPPORT('n') }}
 {% endif %}
@@ -255,8 +255,8 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['cast'] %}
-    SELECT 'cast'::text AS obj_type, format_type(st.oid,NULL) ||'->'|| format_type(tt.oid,tt.typtypmod) AS obj_name,
-    ':cast.'||ca.oid||':/' || format_type(st.oid,NULL) ||'->'|| format_type(tt.oid,tt.typtypmod) AS obj_path, ''::text AS schema_name,
+    SELECT 'cast'::text AS obj_type, pg_catalog.format_type(st.oid,NULL) ||'->'|| pg_catalog.format_type(tt.oid,tt.typtypmod) AS obj_name,
+    ':cast.'||ca.oid||':/' || pg_catalog.format_type(st.oid,NULL) ||'->'|| pg_catalog.format_type(tt.oid,tt.typtypmod) AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['cast'] }} AS show_node, NULL AS other_info
     FROM pg_catalog.pg_cast ca
     JOIN pg_catalog.pg_type st ON st.oid=castsource

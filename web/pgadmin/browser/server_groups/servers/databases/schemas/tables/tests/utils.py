@@ -126,8 +126,8 @@ def create_table(server, db_name, schema_name, table_name, custom_query=None):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created table
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          table_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class "
+                          "where relname='%s'" % table_name)
         table = pg_cursor.fetchone()
         table_id = ''
         if table:
@@ -159,8 +159,8 @@ def verify_table(server, db_name, table_id):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT * FROM pg_class tb WHERE tb.oid=%s" %
-                          table_id)
+        pg_cursor.execute("SELECT * FROM pg_catalog.pg_class tb "
+                          "WHERE tb.oid=%s" % table_id)
         table = pg_cursor.fetchone()
         connection.close()
         return table
@@ -227,8 +227,8 @@ def create_table_for_partition(
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created table
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          table_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class "
+                          "where relname='%s'" % table_name)
         table = pg_cursor.fetchone()
         table_id = ''
         if table:
@@ -574,8 +574,8 @@ def get_table_id(server, db_name, table_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          table_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class "
+                          "where relname='%s'" % table_name)
         table = pg_cursor.fetchone()
         if table:
             table_id = table[0]

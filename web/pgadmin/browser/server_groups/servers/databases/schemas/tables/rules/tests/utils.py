@@ -52,8 +52,8 @@ def create_rule(server, db_name, schema_name, table_name, rule_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get role oid of newly added rule
-        pg_cursor.execute("select oid from pg_rewrite where rulename='%s'" %
-                          rule_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_rewrite where "
+                          "rulename='%s'" % rule_name)
         rule = pg_cursor.fetchone()
         rule_id = ''
         if rule:
@@ -85,8 +85,8 @@ def verify_rule(server, db_name, rule_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select * from pg_rewrite where rulename='%s'" %
-                          rule_name)
+        pg_cursor.execute("select * from pg_catalog.pg_rewrite where "
+                          "rulename='%s'" % rule_name)
         rule = pg_cursor.fetchone()
         connection.close()
         return rule

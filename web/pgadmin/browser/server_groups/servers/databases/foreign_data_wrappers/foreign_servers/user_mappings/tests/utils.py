@@ -71,8 +71,8 @@ def create_user_mapping(server, db_name, fsrv_name):
         connection.commit()
         # Get 'oid' from newly created user mapping
         pg_cursor.execute(
-            "select umid from pg_user_mappings where srvname = '%s' order by"
-            " umid asc limit 1" % fsrv_name)
+            "select umid from pg_catalog.pg_user_mappings where "
+            "srvname = '%s' order by umid asc limit 1" % fsrv_name)
         oid = pg_cursor.fetchone()
         um_id = ''
         if oid:
@@ -104,8 +104,8 @@ def verify_user_mapping(server, db_name, fsrv_name):
                                        server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            "select umid from pg_user_mappings where srvname = '%s' order by"
-            " umid asc limit 1" % fsrv_name)
+            "select umid from pg_catalog.pg_user_mappings "
+            "where srvname = '%s' order by umid asc limit 1" % fsrv_name)
         user_mapping = pg_cursor.fetchone()
         connection.close()
         return user_mapping

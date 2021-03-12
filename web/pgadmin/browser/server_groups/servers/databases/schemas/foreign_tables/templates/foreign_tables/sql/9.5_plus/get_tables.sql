@@ -1,7 +1,7 @@
 {% import 'foreign_tables/sql/macros/db_catalogs.macro' as CATALOG %}
 {% if attrelid  %}
 SELECT
-    pg_catalog.array_agg(quote_ident(n.nspname) || '.' || quote_ident(c.relname)) as inherits
+    pg_catalog.array_agg(quote_ident(n.nspname) || '.' || pg_catalog.quote_ident(c.relname)) as inherits
 FROM
     pg_catalog.pg_class c, pg_catalog.pg_namespace n
 WHERE
@@ -10,7 +10,7 @@ WHERE
 
 {% else %}
 SELECT
-    c.oid AS value, quote_ident(n.nspname) || '.' || quote_ident(c.relname) as label
+    c.oid AS value, pg_catalog.quote_ident(n.nspname) || '.' || pg_catalog.quote_ident(c.relname) as label
 FROM
     pg_catalog.pg_class c, pg_catalog.pg_namespace n
 WHERE

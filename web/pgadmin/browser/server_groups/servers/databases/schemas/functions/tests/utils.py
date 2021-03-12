@@ -43,7 +43,7 @@ def create_trigger_function(server, db_name, schema_name, func_name,
         connection.commit()
         # Get 'oid' from newly created function
         pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
-                          " pg_proc pro WHERE pro.proname='%s'" %
+                          " pg_catalog.pg_proc pro WHERE pro.proname='%s'" %
                           func_name)
         functions = pg_cursor.fetchone()
         connection.close()
@@ -72,7 +72,7 @@ def create_trigger_function_with_trigger(server, db_name, schema_name,
         connection.commit()
         # Get 'oid' from newly created function
         pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
-                          " pg_proc pro WHERE pro.proname='%s'" %
+                          " pg_catalog.pg_proc pro WHERE pro.proname='%s'" %
                           func_name)
         functions = pg_cursor.fetchone()
         connection.close()
@@ -91,7 +91,7 @@ def verify_trigger_function(server, db_name, func_name):
                                          server['sslmode'])
     pg_cursor = connection.cursor()
     pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
-                      " pg_proc pro WHERE pro.proname='%s'" %
+                      " pg_catalog.pg_proc pro WHERE pro.proname='%s'" %
                       func_name)
     functions = pg_cursor.fetchone()
     connection.close()
@@ -133,7 +133,7 @@ def create_procedure(server, db_name, schema_name, func_name, s_type,
         connection.commit()
         # Get 'oid' from newly created function
         pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
-                          " pg_proc pro WHERE pro.proname='%s'" %
+                          " pg_catalog.pg_proc pro WHERE pro.proname='%s'" %
                           func_name)
         functions = pg_cursor.fetchone()
         connection.close()
@@ -166,7 +166,7 @@ def create_function(server, db_name, schema_name, func_name, args=None,
         connection.commit()
         # Get 'oid' from newly created function
         pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
-                          " pg_proc pro WHERE pro.proname='%s'" %
+                          " pg_catalog.pg_proc pro WHERE pro.proname='%s'" %
                           func_name)
         functions = pg_cursor.fetchone()
         connection.close()
@@ -194,7 +194,7 @@ def create_support_internal_function(server, db_name, schema_name, func_name):
         connection.commit()
         # Get 'oid' from newly created function
         pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
-                          " pg_proc pro WHERE pro.proname='%s'" %
+                          " pg_catalog.pg_proc pro WHERE pro.proname='%s'" %
                           func_name)
         functions = pg_cursor.fetchone()
         connection.close()
@@ -213,7 +213,7 @@ def verify_procedure(server, db_name, proc_name):
                                          server['sslmode'])
     pg_cursor = connection.cursor()
     pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
-                      " pg_proc pro WHERE pro.proname='%s'" %
+                      " pg_catalog.g_proc pro WHERE pro.proname='%s'" %
                       proc_name)
     procs = pg_cursor.fetchone()
     connection.close()

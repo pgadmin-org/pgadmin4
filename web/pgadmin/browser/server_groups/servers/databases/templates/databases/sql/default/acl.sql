@@ -28,8 +28,8 @@ FROM
             grantee.oid AS grantee,
             pr.type AS privilege_type,
             pg_catalog.aclcontains(c.datacl, pg_catalog.makeaclitem(grantee.oid, u_grantor.oid, pr.type, true)) AS is_grantable
-        FROM pg_catalog.pg_database c, pg_authid u_grantor, (
-            SELECT pg_authid.oid, pg_authid.rolname
+        FROM pg_catalog.pg_database c, pg_catalog.pg_authid u_grantor, (
+            SELECT pg_catalog.pg_authid.oid, pg_catalog.pg_authid.rolname
             FROM pg_catalog.pg_authid
                 UNION ALL
             SELECT 0::oid AS oid, 'PUBLIC') grantee(oid, rolname),

@@ -52,8 +52,8 @@ def create_policy(server, db_name, schema_name, table_name, policy_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get role oid of newly added policy
-        pg_cursor.execute("select oid from pg_policy where polname='%s'" %
-                          policy_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_policy where "
+                          "polname='%s'" % policy_name)
         policy = pg_cursor.fetchone()
         policy_id = ''
         if policy:
@@ -85,8 +85,8 @@ def verify_policy(server, db_name, policy_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select * from pg_policy where polname='%s'" %
-                          policy_name)
+        pg_cursor.execute("select * from pg_catalog.pg_policy where "
+                          "polname='%s'" % policy_name)
         policy = pg_cursor.fetchone()
         connection.close()
         return policy
@@ -121,8 +121,8 @@ def delete_policy(server, db_name, policy_name, schema_name, table_name):
                                              server['sslmode'])
         pg_cursor = connection.cursor()
 
-        pg_cursor.execute("select * from pg_policy where polname='%s'" %
-                          policy_name)
+        pg_cursor.execute("select * from pg_catalog.pg_policy "
+                          "where polname='%s'" % policy_name)
         policy_count = pg_cursor.fetchone()
         if policy_count:
             old_isolation_level = connection.isolation_level

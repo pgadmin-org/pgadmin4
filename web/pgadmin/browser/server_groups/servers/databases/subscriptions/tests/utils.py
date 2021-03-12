@@ -71,9 +71,8 @@ def create_subscription(server, db_name, subscription_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get role oid of newly added subscription
-        pg_cursor.execute("select oid from pg_subscription sub where "
-                          "sub.subname='%s'" %
-                          subscription_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_subscription sub "
+                          "where sub.subname='%s'" % subscription_name)
         subscription = pg_cursor.fetchone()
         subscription_id = ''
         if subscription:
@@ -105,7 +104,7 @@ def verify_subscription(server, db_name, subscription_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select * from pg_subscription sub "
+        pg_cursor.execute("select * from pg_catalog.pg_subscription sub "
                           "where sub.subname='%s'" %
                           subscription_name)
         subscription = pg_cursor.fetchone()
@@ -138,7 +137,7 @@ def delete_subscription(server, db_name, subscription_name):
                                              server['sslmode'])
         pg_cursor = connection.cursor()
 
-        pg_cursor.execute("select * from pg_subscription sub where "
+        pg_cursor.execute("select * from pg_catalog.pg_subscription sub where "
                           "sub.subname='%s'" %
                           subscription_name)
         subscription_count = pg_cursor.fetchone()

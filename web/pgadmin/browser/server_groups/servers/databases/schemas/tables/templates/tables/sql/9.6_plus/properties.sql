@@ -51,7 +51,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 	CASE WHEN typ.typname IS NOT NULL THEN (select pg_catalog.quote_ident(nspname) FROM pg_catalog.pg_namespace WHERE oid = {{scid}}::oid )||'.'||pg_catalog.quote_ident(typ.typname) ELSE typ.typname END AS typname,
 	typ.typrelid AS typoid,rel.relrowsecurity as rlspolicy, rel.relforcerowsecurity as forcerlspolicy,
 	(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
-	(SELECT array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels,
+	(SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels,
 	(CASE WHEN rel.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_table
 FROM pg_catalog.pg_class rel
   LEFT OUTER JOIN pg_catalog.pg_tablespace spc on spc.oid=rel.reltablespace

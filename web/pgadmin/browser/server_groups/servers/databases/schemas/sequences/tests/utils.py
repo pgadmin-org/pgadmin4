@@ -48,8 +48,8 @@ def create_sequences(server, db_name, schema_name, sequence_name,
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created sequence
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          sequence_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class "
+                          "where relname='%s'" % sequence_name)
         sequence = pg_cursor.fetchone()
         sequence_id = ''
         if sequence:
@@ -80,8 +80,8 @@ def verify_sequence(server, db_name, sequence_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select * from pg_class where relname='%s'" %
-                          sequence_name)
+        pg_cursor.execute("select * from pg_catalog.pg_class "
+                          "where relname='%s'" % sequence_name)
         sequence = pg_cursor.fetchone()
         connection.close()
         return sequence

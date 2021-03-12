@@ -167,11 +167,12 @@ def create_cast(server, source_type, target_type):
 
         # Get 'oid' from newly created cast
         pg_cursor.execute(
-            "SELECT ca.oid FROM pg_cast ca WHERE ca.castsource = "
-            "(SELECT t.oid FROM pg_type t "
+            "SELECT ca.oid FROM pg_catalog.pg_cast ca WHERE ca.castsource = "
+            "(SELECT t.oid FROM pg_catalog.pg_type t "
             "WHERE format_type(t.oid, NULL)='%s') "
-            "AND ca.casttarget = (SELECT t.oid FROM pg_type t WHERE "
-            "format_type(t.oid, NULL) = '%s')" % (source_type, target_type))
+            "AND ca.casttarget = (SELECT t.oid FROM pg_catalog.pg_type t "
+            "WHERE pg_catalog.format_type(t.oid, NULL) = '%s')" %
+            (source_type, target_type))
         oid = pg_cursor.fetchone()
         cast_id = ''
         if oid:
@@ -187,11 +188,12 @@ def verify_cast(connection, source_type, target_type):
     try:
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            "SELECT * FROM pg_cast ca WHERE ca.castsource = "
-            "(SELECT t.oid FROM pg_type t "
+            "SELECT * FROM pg_catalog.pg_cast ca WHERE ca.castsource = "
+            "(SELECT t.oid FROM pg_catalog.pg_type t "
             "WHERE format_type(t.oid, NULL)='%s') "
-            "AND ca.casttarget = (SELECT t.oid FROM pg_type t WHERE "
-            "format_type(t.oid, NULL) = '%s')" % (source_type, target_type))
+            "AND ca.casttarget = (SELECT t.oid FROM pg_catalog.pg_type t "
+            "WHERE pg_catalog.format_type(t.oid, NULL) = '%s')" %
+            (source_type, target_type))
         casts = pg_cursor.fetchall()
         connection.close()
         if len(casts) > 0:
@@ -208,11 +210,12 @@ def drop_cast(connection, source_type, target_type):
     try:
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            "SELECT * FROM pg_cast ca WHERE ca.castsource = "
-            "(SELECT t.oid FROM pg_type t "
+            "SELECT * FROM pg_catalog.pg_cast ca WHERE ca.castsource = "
+            "(SELECT t.oid FROM pg_catalog.pg_type t "
             "WHERE format_type(t.oid, NULL)='%s') "
-            "AND ca.casttarget = (SELECT t.oid FROM pg_type t WHERE "
-            "format_type(t.oid, NULL) = '%s')" % (source_type, target_type))
+            "AND ca.casttarget = (SELECT t.oid FROM pg_catalog.pg_type t "
+            "WHERE pg_catalog.format_type(t.oid, NULL) = '%s')" %
+            (source_type, target_type))
         if pg_cursor.fetchall():
             pg_cursor.execute(
                 "DROP CAST (%s AS %s) CASCADE" % (source_type, target_type))

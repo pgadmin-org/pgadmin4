@@ -26,7 +26,7 @@ class TestDependentsSql(SQLTemplateTestBase):
 
     def test_setup(self, connection, cursor):
         cursor.execute("SELECT pg_class.oid AS table_id "
-                       "FROM pg_class "
+                       "FROM pg_catalog.pg_class "
                        "WHERE pg_class.relname='test_table'")
         self.table_id = cursor.fetchone()[0]
 

@@ -120,8 +120,8 @@ def create_index_constraint(server, db_name, schema_name, table_name,
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get oid of newly added index constraint
-        pg_cursor.execute(
-            "SELECT conindid FROM pg_constraint where conname='%s'" % key_name)
+        pg_cursor.execute("SELECT conindid FROM pg_catalog.pg_constraint "
+                          "where conname='%s'" % key_name)
         index_constraint = pg_cursor.fetchone()
         connection.close()
         oid = index_constraint[0]
@@ -149,9 +149,8 @@ def verify_index_constraint(server, db_name, constraint_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute(
-            "SELECT oid FROM pg_constraint where conname='%s'" %
-            constraint_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_constraint "
+                          "where conname='%s'" % constraint_name)
         index_constraint = pg_cursor.fetchone()
         connection.close()
         return index_constraint

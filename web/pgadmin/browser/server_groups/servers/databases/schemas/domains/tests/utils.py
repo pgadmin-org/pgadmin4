@@ -53,8 +53,8 @@ def create_domain(server, db_name, schema_name, schema_id, domain_name,
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created domain
-        pg_cursor.execute("SELECT d.oid, d.typname FROM pg_type d WHERE"
-                          " d.typname='%s' AND d.typnamespace='%s'" %
+        pg_cursor.execute("SELECT d.oid, d.typname FROM pg_catalog.pg_type d "
+                          "WHERE d.typname='%s' AND d.typnamespace='%s'" %
                           (domain_name, schema_id))
         domains = pg_cursor.fetchone()
         connection.close()
@@ -82,7 +82,7 @@ def verify_domain(server, db_name, schema_id, domain_name):
                                          server['host'],
                                          server['port'])
     pg_cursor = connection.cursor()
-    pg_cursor.execute("SELECT d.oid, d.typname FROM pg_type d WHERE"
+    pg_cursor.execute("SELECT d.oid, d.typname FROM pg_catalog.pg_type d WHERE"
                       " d.typname='%s' AND d.typnamespace='%s'" %
                       (domain_name, schema_id))
     domains = pg_cursor.fetchone()

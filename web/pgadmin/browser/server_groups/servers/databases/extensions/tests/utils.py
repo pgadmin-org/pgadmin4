@@ -53,9 +53,8 @@ def create_extension(server, db_name, extension_name, schema_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created extension
-        pg_cursor.execute(
-            "SELECT oid FROM pg_extension WHERE extname = '%s'" %
-            extension_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_extension "
+                          "WHERE extname = '%s'" % extension_name)
         oid = pg_cursor.fetchone()
         extension_id = ''
         if oid:
@@ -87,8 +86,8 @@ def verify_extension(server, db_name, extension_name):
                                        server['sslmode'])
         pg_cursor = connection.cursor()
 
-        pg_cursor.execute(
-            "select * from pg_extension where extname='%s'" % extension_name)
+        pg_cursor.execute("select * from pg_catalog.pg_extension "
+                          "where extname='%s'" % extension_name)
         extension = pg_cursor.fetchone()
         connection.close()
         return extension
@@ -116,7 +115,7 @@ def drop_extension(server, db_name, extension_name):
                                        server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            "SELECT * FROM pg_extension WHERE extname='%s'"
+            "SELECT * FROM pg_catalog.pg_extension WHERE extname='%s'"
             % extension_name)
         if pg_cursor.fetchall():
             pg_cursor.execute(

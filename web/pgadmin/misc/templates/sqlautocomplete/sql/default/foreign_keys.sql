@@ -1,21 +1,21 @@
 {# SQL query for getting foreign keys #}
 SELECT s_p.nspname AS parentschema,
    t_p.relname AS parenttable,
-   unnest((
+   pg_catalog.unnest((
     select
-        array_agg(attname ORDER BY i)
+        pg_catalog.array_agg(attname ORDER BY i)
     from
-        (select unnest(confkey) as attnum, generate_subscripts(confkey, 1) as i) x
+        (select pg_catalog.unnest(confkey) as attnum, pg_catalog.generate_subscripts(confkey, 1) as i) x
         JOIN pg_catalog.pg_attribute c USING(attnum)
         WHERE c.attrelid = fk.confrelid
     )) AS parentcolumn,
    s_c.nspname AS childschema,
    t_c.relname AS childtable,
-   unnest((
+   pg_catalog.unnest((
     select
-        array_agg(attname ORDER BY i)
+        pg_catalog.array_agg(attname ORDER BY i)
     from
-        (select unnest(conkey) as attnum, generate_subscripts(conkey, 1) as i) x
+        (select pg_catalog.unnest(conkey) as attnum, pg_catalog.generate_subscripts(conkey, 1) as i) x
         JOIN pg_catalog.pg_attribute c USING(attnum)
         WHERE c.attrelid = fk.conrelid
     )) AS childcolumn

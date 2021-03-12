@@ -13,7 +13,7 @@ SELECT att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
 	  pg_catalog.concat(pg_catalog.quote_ident(nspc.nspname),'.',pg_catalog.quote_ident(coll.collname))
 	ELSE '' END AS collspcname,
 	EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid=att.attrelid AND contype='f' AND att.attnum=ANY(conkey)) As is_fk,
-	(SELECT array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=att.attrelid AND sl1.objsubid=att.attnum) AS seclabels,
+	(SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=att.attrelid AND sl1.objsubid=att.attnum) AS seclabels,
 	(CASE WHEN (att.attnum < 1) THEN true ElSE false END) AS is_sys_column, tab.relname as relname,
 	(CASE WHEN tab.relkind = 'v' THEN true ELSE false END) AS is_view_only
 FROM pg_catalog.pg_attribute att

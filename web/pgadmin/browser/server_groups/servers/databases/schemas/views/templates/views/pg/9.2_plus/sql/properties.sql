@@ -10,7 +10,7 @@ SELECT
     description As comment,
     pg_catalog.pg_get_viewdef(c.oid, true) AS definition,
     nsp.nspname AS schema,
-    array_to_string(c.relacl::text[], ', ') AS acl,
+    pg_catalog.array_to_string(c.relacl::text[], ', ') AS acl,
     {#=============Checks if it is system view================#}
     {% if vid and datlastsysoid %}
     CASE WHEN {{vid}} <= {{datlastsysoid}} THEN True ELSE False END AS system_view,

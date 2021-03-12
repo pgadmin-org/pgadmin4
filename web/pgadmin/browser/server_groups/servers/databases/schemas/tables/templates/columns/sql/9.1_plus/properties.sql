@@ -28,7 +28,7 @@ FROM pg_catalog.pg_attribute att
   JOIN pg_catalog.pg_namespace na ON na.oid=cl.relnamespace
   LEFT OUTER JOIN pg_catalog.pg_type et ON et.oid=ty.typelem
   LEFT OUTER JOIN pg_catalog.pg_attrdef def ON adrelid=att.attrelid AND adnum=att.attnum
-  LEFT OUTER JOIN pg_description des ON (des.objoid=att.attrelid AND des.objsubid=att.attnum AND des.classoid='pg_class'::regclass)
+  LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=att.attrelid AND des.objsubid=att.attnum AND des.classoid='pg_class'::regclass)
   LEFT OUTER JOIN (pg_catalog.pg_depend JOIN pg_catalog.pg_class cs ON classid='pg_class'::regclass AND objid=cs.oid AND cs.relkind='S') ON refobjid=att.attrelid AND refobjsubid=att.attnum
   LEFT OUTER JOIN pg_catalog.pg_namespace ns ON ns.oid=cs.relnamespace
   LEFT OUTER JOIN pg_catalog.pg_index pi ON pi.indrelid=att.attrelid AND indisprimary

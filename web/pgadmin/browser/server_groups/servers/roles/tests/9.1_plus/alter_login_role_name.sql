@@ -10,6 +10,6 @@ CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
   REPLICATION;
 
 
-UPDATE pg_authid SET rolcatupdate=false WHERE rolname = 'Role2_$%{}[]()&*^!@"''`\/#'';
+UPDATE pg_catalog.pg_authid SET rolcatupdate=false WHERE rolname = 'Role2_$%{}[]()&*^!@"''`\/#'';
 
 COMMENT ON ROLE "Role2_$%{}[]()&*^!@""'`\/#" IS 'This is detailed description';

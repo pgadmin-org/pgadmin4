@@ -86,7 +86,7 @@ def create_fsrv(server, db_name, fsrv_name, fdw_name):
 
         # Get 'oid' from newly created foreign server
         pg_cursor.execute(
-            "SELECT oid FROM pg_foreign_server WHERE srvname = '%s'"
+            "SELECT oid FROM pg_catalog.pg_foreign_server WHERE srvname = '%s'"
             % fsrv_name)
         oid = pg_cursor.fetchone()
         fsrv_id = ''
@@ -113,7 +113,7 @@ def verify_fsrv(server, db_name, fsrv_name):
         pg_cursor = connection.cursor()
 
         pg_cursor.execute(
-            "SELECT oid FROM pg_foreign_server WHERE srvname = '%s'"
+            "SELECT oid FROM pg_catalog.pg_foreign_server WHERE srvname = '%s'"
             % fsrv_name)
         fsrvs = pg_cursor.fetchall()
         connection.close()

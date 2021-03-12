@@ -93,7 +93,7 @@ def create_trigger_function_with_trigger(server, db_name, schema_name,
         connection.commit()
         # Get 'oid' from newly created function
         pg_cursor.execute("SELECT pro.oid, pro.proname FROM"
-                          " pg_proc pro WHERE pro.proname='%s'" %
+                          " pg_catalog.pg_proc pro WHERE pro.proname='%s'" %
                           func_name)
         functions = pg_cursor.fetchone()
         connection.close()
@@ -139,8 +139,8 @@ def create_trigger(server, db_name, schema_name, table_name, trigger_name,
         pg_cursor.execute(query)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
-        pg_cursor.execute("SELECT oid FROM pg_trigger where tgname='%s'" %
-                          trigger_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_trigger "
+                          "where tgname='%s'" % trigger_name)
         trigger = pg_cursor.fetchone()
         trigger_id = ''
         if trigger:
@@ -184,8 +184,8 @@ def create_view(server, db_name, schema_name, view_name, sql_query=None,
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created view
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          view_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class "
+                          "where relname='%s'" % view_name)
         view = pg_cursor.fetchone()
         view_id = view[0]
         connection.close()
@@ -215,8 +215,8 @@ def verify_view(server, db_name, view_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          view_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class "
+                          "where relname='%s'" % view_name)
         view = pg_cursor.fetchone()
         connection.close()
         return view
@@ -236,8 +236,8 @@ def get_view_id(server, db_name, view_name):
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
         # Get 'oid' from newly created view
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          view_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class "
+                          "where relname='%s'" % view_name)
         view = pg_cursor.fetchone()
         view_id = None
         if view:

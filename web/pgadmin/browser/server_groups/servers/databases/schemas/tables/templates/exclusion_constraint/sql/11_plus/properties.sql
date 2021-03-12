@@ -3,7 +3,7 @@ SELECT cls.oid,
     indnkeyatts as col_count,
     amname,
     CASE WHEN length(spcname::text) > 0 THEN spcname ELSE
-        (SELECT sp.spcname FROM pg_database dtb
+        (SELECT sp.spcname FROM pg_catalog.pg_database dtb
         JOIN pg_catalog.pg_tablespace sp ON dtb.dattablespace=sp.oid
         WHERE dtb.oid = {{ did }}::oid)
     END as spcname,

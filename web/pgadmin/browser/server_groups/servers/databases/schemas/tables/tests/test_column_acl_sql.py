@@ -28,7 +28,7 @@ class TestColumnAclSql(SQLTemplateTestBase):
     def test_setup(self, connection, cursor):
         cursor.execute("SELECT pg_class.oid AS table_id, "
                        "pg_attribute.attnum AS column_id "
-                       "FROM pg_class JOIN pg_attribute ON "
+                       "FROM pg_catalog.pg_class JOIN pg_attribute ON "
                        "attrelid=pg_class.oid "
                        "WHERE pg_class.relname='test_table'"
                        " AND pg_attribute.attname = 'some_column'")

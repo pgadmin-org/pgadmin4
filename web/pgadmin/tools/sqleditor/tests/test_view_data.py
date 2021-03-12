@@ -90,7 +90,7 @@ class TestViewData(BaseTestGenerator):
 
         # Fetch Table OID
         pg_cursor = self.connection.cursor()
-        pg_cursor.execute("""Select oid FROM pg_class WHERE
+        pg_cursor.execute("""Select oid FROM pg_catalog.pg_class WHERE
          relname = '%s' AND relkind IN ('r','s','t')""" % self.table)
 
         result = pg_cursor.fetchall()

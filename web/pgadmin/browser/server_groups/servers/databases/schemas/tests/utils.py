@@ -64,7 +64,8 @@ def create_schema(connection, schema_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get schema details of newly created schema
-        pg_cursor.execute("SELECT sch.oid, sch.nspname FROM pg_namespace sch"
+        pg_cursor.execute("SELECT sch.oid, sch.nspname FROM "
+                          "pg_catalog.pg_namespace sch"
                           " WHERE sch.nspname='%s'" % schema_name)
         schema = pg_cursor.fetchone()
         connection.close()
@@ -83,7 +84,7 @@ def verify_schemas(server, db_name, schema_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT oid,* FROM pg_namespace sch"
+        pg_cursor.execute("SELECT oid,* FROM pg_catalog.pg_namespace sch"
                           " WHERE sch.nspname='%s'" % schema_name)
         schema = pg_cursor.fetchone()
         connection.close()

@@ -3,7 +3,7 @@ SELECT --nspname, collname,
     pg_catalog.concat(nspname, '."', collname,'"')
     ELSE '' END AS copy_collation
 FROM
-    pg_catalog.pg_collation c, pg_namespace n
+    pg_catalog.pg_collation c, pg_catalog.pg_namespace n
 WHERE
     c.collnamespace=n.oid
 ORDER BY

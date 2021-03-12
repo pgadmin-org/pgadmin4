@@ -9,10 +9,10 @@ SELECT n.nspname schema_name,
     p.proiswindow is_window,
     p.proretset is_set_returning,
     d.deptype = 'e' is_extension,
-    pg_get_expr(proargdefaults, 0) AS arg_defaults
+    pg_catalog.pg_get_expr(proargdefaults, 0) AS arg_defaults
 FROM pg_catalog.pg_proc p
     INNER JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
-    LEFT JOIN pg_depend d ON d.objid = p.oid and d.deptype = 'e'
+    LEFT JOIN pg_catalog.pg_depend d ON d.objid = p.oid and d.deptype = 'e'
 WHERE p.prorettype::regtype != 'trigger'::regtype
     AND n.nspname IN ({{schema_names}})
 ORDER BY 1, 2

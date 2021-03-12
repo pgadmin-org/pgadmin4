@@ -56,8 +56,8 @@ def create_trigger(server, db_name, schema_name, table_name, trigger_name,
         pg_cursor.execute(query)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
-        pg_cursor.execute("SELECT oid FROM pg_trigger where tgname='%s'" %
-                          trigger_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_trigger "
+                          "where tgname='%s'" % trigger_name)
         trigger = pg_cursor.fetchone()
         trigger_id = ''
         if trigger:
@@ -89,8 +89,8 @@ def verify_trigger(server, db_name, trigger_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT oid FROM pg_trigger where tgname='%s'" %
-                          trigger_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_trigger "
+                          "where tgname='%s'" % trigger_name)
         trigger = pg_cursor.fetchone()
         connection.close()
         return trigger

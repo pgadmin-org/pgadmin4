@@ -46,8 +46,8 @@ def create_package(server, db_name, schema_name, pkg_name, proc_name):
         pg_cursor.execute(query)
         connection.commit()
         # Get 'oid' from newly created package
-        pg_cursor.execute("SELECT oid FROM pg_namespace WHERE nspname='%s'" %
-                          pkg_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_namespace "
+                          "WHERE nspname='%s'" % pkg_name)
         package_id = pg_cursor.fetchone()[0]
         connection.close()
         return package_id
@@ -75,8 +75,8 @@ def verify_package(server, db_name, pkg_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT oid FROM pg_namespace WHERE nspname='%s'" %
-                          pkg_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_namespace "
+                          "WHERE nspname='%s'" % pkg_name)
         package = pg_cursor.fetchone()
         connection.close()
         return package

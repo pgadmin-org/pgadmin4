@@ -8,7 +8,7 @@ SELECT
     {### Default ACL for Tables ###}
     (SELECT pg_catalog.array_to_string(ARRAY(
         SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
-            FROM pg_default_acl
+            FROM pg_catalog.pg_default_acl
         WHERE defaclobjtype = 'r' AND defaclnamespace = 0::OID
     ), ', ')) AS tblacl,
     {### Default ACL for Sequnces ###}

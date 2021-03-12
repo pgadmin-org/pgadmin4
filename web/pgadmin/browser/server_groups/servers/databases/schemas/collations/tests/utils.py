@@ -37,7 +37,8 @@ def create_collation(server, schema_name, coll_name, db_name):
 
         # Get 'oid' from newly created database
         pg_cursor.execute("SELECT coll.oid, coll.collname FROM"
-                          " pg_collation coll WHERE coll.collname='%s'" %
+                          " pg_catalog.pg_collation coll WHERE "
+                          "coll.collname='%s'" %
                           coll_name)
         collation = pg_cursor.fetchone()
         connection.close()
@@ -58,7 +59,8 @@ def verify_collation(server, db_name, coll_name):
         pg_cursor = connection.cursor()
         # Get 'oid' from newly created database
         pg_cursor.execute("SELECT coll.oid, coll.collname FROM"
-                          " pg_collation coll WHERE coll.collname='%s'" %
+                          " pg_catalog.pg_collation coll "
+                          "WHERE coll.collname='%s'" %
                           coll_name)
         collation = pg_cursor.fetchone()
         connection.close()

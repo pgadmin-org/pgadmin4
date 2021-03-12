@@ -11,7 +11,7 @@ SELECT
     ) AS token,
     pg_catalog.array_agg(
         CASE WHEN (pg_ns.nspname != 'pg_catalog') THEN
-            CONCAT(pg_ns.nspname, '.', pg_ts_dict.dictname)
+            pg_catalog.CONCAT(pg_ns.nspname, '.', pg_ts_dict.dictname)
         ELSE
             pg_catalog.pg_ts_dict.dictname END) AS dictname
 FROM

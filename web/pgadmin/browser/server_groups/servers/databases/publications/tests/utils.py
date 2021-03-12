@@ -67,9 +67,8 @@ def create_publication(server, db_name, publication_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get role oid of newly added publication
-        pg_cursor.execute("select oid from pg_publication pub where "
-                          "pub.pubname='%s'" %
-                          publication_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_publication pub "
+                          "where pub.pubname='%s'" % publication_name)
         publication = pg_cursor.fetchone()
         publication_id = ''
         if publication:
@@ -101,7 +100,7 @@ def verify_publication(server, db_name, publication_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select * from pg_publication pub "
+        pg_cursor.execute("select * from pg_catalog.pg_publication pub "
                           "where pub.pubname='%s'" %
                           publication_name)
         publication = pg_cursor.fetchone()
@@ -134,7 +133,7 @@ def delete_publication(server, db_name, publication_name):
                                              server['sslmode'])
         pg_cursor = connection.cursor()
 
-        pg_cursor.execute("select * from pg_publication pub where "
+        pg_cursor.execute("select * from pg_catalog.pg_publication pub where "
                           "pub.pubname='%s'" %
                           publication_name)
         publication_count = pg_cursor.fetchone()

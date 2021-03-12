@@ -123,7 +123,7 @@ def create_check_constraint(server, db_name, schema_name, table_name,
         connection.commit()
         # Get oid of newly added check constraint
         pg_cursor.execute(
-            "SELECT oid FROM pg_constraint where conname='%s'" %
+            "SELECT oid FROM pg_catalog.pg_constraint where conname='%s'" %
             check_constraint_name)
         chk_constraint_record = pg_cursor.fetchone()
         connection.close()
@@ -153,7 +153,7 @@ def verify_check_constraint(server, db_name, check_constraint_name):
                                              server['port'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            "SELECT oid FROM pg_constraint where conname='%s'" %
+            "SELECT oid FROM pg_catalog.pg_constraint where conname='%s'" %
             check_constraint_name)
         chk_constraint_record = pg_cursor.fetchone()
         connection.close()

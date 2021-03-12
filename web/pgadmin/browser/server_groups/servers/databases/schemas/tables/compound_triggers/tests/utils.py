@@ -61,8 +61,8 @@ def create_compound_trigger(server, db_name, schema_name, table_name,
         pg_cursor.execute(query)
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
-        pg_cursor.execute("SELECT oid FROM pg_trigger where tgname='%s'" %
-                          trigger_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_trigger "
+                          "where tgname='%s'" % trigger_name)
         trigger = pg_cursor.fetchone()
         trigger_id = ''
         if trigger:
@@ -106,8 +106,8 @@ def create_view(server, db_name, schema_name, sql_query, view_name):
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created view
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          view_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class where "
+                          "relname='%s'" % view_name)
         view = pg_cursor.fetchone()
         view_id = view[0]
         connection.close()
@@ -137,8 +137,8 @@ def verify_compound_trigger(server, db_name, trigger_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT oid FROM pg_trigger where tgname='%s'" %
-                          trigger_name)
+        pg_cursor.execute("SELECT oid FROM pg_catalog.pg_trigger "
+                          "where tgname='%s'" % trigger_name)
         trigger = pg_cursor.fetchone()
         connection.close()
         return trigger

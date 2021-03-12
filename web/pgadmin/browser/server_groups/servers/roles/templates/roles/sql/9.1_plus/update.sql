@@ -50,7 +50,7 @@ ALTER ROLE {{ conn|qtIdent(rolname) }}{% if 'rolcanlogin' in data %}
 	data.rolsuper %}
 
 
-UPDATE pg_authid SET rolcatupdate=false WHERE rolname = {{ rolname|qtLiteral }};
+UPDATE pg_catalog.pg_authid SET rolcatupdate=false WHERE rolname = {{ rolname|qtLiteral }};
 
 {% elif
 	rolSuper and
@@ -59,12 +59,12 @@ UPDATE pg_authid SET rolcatupdate=false WHERE rolname = {{ rolname|qtLiteral }};
 {% if data.rolcatupdate %}
 
 
-UPDATE pg_authid SET rolcatupdate=true WHERE rolname = {{ rolname|qtLiteral }};
+UPDATE pg_catalog.pg_authid SET rolcatupdate=true WHERE rolname = {{ rolname|qtLiteral }};
 
 {% else %}
 
 
-UPDATE pg_authid SET rolcatupdate=false WHERE rolname = {{ rolname|qtLiteral }};
+UPDATE pg_catalog.pg_authid SET rolcatupdate=false WHERE rolname = {{ rolname|qtLiteral }};
 
 {% endif %}
 {% endif %}

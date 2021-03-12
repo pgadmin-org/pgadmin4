@@ -4,7 +4,7 @@ SELECT * FROM
     ,typlen, typtype, t.oid, nspname,
     (SELECT COUNT(1) FROM pg_catalog.pg_type t2 WHERE t2.typname = t.typname) > 1 AS isdup
 FROM pg_catalog.pg_type t
-    JOIN pg_namespace nsp ON typnamespace=nsp.oid
+    JOIN pg_catalog.pg_namespace nsp ON typnamespace=nsp.oid
 WHERE (NOT (typname = 'unknown' AND nspname = 'pg_catalog'))
     AND typisdefined AND typtype IN ('b', 'c', 'd', 'e', 'r')
     AND NOT EXISTS (select 1 from pg_catalog.pg_class where relnamespace=typnamespace and relname = typname and relkind != 'c')

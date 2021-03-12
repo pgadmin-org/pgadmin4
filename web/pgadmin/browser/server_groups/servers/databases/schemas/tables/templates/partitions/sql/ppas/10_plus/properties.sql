@@ -1,6 +1,6 @@
 SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS relacl_str,
   (CASE WHEN length(spc.spcname::text) > 0 THEN spc.spcname ELSE
-    (SELECT sp.spcname FROM pg_database dtb
+    (SELECT sp.spcname FROM pg_catalog.pg_database dtb
     JOIN pg_catalog.pg_tablespace sp ON dtb.dattablespace=sp.oid
     WHERE dtb.oid = {{ did }}::oid)
   END) as spcname,
@@ -14,8 +14,8 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 			WHERE tgrelid=rel.oid) AS isrepl,
 	(SELECT count(*) FROM pg_catalog.pg_trigger WHERE tgrelid=rel.oid AND tgisinternal = FALSE) AS triggercount,
 	(SELECT ARRAY(SELECT CASE WHEN (nspname NOT LIKE 'pg\_%') THEN
-            quote_ident(nspname)||'.'||quote_ident(c.relname)
-            ELSE quote_ident(c.relname) END AS inherited_tables
+            pg_catalog.quote_ident(nspname)||'.'||pg_catalog.quote_ident(c.relname)
+            ELSE pg_catalog.quote_ident(c.relname) END AS inherited_tables
     FROM pg_catalog.pg_inherits i
     JOIN pg_catalog.pg_class c ON c.oid = i.inhparent
     JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
@@ -50,7 +50,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 	rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype, typ.typname,
 	typ.typrelid AS typoid,
 	(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
-	(SELECT array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels,
+	(SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=rel.oid AND sl1.objsubid=0) AS seclabels,
 	(CASE WHEN rel.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_table,
 	-- Added for partition table
 	(CASE WHEN rel.relkind = 'p' THEN true ELSE false END) AS is_partitioned,

@@ -194,8 +194,8 @@ def create_index(server, db_name, schema_name, table_name, index_name,
         connection.set_isolation_level(old_isolation_level)
         connection.commit()
         # Get oid of newly added index
-        pg_cursor.execute("select oid from pg_class where relname='%s'" %
-                          index_name)
+        pg_cursor.execute("select oid from pg_catalog.pg_class "
+                          "where relname='%s'" % index_name)
         index_record = pg_cursor.fetchone()
         index_oid = ''
         if index_record:
@@ -227,8 +227,8 @@ def verify_index(server, db_name, index_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select * from pg_class where relname='%s'" %
-                          index_name)
+        pg_cursor.execute("select * from pg_catalog.pg_class "
+                          "where relname='%s'" % index_name)
         index_record = pg_cursor.fetchone()
         connection.close()
         return index_record

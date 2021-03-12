@@ -152,7 +152,7 @@ def create_database(server, db_name, encoding=None):
         connection.commit()
 
         # Get 'oid' from newly created database
-        pg_cursor.execute("SELECT db.oid from pg_database db WHERE"
+        pg_cursor.execute("SELECT db.oid from pg_catalog.pg_database db WHERE"
                           " db.datname='%s'" % db_name)
         oid = pg_cursor.fetchone()
         if oid:
@@ -401,7 +401,7 @@ def drop_debug_function(server, db_name, function_name="test_func"):
 
 def does_function_exist(server, db_name, fun_name):
     query = "select exists(select * " \
-            "from pg_proc where proname = '%s');" % fun_name
+            "from pg_catalog.pg_proc where proname = '%s');" % fun_name
 
     connection = get_db_connection(
         db_name,
@@ -494,7 +494,7 @@ def drop_database(connection, database_name):
                 "WHERE pg_stat_activity.datname ='%s' "
                 "AND current_query='<IDLE>';" % database_name
             )
-        pg_cursor.execute("SELECT * FROM pg_database db WHERE"
+        pg_cursor.execute("SELECT * FROM pg_catalog.pg_database db WHERE"
                           " db.datname='%s'" % database_name)
         if pg_cursor.fetchall():
             old_isolation_level = connection.isolation_level
@@ -524,7 +524,7 @@ def drop_database_multiple(connection, database_names):
                     "WHERE pg_stat_activity.datname ='%s' "
                     "AND current_query='<IDLE>';" % database_name
                 )
-            pg_cursor.execute("SELECT * FROM pg_database db WHERE"
+            pg_cursor.execute("SELECT * FROM pg_catalog.pg_database db WHERE"
                               " db.datname='%s'" % database_name)
             if pg_cursor.fetchall():
                 old_isolation_level = connection.isolation_level
@@ -538,7 +538,7 @@ def drop_database_multiple(connection, database_names):
 def drop_tablespace(connection):
     """This function used to drop the tablespace"""
     pg_cursor = connection.cursor()
-    pg_cursor.execute("SELECT * FROM pg_tablespace")
+    pg_cursor.execute("SELECT * FROM pg_catalog.pg_tablespace")
     table_spaces = pg_cursor.fetchall()
     if table_spaces:
         for table_space in table_spaces:

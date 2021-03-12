@@ -13,7 +13,7 @@ WHERE
     -- On EnterpriseDB - ignore some objects in the catalog, whose name starts
     -- with _*, dual and type_object_source.
     SELECT 'sys' ~ (
-        SELECT nsp.nspname FROM pg_namespace nsp
+        SELECT nsp.nspname FROM pg_catalog.pg_namespace nsp
         WHERE nsp.oid = {{scid}}::oid
     ) AND (
         c.relname NOT LIKE '\\_%' AND c.relname = 'dual' AND

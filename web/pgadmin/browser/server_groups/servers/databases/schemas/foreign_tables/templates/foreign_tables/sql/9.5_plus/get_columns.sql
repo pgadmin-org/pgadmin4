@@ -20,7 +20,7 @@ SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, attfdwoptions,
     pg_catalog.concat(cn.nspname, '."', cl.collname,'"')
     ELSE '' END AS collname,
     pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS typdefault,
-    (SELECT COUNT(1) from pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup
+    (SELECT COUNT(1) from pg_catalog.pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup
 FROM
     pg_catalog.pg_attribute att
 LEFT JOIN

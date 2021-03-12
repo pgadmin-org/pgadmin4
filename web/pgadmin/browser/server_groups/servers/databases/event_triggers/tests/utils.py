@@ -55,7 +55,7 @@ def create_event_trigger(server, db_name, schema_name, func_name,
         connection.commit()
         # Get 'oid' from newly created event trigger
         pg_cursor.execute(
-            "SELECT oid FROM pg_event_trigger WHERE evtname = '%s'"
+            "SELECT oid FROM pg_catalog.pg_event_trigger WHERE evtname = '%s'"
             % trigger_name)
         oid = pg_cursor.fetchone()
         trigger_id = ''
@@ -88,7 +88,7 @@ def verify_event_trigger(server, db_name, trigger_name):
                                        server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute(
-            "SELECT oid FROM pg_event_trigger WHERE evtname = '%s'"
+            "SELECT oid FROM pg_catalog.pg_event_trigger WHERE evtname = '%s'"
             % trigger_name)
         event_trigger = pg_cursor.fetchone()
         connection.close()
@@ -116,7 +116,7 @@ def verify_event_trigger_node(self):
                           "evtevent, "
                           "(select rolname from pg_authid where oid "
                           "= pl.evtowner) as evtowner,"
-                          " evtname from pg_event_trigger pl "
+                          " evtname from pg_catalog.pg_event_trigger pl "
                           "WHERE evtname = '%s'" % self.test_data['name'])
 
         event_trigger = pg_cursor.fetchone()

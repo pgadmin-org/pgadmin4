@@ -63,8 +63,8 @@ def create_tablespace(server, test_tablespace_name, test_tablespace_dir=None):
 
         # Get 'oid' from newly created tablespace
         pg_cursor.execute(
-            "SELECT ts.oid from pg_tablespace ts WHERE ts.spcname='%s'" %
-            test_tablespace_name)
+            "SELECT ts.oid from pg_catalog.pg_tablespace ts "
+            "WHERE ts.spcname='%s'" % test_tablespace_name)
         oid = pg_cursor.fetchone()
         tspc_id = ''
         if oid:
@@ -93,7 +93,7 @@ def verify_table_space(server, test_tablespace_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT * FROM pg_tablespace ts WHERE"
+        pg_cursor.execute("SELECT * FROM pg_catalog.pg_tablespace ts WHERE"
                           " ts.spcname='%s'" % test_tablespace_name)
         tablespace_count = len(pg_cursor.fetchall())
         connection.close()
@@ -107,7 +107,7 @@ def verify_table_space(server, test_tablespace_name):
 def delete_tablespace(connection, test_tablespace_name):
     try:
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT * FROM pg_tablespace ts WHERE"
+        pg_cursor.execute("SELECT * FROM pg_catalog.pg_tablespace ts WHERE"
                           " ts.spcname='%s'" % test_tablespace_name)
         tablespace_count = len(pg_cursor.fetchall())
         if tablespace_count:

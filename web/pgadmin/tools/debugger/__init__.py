@@ -538,7 +538,7 @@ def check_debugger_enabled(conn, ret_status):
     """
     msg = ''
     status_in, rid_tar = conn.execute_scalar(
-        "SELECT count(*) FROM pg_proc WHERE "
+        "SELECT count(*) FROM pg_catalog.pg_proc WHERE "
         "proname = 'pldbg_get_target_info'"
     )
     if not status_in:
@@ -552,7 +552,7 @@ def check_debugger_enabled(conn, ret_status):
     # We also need to check to make sure that the debugger library is
     # also available.
     status_in, ret_oid = conn.execute_scalar(
-        "SELECT count(*) FROM pg_proc WHERE "
+        "SELECT count(*) FROM pg_catalog.pg_proc WHERE "
         "proname = 'plpgsql_oid_debug'"
     )
     if not status_in:
