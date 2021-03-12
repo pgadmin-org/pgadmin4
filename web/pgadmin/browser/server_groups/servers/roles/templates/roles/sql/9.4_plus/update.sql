@@ -99,3 +99,15 @@ GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(rolname) }}
 
 COMMENT ON ROLE {{ conn|qtIdent(rolname) }} IS {{ data.description|qtLiteral }};
 {% endif %}
+
+{% if 'rol_revoked_admins' in data and
+	data.rol_revoked_admins|length > 0
+%}
+
+REVOKE ADMIN OPTION FOR {{ conn|qtIdent(rolname) }} FROM {{ conn|qtIdent(data.rol_revoked_admins)|join(', ') }};{% endif %}{% if 'rol_revoked' in data and data.rol_revoked|length > 0 %}
+
+REVOKE {{ conn|qtIdent(rolname) }} FROM {{ conn|qtIdent(data.rol_revoked)|join(', ') }};{% endif %}{% if data.rol_admins and data.rol_admins|length > 0 %}
+
+GRANT {{ conn|qtIdent(rolname) }} TO {{ conn|qtIdent(data.rol_admins)|join(', ') }} WITH ADMIN OPTION;{% endif %}{% if data.rol_members and data.rol_members|length > 0 %}
+
+GRANT {{ conn|qtIdent(rolname) }} TO {{ conn|qtIdent(data.rol_members)|join(', ') }};{% endif %}

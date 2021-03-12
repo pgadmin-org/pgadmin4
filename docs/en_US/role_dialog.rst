@@ -71,11 +71,11 @@ Use the *Privileges* tab to grant privileges to the role.
     :alt: Role dialog membership tab
     :align: center
 
-* Specify members of the role in the *Role Membership* field. Click inside the
-  *Roles* field to select role names from a drop down list. Confirm each
-  selection by checking the checkbox to the right of the role name; delete a
-  selection by clicking the *x* to the left of the role name. Membership conveys
-  the privileges granted to the specified role to each of its members.
+* Specify member of the role in the *Member of* field and specify the members in the *Member* field.
+  Confirm each selection by checking the checkbox to the right of the role name;
+  delete a selection by clicking the *x* to the left of the role name.
+  Membership conveys the privileges granted to the specified role to each of
+  its members.
 
 Click the *Parameters* tab to continue.
 

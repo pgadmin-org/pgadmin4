@@ -90,7 +90,7 @@ define('pgadmin.node.role', [
     template: _.template([
       '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
       '<div class="<%=Backform.controlsClassName%>">',
-      '  <select title = <%=label%> multiple="multiple" style="width:100%;" class="pgadmin-controls <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-JSON.stringify(value)%>" <%=disabled ? "disabled" : ""%> <%=required ? "required" : ""%>>',
+      '  <select title = <%=label%> multiple="multiple" style="width:100%;" class="pgadmin-controls <%=extraClasses.join(\' \')%>" name="<%=name%>" value="<%-JSON.stringify(value)%>" <%=disabled ? "disabled" : ""%> <%=readonly ? "readonly" : ""%> <%=required ? "required" : ""%>>',
       '    <% for (var i=0; i < options.length; i++) { %>',
       '      <% var option = options[i]; %>',
       '      <option value=<%-option.value%> data-icon=<%-option.image%> <%=value != null && _.indexOf(value, option.value) != -1 ? "selected" : ""%> <%=option.disabled ? "disabled=\'disabled\'" : ""%>><%-option.label%></option>',
@@ -107,7 +107,7 @@ define('pgadmin.node.role', [
       '  <span><%= opttext %><span>',
       '  <% if (checkbox) { %>',
       '  <div class="custom-control custom-checkbox custom-checkbox-no-label d-inline">',
-      '    <input tabindex="-1" type="checkbox" class="custom-control-input" id="check_<%= opttext %>" />',
+      '    <input tabindex="-1" type="checkbox" class="custom-control-input" id="check_<%= opttext %>" <%=disabled ? "disabled" : ""%> />',
       '    <label class="custom-control-label" for="check_<%= opttext %>">',
       '      <span class="sr-only">WITH ADMIN<span>',
       '    </label>',
@@ -149,6 +149,7 @@ define('pgadmin.node.role', [
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
         visible:  evalF(data.visible, data, this.model),
+        readonly: evalF(data.readonly, data, this.model),
         required: evalF(data.required, data, this.model),
         helpMessage: evalASFunc(data.helpMessage, data, this.model),
       });
@@ -242,7 +243,7 @@ define('pgadmin.node.role', [
         multiple: true,
         tags: true,
         allowClear: data.disabled ? false : true,
-        placeholder: data.disabled ? '' : gettext('Select members'),
+        placeholder: data.disabled ? '' : gettext('Select roles'),
         width: 'style',
       }).on('change', function(e) {
         $(e.target).find(':selected').each(function() {
@@ -386,6 +387,7 @@ define('pgadmin.node.role', [
           rolcatupdate: false,
           rolreplication: false,
           rolmembership: [],
+          rolmembers: [],
           rolvaliduntil: null,
           seclabels: [],
           variables: [],
@@ -492,11 +494,12 @@ define('pgadmin.node.role', [
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
           min_version: 90100,
           readonly: 'readonly',
-        },{
-          id: 'rolmembership', label: gettext('Roles'),
+        },
+        {
+          id: 'rolmembership', label: gettext('Member of'),
           group: gettext('Membership'), type: 'collection',
-          cell: 'string', readonly: 'readonly',
-          mode: ['properties', 'edit', 'create'],
+          cell: 'string', mode: ['properties', 'edit', 'create'],
+          readonly: 'readonly',
           control: RoleMembersControl, model: pgBrowser.Node.Model.extend({
             keys: ['role'],
             idAttribute: 'role',
@@ -518,7 +521,34 @@ define('pgadmin.node.role', [
               return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
             }
           },
-        },{
+        },
+        {
+          id: 'rolmembers', label: gettext('Members'), type: 'collection', group: gettext('Membership'),
+          mode: ['properties', 'edit', 'create'], cell: 'string',
+          readonly: 'readonly',
+          control: RoleMembersControl, model: pgBrowser.Node.Model.extend({
+            keys: ['role'],
+            idAttribute: 'role',
+            defaults: {
+              role: undefined,
+              admin: false,
+            },
+            validate: function() {
+              return null;
+            },
+          }),
+          filter: function(d) {
+            return this.model.isNew() || (this.model.get('rolname') != d.label);
+          },
+          helpMessage: function(m) {
+            if (m.has('read_only') && m.get('read_only') == false) {
+              return gettext('Select the checkbox for roles to include WITH ADMIN OPTION.');
+            } else {
+              return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
+            }
+          },
+        },
+        {
           id: 'variables', label: '', type: 'collection',
           group: gettext('Parameters'), hasDatabase: true, url: 'variables',
           model: pgBrowser.Node.VariableModel.extend({keys:['name', 'database']}),

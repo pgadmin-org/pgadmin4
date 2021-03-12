@@ -236,6 +236,105 @@ class RoleView(PGChildNodeView):
                 data['rolmembership'].get('deleted', []),
                 lambda _: True, 'role')
 
+    def _process_rolmembers(self, id, data):
+        """
+        Parser role members.
+        :param id:
+        :param data:
+        """
+        def _part_dict_list(dict_list, condition, list_key=None):
+            ret_val = []
+            for d in dict_list:
+                if condition(d):
+                    ret_val.append(d[list_key])
+
+            return ret_val
+        if id == -1:
+            data['rol_members'] = []
+            data['rol_admins'] = []
+
+            data['rol_admins'] = _part_dict_list(
+                data['rolmembers'], lambda d: d['admin'], 'role')
+            data['rol_members'] = _part_dict_list(
+                data['rolmembers'], lambda d: not d['admin'], 'role')
+        else:
+            data['rol_admins'] = _part_dict_list(
+                data['rolmembers'].get('added', []),
+                lambda d: d['admin'], 'role')
+            data['rol_members'] = _part_dict_list(
+                data['rolmembers'].get('added', []),
+                lambda d: not d['admin'], 'role')
+
+            data['rol_admins'].extend(_part_dict_list(
+                data['rolmembers'].get('changed', []),
+                lambda d: d['admin'], 'role'))
+            data['rol_revoked_admins'] = _part_dict_list(
+                data['rolmembers'].get('changed', []),
+                lambda d: not d['admin'], 'role')
+
+            data['rol_revoked'] = _part_dict_list(
+                data['rolmembers'].get('deleted', []),
+                lambda _: True, 'role')
+
+    def _validate_rolemembers(self, id, data):
+        """
+        Validate the rolmembers data dict
+        :param data: role data
+        :return: valid or invalid message
+        """
+        if 'rolmembers' not in data:
+            return None
+
+        if id == -1:
+            msg = _("""
+Role members information must be passed as an array of JSON objects in the
+following format:
+
+rolmembers:[{
+    role: [rolename],
+    admin: True/False
+    },
+    ...
+]""")
+
+            if not self._validate_input_dict_for_new(data['rolmembers'],
+                                                     ['role', 'admin']):
+                return msg
+
+            self._process_rolmembers(id, data)
+            return None
+
+        msg = _("""
+Role membership information must be passed as a string representing an array of
+JSON objects in the following format:
+rolmembers:{
+    'added': [{
+        role: [rolename],
+        admin: True/False
+        },
+        ...
+        ],
+    'deleted': [{
+        role: [rolename],
+        admin: True/False
+        },
+        ...
+        ],
+    'updated': [{
+        role: [rolename],
+        admin: True/False
+        },
+        ...
+        ]
+""")
+        if not self._validate_input_dict_for_update(data['rolmembers'],
+                                                    ['role', 'admin'],
+                                                    ['role']):
+            return msg
+
+        self._process_rolmembers(id, data)
+        return None
+
     def _validate_rolemembership(self, id, data):
         """
         Validate the rolmembership data dict
@@ -433,7 +532,7 @@ rolmembership:{
                         'rolcanlogin', 'rolsuper', 'rolcreatedb',
                         'rolcreaterole', 'rolinherit', 'rolreplication',
                         'rolcatupdate', 'variables', 'rolmembership',
-                        'seclabels'
+                        'seclabels', 'rolmembers'
                     ]:
                         data[key] = json.loads(val, encoding='utf-8')
                     else:
@@ -462,6 +561,11 @@ rolmembership:{
                 return precondition_required(invalid_msg)
 
             invalid_msg = self._validate_variables(
+                kwargs.get('rid', -1), data)
+            if invalid_msg is not None:
+                return precondition_required(invalid_msg)
+
+            invalid_msg = self._validate_rolemembers(
                 kwargs.get('rid', -1), data)
             if invalid_msg is not None:
                 return precondition_required(invalid_msg)
@@ -715,6 +819,16 @@ rolmembership:{
                         'label': sec.group(2)
                     })
                 row['seclabels'] = res
+
+            if 'rolmembers' in row:
+                rolmembers = []
+                for role in row['rolmembers']:
+                    role = re.search(r'([01])(.+)', role)
+                    rolmembers.append({
+                        'role': role.group(2),
+                        'admin': True if role.group(1) == '1' else False
+                    })
+                row['rolmembers'] = rolmembers
 
     @check_precondition(action='properties')
     def properties(self, gid, sid, rid):

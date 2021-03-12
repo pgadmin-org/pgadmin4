@@ -117,7 +117,8 @@ select[readonly].select2-hidden-accessible + .select2-container {
 }
 
 select[readonly].select2-hidden-accessible + .select2-container .select2-selection {
-    background: #eee;
+    background: $select2-readonly;
+    color: $text-muted;
     box-shadow: none;
 }
 
