@@ -23,6 +23,8 @@ Bug fixes
 
 | `Issue #4438 <https://redmine.postgresql.org/issues/4438>`_ -  Fixed an issue where adding/updating records fails if the table name contains percent sign.
 | `Issue #4784 <https://redmine.postgresql.org/issues/4784>`_ -  Ensure that autovacuum and analyze scale factors should be editable with more than two decimals.
+| `Issue #4847 <https://redmine.postgresql.org/issues/4847>`_ -  Fixed an issue where % displayed twice in explain analyze for query and table.
+| `Issue #4849 <https://redmine.postgresql.org/issues/4849>`_ -  Rename text 'table' with 'relation' in the statistic tab for explain analyze.
 | `Issue #4959 <https://redmine.postgresql.org/issues/4959>`_ -  Fixed an issue where the properties tab for collection nodes is unresponsive after switching the tabs.
 | `Issue #5073 <https://redmine.postgresql.org/issues/5073>`_ -  Fixed an issue where the Save button is enabled for functions/procedures by default when open the properties dialog.
 | `Issue #5119 <https://redmine.postgresql.org/issues/5119>`_ -  Fixed an issue where hanging symlinks in a directory cause select file dialog to break.
