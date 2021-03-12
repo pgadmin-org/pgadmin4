@@ -21,6 +21,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4020 <https://redmine.postgresql.org/issues/4020>`_ -  Fixed color issue on the statistics tab for collection node in the safari browser.
 | `Issue #4438 <https://redmine.postgresql.org/issues/4438>`_ -  Fixed an issue where adding/updating records fails if the table name contains percent sign.
 | `Issue #4784 <https://redmine.postgresql.org/issues/4784>`_ -  Ensure that autovacuum and analyze scale factors should be editable with more than two decimals.
 | `Issue #4847 <https://redmine.postgresql.org/issues/4847>`_ -  Fixed an issue where % displayed twice in explain analyze for query and table.

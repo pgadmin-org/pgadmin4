@@ -255,6 +255,10 @@ legend {
 .table {
 	margin-bottom: 0rem;
 	user-select: text;
+	table-layout: fixed;
+	max-width: none;
+	width: auto;
+	min-width: 100%;
 	th {
 		padding: $table-header-cell-padding $table-cell-padding;
 	}
