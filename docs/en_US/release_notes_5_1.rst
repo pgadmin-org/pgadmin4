@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #5404 <https://redmine.postgresql.org/issues/5404>`_ -  Show the login roles that are members of a group role be shown when examining a group role.
+| `Issue #6212 <https://redmine.postgresql.org/issues/6212>`_ -  Make the container distribution a multi-arch build with x86_64 and Arm64 support.
 | `Issue #6268 <https://redmine.postgresql.org/issues/6268>`_ -  Make 'kerberos' an optional feature in the Python wheel, to avoid the need to install MIT Kerberos on the system by default.
 | `Issue #6270 <https://redmine.postgresql.org/issues/6270>`_ -  Added '--replace' option in Import server to replace the list of servers with the newly imported one.
 
