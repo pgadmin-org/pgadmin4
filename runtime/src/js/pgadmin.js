@@ -13,21 +13,21 @@ const path = require('path');
 const misc = require('../js/misc.js');
 const spawn = require('child_process').spawn;
 
-var pgadminServerProcess = null;
-var startPageUrl = null;
-var serverCheckUrl = null;
+let pgadminServerProcess = null;
+let startPageUrl = null;
+let serverCheckUrl = null;
 
-var serverPort = 5050;
+let serverPort = 5050;
 
 // Paths to the rest of the app
-var pythonPath = misc.getPythonPath();
-var pgadminFile = '../web/pgAdmin4.py';
-var configFile = '../web/config.py';
+let pythonPath = misc.getPythonPath();
+let pgadminFile = '../web/pgAdmin4.py';
+let configFile = '../web/config.py';
 
 // Override the paths above, if a developer needs to
 if (fs.existsSync('dev_config.json')) {
   try {
-    var dev_config = JSON.parse(fs.readFileSync('dev_config.json'));
+    let dev_config = JSON.parse(fs.readFileSync('dev_config.json'));
     pythonPath = dev_config['pythonPath'];
     pgadminFile = dev_config['pgadminFile'];
   } catch (error) {
@@ -37,14 +37,12 @@ if (fs.existsSync('dev_config.json')) {
 
 // This function is used to create UUID
 function createUUID() {
-  var dt = new Date().getTime();
-  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = (dt + Math.random()*16)%16 | 0;
+  let dt = new Date().getTime();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    let r = (dt + Math.random()*16)%16 | 0;
     dt = Math.floor(dt/16);
-    return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+    return (c==='x' ? r :(r&0x3|0x8)).toString(16);
   });
-
-  return uuid;
 }
 
 // This functions is used to start the pgAdmin4 server by spawning a
@@ -55,7 +53,7 @@ function startDesktopMode() {
   if (pgadminServerProcess != null)
     return;
 
-  var UUID = createUUID();
+  let UUID = createUUID();
   // Set the environment variables so that pgAdmin 4 server
   // starts listening on the appropriate port.
   process.env.PGADMIN_INT_PORT = serverPort;
@@ -71,7 +69,7 @@ function startDesktopMode() {
   // Write Python Path, pgAdmin file path and command in log file.
   misc.writeServerLog('pgAdmin Runtime Environment');
   misc.writeServerLog('--------------------------------------------------------');
-  var command = path.resolve(pythonPath) + ' ' + path.resolve(pgadminFile);
+  let command = path.resolve(pythonPath) + ' ' + path.resolve(pgadminFile);
   misc.writeServerLog('Python Path: "' + path.resolve(pythonPath) + '"');
   misc.writeServerLog('Runtime Config File: "' + path.resolve(misc.getRunTimeConfigFile()) + '"');
   misc.writeServerLog('pgAdmin Config File: "' + path.resolve(configFile) + '"');
@@ -131,15 +129,15 @@ function startDesktopMode() {
     return axios.get(serverCheckUrl);
   }
 
-  var connectionTimeout = misc.ConfigureStore.get('connectionTimeout', 90) * 1000;
-  var currentTime = (new Date).getTime();
-  var endTime =  currentTime + connectionTimeout;
-  var midTime1 = currentTime + (connectionTimeout/2);
-  var midTime2 = currentTime + (connectionTimeout*2/3);
-  var pingInProgress = false;
+  let connectionTimeout = misc.ConfigureStore.get('connectionTimeout', 90) * 1000;
+  let currentTime = (new Date).getTime();
+  let endTime =  currentTime + connectionTimeout;
+  let midTime1 = currentTime + (connectionTimeout/2);
+  let midTime2 = currentTime + (connectionTimeout*2/3);
+  let pingInProgress = false;
 
   // ping pgAdmin server every 1 second.
-  var intervalID = setInterval(function() {
+  let intervalID = setInterval(function() {
     // If ping request is already send and response is not
     // received no need to send another request.
     if (pingInProgress)
@@ -155,7 +153,7 @@ function startDesktopMode() {
       launchPgAdminWindow();
     }).catch(() => {
       pingInProgress = false;
-      var curTime = (new Date).getTime();
+      let curTime = (new Date).getTime();
       // if the connection timeout has lapsed then throw an error
       // and stop pinging the server.
       if (curTime >= endTime) {
@@ -193,8 +191,8 @@ function startDesktopMode() {
 function launchPgAdminWindow() {
   // Create and launch new window and open pgAdmin url
   misc.writeServerLog('Application Server URL: ' + startPageUrl);
-  var winWidth = misc.ConfigureStore.get('windowWidth', 1300);
-  var winHeight = misc.ConfigureStore.get('windowHeight', 900);
+  let winWidth = misc.ConfigureStore.get('windowWidth', 1300);
+  let winHeight = misc.ConfigureStore.get('windowHeight', 900);
 
   nw.Window.open(startPageUrl, {
     'icon': '../../assets/pgAdmin4.png',
@@ -262,15 +260,15 @@ function launchPgAdminWindow() {
 }
 
 // Get the gui object of NW.js
-var gui = require('nw.gui');
-var splashWindow = gui.Window.get();
+let gui = require('nw.gui');
+let splashWindow = gui.Window.get();
 
 // Always clear the cache before starting the application.
 nw.App.clearCache();
 
 // Create Mac Builtin Menu
-if (platform() == 'darwin') {
-  var macMenu = new  gui.Menu({type: 'menubar'});
+if (platform() === 'darwin') {
+  let macMenu = new  gui.Menu({type: 'menubar'});
   macMenu.createMacBuiltin('pgAdmin 4');
   splashWindow.menu = macMenu;
 }
@@ -279,7 +277,7 @@ splashWindow.on('loaded', function() {
   // Initialize the ConfigureStore
   misc.ConfigureStore.init();
 
-  var fixedPortCheck = misc.ConfigureStore.get('fixedPort', false);
+  let fixedPortCheck = misc.ConfigureStore.get('fixedPort', false);
   if (fixedPortCheck) {
     serverPort = misc.ConfigureStore.get('portNo');
     //Start the pgAdmin in Desktop mode.
@@ -293,7 +291,7 @@ splashWindow.on('loaded', function() {
         startDesktopMode();
       })
       .catch((errCode) => {
-        if (errCode == 'EADDRINUSE') {
+        if (errCode === 'EADDRINUSE') {
           alert('The port specified is already in use. Please enter a free port number.');
         } else {
           alert(errCode);

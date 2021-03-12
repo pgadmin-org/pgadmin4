@@ -10,8 +10,8 @@
 const misc = require('../js/misc.js');
 
 // Get the window object of view log window
-var gui = require('nw.gui');
-var logWindow = gui.Window.get();
+let gui = require('nw.gui');
+let logWindow = gui.Window.get();
 
 logWindow.on('loaded', function() {
   document.getElementById('status-text').innerHTML = '';

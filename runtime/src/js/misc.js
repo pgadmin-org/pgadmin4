@@ -11,8 +11,8 @@ const fs = require('fs');
 const path = require('path');
 const net = require('net');
 const {platform, homedir} = require('os');
-var pgadminServerProcess = null;
-var pgAdminWindowObject = null;
+let pgadminServerProcess = null;
+let pgAdminWindowObject = null;
 
 // This function is used to check whether directory is present or not
 // if not present then create it recursively
@@ -25,7 +25,7 @@ const createDir = (dirName) => {
 // This function is used to get the python executable path
 // based on the platform. Use this for deployment.
 const getPythonPath = () => {
-  var pythonPath = '';
+  let pythonPath;
   switch (platform()) {
   case 'win32':
     pythonPath = '../python/python.exe';
@@ -50,7 +50,7 @@ const getPythonPath = () => {
 // This function is used to get the [roaming] app data path
 // based on the platform. Use this for config etc.
 const getAppDataPath = () => {
-  var appDataPath = '';
+  let appDataPath;
   switch (platform()) {
   case 'win32':
     appDataPath = path.join(process.env.APPDATA, 'pgadmin');
@@ -86,7 +86,7 @@ const getAppDataPath = () => {
 // This function is used to get the [local] app data path
 // based on the platform. Use this for logs etc.
 const getLocalAppDataPath = () => {
-  var localAppDataPath = '';
+  let localAppDataPath;
   switch (platform()) {
   case 'win32':
     localAppDataPath = path.join(process.env.LOCALAPPDATA, 'pgadmin');
@@ -132,7 +132,7 @@ const getAvailablePort = (fixedPort) => {
     });
 
     server.on('listening', () => {
-      var serverPort = server.address().port;
+      let serverPort = server.address().port;
       server.close();
       resolve(serverPort);
     });
@@ -147,12 +147,12 @@ const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTime
 
 // This function is used to read the file and return the content
 const readServerLog = () => {
-  var data = null;
+  let data = null;
 
   if (fs.existsSync(serverLogFile)) {
     data = fs.readFileSync(serverLogFile, 'utf8');
   } else {
-    var errMsg = 'Unable to read file ' + serverLogFile + '.';
+    let errMsg = 'Unable to read file ' + serverLogFile + '.';
     console.warn(errMsg);
     return errMsg;
   }
@@ -237,7 +237,7 @@ const cleanupAndQuitApp = () => {
   }
 };
 
-var ConfigureStore = {
+let ConfigureStore = {
   fileName: configFileName,
   jsonData: {},
 
@@ -263,7 +263,7 @@ var ConfigureStore = {
         this.jsonData = {};
       }
     } else {
-      var errMsg = 'Unable to read file ' + this.fileName + ' not found.';
+      let errMsg = 'Unable to read file ' + this.fileName + ' not found.';
       console.warn(errMsg);
       return false;
     }
@@ -276,7 +276,7 @@ var ConfigureStore = {
   },
 
   get: function(key, if_not_value) {
-    if(this.jsonData[key] != undefined) {
+    if(this.jsonData[key] !== undefined) {
       return this.jsonData[key];
     } else {
       return if_not_value;
@@ -291,7 +291,7 @@ var ConfigureStore = {
       };
     } else {
       if(value === '' || value == null || typeof(value) == 'undefined') {
-        if(this.jsonData[key] != undefined) {
+        if(this.jsonData[key] !== undefined) {
           delete this.jsonData[key];
         }
       } else {
