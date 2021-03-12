@@ -69,12 +69,19 @@ function startDesktopMode() {
   document.getElementById('loader-text-status').innerHTML = 'Starting pgAdmin 4...';
 
   // Write Python Path, pgAdmin file path and command in log file.
+  misc.writeServerLog('pgAdmin Runtime Environment');
+  misc.writeServerLog('--------------------------------------------------------');
   var command = path.resolve(pythonPath) + ' ' + path.resolve(pgadminFile);
   misc.writeServerLog('Python Path: "' + path.resolve(pythonPath) + '"');
   misc.writeServerLog('Runtime Config File: "' + path.resolve(misc.getRunTimeConfigFile()) + '"');
   misc.writeServerLog('pgAdmin Config File: "' + path.resolve(configFile) + '"');
   misc.writeServerLog('Webapp Path: "' + path.resolve(pgadminFile) + '"');
   misc.writeServerLog('pgAdmin Command: "' + command + '"');
+  misc.writeServerLog('Environment: ');
+  Object.keys(process.env).forEach(function(key) {
+    misc.writeServerLog('  - ' + key + ': ' + process.env[key]);
+  });
+  misc.writeServerLog('--------------------------------------------------------\n');
 
   // Spawn the process to start pgAdmin4 server.
   pgadminServerProcess = spawn(pythonPath, [pgadminFile]);
