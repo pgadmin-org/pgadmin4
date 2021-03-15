@@ -35,7 +35,6 @@ module.exports = {
         // Lossless optimization with custom option
         // Feel free to experiment with options for better result for you
         plugins: [
-          ['gifsicle', { interlaced: true }],
           ['mozjpeg', { progressive: true }],
           ['optipng', { optimizationLevel: 7 }],
           ['pngquant', {quality: [0.75, .9], speed: 3}],

@@ -151,6 +151,7 @@ var webpackShimConfig = {
     'dagre':  path.join(__dirname, 'node_modules/dagre'),
     'graphlib': path.join(__dirname, 'node_modules/graphlib'),
     'react': path.join(__dirname, 'node_modules/react'),
+    'stylis': path.join(__dirname, 'node_modules/stylis'),
 
     // AciTree
     'jquery.acitree': path.join(__dirname, './node_modules/acitree/js/jquery.aciTree.min'),

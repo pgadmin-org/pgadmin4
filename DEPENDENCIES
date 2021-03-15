@@ -90,12 +90,12 @@ Name                                                             Version        
 @babel/types                                                     7.12.13          MIT                                  https://github.com/babel/babel.git
 @istanbuljs/schema                                               0.1.2            MIT                                  git+https://github.com/istanbuljs/schema.git
 @popperjs/core                                                   2.6.0            MIT                                  https://github.com/popperjs/popper-core.git
-@projectstorm/geometry                                           6.3.0            MIT                                  https://github.com/projectstorm/react-diagrams.git
-@projectstorm/react-canvas-core                                  6.3.0            MIT                                  https://github.com/projectstorm/react-diagrams.git
-@projectstorm/react-diagrams                                     6.3.0            MIT                                  https://github.com/projectstorm/react-diagrams.git
-@projectstorm/react-diagrams-core                                6.3.0            MIT                                  https://github.com/projectstorm/react-diagrams.git
-@projectstorm/react-diagrams-defaults                            6.3.0            MIT                                  https://github.com/projectstorm/react-diagrams.git
-@projectstorm/react-diagrams-routing                             6.3.0            MIT                                  https://github.com/projectstorm/react-diagrams.git
+@projectstorm/geometry                                           6.4.2            MIT                                  https://github.com/projectstorm/react-diagrams.git
+@projectstorm/react-canvas-core                                  6.4.2            MIT                                  https://github.com/projectstorm/react-diagrams.git
+@projectstorm/react-diagrams                                     6.4.2            MIT                                  https://github.com/projectstorm/react-diagrams.git
+@projectstorm/react-diagrams-core                                6.4.2            MIT                                  https://github.com/projectstorm/react-diagrams.git
+@projectstorm/react-diagrams-defaults                            6.4.2            MIT                                  https://github.com/projectstorm/react-diagrams.git
+@projectstorm/react-diagrams-routing                             6.4.2            MIT                                  https://github.com/projectstorm/react-diagrams.git
 @simonwep/pickr                                                  1.8.0            MIT                                  https://github.com/Simonwep/pickr.git
 @tippyjs/react                                                   4.2.0            MIT                                  git+https://github.com/atomiks/tippyjs-react.git
 @types/estree                                                    0.0.46           MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
@@ -321,13 +321,11 @@ postcss-svgo                                                     4.0.2          
 postcss-unique-selectors                                         4.0.1            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-value-parser                                             4.1.0            MIT                                  https://github.com/TrySound/postcss-value-parser.git
 postcss-value-parser                                             3.3.1            MIT                                  https://github.com/TrySound/postcss-value-parser.git
-prop-types                                                       15.7.2           MIT                                  https://github.com/facebook/prop-types.git
 punycode                                                         2.1.1            MIT                                  https://github.com/bestiejs/punycode.js.git
 q                                                                1.5.1            MIT                                  git://github.com/kriskowal/q.git
 raf                                                              3.4.1            MIT                                  git://github.com/chrisdickinson/raf.git
-react                                                            16.14.0          MIT                                  git+https://github.com/facebook/react.git
-react-dom                                                        16.14.0          MIT                                  git+https://github.com/facebook/react.git
-react-is                                                         16.13.1          MIT                                  https://github.com/facebook/react.git
+react                                                            17.0.1           MIT                                  https://github.com/facebook/react.git
+react-dom                                                        17.0.1           MIT                                  https://github.com/facebook/react.git
 regenerator-runtime                                              0.11.1           MIT                                  https://github.com/facebook/regenerator/tree/master/packages/regenerator-runtime
 repeating                                                        2.0.1            MIT                                  https://github.com/sindresorhus/repeating.git
 requirejs                                                        2.3.6            MIT                                  https://github.com/jrburke/r.js.git
@@ -336,7 +334,7 @@ rgb-regex                                                        1.0.1          
 rgba-regex                                                       1.0.0            MIT                                  https://github.com/johnotander/rgba-regex.git
 rollup                                                           1.32.1           MIT                                  https://github.com/rollup/rollup.git
 safe-buffer                                                      5.1.2            MIT                                  git://github.com/feross/safe-buffer.git
-scheduler                                                        0.19.1           MIT                                  https://github.com/facebook/react.git
+scheduler                                                        0.20.1           MIT                                  https://github.com/facebook/react.git
 schema-utils                                                     3.0.0            MIT                                  https://github.com/webpack/schema-utils.git
 schema-utils                                                     0.3.0            MIT                                  git+https://github.com/webpack-contrib/schema-utils.git
 select2                                                          4.0.13           MIT                                  git://github.com/select2/select2.git
@@ -424,5 +422,5 @@ precond                                                          0.2.3          
 webcabin-docker                                                  2.2.4-dev        MIT*                                 Unknown
 tablesorter                                                      2.31.3           (MIT OR GPL-2.0)                     git://github.com/Mottie/tablesorter.git
 
-364 dependencies listed.
+362 dependencies listed.
 
