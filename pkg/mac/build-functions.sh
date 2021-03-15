@@ -87,7 +87,7 @@ _create_python_env() {
 
     # Fixup shebangs
     cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin"
-    grep -RiIl 'mac-build' * | xargs sed -i '' 's/\/.*\/python3\./.\/python3./g'
+    grep -RiIl 'mac-build' * | xargs sed -i '' 's/\/.*\/python3\./\$(dirname \"$0\")\/python3./g'
 
     # Remove some things we don't need
     cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework"
