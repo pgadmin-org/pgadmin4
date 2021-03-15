@@ -13,6 +13,10 @@ const net = require('net');
 const {platform, homedir} = require('os');
 let pgadminServerProcess = null;
 let pgAdminWindowObject = null;
+let zoomInShortcut = null;
+let zoomOutShortcut = null;
+let actualSizeShortcut = null;
+let toggleFullScreenShortcut = null;
 
 // This function is used to check whether directory is present or not
 // if not present then create it recursively
@@ -143,7 +147,7 @@ const getAvailablePort = (fixedPort) => {
 const currentTime = (new Date()).getTime();
 const serverLogFile = path.join(getLocalAppDataPath(), 'pgadmin4.' + currentTime.toString() + '.log');
 const configFileName = path.join(getAppDataPath(), 'runtime_config.json');
-const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTimeout': 90, 'windowWidth': 1300, 'windowHeight': 900};
+const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTimeout': 90, 'windowWidth': 1300, 'windowHeight': 900, 'zoomLevel': 0};
 
 // This function is used to read the file and return the content
 const readServerLog = () => {
@@ -237,6 +241,107 @@ const cleanupAndQuitApp = () => {
   }
 };
 
+// This function is used to create zoom events based on platform
+const setZoomEvents = () => {
+  if (platform() == 'darwin') {
+    zoomInShortcut = new nw.Shortcut({key: 'Command+Equal'});
+    zoomOutShortcut = new nw.Shortcut({key: 'Command+Minus'});
+    actualSizeShortcut = new nw.Shortcut({key: 'Command+0'});
+    toggleFullScreenShortcut = new nw.Shortcut({key: 'Command+Ctrl+F'});
+  } else {
+    zoomInShortcut = new nw.Shortcut({key: 'Ctrl+Equal'});
+    zoomOutShortcut = new nw.Shortcut({key: 'Ctrl+Minus'});
+    actualSizeShortcut = new nw.Shortcut({key: 'Ctrl+0'});
+    // Use F10 instead of F11. F11 does not work possibly due to Chromium reserving it for their function.
+    toggleFullScreenShortcut = new nw.Shortcut({key: 'F10'});
+  }
+
+  zoomInShortcut.on('active', function() {
+    zoomIn();
+  });
+
+  zoomOutShortcut.on('active', function() {
+    zoomOut();
+  });
+
+  actualSizeShortcut.on('active', function() {
+    actualSize();
+  });
+
+  toggleFullScreenShortcut.on('active', function() {
+    toggleFullScreen();
+  });
+
+  zoomInShortcut.on('failed', function(msg) {
+    let errMsg = 'Failed to register zoom in shortcut with error: ' + msg;
+    console.warn(errMsg);
+  });
+
+  zoomOutShortcut.on('failed', function(msg) {
+    let errMsg = 'Failed to register zoom out shortcut with error: ' + msg;
+    console.warn(errMsg);
+  });
+
+  actualSizeShortcut.on('failed', function(msg) {
+    let errMsg = 'Failed to register actual size shortcut with error: ' + msg;
+    console.warn(errMsg);
+  });
+
+  toggleFullScreenShortcut.on('failed', function(msg) {
+    let errMsg = 'Failed to register toggle full screen shortcut with error: ' + msg;
+    console.warn(errMsg);
+  });
+};
+
+// This function used to zoom in the pgAdmin window.
+const zoomIn = () => {
+  if (pgAdminWindowObject != null) {
+    pgAdminWindowObject.zoomLevel += 0.5;
+    ConfigureStore.set('zoomLevel', pgAdminWindowObject.zoomLevel);
+    ConfigureStore.saveConfig();
+  }
+};
+
+// This function used to zoom out the pgAdmin window.
+const zoomOut = () => {
+  if (pgAdminWindowObject != null) {
+    pgAdminWindowObject.zoomLevel -= 0.5;
+    ConfigureStore.set('zoomLevel', pgAdminWindowObject.zoomLevel);
+    ConfigureStore.saveConfig();
+  }
+};
+
+// This function used to reset the zoom level of pgAdmin window.
+const actualSize = () => {
+  if (pgAdminWindowObject != null) {
+    pgAdminWindowObject.zoomLevel = 0;
+    ConfigureStore.set('zoomLevel', pgAdminWindowObject.zoomLevel);
+    ConfigureStore.saveConfig();
+  }
+};
+
+const toggleFullScreen = () => {
+  if (pgAdminWindowObject != null) {
+    pgAdminWindowObject.toggleFullscreen();
+  }
+};
+
+// This function is used to register zoom events.
+const registerZoomEvents = () => {
+  nw.App.registerGlobalHotKey(zoomInShortcut);
+  nw.App.registerGlobalHotKey(zoomOutShortcut);
+  nw.App.registerGlobalHotKey(actualSizeShortcut);
+  nw.App.registerGlobalHotKey(toggleFullScreenShortcut);
+};
+
+// This function is used to unregister zoom events.
+const unregisterZoomEvents = () => {
+  nw.App.unregisterGlobalHotKey(zoomInShortcut);
+  nw.App.unregisterGlobalHotKey(zoomOutShortcut);
+  nw.App.unregisterGlobalHotKey(actualSizeShortcut);
+  nw.App.unregisterGlobalHotKey(toggleFullScreenShortcut);
+};
+
 let ConfigureStore = {
   fileName: configFileName,
   jsonData: {},
@@ -312,5 +417,12 @@ module.exports = {
   getServerLogFile: getServerLogFile,
   getRunTimeConfigFile: getRunTimeConfigFile,
   setPgAdminWindowObject: setPgAdminWindowObject,
+  zoomIn: zoomIn,
+  zoomOut: zoomOut,
+  actualSize: actualSize,
+  toggleFullScreen: toggleFullScreen,
+  setZoomEvents: setZoomEvents,
+  registerZoomEvents: registerZoomEvents,
+  unregisterZoomEvents: unregisterZoomEvents,
   ConfigureStore: ConfigureStore,
 };

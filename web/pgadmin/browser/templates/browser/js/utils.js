@@ -22,6 +22,8 @@
   enable: "{{ item.enable }}",
   {% if item.checked is defined %}checked: {% if item.checked %}true{% else %}false{% endif %},
   {% endif %}
+  {% if item.below is defined %}below: {% if item.below %}true{% else %}false{% endif %},
+  {% endif %}
   {% if item.menu_items %}menu_items: {{MENU_ITEMS(key, item.menu_items)}}
   {% endif %}
 }

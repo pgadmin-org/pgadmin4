@@ -46,11 +46,28 @@ browser and the Python server creating a standalone application.
 Runtime Menu
 ------------
 
-Use the *File Menu* to access the *Runtime Menu*:
-
 .. image:: images/runtime_menu.png
     :alt: Runtime Menu
     :align: center
+
+Use the *File Menu* to access the *Runtime Menu*:
+
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| Option                  | Action                                                                                                  |
++=========================+=========================================================================================================+
+| *Configure...*          | Click to open configuration dialog to configure fixed port, port number and connection timeout.         |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *View log...*           | Click to open the view log dialog to view the pgAdmin 4 logs.                                           |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Enter Full Screen*     | Click to enter/exit the full screen mode. Keyboard Shortcuts: OSX (Cmd + Ctrl + F), Other OS (F10).     |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Actual Size*           | Click to change the window size to it original size. Keyboard Shortcuts: OSX (Cmd + 0),                 |
+|                         | Other OS (Ctrl + 0).                                                                                    |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Zoom In*               | Click to increase the zoom level. Keyboard Shortcuts: OSX (Cmd + +), Other OS (Ctrl + +).               |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Zoom Out*              | Click to decrease the zoom level. Keyboard Shortcuts: OSX (Cmd + -), Other OS (Ctrl + -).               |
++-------------------------+---------------------------------------------------------------------------------------------------------+
 
 Configuration Dialog
 --------------------

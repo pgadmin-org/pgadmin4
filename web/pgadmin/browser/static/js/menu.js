@@ -19,7 +19,7 @@ define([
     var menu_opts = [
         'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
         'category', 'target', 'url' /* Do not show icon in the menus, 'icon' */ , 'node',
-        'checked', 'menu_items',
+        'checked', 'below', 'menu_items',
       ],
       defaults = {
         url: '#',
@@ -101,7 +101,14 @@ define([
 
         url.append(textSpan);
 
-        this.$el = $('<li/>').append(url);
+        var mnu_element = $('<li/>').append(url);
+        // Check if below parameter is defined and true then we need to add
+        // separator.
+        if (!_.isUndefined(this.below) && this.below === true) {
+          mnu_element.append('<li class="dropdown-divider"></li>');
+        }
+
+        this.$el = mnu_element;
       }
 
     },

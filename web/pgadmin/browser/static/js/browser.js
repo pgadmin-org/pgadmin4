@@ -836,7 +836,7 @@ define('pgadmin.browser', [
                 enable: (_m.enable == '' ? true : (_.isString(_m.enable) &&
                   _m.enable.toLowerCase() == 'false') ?
                   false : _m.enable),
-                node: _m.node, checked: _m.checked,
+                node: _m.node, checked: _m.checked, below: _m.below,
               });
             };
 

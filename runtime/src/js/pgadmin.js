@@ -118,6 +118,14 @@ function startDesktopMode() {
         'focus': true,
         'show': true,
       });
+    } else if (chunk.indexOf('Runtime Zoom In') > -1) {
+      misc.zoomIn();
+    } else if (chunk.indexOf('Runtime Zoom Out') > -1) {
+      misc.zoomOut();
+    }  else if (chunk.indexOf('Runtime Actual Size') > -1) {
+      misc.actualSize();
+    } else if (chunk.indexOf('Runtime Toggle Full Screen') > -1) {
+      misc.toggleFullScreen();
     } else {
       misc.writeServerLog(chunk);
     }
@@ -209,6 +217,12 @@ function launchPgAdminWindow() {
     // Set pgAdmin4 Windows Object
     misc.setPgAdminWindowObject(pgadminWindow);
 
+    // Set the zoom level stored in the config file.
+    pgadminWindow.zoomLevel = misc.ConfigureStore.get('zoomLevel', 0);
+
+    // Set zoom in and out events.
+    misc.setZoomEvents();
+
     pgadminWindow.on('closed', function() {
       misc.cleanupAndQuitApp();
     });
@@ -252,9 +266,20 @@ function launchPgAdminWindow() {
         });
       });
 
-      misc.ConfigureStore.set('windowWidth', width);
-      misc.ConfigureStore.set('windowHeight', height);
-      misc.ConfigureStore.saveConfig();
+      // No need to write setting in case of full screen
+      if (!pgadminWindow.isFullscreen) {
+        misc.ConfigureStore.set('windowWidth', width);
+        misc.ConfigureStore.set('windowHeight', height);
+        misc.ConfigureStore.saveConfig();
+      }
+    });
+
+    pgadminWindow.on('blur',  function() {
+      misc.unregisterZoomEvents();
+    });
+
+    pgadminWindow.on('focus', function() {
+      misc.registerZoomEvents();
     });
   });
 }

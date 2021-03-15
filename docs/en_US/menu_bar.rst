@@ -28,6 +28,9 @@ Use the *File* menu to access the following options:
 | *Lock Layout*           | Click to open a submenu to select the level for locking the UI layout                                   |
 |                         | This can also be changed from browser display :ref:`preferences <preferences>`                          |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Runtime*               | Click to open a submenu to Configure, View Log and Zoom settings. Only visible when pgAdmin4 runs in    |
+|                         | desktop mode. To know more about runtime menu :ref:`click here <desktop_deployment>`                    |
++-------------------------+---------------------------------------------------------------------------------------------------------+
 
 The Object Menu
 ***************

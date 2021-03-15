@@ -10,6 +10,7 @@
 import json
 import logging
 import os
+import sys
 from abc import ABCMeta, abstractmethod, abstractproperty
 from smtplib import SMTPConnectError, SMTPResponseException, \
     SMTPServerDisconnected, SMTPDataError, SMTPHeloError, SMTPException, \
@@ -55,7 +56,6 @@ try:
     from flask_security.views import default_render_json
 except ImportError as e:
     # Support Flask-Security-Too == 3.2
-    import sys
     if sys.version_info < (3, 8):
         from flask_security.views import _render_json as default_render_json
 
@@ -272,6 +272,17 @@ class BrowserModule(PgAdminModule):
 
         # We need 'Configure...' and 'View log...' Menu only in runtime.
         if current_app.PGADMIN_RUNTIME:
+            full_screen_label = gettext('Enter Full Screen  (F10)')
+            actual_size_label = gettext('Actual Size (Ctrl 0)')
+            zoom_in_label = gettext('Zoom In (Ctrl +)')
+            zoom_out_label = gettext('Zoom Out (Ctrl -)')
+
+            if sys.platform == 'darwin':
+                full_screen_label = gettext('Enter Full Screen  (Cmd Ctrl F)')
+                actual_size_label = gettext('Actual Size (Cmd 0)')
+                zoom_in_label = gettext('Zoom In (Cmd +)')
+                zoom_out_label = gettext('Zoom Out (Cmd -)')
+
             menus['file_items'].append(
                 MenuItem(
                     name='mnu_runtime',
@@ -289,7 +300,32 @@ class BrowserModule(PgAdminModule):
                         module=PGADMIN_BROWSER,
                         callback='mnu_viewlog_runtime',
                         priority=1,
-                        label=gettext('View log...')
+                        label=gettext('View log...'),
+                        below=True,
+                    ), MenuItem(
+                        name='mnu_toggle_fullscreen_runtime',
+                        module=PGADMIN_BROWSER,
+                        callback='mnu_toggle_fullscreen_runtime',
+                        priority=2,
+                        label=full_screen_label
+                    ), MenuItem(
+                        name='mnu_actual_size_runtime',
+                        module=PGADMIN_BROWSER,
+                        callback='mnu_actual_size_runtime',
+                        priority=3,
+                        label=actual_size_label
+                    ), MenuItem(
+                        name='mnu_zoomin_runtime',
+                        module=PGADMIN_BROWSER,
+                        callback='mnu_zoomin_runtime',
+                        priority=4,
+                        label=zoom_in_label
+                    ), MenuItem(
+                        name='mnu_zoomout_runtime',
+                        module=PGADMIN_BROWSER,
+                        callback='mnu_zoomout_runtime',
+                        priority=5,
+                        label=zoom_out_label
                     )]
                 )
             )
