@@ -16,7 +16,7 @@ config.CONSOLE_LOG_LEVEL = logging.DEBUG
 config.FILE_LOG_LEVEL = logging.DEBUG
 
 # Here the sqlitedb is initialized
-#exec(open("web/setup.py").read())
+exec(open("web/setup.py").read())
 
 from sys import argv
 
@@ -138,14 +138,33 @@ conn.close()
 test_client.post('schema_diff/database/connect/{0}/{1}'.format(server_id_2, tar_db_id))
 
 # compare the dbs
+# get the final schema_diff.json
+
+import threading
+import time
+
+result = {'res': None}
 
 comp_url = 'schema_diff/compare_database/{0}/{1}/{2}/{3}/{4}'.format(trans_id, server_id_1, src_db_id, server_id_2, tar_db_id)
 
-response = test_client.get(comp_url)
+def get_schema_diff(test_client, comp_url, result):
+    response = test_client.get(comp_url)
+    result['res'] = response.data
 
-# get the final schema_diff.json
+x = threading.Thread(target=get_schema_diff, args=(test_client, comp_url, result))
+x.start()
 
-response_data = json.loads(response.data.decode('utf-8'))
-file = open('output-5.json', 'w')
+while x.is_alive():
+  res = test_client.get(f'schema_diff/poll/{trans_id}')
+  logging.warning(res.data)
+  time.sleep(2)
+
+x.join()
+
+response_data = json.loads(result['res'].decode('utf-8'))
+
+# save it to a file
+file = open('output-7.json', 'w')
 json.dump(response_data, file)
 file.close()
+
