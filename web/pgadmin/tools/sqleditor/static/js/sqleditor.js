@@ -4172,6 +4172,7 @@ define('tools.querytool', [
         if(pgAdmin.SqlEditor.copiedInOtherSessionWithHeaders) {
           copied_rows = copied_rows.slice(1);
         }
+        var row_index = 0;
         copied_rows = copied_rows.reduce((partial, values) => {
           // split each row with field separator character
           let row = {};
@@ -4182,13 +4183,27 @@ define('tools.querytool', [
             if(v === '') {
               if(self.columns[col].has_default_val) {
                 v = undefined;
+              } else if (self.copied_rows[row_index][self.columns[col].display_name] === null) {
+                v = null;
+              } else {
+                v = '';
+              }
+            }
+
+            if(self.columns[col].cell === 'boolean') {
+              if(v == 'true') {
+                v = true;
+              } else if(v == 'false') {
+                v = false;
               } else {
                 v = null;
               }
             }
+
             row[self.columns[col].name] = v;
           }
           partial.push(row);
+          row_index ++;
           return partial;
         }, []);
 

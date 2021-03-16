@@ -49,3 +49,4 @@ Bug fixes
 | `Issue #6286 <https://redmine.postgresql.org/issues/6286>`_ -  Ensure that the template database should be visible while creating the database.
 | `Issue #6292 <https://redmine.postgresql.org/issues/6292>`_ -  Fixed string index out of range error where the dependent tab is in focus and selecting any publication or table.
 | `Issue #6294 <https://redmine.postgresql.org/issues/6294>`_ -  Fixed an issue where the dependent tab throwing an error when selecting any login/group role.
+| `Issue #6312 <https://redmine.postgresql.org/issues/6312>`_ -  Fixed an issue where copy/paste rows in view data paste the wrong value for boolean type.

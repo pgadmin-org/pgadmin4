@@ -158,6 +158,8 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
             val = quote_char + JSONBigNumber.stringify(val) + quote_char;
           } else if (val && cell_type != 'number' && cell_type != 'boolean') {
             val = quote_char + escape(val.toString()) + quote_char;
+          } else if (cell_type == 'string' && _.isNull(val)){
+            val = null;
           } else if (_.isNull(val) || _.isUndefined(val)) {
             val = '';
           }
