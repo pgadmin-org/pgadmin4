@@ -74,11 +74,8 @@ server_passed_2 = {
 from regression.python_test_utils import test_utils
 
 # create pg server rows in the sqlite db
-server_1 = test_utils.create_parent_server_node(server_passed_1)
-server_id_1 = server_1['server_id']
-
-server_2 = test_utils.create_parent_server_node(server_passed_2)
-server_id_2 = server_2['server_id']
+server_id_1 = test_utils.create_server(server_passed_1)
+server_id_2 = test_utils.create_server(server_passed_2)
 
 # create flask app
 from pgadmin import create_app
