@@ -12,8 +12,8 @@ config.SERVER_MODE = False
 config.WTF_CSRF_ENABLED = False
 #config.LOGIN_DISABLED = True
 
-config.CONSOLE_LOG_LEVEL = logging.DEBUG
-config.FILE_LOG_LEVEL = logging.DEBUG
+config.CONSOLE_LOG_LEVEL = logging.ERROR
+config.FILE_LOG_LEVEL = logging.ERROR
 
 # Here the sqlitedb is initialized
 exec(open("web/setup.py").read())
@@ -156,7 +156,7 @@ x.start()
 
 while x.is_alive():
   res = test_client.get(f'schema_diff/poll/{trans_id}')
-  logging.warning(res.data)
+  print(res.data)
   time.sleep(2)
 
 x.join()
