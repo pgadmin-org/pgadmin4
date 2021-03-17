@@ -69,7 +69,7 @@ function startDesktopMode() {
   // Write Python Path, pgAdmin file path and command in log file.
   misc.writeServerLog('pgAdmin Runtime Environment');
   misc.writeServerLog('--------------------------------------------------------');
-  let command = path.resolve(pythonPath) + ' ' + path.resolve(pgadminFile);
+  let command = path.resolve(pythonPath) + ' -s ' + path.resolve(pgadminFile);
   misc.writeServerLog('Python Path: "' + path.resolve(pythonPath) + '"');
   misc.writeServerLog('Runtime Config File: "' + path.resolve(misc.getRunTimeConfigFile()) + '"');
   misc.writeServerLog('pgAdmin Config File: "' + path.resolve(configFile) + '"');
@@ -82,7 +82,7 @@ function startDesktopMode() {
   misc.writeServerLog('--------------------------------------------------------\n');
 
   // Spawn the process to start pgAdmin4 server.
-  pgadminServerProcess = spawn(pythonPath, [pgadminFile]);
+  pgadminServerProcess = spawn(path.resolve(pythonPath), ['-s', path.resolve(pgadminFile)]);
   pgadminServerProcess.on('error', function(err) {
     // Log the error into the log file if process failed to launch
     misc.writeServerLog('Failed to launch pgAdmin4. Error:');
