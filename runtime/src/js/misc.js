@@ -147,7 +147,7 @@ const getAvailablePort = (fixedPort) => {
 const currentTime = (new Date()).getTime();
 const serverLogFile = path.join(getLocalAppDataPath(), 'pgadmin4.' + currentTime.toString() + '.log');
 const configFileName = path.join(getAppDataPath(), 'runtime_config.json');
-const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTimeout': 90, 'windowWidth': 1300, 'windowHeight': 900, 'zoomLevel': 0};
+const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTimeout': 90, 'zoomLevel': 0};
 
 // This function is used to read the file and return the content
 const readServerLog = () => {
@@ -322,7 +322,16 @@ const actualSize = () => {
 
 const toggleFullScreen = () => {
   if (pgAdminWindowObject != null) {
+    // Toggle full screen
     pgAdminWindowObject.toggleFullscreen();
+
+    // Change the menu label.
+    var menu_label = pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML;
+    if (menu_label.indexOf('Enter Full Screen') > 0) {
+      pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Enter', 'Exit');
+    } else if (menu_label.indexOf('Exit Full Screen') > 0) {
+      pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Exit', 'Enter');
+    }
   }
 };
 
@@ -347,9 +356,34 @@ let ConfigureStore = {
   jsonData: {},
 
   init: function() {
+    // Initialize the Screen.
+    let screen_obj = nw.Screen.Init();
+    // Minimum resolution support
+    let screen_height = 480;
+    let screen_width = 640;
+
+    // if screen_obj is not null and have at least one element then get the
+    // height and width of the work area.
+    if (screen_obj !== null && screen_obj !== undefined &&
+        screen_obj.screens.length > 0) {
+      screen_height = screen_obj.screens[0]['work_area']['height'] - 100;
+      screen_width = screen_obj.screens[0]['work_area']['width'] - 100;
+    }
+
     if (!this.readConfig()){
       this.jsonData = DEFAULT_CONFIG_DATA;
+      this.jsonData['windowHeight'] = screen_height;
+      this.jsonData['windowWidth'] = screen_width;
       this.saveConfig();
+    } else {
+      // Check if stored window height and width is greater then the
+      // actual screen height and width, set the screen height and width.
+      if (ConfigureStore.get('windowHeight') > screen_height ||
+          ConfigureStore.get('windowWidth') > screen_width) {
+        this.set('windowHeight', screen_height);
+        this.set('windowWidth', screen_width);
+        this.saveConfig();
+      }
     }
   },
 

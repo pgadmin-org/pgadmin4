@@ -52,3 +52,4 @@ Bug fixes
 | `Issue #6307 <https://redmine.postgresql.org/issues/6307>`_ -  Fixed an issue where the incorrect values visible in the dependents tab for publication.
 | `Issue #6312 <https://redmine.postgresql.org/issues/6312>`_ -  Fixed an issue where copy/paste rows in view data paste the wrong value for boolean type.
 | `Issue #6316 <https://redmine.postgresql.org/issues/6316>`_ -  Ensure that the primary key should be visible properly in the table dialog.
+| `Issue #6322 <https://redmine.postgresql.org/issues/6322>`_ -  Fixed an issue where the top menu disappears when entering into the full screen for minimum screen resolution.

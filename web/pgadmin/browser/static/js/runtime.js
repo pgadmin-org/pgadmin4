@@ -42,14 +42,6 @@ _.extend(pgBrowser, {
 
   // This function is callback function when 'Enter Full Screen' menu is clicked.
   mnu_toggle_fullscreen_runtime: function() {
-    var menu_label = document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML;
-
-    if (menu_label.indexOf('Enter Full Screen') > 0) {
-      document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Enter', 'Exit');
-    } else if (menu_label.indexOf('Exit Full Screen') > 0) {
-      document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Exit', 'Enter');
-    }
-
     this.send_signal_to_runtime('Runtime Toggle Full Screen');
   },
 

@@ -199,8 +199,8 @@ function startDesktopMode() {
 function launchPgAdminWindow() {
   // Create and launch new window and open pgAdmin url
   misc.writeServerLog('Application Server URL: ' + startPageUrl);
-  let winWidth = misc.ConfigureStore.get('windowWidth', 1300);
-  let winHeight = misc.ConfigureStore.get('windowHeight', 900);
+  let winWidth = misc.ConfigureStore.get('windowWidth');
+  let winHeight = misc.ConfigureStore.get('windowHeight');
 
   nw.Window.open(startPageUrl, {
     'icon': '../../assets/pgAdmin4.png',
