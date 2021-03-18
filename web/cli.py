@@ -16,7 +16,7 @@ config.CONSOLE_LOG_LEVEL = logging.ERROR
 config.FILE_LOG_LEVEL = logging.ERROR
 
 # Here the sqlitedb is initialized
-exec(open("web/setup.py").read())
+# exec(open("web/setup.py").read())
 
 from sys import argv
 
@@ -62,7 +62,7 @@ server_passed_1 = {
 server_passed_2 = {
  'name': str(random.randint(10000, 65535)),
  'host': server_arg_2['host'],
- 'port': server_arg_2['port'] or 5432,
+ 'port': server_arg_2['port'],
  'db': server_arg_2['dbname'],
  'username': server_arg_2['user'],
  'db_password': server_arg_2['password'],
@@ -110,9 +110,6 @@ test_client.post('schema_diff/server/connect/{}'.format(server_id_2),
 
 import psycopg2
 
-# src_db_id = select oid from pg_database where datname = 'diff_source';
-# src_db_id = 1398827
-
 conn = psycopg2.connect(server_arg_1['connstring'])
 cur = conn.cursor()
 cur.execute("select oid from pg_database where datname = '{}'".format(server_passed_1['db']))
@@ -121,9 +118,6 @@ cur.close()
 conn.close()
 
 test_client.post('schema_diff/database/connect/{0}/{1}'.format(server_id_1, src_db_id))
-
-# tar_db_id = select oid from pg_database where datname = 'diff_target';
-# tar_db_id = 1399733
 
 conn = psycopg2.connect(server_arg_2['connstring'])
 cur = conn.cursor()
@@ -153,15 +147,19 @@ x.start()
 
 while x.is_alive():
   res = test_client.get(f'schema_diff/poll/{trans_id}')
-  print(res.data)
+  res_data = json.loads(res.data.decode('utf-8'))
+  data = res_data['data']
+  print("{}...{}%".format(data['compare_msg'], data['diff_percentage']))
   time.sleep(2)
 
 x.join()
 
 response_data = json.loads(result['res'].decode('utf-8'))
 
-# save it to a file
-file = open('output-7.json', 'w')
-json.dump(response_data, file)
-file.close()
-
+if response_data['success'] == 1:
+  # save it to a file
+  file = open('output-7.json', 'w')
+  json.dump(response_data['data'], file)
+  file.close()
+else:
+  print("Error: {}".format(response_data['errormsg']))
