@@ -3,8 +3,6 @@ import config
 
 ## Steps for producing the schema diff json output
 
-# tell to create the sqlite db in a testing path
-# ideally setup.py should receive an argument for telling were the sqlite db is located
 import os
 os.environ["PGADMIN_TESTING_MODE"] = "1"
 
@@ -15,9 +13,13 @@ config.WTF_CSRF_ENABLED = False
 config.CONSOLE_LOG_LEVEL = logging.ERROR
 config.FILE_LOG_LEVEL = logging.ERROR
 
-# Here the sqlitedb is initialized
-print("Creating sqlite db...")
-exec(open("web/setup.py").read())
+from pgadmin import create_app
+from pgadmin.model import SCHEMA_VERSION
+
+config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
+
+print("Starting the Flask app... creating the sqlite db...")
+app = create_app()
 
 from sys import argv
 
@@ -60,15 +62,9 @@ server_2 = {
 
 from regression.python_test_utils import test_utils
 
-print("Inserting server rows in sqlite...")
 # create pg server rows in the sqlite db
 server_id_1 = test_utils.create_server(server_1)
 server_id_2 = test_utils.create_server(server_2)
-
-print("Creating flask app...")
-# create flask app
-from pgadmin import create_app
-app = create_app()
 
 from regression.python_test_utils.csrf_test_client import TestClient
 
@@ -79,9 +75,8 @@ test_client = app.test_client()
 # Solve ERROR  pgadmin:        'PgAdmin' object has no attribute 'PGADMIN_INT_KEY'
 app.PGADMIN_INT_KEY = ''
 
-# schema diff process
-
 print("Starting schema diff...")
+
 # Might take a while
 res = test_client.get("schema_diff/initialize")
 
