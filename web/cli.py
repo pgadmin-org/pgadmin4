@@ -10,6 +10,55 @@ config.SERVER_MODE = False
 config.WTF_CSRF_ENABLED = False
 #config.LOGIN_DISABLED = True
 
+# Removing some unnecessary modules(attempt to speed up init)
+config.MODULE_BLACKLIST = [
+  'pgadmin.about'
+, 'pgadmin.authenticate'
+, 'pgadmin.browser.register_browser_preferences'
+, 'pgadmin.browser.server_groups.servers.pgagent'
+, 'pgadmin.browser.server_groups.servers.pgagent.schedules'
+, 'pgadmin.browser.server_groups.servers.pgagent.steps'
+, 'pgadmin.browser.server_groups.servers.pgagent.tests'
+, 'pgadmin.browser.server_groups.servers.pgagent.utils'
+, 'pgadmin.browser.server_groups.servers.pgagent.schedules.test'
+, 'pgadmin.browser.server_groups.servers.pgagent.steps.tests'
+, 'pgadmin.dashboard'
+, 'pgadmin.help'
+, 'pgadmin.misc'
+, 'pgadmin.preferences'
+, 'pgadmin.settings'
+, 'pgadmin.feature_tests'
+, 'pgadmin.tools.backup'
+, 'pgadmin.tools.datagrid'
+, 'pgadmin.tools.debugger'
+, 'pgadmin.tools.erd'
+, 'pgadmin.tools.grant_wizard'
+, 'pgadmin.tools.import_export'
+, 'pgadmin.tools.maintenance'
+, 'pgadmin.tools.restore'
+, 'pgadmin.tools.search_objects'
+, 'pgadmin.tools.sqleditor'
+, 'pgadmin.tools.storage_manager'
+, 'pgadmin.tools.user_management'
+, 'pgadmin.tools.backup.tests'
+, 'pgadmin.tools.datagrid.tests'
+, 'pgadmin.tools.debugger.tests'
+, 'pgadmin.tools.debugger.utils'
+, 'pgadmin.tools.erd.tests'
+, 'pgadmin.tools.erd.utils'
+, 'pgadmin.tools.grant_wizard.tests'
+, 'pgadmin.tools.import_export.tests'
+, 'pgadmin.tools.maintenance.tests'
+, 'pgadmin.tools.restore.tests'
+, 'pgadmin.tools.schema_diff.tests'
+, 'pgadmin.tools.search_objects.tests'
+, 'pgadmin.tools.search_objects.utils'
+, 'pgadmin.tools.sqleditor.command'
+, 'pgadmin.tools.sqleditor.tests'
+, 'pgadmin.tools.sqleditor.utils'
+, 'pgadmin.utils'
+]
+
 config.CONSOLE_LOG_LEVEL = logging.ERROR
 config.FILE_LOG_LEVEL = logging.ERROR
 
@@ -18,7 +67,8 @@ from pgadmin.model import SCHEMA_VERSION
 
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
-print("Starting the Flask app... creating the sqlite db...")
+print("Starting schema diff...")
+## Starts the Flask app, this step takes a while
 app = create_app()
 
 from sys import argv
@@ -75,9 +125,6 @@ test_client = app.test_client()
 # Solve ERROR  pgadmin:        'PgAdmin' object has no attribute 'PGADMIN_INT_KEY'
 app.PGADMIN_INT_KEY = ''
 
-print("Starting schema diff...")
-
-# Might take a while
 res = test_client.get("schema_diff/initialize")
 
 import json
