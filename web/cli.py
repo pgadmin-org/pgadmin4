@@ -20,7 +20,7 @@ config.FILE_LOG_LEVEL = logging.ERROR
 
 from sys import argv
 
-script, first, second = argv
+script, first, second, third = argv
 
 from psycopg2 import extensions as ext
 
@@ -158,8 +158,9 @@ response_data = json.loads(result['res'].decode('utf-8'))
 
 if response_data['success'] == 1:
   # save it to a file
-  file = open('output-7.json', 'w')
+  file = open(third, 'w')
   json.dump(response_data['data'], file)
   file.close()
+  print("Done. Wrote the schema diff output to '{}'".format(third))
 else:
   print("Error: {}".format(response_data['errormsg']))
