@@ -16,7 +16,8 @@ config.CONSOLE_LOG_LEVEL = logging.ERROR
 config.FILE_LOG_LEVEL = logging.ERROR
 
 # Here the sqlitedb is initialized
-# exec(open("web/setup.py").read())
+print("Creating sqlite db...")
+exec(open("web/setup.py").read())
 
 from sys import argv
 
@@ -24,59 +25,47 @@ script, first, second, third = argv
 
 from psycopg2 import extensions as ext
 
-# These ones should come as CLI args
-# first = 'postgres://postgres@localhost/diff_source'
-# second = 'postgres://postgres@localhost/diff_target'
-
 arg_1 = ext.parse_dsn(first)
 arg_2 = ext.parse_dsn(second)
 
 import random
 
-server_arg_1 ={
-  'port': 5432,
-  'password': '',
-  'connstring': first,
+server_1 = {
+ 'name': str(random.randint(10000, 65535)),
+ 'db': arg_1['dbname'],
+ 'username': arg_1['user'],
+ 'db_password': arg_1.get('password'),
+ 'role': '',
+ 'sslmode': 'prefer',
+ 'comment': '',
+ 'port': 5432,
+ 'password': '',
+ 'connstring': first,
   **arg_1
 }
 
-server_arg_2 ={
-  'port': 5432,
-  'password': '',
-  'connstring': second,
+server_2 = {
+ 'name': str(random.randint(10000, 65535)),
+ 'db': arg_2['dbname'],
+ 'username': arg_2['user'],
+ 'db_password': arg_2.get('password'),
+ 'role': '',
+ 'sslmode': 'prefer',
+ 'comment': '',
+ 'port': 5432,
+ 'password': '',
+ 'connstring': second,
   **arg_2
-}
-
-server_passed_1 = {
- 'name': str(random.randint(10000, 65535)),
- 'host': server_arg_1['host'],
- 'port': server_arg_1['port'],
- 'db': server_arg_1['dbname'],
- 'username': server_arg_1['user'],
- 'db_password': server_arg_1['password'],
- 'role': '',
- 'sslmode': 'prefer',
- 'comment': ''
-}
-
-server_passed_2 = {
- 'name': str(random.randint(10000, 65535)),
- 'host': server_arg_2['host'],
- 'port': server_arg_2['port'],
- 'db': server_arg_2['dbname'],
- 'username': server_arg_2['user'],
- 'db_password': server_arg_2['password'],
- 'role': '',
- 'sslmode': 'prefer',
- 'comment': ''
 }
 
 from regression.python_test_utils import test_utils
 
+print("Inserting server rows in sqlite...")
 # create pg server rows in the sqlite db
-server_id_1 = test_utils.create_server(server_passed_1)
-server_id_2 = test_utils.create_server(server_passed_2)
+server_id_1 = test_utils.create_server(server_1)
+server_id_2 = test_utils.create_server(server_2)
 
+print("Creating flask app...")
 # create flask app
 from pgadmin import create_app
 app = create_app()
@@ -92,6 +81,7 @@ app.PGADMIN_INT_KEY = ''
 
 # schema diff process
 
+print("Starting schema diff...")
 # Might take a while
 res = test_client.get("schema_diff/initialize")
 
@@ -103,25 +93,25 @@ trans_id = response_data['data']['schemaDiffTransId']
 
 # connect to both source and target servers
 test_client.post('schema_diff/server/connect/{}'.format(server_id_1),
-        data=json.dumps({'password': server_passed_1['db_password']}), content_type='html/json')
+        data=json.dumps({'password': server_1['db_password']}), content_type='html/json')
 
 test_client.post('schema_diff/server/connect/{}'.format(server_id_2),
-        data=json.dumps({'password': server_passed_2['db_password']}), content_type='html/json')
+        data=json.dumps({'password': server_2['db_password']}), content_type='html/json')
 
 import psycopg2
 
-conn = psycopg2.connect(server_arg_1['connstring'])
+conn = psycopg2.connect(server_1['connstring'])
 cur = conn.cursor()
-cur.execute("select oid from pg_database where datname = '{}'".format(server_passed_1['db']))
+cur.execute("select oid from pg_database where datname = '{}'".format(server_1['db']))
 src_db_id = cur.fetchone()[0]
 cur.close()
 conn.close()
 
 test_client.post('schema_diff/database/connect/{0}/{1}'.format(server_id_1, src_db_id))
 
-conn = psycopg2.connect(server_arg_2['connstring'])
+conn = psycopg2.connect(server_2['connstring'])
 cur = conn.cursor()
-cur.execute("select oid from pg_database where datname = '{}'".format(server_passed_2['db']))
+cur.execute("select oid from pg_database where datname = '{}'".format(server_2['db']))
 tar_db_id = cur.fetchone()[0]
 cur.close()
 conn.close()
