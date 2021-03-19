@@ -48,13 +48,7 @@ define('pgadmin.node.function', [
       id: 'argtype', label: gettext('Data type'), cell:
         'node-ajax-options', cellHeaderClasses: 'width_percent_30',
       control: 'node-ajax-options', type: 'text', url: 'get_types',
-      editable: function(m) {
-        var node_info = this.get('node_info');
-        if(node_info && 'catalog' in node_info) {
-          return false;
-        }
-        return _.isUndefined(m.isNew) ? true : m.isNew();
-      }, first_empty: true,
+      editable: 'isEditable', first_empty: true,
     },{
       id: 'argmode', label: gettext('Mode'), type: 'options',
       control: 'node-ajax-options', cellHeaderClasses:'width_percent_20',
@@ -66,13 +60,7 @@ define('pgadmin.node.function', [
         {'label': 'OUT', 'value': 'OUT'},
         {'label': 'INOUT', 'value': 'INOUT'},
         {'label': 'VARIADIC', 'value': 'VARIADIC'},
-      ], editable: function(m) {
-        var node_info = this.get('node_info');
-        if(node_info && 'catalog' in node_info) {
-          return false;
-        }
-        return _.isUndefined(m.isNew) ? true : m.isNew();
-      },
+      ], editable: 'isEditable',
     },{
       id: 'argname', label: gettext('Argument name'), type: 'text',
       cell: 'string', editable: 'isInCatalog', cellHeaderClasses:'width_percent_30',
@@ -82,6 +70,13 @@ define('pgadmin.node.function', [
     },
     ],
     toJSON: Backbone.Model.prototype.toJSON,
+    isEditable: function(m) {
+      var node_info = this.get('node_info');
+      if(node_info && 'catalog' in node_info) {
+        return false;
+      }
+      return _.isUndefined(m.isNew) ? true : m.isNew();
+    },
     isInCatalog: function(m){
       var node_info = this.get('node_info');
       if(node_info && 'catalog' in node_info) {

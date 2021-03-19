@@ -367,7 +367,6 @@ define('pgadmin.node.fts_configuration', [
           self.$grid.find('.new').removeClass('new');
           var newRow = self.grid.body.rows[idx].$el;
           newRow.addClass('new');
-          //$(newRow).pgMakeVisible('table-bordered');
           $(newRow).pgMakeVisible('backform-tab');
         }
 

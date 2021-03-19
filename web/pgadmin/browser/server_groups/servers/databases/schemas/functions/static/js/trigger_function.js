@@ -48,12 +48,7 @@ define('pgadmin.node.trigger_function', [
       },
       hasSQL: true,
       showMenu: function(itemData, item) {
-        let node = pgBrowser.treeMenu.findNodeByDomElement(item);
-
-        if (!node || node.parentNode.getData()._type === 'trigger')
-          return false;
-
-        return true;
+        return this.canEdit(itemData, item);
       },
       hasDepends: true,
       hasStatistics: true,

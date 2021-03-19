@@ -608,7 +608,7 @@ class Filemanager(object):
                 created = time.ctime(os.path.getctime(system_path))
                 modified = time.ctime(os.path.getmtime(system_path))
                 file_extension = str(splitext(system_path))
-            except Exception as e:
+            except Exception:
                 continue
 
             # set protected to 1 if no write or read permission
