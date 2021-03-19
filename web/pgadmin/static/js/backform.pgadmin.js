@@ -587,7 +587,6 @@ define([
     },
     template: _.template([
       '<span class="<%=controlLabelClassName%>"><%=label%></span>',
-      '<label class="sr-value sr-only" for="<%=cId%>"></label>',
       '<div class="<%=controlsClassName%> <%=extraClasses.join(\' \')%>">',
       '      <input tabindex="-1" type="checkbox" aria-hidden="true" aria-label="' + gettext('Toggle button') + '" data-style="quick" data-toggle="toggle"',
       '      data-size="<%=options.size%>" data-height="<%=options.height%>"  ',
@@ -615,11 +614,11 @@ define([
 
       if(this.$el.find('.toggle.btn').hasClass('off')) {
         this.$el.find('.sr-value').text(`
-          ${label}, ${offText}, ` + gettext('Toggle button') + `
+          ${label}, ${offText}, ` + gettext('Toggle') + `
         `);
       } else {
         this.$el.find('.sr-value').text(`
-          ${label}, ${onText}, ` + gettext('Toggle button') + `
+          ${label}, ${onText}, ` + gettext('Toggle') + `
         `);
       }
     },
@@ -693,6 +692,7 @@ define([
         .attr('id', data.cId);
 
       this.$el.find('.toggle.btn .toggle-group .btn').attr('aria-hidden', true);
+      this.$el.find('div.toggle').append('<label class="sr-value sr-only" for="<%=cId%>"></label>');
       this.setSrValue();
 
       this.updateInvalid();
