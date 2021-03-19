@@ -30,7 +30,7 @@ describe('#show_data', () => {
   let transId = 98765432;
   beforeEach(() => {
     pgBrowser.preferences_cache = dummy_cache;
-    alertify = jasmine.createSpyObj('alertify', ['alert']);
+    alertify = jasmine.createSpyObj('alertify', ['alert', 'error']);
     datagrid = {
       launch_grid: jasmine.createSpy('launch_grid'),
     };
@@ -138,13 +138,7 @@ describe('#show_data', () => {
   context('current node is underneath a schema', () => {
     it('does not create a transaction', () => {
       showDataGrid(datagrid, pgBrowser, alertify, {mnuid: 11}, [{id: 'schema1'}], transId);
-
-      expect(datagrid.launch_grid).toHaveBeenCalledWith(
-        98765432,
-        '/panel/98765432?is_query_tool=false&cmd_type=11&obj_type=schema&obj_id=4&sgid=1&sid=2&did=3&server_type=pg',
-        false,
-        'schema1.schema1/database1/someuser@server1'
-      );
+      expect(datagrid.launch_grid).not.toHaveBeenCalled();
     });
   });
 
@@ -164,12 +158,7 @@ describe('#show_data', () => {
   context('current node is underneath a catalog', () => {
     it('does not create a transaction', () => {
       showDataGrid(datagrid, pgBrowser, alertify, {mnuid: 11}, [{id: 'catalog1'}], transId);
-      expect(datagrid.launch_grid).toHaveBeenCalledWith(
-        98765432,
-        '/panel/98765432?is_query_tool=false&cmd_type=11&obj_type=catalog&obj_id=6&sgid=1&sid=2&did=3&server_type=pg',
-        false,
-        'catalog1.catalog1/database1/someuser@server1'
-      );
+      expect(datagrid.launch_grid).not.toHaveBeenCalled();
     });
   });
 });

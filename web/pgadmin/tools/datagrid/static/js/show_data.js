@@ -43,6 +43,12 @@ export function showDataGrid(
     return;
   }
 
+  let applicable_nodes = ['table', 'view', 'mview', 'foreign_table'];
+  if (applicable_nodes.indexOf(node.getData()._type) === -1) {
+    alertify.error(gettext('This feature is not applicable to the selected object.'));
+    return;
+  }
+
   const gridUrl = generateUrl(transId, connectionData, node.getData(), parentData);
   const queryToolTitle = generateDatagridTitle(pgBrowser, aciTreeIdentifier);
   if(filter) {
