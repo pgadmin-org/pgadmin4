@@ -245,6 +245,7 @@ define('pgadmin.node.role', [
         allowClear: data.disabled ? false : true,
         placeholder: data.disabled ? '' : gettext('Select roles'),
         width: 'style',
+        disabled: data.readonly ? true : false,
       }).on('change', function(e) {
         $(e.target).find(':selected').each(function() {
         });
