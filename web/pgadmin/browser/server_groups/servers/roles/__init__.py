@@ -538,37 +538,19 @@ rolmembership:{
                     else:
                         data[key] = val
 
-            invalid_msg = self._validate_rolname(kwargs.get('rid', -1), data)
-            if invalid_msg is not None:
-                return precondition_required(invalid_msg)
+            invalid_msg_arr = [
+                self._validate_rolname(kwargs.get('rid', -1), data),
+                self._validate_rolvaliduntil(data),
+                self._validate_rolconnlimit(data),
+                self._validate_rolemembership(kwargs.get('rid', -1), data),
+                self._validate_seclabels(kwargs.get('rid', -1), data),
+                self._validate_variables(kwargs.get('rid', -1), data),
+                self._validate_rolemembers(kwargs.get('rid', -1), data)
+            ]
 
-            invalid_msg = self._validate_rolvaliduntil(data)
-            if invalid_msg is not None:
-                return precondition_required(invalid_msg)
-
-            invalid_msg = self._validate_rolconnlimit(data)
-            if invalid_msg is not None:
-                return precondition_required(invalid_msg)
-
-            invalid_msg = self._validate_rolemembership(
-                kwargs.get('rid', -1), data)
-            if invalid_msg is not None:
-                return precondition_required(invalid_msg)
-
-            invalid_msg = self._validate_seclabels(
-                kwargs.get('rid', -1), data)
-            if invalid_msg is not None:
-                return precondition_required(invalid_msg)
-
-            invalid_msg = self._validate_variables(
-                kwargs.get('rid', -1), data)
-            if invalid_msg is not None:
-                return precondition_required(invalid_msg)
-
-            invalid_msg = self._validate_rolemembers(
-                kwargs.get('rid', -1), data)
-            if invalid_msg is not None:
-                return precondition_required(invalid_msg)
+            for invalid_msg in invalid_msg_arr:
+                if invalid_msg is not None:
+                    return precondition_required(invalid_msg)
 
             self.request = data
 
@@ -798,6 +780,30 @@ rolmembership:{
 
         return gone()
 
+    def _set_seclabels(self, row):
+
+        if 'seclabels' in row and row['seclabels'] is not None:
+            res = []
+            for sec in row['seclabels']:
+                sec = re.search(r'([^=]+)=(.*$)', sec)
+                res.append({
+                    'provider': sec.group(1),
+                    'label': sec.group(2)
+                })
+            row['seclabels'] = res
+
+    def _set_rolemembership(self, row):
+
+        if 'rolmembers' in row:
+            rolmembers = []
+            for role in row['rolmembers']:
+                role = re.search(r'([01])(.+)', role)
+                rolmembers.append({
+                    'role': role.group(2),
+                    'admin': True if role.group(1) == '1' else False
+                })
+            row['rolmembers'] = rolmembers
+
     def transform(self, rset):
         for row in rset['rows']:
             res = []
@@ -810,25 +816,8 @@ rolmembership:{
                     'admin': True if role.group(1) == '1' else False
                 })
             row['rolmembership'] = res
-            if 'seclabels' in row and row['seclabels'] is not None:
-                res = []
-                for sec in row['seclabels']:
-                    sec = re.search(r'([^=]+)=(.*$)', sec)
-                    res.append({
-                        'provider': sec.group(1),
-                        'label': sec.group(2)
-                    })
-                row['seclabels'] = res
-
-            if 'rolmembers' in row:
-                rolmembers = []
-                for role in row['rolmembers']:
-                    role = re.search(r'([01])(.+)', role)
-                    rolmembers.append({
-                        'role': role.group(2),
-                        'admin': True if role.group(1) == '1' else False
-                    })
-                row['rolmembers'] = rolmembers
+            self._set_seclabels(row)
+            self._set_rolemembership(row)
 
     @check_precondition(action='properties')
     def properties(self, gid, sid, rid):

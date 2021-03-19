@@ -1071,6 +1071,71 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             resp_data['pronamespace'] = self._get_schema(
                 resp_data['pronamespace'])
 
+    def _get_function_definition(self, scid, fnid, resp_data, target_schema):
+
+        sql = render_template("/".join([self.sql_template_path,
+                                        self._GET_DEFINITION_SQL]
+                                       ), data=resp_data,
+                              fnid=fnid, scid=scid)
+
+        status, res = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
+        elif target_schema:
+            res['rows'][0]['nspname'] = target_schema
+            resp_data['pronamespace'] = target_schema
+
+        # Add newline and tab before each argument to format
+        name_with_default_args = self.qtIdent(
+            self.conn,
+            res['rows'][0]['nspname'],
+            res['rows'][0]['proname']
+        ) + '(\n\t' + res['rows'][0]['func_args']. \
+            replace(', ', ',\n\t') + ')'
+
+        # Generate sql for "SQL panel"
+        # func_def is function signature with default arguments
+        # query_for - To distinguish the type of call
+        func_def = render_template("/".join([self.sql_template_path,
+                                             self._CREATE_SQL]),
+                                   data=resp_data, query_type="create",
+                                   func_def=name_with_default_args,
+                                   query_for="sql_panel")
+
+        return func_def
+
+    def _get_procedure_definition(self, scid, fnid, resp_data, target_schema):
+
+        sql = render_template("/".join([self.sql_template_path,
+                                        self._GET_DEFINITION_SQL]
+                                       ), data=resp_data,
+                              fnid=fnid, scid=scid)
+
+        status, res = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
+        elif target_schema:
+            res['rows'][0]['nspname'] = target_schema
+
+        # Add newline and tab before each argument to format
+        name_with_default_args = self.qtIdent(
+            self.conn,
+            res['rows'][0]['nspname'],
+            res['rows'][0]['proname']
+        ) + '(\n\t' + res['rows'][0]['func_args'].\
+            replace(', ', ',\n\t') + ')'
+
+        # Generate sql for "SQL panel"
+        # func_def is procedure signature with default arguments
+        # query_for - To distinguish the type of call
+        func_def = render_template("/".join([self.sql_template_path,
+                                             self._CREATE_SQL]),
+                                   data=resp_data, query_type="create",
+                                   func_def=name_with_default_args,
+                                   query_for="sql_panel")
+
+        return func_def
+
     @check_precondition
     def sql(self, gid, sid, did, scid, fnid=None, **kwargs):
         """
@@ -1113,6 +1178,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         if self.node_type == 'procedure':
             object_type = 'procedure'
+
             if 'provolatile' in resp_data:
                 resp_data['provolatile'] = vol_dict.get(
                     resp_data['provolatile'], ''
@@ -1121,36 +1187,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Get Schema Name from its OID.
             self._get_schema_name_from_oid(resp_data)
 
-            sql = render_template("/".join([self.sql_template_path,
-                                            self._GET_DEFINITION_SQL]
-                                           ), data=resp_data,
-                                  fnid=fnid, scid=scid)
-
-            status, res = self.conn.execute_2darray(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
-            elif target_schema:
-                res['rows'][0]['nspname'] = target_schema
-
-            # Add newline and tab before each argument to format
-            name_with_default_args = self.qtIdent(
-                self.conn,
-                res['rows'][0]['nspname'],
-                res['rows'][0]['proname']
-            ) + '(\n\t' + res['rows'][0]['func_args'].\
-                replace(', ', ',\n\t') + ')'
-
             # Parse privilege data
             self._parse_privilege_data(resp_data)
 
-            # Generate sql for "SQL panel"
-            # func_def is procedure signature with default arguments
-            # query_for - To distinguish the type of call
-            func_def = render_template("/".join([self.sql_template_path,
-                                                 self._CREATE_SQL]),
-                                       data=resp_data, query_type="create",
-                                       func_def=name_with_default_args,
-                                       query_for="sql_panel")
+            func_def = self._get_procedure_definition(scid, fnid, resp_data,
+                                                      target_schema)
         else:
             object_type = 'function'
 
@@ -1168,34 +1209,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Parse privilege data
             self._parse_privilege_data(resp_data)
 
-            sql = render_template("/".join([self.sql_template_path,
-                                            self._GET_DEFINITION_SQL]
-                                           ), data=resp_data,
-                                  fnid=fnid, scid=scid)
+            func_def = self._get_function_definition(scid, fnid, resp_data,
+                                                     target_schema)
 
-            status, res = self.conn.execute_2darray(sql)
-            if not status:
-                return internal_server_error(errormsg=res)
-            elif target_schema:
-                res['rows'][0]['nspname'] = target_schema
-                resp_data['pronamespace'] = target_schema
-
-            # Add newline and tab before each argument to format
-            name_with_default_args = self.qtIdent(
-                self.conn,
-                res['rows'][0]['nspname'],
-                res['rows'][0]['proname']
-            ) + '(\n\t' + res['rows'][0]['func_args']. \
-                replace(', ', ',\n\t') + ')'
-
-            # Generate sql for "SQL panel"
-            # func_def is function signature with default arguments
-            # query_for - To distinguish the type of call
-            func_def = render_template("/".join([self.sql_template_path,
-                                                 self._CREATE_SQL]),
-                                       data=resp_data, query_type="create",
-                                       func_def=name_with_default_args,
-                                       query_for="sql_panel")
+        # This is to check whether any exception occurred, if yes, then return
+        if not isinstance(func_def, str) and func_def.status_code is not None:
+            return func_def
 
         sql_header = """-- {0}: {1}.{2}({3})\n\n""".format(
             object_type.upper(), resp_data['pronamespace'],
