@@ -188,10 +188,17 @@ x.join()
 
 response_data = json.loads(result['res'].decode('utf-8'))
 
+import pathlib
+
+if pathlib.Path(third).suffix == '.json':
+    diff_result = json.dumps(response_data['data'], indent=4)
+else:
+    diff_result = '\n'.join(x.get('diff_ddl') for x in response_data['data'] if x.get('status') != 'Identical')
+
 if response_data['success'] == 1:
   # save it to a file
   file = open(third, 'w')
-  json.dump(response_data['data'], file)
+  file.write(diff_result)
   file.close()
   print("Done. Wrote the schema diff output to '{}'".format(third))
 else:
