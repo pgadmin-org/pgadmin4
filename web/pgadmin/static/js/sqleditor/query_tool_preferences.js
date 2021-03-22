@@ -225,8 +225,8 @@ function updateUIPreferences(sqlEditor) {
   }
   sqlEditor.query_tool_obj.setOption('foldGutter', preferences.code_folding);
   sqlEditor.query_tool_obj.setOption('indentWithTabs', !preferences.use_spaces);
-  sqlEditor.query_tool_obj.setOption('indentUnit', preferences.tab_size);
-  sqlEditor.query_tool_obj.setOption('tabSize', preferences.tab_size);
+  sqlEditor.query_tool_obj.setOption('indentUnit', preferences.use_spaces ? preferences.tab_size : 4);
+  sqlEditor.query_tool_obj.setOption('tabSize', preferences.use_spaces ? preferences.tab_size : 4);
   sqlEditor.query_tool_obj.setOption('lineWrapping', preferences.wrap_code);
   sqlEditor.query_tool_obj.setOption('autoCloseBrackets', preferences.insert_pair_brackets);
   sqlEditor.query_tool_obj.setOption('matchBrackets', preferences.brace_matching);

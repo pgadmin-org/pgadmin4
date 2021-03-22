@@ -46,6 +46,7 @@ def sql_format(sql):
     This function takes a SQL statement, formats it, and returns it
     """
     p = Preferences.module('sqleditor')
+    use_spaces = p.preference('use_spaces').get()
     output = sqlparse.format(sql,
                              keyword_case=p.preference(
                                  'keyword_case').get(),
@@ -63,10 +64,9 @@ def sql_format(sql):
                                  'comma_first').get(),
                              wrap_after=p.preference(
                                  'wrap_after').get(),
-                             indent_tabs=not p.preference(
-                                 'use_spaces').get(),
+                             indent_tabs=not use_spaces,
                              indent_width=p.preference(
-                                 'tab_size').get())
+                                 'tab_size').get() if use_spaces else 1)
 
     return output
 

@@ -36,11 +36,13 @@ Bug fixes
 | `Issue #5467 <https://redmine.postgresql.org/issues/5467>`_ -  Allow underscores in the Windows installation path.
 | `Issue #5628 <https://redmine.postgresql.org/issues/5628>`_ -  Remove the "launch now" option in the Windows installer, as UAC could cause it to run as an elevated user.
 | `Issue #5810 <https://redmine.postgresql.org/issues/5810>`_ -  Ensure that cell content being auto selected when editing the cell data.
+| `Issue #5869 <https://redmine.postgresql.org/issues/5869>`_ -  Ensure that SQL formatter should not add extra tabs and format the SQL correctly.
 | `Issue #6018 <https://redmine.postgresql.org/issues/6018>`_ -  Fixed encoding issue when database encoding set to SQL_ASCII and name of the column is in ASCII character.
 | `Issue #6159 <https://redmine.postgresql.org/issues/6159>`_ -  Ensure that the user should be able to kill the session from Dashboard if the user has a 'pg_signal_backend' role.
 | `Issue #6206 <https://redmine.postgresql.org/issues/6206>`_ -  Ensure that the view/edit data panel should not be opened for unsupported nodes using the keyboard shortcut.
 | `Issue #6227 <https://redmine.postgresql.org/issues/6227>`_ -  Ensure PGADMIN_DEFAULT_EMAIL looks sane when initialising a container deployment.
 | `Issue #6228 <https://redmine.postgresql.org/issues/6228>`_ -  Improve the web setup script for Linux to make the platform detection more robust and overrideable.
+| `Issue #6233 <https://redmine.postgresql.org/issues/6233>`_ -  Ensure that SQL formatter should not use tab size if 'Use spaces?' set to false.
 | `Issue #6253 <https://redmine.postgresql.org/issues/6253>`_ -  Fixed an issue where the user is unable to create a subscription if the host/IP address for connection is 127.0.0.1.
 | `Issue #6259 <https://redmine.postgresql.org/issues/6259>`_ -  Ensure that proper error message should be shown on the properties and statistics tab in case of insufficient privileges for a subscription.
 | `Issue #6260 <https://redmine.postgresql.org/issues/6260>`_ -  Fixed an issue where the 'Create Slot' option is disabled in case of the same IP/host provided but the port is different.
@@ -56,3 +58,4 @@ Bug fixes
 | `Issue #6316 <https://redmine.postgresql.org/issues/6316>`_ -  Ensure that the primary key should be visible properly in the table dialog.
 | `Issue #6317 <https://redmine.postgresql.org/issues/6317>`_ -  Ensure that toggle buttons are accessible by most screen readers.
 | `Issue #6322 <https://redmine.postgresql.org/issues/6322>`_ -  Fixed an issue where the top menu disappears when entering into the full screen for minimum screen resolution.
+| `Issue #6323 <https://redmine.postgresql.org/issues/6323>`_ -  Ensure that the grantor name should be visible properly for the security tab in the table dialog.
