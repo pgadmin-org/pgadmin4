@@ -3,6 +3,26 @@ import config
 
 ## Steps for producing the schema diff json output
 
+from sys import argv
+
+help = '''
+usage: pgadmin-schema-diff <source> <target> <file>
+
+where:
+  <source>: a postgres connection string for the source database(e.g. postgres://postgres@localhost/source)
+  <target>: a postgres connection string for the target database(e.g. postgres://postgres@localhost/target)
+  <file>  : a file to save the produced diff(e.g. diff.sql)
+
+To diff a particular schema use the connection string like:
+postgres://postgres@localhost/source?options=--search_path%3dmy_schema
+'''
+
+if len(argv) < 4:
+    print(help)
+    exit(1)
+
+_, first, second, third = argv
+
 import os
 os.environ["PGADMIN_TESTING_MODE"] = "1"
 
@@ -70,10 +90,6 @@ config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 print("Starting schema diff...")
 ## Starts the Flask app, this step takes a while
 app = create_app()
-
-from sys import argv
-
-script, first, second, third = argv
 
 from psycopg2 import extensions as ext
 
