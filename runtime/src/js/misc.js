@@ -293,10 +293,20 @@ const setZoomEvents = () => {
   });
 };
 
+// This function is used to iterate all open windows and set the zoom level.
+const setZoomLevelForAllWindows = () => {
+  nw.Window.getAll(function(winArray) {
+    for (var i = 0; i < winArray.length; i++) {
+      winArray[i].zoomLevel = pgAdminWindowObject.zoomLevel;
+    }
+  })
+};
+
 // This function used to zoom in the pgAdmin window.
 const zoomIn = () => {
   if (pgAdminWindowObject != null) {
     pgAdminWindowObject.zoomLevel += 0.5;
+    setZoomLevelForAllWindows();
     ConfigureStore.set('zoomLevel', pgAdminWindowObject.zoomLevel);
     ConfigureStore.saveConfig();
   }
@@ -306,6 +316,7 @@ const zoomIn = () => {
 const zoomOut = () => {
   if (pgAdminWindowObject != null) {
     pgAdminWindowObject.zoomLevel -= 0.5;
+    setZoomLevelForAllWindows();
     ConfigureStore.set('zoomLevel', pgAdminWindowObject.zoomLevel);
     ConfigureStore.saveConfig();
   }
@@ -315,6 +326,7 @@ const zoomOut = () => {
 const actualSize = () => {
   if (pgAdminWindowObject != null) {
     pgAdminWindowObject.zoomLevel = 0;
+    setZoomLevelForAllWindows();
     ConfigureStore.set('zoomLevel', pgAdminWindowObject.zoomLevel);
     ConfigureStore.saveConfig();
   }
@@ -458,5 +470,6 @@ module.exports = {
   setZoomEvents: setZoomEvents,
   registerZoomEvents: registerZoomEvents,
   unregisterZoomEvents: unregisterZoomEvents,
+  setZoomLevelForAllWindows: setZoomLevelForAllWindows,
   ConfigureStore: ConfigureStore,
 };

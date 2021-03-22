@@ -118,14 +118,16 @@ function startDesktopMode() {
         'focus': true,
         'show': true,
       });
-    } else if (chunk.indexOf('Runtime Zoom In') > -1) {
+    } else if (chunk.indexOf('Runtime Zoom In') >= 0) {
       misc.zoomIn();
-    } else if (chunk.indexOf('Runtime Zoom Out') > -1) {
+    } else if (chunk.indexOf('Runtime Zoom Out') >= 0) {
       misc.zoomOut();
-    }  else if (chunk.indexOf('Runtime Actual Size') > -1) {
+    }  else if (chunk.indexOf('Runtime Actual Size') >= 0) {
       misc.actualSize();
-    } else if (chunk.indexOf('Runtime Toggle Full Screen') > -1) {
+    } else if (chunk.indexOf('Runtime Toggle Full Screen') >= 0) {
       misc.toggleFullScreen();
+    } else if (chunk.indexOf('Runtime new window opened') >= 0) {
+      misc.setZoomLevelForAllWindows();
     } else {
       misc.writeServerLog(chunk);
     }

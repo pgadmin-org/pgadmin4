@@ -110,6 +110,10 @@ define('pgadmin.schemadiff', [
       var open_new_tab = browser_preferences.new_browser_tab_open;
       if (open_new_tab && open_new_tab.includes('schema_diff')) {
         window.open(baseUrl, '_blank');
+        // Send the signal to runtime, so that proper zoom level will be set.
+        setTimeout(function() {
+          pgBrowser.send_signal_to_runtime('Runtime new window opened');
+        }, 500);
       } else {
 
         var propertiesPanel = pgBrowser.docker.findPanels('properties'),

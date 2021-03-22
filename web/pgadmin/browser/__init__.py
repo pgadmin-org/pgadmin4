@@ -1060,22 +1060,24 @@ def lock_layout():
 @blueprint.route("/signal_runtime", endpoint="signal_runtime",
                  methods=["POST"])
 def signal_runtime():
-    data = None
+    # If not runtime then no need to send signal
+    if current_app.PGADMIN_RUNTIME:
+        data = None
 
-    if hasattr(request.data, 'decode'):
-        data = request.data.decode('utf-8')
+        if hasattr(request.data, 'decode'):
+            data = request.data.decode('utf-8')
 
-    if data != '':
-        data = json.loads(data)
+        if data != '':
+            data = json.loads(data)
 
-    # Add Info Handler to current app just to send signal to runtime
-    tmp_handler = logging.StreamHandler()
-    tmp_handler.setLevel(logging.INFO)
-    current_app.logger.addHandler(tmp_handler)
-    # Send signal to runtime
-    current_app.logger.info(data['command'])
-    # Remove the temporary handler
-    current_app.logger.removeHandler(tmp_handler)
+        # Add Info Handler to current app just to send signal to runtime
+        tmp_handler = logging.StreamHandler()
+        tmp_handler.setLevel(logging.INFO)
+        current_app.logger.addHandler(tmp_handler)
+        # Send signal to runtime
+        current_app.logger.info(data['command'])
+        # Remove the temporary handler
+        current_app.logger.removeHandler(tmp_handler)
 
     return make_json_response()
 

@@ -765,6 +765,10 @@ define([
                     var open_new_tab = browserPreferences.new_browser_tab_open;
                     if (open_new_tab && open_new_tab.includes('debugger')) {
                       window.open(url, '_blank');
+                      // Send the signal to runtime, so that proper zoom level will be set.
+                      setTimeout(function() {
+                        pgBrowser.send_signal_to_runtime('Runtime new window opened');
+                      }, 500);
                     } else {
                       pgBrowser.Events.once(
                         'pgadmin-browser:frame:urlloaded:frm_debugger',

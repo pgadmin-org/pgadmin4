@@ -242,6 +242,10 @@ define('pgadmin.datagrid', [
           if(newWin) {
             newWin.document.write(queryToolForm);
             newWin.document.title = panel_title;
+            // Send the signal to runtime, so that proper zoom level will be set.
+            setTimeout(function() {
+              pgBrowser.send_signal_to_runtime('Runtime new window opened');
+            }, 500);
           } else {
             return false;
           }

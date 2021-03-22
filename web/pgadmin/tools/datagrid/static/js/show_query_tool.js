@@ -115,7 +115,7 @@ export function launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL,
     alertify.alert(
       gettext('Query tool launch error'),
       gettext(
-        'Please allow the pop-ups for this site to perform the desired action. If the main window of pgAdmin is closed then close this window and open a new pgAdmin session.'
+        'Please allow pop-ups for this site to perform the desired action. If the main window of pgAdmin is closed then close this window and open a new pgAdmin session.'
       )
     );
   }

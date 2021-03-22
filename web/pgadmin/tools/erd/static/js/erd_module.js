@@ -142,6 +142,10 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
         var newWin = window.open('', '_blank');
         newWin.document.write(erdToolForm);
         newWin.document.title = panelTitle;
+        // Send the signal to runtime, so that proper zoom level will be set.
+        setTimeout(function() {
+          pgBrowser.send_signal_to_runtime('Runtime new window opened');
+        }, 500);
       } else {
         /* On successfully initialization find the dashboard panel,
          * create new panel and add it to the dashboard panel.
