@@ -82,6 +82,17 @@ arg_2 = ext.parse_dsn(second)
 
 import random
 
+def schema_from_search_path(srv):
+    options = srv.get('options')
+    if options is None:
+      return None
+    else:
+      search_path = options.split('--search_path=')
+      if len(search_path) == 2:
+        return search_path[1]
+      else:
+        return None
+
 server_1 = {
  'name': str(random.randint(10000, 65535)),
  'db': arg_1['dbname'],
@@ -93,6 +104,7 @@ server_1 = {
  'port': 5432,
  'password': '',
  'connstring': first,
+ 'schema': schema_from_search_path(arg_1),
   **arg_1
 }
 
@@ -107,6 +119,7 @@ server_2 = {
  'port': 5432,
  'password': '',
  'connstring': second,
+ 'schema': schema_from_search_path(arg_2),
   **arg_2
 }
 
@@ -142,10 +155,16 @@ test_client.post('schema_diff/server/connect/{}'.format(server_id_2),
 
 import psycopg2
 
+src_schema_id = None
+tar_schema_id = None
+
 conn = psycopg2.connect(server_1['connstring'])
 cur = conn.cursor()
-cur.execute("select oid from pg_database where datname = '{}'".format(server_1['db']))
+cur.execute("select oid from pg_database where datname = current_database()")
 src_db_id = cur.fetchone()[0]
+if server_1.get('schema') is not None:
+  cur.execute("select %s::regnamespace::oid", (server_1.get('schema'),))
+  src_schema_id = cur.fetchone()[0]
 cur.close()
 conn.close()
 
@@ -153,8 +172,11 @@ test_client.post('schema_diff/database/connect/{0}/{1}'.format(server_id_1, src_
 
 conn = psycopg2.connect(server_2['connstring'])
 cur = conn.cursor()
-cur.execute("select oid from pg_database where datname = '{}'".format(server_2['db']))
+cur.execute("select oid from pg_database where datname = current_database()")
 tar_db_id = cur.fetchone()[0]
+if server_2.get('schema') is not None:
+  cur.execute("select %s::regnamespace::oid", (server_2.get('schema'),))
+  tar_schema_id = cur.fetchone()[0]
 cur.close()
 conn.close()
 
@@ -168,7 +190,10 @@ import time
 
 result = {'res': None}
 
-comp_url = 'schema_diff/compare_database/{0}/{1}/{2}/{3}/{4}'.format(trans_id, server_id_1, src_db_id, server_id_2, tar_db_id)
+if server_1.get('schema') is not None and server_2.get('schema') is not None:
+    comp_url = 'schema_diff/compare_schema/{0}/{1}/{2}/{3}/{4}/{5}/{6}'.format(trans_id, server_id_1, src_db_id, src_schema_id, server_id_2, tar_db_id, tar_schema_id)
+else:
+    comp_url = 'schema_diff/compare_database/{0}/{1}/{2}/{3}/{4}'.format(trans_id, server_id_1, src_db_id, server_id_2, tar_db_id)
 
 def get_schema_diff(test_client, comp_url, result):
     response = test_client.get(comp_url)
