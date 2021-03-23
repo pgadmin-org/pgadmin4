@@ -1932,6 +1932,7 @@ define([
           'cssText',
           'height: ' + ($tabContent.height()) + 'px !important;'
         );
+        $sqlPane.find('.CodeMirror').css('z-index', 99);
       }
     }
 
