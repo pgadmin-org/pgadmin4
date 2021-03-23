@@ -139,16 +139,31 @@ server_2 = {
   **arg_2
 }
 
-from regression.python_test_utils import test_utils
+import sqlite3
+
+## copied from the test_utils module(cannot use the module on a docker container because it's excluded in dockerignore)
+def create_server(server):
+    """This function is used to create server"""
+    conn = sqlite3.connect(config.TEST_SQLITE_PATH)
+    # Create the server
+    cur = conn.cursor()
+    server_details = (1, 1, server['name'], server['host'],
+                      server['port'], server['db'], server['username'],
+                      server['role'], server['sslmode'], server['comment'])
+    cur.execute('INSERT INTO server (user_id, servergroup_id, name, host, '
+                'port, maintenance_db, username, role, ssl_mode,'
+                ' comment) VALUES (?,?,?,?,?,?,?,?,?,?)', server_details)
+    server_id = cur.lastrowid
+    conn.commit()
+    conn.close()
+
+    return server_id
 
 # create pg server rows in the sqlite db
-server_id_1 = test_utils.create_server(server_1)
-server_id_2 = test_utils.create_server(server_2)
-
-from regression.python_test_utils.csrf_test_client import TestClient
+server_id_1 = create_server(server_1)
+server_id_2 = create_server(server_2)
 
 # interact with a http client
-app.test_client_class = TestClient
 test_client = app.test_client()
 
 # Solve ERROR  pgadmin:        'PgAdmin' object has no attribute 'PGADMIN_INT_KEY'
@@ -248,3 +263,4 @@ if response_data['success'] == 1:
   print("Done. Wrote the schema diff output to '{}'".format(third))
 else:
   print("Error: {}".format(response_data['errormsg']))
+
