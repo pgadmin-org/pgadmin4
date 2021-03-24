@@ -13,11 +13,6 @@
 FROM alpine:3.13
 
 COPY web /pgadmin4/web
-RUN rm -rf /pgadmin4/web/*.log \
-           /pgadmin4/web/config_*.py \
-           /pgadmin4/web/node_modules
-
-WORKDIR /pgadmin4/web
 
 #########################################################################
 # Next, create the base environment for Python
@@ -49,7 +44,6 @@ RUN apk add --no-cache \
 # Assemble everything into the final container.
 #########################################################################
 
-WORKDIR /pgadmin4
 ENV PYTHONPATH=/pgadmin4
 
 # License files
@@ -84,4 +78,5 @@ USER pgadmin
 
 WORKDIR /pgadmin4/web
 
-ENTRYPOINT ["/venv/bin/python3", "cli.py"]
+## Needs -u to not buffer progress messages(on stderr)
+ENTRYPOINT ["/venv/bin/python3", "-u", "cli.py"]
