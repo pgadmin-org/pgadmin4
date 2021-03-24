@@ -1,10 +1,6 @@
 import logging
 import config
-
-## Steps for producing the schema diff json output
-
-from sys import argv
-from sys import stderr
+import sys
 
 help = '''
 usage: pgadmin-schema-diff <source> <target>
@@ -17,10 +13,10 @@ To diff a particular schema use the connection string like:
 postgres://postgres@localhost/source?options=--search_path%3dparticular_schema
 '''
 
-args = dict(enumerate(argv))
+args = dict(enumerate(sys.argv))
 
 if len(args) < 3:
-    print(help, file=stderr)
+    print(help, file=sys.stderr)
     exit(1)
 
 first = args.get(1)
@@ -91,9 +87,15 @@ from pgadmin.model import SCHEMA_VERSION
 
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
-print("Starting schema diff...", file=stderr)
+print("Starting schema diff...", file=sys.stderr)
+
+# create_app prints "NOTE: Configuring authentication for DESKTOP mode.", this pollutes our SQL diff output.
+# So here we disable stdout temporarily to avoid that
+sys.stdout = open(os.devnull, 'w')
 ## Starts the Flask app, this step takes a while
 app = create_app()
+## Now enable stdout
+sys.stdout = sys.__stdout__
 
 from psycopg2 import extensions as ext
 
@@ -238,7 +240,7 @@ while x.is_alive():
   res = test_client.get(f'schema_diff/poll/{trans_id}')
   res_data = json.loads(res.data.decode('utf-8'))
   data = res_data['data']
-  print("{}...{}%".format(data['compare_msg'], data['diff_percentage']), file=stderr)
+  print("{}...{}%".format(data['compare_msg'], data['diff_percentage']), file=sys.stderr)
   time.sleep(2)
 
 x.join()
@@ -258,8 +260,8 @@ else:
     diff_result = message + '\n'.join(x.get('diff_ddl') for x in response_data['data'] if x.get('status') != 'Identical')
 
 if response_data['success'] == 1:
-  print("Done.", file=stderr)
+  print("Done.", file=sys.stderr)
   print(diff_result)
 else:
-  print("Error: {}".format(response_data['errormsg']), file=stderr)
+  print("Error: {}".format(response_data['errormsg']), file=sys.stderr)
 
