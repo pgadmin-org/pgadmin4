@@ -20,6 +20,12 @@ COPY web /pgadmin4/web
 
 # Install dependencies
 COPY requirements.txt /pgadmin4
+RUN rm -rf /pgadmin4/web/*.log \
+           /pgadmin4/web/config_*.py \
+           /pgadmin4/web/node_modules \
+           /pgadmin4/web/regression \
+           `find /pgadmin4/web -type d -name tests` \
+           `find /pgadmin4/web -type f -name .DS_Store`
 
 WORKDIR /pgadmin4
 

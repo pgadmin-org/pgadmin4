@@ -1,6 +1,19 @@
+# Using the https://www.pgadmin.org/docs/pgadmin4/development/schema_diff.html without the GUI
+# The main idea is to init the flask app(which needs and creates a sqlitedb), fill in the required state(some sqlite rows)
+# and interact with the schema diff endpoints with a test http client.
 import logging
 import config
 import sys
+import os
+import random
+import sqlite3
+import json
+import psycopg2
+import threading
+import time
+from pgadmin import create_app
+from pgadmin.model import SCHEMA_VERSION
+from psycopg2 import extensions as ext
 
 help = '''
 usage: pgadmin-schema-diff <source> <target>
@@ -23,12 +36,12 @@ first = args.get(1)
 second = args.get(2)
 third = args.get(3)
 
-import os
+# Configuration
+
 os.environ["PGADMIN_TESTING_MODE"] = "1"
 
 config.SERVER_MODE = False
 config.WTF_CSRF_ENABLED = False
-#config.LOGIN_DISABLED = True
 
 # Removing some unnecessary modules(attempt to speed up init)
 config.MODULE_BLACKLIST = [
@@ -79,30 +92,32 @@ config.MODULE_BLACKLIST = [
 , 'pgadmin.utils'
 ]
 
+# Change these to DEBUG to see more details including the SQL queries
 config.CONSOLE_LOG_LEVEL = logging.ERROR
 config.FILE_LOG_LEVEL = logging.ERROR
 
-from pgadmin import create_app
-from pgadmin.model import SCHEMA_VERSION
-
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
+
+## Starting process
 
 print("Starting schema diff...", file=sys.stderr)
 
 # create_app prints "NOTE: Configuring authentication for DESKTOP mode.", this pollutes our SQL diff output.
 # So here we disable stdout temporarily to avoid that
 sys.stdout = open(os.devnull, 'w')
+
 ## Starts the Flask app, this step takes a while
 app = create_app()
+
 ## Now enable stdout
 sys.stdout = sys.__stdout__
 
-from psycopg2 import extensions as ext
+# Needed for solving: ERROR  pgadmin: 'PgAdmin' object has no attribute 'PGADMIN_INT_KEY'
+app.PGADMIN_INT_KEY = ''
 
+# pg connection strings to dicts
 arg_1 = ext.parse_dsn(first)
 arg_2 = ext.parse_dsn(second)
-
-import random
 
 def schema_from_search_path(srv):
     options = srv.get('options')
@@ -115,8 +130,10 @@ def schema_from_search_path(srv):
       else:
         return None
 
+# create pg server rows in the sqlite db
+
 server_1 = {
- 'name': str(random.randint(10000, 65535)),
+ 'name': str(random.randint(10000, 65535)), ## some random name for registering the server on the sqlite db
  'db': arg_1['dbname'],
  'username': arg_1['user'],
  'db_password': arg_1.get('password'),
@@ -131,7 +148,7 @@ server_1 = {
 }
 
 server_2 = {
- 'name': str(random.randint(10000, 65535)),
+ 'name': str(random.randint(10000, 65535)), ## some random name for registering the server on the sqlite db
  'db': arg_2['dbname'],
  'username': arg_2['user'],
  'db_password': arg_2.get('password'),
@@ -145,13 +162,10 @@ server_2 = {
   **arg_2
 }
 
-import sqlite3
-
-## copied from the test_utils module(cannot use the module on a docker container because it's excluded in dockerignore)
+# this func is copied from the test_utils module(cannot use the module on a docker container because it's excluded in .dockerignore)
 def create_server(server):
     """This function is used to create server"""
     conn = sqlite3.connect(config.TEST_SQLITE_PATH)
-    # Create the server
     cur = conn.cursor()
     server_details = (1, 1, server['name'], server['host'],
                       server['port'], server['db'], server['username'],
@@ -162,24 +176,16 @@ def create_server(server):
     server_id = cur.lastrowid
     conn.commit()
     conn.close()
-
     return server_id
 
-# create pg server rows in the sqlite db
 server_id_1 = create_server(server_1)
 server_id_2 = create_server(server_2)
 
 # interact with a http client
 test_client = app.test_client()
 
-# Solve ERROR  pgadmin:        'PgAdmin' object has no attribute 'PGADMIN_INT_KEY'
-app.PGADMIN_INT_KEY = ''
-
+# Get trans_id(transaction id), it's just a random id generated on flask that's used for showing the diff progress messages
 res = test_client.get("schema_diff/initialize")
-
-import json
-
-# Get schema diff trans_id
 response_data = json.loads(res.data.decode('utf-8'))
 trans_id = response_data['data']['schemaDiffTransId']
 
@@ -190,8 +196,7 @@ test_client.post('schema_diff/server/connect/{}'.format(server_id_1),
 test_client.post('schema_diff/server/connect/{}'.format(server_id_2),
         data=json.dumps({'password': server_2['db_password']}), content_type='html/json')
 
-import psycopg2
-
+# Get the source and target db/schema oids for diffing
 src_schema_id = None
 tar_schema_id = None
 
@@ -219,31 +224,36 @@ conn.close()
 
 test_client.post('schema_diff/database/connect/{0}/{1}'.format(server_id_2, tar_db_id))
 
-import threading
-import time
-
-result = {'res': None}
+# Obtain the endpoint for diffing dbs or schemas
 
 if server_1.get('schema') is not None and server_2.get('schema') is not None:
     comp_url = 'schema_diff/compare_schema/{0}/{1}/{2}/{3}/{4}/{5}/{6}'.format(trans_id, server_id_1, src_db_id, src_schema_id, server_id_2, tar_db_id, tar_schema_id)
 else:
     comp_url = 'schema_diff/compare_database/{0}/{1}/{2}/{3}/{4}'.format(trans_id, server_id_1, src_db_id, server_id_2, tar_db_id)
 
+# Compute the schema diff on a thread so we can poll its progress
+
+# trick for getting the thread result on a variable to be used on main
+result = {'res': None}
+
 def get_schema_diff(test_client, comp_url, result):
     response = test_client.get(comp_url)
     result['res'] = response.data
 
-x = threading.Thread(target=get_schema_diff, args=(test_client, comp_url, result))
-x.start()
+diff_thread = threading.Thread(target=get_schema_diff, args=(test_client, comp_url, result))
+diff_thread.start()
 
-while x.is_alive():
+# poll the progress
+while diff_thread.is_alive():
   res = test_client.get(f'schema_diff/poll/{trans_id}')
   res_data = json.loads(res.data.decode('utf-8'))
   data = res_data['data']
   print("{}...{}%".format(data['compare_msg'], data['diff_percentage']), file=sys.stderr)
   time.sleep(2)
 
-x.join()
+diff_thread.join()
+
+# finally get the diff to stdout
 
 response_data = json.loads(result['res'].decode('utf-8'))
 
@@ -257,6 +267,7 @@ message = '''
 if third == 'json':
     diff_result = json.dumps(response_data['data'], indent=4)
 else:
+    # Some db objects on the json diff output don't have a diff_ddl(they're 'Identical') so we skip them.
     diff_result = message + '\n'.join(x.get('diff_ddl') for x in response_data['data'] if x.get('status') != 'Identical')
 
 if response_data['success'] == 1:
@@ -264,4 +275,3 @@ if response_data['success'] == 1:
   print(diff_result)
 else:
   print("Error: {}".format(response_data['errormsg']), file=sys.stderr)
-
