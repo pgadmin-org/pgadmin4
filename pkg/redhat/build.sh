@@ -159,7 +159,7 @@ cp -rfa %{pga_build_root}/web/* \${RPM_BUILD_ROOT}
 
 %files
 /usr/pgadmin4/bin/*
-/etc/httpd/conf.d/*
+%config(noreplace) /etc/httpd/conf.d/*
 EOF
 
 mkdir -p "${WEBROOT}/etc/httpd/conf.d"

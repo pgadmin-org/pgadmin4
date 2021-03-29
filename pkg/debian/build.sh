@@ -72,6 +72,10 @@ fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${AP
 echo "Creating the web package..."
 mkdir "${WEBROOT}/DEBIAN"
 
+cat << EOF > "${WEBROOT}/DEBIAN/conffiles"
+/etc/apache2/conf-available/pgadmin4.conf
+EOF
+
 cat << EOF > "${WEBROOT}/DEBIAN/control"
 Package: ${APP_NAME}-web
 Version: ${APP_LONG_VERSION}
