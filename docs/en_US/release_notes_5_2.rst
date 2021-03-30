@@ -13,7 +13,9 @@ New features
 Housekeeping
 ************
 
+
 Bug fixes
 *********
 
+| `Issue #6293 <https://redmine.postgresql.org/issues/6293>`_ -  Fixed an issue where the procedure creation is failed when providing the Volatility option.
 | `Issue #6356 <https://redmine.postgresql.org/issues/6356>`_ -  Mark the Apache HTTPD config file as such in the web DEB and RPM packages.

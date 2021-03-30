@@ -22,7 +22,7 @@ CREATE OR REPLACE PROCEDURE {{ conn|qtIdent(o_data.pronamespace, name) }}({% if 
     LANGUAGE {{ data.lanname|qtLiteral }} {% else %}
     LANGUAGE {{ o_data.lanname|qtLiteral }}
     {% endif %}
-{{ data.provolatile }}
+{% if 'provolatile' in data and data.provolatile %}{{ data.provolatile }} {% elif 'provolatile' not in data and o_data.provolatile %}{{ o_data.provolatile }} {% endif %}
 {% if ('prosecdef' in data and data.prosecdef) or ('prosecdef' not in data and o_data.prosecdef) %}SECURITY DEFINER{% endif %}
 {% if data.lanname == 'edbspl' or (o_data.lanname == 'edbspl' and not 'lanname' in data ) %}
 {% if ('proleakproof' in data and data.proleakproof) or ('proleakproof' not in data and o_data.proleakproof) %} LEAKPROOF{% else %} NOT LEAKPROOF{% endif %}
