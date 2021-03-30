@@ -45,7 +45,6 @@ export function showDataGrid(
 
   let applicable_nodes = ['table', 'view', 'mview', 'foreign_table'];
   if (applicable_nodes.indexOf(node.getData()._type) === -1) {
-    alertify.error(gettext('This feature is not applicable to the selected object.'));
     return;
   }
 
