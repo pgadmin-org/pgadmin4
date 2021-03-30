@@ -1,0 +1,45 @@
+{
+  "get_server_group_children": [
+    {
+      "name": "Get the all children of server group",
+      "url": "/browser/server_group/children/",
+      "is_positive_test": true,
+      "children": true,
+      "mocking_required": true,
+      "mock_data": {
+        "id": 1,
+        "name": "test_mock_server",
+        "username": "postgre1",
+        "use_ssh_tunnel": 1,
+        "tunnel_host": "127.0.0.1",
+        "tunnel_port": 22,
+        "tunnel_username": "user",
+        "tunnel_authentication": 1,
+        "tunnel_password": "user123",
+        "tunnel_identity_file": "pkey_rsa",
+        "service": null,
+        "fgcolor":"#B6D7A8",
+        "bgcolor": "#0C343D",
+        "servergroup_id": 5,
+        "server_owner": "admin"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "get_server_group": [
+    {
+      "name": "Check Server Group Node",
+      "url": "/browser/server_group/obj/",
+      "is_positive_test": true,
+      "children": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ]
+}

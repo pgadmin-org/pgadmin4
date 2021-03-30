@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #5319 <https://redmine.postgresql.org/issues/5319>`_ -  Improve code coverage and API test cases for Server module.
 
 Bug fixes
 *********

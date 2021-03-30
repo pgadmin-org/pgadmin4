@@ -62,6 +62,30 @@ class AddServerTest(BaseTestGenerator):
             self.server['connect_now'] = self.test_data['connect_now']
             self.server['password'] = self.server['db_password']
 
+        # SSL properties
+        if 'sslcert' in self.test_data:
+            self.server['sslcert'] = self.test_data['sslcert']
+        if 'sslkey' in self.test_data:
+            self.server['sslkey'] = self.test_data['sslkey']
+        if 'sslrootcert' in self.test_data:
+            self.server['sslrootcert'] = self.test_data['sslrootcert']
+        if 'sslmode' in self.test_data:
+            self.server['sslmode'] = self.test_data['sslmode']
+        if 'sslcompression' in self.test_data:
+            self.server['sslcompression'] = self.test_data['sslcompression']
+
+        # Advanced tab properties
+        if 'passfile' in self.test_data:
+            self.server['passfile'] = self.test_data['passfile']
+        if 'hostaddr' in self.test_data:
+            self.server['hostaddr'] = self.test_data['hostaddr']
+
+        # Background/Foreground color
+        if 'fgcolor' in self.test_data:
+            self.server['fgcolor'] = self.test_data['fgcolor']
+        if 'bgcolor' in self.test_data:
+            self.server['bgcolor'] = self.test_data['bgcolor']
+
         if self.is_positive_test:
             if hasattr(self, 'with_save'):
                 self.server['save_password'] = self.with_save

@@ -11,6 +11,8 @@ import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.test_setup import config_data
+from regression.python_test_utils import test_utils as utils
+from . import utils as cast_utils
 
 
 class SgNodeTestCase(BaseTestGenerator):
@@ -18,10 +20,8 @@ class SgNodeTestCase(BaseTestGenerator):
      This class will check available server groups in pgAdmin.
     """
 
-    scenarios = [
-        # Fetching the default url for server group node
-        ('Check Server Group Node', dict(url='/browser/server_group/obj/'))
-    ]
+    scenarios = utils.generate_scenarios('get_server_group',
+                                         cast_utils.test_cases)
 
     def runTest(self):
         """This function will check available server groups."""

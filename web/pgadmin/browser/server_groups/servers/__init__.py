@@ -1069,7 +1069,8 @@ class ServerNode(PGChildNodeView):
                 tunnel_username=data.get('tunnel_username', None),
                 tunnel_authentication=data.get('tunnel_authentication', 0),
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
-                shared=data.get('shared', None)
+                shared=data.get('shared', None),
+                passfile=data.get('passfile', None)
             )
             db.session.add(server)
             db.session.commit()
@@ -1572,7 +1573,11 @@ class ServerNode(PGChildNodeView):
             sid: Server id
         """
         try:
-            data = json.loads(request.form['data'], encoding='utf-8')
+            if request.form and request.form['data']:
+                data = json.loads(request.form['data'], encoding='utf-8')
+            else:
+                data = json.loads(request.data, encoding='utf-8')
+
             crypt_key = get_crypt_key()[1]
 
             # Fetch Server Details
