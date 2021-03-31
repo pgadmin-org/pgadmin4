@@ -254,7 +254,7 @@ if args.json_diff:
     diff_result = json.dumps(response_data['data'], indent=4)
 else:
     # Some db objects on the json diff output don't have a diff_ddl(they're 'Identical') so we skip them.
-    diff_result = message + '\n'.join(x.get('diff_ddl') for x in response_data['data'] if x.get('status') != 'Identical')
+    diff_result = message + 'BEGIN;\n\n' + '\n'.join(x.get('diff_ddl') for x in response_data['data'] if x.get('status') != 'Identical') + '\n\nEND;'
 
 if response_data['success'] == 1:
   print("Done.", file=sys.stderr)
