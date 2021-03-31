@@ -16,13 +16,15 @@ from pgadmin.model import SCHEMA_VERSION
 from psycopg2 import extensions as ext
 import argparse
 
-parser = argparse.ArgumentParser(description='Diff two databases or two schemas', prog='pgadmin-schema-diff',
-        epilog='To diff a schema use the connection string like this:\npostgres://postgres@localhost/source?options=--search_path%3dparticular_schema')
+parser = argparse.ArgumentParser(description='Diff two databases or two schemas', prog='pgadmin-schema-diff')
 parser.add_argument("source",
         help="a postgres connection string for the source database(e.g. postgres://postgres@localhost/source)")
 parser.add_argument("target",
         help="a postgres connection string for the target database(e.g. postgres://postgres@localhost/target)")
-parser.add_argument("--json-diff", help="get the full diff output in json(for debugging)", dest='json_diff', action='store_true')
+parser.add_argument("--schema", help="schema to diff in both source and target database", dest='schema')
+parser.add_argument("--source-schema", help="source database schema", dest='source_schema')
+parser.add_argument("--target-schema", help="target database schema", dest='target_schema')
+parser.add_argument("--json-diff",     help="get the full diff output in json(for debugging, internal use)", dest='json_diff', action='store_true')
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -113,17 +115,6 @@ app.PGADMIN_INT_KEY = ''
 arg_1 = ext.parse_dsn(args.source)
 arg_2 = ext.parse_dsn(args.target)
 
-def schema_from_search_path(srv):
-    options = srv.get('options')
-    if options is None:
-      return None
-    else:
-      search_path = options.split('--search_path=')
-      if len(search_path) == 2:
-        return search_path[1]
-      else:
-        return None
-
 # create pg server rows in the sqlite db
 
 server_1 = {
@@ -137,7 +128,7 @@ server_1 = {
  'port': 5432,
  'password': '',
  'connstring': args.source,
- 'schema': schema_from_search_path(arg_1),
+ 'schema': args.source_schema or args.schema,
   **arg_1
 }
 
@@ -152,7 +143,7 @@ server_2 = {
  'port': 5432,
  'password': '',
  'connstring': args.target,
- 'schema': schema_from_search_path(arg_2),
+ 'schema': args.target_schema or args.schema,
   **arg_2
 }
 
