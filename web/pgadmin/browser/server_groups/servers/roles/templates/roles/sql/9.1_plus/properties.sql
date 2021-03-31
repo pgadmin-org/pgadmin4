@@ -1,7 +1,7 @@
 SELECT
 	r.oid, r.*,
 	pg_catalog.shobj_description(r.oid, 'pg_authid') AS description,
-	pg_catalog.ARRAY(
+	ARRAY(
 		SELECT
 			CASE WHEN am.admin_option THEN '1' ELSE '0' END || rm.rolname
 		FROM

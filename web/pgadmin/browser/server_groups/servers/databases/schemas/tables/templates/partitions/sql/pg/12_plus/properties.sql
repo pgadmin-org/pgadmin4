@@ -6,14 +6,14 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
   END) as spcname,
   (select nspname FROM pg_catalog.pg_namespace WHERE oid = {{scid}}::oid ) as parent_schema,
   nsp.nspname as schema,
-  pg_get_userbyid(rel.relowner) AS relowner, rel.relispartition,
+  pg_catalog.pg_get_userbyid(rel.relowner) AS relowner, rel.relispartition,
   rel.relhassubclass, rel.reltuples::bigint, des.description, con.conname, con.conkey,
 	EXISTS(select 1 FROM pg_catalog.pg_trigger
 			JOIN pg_catalog.pg_proc pt ON pt.oid=tgfoid AND pt.proname='logtrigger'
 			JOIN pg_catalog.pg_proc pc ON pc.pronamespace=pt.pronamespace AND pc.proname='slonyversion'
 			WHERE tgrelid=rel.oid) AS isrepl,
 	(SELECT count(*) FROM pg_catalog.pg_trigger WHERE tgrelid=rel.oid AND tgisinternal = FALSE) AS triggercount,
-	(SELECT pg_catalog.ARRAY(SELECT CASE WHEN (nspname NOT LIKE 'pg\_%') THEN
+	(SELECT ARRAY(SELECT CASE WHEN (nspname NOT LIKE 'pg\_%') THEN
             pg_catalog.quote_ident(nspname)||'.'||pg_catalog.quote_ident(c.relname)
             ELSE pg_catalog.quote_ident(c.relname) END AS inherited_tables
     FROM pg_catalog.pg_inherits i
