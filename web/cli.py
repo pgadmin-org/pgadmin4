@@ -15,6 +15,7 @@ from pgadmin import create_app
 from pgadmin.model import SCHEMA_VERSION
 from psycopg2 import extensions as ext
 import argparse
+import re
 
 parser = argparse.ArgumentParser(description='Diff two databases or two schemas', prog='pgadmin-schema-diff')
 parser.add_argument("source",
@@ -24,7 +25,13 @@ parser.add_argument("target",
 parser.add_argument("--schema", help="schema to diff in both source and target database", dest='schema')
 parser.add_argument("--source-schema", help="source database schema", dest='source_schema')
 parser.add_argument("--target-schema", help="target database schema", dest='target_schema')
-parser.add_argument("--json-diff",     help="get the full diff output in json(for debugging, internal use)", dest='json_diff', action='store_true')
+
+group = parser.add_mutually_exclusive_group()
+group.add_argument("--include-objects", help="comma delimited database objects to include on the diff(e.g. table,sequence,function)",
+        dest='include_objects', type=lambda s: re.split(',', s))
+group.add_argument("--exclude-objects", help="comma delimited database objects to exclude on the diff(e.g. table,sequence,function)",
+        dest='exclude_objects', type=lambda s: re.split(',', s))
+group.add_argument("--json-diff", help="get the full diff output in json(for debugging, internal use)", dest='json_diff', action='store_true')
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -250,11 +257,19 @@ message = '''
 -- Please report an issue for any failure with the reproduction steps.\n
 '''
 
+def in_db_objects(el, args):
+    if args.include_objects is not None:
+        return el in args.include_objects
+    elif args.exclude_objects is not None:
+        return el not in args.exclude_objects
+    else:
+        return True
+
 if args.json_diff:
     diff_result = json.dumps(response_data['data'], indent=4)
 else:
     # Some db objects on the json diff output don't have a diff_ddl(they're 'Identical') so we skip them.
-    diff_result = message + 'BEGIN;\n\n' + '\n'.join(x.get('diff_ddl') for x in response_data['data'] if x.get('status') != 'Identical') + '\n\nEND;'
+    diff_result = message + 'BEGIN;\n\n' + '\n'.join(x.get('diff_ddl') for x in response_data['data'] if x.get('status') != 'Identical' and in_db_objects(x.get('type'), args)) + '\n\nEND;'
 
 if response_data['success'] == 1:
   print("Done.", file=sys.stderr)
