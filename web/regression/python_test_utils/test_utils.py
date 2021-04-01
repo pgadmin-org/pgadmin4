@@ -1347,8 +1347,8 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
     :param test_name: test name
     :return: remote web-driver instance for specified browser
     """
-    test_name = browser + browser_ver + "_" + test_name + "-" + time.strftime(
-        "%m_%d_%y_%H_%M_%S", time.localtime())
+    test_name = time.strftime("%m_%d_%y_%H_%M_%S_", time.localtime()) + \
+                test_name.replace(' ', '_') + '_' + browser + browser_ver
     driver_local = None
     desired_capabilities = {
         "version": browser_ver,
