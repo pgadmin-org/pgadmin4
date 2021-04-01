@@ -14,12 +14,12 @@ class BrowserToolBarLocators():
         ".wcFrameButton[title='Query Tool']:not(.disabled)"
 
     query_tool_panel_css = \
-        ".wcPanelTab .wcTabIcon.pg-font-icon.icon-query-tool"
+        ".wcPanelTab .wcTabIcon.pg-font-icon.icon-query_tool"
 
     view_table_data_button_css = \
         ".wcFrameButton[title='View Data']:not(.disabled)"
 
-    view_data_panel_css = ".wcPanelTab .wcTabIcon.fa.fa-table"
+    view_data_panel_css = ".wcPanelTab .wcTabIcon.pg-font-icon.icon-view_data"
 
     filter_data_button_css = \
         ".wcFrameButton[title='Filtered Rows']:not(.disabled)"

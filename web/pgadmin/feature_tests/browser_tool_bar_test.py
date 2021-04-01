@@ -63,10 +63,11 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         self.page.expand_database_node(
             self.server['name'],
             self.server['db_password'], self.test_db)
-        self.page.retry_click(
+        self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,
              BrowserToolBarLocators.open_query_tool_button_css),
-            (By.CSS_SELECTOR, BrowserToolBarLocators.query_tool_panel_css))
+            (By.CSS_SELECTOR, BrowserToolBarLocators.query_tool_panel_css)),
+            'Query tool did not open on clicking Query Tool button.')
 
     def test_view_data_tool_button(self):
         self.page.click_a_tree_node(
@@ -82,14 +83,16 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
             self.test_table_name,
             TreeAreaLocators.sub_nodes_of_tables_node)
 
-        self.page.retry_click(
+        self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,
              BrowserToolBarLocators.view_table_data_button_css),
-            (By.CSS_SELECTOR, BrowserToolBarLocators.view_data_panel_css))
+            (By.CSS_SELECTOR, BrowserToolBarLocators.view_data_panel_css)),
+            'View/Edit Data tab did not open after clicking View/Edit button.')
 
     def test_filtered_rows_tool_button(self):
-        self.page.retry_click(
+        self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,
              BrowserToolBarLocators.filter_data_button_css),
-            (By.CSS_SELECTOR, BrowserToolBarLocators.filter_alertify_box_css))
+            (By.CSS_SELECTOR, BrowserToolBarLocators.filter_alertify_box_css)),
+            'Filter dialogue did not open on clicking filter button.')
         self.page.click_modal('Cancel')
