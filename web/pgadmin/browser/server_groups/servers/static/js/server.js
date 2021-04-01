@@ -287,7 +287,7 @@ define('pgadmin.node.server', [
                 function() { disconnect(); },
                 function() { return true;}
               ).set('labels', {
-                ok: gettext('Ok'),
+                ok: gettext('OK'),
                 cancel: gettext('Cancel'),
               });
             } else {

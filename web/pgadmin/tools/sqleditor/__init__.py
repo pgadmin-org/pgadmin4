@@ -119,6 +119,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.get_new_connection_data',
             'sqleditor.get_new_connection_database',
             'sqleditor.get_new_connection_user',
+            'sqleditor._check_server_connection_status',
             'sqleditor.get_new_connection_role',
             'sqleditor.connect_server',
             'sqleditor.connect_server_with_user',
@@ -1477,6 +1478,49 @@ def get_filter_data(trans_id):
         check_transaction_status(trans_id)
 
     return FilterDialog.get(status, error_msg, conn, trans_obj, session_ob)
+
+
+@blueprint.route(
+    '/get_server_connection/<int:sgid>/<int:sid>',
+    methods=["GET"], endpoint='_check_server_connection_status'
+)
+@login_required
+def _check_server_connection_status(sgid, sid=None):
+    """
+    This function returns the server connection details
+    """
+    try:
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        from pgadmin.browser.server_groups.servers import \
+            server_icon_and_background
+        server = Server.query.filter_by(
+            id=sid).first()
+
+        manager = driver.connection_manager(server.id)
+        conn = manager.connection()
+        connected = conn.connected()
+
+        msg = "Success"
+        return make_json_response(
+            data={
+                'status': True,
+                'msg': msg,
+                'result': {
+                    'server': connected
+                }
+            }
+        )
+
+    except Exception:
+        return make_json_response(
+            data={
+                'status': False,
+                'msg': ERROR_FETCHING_DATA,
+                'result': {
+                    'server': False
+                }
+            }
+        )
 
 
 @blueprint.route(

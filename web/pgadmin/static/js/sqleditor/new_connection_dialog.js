@@ -258,7 +258,7 @@ let NewConnectionDialog = {
     }).fail(function() {
       Alertify.alert().setting({
         'title': gettext('Connection lost'),
-        'label':gettext('Ok'),
+        'label':gettext('OK'),
         'message': gettext('Connection to the server has been lost.'),
         'onok': function(){
           //Close the window after connection is lost

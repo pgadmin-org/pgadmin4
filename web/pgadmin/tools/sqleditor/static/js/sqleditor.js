@@ -4809,7 +4809,7 @@ define('tools.querytool', [
         else if (!ignore_unsaved_query && self.is_query_tool
                    && self.is_query_changed
                    && self.preferences.prompt_save_query_changes) {
-          msg = gettext('The text has changed. Do you want to save changes?');
+          msg = gettext('The query text has changed. Do you want to save changes?');
           self.unsaved_changes_user_confirmation(msg, false);
         } // If a transaction is currently ongoing
         else if (self.preferences.prompt_commit_transaction
@@ -4938,14 +4938,45 @@ define('tools.querytool', [
                 break;
               case 1: // Don't Save
                 self.close_on_save = false;
-                if(this.is_unsaved_data)
-                  self.ignore_on_close.unsaved_data = true;
-                else
-                  self.ignore_on_close.unsaved_query = true;
-                // Go back to check for any other needed confirmations before closing
-                if (!self.check_needed_confirmations_before_closing_panel()){
-                  closeEvent.cancel = true;
-                }
+                $.ajax({
+                  url: url_for('sqleditor._check_server_connection_status', {
+                    'sid': self.url_params.sid,
+                    'sgid': self.url_params.sgid,
+                  }),
+                  headers: {
+                    'Cache-Control' : 'no-cache',
+                  },
+                }).done(function (res) {
+                  let response = res.data.result.server;
+                  if (response) {
+                    closeEvent.cancel = true;
+                    if (this.is_unsaved_data)
+                      self.ignore_on_close.unsaved_data = true;
+                    else
+                      self.ignore_on_close.unsaved_query = true;
+
+                    // Go back to check for any other needed confirmations before closing
+                    if (!self.check_needed_confirmations_before_closing_panel()) {
+                      closeEvent.cancel = true;
+                    }
+                  } else {
+                    alertify.confirm(
+                      gettext('Warning'),
+                      gettext('The current transaction has been rolled back because the server was disconnected.'),
+                      function() {
+                        // Close the query tool if server is disconnected.
+                        setTimeout(() => { self.close(); }, 200);
+                      },
+                      function() {
+                        return true;
+                      }
+                    ).set('labels', {
+                      ok: gettext('OK')
+                    });
+                  }
+                }).fail(function() {
+                  /* failure should be ignored */
+                });
                 break;
               case 2: //Save
                 self.close_on_save = true;

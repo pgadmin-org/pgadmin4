@@ -244,7 +244,7 @@ function initFilterDialog(alertify, pgBrowser) {
                   alertify.alert()
                     .setting({
                       'title': gettext('Validation Error'),
-                      'label':gettext('Ok'),
+                      'label':gettext('OK'),
                       'message': gettext(res.data.result),
                       'onok': function(){
                         filter_editor.focus();
