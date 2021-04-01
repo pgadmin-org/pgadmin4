@@ -982,6 +982,37 @@ AND relkind != 'c'))"""
                                json_resp=False)
         return sql
 
+    def get_dependencies(self, conn, object_id, where=None,
+                         show_system_objects=None, is_schema_diff=False):
+        """
+        This function is used to get dependencies of domain and it's
+        domain constraints.
+        """
+        domain_dependencies = []
+        domain_deps = super().get_dependencies(
+            conn, object_id, where=None, show_system_objects=None,
+            is_schema_diff=True)
+        if len(domain_deps) > 0:
+            domain_dependencies.extend(domain_deps)
+
+        # Get Domain Constraints
+        SQL = render_template("/".join([self.template_path,
+                                        self._GET_CONSTRAINTS_SQL]),
+                              doid=object_id)
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return False, internal_server_error(errormsg=res)
+
+        # Get the domain constraints dependencies.
+        for row in res['rows']:
+            constraint_deps = super().get_dependencies(
+                conn, row['conoid'], where=None, show_system_objects=None,
+                is_schema_diff=True)
+            if len(constraint_deps) > 0:
+                domain_dependencies.extend(constraint_deps)
+
+        return domain_dependencies
+
 
 SchemaDiffRegistry(blueprint.node_type, DomainView)
 DomainView.register_node_view(blueprint)
