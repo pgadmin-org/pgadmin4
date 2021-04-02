@@ -58,7 +58,7 @@ Summary:	The core server package for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
 
-Requires:	python3, postgresql-libs >= 11, krb5-libs, xdg-utils
+Requires:	python3, postgresql-libs >= 11, krb5-libs
 
 %description
 The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -95,7 +95,7 @@ Release:	1%{?dist}
 Summary:	The desktop user interface for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
-Requires:	${APP_NAME}-server = ${RPM_VERSION}, libatomic
+Requires:	${APP_NAME}-server = ${RPM_VERSION}, libatomic, xdg-utils
 
 %description
 The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
