@@ -35,7 +35,7 @@ cat << EOF > "${SERVERROOT}/DEBIAN/control"
 Package: ${APP_NAME}-server
 Version: ${APP_LONG_VERSION}
 Architecture: ${OS_ARCH}
-Depends: python3, libpq5 (>= 11.0), libgssapi-krb5-2
+Depends: python3, libpq5 (>= 11.0), libgssapi-krb5-2, xdg-utils
 Recommends: postgresql-client | postgresql-client-13 | postgresql-client-12 | postgresql-client-11 | postgresql-client-10
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
