@@ -412,7 +412,12 @@ export default class BodyWidget extends React.Component {
 
   onHelpClick() {
     let url = url_for('help.static', {'filename': 'erd_tool.html'});
-    window.open(url, 'pgadmin_help');
+    if (this.props.pgWindow) {
+      this.props.pgWindow.open(url, 'pgadmin_help');
+    }
+    else {
+      window.open(url, 'pgadmin_help');
+    }
   }
 
   onLoadDiagram() {

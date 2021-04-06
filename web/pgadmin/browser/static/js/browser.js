@@ -907,7 +907,12 @@ define('pgadmin.browser', [
 
         window.open(fullUrl, 'postgres_help');
       } else if(type == 'dialog_help') {
-        window.open(url, 'pgadmin_help');
+        if (pgWindow && pgWindow.default) {
+          pgWindow.default.open(url, 'pgadmin_help');
+        }
+        else {
+          window.open(url, 'pgadmin_help');
+        }
       }
       $('#live-search-field').focus();
     },
