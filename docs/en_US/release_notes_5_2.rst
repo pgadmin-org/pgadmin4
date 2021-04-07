@@ -27,3 +27,4 @@ Bug fixes
 | `Issue #6338 <https://redmine.postgresql.org/issues/6338>`_ -  Added missing dependency 'xdg-utils' for the desktop packages in RPM and Debian.
 | `Issue #6344 <https://redmine.postgresql.org/issues/6344>`_ -  Fixed cannot unpack non-iterable response object error when selecting any partition.
 | `Issue #6356 <https://redmine.postgresql.org/issues/6356>`_ -  Mark the Apache HTTPD config file as such in the web DEB and RPM packages.
+| `Issue #6375 <https://redmine.postgresql.org/issues/6375>`_ -  Fixed an issue where users are unable to see data of the partitions using the View/Edit data option.

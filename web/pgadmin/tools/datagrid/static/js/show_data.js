@@ -43,7 +43,7 @@ export function showDataGrid(
     return;
   }
 
-  let applicable_nodes = ['table', 'view', 'mview', 'foreign_table'];
+  let applicable_nodes = ['table', 'partition', 'view', 'mview', 'foreign_table', 'catalog_object'];
   if (applicable_nodes.indexOf(node.getData()._type) === -1) {
     return;
   }
