@@ -31,3 +31,4 @@ Bug fixes
 | `Issue #6344 <https://redmine.postgresql.org/issues/6344>`_ -  Fixed cannot unpack non-iterable response object error when selecting any partition.
 | `Issue #6356 <https://redmine.postgresql.org/issues/6356>`_ -  Mark the Apache HTTPD config file as such in the web DEB and RPM packages.
 | `Issue #6375 <https://redmine.postgresql.org/issues/6375>`_ -  Fixed an issue where users are unable to see data of the partitions using the View/Edit data option.
+| `Issue #6376 <https://redmine.postgresql.org/issues/6376>`_ -  Fixed an issue where a connection warning should be displayed on the user clicks on explain or explain analyze and the database server is disconnected from the browser tree.
