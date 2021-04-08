@@ -13,7 +13,6 @@ import flask
 import pickle
 from flask import current_app, flash, Response, request, url_for,\
     render_template
-from flask_babelex import gettext
 from flask_security import current_user
 from flask_security.views import _security, _ctx
 from flask_security.utils import config_value, get_post_logout_redirect, \
@@ -90,7 +89,7 @@ def login():
                 return flask.redirect('{0}?next={1}'.format(url_for(
                     'authenticate.kerberos_login'), url_for('browser.index')))
 
-            flash(gettext(msg), 'danger')
+            flash(msg, 'danger')
             return flask.redirect(get_post_logout_redirect())
 
         session['_auth_source_manager_obj'] = current_auth_obj
@@ -98,7 +97,7 @@ def login():
 
     elif isinstance(msg, Response):
         return msg
-    flash(gettext(msg), 'danger')
+    flash(msg, 'danger')
     response = flask.redirect(get_post_logout_redirect())
     return response
 

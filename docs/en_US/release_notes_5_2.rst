@@ -22,6 +22,7 @@ Bug fixes
 | `Issue #6076 <https://redmine.postgresql.org/issues/6076>`_ -  Fixed an issue where correct error not thrown while importing servers and JSON file has incorrect/insufficient keys.
 | `Issue #6082 <https://redmine.postgresql.org/issues/6082>`_ -  Ensure that the user should not be to change the connection when a long query is running.
 | `Issue #6220 <https://redmine.postgresql.org/issues/6220>`_ -  Corrected the syntax for 'CREATE TRIGGER', use 'EXECUTE FUNCTION' instead of 'EXECUTE PROCEDURE' from v11 onwards.
+| `Issue #6274 <https://redmine.postgresql.org/issues/6274>`_ -  Ensure that the strings in the LDAP auth module are translatable.
 | `Issue #6293 <https://redmine.postgresql.org/issues/6293>`_ -  Fixed an issue where the procedure creation is failed when providing the Volatility option.
 | `Issue #6325 <https://redmine.postgresql.org/issues/6325>`_ -  Ensure that the file format for the storage manager should be 'All files' and for other dialogs, it should remember the last selected format.
 | `Issue #6327 <https://redmine.postgresql.org/issues/6327>`_ -  Ensure that while comparing domains check function dependencies should be considered in schema diff.

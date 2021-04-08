@@ -26,7 +26,8 @@ from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import LDAP
 
 
-ERROR_SEARCHING_LDAP_DIRECTORY = "Error searching the LDAP directory: {}"
+ERROR_SEARCHING_LDAP_DIRECTORY = gettext(
+    "Error searching the LDAP directory: {}")
 
 
 class LDAPAuthentication(BaseAuthentication):
@@ -53,7 +54,8 @@ class LDAPAuthentication(BaseAuthentication):
         self.anonymous_bind = getattr(config, 'LDAP_ANONYMOUS_BIND', False)
 
         if self.bind_user and not self.bind_pass:
-            return False, "LDAP configuration error: Set the bind password."
+            return False, gettext(
+                "LDAP configuration error: Set the bind password.")
 
         # if no dedicated ldap user is configured then use the login
         # username and password
@@ -121,17 +123,17 @@ class LDAPAuthentication(BaseAuthentication):
         except LDAPSocketOpenError as e:
             current_app.logger.exception(
                 "Error connecting to the LDAP server: {}\n".format(e))
-            return False, "Error connecting to the LDAP server:" \
-                          " {}\n".format(e.args[0])
+            return False, gettext("Error connecting to the LDAP server: {}\n"
+                                  ).format(e.args[0])
         except LDAPBindError as e:
             current_app.logger.exception(
                 "Error binding to the LDAP server.")
-            return False, "Error binding to the LDAP server."
+            return False, gettext("Error binding to the LDAP server.")
         except Exception as e:
             current_app.logger.exception(
                 "Error connecting to the LDAP server: {}\n".format(e))
-            return False, "Error connecting to the LDAP server:" \
-                          " {}\n".format(e.args[0])
+            return False, gettext("Error connecting to the LDAP server: {}\n"
+                                  ).format(e.args[0])
 
         # Enable TLS if STARTTLS is configured
         if self.start_tls:
@@ -140,7 +142,8 @@ class LDAPAuthentication(BaseAuthentication):
             except LDAPStartTLSError as e:
                 current_app.logger.exception(
                     "Error starting TLS: {}\n".format(e))
-                return False, "Error starting TLS: {}\n".format(e.args[0])
+                return False, gettext("Error starting TLS: {}\n"
+                                      ).format(e.args[0])
 
         return True, None
 
@@ -179,7 +182,7 @@ class LDAPAuthentication(BaseAuthentication):
         except LDAPSSLConfigurationError as e:
             current_app.logger.exception(
                 "LDAP configuration error: {}\n".format(e))
-            return False, "LDAP configuration error: {}\n".format(
+            return False, gettext("LDAP configuration error: {}\n").format(
                 e.args[0])
         return True, tls
 
@@ -194,7 +197,8 @@ class LDAPAuthentication(BaseAuthentication):
         tls = None
 
         if isinstance(uri, str):
-            return False, "LDAP configuration error: Set the proper LDAP URI."
+            return False, gettext(
+                "LDAP configuration error: Set the proper LDAP URI.")
 
         if uri.scheme == 'ldaps' or config.LDAP_USE_STARTTLS:
             status, tls = self.__configure_tls()
@@ -224,8 +228,8 @@ class LDAPAuthentication(BaseAuthentication):
             search_base_dn = config.LDAP_SEARCH_BASE_DN
             if (not search_base_dn or search_base_dn == '<Search-Base-DN>')\
                     and (self.anonymous_bind or self.dedicated_user):
-                return False, "LDAP configuration error:" \
-                              " Set the Search Domain."
+                return False, gettext("LDAP configuration error: "
+                                      "Set the Search Domain.")
             elif not search_base_dn or search_base_dn == '<Search-Base-DN>':
                 search_base_dn = config.LDAP_BASE_DN
 
@@ -260,8 +264,8 @@ class LDAPAuthentication(BaseAuthentication):
         results = len(self.conn.entries)
         if results > 1:
             return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(
-                "More than one result found.")
+                gettext("More than one result found."))
         elif results < 1:
             return False, ERROR_SEARCHING_LDAP_DIRECTORY.format(
-                "Could not find the specified user.")
+                gettext("Could not find the specified user."))
         return True, self.conn.entries[0]
