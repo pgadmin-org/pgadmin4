@@ -250,6 +250,7 @@ Graphs.propTypes = {
     PropTypes.string.isRequired,
     PropTypes.number.isRequired,
   ]),
+  pageVisible: PropTypes.bool,
   enablePoll: PropTypes.bool,
 };
 
@@ -330,40 +331,40 @@ export function GraphsWrapper(props) {
 
   return (
     <>
-    <DashboardRow>
-      <DashboardRowCol breakpoint='md' parts={6}>
-        <ChartContainer id='sessions-graph' title={props.isDatabase ?  gettext('Database sessions') : gettext('Server sessions')} legendRef={sessionStatsLegendRef} errorMsg={props.errorMsg}>
-          <LineChart options={options} data={props.sessionStats} updateOptions={updateOptions}
-            onInit={onInitCallback(sessionStatsLegendRef)}/>
-        </ChartContainer>
-      </DashboardRowCol>
-      <DashboardRowCol breakpoint='md' parts={6}>
-        <ChartContainer id='tps-graph' title={gettext('Transactions per second')} legendRef={tpsStatsLegendRef} errorMsg={props.errorMsg}>
-          <LineChart options={options} data={props.tpsStats} updateOptions={updateOptions}
-            onInit={onInitCallback(tpsStatsLegendRef)}/>
-        </ChartContainer>
-      </DashboardRowCol>
-    </DashboardRow>
-    <DashboardRow>
-      <DashboardRowCol breakpoint='md' parts={4}>
-        <ChartContainer id='ti-graph' title={gettext('Tuples in')} legendRef={tiStatsLegendRef} errorMsg={props.errorMsg}>
-          <LineChart options={options} data={props.tiStats} updateOptions={updateOptions}
-            onInit={onInitCallback(tiStatsLegendRef)}/>
-        </ChartContainer>
-      </DashboardRowCol>
-      <DashboardRowCol breakpoint='md' parts={4}>
-        <ChartContainer id='to-graph' title={gettext('Tuples out')} legendRef={toStatsLegendRef} errorMsg={props.errorMsg}>
-          <LineChart options={options} data={props.toStats} updateOptions={updateOptions}
-            onInit={onInitCallback(toStatsLegendRef)}/>
-        </ChartContainer>
-      </DashboardRowCol>
-      <DashboardRowCol breakpoint='md' parts={4}>
-        <ChartContainer id='bio-graph' title={gettext('Block I/O')} legendRef={bioStatsLegendRef} errorMsg={props.errorMsg}>
-          <LineChart options={options} data={props.bioStats} updateOptions={updateOptions}
-            onInit={onInitCallback(bioStatsLegendRef)}/>
-        </ChartContainer>
-      </DashboardRowCol>
-    </DashboardRow>
+      <DashboardRow>
+        <DashboardRowCol breakpoint='md' parts={6}>
+          <ChartContainer id='sessions-graph' title={props.isDatabase ?  gettext('Database sessions') : gettext('Server sessions')} legendRef={sessionStatsLegendRef} errorMsg={props.errorMsg}>
+            <LineChart options={options} data={props.sessionStats} updateOptions={updateOptions}
+              onInit={onInitCallback(sessionStatsLegendRef)}/>
+          </ChartContainer>
+        </DashboardRowCol>
+        <DashboardRowCol breakpoint='md' parts={6}>
+          <ChartContainer id='tps-graph' title={gettext('Transactions per second')} legendRef={tpsStatsLegendRef} errorMsg={props.errorMsg}>
+            <LineChart options={options} data={props.tpsStats} updateOptions={updateOptions}
+              onInit={onInitCallback(tpsStatsLegendRef)}/>
+          </ChartContainer>
+        </DashboardRowCol>
+      </DashboardRow>
+      <DashboardRow>
+        <DashboardRowCol breakpoint='md' parts={4}>
+          <ChartContainer id='ti-graph' title={gettext('Tuples in')} legendRef={tiStatsLegendRef} errorMsg={props.errorMsg}>
+            <LineChart options={options} data={props.tiStats} updateOptions={updateOptions}
+              onInit={onInitCallback(tiStatsLegendRef)}/>
+          </ChartContainer>
+        </DashboardRowCol>
+        <DashboardRowCol breakpoint='md' parts={4}>
+          <ChartContainer id='to-graph' title={gettext('Tuples out')} legendRef={toStatsLegendRef} errorMsg={props.errorMsg}>
+            <LineChart options={options} data={props.toStats} updateOptions={updateOptions}
+              onInit={onInitCallback(toStatsLegendRef)}/>
+          </ChartContainer>
+        </DashboardRowCol>
+        <DashboardRowCol breakpoint='md' parts={4}>
+          <ChartContainer id='bio-graph' title={gettext('Block I/O')} legendRef={bioStatsLegendRef} errorMsg={props.errorMsg}>
+            <LineChart options={options} data={props.bioStats} updateOptions={updateOptions}
+              onInit={onInitCallback(bioStatsLegendRef)}/>
+          </ChartContainer>
+        </DashboardRowCol>
+      </DashboardRow>
     </>
   );
 }

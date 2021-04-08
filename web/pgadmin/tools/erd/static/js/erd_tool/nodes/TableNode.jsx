@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import { DefaultNodeModel, PortWidget } from '@projectstorm/react-diagrams';
+import { DefaultNodeModel, DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 import { IconButton, DetailsToggleButton } from '../ui_components/ToolBar';
@@ -17,6 +17,7 @@ import TableIcon from 'top/browser/server_groups/servers/databases/schemas/table
 import PrimaryKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/primary_key.svg';
 import ForeignKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/img/foreign_key.svg';
 import ColumnIcon from 'top/browser/server_groups/servers/databases/schemas/tables/columns/static/img/column.svg';
+import PropTypes from 'prop-types';
 
 const TYPE = 'table';
 
@@ -127,6 +128,11 @@ function RowIcon({icon}) {
   );
 }
 
+RowIcon.propTypes = {
+  icon: PropTypes.any.isRequired,
+};
+
+
 export class TableNodeWidget extends React.Component {
   constructor(props) {
     super(props);
@@ -205,6 +211,11 @@ export class TableNodeWidget extends React.Component {
     );
   }
 }
+
+TableNodeWidget.propTypes = {
+  node: PropTypes.instanceOf(TableNodeModel),
+  engine: PropTypes.instanceOf(DiagramEngine),
+};
 
 export class TableNodeFactory extends AbstractReactFactory {
   constructor() {

@@ -81,8 +81,10 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
 
 BaseChart.propTypes = {
   type: PropTypes.string.isRequired,
+  id: PropTypes.string,
   data: PropTypes.object.isRequired,
   options: PropTypes.object,
+  redraw: PropTypes.bool,
   updateOptions: PropTypes.object,
   onInit: PropTypes.func,
   onUpdate: PropTypes.func,

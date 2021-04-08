@@ -128,7 +128,7 @@
     "wkx": "^0.5.0"
   },
   "scripts": {
-    "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js .",
+    "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js  --ext .jsx .",
     "webpacker": "yarn run webpack --config webpack.config.js --progress",
     "webpacker:watch": "yarn run webpack --config webpack.config.js --progress --watch",
     "bundle:watch": "yarn run linter && yarn run webpacker:watch",

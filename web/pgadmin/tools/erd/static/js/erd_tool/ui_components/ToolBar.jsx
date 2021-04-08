@@ -28,6 +28,7 @@ const BaseIconButton = forwardRef((props, ref)=>{
     </button>
   );
 });
+BaseIconButton.displayName = 'BaseIconButton';
 
 BaseIconButton.propTypes = {
   icon: PropTypes.string,
@@ -88,6 +89,7 @@ export const IconButton = forwardRef((props, ref) => {
     return <BaseIconButton ref={ref} className='btn btn-sm btn-primary-icon' {...otherProps}/>;
   }
 });
+IconButton.displayName = 'IconButton';
 
 IconButton.propTypes = {
   title: PropTypes.string,
@@ -120,6 +122,10 @@ export function ButtonGroup({className, children}) {
 
 ButtonGroup.propTypes = {
   className: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node
+  ]),
 };
 
 /* Toolbar container */
@@ -131,6 +137,10 @@ export default function ToolBar({id, children}) {
   );
 }
 
-ButtonGroup.propTypes = {
+ToolBar.propTypes = {
   id: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node
+  ]),
 };

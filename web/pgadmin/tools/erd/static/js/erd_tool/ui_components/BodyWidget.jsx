@@ -292,7 +292,7 @@ export default class BodyWidget extends React.Component {
 
   closePanel() {
     window.onbeforeunload = null;
-    this.props.panel.off(wcDocker.EVENT.CLOSING);
+    this.props.panel.off(window.wcDocker.EVENT.CLOSING);
     this.props.pgWindow.pgAdmin.Browser.docker.removePanel(this.props.panel);
   }
 
@@ -555,16 +555,16 @@ export default class BodyWidget extends React.Component {
     let nodesRect = this.diagram.getEngine().getBoundingNodesRect(this.diagram.getModel().getNodes(), 10);
     let canvasRect = this.canvasEle.getBoundingClientRect();
     let canvasTopLeftPoint = {
-        x: canvasRect.left,
-        y: canvasRect.top
+      x: canvasRect.left,
+      y: canvasRect.top
     };
     let nodeLayerTopLeftPoint = {
-        x: canvasTopLeftPoint.x + this.diagram.getModel().getOffsetX(),
-        y: canvasTopLeftPoint.y + this.diagram.getModel().getOffsetY()
+      x: canvasTopLeftPoint.x + this.diagram.getModel().getOffsetX(),
+      y: canvasTopLeftPoint.y + this.diagram.getModel().getOffsetY()
     };
     let nodesRectTopLeftPoint = {
-        x: nodeLayerTopLeftPoint.x + nodesRect.getTopLeft().x,
-        y: nodeLayerTopLeftPoint.y + nodesRect.getTopLeft().y
+      x: nodeLayerTopLeftPoint.x + nodesRect.getTopLeft().x,
+      y: nodeLayerTopLeftPoint.y + nodesRect.getTopLeft().y
     };
     let prevTransform = this.canvasEle.querySelector('div').style.transform;
     this.canvasEle.childNodes.forEach((ele)=>{
@@ -579,37 +579,37 @@ export default class BodyWidget extends React.Component {
     /* html2canvas ignores CSS styles, set the CSS styles to inline */
     const setSvgInlineStyles = (targetElem) => {
       const transformProperties = [
-          'fill',
-          'color',
-          'font-size',
-          'stroke',
-          'font'
+        'fill',
+        'color',
+        'font-size',
+        'stroke',
+        'font'
       ];
-      let svgElems = Array.from(targetElem.getElementsByTagName("svg"));
+      let svgElems = Array.from(targetElem.getElementsByTagName('svg'));
       for (let svgEle of svgElems) {
-          svgEle.setAttribute('width', svgEle.clientWidth);
-          svgEle.setAttribute('height', svgEle.clientHeight);
-          /* Wrap the SVG in a div tag so that transforms are consistent with html */
-          let wrap = document.createElement('div');
-          wrap.setAttribute('style', svgEle.getAttribute('style'));
-          svgEle.setAttribute('style', null);
-          svgEle.parentNode.appendChild(wrap);
-          wrap.appendChild(svgEle);
-          recurseElementChildren(svgEle);
+        svgEle.setAttribute('width', svgEle.clientWidth);
+        svgEle.setAttribute('height', svgEle.clientHeight);
+        /* Wrap the SVG in a div tag so that transforms are consistent with html */
+        let wrap = document.createElement('div');
+        wrap.setAttribute('style', svgEle.getAttribute('style'));
+        svgEle.setAttribute('style', null);
+        svgEle.parentNode.appendChild(wrap);
+        wrap.appendChild(svgEle);
+        recurseElementChildren(svgEle);
       }
       function recurseElementChildren(node) {
-          if (!node.style)
-              return;
+        if (!node.style)
+          return;
 
-          let styles = getComputedStyle(node);
-          for (let transformProperty of transformProperties) {
-              node.style[transformProperty] = styles[transformProperty];
-          }
-          for (let child of Array.from(node.childNodes)) {
-              recurseElementChildren(child);
-          }
+        let styles = getComputedStyle(node);
+        for (let transformProperty of transformProperties) {
+          node.style[transformProperty] = styles[transformProperty];
+        }
+        for (let child of Array.from(node.childNodes)) {
+          recurseElementChildren(child);
+        }
       }
-    }
+    };
 
     setTimeout(()=>{
       html2canvas(this.canvasEle, {
@@ -720,7 +720,7 @@ export default class BodyWidget extends React.Component {
     }
   }
 
-  onNoteClick(e) {
+  onNoteClick() {
     let noteNode = this.diagram.getSelectedNodes()[0];
     this.showNote(noteNode);
   }
@@ -810,65 +810,65 @@ export default class BodyWidget extends React.Component {
   render() {
     return (
       <>
-      <ToolBar id="btn-toolbar">
-        <ButtonGroup>
-          <IconButton id="open-file" icon="fa fa-folder-open" onClick={this.onLoadDiagram} title={gettext('Load from file')}
-            shortcut={this.state.preferences.open_project}/>
-          <IconButton id="save-erd" icon="fa fa-save" onClick={()=>{this.onSaveDiagram();}} title={gettext('Save project')}
-            shortcut={this.state.preferences.save_project} disabled={!this.state.dirty}/>
-          <IconButton id="save-as-erd" icon="fa fa-share-square" onClick={this.onSaveAsDiagram} title={gettext('Save as')}
-            shortcut={this.state.preferences.save_project_as}/>
-        </ButtonGroup>
-        <ButtonGroup>
-          <IconButton id="save-sql" icon="fa fa-file-code" onClick={this.onSQLClick} title={gettext('Generate SQL')}
-            shortcut={this.state.preferences.generate_sql}/>
-          <IconButton id="save-image" icon="fa fa-file-image" onClick={this.onImageClick} title={gettext('Download image')}
-            shortcut={this.state.preferences.download_image}/>
-        </ButtonGroup>
-        <ButtonGroup>
-          <IconButton id="add-node" icon="fa fa-plus-square" onClick={this.onAddNewNode} title={gettext('Add table')}
-            shortcut={this.state.preferences.add_table}/>
-          <IconButton id="edit-node" icon="fa fa-pencil-alt" onClick={this.onEditNode} title={gettext('Edit table')}
-            shortcut={this.state.preferences.edit_table} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-          <IconButton id="clone-node" icon="fa fa-clone" onClick={this.onCloneNode} title={gettext('Clone table')}
-            shortcut={this.state.preferences.clone_table} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-          <IconButton id="delete-node" icon="fa fa-trash-alt" onClick={this.onDeleteNode} title={gettext('Drop table/link')}
-            shortcut={this.state.preferences.drop_table} disabled={!this.state.any_item_selected}/>
-        </ButtonGroup>
-        <ButtonGroup>
-          <IconButton id="add-onetomany" text="1M" onClick={this.onOneToManyClick} title={gettext('One-to-Many link')}
-            shortcut={this.state.preferences.one_to_many} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-          <IconButton id="add-manytomany" text="MM" onClick={this.onManyToManyClick} title={gettext('Many-to-Many link')}
-            shortcut={this.state.preferences.many_to_many} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-        </ButtonGroup>
-        <ButtonGroup>
-          <IconButton id="add-note" icon="fa fa-sticky-note" onClick={this.onNoteClick} title={gettext('Add/Edit note')}
-            shortcut={this.state.preferences.add_edit_note} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-          <IconButton id="auto-align" icon="fa fa-magic" onClick={this.onAutoDistribute} title={gettext('Auto align')}
-            shortcut={this.state.preferences.auto_align} />
-          <DetailsToggleButton id="more-details" onClick={this.onDetailsToggle} showDetails={this.state.show_details}
-            shortcut={this.state.preferences.show_details} />
-        </ButtonGroup>
-        <ButtonGroup>
-          <IconButton id="zoom-to-fit" icon="fa fa-compress" onClick={this.diagram.zoomToFit} title={gettext('Zoom to fit')}
-            shortcut={this.state.preferences.zoom_to_fit}/>
-          <IconButton id="zoom-in" icon="fa fa-search-plus" onClick={this.diagram.zoomIn} title={gettext('Zoom in')}
-            shortcut={this.state.preferences.zoom_in}/>
-          <IconButton id="zoom-out" icon="fa fa-search-minus" onClick={this.diagram.zoomOut} title={gettext('Zoom out')}
-            shortcut={this.state.preferences.zoom_out}/>
-        </ButtonGroup>
-        <ButtonGroup>
-          <IconButton id="help" icon="fa fa-question" onClick={this.onHelpClick} title={gettext('Help')} />
-        </ButtonGroup>
-      </ToolBar>
-      <ConnectionBar statusId="btn-conn-status" status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
-        fgcolor={this.props.params.fgcolor} title={this.props.params.title}/>
-      <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
-        reference={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
-      <div className="diagram-container" ref={this.diagramContainerRef}>
-        <Loader message={this.state.loading_msg} autoEllipsis={true}/>
-        <CanvasWidget className="diagram-canvas flex-grow-1" ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
-      </div>
+        <ToolBar id="btn-toolbar">
+          <ButtonGroup>
+            <IconButton id="open-file" icon="fa fa-folder-open" onClick={this.onLoadDiagram} title={gettext('Load from file')}
+              shortcut={this.state.preferences.open_project}/>
+            <IconButton id="save-erd" icon="fa fa-save" onClick={()=>{this.onSaveDiagram();}} title={gettext('Save project')}
+              shortcut={this.state.preferences.save_project} disabled={!this.state.dirty}/>
+            <IconButton id="save-as-erd" icon="fa fa-share-square" onClick={this.onSaveAsDiagram} title={gettext('Save as')}
+              shortcut={this.state.preferences.save_project_as}/>
+          </ButtonGroup>
+          <ButtonGroup>
+            <IconButton id="save-sql" icon="fa fa-file-code" onClick={this.onSQLClick} title={gettext('Generate SQL')}
+              shortcut={this.state.preferences.generate_sql}/>
+            <IconButton id="save-image" icon="fa fa-file-image" onClick={this.onImageClick} title={gettext('Download image')}
+              shortcut={this.state.preferences.download_image}/>
+          </ButtonGroup>
+          <ButtonGroup>
+            <IconButton id="add-node" icon="fa fa-plus-square" onClick={this.onAddNewNode} title={gettext('Add table')}
+              shortcut={this.state.preferences.add_table}/>
+            <IconButton id="edit-node" icon="fa fa-pencil-alt" onClick={this.onEditNode} title={gettext('Edit table')}
+              shortcut={this.state.preferences.edit_table} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
+            <IconButton id="clone-node" icon="fa fa-clone" onClick={this.onCloneNode} title={gettext('Clone table')}
+              shortcut={this.state.preferences.clone_table} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
+            <IconButton id="delete-node" icon="fa fa-trash-alt" onClick={this.onDeleteNode} title={gettext('Drop table/link')}
+              shortcut={this.state.preferences.drop_table} disabled={!this.state.any_item_selected}/>
+          </ButtonGroup>
+          <ButtonGroup>
+            <IconButton id="add-onetomany" text="1M" onClick={this.onOneToManyClick} title={gettext('One-to-Many link')}
+              shortcut={this.state.preferences.one_to_many} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
+            <IconButton id="add-manytomany" text="MM" onClick={this.onManyToManyClick} title={gettext('Many-to-Many link')}
+              shortcut={this.state.preferences.many_to_many} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
+          </ButtonGroup>
+          <ButtonGroup>
+            <IconButton id="add-note" icon="fa fa-sticky-note" onClick={this.onNoteClick} title={gettext('Add/Edit note')}
+              shortcut={this.state.preferences.add_edit_note} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
+            <IconButton id="auto-align" icon="fa fa-magic" onClick={this.onAutoDistribute} title={gettext('Auto align')}
+              shortcut={this.state.preferences.auto_align} />
+            <DetailsToggleButton id="more-details" onClick={this.onDetailsToggle} showDetails={this.state.show_details}
+              shortcut={this.state.preferences.show_details} />
+          </ButtonGroup>
+          <ButtonGroup>
+            <IconButton id="zoom-to-fit" icon="fa fa-compress" onClick={this.diagram.zoomToFit} title={gettext('Zoom to fit')}
+              shortcut={this.state.preferences.zoom_to_fit}/>
+            <IconButton id="zoom-in" icon="fa fa-search-plus" onClick={this.diagram.zoomIn} title={gettext('Zoom in')}
+              shortcut={this.state.preferences.zoom_in}/>
+            <IconButton id="zoom-out" icon="fa fa-search-minus" onClick={this.diagram.zoomOut} title={gettext('Zoom out')}
+              shortcut={this.state.preferences.zoom_out}/>
+          </ButtonGroup>
+          <ButtonGroup>
+            <IconButton id="help" icon="fa fa-question" onClick={this.onHelpClick} title={gettext('Help')} />
+          </ButtonGroup>
+        </ToolBar>
+        <ConnectionBar statusId="btn-conn-status" status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
+          fgcolor={this.props.params.fgcolor} title={this.props.params.title}/>
+        <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
+          reference={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
+        <div className="diagram-container" ref={this.diagramContainerRef}>
+          <Loader message={this.state.loading_msg} autoEllipsis={true}/>
+          <CanvasWidget className="diagram-canvas flex-grow-1" ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
+        </div>
       </>
     );
   }
@@ -892,4 +892,5 @@ BodyWidget.propTypes = {
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,
   alertify: PropTypes.object.isRequired,
+  panel: PropTypes.object,
 };

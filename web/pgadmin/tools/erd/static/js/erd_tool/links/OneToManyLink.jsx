@@ -18,6 +18,7 @@ import {
 } from '@projectstorm/react-diagrams';
 import {Point} from '@projectstorm/geometry';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 export const OneToManyModel = {
   local_table_uid: undefined,
@@ -84,7 +85,7 @@ const CustomLinkEndWidget = props => {
           <polyline className="svg-link-ele" points="-8,0 0,15 0,0 0,30 0,15 8,0" fill="none" strokeWidth={props.width} />
         </>
       );
-    } else if (type == 'one') {
+    } else if (itype == 'one') {
       return (
         <polyline className="svg-link-ele" points="-8,15 0,15 0,0 0,30 0,15 8,15" fill="none" strokeWidth={props.width} />
       );
@@ -100,6 +101,15 @@ const CustomLinkEndWidget = props => {
       </g>
     </g>
   );
+};
+
+CustomLinkEndWidget.propTypes = {
+  point: PropTypes.instanceOf(PointModel).isRequired,
+  rotation: PropTypes.number.isRequired,
+  tx: PropTypes.number.isRequired,
+  ty: PropTypes.number.isRequired,
+  type: PropTypes.oneOf(['many', 'one']).isRequired,
+  width: PropTypes.number,
 };
 
 export class OneToManyLinkWidget extends RightAngleLinkWidget {
@@ -243,7 +253,7 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
                 window.addEventListener('mouseup', this.handleUp);
               }
             },
-            onMouseEnter: (event) => {
+            onMouseEnter: () => {
               this.setState({ selected: true });
               this.props.link.lastHoverIndexOfPath = j;
             },
