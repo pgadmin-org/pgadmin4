@@ -57,7 +57,9 @@ class SettingsModule(PgAdminModule):
         return [
             'settings.store', 'settings.store_bulk', 'settings.reset_layout',
             'settings.save_tree_state', 'settings.get_tree_state',
-            'settings.reset_tree_state'
+            'settings.reset_tree_state',
+            'settings.save_file_format_setting',
+            'settings.get_file_format_setting'
         ]
 
 
@@ -218,3 +220,66 @@ def get_browser_tree_state():
     return Response(response=data,
                     status=200,
                     mimetype="application/json")
+
+
+def _get_dialog_type(file_type):
+    """
+    This function return dialog type
+    :param file_type:
+    :return: dialog type.
+    """
+    if 'pgerd' in file_type:
+        return 'erd_file_type'
+    elif 'backup' in file_type:
+        return 'backup_file_type'
+    elif 'csv' in file_type and 'txt' in file_type:
+        return 'import_export_file_type'
+    elif 'csv' in file_type and 'txt' not in file_type:
+        return 'storage_manager_file_type'
+    else:
+        return 'sqleditor_file_format'
+
+
+@blueprint.route("/save_file_format_setting/",
+                 endpoint="save_file_format_setting",
+                 methods=['POST'])
+@login_required
+def save_file_format_setting():
+    """
+    This function save the selected file format.
+    :return: save file format response
+    """
+    data = request.form if request.form else json.loads(
+        request.data.decode('utf-8'))
+    file_type = _get_dialog_type(data['allowed_file_types'])
+
+    store_setting(file_type, data['selectedFormat'])
+    return make_json_response(success=True,
+                              info=data,
+                              result=request.form)
+
+
+@blueprint.route("/get_file_format_setting/",
+                 endpoint="get_file_format_setting",
+                 methods=['GET'])
+@login_required
+def get_file_format_setting():
+    """
+    This function return the last selected file format
+    :return: last selected file format
+    """
+    data = dict()
+    for k, v in request.args.items():
+        try:
+            data[k] = json.loads(v, encoding='utf-8')
+        except (ValueError, TypeError, KeyError):
+            data[k] = v
+
+    file_type = _get_dialog_type(list(data.values()))
+
+    data = Setting.query.filter_by(
+        user_id=current_user.id, setting=file_type).first()
+    if data is None:
+        return make_json_response(success=True, info='*')
+    else:
+        return make_json_response(success=True, info=data.value)

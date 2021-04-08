@@ -52,6 +52,18 @@ define([
     });
   };
 
+  var getFileFormat = function(data) {
+  // Get last selected file format
+    return $.ajax({
+      async: false,
+      cache: false,
+      url: url_for('settings.get_file_format_setting'),
+      data : $.extend({}, data),
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8',
+    });
+  };
+
   // Set enable/disable state of list and grid view
   var setViewButtonsFor = function(viewMode) {
     if (viewMode == 'grid') {
@@ -1330,18 +1342,22 @@ define([
         if (types_len > 0) {
           var i = 0,
             t,
-            selected = false,
             have_all_types = false;
 
           let fileFormats = '';
+          let response = getFileFormat(config.options.allowed_file_types);
+          let lastSelectedFormat =  response.responseJSON.info;
+
           while (i < types_len) {
             t = allowed_types[i];
-            if (!selected && (types_len == 1 || t != '*')) {
-              fileFormats += '<option value=' + t + ' selected>' + t + '</option>';
-              selected = true;
+            if ((types_len == 1 || t != '*')) {
+              if(t === lastSelectedFormat)
+                fileFormats += '<option value=' + t + ' selected >' + t + '</option>';
+              else
+                fileFormats += '<option value=' + t + ' >' + t + '</option>';
               have_all_types = (have_all_types || (t == '*'));
-            } else {
-              fileFormats += '<option value="' + t + '">' +
+            } else if ((lastSelectedFormat === '*')) {
+              fileFormats += '<option value="' + t + '" selected >' +
                 (t == '*' ? gettext('All Files') : t) + '</option>';
               have_all_types = (have_all_types || (t == '*'));
             }
@@ -1370,6 +1386,13 @@ define([
             curr_path = $('.currentpath').val(),
             user_input_file = null,
             input_path = $('.storage_dialog #uploader .input-path').val();
+          config.options.selectedFormat = selected_val;
+          $.ajax({
+            url: url_for('settings.save_file_format_setting'),
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(config.options),
+          });
           if (curr_path.endsWith('/')) {
             user_input_file = input_path.substring(curr_path.lastIndexOf('/')+1);
           } else {
@@ -1928,10 +1951,15 @@ define([
     getDetailView: function(path) {
       if (path.lastIndexOf('/') == path.length - 1 || path.lastIndexOf('\\') == path.length - 1) {
         var allowed_types = this.config.options.allowed_file_types;
-        var set_type = allowed_types[0];
-        if (allowed_types[0] == '*') {
-          set_type = allowed_types[1];
-        }
+
+        let set_type;
+
+        let response = getFileFormat(this.config.options.allowed_file_types);
+        let lastSelectedFormat =  response.responseJSON.info;
+        if (_.isUndefined(lastSelectedFormat))
+          set_type = allowed_types[0];
+        else
+          set_type = lastSelectedFormat;
         getFolderInfo(path, set_type);
       }
     },
