@@ -13,6 +13,7 @@ import url_for from '../url_for';
 import axios from 'axios';
 import * as httpErrorHandler from './query_tool_http_error_handler';
 import * as queryTxnStatus from 'sources/sqleditor/query_txn_status_constants';
+import * as SqlEditorUtils from 'sources/sqleditor_utils';
 
 class LoadingScreen {
   constructor(sqlEditor) {
@@ -75,6 +76,9 @@ class ExecuteQuery {
 
         if (ExecuteQuery.isSqlCorrect(httpMessageData)) {
           self.loadingScreen.setMessage('Waiting for the query to complete...');
+
+          // Disable drop down arrow to change connections
+          SqlEditorUtils.disable_connection_dropdown(true);
 
           self.updateSqlEditorStateWithInformationFromServer(httpMessageData.data);
 
@@ -161,6 +165,10 @@ class ExecuteQuery {
           self.loadingScreen.hide();
           self.sqlServerObject.update_msg_history(false, 'Execution Cancelled!', true);
         }
+        // Enable connection list drop down again for query tool only
+        if(self.sqlServerObject.is_query_tool && !ExecuteQuery.isQueryStillRunning(httpMessage)){
+          SqlEditorUtils.disable_connection_dropdown(false);
+        }
       }
     ).catch(
       error => {
@@ -171,6 +179,7 @@ class ExecuteQuery {
         self.sqlServerObject.setIsQueryRunning(false);
         if (self.sqlServerObject.is_query_tool) {
           self.enableSQLEditorButtons();
+          SqlEditorUtils.disable_connection_dropdown(false);
         }
 
         if(error.response) {

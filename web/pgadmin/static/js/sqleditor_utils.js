@@ -57,6 +57,17 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
 
+      // Disables arrow to change connection
+      disable_connection_dropdown: function (status) {
+        if (status){
+          $('.conn-info-dd').prop('disabled',true);
+          $('.connection-data').css({pointerEvents: 'none', cursor: 'arrow'});
+        }else{
+          $('.conn-info-dd').prop('disabled',false);
+          $('.connection-data').css({pointerEvents: 'auto', cursor: 'pointer'});
+        }
+      },
+
       // Status flag
       previousStatus: null,
 

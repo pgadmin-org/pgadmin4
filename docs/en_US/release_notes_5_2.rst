@@ -20,6 +20,7 @@ Bug fixes
 
 | `Issue #5519 <https://redmine.postgresql.org/issues/5519>`_ -  Ensure that the query tool tab should be closed after server disconnection when auto-commit/auto-rollback is set to false.
 | `Issue #6076 <https://redmine.postgresql.org/issues/6076>`_ -  Fixed an issue where correct error not thrown while importing servers and JSON file has incorrect/insufficient keys.
+| `Issue #6082 <https://redmine.postgresql.org/issues/6082>`_ -  Ensure that the user should not be to change the connection when a long query is running.
 | `Issue #6220 <https://redmine.postgresql.org/issues/6220>`_ -  Corrected the syntax for 'CREATE TRIGGER', use 'EXECUTE FUNCTION' instead of 'EXECUTE PROCEDURE' from v11 onwards.
 | `Issue #6293 <https://redmine.postgresql.org/issues/6293>`_ -  Fixed an issue where the procedure creation is failed when providing the Volatility option.
 | `Issue #6325 <https://redmine.postgresql.org/issues/6325>`_ -  Ensure that the file format for the storage manager should be 'All files' and for other dialogs, it should remember the last selected format.
