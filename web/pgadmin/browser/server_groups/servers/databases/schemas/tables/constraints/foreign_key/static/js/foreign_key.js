@@ -505,8 +505,6 @@ define('pgadmin.node.foreign_key', [
 
             newRow.addClass('new');
             $(newRow).pgMakeVisible('backform-tab');
-          } else {
-            //delete m;
           }
         }
         return false;
@@ -1083,6 +1081,15 @@ define('pgadmin.node.foreign_key', [
           },
         },
         ],
+        isReadonly:function(m) {
+          // If we are in table edit mode then
+          if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
+            // If OID is undefined then user is trying to add
+            // new constraint which should allowed for Unique
+            return !_.isUndefined(m.get('oid'));
+          }
+          return !m.isNew();
+        },
         validate: function() {
           var columns = this.get('columns'),
             msg;

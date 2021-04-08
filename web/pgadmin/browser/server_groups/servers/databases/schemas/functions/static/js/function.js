@@ -91,8 +91,6 @@ define('pgadmin.node.function', [
       }
       return true;
     },
-    validate: function() {
-    },
   });
 
   if (!pgBrowser.Nodes['function']) {

@@ -125,42 +125,14 @@ define('pgadmin.node.exclusion_constraint', [
         onText: 'ASC',
         offText: 'DESC',
       },
-      editable: function(m) {
-        if (m instanceof Backbone.Collection) {
-          return true;
-        } else if ((_.has(m.collection, 'handler') &&
-          !_.isUndefined(m.collection.handler) &&
-            !_.isUndefined(m.collection.handler.get('oid')))) {
-          return false;
-        } else if (m.top.get('amname') === 'btree') {
-          m.set('is_sort_nulls_applicable', true);
-          return true;
-        } else {
-          m.set('is_sort_nulls_applicable', false);
-          return false;
-        }
-      },
+      editable: 'isEditable',
     },{
       id: 'nulls_order', label: gettext('NULLs order'), type:'switch',
       options: {
         onText: 'FIRST',
         offText: 'LAST',
       },
-      editable: function(m) {
-        if (m instanceof Backbone.Collection) {
-          return true;
-        } else if ((_.has(m.collection, 'handler') &&
-          !_.isUndefined(m.collection.handler) &&
-            !_.isUndefined(m.collection.handler.get('oid')))) {
-          return false;
-        } else if (m.top.get('amname') === 'btree') {
-          m.set('is_sort_nulls_applicable', true);
-          return true;
-        } else {
-          m.set('is_sort_nulls_applicable', false);
-          return false;
-        }
-      },
+      editable: 'isEditable',
     },{
       id: 'operator', label: gettext('Operator'), type: 'text',
       node: 'table', url: 'get_operator',
@@ -220,6 +192,21 @@ define('pgadmin.node.exclusion_constraint', [
       }),
     },
     ],
+    isEditable: function(m) {
+      if (m instanceof Backbone.Collection) {
+        return true;
+      } else if ((_.has(m.collection, 'handler') &&
+        !_.isUndefined(m.collection.handler) &&
+        !_.isUndefined(m.collection.handler.get('oid')))) {
+        return false;
+      } else if (m.top.get('amname') === 'btree') {
+        m.set('is_sort_nulls_applicable', true);
+        return true;
+      } else {
+        m.set('is_sort_nulls_applicable', false);
+        return false;
+      }
+    },
     validate: function() {
       this.errorModel.clear();
       var operator = this.get('operator'),
@@ -775,22 +762,14 @@ define('pgadmin.node.exclusion_constraint', [
             },
           }),
           select2:{allowClear:true},
-          readonly: function(m) {
-            return ((_.has(m, 'handler') &&
-              !_.isUndefined(m.handler) &&
-                !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
-          },
+          readonly: 'isReadonly',
         },{
           id: 'fillfactor', label: gettext('Fill factor'),
           type: 'int', group: gettext('Definition'), allowNull: true,
         },{
           id: 'condeferrable', label: gettext('Deferrable?'),
           type: 'switch', group: gettext('Definition'), deps: ['index'],
-          readonly: function(m) {
-            return ((_.has(m, 'handler') &&
-              !_.isUndefined(m.handler) &&
-                !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
-          },
+          readonly: 'isReadonly',
         },{
           id: 'condeferred', label: gettext('Deferred?'),
           type: 'switch', group: gettext('Definition'),
@@ -817,11 +796,7 @@ define('pgadmin.node.exclusion_constraint', [
         },{
           id: 'indconstraint', label: gettext('Constraint'), cell: 'string',
           type: 'multiline', mode: ['create', 'edit', 'properties'], editable: false,
-          group: gettext('Definition'), readonly: function(m) {
-            return ((_.has(m, 'handler') &&
-              !_.isUndefined(m.handler) &&
-                !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
-          },
+          group: gettext('Definition'), readonly: 'isReadonly',
         },{
           id: 'columns', label: gettext('Columns/Expressions'),
           type: 'collection', group: gettext('Columns'),
@@ -834,11 +809,7 @@ define('pgadmin.node.exclusion_constraint', [
           },
           control: ExclusionConstraintColumnControl,
           model: ExclusionConstraintColumnModel,
-          readonly: function(m) {
-            return ((_.has(m, 'handler') &&
-              !_.isUndefined(m.handler) &&
-                !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
-          },
+          readonly: 'isReadonly',
           cell: Backgrid.StringCell.extend({
             initialize: function() {
               Backgrid.StringCell.prototype.initialize.apply(this, arguments);
@@ -1041,6 +1012,11 @@ define('pgadmin.node.exclusion_constraint', [
             return !m.isNew();
           },
         }],
+        isReadonly: function(m) {
+          return ((_.has(m, 'handler') &&
+              !_.isUndefined(m.handler) &&
+              !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
+        },
         validate: function() {
           this.errorModel.clear();
           var columns = this.get('columns'),
