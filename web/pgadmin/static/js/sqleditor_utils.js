@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////
 // This file contains common utilities functions used in sqleditor modules
 
-define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
-  function ($, _, gettext, url_for) {
+define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for', 'pgadmin.alertifyjs'],
+  function ($, _, gettext, url_for, alertify) {
     var sqlEditorUtils = {
       /* Reference link http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
        * Modified as per requirement.
@@ -235,6 +235,23 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
             buttons: [button],
           };
         }
+      },
+
+      isModalOpen: function(dialog_list) {
+        /* check the modals inside the sqleditor are open or not */
+        if(Array.isArray(dialog_list)) {
+          for(let d of dialog_list) {
+            try {
+              if(alertify.dialog(d) && alertify.dialog(d).isOpen())
+                return true;
+            }
+            catch (err) {
+              // Do nothing
+              console.warn(err.stack || err);
+            }
+          }
+        }
+        return false;
       },
     };
     return sqlEditorUtils;

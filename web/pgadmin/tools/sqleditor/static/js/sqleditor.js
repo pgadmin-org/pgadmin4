@@ -506,13 +506,23 @@ define('tools.querytool', [
                 transId = self.handler.transId;
 
               if (!$container.hasClass('wcPanelTabContentHidden')) {
-                setTimeout(function () {
-                  self.handler.gridView.query_tool_obj.focus();
-                }, 200);
-                // Trigger an event to update connection status flag
-                pgBrowser.Events.trigger(
-                  'pgadmin:query_tool:panel:gain_focus:' + transId
-                );
+
+                let modal_list = ['fileSelectionDlg', 'createModeDlg',
+                  'confirm', 'alert', 'confirmSave', 'newConnectionDialog',
+                  'macroDialog'];
+
+                /* check the modals inside the sqleditor are open, if not,
+                focus on the editor instead. */
+                if(!SqlEditorUtils.isModalOpen(modal_list)) {
+                  setTimeout(function () {
+                    self.handler.gridView.query_tool_obj.focus();
+                  }, 200);
+
+                  // Trigger an event to update connection status flag
+                  pgBrowser.Events.trigger(
+                    'pgadmin:query_tool:panel:gain_focus:' + transId
+                  );
+                }
               }
             });
 

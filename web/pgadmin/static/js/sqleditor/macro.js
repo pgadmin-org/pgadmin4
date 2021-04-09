@@ -63,6 +63,17 @@ let MacroDialog = {
               className: 'btn btn-primary fa fa-save pg-alertify-button',
               'data-btn-name': 'ok',
             }],
+            focus: {
+              element: function(){
+              /*
+              returning false will focus nothing, but it will make
+              contents behind the modal accessible via Tab key,
+              so focus the dialog itself instead.
+              */
+                return $(this.elements.dialog).find('.header-icon-cell button')[0];
+              },
+              select: true,
+            },
             // Set options for dialog
             options: {
               title: title,

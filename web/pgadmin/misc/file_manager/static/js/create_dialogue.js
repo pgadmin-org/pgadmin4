@@ -191,4 +191,4 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
       }
     },
   };
-}, true, 'fileSelectionDlg');
+}, false, 'fileSelectionDlg');

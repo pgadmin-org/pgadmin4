@@ -19,8 +19,10 @@ Bug fixes
 *********
 
 | `Issue #5519 <https://redmine.postgresql.org/issues/5519>`_ -  Ensure that the query tool tab should be closed after server disconnection when auto-commit/auto-rollback is set to false.
+| `Issue #5908 <https://redmine.postgresql.org/issues/5908>`_ -  Fixed an issue where shortcut keys are not working with manage macro.
 | `Issue #6076 <https://redmine.postgresql.org/issues/6076>`_ -  Fixed an issue where correct error not thrown while importing servers and JSON file has incorrect/insufficient keys.
 | `Issue #6082 <https://redmine.postgresql.org/issues/6082>`_ -  Ensure that the user should not be to change the connection when a long query is running.
+| `Issue #6161 <https://redmine.postgresql.org/issues/6161>`_ -  Fixed an issue where the cursor shifts its focus to the wrong window for all the query tool related model dialogs.
 | `Issue #6220 <https://redmine.postgresql.org/issues/6220>`_ -  Corrected the syntax for 'CREATE TRIGGER', use 'EXECUTE FUNCTION' instead of 'EXECUTE PROCEDURE' from v11 onwards.
 | `Issue #6274 <https://redmine.postgresql.org/issues/6274>`_ -  Ensure that the strings in the LDAP auth module are translatable.
 | `Issue #6293 <https://redmine.postgresql.org/issues/6293>`_ -  Fixed an issue where the procedure creation is failed when providing the Volatility option.
