@@ -258,6 +258,36 @@ query took to complete and how many rows were retrieved:
     :alt: Query tool output information
     :align: center
 
+Notifications Panel
+*******************
+
+Use the *Notifications* tab to view the notifications using PostgreSQL *Listen/
+Notify* feature. For more details see `PostgreSQL documentation <https://
+www.postgresql.org/docs/current/sql-listen.html>`_.
+
+Example:
+
+1. Execute *LISTEN "foo"* in first *Query Tool* session
+
+.. image:: images/query_output_notifications_listen.png
+    :alt: Query tool notifications listen
+    :align: center
+
+2. In the another *Query Tool* session, execute *Notify* command or *pg_notify*
+function to send the notification of the event together with the payload.
+
+.. image:: images/query_output_notifications_notify.png
+    :alt: Query tool notifications notify
+    :align: center
+
+3. You can observe the *Notification* tab in the first *Query Tool* session
+where it shows the Recorded time, Event, Process ID, and the Payload of the
+particular channel.
+
+.. image:: images/query_output_notifications_panel.png
+    :alt: Query tool notifications panel
+    :align: center
+
 Query History Panel
 *******************
 

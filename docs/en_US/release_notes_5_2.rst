@@ -18,6 +18,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4001 <https://redmine.postgresql.org/issues/4001>`_ -  Updated docs and screenshots to cover the Notifications tab on the Query Tool.
 | `Issue #5519 <https://redmine.postgresql.org/issues/5519>`_ -  Ensure that the query tool tab should be closed after server disconnection when auto-commit/auto-rollback is set to false.
 | `Issue #5908 <https://redmine.postgresql.org/issues/5908>`_ -  Fixed an issue where shortcut keys are not working with manage macro.
 | `Issue #6076 <https://redmine.postgresql.org/issues/6076>`_ -  Fixed an issue where correct error not thrown while importing servers and JSON file has incorrect/insufficient keys.
