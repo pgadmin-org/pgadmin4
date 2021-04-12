@@ -103,7 +103,8 @@ define('pgadmin.node.check_constraint', [
         // Check Constraint Schema
         schema: [{
           id: 'name', label: gettext('Name'), type:'text', cell:'string',
-          readonly: 'isReadonly',
+          mode: ['properties', 'create', 'edit'], editable:true,
+          cellHeaderClasses:'width_percent_40',
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
