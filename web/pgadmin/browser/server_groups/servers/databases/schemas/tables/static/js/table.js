@@ -486,7 +486,7 @@ define('pgadmin.node.table', [
           visible: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
               && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 90500)
+                m.node_info.server.version >= 90600)
               return true;
 
             return false;
@@ -494,7 +494,7 @@ define('pgadmin.node.table', [
           disabled: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
               && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version < 90500)
+                m.node_info.server.version < 90600)
               return true;
 
             return m.inSchema();
@@ -507,12 +507,17 @@ define('pgadmin.node.table', [
           visible: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
               && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 90500)
+                m.node_info.server.version >= 90600)
               return true;
 
             return false;
           },
           disabled: function(m) {
+            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+              && !_.isUndefined(m.node_info.server.version) &&
+                m.node_info.server.version < 90600)
+              return true;
+
             if (m.get('rlspolicy')){
               return false;
             }

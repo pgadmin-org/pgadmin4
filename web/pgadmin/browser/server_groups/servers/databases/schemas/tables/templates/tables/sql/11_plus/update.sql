@@ -289,9 +289,3 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% if data.replica_identity and data.replica_identity != o_data.replica_identity %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} REPLICA IDENTITY {{data.replica_identity }};
 {% endif %}
-{#####################################################}
-{## Change replica identity ##}
-{#####################################################}
-{% if data.replica_identity and data.replica_identity != o_data.replica_identity %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} REPLICA IDENTITY {{data.replica_identity }};
-{% endif %}
