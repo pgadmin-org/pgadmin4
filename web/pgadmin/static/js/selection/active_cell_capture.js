@@ -108,7 +108,7 @@ define([
         }
 
         if (isClickingLastClickedHeader(rowClicked, 1)) {
-          if (isSingleRangeSelected()) {
+          if (isSingleRangeSelected() || grid.getSelectionModel().getSelectedRanges().length === 0) {
             grid.resetActiveCell();
           } else {
             grid.setActiveCell(retrievePreviousSelectedRange().fromRow, 1);
