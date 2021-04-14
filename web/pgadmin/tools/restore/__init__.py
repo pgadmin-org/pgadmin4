@@ -22,7 +22,7 @@ from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
 from pgadmin.utils.ajax import make_json_response, bad_request
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.model import Server
+from pgadmin.model import Server, SharedServer
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 # set template path for sql scripts
@@ -88,9 +88,15 @@ class RestoreMessage(IProcessDesc):
 
     def get_server_details(self):
         # Fetch the server details like hostname, port, roles etc
-        s = Server.query.filter_by(
-            id=self.sid, user_id=current_user.id
-        ).first()
+        if Server.query.filter_by(id=self.sid,
+                                  user_id=current_user.id).first():
+            s = Server.query.filter_by(
+                id=self.sid, user_id=current_user.id
+            ).first()
+        else:
+            s = SharedServer.query.filter_by(
+                id=self.sid, user_id=current_user.id
+            ).first()
 
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -209,10 +215,14 @@ def _connect_server(sid):
     :param sid: Server ID.
     :return: if not error occurred then return connection data.
     """
-    # Fetch the server details like hostname, port, roles etc
-    server = Server.query.filter_by(
-        id=sid
-    ).first()
+    if Server.query.filter_by(id=sid, user_id=current_user.id).first():
+        server = Server.query.filter_by(
+            id=sid, user_id=current_user.id
+        ).first()
+    else:
+        server = SharedServer.query.filter_by(
+            id=sid, user_id=current_user.id
+        ).first()
 
     if server is None:
         return make_json_response(
@@ -466,9 +476,15 @@ def check_utility_exists(sid):
     Returns:
         None
     """
-    server = Server.query.filter_by(
-        id=sid, user_id=current_user.id
-    ).first()
+    # Fetch the server details like hostname, port, roles etc
+    if Server.query.filter_by(id=sid, user_id=current_user.id).first():
+        server = Server.query.filter_by(
+            id=sid, user_id=current_user.id
+        ).first()
+    else:
+        server = SharedServer.query.filter_by(
+            id=sid, user_id=current_user.id
+        ).first()
 
     if server is None:
         return make_json_response(

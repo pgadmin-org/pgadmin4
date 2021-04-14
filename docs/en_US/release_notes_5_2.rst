@@ -38,3 +38,4 @@ Bug fixes
 | `Issue #6367 <https://redmine.postgresql.org/issues/6367>`_ -  Fixed an issue where the Save button is enabled by default when open the table's properties dialog on PG 9.5.
 | `Issue #6375 <https://redmine.postgresql.org/issues/6375>`_ -  Fixed an issue where users are unable to see data of the partitions using the View/Edit data option.
 | `Issue #6376 <https://redmine.postgresql.org/issues/6376>`_ -  Fixed an issue where a connection warning should be displayed on the user clicks on explain or explain analyze and the database server is disconnected from the browser tree.
+| `Issue #6385 <https://redmine.postgresql.org/issues/6385>`_ -  Ensure that Backup and Restore should work on shared servers.

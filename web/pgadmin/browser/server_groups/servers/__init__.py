@@ -346,7 +346,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 host=data.host,
                 hostaddr=data.hostaddr,
                 port=data.port,
-                maintenance_db=None,
+                maintenance_db=data.maintenance_db,
                 username=None,
                 save_password=0,
                 ssl_mode=data.ssl_mode,
