@@ -1332,8 +1332,9 @@ def launch_url_in_browser(driver_instance, url, title='pgAdmin 4', timeout=50):
             if count == 0:
                 print(str(e))
                 exception_msg = 'Web-page title did not match to {0}. ' \
-                                'Please check url {1} accessible on ' \
-                                'internet.'.format(title, url)
+                                'Waited for {1} seconds Please check url {2}' \
+                                ' accessible on internet.'.\
+                    format(title, timeout, url)
                 raise WebDriverException(exception_msg)
 
 

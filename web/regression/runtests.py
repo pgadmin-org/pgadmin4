@@ -570,12 +570,12 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
     :param max_thread_count:
     """
     driver_object = None
-    try:
-        # Thread list
-        threads_list = []
-        # Create thread for each server
-        for ser in servers_details:
-            # Logic to add new threads
+
+    # Thread list
+    threads_list = []
+    # Create thread for each server
+    for ser in servers_details:
+        try:
             while True:
                 # If active thread count <= max_thread_count, add new thread
                 if threading.activeCount() <= max_thread_count:
@@ -603,16 +603,24 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
                 else:
                     time.sleep(10)
 
-        # Start threads in parallel
-        for t in threads_list:
-            t.join()
-    except Exception as exc:
-        # Print exception stack trace
-        traceback.print_exc(file=sys.stderr)
-        print(str(exc))
-        # Clean driver object created
-        if driver_object is not None:
-            driver_object.quit()
+                # Start threads in parallel
+                for t in threads_list:
+                    t.join()
+
+        except Exception as exc:
+            # Print exception stack trace
+            traceback.print_exc(file=sys.stderr)
+            print('Exception before starting tests for ' + ser['name'],
+                  file=sys.stderr)
+            print(str(exc), file=sys.stderr)
+
+            # Mark failure as true
+            global failure
+            failure = True
+
+            # Clean driver object created
+            if driver_object is not None:
+                driver_object.quit()
 
 
 def run_sequential_tests(url_client, servers_details, sequential_tests_lists,
@@ -815,6 +823,12 @@ if __name__ == '__main__':
                         # Create app form source code
                         app_starter_local = AppStarter(None, config)
                         client_url = app_starter_local.start_app()
+
+                        if config.DEBUG:
+                            print('pgAdmin is launched with DEBUG=True, '
+                                  'hence sleeping for 50 seconds.',
+                                  file=sys.stderr)
+                            time.sleep(50)
 
                         # Running Parallel tests
                         if len(parallel_tests) > 0:
