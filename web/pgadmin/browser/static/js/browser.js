@@ -489,6 +489,12 @@ define('pgadmin.browser', [
       setTimeout(function() {
         obj.editor.setValue('-- ' + select_object_msg);
         obj.editor.refresh();
+        /* In case of Runtime we need to make height of sql_textarea
+         * to 101% to fix the black screen issue with NWjs.
+         */
+        if (pgAdmin['pgadmim_runtime'] === 'True') {
+          $('.pg-panel-content .sql_textarea').addClass('runtime_sql_textarea');
+        }
       }, 10);
 
       // Initialise the treeview

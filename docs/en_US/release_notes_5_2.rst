@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #6325 <https://redmine.postgresql.org/issues/6325>`_ -  Ensure that the file format for the storage manager should be 'All files' and for other dialogs, it should remember the last selected format.
 | `Issue #6327 <https://redmine.postgresql.org/issues/6327>`_ -  Ensure that while comparing domains check function dependencies should be considered in schema diff.
 | `Issue #6333 <https://redmine.postgresql.org/issues/6333>`_ -  Fixed sizing issue of help dialog for Query Tool and ERD Tool when open in the new browser tab.
+| `Issue #6334 <https://redmine.postgresql.org/issues/6334>`_ -  Fixed SQL panel black screen issue when detaching it in runtime.
 | `Issue #6338 <https://redmine.postgresql.org/issues/6338>`_ -  Added missing dependency 'xdg-utils' for the desktop packages in RPM and Debian.
 | `Issue #6344 <https://redmine.postgresql.org/issues/6344>`_ -  Fixed cannot unpack non-iterable response object error when selecting any partition.
 | `Issue #6356 <https://redmine.postgresql.org/issues/6356>`_ -  Mark the Apache HTTPD config file as such in the web DEB and RPM packages.
