@@ -229,7 +229,6 @@ var themeCssRules = function(theme_name) {
         options: {
           resources: function(_theme_name){
             let ret_res = [
-              './pgadmin/static/scss/resources/' + _theme_name + '/_theme.variables.scss',
               './pgadmin/static/scss/resources/pgadmin.resources.scss',
             ];
             if(_theme_name!='standard') {
