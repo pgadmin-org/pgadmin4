@@ -14,12 +14,6 @@
   height: 100%;
 }
 
-.wcFloating {
-  & .runtime_sql_textarea {
-    height: 101% !important;
-  }
-}
-
 .sql_textarea .CodeMirror-scroll {
   z-index: 0;
 }

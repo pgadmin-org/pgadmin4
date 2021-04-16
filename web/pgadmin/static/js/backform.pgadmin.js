@@ -1868,7 +1868,6 @@ define([
             }).done(function(res) {
               self.sqlCtrl.clearHistory();
               self.sqlCtrl.setValue(res.data);
-              self.setCodeMirrorHeight(obj);
             }).fail(function() {
               self.model.trigger('pgadmin-view:msql:error', self.method, node, arguments);
             }).always(function() {
@@ -1884,7 +1883,6 @@ define([
         }
         this.sqlCtrl.refresh.apply(this.sqlCtrl);
       }
-      this.setCodeMirrorHeight(obj);
     },
     onPanelResized: function(o) {
       if (o && o.container) {
@@ -1900,7 +1898,6 @@ define([
             'height: ' + ($tabContent.height() + 8) + 'px !important;'
           );
         }
-        this.sqlCtrl.setSize($tabContent.width() + 'px', $tabContent.height() + 'px');
       }
     },
     remove: function() {
@@ -1916,26 +1913,6 @@ define([
 
       Backform.Control.__super__.remove.apply(this, arguments);
     },
-    setCodeMirrorHeight: function(obj) {
-      // Fix for mac os code-mirror showing black screen.
-      var txtArea = $('.pgadmin-controls .pg-el-sm-12 .SQL > .CodeMirror > div > textarea').first();
-      txtArea.css('z-index', -1);
-      var $tabContent = $('.backform-tab > .tab-content').first();
-      var $sqlPane = $tabContent.find('.CodeMirror > div > textarea');
-      for(let i=0; i<$sqlPane.length; i++) {$($sqlPane[i]).css('z-index', -1);}
-
-      $tabContent = $('.backform-tab > .tab-content').first();
-      $sqlPane = $tabContent.find('div[role=tabpanel].tab-pane.' + obj.tab.innerText);
-      // Set height to CodeMirror.
-      if ($sqlPane.hasClass('active')) {
-        $sqlPane.find('.CodeMirror').css(
-          'cssText',
-          'height: ' + ($tabContent.height()) + 'px !important;'
-        );
-        $sqlPane.find('.CodeMirror').css('z-index', 99);
-      }
-    }
-
   });
   /*
    * Numeric input Control functionality just like backgrid
