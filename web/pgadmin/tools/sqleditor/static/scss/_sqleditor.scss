@@ -52,6 +52,8 @@
 
 #editor-panel {
   z-index: 0;
+  position: absolute;
+  top: $sql-editor-panel-top;
   bottom: 0;
   left: 0;
   right: 0;

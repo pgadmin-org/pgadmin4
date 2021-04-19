@@ -6,7 +6,7 @@ LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=fdw.oid AND des.obj
 WHERE fdw.oid={{fdwid}}::oid
 {% else %}
 SELECT srv.oid, srvname as name, srvfdw as fdwid, srvtype as fsrvtype, srvversion as fsrvversion,
-fdw.fdwname as fdwname, description, pg_catalog.array_to_string(srvoptions, ',') AS fsrvoptions,
+fdw.fdwname as fdwname, description, srvoptions AS fsrvoptions,
 pg_catalog.pg_get_userbyid(srvowner) as fsrvowner, pg_catalog.array_to_string(srvacl::text[], ', ') as acl
 FROM pg_catalog.pg_foreign_server srv
 LEFT OUTER JOIN pg_catalog.pg_foreign_data_wrapper fdw on fdw.oid=srvfdw

@@ -1,6 +1,6 @@
 {# ============= Get all the properties of foreign data wrapper ============= #}
 SELECT fdw.oid, fdwname as name, fdwhandler, fdwvalidator, description,
-    pg_catalog.array_to_string(fdwoptions, ',') AS fdwoptions, pg_catalog.pg_get_userbyid(fdwowner) as fdwowner, pg_catalog.array_to_string(fdwacl::text[], ', ') as acl,
+    fdwoptions AS fdwoptions, pg_catalog.pg_get_userbyid(fdwowner) as fdwowner, pg_catalog.array_to_string(fdwacl::text[], ', ') as acl,
     CASE
     -- EPAS in redwood mode, concatenation of a string with NULL results as the original string
     WHEN vp.proname IS NULL THEN NULL

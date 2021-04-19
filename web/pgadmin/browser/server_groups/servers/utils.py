@@ -161,8 +161,7 @@ def tokenize_options(options_from_db, option_name, option_value):
     """
     options = []
     if options_from_db is not None:
-        option_str = options_from_db.split(',')
-        for fdw_option in option_str:
+        for fdw_option in options_from_db:
             k, v = fdw_option.split('=', 1)
             options.append({option_name: k, option_value: v})
     return options
