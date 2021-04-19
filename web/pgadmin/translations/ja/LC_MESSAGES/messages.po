@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-16 18:25+0530\n"
-"PO-Revision-Date: 2021-03-20 00:38+0900\n"
+"PO-Revision-Date: 2021-04-17 22:49+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: pgadmin/__init__.py:332 pgadmin/authenticate/internal.py:28
 msgid "Incorrect username or password."
@@ -152,7 +152,7 @@ msgstr "Kerberos 認証に失敗しました。Kerberos チケットが見つか
 
 #: pgadmin/authenticate/ldap.py:29
 msgid "Error searching the LDAP directory: {}"
-msgstr ""
+msgstr "LDAP ディレクトリの検索中にエラーが発生しました： {}"
 
 #: pgadmin/authenticate/ldap.py:40
 msgid "ldap"
@@ -160,39 +160,39 @@ msgstr "LDAP"
 
 #: pgadmin/authenticate/ldap.py:57
 msgid "LDAP configuration error: Set the bind password."
-msgstr ""
+msgstr "LDAP の構成エラー： バインドパスワードを設定してください"
 
 #: pgadmin/authenticate/ldap.py:126 pgadmin/authenticate/ldap.py:135
 msgid "Error connecting to the LDAP server: {}\n"
-msgstr ""
+msgstr "LDAP サーバへの接続中にエラーが発生しました： {}\n"
 
 #: pgadmin/authenticate/ldap.py:131
 msgid "Error binding to the LDAP server."
-msgstr ""
+msgstr "LDAP サーバへのバインド中にエラーが発生しました"
 
 #: pgadmin/authenticate/ldap.py:145
 msgid "Error starting TLS: {}\n"
-msgstr ""
+msgstr "TLS の開始中にエラーが発生しました： {}\n"
 
 #: pgadmin/authenticate/ldap.py:185
 msgid "LDAP configuration error: {}\n"
-msgstr ""
+msgstr "LDAP の構成エラー： {}\n"
 
 #: pgadmin/authenticate/ldap.py:200
 msgid "LDAP configuration error: Set the proper LDAP URI."
-msgstr ""
+msgstr "LDAP の構成エラー： 正しい LDAP の URI を設定してください"
 
 #: pgadmin/authenticate/ldap.py:231
 msgid "LDAP configuration error: Set the Search Domain."
-msgstr ""
+msgstr "LDAP の構成エラー： 検索ドメインを設定してください"
 
 #: pgadmin/authenticate/ldap.py:267
 msgid "More than one result found."
-msgstr ""
+msgstr "複数の結果が見つかりました"
 
 #: pgadmin/authenticate/ldap.py:270
 msgid "Could not find the specified user."
-msgstr ""
+msgstr "指定されたユーザが見つかりませんでした"
 
 #: pgadmin/authenticate/registry.py:50
 msgid "Authentication source '{0}' has not been implemented."
@@ -10766,15 +10766,15 @@ msgstr "実行時"
 
 #: pgadmin/static/js/generated/vendor.others.js:2
 msgid "delete"
-msgstr ""
+msgstr "delete"
 
 #: pgadmin/static/js/generated/vendor.others.js:2
 msgid "has"
-msgstr ""
+msgstr "has"
 
 #: pgadmin/static/js/generated/vendor.others.js:2
 msgid "get"
-msgstr ""
+msgstr "get"
 
 #: pgadmin/static/js/selection/clipboard.js:83
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:178
@@ -11564,6 +11564,8 @@ msgid ""
 "main window of pgAdmin is closed then close this window and open a new "
 "pgAdmin session."
 msgstr ""
+"要求された操作を正しく実行させるため、このサイトからのポップアップウィンドウを許可してください。pgAdmin "
+"のメインウィンドウが終了させられた場合は、このウィンドウを閉じ、新しい pgAdmin セッションを開始してください"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:53
 msgid "Save As"
@@ -13547,7 +13549,7 @@ msgstr "データが変更されています。保存しますか？"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:5233
 msgid "The query text has changed. Do you want to save changes?"
-msgstr ""
+msgstr "クエリのテキストが変更されています。保存しますか？"
 
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:5324
 msgid ""
@@ -13563,7 +13565,7 @@ msgstr "トランザクションをコミットしますか？"
 msgid ""
 "The current transaction has been rolled back because the server was "
 "disconnected."
-msgstr ""
+msgstr "サーバへの接続が切断されたため、現在のトランザクションはロールバックされました"
 
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:28
 msgid "The session is idle and there is no current transaction."
@@ -14400,53 +14402,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー： {0}"
-
-#~ msgid ""
-#~ "Specifies whether the command should "
-#~ "create the replication slot on the "
-#~ "publisher."
-#~ msgstr "パブリッシャー上にレプリケーションスロットを作成するかどうか指定します"
-
-#~ msgid "Select members"
-#~ msgstr "メンバの選択"
-
-#~ msgid "Roles"
-#~ msgstr "ロール"
-
-#~ msgid "%% of query"
-#~ msgstr "クエリ処理全体を占める割合"
-
-#~ msgid "Statistics per Table"
-#~ msgstr "テーブル別の統計"
-
-#~ msgid "%% of table"
-#~ msgstr "テーブル処理各々を占める割合"
-
-#~ msgid "delete"
-#~ msgstr "delete"
-
-#~ msgid "has"
-#~ msgstr "has"
-
-#~ msgid "get"
-#~ msgstr "get"
-
-#~ msgid "Ok"
-#~ msgstr "OK"
-
-#~ msgid "This feature is not applicable to the selected object."
-#~ msgstr "選択されたオブジェクトにこの機能は使えません"
-
-#~ msgid ""
-#~ "Please allow the pop-ups for this"
-#~ " site to perform the desired action."
-#~ " If the main window of pgAdmin "
-#~ "is closed then close this window "
-#~ "and open a new pgAdmin session."
-#~ msgstr ""
-#~ "要求された操作を正しく実行させるため、このサイトからのポップアップウィンドウを許可してください。pgAdmin "
-#~ "のメインウィンドウが終了させられた場合は、このウィンドウを閉じ、新しい pgAdmin セッションを開始してください"
-
-#~ msgid "The text has changed. Do you want to save changes?"
-#~ msgstr "テキストが変更されています。保存しますか？"
 
