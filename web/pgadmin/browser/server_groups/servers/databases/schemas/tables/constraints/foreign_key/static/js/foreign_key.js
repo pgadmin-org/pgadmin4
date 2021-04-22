@@ -737,15 +737,7 @@ define('pgadmin.node.foreign_key', [
         },{
           id: 'condeferrable', label: gettext('Deferrable?'),
           type: 'switch', group: gettext('Definition'),
-          readonly: function(m) {
-            // If we are in table edit mode then
-            if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should allowed for Unique
-              return !_.isUndefined(m.get('oid'));
-            }
-            return !m.isNew();
-          },
+          readonly: 'isReadonly',
         },{
           id: 'condeferred', label: gettext('Deferred?'),
           type: 'switch', group: gettext('Definition'),
@@ -762,15 +754,7 @@ define('pgadmin.node.foreign_key', [
               return true;
             }
           },
-          readonly: function(m) {
-            // If we are in table edit mode then
-            if (_.has(m, 'handler') && !_.isUndefined(m.handler)) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should allowed for Unique
-              return !_.isUndefined(m.get('oid'));
-            }
-            return !m.isNew();
-          },
+          readonly: 'isReadOnly',
         },{
           id: 'confmatchtype', label: gettext('Match type'),
           type: 'switch', group: gettext('Definition'),

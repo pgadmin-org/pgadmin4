@@ -1786,7 +1786,6 @@ define('pgadmin.browser.node', [
         },
         self = this,
         priority = -Infinity;
-
       var treeInfo = (_.isUndefined(item) || _.isNull(item)) ?
         info || {} : this.getTreeNodeHierarchy(item);
       var actionType = type in opURL ? opURL[type] : type;

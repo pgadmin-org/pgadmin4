@@ -189,12 +189,7 @@ define('pgadmin.node.language', [
               });
             }
             return res;
-          }, disabled: function(m) {
-            if (m.isNew()) {
-              return m.get('template_list').indexOf(m.get('name')) != -1;
-            }
-            return false;
-          },
+          }, disabled: 'isDisabled',
           readonly: function(m) {return !m.isNew();},
         },{
           id: 'laninl', label: gettext('Inline function'), type: 'text', control: 'node-ajax-options',
@@ -214,12 +209,7 @@ define('pgadmin.node.language', [
               });
             }
             return res;
-          }, disabled: function(m) {
-            if (m.isNew()) {
-              return m.get('template_list').indexOf(m.get('name')) != -1;
-            }
-            return false;
-          },
+          }, disabled: 'isDisabled',
           readonly: function(m) {return !m.isNew();},
         },{
           id: 'lanval', label: gettext('Validator function'), type: 'text', control: 'node-ajax-options',
@@ -239,12 +229,7 @@ define('pgadmin.node.language', [
               });
             }
             return res;
-          }, disabled: function(m) {
-            if (m.isNew()) {
-              return m.get('template_list').indexOf(m.get('name')) != -1;
-            }
-            return false;
-          },
+          }, disabled: 'isDisabled',
           readonly: function(m) {return !m.isNew();},
         }, {
           id: 'lanacl', label: gettext('Privileges'), type: 'collection',
@@ -291,6 +276,12 @@ define('pgadmin.node.language', [
           }
 
           return null;
+        },
+        isDisabled: function(m){
+          if (m.isNew()) {
+            return m.get('template_list').indexOf(m.get('name')) != -1;
+          }
+          return false;
         },
       }),
     });

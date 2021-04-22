@@ -374,14 +374,7 @@ define('pgadmin.node.table', [
         },{
           id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
           type: 'switch', mode: ['properties', 'create', 'edit'],
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
+          visible: 'isVersionGreaterThan96',
           readonly: function(m) {
             if (!m.isNew())
               return true;
@@ -483,14 +476,7 @@ define('pgadmin.node.table', [
           id: 'rlspolicy', label: gettext('RLS Policy?'), cell: 'switch',
           type: 'switch', mode: ['properties','edit', 'create'],
           group: gettext('advanced'),
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 90600)
-              return true;
-
-            return false;
-          },
+          visible: 'isSupported',
           disabled: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
               && !_.isUndefined(m.node_info.server.version) &&
@@ -504,14 +490,7 @@ define('pgadmin.node.table', [
           id: 'forcerlspolicy', label: gettext('Force RLS Policy?'), cell: 'switch',
           type: 'switch', mode: ['properties','edit', 'create'], deps: ['rlspolicy'],
           group: gettext('advanced'),
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 90600)
-              return true;
-
-            return false;
-          },
+          visible: 'isSupported',
           disabled: function(m) {
             if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
               && !_.isUndefined(m.node_info.server.version) &&
@@ -843,31 +822,16 @@ define('pgadmin.node.table', [
           id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
           mode: ['create', 'edit'], min: 10, max: 100,
           group: gettext('advanced'),
-          disabled: function(m) {
-            if(m.get('is_partitioned')) {
-              return true;
-            }
-            return m.inSchema();
-          },
+          disabled: 'isDisabled',
         },{
           id: 'toast_tuple_target', label: gettext('Toast tuple target'), type: 'int',
           mode: ['create', 'edit'], min: 128, min_version: 110000,
           group: gettext('advanced'),
-          disabled: function(m) {
-            if(m.get('is_partitioned')) {
-              return true;
-            }
-            return m.inSchema();
-          },
+          disabled: 'isDisabled',
         },{
           id: 'parallel_workers', label: gettext('Parallel workers'), type: 'int',
           mode: ['create', 'edit'], group: gettext('advanced'), min_version: 90600,
-          disabled: function(m) {
-            if(m.get('is_partitioned')) {
-              return true;
-            }
-            return m.inSchema();
-          },
+          disabled: 'isDisabled',
         },
         {
           id: 'relhasoids', label: gettext('Has OIDs?'), cell: 'switch',
@@ -970,14 +934,7 @@ define('pgadmin.node.table', [
             return options;
           },
           mode:['create'],
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
+          visible: 'isVersionGreaterThan96',
           disabled: function(m) {
             if (!m.get('is_partitioned'))
               return true;
@@ -1027,14 +984,7 @@ define('pgadmin.node.table', [
             );
 
           },
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
+          visible: 'isVersionGreaterThan96',
           disabled: function(m) {
             if (m.get('partition_keys') && m.get('partition_keys').models.length > 0) {
               setTimeout(function () {
@@ -1047,14 +997,7 @@ define('pgadmin.node.table', [
         },{
           id: 'partition_scheme', label: gettext('Partition Scheme'),
           type: 'note', group: 'partition', mode: ['edit'],
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
+          visible: 'isVersionGreaterThan96',
           disabled: function(m) {
             if (!m.isNew()) {
               this.text = m.get('partition_scheme');
@@ -1077,14 +1020,7 @@ define('pgadmin.node.table', [
             gettext('Let\'s say, we want to create a partition table based per year for the column \'saledate\', having datatype \'date/timestamp\', then we need to specify the expression as \'extract(YEAR from saledate)\' as partition key.'),
             '</li></ul>',
           ].join(''),
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
+          visible: 'isVersionGreaterThan96',
         }, {
           id: 'partitions', label:gettext('Partitions'),
           model: Backform.PartitionsModel,
@@ -1138,14 +1074,7 @@ define('pgadmin.node.table', [
               return true;
             return false;
           },
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
+          visible: 'isVersionGreaterThan96',
           disabled: function(m) {
             if (m.isNew() && m.get('partitions') && m.get('partitions').models.length > 0) {
               setTimeout(function () {
@@ -1181,14 +1110,7 @@ define('pgadmin.node.table', [
             gettext('Enabled for hash partition.'),
             '</li></ul>',
           ].join(''),
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
+          visible: 'isVersionGreaterThan96',
         },{
           // Here - we will create tab control for storage parameters
           // (auto vacuum).
@@ -1276,6 +1198,23 @@ define('pgadmin.node.table', [
           }
           return null;
         },
+        isVersionGreaterThan96: function(m) {
+          if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+            && !_.isUndefined(m.node_info.server.version) &&
+              m.node_info.server.version >= 100000)
+            return true;
+
+          return false;
+        },
+        isSupported: function(m) {
+          // Enable when server version is greater than 95.
+          if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+            && !_.isUndefined(m.node_info.server.version) &&
+              m.node_info.server.version >= 90600)
+            return true;
+
+          return false;
+        },
         // We will disable everything if we are under catalog node
         inSchema: function() {
           if(this.node_info &&  'catalog' in this.node_info)
@@ -1283,6 +1222,12 @@ define('pgadmin.node.table', [
             return true;
           }
           return false;
+        },
+        isDisabled:function(m) {
+          if(m.get('is_partitioned')) {
+            return true;
+          }
+          return m.inSchema();
         },
         isInheritedTable: function(m) {
           if(!m.inSchema.apply(this, [m])) {

@@ -223,7 +223,6 @@ function(
                     t.unload(i);
                   });
               }},
-            function() {}
           );
         },
         reset_table_stats: function(args) {
