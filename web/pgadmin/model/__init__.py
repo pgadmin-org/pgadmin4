@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 27
+SCHEMA_VERSION = 28
 
 ##########################################################################
 #
@@ -361,6 +361,11 @@ class SharedServer(db.Model):
 
     __tablename__ = 'sharedserver'
     id = db.Column(db.Integer, primary_key=True)
+    osid = db.Column(
+        db.Integer,
+        db.ForeignKey('server.id'),
+        nullable=False
+    )
     user_id = db.Column(
         db.Integer,
         db.ForeignKey(USER_ID)

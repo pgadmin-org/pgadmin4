@@ -15,7 +15,7 @@ from flask import url_for, Response, render_template, request, current_app
 from flask_babelex import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, html, does_utility_exist
+from pgadmin.utils import PgAdminModule, html, does_utility_exist, get_server
 from pgadmin.utils.ajax import bad_request, make_json_response
 from pgadmin.utils.driver import get_driver
 
@@ -209,14 +209,8 @@ def create_maintenance_job(sid, did):
     index_name = get_index_name(data)
 
     # Fetch the server details like hostname, port, roles etc
-    if Server.query.filter_by(id=sid, user_id=current_user.id).first():
-        server = Server.query.filter_by(
-            id=sid, user_id=current_user.id
-        ).first()
-    else:
-        server = SharedServer.query.filter_by(
-            id=sid, user_id=current_user.id
-        ).first()
+
+    server = get_server(sid)
 
     if server is None:
         return make_json_response(
@@ -263,7 +257,7 @@ def create_maintenance_job(sid, did):
 
     try:
         p = BatchProcess(
-            desc=Message(sid, data, query),
+            desc=Message(server.id, data, query),
             cmd=utility, args=args
         )
         manager.export_password_env(p.id)
@@ -306,18 +300,8 @@ def check_utility_exists(sid):
     Returns:
         None
     """
-    # server = Server.query.filter_by(
-    #     id=sid, user_id=current_user.id
-    # ).first()
 
-    if Server.query.filter_by(id=sid, user_id=current_user.id).first():
-        server = Server.query.filter_by(
-            id=sid, user_id=current_user.id
-        ).first()
-    else:
-        server = SharedServer.query.filter_by(
-            id=sid, user_id=current_user.id
-        ).first()
+    server = get_server(sid)
 
     if server is None:
         return make_json_response(

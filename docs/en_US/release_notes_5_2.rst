@@ -23,7 +23,7 @@ Bug fixes
 | `Issue #5908 <https://redmine.postgresql.org/issues/5908>`_ -  Fixed an issue where shortcut keys are not working with manage macro.
 | `Issue #6076 <https://redmine.postgresql.org/issues/6076>`_ -  Fixed an issue where correct error not thrown while importing servers and JSON file has incorrect/insufficient keys.
 | `Issue #6082 <https://redmine.postgresql.org/issues/6082>`_ -  Ensure that the user should not be to change the connection when a long query is running.
-| `Issue #6106 <https://redmine.postgresql.org/issues/6106>`_ -  Fixed flickering issue of the input box on check constraints.
+| `Issue #6107 <https://redmine.postgresql.org/issues/6107>`_ -  Fixed flickering issue of the input box on check constraints.
 | `Issue #6161 <https://redmine.postgresql.org/issues/6161>`_ -  Fixed an issue where the cursor shifts its focus to the wrong window for all the query tool related model dialogs.
 | `Issue #6220 <https://redmine.postgresql.org/issues/6220>`_ -  Corrected the syntax for 'CREATE TRIGGER', use 'EXECUTE FUNCTION' instead of 'EXECUTE PROCEDURE' from v11 onwards.
 | `Issue #6274 <https://redmine.postgresql.org/issues/6274>`_ -  Ensure that the strings in the LDAP auth module are translatable.
@@ -40,4 +40,3 @@ Bug fixes
 | `Issue #6375 <https://redmine.postgresql.org/issues/6375>`_ -  Fixed an issue where users are unable to see data of the partitions using the View/Edit data option.
 | `Issue #6376 <https://redmine.postgresql.org/issues/6376>`_ -  Fixed an issue where a connection warning should be displayed on the user clicks on explain or explain analyze and the database server is disconnected from the browser tree.
 | `Issue #6379 <https://redmine.postgresql.org/issues/6379>`_ -  Fixed an issue where foreign data wrapper properties are not visible if the host option contains two host addresses.
-| `Issue #6385 <https://redmine.postgresql.org/issues/6385>`_ -  Ensure that Backup and Restore should work on shared servers.

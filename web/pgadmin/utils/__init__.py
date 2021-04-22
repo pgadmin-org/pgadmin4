@@ -19,6 +19,7 @@ from threading import Lock
 
 from .paths import get_storage_directory
 from .preferences import Preferences
+from pgadmin.model import Server, SharedServer
 
 
 class PgAdminModule(Blueprint):
@@ -276,6 +277,16 @@ def does_utility_exist(file):
         error_msg = gettext("'%s' file not found. Please correct the Binary"
                             " Path in the Preferences dialog" % file)
     return error_msg
+
+
+def get_server(sid):
+    """
+    # Fetch the server  etc
+    :param sid:
+    :return: server
+    """
+    server = Server.query.filter_by(id=sid).first()
+    return server
 
 
 # Shortcut configuration for Accesskey

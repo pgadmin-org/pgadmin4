@@ -339,6 +339,7 @@ class ServerModule(sg.ServerGroupPluginModule):
             db.session.rollback()
             user = User.query.filter_by(id=data.user_id).first()
             shared_server = SharedServer(
+                osid=data.id,
                 user_id=current_user.id,
                 server_owner=user.username,
                 servergroup_id=gid,
@@ -388,14 +389,14 @@ class ServerModule(sg.ServerGroupPluginModule):
         """
         shared_server = SharedServer.query.filter_by(
             name=server.name, user_id=current_user.id,
-            servergroup_id=gid).first()
+            servergroup_id=gid, osid=server.id).first()
 
         if shared_server is None:
             ServerModule.create_shared_server(server, gid)
 
             shared_server = SharedServer.query.filter_by(
                 name=server.name, user_id=current_user.id,
-                servergroup_id=gid).first()
+                servergroup_id=gid, osid=server.id).first()
 
         return shared_server
 
