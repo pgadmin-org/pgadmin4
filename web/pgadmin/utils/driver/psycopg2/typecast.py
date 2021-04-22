@@ -13,6 +13,7 @@ data types.
 """
 
 from psycopg2 import STRING as _STRING
+from psycopg2.extensions import FLOAT as _FLOAT
 from psycopg2.extensions import DECIMAL as _DECIMAL, encodings
 import psycopg2
 from psycopg2.extras import Json as psycopg2_json
@@ -201,6 +202,14 @@ def register_string_typecasters(connection):
 
         psycopg2.extensions.register_type(unicode_type, connection)
         psycopg2.extensions.register_type(unicode_array_type, connection)
+
+
+def register_float_typecasters(connection):
+    # This function is to convert  pg types into decimal type
+    string_type_to_float = \
+        psycopg2.extensions.new_type(TO_STRING_NUMERIC_DATATYPES,
+                                     'TYPECAST_TO_DECIMAL', _DECIMAL)
+    psycopg2.extensions.register_type(string_type_to_float, connection)
 
 
 def register_binary_typecasters(connection):

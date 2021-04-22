@@ -30,7 +30,7 @@ from pgadmin.utils.exception import ConnectionLost, CryptKeyMissing
 from pgadmin.utils import get_complete_file_path
 from ..abstract import BaseConnection
 from .cursor import DictCursor
-from .typecast import register_global_typecasters, \
+from .typecast import register_float_typecasters, register_global_typecasters,\
     register_string_typecasters, register_binary_typecasters, \
     unregister_numeric_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
@@ -462,6 +462,7 @@ class Connection(BaseConnection):
         self._set_auto_commit(kwargs)
 
         register_string_typecasters(self.conn)
+        register_float_typecasters(self.conn)
 
         if self.array_to_string:
             register_array_to_string_typecasters(self.conn)
@@ -911,6 +912,8 @@ WHERE db.datname = current_database()""")
 
         # Registering back type caster for large size data types to string
         # which was unregistered at starting
+        if any(type['type_code'] == 701 for type in self.column_info):
+            register_float_typecasters(self.conn)
         register_string_typecasters(self.conn)
         return True, gen
 

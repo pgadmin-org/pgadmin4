@@ -17,4 +17,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #6341 <https://redmine.postgresql.org/issues/6341>`_ -  Fixed an issue where CSV download quotes the numeric columns.
 | `Issue #6385 <https://redmine.postgresql.org/issues/6385>`_ -  Ensure that Backup and Restore should work on shared servers.
