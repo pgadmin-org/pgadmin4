@@ -294,20 +294,25 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 idxcons_utils.get_index_constraints(self.conn, did, tid, ctype)
             if status:
                 for cons in constraints:
-                    data.setdefault(
-                        index_constraints[ctype], []).append(cons)
+                    if not self.\
+                            _is_partition_and_constraint_inherited(cons, data):
+                        data.setdefault(
+                            index_constraints[ctype], []).append(cons)
 
         # Add Foreign Keys
         status, foreign_keys = fkey_utils.get_foreign_keys(self.conn, tid)
         if status:
             for fk in foreign_keys:
-                data.setdefault('foreign_key', []).append(fk)
+                if not self._is_partition_and_constraint_inherited(fk, data):
+                    data.setdefault('foreign_key', []).append(fk)
 
         # Add Check Constraints
         status, check_constraints = \
             check_utils.get_check_constraints(self.conn, tid)
         if status:
-            data['check_constraint'] = check_constraints
+            for cc in check_constraints:
+                if not self._is_partition_and_constraint_inherited(cc, data):
+                    data.setdefault('check_constraint', []).append(cc)
 
         # Add Exclusion Constraint
         status, exclusion_constraints = \
@@ -315,6 +320,23 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if status:
             for ex in exclusion_constraints:
                 data.setdefault('exclude_constraint', []).append(ex)
+
+    @staticmethod
+    def _is_partition_and_constraint_inherited(constraint, data):
+
+        """
+        This function will check whether a constraint is local or
+        inherited only for partition table
+        :param constraint: given constraint
+        :param data: partition table data
+        :return: True or False based on condition
+        """
+        # check whether the table is partition or not, then check conislocal
+        if 'relispartition' in data and data['relispartition'] is True:
+            if 'conislocal' in constraint \
+                    and constraint['conislocal'] is False:
+                return True
+        return False
 
     def get_table_dependents(self, tid):
         """
@@ -820,7 +842,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             main_sql.append(rules_sql)
 
     def _get_resql_for_partitions(self, data, rset, json_resp,
-                                  diff_partition_sql, main_sql):
+                                  diff_partition_sql, main_sql, did):
         """
         ##########################################
         # Reverse engineered sql for PARTITIONS
@@ -828,6 +850,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         """
 
         sql_header = ''
+        partition_sql_arr = []
         if len(rset['rows']):
             if json_resp:
                 sql_header = "\n-- Partitions SQL"
@@ -900,18 +923,48 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 part_data['vacuum_toast'] = \
                     copy.deepcopy(self.parse_vacuum_data(
                         self.conn, row, 'toast'))
+
+                scid = row['schema_id']
+                schema = part_data['schema']
+                table = part_data['name']
+
+                # Get all the supported constraints for partition table
+                self._add_constrints_to_output(part_data, did, row['oid'])
+
                 partition_sql += render_template("/".join(
                     [self.partition_template_path, self._CREATE_SQL]),
                     data=part_data, conn=self.conn) + '\n'
 
-            # Add into main sql
-            partition_sql = re.sub(self.pattern, self.double_newline,
-                                   partition_sql).strip('\n')
-            partition_main_sql = partition_sql.strip('\n')
+                partition_sql = re.sub(self.pattern, self.double_newline,
+                                       partition_sql).strip('\n')
+
+                partition_main_sql = partition_sql.strip('\n')
+
+                # Add into partition sql to partition array
+                partition_sql_arr.append(partition_main_sql)
+
+                # Get Reverse engineered sql for ROW SECURITY POLICY
+                self._get_resql_for_row_security_policy(scid, row['oid'],
+                                                        json_resp,
+                                                        partition_sql_arr,
+                                                        schema, table)
+
+                # Get Reverse engineered sql for Triggers
+                self._get_resql_for_triggers(row['oid'], json_resp,
+                                             partition_sql_arr, schema, table)
+
+                # Get Reverse engineered sql for Compound Triggers
+                self._get_resql_for_compound_triggers(row['oid'],
+                                                      partition_sql_arr,
+                                                      schema, table)
+
+                # Get Reverse engineered sql for Rules
+                self._get_resql_for_rules(row['oid'], partition_sql_arr, table,
+                                          json_resp)
+
             if not diff_partition_sql:
-                main_sql.append(
-                    sql_header + self.double_newline + partition_main_sql
-                )
+                main_sql.append(sql_header + '\n')
+                main_sql += partition_sql_arr
 
     def get_reverse_engineered_sql(self, **kwargs):
         """
@@ -964,7 +1017,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 return internal_server_error(errormsg=rset)
 
             self._get_resql_for_partitions(data, rset, json_resp,
-                                           diff_partition_sql, main_sql)
+                                           diff_partition_sql, main_sql, did)
 
         sql = '\n'.join(main_sql)
 

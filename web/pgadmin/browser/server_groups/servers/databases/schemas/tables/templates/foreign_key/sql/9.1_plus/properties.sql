@@ -16,7 +16,8 @@ SELECT ct.oid,
       nr.nspname as refnsp,
       cr.relname as reftab,
       description as comment,
-      convalidated
+      convalidated,
+      conislocal
 FROM pg_catalog.pg_constraint ct
 JOIN pg_catalog.pg_class cl ON cl.oid=conrelid
 JOIN pg_catalog.pg_namespace nl ON nl.oid=cl.relnamespace

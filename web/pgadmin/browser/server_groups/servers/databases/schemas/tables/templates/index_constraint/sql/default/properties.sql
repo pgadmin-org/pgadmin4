@@ -14,6 +14,7 @@ SELECT cls.oid,
     END AS comment,
     condeferrable,
     condeferred,
+    conislocal,
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'fillfactor=([0-9]*)') AS fillfactor
 FROM pg_catalog.pg_index idx
 JOIN pg_catalog.pg_class cls ON cls.oid=indexrelid
