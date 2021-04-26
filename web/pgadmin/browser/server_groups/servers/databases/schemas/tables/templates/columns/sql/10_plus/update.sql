@@ -31,7 +31,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 
 {% endif %}
 {###  Drop column default value ###}
-{% if data.defval is defined and data.defval == '' and data.defval != o_data.defval %}
+{% if data.defval is defined and (data.defval == '' or data.defval is none) and data.defval != o_data.defval %}
 ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} DROP DEFAULT;
 
