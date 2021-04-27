@@ -1,4 +1,5 @@
-SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name
+SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name,
+(SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END) FROM pg_inherits i WHERE i.inhrelid = cls.oid) as is_inherited
 FROM pg_catalog.pg_index idx
     JOIN pg_catalog.pg_class cls ON cls.oid=indexrelid
     JOIN pg_catalog.pg_class tab ON tab.oid=indrelid

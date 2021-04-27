@@ -703,6 +703,12 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         from pgadmin.browser.server_groups.servers.databases.schemas. \
             tables.indexes import utils as index_utils
         for row in rset['rows']:
+            # Do not include inherited indexes as those are automatically
+            # created by postgres. If index is inherited, exclude it
+            # from main sql
+            if 'is_inherited' in row and row['is_inherited'] is True:
+                continue
+
             index_sql = index_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=table, did=did, tid=tid,
                 idx=row['oid'], datlastsysoid=self.datlastsysoid,
@@ -942,6 +948,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
                 # Add into partition sql to partition array
                 partition_sql_arr.append(partition_main_sql)
+
+                # Get Reverse engineered sql for index
+                self._get_resql_for_index(did, row['oid'], partition_sql_arr,
+                                          json_resp, schema, table)
 
                 # Get Reverse engineered sql for ROW SECURITY POLICY
                 self._get_resql_for_row_security_policy(scid, row['oid'],
