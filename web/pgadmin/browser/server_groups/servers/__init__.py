@@ -618,7 +618,7 @@ class ServerNode(PGChildNodeView):
             ),
         )
 
-    def delete_shared_server(self, server_name, gid):
+    def delete_shared_server(self, server_name, gid, osid):
         """
         Delete the shared server
         :param server_name:
@@ -626,7 +626,8 @@ class ServerNode(PGChildNodeView):
         """
         try:
             shared_server = SharedServer.query.filter_by(name=server_name,
-                                                         servergroup_id=gid)
+                                                         servergroup_id=gid,
+                                                         osid=osid)
             for s in shared_server:
                 get_driver(PG_DEFAULT_DRIVER).delete_manager(s.id)
                 db.session.delete(s)
@@ -662,7 +663,7 @@ class ServerNode(PGChildNodeView):
                     get_driver(PG_DEFAULT_DRIVER).delete_manager(s.id)
                     db.session.delete(s)
                 db.session.commit()
-                self.delete_shared_server(server_name, gid)
+                self.delete_shared_server(server_name, gid, sid)
                 QueryHistory.clear_history(current_user.id, sid)
 
             except Exception as e:
@@ -819,7 +820,7 @@ class ServerNode(PGChildNodeView):
                 if 'shared' in data and not data['shared']:
                     # Delete the shared server from DB if server
                     # owner uncheck shared property
-                    self.delete_shared_server(server.name, gid)
+                    self.delete_shared_server(server.name, gid, server.id)
                 if arg == 'sslcompression':
                     value = 1 if value else 0
                 self._update_server_details(server, sharedserver,
@@ -1879,7 +1880,7 @@ class ServerNode(PGChildNodeView):
             if server.shared and server.user_id != current_user.id:
                 shared_server = SharedServer.query.filter_by(
                     name=server.name, user_id=current_user.id,
-                    servergroup_id=gid).first()
+                    servergroup_id=gid, osid=server.id).first()
 
                 if shared_server is None:
                     return make_json_response(

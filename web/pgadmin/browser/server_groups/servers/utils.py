@@ -282,15 +282,7 @@ def does_server_exists(sid, user_id):
     # **kwargs parameter can be added to function to filter with more
     # parameters.
     try:
-        if Server.query.filter_by(id=sid, user_id=user_id).first():
-            server = Server.query.filter_by(
-                id=sid, user_id=user_id
-            ).first()
-        else:
-            server = SharedServer.query.filter_by(
-                id=sid, user_id=user_id
-            ).first()
-
-        return True if server is not None else False
+        return True if Server.query.filter_by(
+            id=sid).first() is not None else False
     except Exception:
         return False
