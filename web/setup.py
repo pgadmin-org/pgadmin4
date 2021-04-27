@@ -10,9 +10,6 @@
 """Perform the initial setup of the application, by creating the auth
 and settings database."""
 
-from pgadmin.model import db, User, Version, ServerGroup, Server, \
-    SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-from pgadmin import create_app
 import argparse
 import json
 import os
@@ -32,6 +29,10 @@ else:
 root = os.path.dirname(os.path.realpath(__file__))
 if sys.path[0] != root:
     sys.path.insert(0, root)
+
+from pgadmin.model import db, User, Version, ServerGroup, Server, \
+    SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
+from pgadmin import create_app
 
 
 def add_value(attr_dict, key, value):
