@@ -97,6 +97,16 @@ define(
                 that.onCreate.apply(that, [myPanel, $container]);
               }
 
+              // Prevent browser from opening the drag file.
+              $('.pg-panel-content').bind('dragover', function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+              });
+              $('.pg-panel-content').bind('drop', function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+              });
+
               if (that.elContainer) {
                 myPanel.pgElContainer = $container;
                 $container.addClass('pg-el-container');

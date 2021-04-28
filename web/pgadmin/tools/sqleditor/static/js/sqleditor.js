@@ -491,6 +491,16 @@ define('tools.querytool', [
         }, 200);
       });
 
+      // Prevent browser from opening the drag file.
+      $('#datagrid').bind('dragover', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      });
+      $('#datagrid').bind('drop', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      });
+
       var open_new_tab = self.browser_preferences.new_browser_tab_open;
       if (_.isNull(open_new_tab) || _.isUndefined(open_new_tab) || !open_new_tab.includes('qt')) {
         // Listen on the panel closed event and notify user to save modifications.
