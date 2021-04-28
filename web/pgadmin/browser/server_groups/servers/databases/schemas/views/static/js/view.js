@@ -30,7 +30,7 @@ define('pgadmin.node.view', [
         node: 'view',
         label: gettext('Views'),
         type: 'coll-view',
-        columns: ['name', 'owner'],
+        columns: ['name', 'owner', 'comment'],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });

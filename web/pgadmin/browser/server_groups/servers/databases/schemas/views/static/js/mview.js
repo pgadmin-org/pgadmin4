@@ -30,7 +30,7 @@ define('pgadmin.node.mview', [
         node: 'mview',
         label: gettext('Materialized Views'),
         type: 'coll-mview',
-        columns: ['name', 'owner'],
+        columns: ['name', 'owner', 'comment'],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
