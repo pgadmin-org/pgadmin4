@@ -17,6 +17,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4436 <https://redmine.postgresql.org/issues/4436>`_ -  Fixed an issue where drag and drop object is not correct in codemirror for properties dialog.
 | `Issue #5555 <https://redmine.postgresql.org/issues/5555>`_ -  Fixed an issue where data is displayed in the wrong order when executing the query repeatedly.
 | `Issue #6329 <https://redmine.postgresql.org/issues/6329>`_ -  Fixed an issue where the wrong SQL is showing for the child partition tables.
 | `Issue #6341 <https://redmine.postgresql.org/issues/6341>`_ -  Fixed an issue where CSV download quotes the numeric columns.

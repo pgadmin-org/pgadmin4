@@ -2609,16 +2609,49 @@ define([
       // refresh the code mirror object on 'pg-property-tab-changed' event to
       // make it work properly.
       self.model.on('pg-property-tab-changed', this.refreshTextArea, this);
-
+      this.sqlCtrl.setOption('dragDrop', true);
       this.sqlCtrl.on('focus', this.onFocus);
       this.sqlCtrl.on('blur', this.onBlur);
-
+      this.sqlCtrl.on('drop', this.onDrop);
       // Refresh SQL Field to refresh the control lazily after it renders
       setTimeout(function() {
         self.refreshTextArea.apply(self);
       }, 0);
 
       return self;
+    },
+
+    onDrop: function(editor, e){
+      var dropDetails = null;
+      try {
+        dropDetails = JSON.parse(e.dataTransfer.getData('text'));
+
+        /* Stop firefox from redirecting */
+
+        if(e.preventDefault) {
+          e.preventDefault();
+        }
+        if (e.stopPropagation) {
+          e.stopPropagation();
+        }
+      } catch(error) {
+        /* if parsing fails, it must be the drag internal of codemirror text */
+        return;
+      }
+
+      var cursor = editor.coordsChar({
+        left: e.x,
+        top: e.y,
+      });
+      editor.replaceRange(dropDetails.text, cursor);
+      editor.focus();
+      editor.setSelection({
+        ...cursor,
+        ch: cursor.ch + dropDetails.cur.from,
+      },{
+        ...cursor,
+        ch: cursor.ch +dropDetails.cur.to,
+      });
     },
 
     onFocus: function() {
