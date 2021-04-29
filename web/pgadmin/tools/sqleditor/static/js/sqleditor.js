@@ -1427,7 +1427,9 @@ define('tools.querytool', [
       })
         .done(function(res) {
           self.handler.has_more_rows = res.data.has_more_rows;
-          $('#btn-flash').prop('disabled', false);
+          setTimeout(() => {
+            $('#btn-flash').prop('disabled', false);
+          }, 700);
           $('#btn-save-results-to-file').prop('disabled', false);
           self.handler.trigger('pgadmin-sqleditor:loading-icon:hide');
           self.update_grid_data(res.data.result);
@@ -1823,6 +1825,7 @@ define('tools.querytool', [
 
     // Callback function for the flash button click.
     on_flash: function() {
+      $('#btn-flash').prop('disabled', true);
       let data_click_counter = $('#btn-flash').attr('data-click-counter');
       data_click_counter = (parseInt(data_click_counter) + 1)%10;
       $('#btn-flash').attr('data-click-counter', data_click_counter);
@@ -3109,7 +3112,8 @@ define('tools.querytool', [
 
             // Hide the loading icon
             self_col.trigger('pgadmin-sqleditor:loading-icon:hide');
-            $('#btn-flash').prop('disabled', false);
+
+            // Enable/Disable download button based on query result
             if (!_.isUndefined(data) && Array.isArray(data.result) && data.result.length > 0) {
               self.enable_disable_download_btn(false);
             }
@@ -3295,7 +3299,10 @@ define('tools.querytool', [
         }
 
         if (status != 'Busy') {
-          $('#btn-flash').prop('disabled', false);
+          setTimeout(() => {
+            $('#btn-flash').prop('disabled', false);
+          }, 400);
+
           self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
           if(!self.total_time) {

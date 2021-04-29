@@ -17,6 +17,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #5555 <https://redmine.postgresql.org/issues/5555>`_ -  Fixed an issue where data is displayed in the wrong order when executing the query repeatedly.
 | `Issue #6329 <https://redmine.postgresql.org/issues/6329>`_ -  Fixed an issue where the wrong SQL is showing for the child partition tables.
 | `Issue #6341 <https://redmine.postgresql.org/issues/6341>`_ -  Fixed an issue where CSV download quotes the numeric columns.
 | `Issue #6355 <https://redmine.postgresql.org/issues/6355>`_ -  Ensure that pgAdmin should not allow opening external files that are dragged into it.
