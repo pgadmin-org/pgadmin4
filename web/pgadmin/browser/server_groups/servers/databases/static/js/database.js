@@ -10,9 +10,10 @@
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/utils', 'sources/pgadmin', 'pgadmin.browser.utils',
-  'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.browser.collection',
+  'pgadmin.alertifyjs', 'pgadmin.backform',
+  'pgadmin.authenticate.kerberos', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege', 'pgadmin.browser.server.variable',
-], function(gettext, url_for, $, _, pgadminUtils, pgAdmin, pgBrowser, Alertify, Backform) {
+], function(gettext, url_for, $, _, pgadminUtils, pgAdmin, pgBrowser, Alertify, Backform, Kerberos) {
 
   if (!pgBrowser.Nodes['coll-database']) {
     pgBrowser.Nodes['coll-database'] =
@@ -556,24 +557,39 @@ define('pgadmin.node.database', [
           onFailure = function(
             xhr, status, error, _model, _data, _tree, _item, _status
           ) {
-            if (!_status) {
-              tree.setInode(_item);
-              tree.addIcon(_item, {icon: 'icon-database-not-connected'});
-            }
-
-            Alertify.pgNotifier('error', xhr, error, function(msg) {
-              setTimeout(function() {
-                if (msg == 'CRYPTKEY_SET') {
+            if (xhr.status != 200 && xhr.responseText.search('Ticket expired') !== -1) {
+              tree.addIcon(_item, {icon: 'icon-server-connecting'});
+              let fetchTicket = Kerberos.fetch_ticket();
+              fetchTicket.then(
+                function() {
                   connect_to_database(_model, _data, _tree, _item, _wasConnected);
-                } else {
-                  Alertify.dlgServerPass(
-                    gettext('Connect to database'),
-                    msg, _model, _data, _tree, _item, _status,
-                    onSuccess, onFailure, onCancel
-                  ).resizeTo();
+                },
+                function(error) {
+                  tree.setInode(_item);
+                  tree.addIcon(_item, {icon: 'icon-database-not-connected'});
+                  Alertify.pgNotifier(error, xhr, gettext('Connect  to database.'));
                 }
-              }, 100);
-            });
+              );
+            } else {
+              if (!_status) {
+                tree.setInode(_item);
+                tree.addIcon(_item, {icon: 'icon-database-not-connected'});
+              }
+
+              Alertify.pgNotifier('error', xhr, error, function(msg) {
+                setTimeout(function() {
+                  if (msg == 'CRYPTKEY_SET') {
+                    connect_to_database(_model, _data, _tree, _item, _wasConnected);
+                  } else {
+                    Alertify.dlgServerPass(
+                      gettext('Connect to database'),
+                      msg, _model, _data, _tree, _item, _status,
+                      onSuccess, onFailure, onCancel
+                    ).resizeTo();
+                  }
+                }, 100);
+              });
+            }
           },
           onSuccess = function(
             res, model, _data, _tree, _item, _connected
@@ -640,6 +656,7 @@ define('pgadmin.node.database', [
           if (xhr.status === 410) {
             error = gettext('Error: Object not found - %s.', error);
           }
+
           return onFailure(
             xhr, status, error, obj, data, tree, item, wasConnected
           );

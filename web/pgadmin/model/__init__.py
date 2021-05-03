@@ -29,7 +29,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 28
+SCHEMA_VERSION = 29
 
 ##########################################################################
 #
@@ -184,6 +184,7 @@ class Server(db.Model):
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(db.String(64), nullable=True)
     shared = db.Column(db.Boolean(), nullable=False)
+    kerberos_conn = db.Column(db.Boolean(), nullable=False)
 
     @property
     def serialize(self):

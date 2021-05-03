@@ -490,6 +490,7 @@ class DatabaseView(PGChildNodeView):
                         did, errmsg
                     )
                 )
+
                 return internal_server_error(errmsg)
             else:
                 current_app.logger.info(

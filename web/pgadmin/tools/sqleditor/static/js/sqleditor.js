@@ -51,6 +51,7 @@ define('tools.querytool', [
   'sources/window',
   'sources/is_native',
   'sources/sqleditor/macro',
+  'pgadmin.authenticate.kerberos',
   'sources/../bundle/slickgrid',
   'pgadmin.file_manager',
   'slick.pgadmin.formatters',
@@ -65,7 +66,7 @@ define('tools.querytool', [
   GeometryViewer, historyColl, queryHist, querySources,
   keyboardShortcuts, queryToolActions, queryToolNotifications, Datagrid,
   modifyAnimation, calculateQueryRunTime, callRenderAfterPoll, queryToolPref, queryTxnStatus, csrfToken, panelTitleFunc,
-  pgWindow, isNative, MacroHandler) {
+  pgWindow, isNative, MacroHandler, Kerberos) {
   /* Return back, this has been called more than once */
   if (pgAdmin.SqlEditor)
     return pgAdmin.SqlEditor;
@@ -2454,9 +2455,23 @@ define('tools.querytool', [
               pgBrowser.report_error(gettext('Error fetching rows - %s.', xhr.statusText), xhr.responseJSON.errormsg, undefined, self.close.bind(self));
             }
           } else {
-            pgBrowser.Events.trigger(
-              'pgadmin:query_tool:connected_fail:' + self.transId, xhr, error
-            );
+            if (xhr.responseText.search('Ticket expired') !== -1) {
+              let fetchTicket = Kerberos.fetch_ticket();
+              fetchTicket.then(
+                function() {
+                  self.initTransaction();
+                },
+                function(error) {
+                  pgBrowser.Events.trigger(
+                    'pgadmin:query_tool:connected_fail:' + self.transId, xhr, error
+                  );
+                }
+              );
+            } else {
+              pgBrowser.Events.trigger(
+                'pgadmin:query_tool:connected_fail:' + self.transId, xhr, error
+              );
+            }
           }
         });
       },

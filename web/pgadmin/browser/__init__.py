@@ -50,7 +50,7 @@ from pgadmin.utils.master_password import validate_master_password, \
     set_crypt_key, process_masterpass_disabled
 from pgadmin.model import User
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
-    INTERNAL, KERBEROS
+    INTERNAL, KERBEROS, LDAP
 
 try:
     from flask_security.views import default_render_json
@@ -197,7 +197,8 @@ class BrowserModule(PgAdminModule):
         for name, script in [
             [PGADMIN_BROWSER, 'js/browser'],
             ['pgadmin.browser.endpoints', 'js/endpoints'],
-            ['pgadmin.browser.error', 'js/error']
+            ['pgadmin.browser.error', 'js/error'],
+            ['pgadmin.browser.constants', 'js/constants']
         ]:
             scripts.append({
                 'name': name,
@@ -860,6 +861,18 @@ def utils():
 def exposed_urls():
     return make_response(
         render_template('browser/js/endpoints.js'),
+        200, {'Content-Type': MIMETYPE_APP_JS}
+    )
+
+
+@blueprint.route("/js/constants.js")
+@pgCSRFProtect.exempt
+def app_constants():
+    return make_response(
+        render_template('browser/js/constants.js',
+                        INTERNAL=INTERNAL,
+                        LDAP=LDAP,
+                        KERBEROS=KERBEROS),
         200, {'Content-Type': MIMETYPE_APP_JS}
     )
 

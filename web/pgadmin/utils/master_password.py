@@ -34,7 +34,7 @@ def get_crypt_key():
             and not config.SERVER_MODE and enc_key is None:
         return False, None
     elif config.SERVER_MODE and \
-            session['_auth_source_manager_obj']['source_friendly_name']\
+            session['_auth_source_manager_obj']['current_source']\
             == KERBEROS:
         return True, session['kerberos_key'] if 'kerberos_key' in session \
             else None

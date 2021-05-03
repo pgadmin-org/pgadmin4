@@ -24,10 +24,11 @@ import logging
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN
 from pgadmin.browser.server_groups.servers.utils import does_server_exists
+from pgadmin.utils.constants import KERBEROS
 
 import pytz
 from dateutil import parser
-from flask import current_app
+from flask import current_app, session
 from flask_babelex import gettext as _
 from flask_security import current_user
 
@@ -278,13 +279,16 @@ class BatchProcess(object):
         env['PROCID'] = self.id
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
+        if config.SERVER_MODE and session and \
+                session['_auth_source_manager_obj']['current_source'] == \
+                KERBEROS:
+            env['KRB5CCNAME'] = session['KRB5CCNAME']
 
         if self.env:
             env.update(self.env)
 
         if cb is not None:
             cb(env)
-
         if os.name == 'nt':
             DETACHED_PROCESS = 0x00000008
             from subprocess import CREATE_NEW_PROCESS_GROUP

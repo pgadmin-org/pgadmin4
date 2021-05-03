@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #6158 <https://redmine.postgresql.org/issues/6158>`_ -  Added support to connect PostgreSQL servers via Kerberos authentication.
 
 Housekeeping
 ************

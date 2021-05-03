@@ -634,6 +634,9 @@ KRB_KTNAME = '<KRB5_KEYTAB_FILE>'
 
 KRB_AUTO_CREATE_USER = True
 
+KERBEROS_CCACHE_DIR = os.path.join(DATA_DIR, 'krbccache')
+
+
 ##########################################################################
 # Local config settings
 ##########################################################################

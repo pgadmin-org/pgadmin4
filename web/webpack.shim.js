@@ -174,11 +174,13 @@ var webpackShimConfig = {
     'pgadmin.backgrid': path.join(__dirname, './pgadmin/static/js/backgrid.pgadmin'),
 
     'pgadmin.about': path.join(__dirname, './pgadmin/about/static/js/about'),
+    'pgadmin.authenticate.kerberos': path.join(__dirname, './pgadmin/authenticate/static/js/kerberos'),
     'pgadmin.browser': path.join(__dirname, './pgadmin/browser/static/js/browser'),
     'pgadmin.browser.bgprocess': path.join(__dirname, './pgadmin/misc/bgprocess/static/js/bgprocess'),
     'pgadmin.browser.collection': path.join(__dirname, './pgadmin/browser/static/js/collection'),
     'pgadmin.browser.datamodel': path.join(__dirname, './pgadmin/browser/static/js/datamodel'),
     'pgadmin.browser.endpoints': '/browser/js/endpoints',
+    'pgadmin.browser.constants': '/browser/js/constants',
     'pgadmin.browser.error': path.join(__dirname, './pgadmin/browser/static/js/error'),
     'pgadmin.browser.frame': path.join(__dirname, './pgadmin/browser/static/js/frame'),
     'pgadmin.browser.keyboard': path.join(__dirname, './pgadmin/browser/static/js/keyboard'),
@@ -300,6 +302,7 @@ var webpackShimConfig = {
     'pgadmin.browser.messages',
     'pgadmin.browser.utils',
     'pgadmin.server.supported_servers',
+    'pgadmin.browser.constants',
   ],
   // Define list of pgAdmin common libraries to bundle them separately
   // into commons JS from app.bundle.js

@@ -13,10 +13,13 @@ import flask
 import pickle
 from flask import current_app, flash, Response, request, url_for,\
     render_template
-from flask_security import current_user
+from flask_babelex import gettext
+from flask_security import current_user, login_required
 from flask_security.views import _security, _ctx
 from flask_security.utils import config_value, get_post_logout_redirect, \
     get_post_login_redirect, logout_user
+from pgadmin.utils.ajax import make_json_response, internal_server_error
+import os
 
 from flask import session
 
@@ -34,7 +37,9 @@ class AuthenticateModule(PgAdminModule):
     def get_exposed_url_endpoints(self):
         return ['authenticate.login',
                 'authenticate.kerberos_login',
-                'authenticate.kerberos_logout']
+                'authenticate.kerberos_logout',
+                'authenticate.kerberos_update_ticket',
+                'authenticate.kerberos_validate_ticket']
 
 
 blueprint = AuthenticateModule(MODULE_NAME, __name__, static_url_path='')
@@ -55,6 +60,12 @@ def kerberos_login():
 @pgCSRFProtect.exempt
 def kerberos_logout():
     logout_user()
+    if 'KRB5CCNAME' in session:
+        # Remove the credential cache
+        cache_file_path = session['KRB5CCNAME'].split(":")[1]
+        if os.path.exists(cache_file_path):
+            os.remove(cache_file_path)
+
     return Response(render_template("browser/kerberos_logout.html",
                                     login_url=url_for('security.login'),
                                     ))
@@ -165,6 +176,8 @@ class AuthSourceManager():
 
             if self.form.data['email'] and self.form.data['password'] and \
                     source.get_source_name() == KERBEROS:
+                msg = gettext('pgAdmin internal user authentication'
+                              ' is not enabled, please contact administrator.')
                 continue
 
             status, msg = source.authenticate(self.form)
@@ -173,11 +186,13 @@ class AuthSourceManager():
             # OR When kerberos authentication failed while accessing pgadmin,
             # we need to break the loop as no need to authenticate further
             # even if the authentication sources set to multiple
-            if not status and (hasattr(msg, 'status') and
-                               msg.status == '401 UNAUTHORIZED') or \
-                (source.get_source_name() == KERBEROS and
-                 request.method == 'GET'):
-                break
+            if not status:
+                if (hasattr(msg, 'status') and
+                    msg.status == '401 UNAUTHORIZED') or\
+                        (source.get_source_name() ==
+                         KERBEROS and
+                         request.method == 'GET'):
+                    break
 
             if status:
                 self.set_source(source)
@@ -224,3 +239,58 @@ def init_app(app):
     AuthSourceRegistry.load_auth_sources()
 
     return auth_sources
+
+
+@blueprint.route("/kerberos/update_ticket",
+                 endpoint="kerberos_update_ticket", methods=["GET"])
+@pgCSRFProtect.exempt
+@login_required
+def kerberos_update_ticket():
+    """
+    Update the kerberos ticket.
+    """
+    from werkzeug.datastructures import Headers
+    headers = Headers()
+
+    authorization = request.headers.get("Authorization", None)
+
+    if authorization is None:
+        # Send the Negotiate header to the client
+        # if Kerberos ticket is not found.
+        headers.add('WWW-Authenticate', 'Negotiate')
+        return Response("Unauthorised", 401, headers)
+    else:
+        source = get_auth_sources(KERBEROS)
+        auth_header = authorization.split()
+        in_token = auth_header[1]
+
+        # Validate the Kerberos ticket
+        status, context = source.negotiate_start(in_token)
+        if status:
+            return Response("Ticket updated successfully.")
+
+        return Response(context, 500)
+
+
+@blueprint.route("/kerberos/validate_ticket",
+                 endpoint="kerberos_validate_ticket", methods=["GET"])
+@pgCSRFProtect.exempt
+@login_required
+def kerberos_validate_ticket():
+    """
+    Return the kerberos ticket lifetime left after getting the
+    ticket from the credential cache
+    """
+    import gssapi
+
+    try:
+        del_creds = gssapi.Credentials(store={'ccache': session['KRB5CCNAME']})
+        creds = del_creds.acquire(store={'ccache': session['KRB5CCNAME']})
+    except Exception as e:
+        current_app.logger.exception(e)
+        return internal_server_error(errormsg=str(e))
+
+    return make_json_response(
+        data={'ticket_lifetime': creds.lifetime},
+        status=200
+    )

@@ -10,7 +10,7 @@
 """A blueprint module implementing the Spnego/Kerberos authentication."""
 
 import base64
-from os import environ
+from os import environ, path
 
 from werkzeug.datastructures import Headers
 from flask_babelex import gettext
@@ -128,19 +128,37 @@ class KerberosAuthentication(BaseAuthentication):
         if out_token and not context.complete:
             return False, out_token
         if context.complete:
+            deleg_creds = context.delegated_creds
+            if not hasattr(deleg_creds, 'name'):
+                error_msg = gettext('Delegated credentials not supplied.')
+                current_app.logger.error(error_msg)
+                return False, Exception(error_msg)
+            try:
+                cache_file_path = path.join(
+                    config.KERBEROS_CCACHE_DIR, 'pgadmin_cache_{0}'.format(
+                        deleg_creds.name)
+                )
+                CCACHE = 'FILE:{0}'.format(cache_file_path)
+                store = {'ccache': CCACHE}
+                deleg_creds.store(store, overwrite=True, set_default=True)
+                session['KRB5CCNAME'] = CCACHE
+            except Exception as e:
+                current_app.logger.exception(e)
+                return False, e
+
             return True, context
         else:
             return False, None
 
     def negotiate_end(self, context):
-        # Free gss_cred_id_t
+        # Free Delegated Credentials
         del_creds = getattr(context, 'delegated_creds', None)
         if del_creds:
             deleg_creds = context.delegated_creds
             del(deleg_creds)
 
     def __auto_create_user(self, username):
-        """Add the ldap user to the internal SQLite database."""
+        """Add the kerberos user to the internal SQLite database."""
         username = str(username)
         if config.KRB_AUTO_CREATE_USER:
             user = User.query.filter_by(

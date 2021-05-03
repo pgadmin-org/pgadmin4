@@ -12,6 +12,7 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from pgadmin.authenticate.registry import AuthSourceRegistry
 from unittest.mock import patch, MagicMock
+from werkzeug.datastructures import Headers
 
 
 class KerberosLoginMockTestCase(BaseTestGenerator):
@@ -30,6 +31,11 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
             auth_source=['kerberos'],
             auto_create_user=True,
             flag=2
+        )),
+        ('Spnego/Kerberos Update Ticket', dict(
+            auth_source=['kerberos'],
+            auto_create_user=True,
+            flag=3
         ))
     ]
 
@@ -54,8 +60,13 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
                 self.skipTest(
                     "Can not run Kerberos Authentication in the Desktop mode."
                 )
-
             self.test_authorized()
+        elif self.flag == 3:
+            if app_config.SERVER_MODE is False:
+                self.skipTest(
+                    "Can not run Kerberos Authentication in the Desktop mode."
+                )
+            self.test_update_ticket()
 
     def test_unauthorized(self):
         """
@@ -73,13 +84,7 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         passed on to the routed method.
         """
 
-        class delCrads:
-            def __init__(self):
-                self.initiator_name = 'user@PGADMIN.ORG'
-        del_crads = delCrads()
-
-        AuthSourceRegistry.registry['kerberos'].negotiate_start = MagicMock(
-            return_value=[True, del_crads])
+        del_crads = self.mock_negotiate_start()
         res = self.tester.login(None,
                                 None,
                                 True,
@@ -88,6 +93,33 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         self.assertEqual(res.status_code, 200)
         respdata = 'Gravatar image for %s' % del_crads.initiator_name
         self.assertTrue(respdata in res.data.decode('utf8'))
+
+    def mock_negotiate_start(self):
+        class delCrads:
+            def __init__(self):
+                self.initiator_name = 'user@PGADMIN.ORG'
+
+        del_crads = delCrads()
+
+        AuthSourceRegistry.registry['kerberos'].negotiate_start = MagicMock(
+            return_value=[True, del_crads])
+        return del_crads
+
+    def test_update_ticket(self):
+        # Response header should include the Negotiate header in the first call
+        response = self.tester.get('/authenticate/kerberos/update_ticket')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.headers.get('www-authenticate'), 'Negotiate')
+
+        # When we send the Kerberos Ticket, it should return  success
+        del_crads = self.mock_negotiate_start()
+
+        krb_token = Headers({})
+        krb_token['Authorization'] = 'Negotiate CTOKEN'
+
+        response = self.tester.get('/authenticate/kerberos/update_ticket',
+                                   headers=krb_token)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = 'ldap'

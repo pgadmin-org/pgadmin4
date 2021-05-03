@@ -13,6 +13,8 @@ import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
 import _ from 'underscore';
 import {DialogWrapper} from '../../../../static/js/alertify/dialog_wrapper';
+import {fetch_ticket_lifetime} from  '../../../../authenticate/static/js/kerberos';
+import userInfo from 'pgadmin.user_management.current_user';
 
 export class BackupDialogWrapper extends DialogWrapper {
   constructor(dialogContainerSelector, dialogTitle, typeOfDialog,
@@ -165,10 +167,29 @@ export class BackupDialogWrapper extends DialogWrapper {
       );
 
       this.setExtraParameters(selectedTreeNode, treeInfo);
+      let backupDate = this.view.model.toJSON();
+
+      if(userInfo['auth_sources'] == 'KERBEROS' && (backupDate.type == 'globals' || backupDate.type == 'server')) {
+        let newPromise = fetch_ticket_lifetime();
+        newPromise.then(
+          function(lifetime) {
+            if (lifetime < 1800 && lifetime  > 0) {
+              dialog.alertify.warning(
+                'You have '+ (Math.round(parseInt(lifetime)/60)).toString() +' minutes left on your ticket - if the dump takes longer than that, it may fail."'
+              );
+            }
+          },
+          function() {
+            dialog.alertify.warning(
+              gettext('Please renew your kerberos ticket, it has been expired.')
+            );
+          }
+        );
+      }
 
       axios.post(
         baseUrl,
-        this.view.model.toJSON()
+        backupDate
       ).then(function (res) {
         if (res.data.success) {
           dialog.alertify.success(gettext('Backup job created.'), 5);

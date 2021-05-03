@@ -25,7 +25,7 @@ from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, bad_request, internal_server_error, forbidden
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL,\
-    SUPPORTED_AUTH_SOURCES, KERBEROS
+    SUPPORTED_AUTH_SOURCES, KERBEROS, LDAP
 from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting, roles_users, SharedServer
@@ -157,7 +157,6 @@ def script():
 @pgCSRFProtect.exempt
 @login_required
 def current_user_info():
-
     return Response(
         response=render_template(
             "user_management/js/current_user.js",
@@ -176,7 +175,9 @@ def current_user_info():
             allow_save_tunnel_password='true' if
             config.ALLOW_SAVE_TUNNEL_PASSWORD and session[
                 'allow_save_password'] else 'false',
-            auth_sources=config.AUTHENTICATION_SOURCES
+            auth_sources=config.AUTHENTICATION_SOURCES,
+            current_auth_source=session['_auth_source_manager_obj'][
+                'current_source'] if config.SERVER_MODE is True else INTERNAL
         ),
         status=200,
         mimetype=MIMETYPE_APP_JS

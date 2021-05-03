@@ -18,11 +18,13 @@ import select
 import datetime
 from collections import deque
 import psycopg2
-from flask import g, current_app
+import threading
+from flask import g, current_app, session
 from flask_babelex import gettext
 from flask_security import current_user
 from pgadmin.utils.crypto import decrypt, encrypt
 from psycopg2.extensions import encodings
+from os import environ
 
 import config
 from pgadmin.model import User
@@ -38,6 +40,9 @@ from .encoding import get_encoding, configure_driver_encodings
 from pgadmin.utils import csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
+from pgadmin.utils.constants import KERBEROS
+
+lock = threading.Lock()
 
 _ = gettext
 
@@ -313,6 +318,13 @@ class Connection(BaseConnection):
             os.environ['PGAPPNAME'] = '{0} - {1}'.format(
                 config.APP_NAME, conn_id)
 
+            if config.SERVER_MODE and \
+                    session['_auth_source_manager_obj']['current_source'] == \
+                    KERBEROS and 'KRB5CCNAME' in session\
+                    and manager.kerberos_conn:
+                lock.acquire()
+                environ['KRB5CCNAME'] = session['KRB5CCNAME']
+
             pg_conn = psycopg2.connect(
                 host=manager.local_bind_host if manager.use_ssh_tunnel
                 else manager.host,
@@ -340,7 +352,13 @@ class Connection(BaseConnection):
             if self.async_ == 1:
                 self._wait(pg_conn)
 
+            if config.SERVER_MODE and \
+                    session['_auth_source_manager_obj']['current_source'] == \
+                    KERBEROS:
+                environ['KRB5CCNAME'] = ''
+
         except psycopg2.Error as e:
+            environ['KRB5CCNAME'] = ''
             manager.stop_ssh_tunnel()
             if e.pgerror:
                 msg = e.pgerror
@@ -358,6 +376,11 @@ class Connection(BaseConnection):
                 )
             )
             return False, msg
+        finally:
+            if config.SERVER_MODE and \
+                    session['_auth_source_manager_obj']['current_source'] == \
+                    KERBEROS and lock.locked():
+                lock.release()
 
         # Overwrite connection notice attr to support
         # more than 50 notices at a time
@@ -1438,7 +1461,6 @@ Failed to reset the connection to the server due to following error:
         Args:
             conn: connection object
         """
-
         while True:
             state = conn.poll()
             if state == psycopg2.extensions.POLL_OK:

@@ -13,11 +13,13 @@ define('pgadmin.node.server', [
   'pgadmin.server.supported_servers', 'pgadmin.user_management.current_user',
   'pgadmin.alertifyjs', 'pgadmin.backform',
   'sources/browser/server_groups/servers/model_validation',
+  'pgadmin.authenticate.kerberos',
+  'pgadmin.browser.constants',
   'pgadmin.browser.server.privilege',
 ], function(
   gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser,
   supported_servers, current_user, Alertify, Backform,
-  modelValidation
+  modelValidation, Kerberos, pgConst,
 ) {
 
   if (!pgBrowser.Nodes['server']) {
@@ -905,19 +907,35 @@ define('pgadmin.node.server', [
             },
           }),
         },{
+          id: 'kerberos_conn', label: gettext('Kerberos authentication?'), type: 'switch',
+          group: gettext('Connection'), 'options': {
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
+          }, disabled: function() {
+            if (current_user['current_auth_source'] != pgConst['KERBEROS'])
+              return true;
+            return false;
+          },
+        },{
           id: 'password', label: gettext('Password'), type: 'password', maxlength: null,
-          group: gettext('Connection'), control: 'input', mode: ['create'], deps: ['connect_now'],
+          group: gettext('Connection'), control: 'input', mode: ['create'],
+          deps: ['connect_now', 'kerberos_conn'],
           visible: function(model) {
             return model.get('connect_now') && model.isNew();
+          },
+          disabled: function(model) {
+            if (model.get('kerberos_conn'))
+              return true;
+
+            return false;
           },
         },{
           id: 'save_password', controlLabel: gettext('Save password?'),
           type: 'checkbox', group: gettext('Connection'), mode: ['create'],
-          deps: ['connect_now'], visible: function(model) {
+          deps: ['connect_now', 'kerberos_conn'], visible: function(model) {
             return model.get('connect_now') && model.isNew();
           },
-          disabled: function() {
-            if (!current_user.allow_save_password)
+          disabled: function(model) {
+            if (!current_user.allow_save_password || model.get('kerberos_conn'))
               return true;
 
             return false;
@@ -1279,19 +1297,32 @@ define('pgadmin.node.server', [
             }
 
           }
-
-          Alertify.pgNotifier('error', xhr, error, function(msg) {
-            setTimeout(function() {
-              if (msg == 'CRYPTKEY_SET') {
+          if (xhr.status != 200 && xhr.responseText.search('Ticket expired') !== -1) {
+            tree.addIcon(_item, {icon: 'icon-server-connecting'});
+            let fetchTicket = Kerberos.fetch_ticket();
+            fetchTicket.then(
+              function() {
                 connect_to_server(_node, _data, _tree, _item, _wasConnected);
-              } else {
-                Alertify.dlgServerPass(
-                  gettext('Connect to Server'),
-                  msg, _node, _data, _tree, _item, _wasConnected
-                ).resizeTo();
+              },
+              function() {
+                tree.addIcon(_item, {icon: 'icon-server-not-connected'});
+                Alertify.pgNotifier('Connection error', xhr, gettext('Connect to server.'));
               }
-            }, 100);
-          });
+            );
+          } else {
+            Alertify.pgNotifier('error', xhr, error, function(msg) {
+              setTimeout(function() {
+                if (msg == 'CRYPTKEY_SET') {
+                  connect_to_server(_node, _data, _tree, _item, _wasConnected);
+                } else {
+                  Alertify.dlgServerPass(
+                    gettext('Connect to Server'),
+                    msg, _node, _data, _tree, _item, _wasConnected
+                  ).resizeTo();
+                }
+              }, 100);
+            });
+          }
         },
         onSuccess = function(res, node, _data, _tree, _item, _wasConnected) {
           if (res && res.data) {
