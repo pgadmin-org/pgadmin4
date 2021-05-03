@@ -4965,6 +4965,7 @@ define('tools.querytool', [
                 break;
               case 1: // Don't Save
                 self.close_on_save = false;
+                self.is_unsaved_data = this.is_unsaved_data;
                 $.ajax({
                   url: url_for('sqleditor._check_server_connection_status', {
                     'sid': self.url_params.sid,
@@ -4977,7 +4978,7 @@ define('tools.querytool', [
                   let response = res.data.result.server;
                   if (response) {
                     closeEvent.cancel = true;
-                    if (this.is_unsaved_data)
+                    if (self.is_unsaved_data)
                       self.ignore_on_close.unsaved_data = true;
                     else
                       self.ignore_on_close.unsaved_query = true;
