@@ -25,5 +25,6 @@ Bug fixes
 | `Issue #6377 <https://redmine.postgresql.org/issues/6377>`_ -  Fixed an issue where schema diff does not create DROP DEFAULT statement for columns.
 | `Issue #6385 <https://redmine.postgresql.org/issues/6385>`_ -  Ensure that Backup and Restore should work on shared servers.
 | `Issue #6408 <https://redmine.postgresql.org/issues/6408>`_ -  Fixed ModuleNotFoundError when running setup.py from outside of the root.
+| `Issue #6413 <https://redmine.postgresql.org/issues/6413>`_ -  Fixed an issue where duplicate columns are visible in the browser tree, which is owned by two sequences.
 | `Issue #6416 <https://redmine.postgresql.org/issues/6416>`_ -  Added comment column in the properties panel for View and Materialized View collection node.
 | `Issue #6417 <https://redmine.postgresql.org/issues/6417>`_ -  Fixed an issue where query editor is not being closed if the user clicks on the 'Don't Save' button.
