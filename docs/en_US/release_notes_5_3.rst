@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #6158 <https://redmine.postgresql.org/issues/6158>`_ -  Added support to connect PostgreSQL servers via Kerberos authentication.
+| `Issue #6397 <https://redmine.postgresql.org/issues/6397>`_ -  Added "IF NOT EXISTS" clause while creating tables and partition tables which is convenient while using the ERD tool.
 
 Housekeeping
 ************
