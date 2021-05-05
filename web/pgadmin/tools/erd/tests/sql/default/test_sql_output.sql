@@ -1,6 +1,6 @@
 
 
-CREATE TABLE public.newtable1
+CREATE TABLE IF NOT EXISTS public.newtable1
 (
     id integer,
     col1 character varying(50),
@@ -10,7 +10,7 @@ WITH (
     OIDS = FALSE
 );
 
-CREATE TABLE public.newtable2
+CREATE TABLE IF NOT EXISTS public.newtable2
 (
     table1_id integer,
     col2 character varying(50),
@@ -20,7 +20,7 @@ WITH (
     OIDS = FALSE
 );
 
-CREATE TABLE public.newtable3
+CREATE TABLE IF NOT EXISTS public.newtable3
 (
 )
 
