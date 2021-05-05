@@ -179,6 +179,8 @@ module.exports = {
       'pgadmin.tools.erd': path.join(__dirname, './pgadmin/tools/erd/static/js'),
       'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
       'tools': path.join(__dirname, './pgadmin/tools/'),
+      'pgadmin.user_management.current_user': regressionDir + '/javascript/fake_current_user',
+      'pgadmin.browser.constants': regressionDir + '/javascript/fake_constants',
     },
   },
 };

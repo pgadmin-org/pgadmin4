@@ -14,12 +14,11 @@ define('pgadmin.node.server', [
   'pgadmin.alertifyjs', 'pgadmin.backform',
   'sources/browser/server_groups/servers/model_validation',
   'pgadmin.authenticate.kerberos',
-  'pgadmin.browser.constants',
   'pgadmin.browser.server.privilege',
 ], function(
   gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser,
   supported_servers, current_user, Alertify, Backform,
-  modelValidation, Kerberos, pgConst,
+  modelValidation, Kerberos,
 ) {
 
   if (!pgBrowser.Nodes['server']) {
@@ -910,11 +909,7 @@ define('pgadmin.node.server', [
           id: 'kerberos_conn', label: gettext('Kerberos authentication?'), type: 'switch',
           group: gettext('Connection'), 'options': {
             'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
-          }, disabled: function() {
-            if (current_user['current_auth_source'] != pgConst['KERBEROS'])
-              return true;
-            return false;
-          },
+          }
         },{
           id: 'password', label: gettext('Password'), type: 'password', maxlength: null,
           group: gettext('Connection'), control: 'input', mode: ['create'],

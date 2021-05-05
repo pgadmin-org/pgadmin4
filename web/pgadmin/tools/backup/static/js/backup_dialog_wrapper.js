@@ -169,7 +169,7 @@ export class BackupDialogWrapper extends DialogWrapper {
       this.setExtraParameters(selectedTreeNode, treeInfo);
       let backupDate = this.view.model.toJSON();
 
-      if(userInfo['auth_sources'] == 'KERBEROS' && (backupDate.type == 'globals' || backupDate.type == 'server')) {
+      if(userInfo['current_auth_source'] == 'KERBEROS' && (backupDate.type == 'globals' || backupDate.type == 'server')) {
         let newPromise = fetch_ticket_lifetime();
         newPromise.then(
           function(lifetime) {

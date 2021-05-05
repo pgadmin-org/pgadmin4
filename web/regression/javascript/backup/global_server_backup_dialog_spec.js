@@ -20,7 +20,6 @@ describe('GlobalServerBackupDialog', () => {
   let alertifySpy;
   let backupModelSpy;
 
-
   let rootNode;
   let serverTreeNode;
   let ppasServerTreeNode;
@@ -74,7 +73,6 @@ describe('GlobalServerBackupDialog', () => {
         alertifySpy,
         backupModelSpy
       );
-
       pgBrowser.get_preference = jasmine.createSpy('get_preferences');
     });
 

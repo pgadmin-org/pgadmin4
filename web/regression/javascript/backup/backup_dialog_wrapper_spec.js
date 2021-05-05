@@ -46,6 +46,7 @@ describe('BackupDialogWrapper', () => {
       },
       keyboardNavigation: jasmine.createSpyObj('keyboardNavigation', ['getDialogTabNavigator']),
     };
+
     noDataNode = pgBrowser.treeMenu.addNewNode('level1.1', undefined, [{id: 'level1'}]);
     serverTreeNode = pgBrowser.treeMenu.addNewNode('level2.1', {
       _type: 'server',
