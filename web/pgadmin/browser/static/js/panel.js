@@ -98,11 +98,7 @@ define(
               }
 
               // Prevent browser from opening the drag file.
-              $('.pg-panel-content').bind('dragover', function (event) {
-                event.stopPropagation();
-                event.preventDefault();
-              });
-              $('.pg-panel-content').bind('drop', function (event) {
+              $container.bind('dragover drop', function (event) {
                 event.stopPropagation();
                 event.preventDefault();
               });

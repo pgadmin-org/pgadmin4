@@ -493,11 +493,7 @@ define('tools.querytool', [
       });
 
       // Prevent browser from opening the drag file.
-      $('#datagrid').bind('dragover', function (event) {
-        event.stopPropagation();
-        event.preventDefault();
-      });
-      $('#datagrid').bind('drop', function (event) {
+      $('#datagrid').bind('dragover drop', function (event) {
         event.stopPropagation();
         event.preventDefault();
       });
