@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the repo RPM version and build
-REPO_RPM_VERSION=1
+REPO_RPM_VERSION=2
 REPO_RPM_BUILD=1
 
 # Set the repo base directory
@@ -55,6 +55,7 @@ enabled=1
 EOF
 
     if [ ${INCLUDE_KEY} -eq 1 ]; then
+        echo repo_gpgcheck=1 >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
         echo gpgcheck=1 >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
         echo gpgkey=file:///etc/pki/rpm-gpg/PGADMIN_PKG_KEY >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
     else
