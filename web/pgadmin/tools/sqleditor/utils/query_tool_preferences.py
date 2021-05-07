@@ -268,6 +268,16 @@ def register_query_tool_preferences(self):
         }
     )
 
+    self.column_data_auto_resize = self.preference.register(
+        'Results_grid', 'column_data_auto_resize',
+        gettext("Column data auto-resize?"), 'boolean', True,
+        category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext(
+            'If set to True then data output columns will auto fit to max '
+            'data width else it is fit, based on data type or column name.'
+        )
+    )
+
     self.sql_font_size = self.preference.register(
         'Editor', 'sql_font_size',
         gettext("Font size"), 'numeric', '1',

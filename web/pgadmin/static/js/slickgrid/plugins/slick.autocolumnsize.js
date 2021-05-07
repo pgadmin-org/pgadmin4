@@ -10,7 +10,7 @@
     },
   });
 
-  function AutoColumnSize(maxWidth) {
+  function AutoColumnSize() {
 
     var grid, $container, context,
       keyCodes = {
@@ -19,13 +19,14 @@
 
     function init(_grid) {
       grid = _grid;
-      maxWidth = maxWidth || 200;
 
       $container = $(grid.getContainerNode());
       $container.on('dblclick.autosize', '.slick-resizable-handle', reSizeColumn);
       $container.keydown(handleControlKeys);
 
       context = document.createElement('canvas').getContext('2d');
+      // Expose resizeAllColumns method to call from outside of this file.
+      grid.resizeAllColumns = resizeAllColumns;
     }
 
     function destroy() {
@@ -43,12 +44,16 @@
       var allColumns = grid.getColumns();
       elHeaders.each(function(index, el) {
         var columnDef = $(el).data('column');
+        // Check if width is set then no need to resize that column.
+        if (typeof(columnDef.width) !== 'undefined' && !isNaN(columnDef.width)) {
+          return;
+        }
+
         var headerWidth = getElementWidth(el);
         var colIndex = grid.getColumnIndex(columnDef.id);
         var column = allColumns[colIndex];
         var autoSizeWidth = Math.max(headerWidth, getMaxColumnTextWidth(columnDef, colIndex)) + 1;
-        autoSizeWidth = Math.min(maxWidth, autoSizeWidth);
-        column.width = autoSizeWidth;
+        column.width = autoSizeWidth + (columnDef.addWidth || 0);
       });
       grid.setColumns(allColumns);
       grid.onColumnsResized.notify();

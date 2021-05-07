@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #5954 <https://redmine.postgresql.org/issues/5954>`_ -  Added support to set auto width of columns by content size in the data output window.
 | `Issue #6158 <https://redmine.postgresql.org/issues/6158>`_ -  Added support to connect PostgreSQL servers via Kerberos authentication.
 | `Issue #6397 <https://redmine.postgresql.org/issues/6397>`_ -  Added "IF NOT EXISTS" clause while creating tables and partition tables which is convenient while using the ERD tool.
 

@@ -871,6 +871,13 @@ define('tools.querytool', [
       self.handler['table_name'] = table_name;
       column_size[table_name] = column_size[table_name] || {};
 
+      // Keep track of column_data_auto_resize preferences value
+      if (_.isUndefined(self.auto_resize_column_based_on_data) || self.auto_resize_column_based_on_data !== self.preferences.column_data_auto_resize) {
+        self.auto_resize_column_based_on_data = self.preferences.column_data_auto_resize;
+        column_size[table_name] = {};
+      }
+
+
       _.each(columns, function(c) {
         c.display_name = _.escape(c.display_name);
         c.column_type = _.escape(c.column_type);
@@ -898,13 +905,34 @@ define('tools.querytool', [
         // column name.
         var column_type = c.column_type.trim();
         var label = c.name.length > column_type.length ? _.escape(c.display_name) : column_type;
+        var iconWidth = 0;
+        // increase width to add 'view' button
+        if (c.cell == 'geometry' || c.cell == 'geography') {
+          iconWidth += 28;
+        }
+        // Increase width for editable/read-only icon
+        if(!_.isUndefined(c.can_edit)) {
+          iconWidth += 12;
+        }
 
         if (_.isUndefined(column_size[table_name][options.nonative_field])) {
-          options['width'] = SqlEditorUtils.calculateColumnWidth(label);
-          column_size[table_name][c.nonative_field] = options['width'];
+          /* If column_data_auto_resize is true then for the first time set
+           * the addWidth parameter to iconWidth and if it is false then
+           * calculate width based on longer string among data type or
+           * column name.
+           */
+          if (self.preferences.column_data_auto_resize) {
+            options['addWidth'] = iconWidth;
+            options['width'] = NaN;
+          } else {
+            options['width'] = SqlEditorUtils.calculateColumnWidth(label);
+            options['width'] += iconWidth;
+            column_size[table_name][c.nonative_field] = options['width'];
+          }
         } else {
           options['width'] = column_size[table_name][options.nonative_field];
         }
+
         // If grid is editable then add editor else make it readonly
         if (c.cell == 'oid' && c.name == 'oid') {
           options['editor'] = null;
@@ -927,7 +955,6 @@ define('tools.querytool', [
           options['formatter'] = Slick.Formatters.Binary;
         } else if (c.cell == 'geometry' || c.cell == 'geography') {
           // increase width to add 'view' button
-          options['width'] += 28;
           options['can_edit'] = false;
         } else {
           options['editor'] = c.can_edit ? Slick.Editors.pgText :
@@ -936,9 +963,6 @@ define('tools.querytool', [
         }
 
         if(!_.isUndefined(c.can_edit)) {
-          // Increase width for editable/read-only icon
-          options['width'] += 12;
-
           let tooltip = '';
           if(c.can_edit)
             tooltip = gettext('Editable column');
@@ -1148,6 +1172,10 @@ define('tools.querytool', [
       dataView.onRowsChanged.subscribe(function(e, args) {
         grid.invalidateRows(args.rows);
         grid.render();
+        // Resize all columns if column_data_auto_resize is true.
+        if (self.preferences.column_data_auto_resize) {
+          grid.resizeAllColumns && grid.resizeAllColumns();
+        }
       });
 
       // Listener function which will be called before user updates existing cell
