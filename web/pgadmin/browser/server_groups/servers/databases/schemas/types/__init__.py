@@ -246,14 +246,12 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Declare allows acl on type
             self.acl = ['U']
 
-            ver = self.manager.version
-            server_type = self.manager.server_type
-            # Set the template path for the SQL scripts
-            self.template_path = 'types/sql/' + (
-                '#{0}#{1}#'.format(server_type, ver)
-                if server_type == 'gpdb' else
-                '#{0}#'.format(ver)
-            )
+            self.template_path = "/".join([
+                'types',
+                self.manager.server_type,
+                'sql',
+                '#{0}#'
+            ]).format(self.manager.version)
 
             return f(*args, **kwargs)
 
@@ -472,6 +470,31 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         return res
 
+    def _additional_properties_advanced_server_type(self, data):
+        """
+        Used by additional_properties internally for advanced server types.
+        :param rows: list of data
+        :return: formatted response
+        """
+        is_tlength, is_precision, typeval = \
+            self.get_length_precision(data.get('elemoid', None))
+
+        # Split length, precision from type name for grid
+        t_len, t_prec = DataTypeReader.parse_length_precision(
+            data['fulltype'], is_tlength, is_precision)
+
+        data = self.convert_length_precision_to_string(data)
+        data['type'] = self._cltype_formatter(data['type'])
+        data['cltype'] = self._cltype_formatter(data['type'])
+        data['hasSqrBracket'] = self.hasSqrBracket
+        data['tlength'] = t_len,
+        data['precision'] = t_prec
+        data['is_tlength'] = is_tlength,
+        data['is_precision'] = is_precision,
+        data['maxsize'] = data['typndims']
+
+        return data
+
     def additional_properties(self, copy_dict, tid):
         """
         We will use this function to add additional properties according to
@@ -485,13 +508,13 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         of_type = copy_dict['typtype']
         res = dict()
 
-        render_args = {'type': of_type}
+        render_args = {'typtype': of_type}
         if of_type == 'c':
             render_args['typrelid'] = copy_dict['typrelid']
         else:
             render_args['tid'] = tid
 
-        if of_type in ('c', 'e', 'r'):
+        if of_type in ('c', 'e', 'r', 'N', 'V', 'A'):
             SQL = render_template("/".join([self.template_path,
                                             'additional_properties.sql']),
                                   **render_args)
@@ -504,6 +527,11 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if of_type == 'c':
             # To display in properties
             res = self._additional_properties_composite(rset['rows'])
+
+        if of_type in ('N', 'V'):
+            # To display in properties
+            res = self._additional_properties_advanced_server_type(
+                rset['rows'][0])
 
         # If type is of ENUM then we need to add labels in our output
         if of_type == 'e':
@@ -1003,6 +1031,12 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                         each_type['type'])
                     each_type['hasSqrBracket'] = self.hasSqrBracket
 
+            of_type = data.get('typtype', None)
+            if of_type in ('N', 'V'):
+                data = self.convert_length_precision_to_string(data)
+                data['cltype'] = self._cltype_formatter(data['type'])
+                data['hasSqrBracket'] = self.hasSqrBracket
+
             SQL = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]),
                                   data=data, conn=self.conn)
@@ -1281,6 +1315,14 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     each_type['type'])
                 each_type['hasSqrBracket'] = self.hasSqrBracket
 
+        of_type = data.get('typtype', None)
+        if of_type in ('N', 'V', 'A'):
+            data = self.convert_length_precision_to_string(data)
+            data['cltype'] = self._cltype_formatter(data['type'])
+            data['hasSqrBracket'] = self.hasSqrBracket
+            if of_type == 'V':
+                data['typndims'] = data['maxsize']
+
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
                               data=data, conn=self.conn, is_sql=is_sql)
@@ -1306,6 +1348,15 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     each_type['cltype'] = self._cltype_formatter(
                         each_type['type'])
                     each_type['hasSqrBracket'] = self.hasSqrBracket
+
+            of_type = data.get('typtype', None)
+            if of_type in ('N', 'V', 'A'):
+                data = self.convert_length_precision_to_string(data)
+                data['cltype'] = self._cltype_formatter(data['type'])
+                data['hasSqrBracket'] = self.hasSqrBracket
+
+                if of_type == 'V':
+                    data['typndims'] = data['maxsize']
 
         SQL = render_template(
             "/".join([self.template_path,

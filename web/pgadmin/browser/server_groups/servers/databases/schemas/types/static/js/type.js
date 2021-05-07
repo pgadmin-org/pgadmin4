@@ -343,13 +343,21 @@ define('pgadmin.node.type', [
           group: gettext('Definition'),
           select2: { allowClear: false },
           options: function() {
-            return [
+            var typetype = [
               {label: gettext('Composite'), value: 'c'},
               {label: gettext('Enumeration'), value: 'e'},
               {label: gettext('External'), value: 'b'},
               {label: gettext('Range'), value: 'r'},
               {label: gettext('Shell'), value: 'p'},
             ];
+            if (this.node_info.server.server_type === 'ppas' &&
+            this.node_info.server.version >= 90500){
+              typetype.push(
+                {label: gettext('Nested Table'), value: 'N'},
+                {label: gettext('Varying Array'), value: 'V'}
+              );
+            }
+            return typetype;
           },
           // If create mode then by default open composite type
           control: Backform.Select2Control.extend({
@@ -385,6 +393,171 @@ define('pgadmin.node.type', [
           visible: function(m) {
             return m.get('typtype') === 'e';
           },
+        },{
+          type: 'nested',
+          group: gettext('Definition'),
+          label: '',
+          control: 'plain-fieldset',
+          deps: ['typtype'],
+          mode: ['edit', 'create', 'properties'],
+          visible: function (m) {
+            return m.get('typtype') === 'N' || m.get('typtype') === 'V';
+          },
+          schema: [{
+            id: 'type',
+            type: 'text',
+            label: gettext('Data Type'),
+            group: gettext('Definition'),
+            control: 'node-ajax-options',
+            mode: ['edit', 'create','properties'],
+            readonly: 'inEditMode',
+            url: 'get_types',
+            disabled: false,
+            node: 'type',
+            cache_node: 'domain',
+            editable: true,
+            deps: ['typtype'],
+            cell: 'node-ajax-options',
+            select2: { allowClear: false },
+            transform: function (d, control) {
+              var data_types = [];
+              _.each(d, function (o) {
+                if (!(o.value.includes('[]'))) {
+                  data_types.push(o);
+                }
+              });
+              control.model.type_options = data_types;
+              return data_types;
+            },
+          },{
+            id: 'maxsize',
+            group: gettext('Definition'),
+            label: gettext('Size'),
+            type: 'int',
+            deps: ['typtype'],
+            cell: IntegerDepCell,
+            mode: ['create', 'edit','properties'],
+            readonly: 'inEditMode',
+            visible: function (m) {
+              return m.get('typtype') === 'V';
+            }
+          },{
+          // Note: There are ambiguities in the PG catalogs and docs between
+          // precision and scale. In the UI, we try to follow the docs as
+          // closely as possible, therefore we use Length/Precision and Scale
+            id: 'tlength',
+            group: gettext('Data Type'),
+            label: gettext('Length/Precision'),
+            mode: ['edit', 'create','properties'],
+            deps: ['type'],
+            type: 'text',
+            readonly: 'inEditMode',
+            cell: IntegerDepCell,
+            visible: function (m) {
+              return m.get('typtype') === 'N';
+            },
+            disabled: function (m) {
+              var of_type = m.get('type'),
+                flag = true;
+              _.each(m.type_options, function (o) {
+                if (of_type == o.value) {
+                  if (o.length) {
+                    m.set('min_val_attlen', o.min_val, { silent: true });
+                    m.set('max_val_attlen', o.max_val, { silent: true });
+                    flag = false;
+                  }
+                }
+              });
+              flag && setTimeout(function () {
+                if (m.get('attlen')) {
+                  m.set('attlen', null);
+                }
+              }, 10);
+              return flag;
+            },
+            editable: function (m) {
+              // We will store type from selected from combobox
+              var of_type = m.get('type');
+              if (m.type_options) {
+                // iterating over all the types
+                _.each(m.type_options, function (o) {
+                // if type from selected from combobox matches in options
+                  if (of_type == o.value) {
+                    // if length is allowed for selected type
+                    if (o.length) {
+                      // set the values in model
+                      m.set('is_tlength', true, { silent: true });
+                      m.set('min_val', o.min_val, { silent: true });
+                      m.set('max_val', o.max_val, { silent: true });
+                    } else {
+                      // set the values in model
+                      m.set('is_tlength', false, { silent: true });
+                    }
+                  }
+                });
+              }
+              return m.get('is_tlength');
+            }
+          },{
+            // Note: There are ambiguities in the PG catalogs and docs between
+            // precision and scale. In the UI, we try to follow the docs as
+            // closely as possible, therefore we use Length/Precision and Scale
+            id: 'precision',
+            group: gettext('Data Type'),
+            label: gettext('Scale'),
+            mode: ['edit', 'create','properties'],
+            deps: ['type'],
+            type: 'text',
+            readonly: 'inEditMode',
+            cell: IntegerDepCell,
+            visible: function (m) {
+              return m.get('typtype') === 'N';
+            },
+            disabled: function(m) {
+              var of_type = m.get('type'),
+                flag = true;
+              _.each(m.type_options, function(o) {
+                if ( of_type == o.value ) {
+                  if(o.precision) {
+                    m.set('min_val_attprecision', 0, {silent: true});
+                    m.set('max_val_attprecision', o.max_val, {silent: true});
+                    flag = false;
+                  }
+                }
+              });
+
+              flag && setTimeout(function() {
+                if(m.get('attprecision')) {
+                  m.set('attprecision', null);
+                }
+              },10);
+              return flag;
+            },
+            editable: function(m) {
+              // We will store type from selected from combobox
+              var of_type = m.get('type');
+              if(m.type_options) {
+                // iterating over all the types
+                _.each(m.type_options, function(o) {
+                  // if type from selected from combobox matches in options
+                  if ( of_type == o.value ) {
+                    // if precession is allowed for selected type
+                    if(o.precision)
+                    {
+                      // set the values in model
+                      m.set('is_precision', true, {silent: true});
+                      m.set('min_val', o.min_val, {silent: true});
+                      m.set('max_val', o.max_val, {silent: true});
+                    } else {
+                      // set the values in model
+                      m.set('is_precision', false, {silent: true});
+                    }
+                  }
+                });
+              }
+              return m.get('is_precision');
+            },
+          }]
         },{
           // We will disable range type control in edit mode
           type: 'nested', control: 'plain-fieldset', group: gettext('Definition'),

@@ -53,7 +53,45 @@
       "data": {}
     },
 
-
+    {
+      "type": "create",
+      "name": "Create Nested Table type",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
+      "data": {
+        "name": "nested_table_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"N",
+        "schema":"public",
+        "type": "numeric",
+        "tlength": 2,
+        "precision": 1,
+        "typacl":[],
+        "seclabels":[],
+        "description":""
+      },
+      "expected_sql_file": "create_nested_table_type.sql"
+    },
+     {
+      "type": "create",
+      "name": "Create Varray type",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
+      "data": {
+        "name": "varray_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"V",
+        "schema":"public",
+        "type": "integer",
+        "maxsize": 10,
+        "typacl":[],
+        "seclabels":[],
+        "description":""
+      },
+      "expected_sql_file": "create_varray_type.sql"
+    },
     {
       "type": "create",
       "name": "Create Composite type",

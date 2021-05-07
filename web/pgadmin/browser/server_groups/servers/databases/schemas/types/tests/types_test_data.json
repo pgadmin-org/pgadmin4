@@ -3,8 +3,68 @@
     {
       "name": "Create types: With valid data.",
       "url": "/browser/type/obj/",
+      "server_min_version": "10000",
+      "skip_msg": "Nested Table types are supported for PPAS & version > 9.6",
       "is_positive_test": true,
-      "test_data": {},
+      "test_data": {
+        "name": "type_name_add",
+            "is_sys_type": false,
+            "typtype": "c",
+            "typeowner": "db_user",
+            "schema": "schema_name",
+            "composite": [{"member_name": "one", "type": "bigint",
+                           "is_tlength": false, "is_precision": false},
+                          {"member_name": "two", "type": "\"char\"[]",
+                           "is_tlength": false, "is_precision": false}],
+            "enum": [], "typacl": [], "seclabels": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Create Nested types: With valid data for Advanced Server.",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "name": "type_name_add",
+            "is_sys_type": false,
+            "typeowner": "db_user",
+            "schema": "schema_name",
+             "typtype":"N",
+        "type": "numeric",
+        "tlength": 2,
+        "precision": 1,
+        "typacl":[],
+        "seclabels":[],
+        "server_min_version": 10000,
+      "skip_msg": "Nested Table types are supported for PPAS & version > 9.6"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+        {
+      "name": "Create Varray types: With valid data for Advanced Server.",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "name": "type_name_add",
+            "is_sys_type": false,
+            "typeowner": "db_user",
+            "schema": "schema_name",
+             "typtype":"V",
+        "type": "integer",
+        "maxsize": 10,
+        "typacl":[],
+        "seclabels":[],
+        "server_min_version": 10000,
+      "skip_msg": "Varray types are supported for PPAS & version > 9.6"
+      },
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
@@ -16,7 +76,17 @@
       "url": "/browser/type/obj/",
       "is_positive_test": false,
       "missing_parameter": true,
-      "test_data": {},
+      "test_data": {
+            "is_sys_type": false,
+            "typtype": "c",
+            "typeowner": "db_user",
+            "schema": "schema_name",
+            "composite": [{"member_name": "one", "type": "bigint",
+                           "is_tlength": false, "is_precision": false},
+                          {"member_name": "two", "type": "\"char\"[]",
+                           "is_tlength": false, "is_precision": false}],
+            "enum": [], "typacl": [], "seclabels": []
+      },
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
@@ -28,7 +98,18 @@
       "url": "/browser/type/obj/",
       "is_positive_test": false,
       "internal_server_error": true,
-      "test_data": {},
+      "test_data": {
+         "name": "type_name_add",
+            "is_sys_type": false,
+            "typtype": "c",
+            "typeowner": "db_user",
+            "schema": "schema_name",
+            "composite": [{"member_name": "one", "type": "bigint",
+                           "is_tlength": false, "is_precision": false},
+                          {"member_name": "two", "type": "\"char\"[]",
+                           "is_tlength": false, "is_precision": false}],
+            "enum": [], "typacl": [], "seclabels": []
+      },
       "mocking_required": true,
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
@@ -43,7 +124,18 @@
       "url": "/browser/type/obj/",
       "is_positive_test": false,
       "error_in_db": true,
-      "test_data": {},
+      "test_data": {
+         "name": "type_name_add",
+            "is_sys_type": false,
+            "typtype": "c",
+            "typeowner": "db_user",
+            "schema": "schema_name",
+            "composite": [{"member_name": "one", "type": "bigint",
+                           "is_tlength": false, "is_precision": false},
+                          {"member_name": "two", "type": "\"char\"[]",
+                           "is_tlength": false, "is_precision": false}],
+            "enum": [], "typacl": [], "seclabels": []
+      },
       "mocking_required": true,
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",

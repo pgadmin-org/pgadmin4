@@ -1,5 +1,5 @@
 {# The SQL given below will fetch composite type#}
-{% if type == 'c' %}
+{% if typtype == 'c' %}
 SELECT attnum, attname, pg_catalog.format_type(t.oid,NULL) AS typname, attndims, atttypmod, nsp.nspname,
     (SELECT COUNT(1) from pg_catalog.pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup,
     collname, nspc.nspname as collnspname, att.attrelid,
@@ -16,7 +16,7 @@ FROM pg_catalog.pg_attribute att
 {% endif %}
 
 {# The SQL given below will fetch enum type#}
-{% if type == 'e' %}
+{% if typtype == 'e' %}
 SELECT enumlabel
 FROM pg_catalog.pg_enum
     WHERE enumtypid={{tid}}::oid
@@ -24,7 +24,7 @@ FROM pg_catalog.pg_enum
 {% endif %}
 
 {# The SQL given below will fetch range type#}
-{% if type == 'r' %}
+{% if typtype == 'r' %}
 SELECT rngsubtype, st.typname,
     rngcollation,
     CASE WHEN n.nspname IS NOT NULL THEN pg_catalog.concat(pg_catalog.quote_ident(n.nspname), '.', pg_catalog.quote_ident(col.collname)) ELSE col.collname END AS collname,
