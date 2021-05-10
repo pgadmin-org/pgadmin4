@@ -218,9 +218,6 @@ const cleanupAndQuitApp = () => {
   }
 
   if (pgAdminWindowObject != null) {
-    // Close the window.
-    pgAdminWindowObject.close(true);
-
     // Remove all the cookies.
     pgAdminWindowObject.cookies.getAll({}, function(cookies) {
       try {
