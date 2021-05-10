@@ -31,15 +31,18 @@ Use the fields in the *General* tab to identify the server:
   connection to the server upon completion of the dialog; this is the default
 
 * If the *Shared?* switch is moved to *Yes* then that server can be
-  shared with all the other users. This option is available only to admin users. For more information on users see :ref:`User Management Dialog <user_management>`. The users can access the shared servers with some restritctions. The Users accessing the shared servers cannot do the following operations on the shared servers:
+  shared with all the other users. This option is available only to admin users.
+  For more information on users see :ref:`User Management Dialog <user_management>`.
+  Users can access the shared servers with some restrictions - the following
+  operations on shared servers are not permitted:
 
-    * Create a server
     * Delete the server
     * Rename the server
     * Rename the group server
     * Change of host, port, and maintenance database
 
-  Please note that once the server is shared, it's icon is changed in the browser tree.
+  Please note that once the server is shared, it's icon is changed in the
+  browser tree.
 
 * Provide a comment about the server in the *Comments* field.
 
@@ -62,6 +65,8 @@ Use the fields in the *Connection* tab to configure a connection:
   installed on that database.
 * Use the *Username* field to specify the name of a role that will be used when
   authenticating with the server.
+* When *Kerberos authentication?* is set to *True*, pgAdmin will try to connect
+  the PostgreSQL server using Kerberos authentication.
 * Use the *Password* field to provide a password that will be supplied when
   authenticating with the server.
 * Check the box next to *Save password?* to instruct pgAdmin to save the
