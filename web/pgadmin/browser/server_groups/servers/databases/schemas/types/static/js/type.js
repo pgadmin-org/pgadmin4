@@ -1032,6 +1032,16 @@ define('pgadmin.node.type', [
             }
           }
 
+          // For Nested Table and Varying Array
+          if(this.get('typtype') == 'N' || this.get('typtype') == 'V') {
+            if (_.isUndefined(this.get('type')) || _.isNull(this.get('type')) ||
+                String(this.get('type')).replace(/^\s+|\s+$/g, '') == '') {
+              msg = gettext('Data type cannot be empty.');
+              this.errorModel.set('type', msg);
+              return msg;
+            }
+          }
+
           return null;
         },
         // We will disable everything if we are under catalog node
