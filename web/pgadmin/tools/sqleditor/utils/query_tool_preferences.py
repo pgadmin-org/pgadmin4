@@ -270,11 +270,13 @@ def register_query_tool_preferences(self):
 
     self.column_data_auto_resize = self.preference.register(
         'Results_grid', 'column_data_auto_resize',
-        gettext("Column data auto-resize?"), 'boolean', True,
+        gettext("Resize by data?"), 'boolean', True,
         category_label=PREF_LABEL_RESULTS_GRID,
         help_str=gettext(
-            'If set to True then data output columns will auto fit to max '
-            'data width else it is fit, based on data type or column name.'
+            'If set to True then data columns will auto-size to the maximum'
+            'width of the data in the column as loaded in the first batch. If '
+            'False, the column will be sized to the widest of the data type '
+            'or column name.'
         )
     )
 
