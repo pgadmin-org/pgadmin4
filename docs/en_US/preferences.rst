@@ -372,9 +372,10 @@ Use the fields on the *Options* panel to manage editor preferences.
 Use the fields on the *Results grid* panel to specify your formatting
 preferences for copied data.
 
-* When the *Column data auto-resize?* switch is set to *True*, then data
-  output columns will auto fit to max data width. If it is set to *False* then
-  size is set based on data type or column name.
+* When the *Resize by data?* switch is set to *True*, then data columns will
+  auto-size to the maximum width of the data in the column as loaded in the
+  first batch. If False, the column will be sized to the widest of the data
+  type or column name.
 * Use the *Result copy field separator* drop-down listbox to select the field
   separator for copied data.
 * Use the *Result copy quote character* drop-down listbox to select the quote
