@@ -366,7 +366,7 @@ module.exports = [{
     libraryTarget: 'amd',
     path: outputPath,
     filename: '[name].js',
-    chunkFilename: '[name].chunk.js',
+    chunkFilename: '[name].chunk.js?id=[chunkhash]',
     libraryExport: 'default',
     publicPath: '',
   },

@@ -21,6 +21,7 @@ Bug fixes
 *********
 
 | `Issue #4436 <https://redmine.postgresql.org/issues/4436>`_ -  Fixed an issue where drag and drop object is not correct in codemirror for properties dialog.
+| `Issue #5477 <https://redmine.postgresql.org/issues/5477>`_ -  Added support for cache bust webpack chunk files.
 | `Issue #5555 <https://redmine.postgresql.org/issues/5555>`_ -  Fixed an issue where data is displayed in the wrong order when executing the query repeatedly.
 | `Issue #5776 <https://redmine.postgresql.org/issues/5776>`_ -  Ensure that while connecting to the server using SSPI login, it should not prompt for the password.
 | `Issue #6329 <https://redmine.postgresql.org/issues/6329>`_ -  Fixed an issue where the wrong SQL is showing for the child partition tables.
