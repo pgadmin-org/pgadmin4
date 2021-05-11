@@ -528,7 +528,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            # we need oid to to add object in tree at browser
+            # we need oid to add object in tree at browser
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
                                   tid=tid, data=data)

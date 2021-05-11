@@ -403,7 +403,7 @@ export class Tree {
   /**
    * As the name hints this functions works as a layer in between ACI and
    * the adaptor. Given a ACITree JQuery node find the location of it in the
-   * Tree and then returns and array with the path to to the Tree Node in
+   * Tree and then returns and array with the path to the Tree Node in
    * question
    *
    * This is not optimized and will always go through the full tree

@@ -590,7 +590,7 @@ AND relkind != 'c'))"""
         if not status:
             return internal_server_error(errormsg=res)
 
-        # We need oid to to add object in tree at browser, below sql will
+        # We need oid to add object in tree at browser, below sql will
         # gives the same
         SQL = render_template("/".join([self.template_path,
                                         self._OID_SQL]),

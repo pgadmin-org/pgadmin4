@@ -109,7 +109,7 @@ Click the *Variables* tab to continue.
     :alt: Column dialog variables tab
     :align: center
 
-Use the *Variables* tab to to specify the number of distinct values that may be
+Use the *Variables* tab to specify the number of distinct values that may be
 present in the column; this value overrides estimates made by the ANALYZE
 command. Click the *Add* icon (+) to add a *Name*/*Value* pair:
 

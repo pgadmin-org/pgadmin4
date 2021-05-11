@@ -4,7 +4,7 @@
 `Move Objects Dialog`:index:
 ****************************
 
-Use the *Move Objects* dialog to to move database objects from one tablespace to
+Use the *Move Objects* dialog to move database objects from one tablespace to
 another tablespace.
 
 The *Move Objects* dialog organizes the movement of database objects with the

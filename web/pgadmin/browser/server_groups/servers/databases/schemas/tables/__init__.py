@@ -937,7 +937,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if not status:
                 return internal_server_error(errormsg=new_scid)
 
-            # we need oid to to add object in tree at browser
+            # we need oid to add object in tree at browser
             sql = render_template(
                 "/".join([self.table_template_path, self._OID_SQL]),
                 scid=new_scid, data=data

@@ -630,7 +630,7 @@ It may have been removed by another user.
                     errormsg=res
                 )
 
-            # we need oid to to add object in tree at browser,
+            # we need oid to add object in tree at browser,
             # below sql will gives the same
             SQL = render_template(
                 "/".join([self.template_path, 'sql/oid.sql']),

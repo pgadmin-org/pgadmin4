@@ -21,7 +21,7 @@ Use the *File* menu to access the following options:
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 | Option                  | Action                                                                                                  |
 +=========================+=========================================================================================================+
-| *Preferences*           | Click to open the :ref:`Preferences <preferences>` dialog to to customize your pgAdmin settings.        |
+| *Preferences*           | Click to open the :ref:`Preferences <preferences>` dialog to customize your pgAdmin settings.        |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 | *Reset Layout*          | If you have modified the workspace, click to restore the default layout.                                |
 +-------------------------+---------------------------------------------------------------------------------------------------------+

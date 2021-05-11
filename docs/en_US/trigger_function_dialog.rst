@@ -123,7 +123,7 @@ Click the *Security* tab to continue.
 Use the *Security* tab to assign privileges and define security labels.
 
 Use the *Privileges* panel to assign usage privileges for the trigger function
-to a role. Click the *Add* icon (+) to to add a role to the table.
+to a role. Click the *Add* icon (+) to add a role to the table.
 
 * Select the name of the role from the drop-down listbox in the *Grantee* field.
 * Click inside the *Privileges* field. Check the boxes to the left of one or

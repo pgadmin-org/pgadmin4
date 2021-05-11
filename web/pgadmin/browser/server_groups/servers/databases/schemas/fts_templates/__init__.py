@@ -389,7 +389,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
 
-        # we need fts_template id to to add object in tree at browser,
+        # we need fts_template id to add object in tree at browser,
         # below sql will give the same
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),

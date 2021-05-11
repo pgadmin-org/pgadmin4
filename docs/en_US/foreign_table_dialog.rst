@@ -49,7 +49,7 @@ Click the *Columns* tab to continue.
     :alt: Foreign table dialog columns tab
     :align: center
 
-Use the fields in the *Columns* tab to to add columns and their attributes to
+Use the fields in the *Columns* tab to add columns and their attributes to
 the table. Click the *Add* icon (+) to define a column:
 
 * Use the *Name* field to add a descriptive name for the column.

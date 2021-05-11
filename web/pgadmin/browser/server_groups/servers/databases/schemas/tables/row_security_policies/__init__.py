@@ -379,7 +379,7 @@ class RowSecurityView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            # we need oid to to add object in tree at browser
+            # we need oid to add object in tree at browser
             sql = render_template(
                 "/".join([self.template_path, 'get_position.sql']),
                 tid=tid, data=data

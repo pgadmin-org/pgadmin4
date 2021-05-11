@@ -490,7 +490,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
 
-        # We need oid to to add object in tree at browser
+        # We need oid to add object in tree at browser
         SQL = render_template(
             "/".join([self.template_path, self._OID_SQL]), data=data
         )
@@ -598,7 +598,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
 
-        # We need oid to to add object in tree at browser
+        # We need oid to add object in tree at browser
         SQL = render_template("/".join([self.template_path,
                                         self._OID_SQL]), coid=coid)
 

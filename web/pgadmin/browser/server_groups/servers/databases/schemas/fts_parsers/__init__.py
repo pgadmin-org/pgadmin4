@@ -418,7 +418,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
 
-        # we need fts_parser id to to add object in tree at browser,
+        # we need fts_parser id to add object in tree at browser,
         # below sql will give the same
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),

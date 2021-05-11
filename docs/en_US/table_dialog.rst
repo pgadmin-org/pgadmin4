@@ -365,7 +365,7 @@ Click the *Columns* tab to continue.
     :alt: Table dialog exclusion constraint columns
     :align: center
 
-Use the fields in the *Columns* tab to to specify the column(s) to which the
+Use the fields in the *Columns* tab to specify the column(s) to which the
 constraint applies. Use the drop-down listbox next to *Column* to select a
 column and click the *Add* icon (+) to provide details of the action on the
 column:

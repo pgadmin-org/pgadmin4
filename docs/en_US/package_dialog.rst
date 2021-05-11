@@ -45,7 +45,7 @@ Click the *Security* tab to continue.
     :alt: Package dialog security tab
     :align: center
 
-Use the fields in the *Security* tab to to assign EXECUTE privileges for the
+Use the fields in the *Security* tab to assign EXECUTE privileges for the
 package to a role. Click the *Add* icon (+) to set privileges for the package:
 
 * Select the name of the role from the drop-down listbox in the *Grantee* field.
