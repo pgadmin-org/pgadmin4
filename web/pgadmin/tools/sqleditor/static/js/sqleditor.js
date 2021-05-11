@@ -4078,7 +4078,7 @@ define('tools.querytool', [
           return;
 
         // Add column position and it's value to data
-        data[column_info.field] = _values[column_info.field] || '';
+        data[column_info.field] = _.isUndefined(_values[column_info.field]) ? '' : _values[column_info.field];
 
         self.trigger(
           'pgadmin-sqleditor:loading-icon:show',
@@ -4138,7 +4138,7 @@ define('tools.querytool', [
           return;
 
         // Add column position and it's value to data
-        data[column_info.field] = _values[column_info.field] || '';
+        data[column_info.field] = _.isUndefined(_values[column_info.field]) ? '' : _values[column_info.field];
 
         self.trigger(
           'pgadmin-sqleditor:loading-icon:show',
