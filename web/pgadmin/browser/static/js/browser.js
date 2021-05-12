@@ -230,6 +230,7 @@ define('pgadmin.browser', [
         isCloseable: false,
         isPrivate: true,
         icon: '',
+        limit: 1,
         content: '<div id="tree" class="aciTree"></div>',
         onCreate: function(panel) {
           toolBar.initializeToolbar(panel, wcDocker);
@@ -244,6 +245,7 @@ define('pgadmin.browser', [
         isCloseable: false,
         isPrivate: true,
         elContainer: true,
+        limit: 1,
         content: '<div class="obj_properties container-fluid"><div role="status" class="pg-panel-message">' + select_object_msg + '</div></div>',
         events: panelEvents,
         onCreate: function(myPanel, $container) {
@@ -258,6 +260,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: true,
         isPrivate: false,
+        limit : 1,
         canHide: true,
         content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container d-none"></div></div>',
         events: panelEvents,
@@ -270,6 +273,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: false,
         isPrivate: true,
+        limit: 1,
         content: '<label for="sql-textarea" class="sr-only">' + gettext('SQL Code') + '</label><div class="sql_textarea"><textarea id="sql-textarea" name="sql-textarea" title="' + gettext('SQL Code') + '"></textarea></div>',
       }),
       // Dependencies of the object
@@ -281,6 +285,7 @@ define('pgadmin.browser', [
         isCloseable: true,
         isPrivate: false,
         canHide: true,
+        limit: 1,
         content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependencies-container d-none"></div></div>',
         events: panelEvents,
       }),
@@ -292,6 +297,7 @@ define('pgadmin.browser', [
         width: 500,
         isCloseable: true,
         isPrivate: false,
+        limit: 1,
         canHide: true,
         content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependents-container d-none"></div></div>',
         events: panelEvents,
@@ -345,6 +351,7 @@ define('pgadmin.browser', [
             showTitle: panel.showTitle,
             isCloseable: panel.isCloseable,
             isPrivate: panel.isPrivate,
+            limit: (panel.limit) ? panel.limit : null,
             content: (panel.content) ? panel.content : '',
             events: (panel.events) ? panel.events : '',
             canHide: (panel.canHide) ? panel.canHide : '',

@@ -30,6 +30,7 @@ Bug fixes
 | `Issue #6377 <https://redmine.postgresql.org/issues/6377>`_ -  Fixed an issue where schema diff does not create DROP DEFAULT statement for columns.
 | `Issue #6385 <https://redmine.postgresql.org/issues/6385>`_ -  Ensure that Backup and Restore should work on shared servers.
 | `Issue #6392 <https://redmine.postgresql.org/issues/6392>`_ -  Fixed an issue where the filter 'Include/Exclude By Selection' not working for null values.
+| `Issue #6399 <https://redmine.postgresql.org/issues/6399>`_ -  Ensure that the user should not be able to add duplicate panels.
 | `Issue #6407 <https://redmine.postgresql.org/issues/6407>`_ -  Added support for the creation of Nested Table and Varying Array Type for Advanced Server.
 | `Issue #6408 <https://redmine.postgresql.org/issues/6408>`_ -  Fixed ModuleNotFoundError when running setup.py from outside of the root.
 | `Issue #6409 <https://redmine.postgresql.org/issues/6409>`_ -  Fixed an issue where the current debug line is not visible in the 'Dark' theme.
