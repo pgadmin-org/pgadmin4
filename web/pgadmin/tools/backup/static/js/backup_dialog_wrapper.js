@@ -15,6 +15,7 @@ import _ from 'underscore';
 import {DialogWrapper} from '../../../../static/js/alertify/dialog_wrapper';
 import {fetch_ticket_lifetime} from  '../../../../authenticate/static/js/kerberos';
 import userInfo from 'pgadmin.user_management.current_user';
+import pgConst from 'pgadmin.browser.constants';
 
 export class BackupDialogWrapper extends DialogWrapper {
   constructor(dialogContainerSelector, dialogTitle, typeOfDialog,
@@ -169,7 +170,7 @@ export class BackupDialogWrapper extends DialogWrapper {
       this.setExtraParameters(selectedTreeNode, treeInfo);
       let backupDate = this.view.model.toJSON();
 
-      if(userInfo['current_auth_source'] == 'KERBEROS' && (backupDate.type == 'globals' || backupDate.type == 'server')) {
+      if(userInfo['current_auth_source'] == pgConst['KERBEROS'] && treeInfo.server.gss_authenticated && (backupDate.type == 'globals' || backupDate.type == 'server')) {
         let newPromise = fetch_ticket_lifetime();
         newPromise.then(
           function(lifetime) {

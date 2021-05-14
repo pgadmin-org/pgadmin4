@@ -911,6 +911,16 @@ define('pgadmin.node.server', [
             'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
           }
         },{
+          id: 'gss_authenticated', label: gettext('GSS authenticated?'), type: 'switch',
+          group: gettext('Connection'), 'options': {
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
+          }, mode: ['properties'], visible: 'isConnected'
+        },{
+          id: 'gss_encrypted', label: gettext('GSS encrypted?'), type: 'switch',
+          group: gettext('Connection'), 'options': {
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
+          }, mode: ['properties'], visible: 'isConnected',
+        },{
           id: 'password', label: gettext('Password'), type: 'password', maxlength: null,
           group: gettext('Connection'), control: 'input', mode: ['create'],
           deps: ['connect_now', 'kerberos_conn'],

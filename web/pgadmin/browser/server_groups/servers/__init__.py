@@ -255,6 +255,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 user_name=server.username,
                 shared=server.shared,
                 is_kerberos_conn=bool(server.kerberos_conn),
+                gss_authenticated=manager.gss_authenticated
             )
 
     @property
@@ -549,7 +550,8 @@ class ServerNode(PGChildNodeView):
                     errmsg=errmsg,
                     user_name=server.username,
                     shared=server.shared,
-                    is_kerberos_conn=bool(server.kerberos_conn)
+                    is_kerberos_conn=bool(server.kerberos_conn),
+                    gss_authenticated=manager.gss_authenticated
                 )
             )
 
@@ -617,7 +619,8 @@ class ServerNode(PGChildNodeView):
                 errmsg=errmsg,
                 shared=server.shared,
                 user_name=server.username,
-                is_kerberos_conn=bool(server.kerberos_conn)
+                is_kerberos_conn=bool(server.kerberos_conn),
+                gss_authenticated=manager.gss_authenticated
             ),
         )
 
@@ -991,6 +994,8 @@ class ServerNode(PGChildNodeView):
             if server.tunnel_identity_file else None,
             'tunnel_authentication': tunnel_authentication,
             'kerberos_conn': bool(server.kerberos_conn),
+            'gss_authenticated': manager.gss_authenticated,
+            'gss_encrypted': manager.gss_encrypted
         }
 
         return ajax_response(response)
@@ -1162,6 +1167,8 @@ class ServerNode(PGChildNodeView):
                     if manager and manager.version
                     else None,
                     is_kerberos_conn=bool(server.kerberos_conn),
+                    gss_authenticated=manager.gss_authenticated if
+                    manager and manager.gss_authenticated else False
                 )
             )
 
@@ -1478,6 +1485,7 @@ class ServerNode(PGChildNodeView):
                     'is_tunnel_password_saved': True
                     if server.tunnel_password is not None else False,
                     'is_kerberos_conn': bool(server.kerberos_conn),
+                    'gss_authenticated': manager.gss_authenticated
                 }
             )
 
