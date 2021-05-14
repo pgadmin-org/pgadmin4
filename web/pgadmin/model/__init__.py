@@ -184,7 +184,7 @@ class Server(db.Model):
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(db.String(64), nullable=True)
     shared = db.Column(db.Boolean(), nullable=False)
-    kerberos_conn = db.Column(db.Boolean(), nullable=False)
+    kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
 
     @property
     def serialize(self):

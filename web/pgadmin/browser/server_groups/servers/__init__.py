@@ -1362,7 +1362,8 @@ class ServerNode(PGChildNodeView):
                 except Exception as e:
                     current_app.logger.exception(e)
                     return internal_server_error(errormsg=str(e))
-        if 'password' not in data and server.kerberos_conn is False:
+        if 'password' not in data and (server.kerberos_conn is False or
+                                       server.kerberos_conn is None):
             conn_passwd = getattr(conn, 'password', None)
             if conn_passwd is None and not server.save_password and \
                     server.passfile is None and server.service is None:
