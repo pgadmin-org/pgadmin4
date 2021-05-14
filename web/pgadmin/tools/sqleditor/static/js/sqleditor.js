@@ -3847,7 +3847,7 @@ define('tools.querytool', [
       // Open FileManager
       _open_select_file_manager: function() {
         var params = {
-          'supported_types': ['sql'], // file types allowed
+          'supported_types': ['*', 'sql'], // file types allowed
           'dialog_type': 'select_file', // open select file dialog
         };
         pgAdmin.FileManager.init();

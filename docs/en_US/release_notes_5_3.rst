@@ -38,3 +38,4 @@ Bug fixes
 | `Issue #6416 <https://redmine.postgresql.org/issues/6416>`_ -  Added comment column in the properties panel for View and Materialized View collection node.
 | `Issue #6417 <https://redmine.postgresql.org/issues/6417>`_ -  Fixed an issue where query editor is not being closed if the user clicks on the 'Don't Save' button.
 | `Issue #6420 <https://redmine.postgresql.org/issues/6420>`_ -  Ensure that pgAdmin4 shut down completely on the Quit command.
+| `Issue #6443 <https://redmine.postgresql.org/issues/6443>`_ -  Fixed an issue where file dialog showing incorrect files for the selected file types.
