@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-05-14 17:37+0530\n"
-"PO-Revision-Date: 2021-04-17 22:49+0900\n"
+"PO-Revision-Date: 2021-05-15 22:02+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: pgadmin/__init__.py:332 pgadmin/authenticate/internal.py:28
 msgid "Incorrect username or password."
@@ -122,7 +122,7 @@ msgstr "ロゴ"
 msgid ""
 "pgAdmin internal user authentication is not enabled, please contact "
 "administrator."
-msgstr ""
+msgstr "pgAdmin の内部ユーザ認証が有効になっていません。管理者に連絡してください"
 
 #: pgadmin/authenticate/internal.py:29
 msgid "Login failed"
@@ -158,7 +158,7 @@ msgstr "Kerberos 認証に失敗しました。Kerberos チケットが見つか
 
 #: pgadmin/authenticate/kerberos.py:133
 msgid "Delegated credentials not supplied."
-msgstr ""
+msgstr "委任資格情報が設定されていません"
 
 #: pgadmin/authenticate/ldap.py:29
 msgid "Error searching the LDAP directory: {}"
@@ -5952,11 +5952,11 @@ msgstr "シェル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:393
 msgid "Nested Table"
-msgstr ""
+msgstr "ネスト化されたテーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:394
 msgid "Varying Array"
-msgstr ""
+msgstr "可変配列"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:413
 msgid "Composite Type"
@@ -5970,7 +5970,7 @@ msgstr "列挙型"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:492
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:558
 msgid "Data Type"
-msgstr ""
+msgstr "データ型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:628
 msgid "Subtype"
@@ -6138,7 +6138,7 @@ msgstr "出力関数は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:1117
 msgid "Data type cannot be empty."
-msgstr ""
+msgstr "データ型は必須です"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:76
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:39
@@ -6502,7 +6502,7 @@ msgstr "スキーマ制限の変更を適用するには、スキーマノード
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:584
 msgid "Connect  to database."
-msgstr ""
+msgstr "データベースに接続"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:599
 msgid "Connect to database"
@@ -8587,15 +8587,15 @@ msgstr "接続設定の変更を適用するには、いったんサーバから
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:937
 msgid "Kerberos authentication?"
-msgstr ""
+msgstr "Kerberos 認証"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:942
 msgid "GSS authenticated?"
-msgstr ""
+msgstr "GSS 認証"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:947
 msgid "GSS encrypted?"
-msgstr ""
+msgstr "GSS 暗号化"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:965
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1137
@@ -8657,7 +8657,7 @@ msgstr "接続タイムアウト（秒）"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1354
 msgid "Connect to server."
-msgstr ""
+msgstr "サーバに接続"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1364
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:895
@@ -11508,7 +11508,7 @@ msgstr "バックアップ （%s： %s）"
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:195
 msgid "Please renew your kerberos ticket, it has been expired."
-msgstr ""
+msgstr "お使いの Kerberos チケットは有効期限が切れています。新しいチケットを再発行してください"
 
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:206
 msgid "Backup job created."
@@ -13847,14 +13847,14 @@ msgstr "結果コピーのフィールドの区切り文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:273
 msgid "Resize by data?"
-msgstr ""
+msgstr "データに合わせてリサイズ"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:275
 msgid ""
 "If set to True then data columns will auto-size to the maximumwidth of "
 "the data in the column as loaded in the first batch. If False, the column"
 " will be sized to the widest of the data type or column name."
-msgstr ""
+msgstr "True の場合、列に含まれているデータの最大幅に合わせて、表示領域の広さを調整します。False にすると、データ型の名前や、列名の幅に合わせます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:285
 msgid "Font size"
