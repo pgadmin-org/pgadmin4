@@ -1414,6 +1414,10 @@ define('tools.querytool', [
         collection[i] = item;
       }
       dataView.setItems(collection, self.client_primary_key);
+      /* Resize the columns once if data empty */
+      if (collection.length === 0 && self.preferences.column_data_auto_resize) {
+        self.grid.resizeAllColumns && self.grid.resizeAllColumns();
+      }
     },
 
     fetch_next_all: function(cb) {
