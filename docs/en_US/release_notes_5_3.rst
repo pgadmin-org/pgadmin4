@@ -35,6 +35,7 @@ Bug fixes
 | `Issue #6408 <https://redmine.postgresql.org/issues/6408>`_ -  Fixed ModuleNotFoundError when running setup.py from outside of the root.
 | `Issue #6409 <https://redmine.postgresql.org/issues/6409>`_ -  Fixed an issue where the current debug line is not visible in the 'Dark' theme.
 | `Issue #6413 <https://redmine.postgresql.org/issues/6413>`_ -  Fixed an issue where duplicate columns are visible in the browser tree, which is owned by two sequences.
+| `Issue #6414 <https://redmine.postgresql.org/issues/6414>`_ -  Fixed an issue where the Help message not displaying correctly on Login/Group role.
 | `Issue #6416 <https://redmine.postgresql.org/issues/6416>`_ -  Added comment column in the properties panel for View and Materialized View collection node.
 | `Issue #6417 <https://redmine.postgresql.org/issues/6417>`_ -  Fixed an issue where query editor is not being closed if the user clicks on the 'Don't Save' button.
 | `Issue #6420 <https://redmine.postgresql.org/issues/6420>`_ -  Ensure that pgAdmin4 shut down completely on the Quit command.

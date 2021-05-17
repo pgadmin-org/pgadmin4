@@ -515,7 +515,13 @@ define('pgadmin.node.role', [
           filter: function(d) {
             return this.model.isNew() || (this.model.get('rolname') != d.label);
           },
-          helpMessage: 'helpMessage',
+          helpMessage: function(m) {
+            if (m.has('read_only') && m.get('read_only') == false) {
+              return gettext('Select the checkbox for roles to include WITH ADMIN OPTION.');
+            } else {
+              return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
+            }
+          },
         },
         {
           id: 'rolmembers', label: gettext('Members'), type: 'collection', group: gettext('Membership'),
@@ -535,7 +541,13 @@ define('pgadmin.node.role', [
           filter: function(d) {
             return this.model.isNew() || (this.model.get('rolname') != d.label);
           },
-          helpMessage: 'helpMessage',
+          helpMessage: function(m) {
+            if (m.has('read_only') && m.get('read_only') == false) {
+              return gettext('Select the checkbox for roles to include WITH ADMIN OPTION.');
+            } else {
+              return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
+            }
+          },
         },
         {
           id: 'variables', label: '', type: 'collection',
@@ -590,13 +602,6 @@ define('pgadmin.node.role', [
           }
 
           return null;
-        },
-        helpMessage: function(m) {
-          if (m.has('read_only') && m.get('read_only') == false) {
-            return gettext('Select the checkbox for roles to include WITH ADMIN OPTION.');
-          } else {
-            return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
-          }
         },
       }),
     });
