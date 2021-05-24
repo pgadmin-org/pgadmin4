@@ -6,21 +6,27 @@ builds may still work with suitable adjustments.
 
 ## Installing build requirements
 
-1. Install Visual Studio 2017 Pro from https://my.visualstudio.com/Downloads?q=Visual%20Studio%202017
-
-Choose the Desktop development with C++ option.
+1. Install Visual Studio 2017 Pro from https://my.visualstudio.com/Downloads?q=Visual%20Studio%202017.
+    Choose the Desktop development with C++ option, and ensure that you add the
+    'Visual C++ MFC for x86 and x64' option.
 
 2. Install Chocolatey from https://chocolatey.org/install#individual
 
 3. Install various command line tools:
 
-        choco install -y  bzip2 cmake diffutils dotnet3.5 gzip git innosetup nodejs-lts python strawberryperl wget yarn
+        choco install -y  awk bzip2 cmake diffutils dotnet3.5 gnuwin32-coreutils.install gzip git html-help-workshop innosetup nodejs-lts python sed strawberryperl wget yarn
 
-4. Upgrade pip (this may give a permissions error that can be ignored):
+4. Ensure the GNU CoreUtils and Microsoft HTML Help Workshop are in the system path - add:
 
-        pip install --upgrade pip
+    * C:\Program Files (x86)\GnuWin32\bin
+    * C:\Program Files (x86)\HTML Help Workshop
+   
 
-5. Install virtualenv:
+5. Upgrade pip:
+
+        python -m pip install --upgrade pip
+
+6. Install virtualenv:
 
         pip install virtualenv
 
@@ -39,19 +45,22 @@ prompt.
         tar -zxvf zlib-1.2.11.tar.gz
         cd zlib-1.2.11
         cmake -DCMAKE_INSTALL_PREFIX=C:/build64/zlib -G "Visual Studio 15 2017 Win64" .
+        msbuild ALL_BUILD.vcxproj /p:Configuration=Release
         msbuild RUN_TESTS.vcxproj /p:Configuration=Release
         msbuild INSTALL.vcxproj /p:Configuration=Release
         copy C:\build64\zlib\lib\zlib.lib C:\build64\zlib\lib\zdll.lib
+        cd ..
 
 3. Download the OpenSSL source code, unpack and build it:
 
-        wget https://www.openssl.org/source/openssl-1.1.1g.tar.gz
-        tar -zxvf openssl-1.1.1g.tar.gz
-        cd openssl-1.1.1g
+        wget https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+        tar -zxvf openssl-1.1.1k.tar.gz
+        cd openssl-1.1.1k
         perl Configure VC-WIN64A no-asm --prefix=C:\build64\openssl no-ssl2 no-ssl3 no-comp
         nmake
         nmake test
         nmake install
+        cd ..
 
 Note that if you are not working in an administrative account, you may need to
 create and give your regular account appropriate permissions to write/modify
@@ -63,8 +72,10 @@ users could potentially write to.
 
    In a *32bit* Visual Studio 2017 command prompt:
 
+        wget https://kerberos.org/dist/krb5/1.19/krb5-1.19.1.tar.gz
+        tar -zxvf krb5-1.19.1.tar.gz
         mkdir C:\build64\krb5
-        cd krb5-1.18.3\src
+        cd krb5-1.19.1\src
         set KRB_INSTALL_DIR=C:\build64\krb5
         nmake -f Makefile.in prep-windows
 
@@ -75,17 +86,18 @@ users could potentially write to.
 
    In a *64bit* Visual Studio 2017 command prompt:
 
-        cd krb5-1.18.3\src
+        cd krb5-1.19.1\src
         set PATH=%PATH%;"%WindowsSdkVerBinPath%"\x86
         set KRB_INSTALL_DIR=C:\build64\krb5
         nmake NODEBUG=1
         nmake install NODEBUG=1
+        cd ..\..
 
 5. Download the PostgreSQL source code, unpack and build it:
 
-        wget https://ftp.postgresql.org/pub/source/v12.3/postgresql-13.1.tar.bz2
-        tar -zxvf postgresql-13.1.tar.gz
-        cd postgresql-13.1\src\tools\msvc
+        wget https://ftp.postgresql.org/pub/source/v13.3/postgresql-13.3.tar.gz
+        tar -zxvf postgresql-13.3.tar.gz
+        cd postgresql-13.3\src\tools\msvc
         
         >> config.pl echo # Configuration arguments for vcbuild.
         >> config.pl echo use strict;
@@ -154,9 +166,9 @@ Studio 2017 64bit command prompt. Note that the examples shown below are the
 defaults for the build system, so if they match your requirements you don't
 need to set them:
 
-        SET "PGADMIN_POSTGRES_DIR=C:\Program Files\PostgreSQL\13"
+        SET "PGADMIN_POSTGRES_DIR=C:\build64\pgsql"
         SET "PGADMIN_PYTHON_DIR=C:\Python39"
-        SET "PGADMIN_KRB5_DIR=C:\jenkins\build64\krb5"
+        SET "PGADMIN_KRB5_DIR=C:\build64\krb5"
         SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
         SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
         SET "PGADMIN_VCREDIST_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Redist\MSVC\14.16.27012"
