@@ -18,7 +18,7 @@ define(
       var defaults = [
         'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
         'isPrivate', 'isLayoutMember', 'content', 'icon', 'events', 'onCreate', 'elContainer',
-        'canHide', 'limit', 'extraClasses',
+        'canHide', 'limit', 'extraClasses', 'canMaximise',
       ];
       _.extend(this, _.pick(options, defaults));
     };
@@ -37,6 +37,7 @@ define(
       panel: null,
       onCreate: null,
       elContainer: false,
+      canMaximise: false,
       limit: null,
       extraClasses: null,
       load: function(docker, title) {
@@ -69,6 +70,7 @@ define(
                 $container.addClass(that.extraClasses);
               }
 
+              myPanel.maximisable(!!that.canMaximise);
               myPanel.closeable(!!that.isCloseable);
               myPanel.layout().addItem($container);
               that.panel = myPanel;

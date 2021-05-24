@@ -122,7 +122,7 @@
     "tempusdominus-bootstrap-4": "^5.1.2",
     "tempusdominus-core": "^5.0.3",
     "underscore": "^1.13.1",
-    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#c4a3398b89588408dc705895675bce7bd7660d36",
+    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#89e006611f4d0fc24b0a098fa2041821d093be4f",
     "wkx": "^0.5.0"
   },
   "scripts": {

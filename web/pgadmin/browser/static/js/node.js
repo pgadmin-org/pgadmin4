@@ -514,6 +514,7 @@ define('pgadmin.browser.node', [
         isCloseable: true,
         isPrivate: true,
         isLayoutMember: false,
+        canMaximise: true,
         elContainer: true,
         content: '<div class="obj_properties container-fluid"><div role="status" class="pg-panel-message">' + gettext('Please wait while we fetch information about the node from the server...') + '</div></div>',
         onCreate: function(myPanel, $container) {

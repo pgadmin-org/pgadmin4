@@ -64,6 +64,9 @@
   display: flex;
 }
 
+.wcFloating .wcFrameButtonBar {
+  flex-direction: row-reverse;
+}
 
 .wcLayout {
   display: block;
