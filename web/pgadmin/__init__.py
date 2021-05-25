@@ -262,7 +262,13 @@ def create_app(app_name=None):
         create_app_data_directory(config)
 
         # File logging
-        fh = logging.FileHandler(config.LOG_FILE, encoding='utf-8')
+        from pgadmin.utils.enhanced_log_rotation import \
+            EnhancedRotatingFileHandler
+        fh = EnhancedRotatingFileHandler(config.LOG_FILE,
+                                         config.LOG_ROTATION_SIZE,
+                                         config.LOG_ROTATION_AGE,
+                                         config.LOG_ROTATION_MAX_LOG_FILES)
+
         fh.setLevel(config.FILE_LOG_LEVEL)
         fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
         app.logger.addHandler(fh)

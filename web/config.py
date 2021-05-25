@@ -286,6 +286,13 @@ if SERVER_MODE and not IS_WIN:
 else:
     LOG_FILE = os.path.join(DATA_DIR, 'pgadmin4.log')
 
+# Log rotation setting
+# Log file will be rotated considering values for LOG_ROTATION_SIZE
+# & LOG_ROTATION_AGE. Rotated file will be named in format
+# - LOG_FILE.Y-m-d_H-M-S
+LOG_ROTATION_SIZE = 10  # In MBs
+LOG_ROTATION_AGE = 1440  # In minutes
+LOG_ROTATION_MAX_LOG_FILES = 90  # Maximum number of backups to retain
 ##########################################################################
 # Server Connection Driver Settings
 ##########################################################################
