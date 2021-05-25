@@ -374,3 +374,20 @@ div.strikeout:after {
 /* Setting it to hardcoded white as the SVG generated is having white bg
  * Need to check what can be done.
  */
+
+/* Css for psql */
+.psql_terminal .terminal {
+  padding-top: 1%;
+  padding-left: 0.5%;
+  height: 100%;
+}
+
+.psql-icon-style {
+  font-size: inherit;
+  padding-left: 0em;
+}
+
+.psql-tab-style {
+  font-size: small;
+  padding-left: 0em;
+}

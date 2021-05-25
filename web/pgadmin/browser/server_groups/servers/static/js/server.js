@@ -101,7 +101,8 @@ define('pgadmin.node.server', [
           icon: 'fa fa-unlink', enable : 'is_connected',data: {
             data_disabled: gettext('Database is already disconnected.'),
           },
-        },{
+        },
+        {
           name: 'reload_configuration', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'reload_configuration',
           category: 'reload', priority: 6, label: gettext('Reload Configuration'),
@@ -728,6 +729,14 @@ define('pgadmin.node.server', [
 
           return false;
         },
+        /* Open psql tool for server*/
+        server_psql_tool: function(args) {
+          var input = args || {},
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
+          pgBrowser.psql.psql_tool(d, i, true);
+        }
       },
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {

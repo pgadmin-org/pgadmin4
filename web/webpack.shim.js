@@ -159,6 +159,15 @@ var webpackShimConfig = {
     'jquery.acisortable': path.join(__dirname, './node_modules/acitree/js/jquery.aciSortable.min'),
     'jquery.acifragment': path.join(__dirname, './node_modules/acitree/js/jquery.aciFragment.min'),
 
+    //xterm
+    'xterm': path.join(__dirname, './node_modules/xterm/lib/xterm.js'),
+    'xterm-addon-fit': path.join(__dirname, './node_modules/xterm-addon-fit/lib/xterm-addon-fit.js'),
+    'xterm-addon-web-links': path.join(__dirname, './node_modules/xterm-addon-web-links/lib/xterm-addon-web-links.js'),
+    'xterm-addon-search': path.join(__dirname, './node_modules/xterm-addon-search/lib/xterm-addon-search.js'),
+
+    //socket
+    'socketio': path.join(__dirname, './node_modules/socket.io-client/dist/socket.io.js'),
+
     // Backbone and Backgrid
     'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
     'backbone.undo': path.join(__dirname, './node_modules/backbone-undo/Backbone.Undo'),
@@ -288,6 +297,8 @@ var webpackShimConfig = {
     'pgadmin.tools.storage_manager': path.join(__dirname, './pgadmin/tools/storage_manager/static/js/storage_manager'),
     'pgadmin.tools.erd_module': path.join(__dirname, './pgadmin/tools/erd/static/js/erd_module'),
     'pgadmin.tools.erd': path.join(__dirname, './pgadmin/tools/erd/static/js'),
+    'pgadmin.tools.psql_module': path.join(__dirname, './pgadmin/tools/psql/static/js/psql_module'),
+    'pgadmin.tools.psql': path.join(__dirname, './pgadmin/tools/psql/static/js'),
     'pgadmin.search_objects': path.join(__dirname, './pgadmin/tools/search_objects/static/js'),
     'pgadmin.tools.user_management': path.join(__dirname, './pgadmin/tools/user_management/static/js/user_management'),
     'pgadmin.user_management.current_user': '/user_management/current_user',

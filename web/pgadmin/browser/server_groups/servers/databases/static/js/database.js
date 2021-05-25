@@ -122,6 +122,9 @@ define('pgadmin.node.database', [
       is_connected: function(node) {
         return (node && node.connected == true && node.canDisconn == true);
       },
+      is_psql_enabled: function(node) {
+        return (node && node.connected == true) && pgAdmin['enable_psql'];
+      },
       is_conn_allow: function(node) {
         return (node && node.allowConn == true);
       },

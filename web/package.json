@@ -117,13 +117,18 @@
     "shim-loader": "^1.0.1",
     "slickgrid": "git+https://github.com/6pac/SlickGrid.git#2.3.16",
     "snapsvg-cjs": "^0.0.6",
+    "socket.io-client": "^4.0.0",
     "split.js": "^1.5.10",
     "tablesorter": "^2.31.2",
     "tempusdominus-bootstrap-4": "^5.1.2",
     "tempusdominus-core": "^5.0.3",
     "underscore": "^1.13.1",
     "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#89e006611f4d0fc24b0a098fa2041821d093be4f",
-    "wkx": "^0.5.0"
+    "wkx": "^0.5.0",
+    "xterm": "^4.11.0",
+    "xterm-addon-fit": "^0.5.0",
+    "xterm-addon-search": "^0.8.0",
+    "xterm-addon-web-links": "^0.4.0"
   },
   "scripts": {
     "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js  --ext .jsx .",

@@ -177,6 +177,7 @@ module.exports = {
       'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
       'pgadmin.browser.activity': path.join(__dirname, './pgadmin/browser/static/js/activity'),
       'pgadmin.tools.erd': path.join(__dirname, './pgadmin/tools/erd/static/js'),
+      'pgadmin.tools.psql': path.join(__dirname, './pgadmin/tools/psql/static/js'),
       'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
       'tools': path.join(__dirname, './pgadmin/tools/'),
       'pgadmin.user_management.current_user': regressionDir + '/javascript/fake_current_user',

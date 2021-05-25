@@ -62,7 +62,8 @@ def underscore_unescape(text):
         "&gt;": '>',
         "&quot;": '"',
         "&#96;": '`',
-        "&#x27;": "'"
+        "&#x27;": "'",
+        "&#39;": "'"
     }
 
     # always replace & first

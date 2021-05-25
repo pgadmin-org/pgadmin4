@@ -128,6 +128,8 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Search Objects...*       | Click to open the :ref:`Search Objects... <search_objects>` and start searching any kind of objects in a database.                        |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *PSQL Tool*               | Click to open the :ref:`PSQL Tool <psql_tool>` and start PSQL in the current database context.                                            |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
 The Help Menu
 *************

@@ -209,6 +209,16 @@ define('pgadmin.browser.node', [
           priority: 997, label: gettext('Search Objects...'),
           icon: 'fa fa-search', enable: enable,
         }]);
+
+        if(pgAdmin['enable_psql']) {
+          // show psql tool same as query tool.
+          pgAdmin.Browser.add_menus([{
+            name: 'show_psql_tool', node: this.type, module: this,
+            applies: ['context'], callback: 'show_psql_tool',
+            priority: 998, label: gettext('PSQL Tool (Beta)'),
+            icon: 'fas fa-terminal',
+          }]);
+        }
       }
 
       // This will add options of scripts eg:'CREATE Script'
@@ -901,6 +911,15 @@ define('pgadmin.browser.node', [
 
         // Here call data grid method to render query tool
         pgAdmin.DataGrid.show_query_tool('', i);
+      },
+
+      // Callback to render psql tool.
+      show_psql_tool: function(args) {
+        var input = args || {},
+          t = pgBrowser.tree,
+          i = input.item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+        pgBrowser.psql.psql_tool(d, i, true);
       },
 
       // Logic to change the server background colour

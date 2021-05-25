@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+
+{% block css_link %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}
+{% block body %}
+<style>
+    body {padding: 0px;}
+    {% if is_desktop_mode and is_linux %}
+    .alertify .ajs-dimmer,.alertify .ajs-modal{-webkit-transform: none;}
+    .alertify-notifier{-webkit-transform: none;}
+    .alertify-notifier .ajs-message{-webkit-transform: none;}
+    .alertify .ajs-dialog.ajs-shake{-webkit-animation-name: none;}
+    .sql-editor-busy-icon.fa-pulse{-webkit-animation: none;}
+    {% endif %}
+</style>
+<div style="width: 100%; height: 100%;" id="psql-terminal" class="psql_terminal"></div>
+{% endblock %}
+
+
+{% block init_script %}
+require(
+    ['sources/generated/psql_tool'],
+    function(pgBrowser) {
+        const term = self.pgAdmin.Browser.psql.psql_terminal();
+        <!--Addon for fitAddon, webLinkAddon, SearchAddon  -->
+        const fitAddon = self.pgAdmin.Browser.psql.psql_Addon(term);
+        <!-- Update the theme for terminal as per pgAdmin 4 theme.-->
+        self.pgAdmin.Browser.psql.set_theme(term);
+        <!-- Open the terminal -->
+        term.open(document.getElementById('psql-terminal'));
+        <!-- Socket-->
+        const socket = self.pgAdmin.Browser.psql.psql_socket();
+        self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db}}', '{{server_type}}', fitAddon, term);
+        self.pgAdmin.Browser.psql.psql_terminal_io(term, socket);
+
+        <!-- Resize the terminal -->
+        function fitToscreen(){
+            fitAddon.fit()
+            socket.emit("resize", {"cols": term.cols, "rows": term.rows})
+        }
+
+        function debounce(func, wait_ms) {
+            let timeout
+            return function(...args) {
+              const context = this
+              clearTimeout(timeout)
+              timeout = setTimeout(() => func.apply(context, args), wait_ms)
+            }
+        }
+
+        const wait_ms = 50;;
+        window.onresize = debounce(fitToscreen, wait_ms)
+    });
+{% endblock %}
+
+

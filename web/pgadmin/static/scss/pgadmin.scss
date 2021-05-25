@@ -10,6 +10,11 @@ $theme-colors: (
   --color-fg: #{$color-fg};
   --color-bg: #{$color-bg};
   --border-color: #{$border-color};
+  --psql-background: #{$psql-background};
+  --psql-foreground: #{$psql-foreground};
+  --psql-cursor: #{$psql-cursor};
+  --psql-cursorAccent: #{$psql-cursorAccent};
+  --psql-selection: #{$psql-selection};
 }
 
 @import "bootstrap/scss/bootstrap";

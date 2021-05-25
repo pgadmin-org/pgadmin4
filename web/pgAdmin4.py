@@ -13,7 +13,7 @@ to start a web server."""
 
 
 import sys
-from cheroot.wsgi import Server as CherootServer
+
 
 if sys.version_info < (3, 4):
     raise RuntimeError('This application must be run under Python 3.4 '
@@ -37,7 +37,7 @@ else:
     builtins.SERVER_MODE = None
 
 import config
-from pgadmin import create_app
+from pgadmin import create_app, socketio
 from pgadmin.utils import u_encode, fs_encoding, file_quote
 from pgadmin.utils.constants import INTERNAL
 # Get the config database schema version. We store this in pgadmin.model
@@ -97,6 +97,8 @@ if not os.path.isfile(config.SQLITE_PATH):
 ##########################################################################
 app = create_app()
 app.debug = False
+app.config['sessions'] = dict()
+
 if config.SERVER_MODE:
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
@@ -206,17 +208,16 @@ def main():
         else:
             # Can use cheroot instead of flask dev server when not in debug
             # 10 is default thread count in CherootServer
-            num_threads = 10 if config.THREADED_MODE else 1
-            prod_server = CherootServer(
-                (config.DEFAULT_SERVER, config.EFFECTIVE_SERVER_PORT),
-                wsgi_app=app,
-                numthreads=num_threads,
-                server_name=config.APP_NAME)
+            # num_threads = 10 if config.THREADED_MODE else 1
             try:
-                print("Using production server...")
-                prod_server.start()
+                socketio.run(
+                    app,
+                    host=config.DEFAULT_SERVER,
+                    port=config.EFFECTIVE_SERVER_PORT,
+                )
             except KeyboardInterrupt:
-                prod_server.stop()
+                print("CLOSE SERVER")
+                socketio.stop()
 
     except IOError:
         app.logger.error("Error starting the app server: %s", sys.exc_info())

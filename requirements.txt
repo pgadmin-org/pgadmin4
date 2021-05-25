@@ -8,7 +8,6 @@
 #
 ###############################################################################
 
-cheroot==8.*
 Flask==1.*
 Flask-Gravatar==0.*
 Flask-Login==0.*
@@ -37,3 +36,5 @@ sshtunnel==0.*
 ldap3==2.*
 Flask-BabelEx==0.*
 gssapi==1.6.*
+flask-socketio>=5.0.1
+eventlet==0.30.2

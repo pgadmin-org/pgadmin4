@@ -1,0 +1,184 @@
+{
+  "psql_user_input": [
+    {
+      "name": "Enter Select 1;",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select 1;",
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Enter Backspace",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select 1;",
+      "is_backspace": true,
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },{
+      "name": "Enter Backspace",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select 1;",
+      "is_backspace": true,
+      "move_cursor_up": true,
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Enter ArrowUp",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select 1;",
+      "is_arrowUp": true,
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Enter ArrowUp",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select 1;",
+      "is_arrowUp": true,
+      "is_history": true,
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Enter ArrowLeft",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select 1;",
+      "is_arrowLeft": true,
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Enter ArrowRight",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select 1;",
+      "is_arrowRight": true,
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },{
+      "name": "Read previous executed command",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select 1;",
+      "is_arrowRight": true,
+      "move_cursor_right": true,
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Meta command \\! not allowed",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "\\!",
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Meta command \\! with other cmd not allowed",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "\\! ls",
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Valid commands",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "select \"\\!\"",
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },{
+      "name": "First command as enter",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "",
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    },
+    {
+      "name": "Exist psql terminal by using \\q",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "\\q",
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    }
+  ],
+  "resize_terminal": [
+    {
+      "name": "Resize psql terminal as per UI.",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_data":  {
+        "cols": 141,
+        "rows": 39
+      },
+      "mock_data": {
+
+      },
+      "expected_data": {
+      }
+    }
+  ],
+  "backend_task": [
+    {
+      "name": "Backend Task",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "input_cmd": "Select 1;",
+      "is_backend_task": true,
+      "mock_data": {
+        "is_test": true
+      },
+      "expected_data": {
+      }
+    }
+  ]
+}

@@ -52,6 +52,10 @@ define('pgadmin.browser.utils',
   pgAdmin['user_inactivity_timeout'] = {{ current_app.config.get('USER_INACTIVITY_TIMEOUT') }};
   pgAdmin['override_user_inactivity_timeout'] = '{{ current_app.config.get('OVERRIDE_USER_INACTIVITY_TIMEOUT') }}' == 'True';
 
+  /* GET PSQL Tool related config */
+  pgAdmin['enable_psql'] =  '{{ current_app.config.get('ENABLE_PSQL') }}' == 'True';
+  pgAdmin['allow_psql_shell_commands'] =  '{{ current_app.config.get('ALLOW_PSQL_SHELL_COMMANDS') }}'  == 'True';
+
   // Define list of nodes on which Query tool option doesn't appears
   var unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',

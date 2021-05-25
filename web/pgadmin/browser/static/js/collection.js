@@ -64,6 +64,14 @@ define([
               priority: 997, label: gettext('Search Objects...'),
               icon: 'fa fa-search',
             }]);
+
+            // show psql tool same as query tool.
+            pgAdmin.Browser.add_menus([{
+              name: 'show_psql_tool', node: this.type, module: this,
+              applies: ['context'], callback: 'show_psql_tool',
+              priority: 998, label: gettext('PSQL Tool (Beta)'),
+              icon: 'fas fa-terminal',
+            }]);
           }
         }
       },
@@ -497,6 +505,13 @@ define([
         if(pgAdmin.SearchObjects) {
           pgAdmin.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
         }
+      },
+      show_psql_tool: function(args) {
+        var input = args || {},
+          t = pgBrowser.tree,
+          i = input.item || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+        pgBrowser.psql.psql_tool(d, i, true);
       },
     });
 

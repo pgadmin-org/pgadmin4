@@ -21,3 +21,5 @@
 
 @import '../vendor/backgrid/backgrid.css';
 @import '../vendor/backgrid/backgrid-select-all.css';
+
+@import 'node_modules/xterm/css/xterm.css';

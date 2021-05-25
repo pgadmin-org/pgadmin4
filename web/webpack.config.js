@@ -355,6 +355,7 @@ module.exports = [{
     debugger_direct: './pgadmin/tools/debugger/static/js/direct.js',
     schema_diff: './pgadmin/tools/schema_diff/static/js/schema_diff_hook.js',
     erd_tool: './pgadmin/tools/erd/static/js/erd_tool_hook.js',
+    psql_tool: './pgadmin/tools/psql/static/js/index.js',
     file_utils: './pgadmin/misc/file_manager/static/js/utility.js',
     'pgadmin.style': pgadminCssStyles,
     pgadmin: pgadminScssStyles,
@@ -493,7 +494,7 @@ module.exports = [{
           ],
         },
       },
-    }, {
+    },{
       test: require.resolve('./node_modules/acitree/js/jquery.aciTree.min'),
       use: {
         loader: 'imports-loader',
@@ -532,6 +533,7 @@ module.exports = [{
             'pure|pgadmin.tools.storage_manager',
             'pure|pgadmin.tools.search_objects',
             'pure|pgadmin.tools.erd_module',
+            'pure|pgadmin.tools.psql_module',
           ],
         },
       },

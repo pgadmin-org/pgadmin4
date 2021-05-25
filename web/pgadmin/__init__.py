@@ -19,6 +19,7 @@ from collections import defaultdict
 from importlib import import_module
 
 from flask import Flask, abort, request, current_app, session, url_for
+from flask_socketio import SocketIO
 from werkzeug.exceptions import HTTPException
 from flask_babelex import Babel, gettext
 from flask_babelex import gettext as _
@@ -52,9 +53,14 @@ import mimetypes
 mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('text/css', '.css')
 
+
 winreg = None
 if os.name == 'nt':
     import winreg
+
+socketio = SocketIO(manage_session=False, async_mode='eventlet',
+                    logger=False, engineio_logger=False, debug=False,
+                    ping_interval=25, ping_timeout=120)
 
 
 class PgAdmin(Flask):
@@ -811,4 +817,5 @@ def create_app(app_name=None):
     ##########################################################################
     # All done!
     ##########################################################################
+    socketio.init_app(app)
     return app

@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #2341 <https://redmine.postgresql.org/issues/2341>`_ -  Added support to launch PSQL for the connected database server.
 | `Issue #4064 <https://redmine.postgresql.org/issues/4064>`_ -  Added window maximize/restore functionality for properties dialog.
 
 Housekeeping

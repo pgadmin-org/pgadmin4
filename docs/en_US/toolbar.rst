@@ -21,3 +21,5 @@ the selected browser node.
   to apply a filter to a set of data for viewing/editing.
 * Use the :ref:`Search objects <search_objects>` button to access the search objects
   dialog. It helps you search any database object.
+* Use the :ref:`PSQL Tool <psql_tool>` button to open the PSQL in the current
+  database context.

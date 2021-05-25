@@ -100,6 +100,10 @@ export function generateTitle(title_placeholder, title_data) {
     title_placeholder = title_placeholder.replace(new RegExp('%ARGS%'), _.unescape(title_data.args));
     title_placeholder = title_placeholder.replace(new RegExp('%SCHEMA%'), _.unescape(title_data.schema));
     title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), _.unescape(title_data.database));
+  } else if(title_data.type == 'psql_tool') {
+    title_placeholder = title_placeholder.replace(new RegExp('%DATABASE%'), _.unescape(title_data.database));
+    title_placeholder = title_placeholder.replace(new RegExp('%USERNAME%'), _.unescape(title_data.username));
+    title_placeholder = title_placeholder.replace(new RegExp('%SERVER%'), _.unescape(title_data.server));
   }
 
   return _.escape(title_placeholder);

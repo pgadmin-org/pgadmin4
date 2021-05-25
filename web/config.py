@@ -156,8 +156,8 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 # such as JavaScript, CSS, or pretty much anything that the browser loads.
 # see https://content-security-policy.com/#source_list for more info
 # e.g. "default-src https: data: 'unsafe-inline' 'unsafe-eval';"
-CONTENT_SECURITY_POLICY = "default-src http: data: blob: 'unsafe-inline' " \
-                          "'unsafe-eval';"
+CONTENT_SECURITY_POLICY = "default-src ws: http: data: blob: 'unsafe-inline'" \
+                          " 'unsafe-eval';"
 
 # STRICT_TRANSPORT_SECURITY_ENABLED when set to True will set the
 # Strict-Transport-Security header
@@ -636,6 +636,21 @@ KRB_AUTO_CREATE_USER = True
 
 KERBEROS_CCACHE_DIR = os.path.join(DATA_DIR, 'krbccache')
 
+##########################################################################
+# PSQL tool settings
+##########################################################################
+# This will enable PSQL tool in pgAdmin. So user can execute the commands
+# using PSQL terminal in pgAdmin.
+ENABLE_PSQL = True
+
+# ALLOW_PSQL_SHELL_COMMAND = True will disable the execution of os level
+# commands using meta command \! from PSQL terminal.
+# As PSQL allow user to execute the os level commands from the PSQL terminal
+# user can execute any system level command as per the system login user
+# privileges. Default this setting is set to False but if it set to True
+# User will able to execute the system level commands through PSQL terminal
+# in pgAdmin.
+ALLOW_PSQL_SHELL_COMMANDS = False
 
 ##########################################################################
 # Local config settings

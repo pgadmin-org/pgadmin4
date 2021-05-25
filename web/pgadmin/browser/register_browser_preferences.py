@@ -10,6 +10,7 @@ from flask_babelex import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_TABS_SETTINGS, \
     PREF_LABEL_OPTIONS
+from flask_security import current_user
 import config
 
 LOCK_LAYOUT_LEVEL = {
@@ -511,10 +512,12 @@ def register_browser_preferences(self):
         options=[{'label': gettext('Query Tool'), 'value': 'qt'},
                  {'label': gettext('Debugger'), 'value': 'debugger'},
                  {'label': gettext('Schema Diff'), 'value': 'schema_diff'},
-                 {'label': gettext('ERD Tool'), 'value': 'erd_tool'}],
-        help_str=gettext('Select Query Tool, Debugger, or Schema Diff from '
-                         'the drop-down to set open in new browser tab for '
-                         'that particular module.'),
+                 {'label': gettext('ERD Tool'), 'value': 'erd_tool'},
+                 {'label': gettext('PSQL Tool'), 'value': 'psql_tool'}],
+        help_str=gettext('Select Query Tool, Debugger, Schema Diff, ERD Tool '
+                         'or PSQL Tool from the drop-down to set '
+                         'open in new browser tab for that particular module.'
+                         ),
         select2={
             'multiple': True, 'allowClear': False,
             'tags': True, 'first_empty': False,
@@ -522,4 +525,17 @@ def register_browser_preferences(self):
             'tokenSeparators': [','],
             'placeholder': gettext('Select open new tab...')
         }
+    )
+
+    self.psql_tab_title = self.preference.register(
+        'tab_settings', 'psql_tab_title_placeholder',
+        gettext("PSQL tool tab title"),
+        'text', '%DATABASE%/%USERNAME%@%SERVER%',
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. '
+            'Users can provide any string with or without placeholders of'
+            ' their choice. The blank title will be revert back to the'
+            ' default title with placeholders.'
+        )
     )

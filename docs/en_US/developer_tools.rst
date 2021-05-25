@@ -16,3 +16,4 @@ PL/SQL code.
    editgrid
    schema_diff
    erd_tool
+   psql_tool
