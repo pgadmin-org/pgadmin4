@@ -17,6 +17,7 @@ import psycopg2
 import sqlite3
 import shutil
 from functools import partial
+import random
 
 from selenium.webdriver.support.wait import WebDriverWait
 from testtools.testcase import clone_test_with_new_id
@@ -1400,7 +1401,7 @@ def get_parallel_sequential_module_list(module_list):
     sequential_tests_file = [
         'pgadmin.feature_tests.pg_utilities_backup_restore_test',
         'pgadmin.feature_tests.pg_utilities_maintenance_test',
-        'pgadmin.feature_tests.keyboard_shortcut_test']
+    ]
 
     #  list of tests can be executed in parallel
     parallel_tests = list(module_list)
@@ -1704,3 +1705,28 @@ def create_user_wise_test_client(user):
         return wrapper
 
     return multi_user_decorator
+
+
+def create_users_for_parallel_tests(tester):
+    """
+    Function creates user using /user api
+    @param tester: test client
+    @return: uer details dict
+    """
+    login_username = 'ui_test_user' + str(random.randint(1000, 9999)) +\
+                     '@edb.com'
+    user_details = {'login_username': login_username,
+                    'login_password': 'adminedb'}
+    response = tester.post(
+        '/user_management/user/',
+        data=json.dumps(dict(username=user_details['login_username'],
+                             email=user_details['login_username'],
+                             newPassword=user_details['login_password'],
+                             confirmPassword=user_details['login_password'],
+                             active=True,
+                             role="1"
+                             )),
+        follow_redirects=True)
+    user_id = json.loads(response.data.decode('utf-8'))['id']
+    user_details['user_id'] = user_id
+    return user_details

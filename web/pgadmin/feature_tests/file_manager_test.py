@@ -41,7 +41,10 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.wait = WebDriverWait(self.page.driver, 10)
         filename = self.server_information['type'] + \
             str(self.server_information['server_version'])
-        self.XSS_FILE = '/tmp/<img src=x ' + filename + '=alert("1")>.sql'
+        if self.parallel_ui_tests:
+            self.XSS_FILE = '/<img src=x ' + filename + '=alert("1")>.sql'
+        else:
+            self.XSS_FILE = '/tmp/<img src=x ' + filename + '=alert("1")>.sql'
         # Remove any previous file
         if os.path.isfile(self.XSS_FILE):
             os.remove(self.XSS_FILE)
@@ -92,21 +95,14 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.fill_input_by_css_selector(
             QueryToolLocators.input_file_path_css,
             "/tmp", key_after_input=Keys.RETURN)
+        time.sleep(2)
 
-        if self.page.driver.capabilities['browserName'] == 'firefox':
-            table = self.page.wait_for_element_to_reload(
-                lambda driver: driver.find_element_by_css_selector(
-                    QueryToolLocators.select_file_content_css)
-            )
-        else:
-            self.wait.until(EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, QueryToolLocators.select_file_content_css)))
-            self.wait.until(lambda element:
-                            self.page.driver.find_element_by_css_selector(
-                                '[name=home]').is_enabled())
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, QueryToolLocators.select_file_content_css)))
 
-            table = self.page.driver.find_element_by_css_selector(
-                QueryToolLocators.select_file_content_css)
+        table = self.page.driver.find_element_by_css_selector(
+            QueryToolLocators.select_file_content_css)
+
         retry_count = 0
         while retry_count < 5:
             try:

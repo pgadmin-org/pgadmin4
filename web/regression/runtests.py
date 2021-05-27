@@ -151,7 +151,7 @@ scenarios.apply_scenario = test_utils.apply_scenario
 
 
 def get_suite(module_list, test_server, test_app_client, server_information,
-              test_db_name, driver_passed):
+              test_db_name, driver_passed, parallel_ui_test):
     """
      This function add the tests to test suite and return modified test suite
       variable.
@@ -164,6 +164,12 @@ def get_suite(module_list, test_server, test_app_client, server_information,
     :type test_app_client: pgadmin app object
     :return pgadmin_suite: test suite with test cases
     :rtype: TestSuite
+    :param driver_passed: driver object to run selenium tests
+    :type driver_passed: webdriver object
+    :param parallel_ui_test: whether ui tests to be run in parallel
+    :type parallel_ui_test: boolan
+    :param test_db_name: database name
+    :type test_db_name: string
     """
     modules = []
     pgadmin_suite = unittest.TestSuite()
@@ -182,11 +188,11 @@ def get_suite(module_list, test_server, test_app_client, server_information,
         obj.setTestClient(test_app_client)
         obj.setTestServer(test_server)
         obj.setDriver(driver_passed)
+        obj.setParallelUI_tests(parallel_ui_test)
         obj.setServerInformation(server_information)
         obj.setTestDatabaseName(test_db_name)
         scenario = scenarios.generate_scenarios(obj)
         pgadmin_suite.addTests(scenario)
-
     return pgadmin_suite
 
 
@@ -450,12 +456,14 @@ class StreamToLogger(object):
         pass
 
 
-def execute_test(test_module_list_passed, server_passed, driver_passed):
+def execute_test(test_module_list_passed, server_passed, driver_passed,
+                 parallel_ui_test=False):
     """
     Function executes actually test
-    :param test_module_list_passed:
-    :param server_passed:
-    :param driver_passed:
+    :param test_module_list_passed: test modules
+    :param server_passed: serve details
+    :param driver_passed: webdriver object
+    :param parallel_ui_test: parallel ui tests
     :return:
     """
     try:
@@ -493,11 +501,17 @@ def execute_test(test_module_list_passed, server_passed, driver_passed):
         test_utils.configure_preferences(
             default_binary_path=server_passed['default_binary_paths'])
 
+        # Create user to run selenoid tests in parallel
+        if parallel_ui_test:
+            server_passed['login_details'] = \
+                test_utils.create_users_for_parallel_tests(test_client)
+
         # Get unit test suit
         suite = get_suite(test_module_list_passed,
                           server_passed,
                           test_client,
-                          server_information, test_db_name, driver_passed)
+                          server_information, test_db_name, driver_passed,
+                          parallel_ui_test=parallel_ui_test)
 
         # Run unit test suit created
         tests = unittest.TextTestRunner(stream=sys.stderr,
@@ -570,12 +584,11 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
     :param max_thread_count:
     """
     driver_object = None
-
-    # Thread list
-    threads_list = []
-    # Create thread for each server
-    for ser in servers_details:
-        try:
+    try:
+        # Thread list
+        threads_list = []
+        # Create thread for each server
+        for ser in servers_details:
             while True:
                 # If active thread count <= max_thread_count, add new thread
                 if threading.activeCount() <= max_thread_count:
@@ -594,33 +607,33 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
                     # Start thread
                     t = threading.Thread(target=execute_test, name=thread_name,
                                          args=(parallel_tests_lists, ser,
-                                               driver_object))
+                                               driver_object, True))
                     threads_list.append(t)
                     t.start()
-                    time.sleep(3)
+                    time.sleep(10)
                     break
                 # else sleep for 10 seconds
                 else:
                     time.sleep(10)
 
-                # Start threads in parallel
-                for t in threads_list:
-                    t.join()
+        # Start threads in parallel
+        for t in threads_list:
+            t.join()
 
-        except Exception as exc:
-            # Print exception stack trace
-            traceback.print_exc(file=sys.stderr)
-            print('Exception before starting tests for ' + ser['name'],
-                  file=sys.stderr)
-            print(str(exc), file=sys.stderr)
+    except Exception as exc:
+        # Print exception stack trace
+        traceback.print_exc(file=sys.stderr)
+        print('Exception before starting tests for ' + ser['name'],
+              file=sys.stderr)
+        print(str(exc), file=sys.stderr)
 
-            # Mark failure as true
-            global failure
-            failure = True
+        # Mark failure as true
+        global failure
+        failure = True
 
-            # Clean driver object created
-            if driver_object is not None:
-                driver_object.quit()
+        # Clean driver object created
+        if driver_object is not None:
+            driver_object.quit()
 
 
 def run_sequential_tests(url_client, servers_details, sequential_tests_lists,
@@ -654,7 +667,7 @@ def run_sequential_tests(url_client, servers_details, sequential_tests_lists,
             t = threading.Thread(target=execute_test,
                                  name=thread_name,
                                  args=(sequential_tests_lists, ser,
-                                       driver_object))
+                                       driver_object, True))
             t.start()
             t.join()
     except Exception as exc:
@@ -779,105 +792,114 @@ if __name__ == '__main__':
     if args['pkg'] is not None:
         node_name = args['pkg'].split('.')[-1]
 
+    is_parallel_ui_tests = test_utils.is_parallel_ui_tests(args)
     # Check if feature tests included & parallel tests switch passed
-    if test_utils.is_feature_test_included(args) and \
-            test_utils.is_parallel_ui_tests(args):
-        try:
-            # Get selenium config dict
-            selenoid_config = test_setup.config_data['selenoid_config']
+    if test_utils.is_feature_test_included(args) and is_parallel_ui_tests:
+        if config.SERVER_MODE:
+            try:
+                # Get selenium config dict
+                selenoid_config = test_setup.config_data['selenoid_config']
 
-            # Set DEFAULT_SERVER value
-            default_server = selenoid_config['pgAdmin_default_server']
-            os.environ["PGADMIN_CONFIG_DEFAULT_SERVER"] = str(default_server)
-            config.DEFAULT_SERVER = str(default_server)
+                # Set DEFAULT_SERVER value
+                default_server = selenoid_config['pgAdmin_default_server']
+                os.environ["PGADMIN_CONFIG_DEFAULT_SERVER"] = str(
+                    default_server)
+                config.DEFAULT_SERVER = str(default_server)
 
-            # Get hub url
-            hub_url = selenoid_config['selenoid_url']
+                # Get hub url
+                hub_url = selenoid_config['selenoid_url']
 
-            # Get selenium grid status & list of available browser out passed
-            selenium_grid_status, list_of_browsers \
-                = test_utils.get_selenium_grid_status_and_browser_list(hub_url,
-                                                                       args)
+                # Get selenium grid status & list of available browser
+                # out of passed
+                selenium_grid_status, list_of_browsers = test_utils.\
+                    get_selenium_grid_status_and_browser_list(hub_url, args)
 
-            # Execute tests if selenium-grid is up
-            if selenium_grid_status and len(list_of_browsers) > 0:
-                app_starter_local = None
-                # run across browsers
-                for browser_info in list_of_browsers:
-                    try:
-                        # browser info
-                        browser_name, browser_version = \
-                            test_utils.get_browser_details(browser_info,
-                                                           hub_url)
+                # Execute tests if selenium-grid is up
+                if selenium_grid_status and len(list_of_browsers) > 0:
+                    app_starter_local = None
+                    # run across browsers
+                    for browser_info in list_of_browsers:
+                        try:
+                            # browser info
+                            browser_name, browser_version = \
+                                test_utils.get_browser_details(browser_info,
+                                                               hub_url)
 
-                        # test lists can be executed in parallel & sequentially
-                        parallel_tests, sequential_tests = \
-                            test_utils.get_parallel_sequential_module_list(
-                                test_module_list)
+                            # test lists can be executed in
+                            # parallel & sequentially
+                            parallel_tests, sequential_tests = \
+                                test_utils.get_parallel_sequential_module_list(
+                                    test_module_list)
 
-                        # Print test summary
-                        test_utils.print_test_summary(
-                            test_module_list, parallel_tests, sequential_tests,
-                            browser_name, browser_version)
-
-                        # Create app form source code
-                        app_starter_local = AppStarter(None, config)
-                        client_url = app_starter_local.start_app()
-
-                        if config.DEBUG:
-                            print('pgAdmin is launched with DEBUG=True, '
-                                  'hence sleeping for 50 seconds.',
-                                  file=sys.stderr)
-                            time.sleep(50)
-
-                        # Running Parallel tests
-                        if len(parallel_tests) > 0:
-                            parallel_sessions = \
-                                int(selenoid_config['max_parallel_sessions'])
-
-                            run_parallel_tests(
-                                client_url, servers_info, parallel_tests,
-                                browser_name, browser_version,
-                                parallel_sessions)
-
-                        # Sequential Tests
-                        if len(sequential_tests) > 0:
-                            run_sequential_tests(
-                                client_url, servers_info, sequential_tests,
+                            # Print test summary
+                            test_utils.print_test_summary(
+                                test_module_list, parallel_tests,
+                                sequential_tests,
                                 browser_name, browser_version)
 
-                        # Clean up environment
-                        if app_starter_local:
-                            app_starter_local.stop_app()
+                            # Create app form source code
+                            app_starter_local = AppStarter(None, config)
+                            client_url = app_starter_local.start_app()
 
-                        # Pause before printing result in order
-                        # not to mix output
-                        time.sleep(5)
+                            if config.DEBUG:
+                                print('pgAdmin is launched with DEBUG=True, '
+                                      'hence sleeping for 50 seconds.',
+                                      file=sys.stderr)
+                                time.sleep(50)
 
-                        # Print note for completion of execution in a browser.
-                        print(
-                            "\n============= Test execution with {0} is "
-                            "completed.=============".format(browser_name),
-                            file=sys.stderr)
-                        print_test_results()
+                            # Running Parallel tests
+                            if len(parallel_tests) > 0:
+                                parallel_sessions = \
+                                    int(selenoid_config[
+                                        'max_parallel_sessions'])
 
-                    except SystemExit:
-                        if app_starter_local:
-                            app_starter_local.stop_app()
-                        if handle_cleanup:
-                            handle_cleanup()
-                        raise
-            else:
-                print(
-                    "\n============= Either Selenium Grid is NOT up OR"
-                    " browser list is 0 =============", file=sys.stderr)
+                                run_parallel_tests(
+                                    client_url, servers_info, parallel_tests,
+                                    browser_name, browser_version,
+                                    parallel_sessions)
+
+                            # Sequential Tests
+                            if len(sequential_tests) > 0:
+                                run_sequential_tests(
+                                    client_url, servers_info, sequential_tests,
+                                    browser_name, browser_version)
+
+                            # Clean up environment
+                            if app_starter_local:
+                                app_starter_local.stop_app()
+
+                            # Pause before printing result in order
+                            # not to mix output
+                            time.sleep(5)
+
+                            print(
+                                "\n============= Test execution with {0} is "
+                                "completed.=============".format(browser_name),
+                                file=sys.stderr)
+                            print_test_results()
+
+                        except SystemExit:
+                            if app_starter_local:
+                                app_starter_local.stop_app()
+                            if handle_cleanup:
+                                handle_cleanup()
+                            raise
+                else:
+                    print(
+                        "\n============= Either Selenium Grid is NOT up OR"
+                        " browser list is 0 =============", file=sys.stderr)
+                    failure = True
+            except Exception as exc:
+                # Print exception stack trace
+                traceback.print_exc(file=sys.stderr)
+                print(str(exc))
                 failure = True
-        except Exception as exc:
-            # Print exception stack trace
-            traceback.print_exc(file=sys.stderr)
-            print(str(exc))
+            del os.environ["PGADMIN_CONFIG_DEFAULT_SERVER"]
+        else:
+            print(
+                "\n============= Please Turn on Server Mode to run selenoid "
+                "tests =============", file=sys.stderr)
             failure = True
-        del os.environ["PGADMIN_CONFIG_DEFAULT_SERVER"]
     else:
         try:
             for server in servers_info:

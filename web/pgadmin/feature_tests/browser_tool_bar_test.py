@@ -88,6 +88,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
              BrowserToolBarLocators.view_table_data_button_css),
             (By.CSS_SELECTOR, BrowserToolBarLocators.view_data_panel_css)),
             'View/Edit Data tab did not open after clicking View/Edit button.')
+        self.page.close_query_tool(prompt=False)
 
     def test_filtered_rows_tool_button(self):
         self.assertTrue(self.page.retry_click(
@@ -96,3 +97,4 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
             (By.CSS_SELECTOR, BrowserToolBarLocators.filter_alertify_box_css)),
             'Filter dialogue did not open on clicking filter button.')
         self.page.click_modal('Cancel')
+        self.page.close_query_tool(prompt=False)

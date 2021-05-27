@@ -148,6 +148,9 @@ class BaseTestGenerator(unittest.TestCase):
     def setDriver(self, driver):
         self.driver = driver
 
+    def setParallelUI_tests(self, parallel_ui_tests):
+        self.parallel_ui_tests = parallel_ui_tests
+
     def setServerInformation(self, server_information):
         self.server_information = server_information
 

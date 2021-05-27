@@ -27,7 +27,7 @@ class BaseFeatureTest(BaseTestGenerator):
     def setUp(self):
         self.server = deepcopy(self.server)
         self.server['name'] += ' Feature Tests'
-        if app_config.SERVER_MODE:
+        if app_config.SERVER_MODE and not self.parallel_ui_tests:
             self.skipTest(
                 "Currently, config is set to start pgadmin in server mode. "
                 "This test doesn't know username and password so doesn't work "
@@ -36,6 +36,8 @@ class BaseFeatureTest(BaseTestGenerator):
 
         self.page = PgadminPage(self.driver, app_config)
         try:
+            if self.parallel_ui_tests:
+                self.page.login_to_app(self.server['login_details'])
             test_utils.reset_layout_db()
             self.page.driver.switch_to.default_content()
             self.page.wait_for_app()
