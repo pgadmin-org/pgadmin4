@@ -415,11 +415,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       });
 
       term.onKey(function (ev) {
-        if (pgAdmin['allow_psql_shell_commands']) {
-          socket.emit('socket_input', {'input': ev.key, 'key_name': ev.domEvent.code});
-        } else {
-          socket.emit('socket_input', {'input': ev.key, 'key_name': ev.domEvent.code});
-        }
+        socket.emit('socket_input', {'input': ev.key, 'key_name': ev.domEvent.code});
       });
     }
   };

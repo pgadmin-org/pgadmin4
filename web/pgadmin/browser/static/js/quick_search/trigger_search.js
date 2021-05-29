@@ -95,7 +95,7 @@ export function Search() {
     if(items.length > 0){
       let menuItemsHtmlElement = [];
       for(let i=0; i < items.length; i++){
-        Object.keys(items[i]).map( (value) => {
+        Object.keys(items[i]).forEach( (value) => {
           if(value != 'element' && value != 'No object selected'){
             menuItemsHtmlElement.push( <li key={ 'li-menu-' + i }><a tabIndex='0' id={ 'li-menu-' + i } href={'#'} className={ (items[i]['element'].classList.contains('disabled') == true ? 'dropdown-item menu-groups-a disabled':'dropdown-item menu-groups-a')} key={ 'menu-' + i } onClick={() => {items[i]['element'].click(); toggleDropdownMenu();}}>
               {value}

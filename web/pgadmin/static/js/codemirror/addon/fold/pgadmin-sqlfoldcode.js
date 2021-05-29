@@ -64,7 +64,7 @@
         if (nextOpen < 0) nextOpen = text.length;
         if (nextClose < 0) nextClose = text.length;
         pos = Math.min(nextOpen, nextClose);
-        if (pos == text.length) break;
+        if (pos == text.length) { whileloopvar=1; break; }
         if (cm.getTokenAt(CodeMirror.Pos(i, pos + 1)).type == tokenType) {
           if (pos == nextOpen) ++count;
           else if (!--count) {

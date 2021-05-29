@@ -335,7 +335,7 @@ var getThemeWebpackConfig = function(theme_name) {
 };
 
 var pgadminThemesWebpack = [];
-Object.keys(pgadminThemes).map((theme_name)=>{
+Object.keys(pgadminThemes).forEach((theme_name)=>{
   pgadminThemesWebpack.push(getThemeWebpackConfig(theme_name));
 });
 
