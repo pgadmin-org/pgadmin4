@@ -18,19 +18,9 @@ let _browserPanel = null;
 // Default Tool Bar Buttons.
 let _defaultToolBarButtons = [
   {
-    label: gettext('Query Tool'),
-    ariaLabel: gettext('Query Tool'),
-    btnClass: 'pg-font-icon icon-query_tool',
-    text: '',
-    toggled: false,
-    toggleClass: '',
-    parentClass: 'pg-toolbar-btn btn-primary-icon',
-    enabled: false,
-  },
-  {
-    label: gettext('View Data'),
-    ariaLabel: gettext('View Data'),
-    btnClass: 'pg-font-icon sql-icon-lg icon-view_data',
+    label: gettext('Search objects'),
+    ariaLabel: gettext('Search objects'),
+    btnClass: 'fa fa-search',
     text: '',
     toggled: false,
     toggleClass: '',
@@ -48,9 +38,19 @@ let _defaultToolBarButtons = [
     enabled: false,
   },
   {
-    label: gettext('Search objects'),
-    ariaLabel: gettext('Search objects'),
-    btnClass: 'fa fa-search',
+    label: gettext('View Data'),
+    ariaLabel: gettext('View Data'),
+    btnClass: 'pg-font-icon sql-icon-lg icon-view_data',
+    text: '',
+    toggled: false,
+    toggleClass: '',
+    parentClass: 'pg-toolbar-btn btn-primary-icon',
+    enabled: false,
+  },
+  {
+    label: gettext('Query Tool'),
+    ariaLabel: gettext('Query Tool'),
+    btnClass: 'pg-font-icon icon-query_tool',
     text: '',
     toggled: false,
     toggleClass: '',
@@ -60,7 +60,7 @@ let _defaultToolBarButtons = [
 ];
 
 if(pgAdmin['enable_psql']) {
-  _defaultToolBarButtons.push({
+  _defaultToolBarButtons.unshift({
     label: gettext('PSQL Tool'),
     ariaLabel: gettext('PSQL Tool'),
     btnClass: 'fas fa-terminal',

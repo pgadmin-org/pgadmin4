@@ -13,11 +13,12 @@ define([
   'backbone', 'pgadmin.backgrid', 'codemirror', 'pgadmin.backform',
   'pgadmin.tools.debugger.ui', 'pgadmin.tools.debugger.utils',
   'tools/datagrid/static/js/show_query_tool', 'sources/utils',
-  'pgadmin.authenticate.kerberos', 'wcdocker', 'pgadmin.browser.frame',
+  'pgadmin.authenticate.kerberos', 'tools/datagrid/static/js/datagrid_panel_title',
+  'wcdocker', 'pgadmin.browser.frame',
 ], function(
   gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
   CodeMirror, Backform, get_function_arguments, debuggerUtils, showQueryTool,
-  pgadminUtils, Kerberos
+  pgadminUtils, Kerberos, panelTitleFunc
 ) {
   var pgTools = pgAdmin.Tools = pgAdmin.Tools || {},
     wcDocker = window.wcDocker;
@@ -333,10 +334,15 @@ define([
     //Callback function when user start the indirect debugging ( Listen to another session to invoke the target )
     start_global_debugger: function(args, item, trans_id) {
       // Initialize the target and create asynchronous connection and unique transaction ID
+
+      var self = this;
       var t = pgBrowser.tree,
         i = item || t.selected(),
         d = i && i.length == 1 ? t.itemData(i) : undefined,
-        node = d && pgBrowser.Nodes[d._type];
+        node = d && pgBrowser.Nodes[d._type],
+        tree_data = pgBrowser.treeMenu.translateTreeNodeIdFromACITree(i),
+        db_data = pgBrowser.treeMenu.findNode(tree_data.slice(0,4)),
+        dbNode = db_data.domNode;
 
       if (!d)
         return;
@@ -432,9 +438,17 @@ define([
               ),
               panel = pgBrowser.docker.addPanel(
                 'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
-              );
+              ),
+              db_label = treeInfo.database.label;
+
+            if(res.data.data_obj.db_name != treeInfo.database.label) {
+              db_label = res.data.data_obj.db_name;
+              var message = `Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`;
+              panelTitleFunc.refresh_db_node(message, dbNode);
+            }
+
             var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
-            debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, treeInfo.schema.label, treeInfo.database.label, null, pgBrowser);
+            debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, db_label, db_label, null, pgBrowser);
 
             panel.focus();
 
@@ -498,10 +512,14 @@ define([
       in the user input dialog
     */
     get_function_information: function(args, item) {
+
       var t = pgBrowser.tree,
         i = item || t.selected(),
         d = i && i.length == 1 ? t.itemData(i) : undefined,
-        node = d && pgBrowser.Nodes[d._type];
+        node = d && pgBrowser.Nodes[d._type],
+        tree_data = pgBrowser.treeMenu.translateTreeNodeIdFromACITree(i),
+        db_data = pgBrowser.treeMenu.findNode(tree_data.slice(0,4)),
+        dbNode = db_data.domNode;
 
       if (!d)
         return;
@@ -565,7 +583,9 @@ define([
               url: baseUrl,
               method: 'GET',
             })
-              .done(function() {
+              .done(function(res) {
+
+                var data = res.data;
 
                 var url = url_for('debugger.direct', {
                   'trans_id': trans_id,
@@ -592,9 +612,17 @@ define([
                     ),
                     panel = pgBrowser.docker.addPanel(
                       'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
-                    );
+                    ),
+                    db_label = newTreeInfo.database.label;
+
+                  if(data && data.data_obj && data.data_obj.db_name != newTreeInfo.database.label) {
+                    db_label = data.data_obj.db_name;
+                    var message = `Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`;
+                    panelTitleFunc.refresh_db_node(message, dbNode);
+                  }
+
                   var label = newTreeInfo.function ? newTreeInfo.function.label : newTreeInfo.trigger_function ? newTreeInfo.trigger_function.label : newTreeInfo.trigger ? newTreeInfo.trigger.label : newTreeInfo.procedure.label;
-                  debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, newTreeInfo.database.label, null, pgBrowser);
+                  debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, db_label, null, pgBrowser);
 
                   panel.focus();
 

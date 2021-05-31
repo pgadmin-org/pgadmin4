@@ -351,6 +351,7 @@ def poll(trans_id):
     oids = None
     additional_messages = None
     notifies = None
+    data_obj = {}
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -503,6 +504,7 @@ def poll(trans_id):
         result = error_msg
 
     transaction_status = conn.transaction_status()
+    data_obj['db_name'] = conn.db
 
     return make_json_response(
         data={
@@ -520,6 +522,7 @@ def poll(trans_id):
             'has_oids': has_oids,
             'oids': oids,
             'transaction_status': transaction_status,
+            'data_obj': data_obj,
         },
         encoding=conn.python_encoding
     )

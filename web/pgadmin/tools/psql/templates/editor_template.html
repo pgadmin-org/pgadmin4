@@ -34,6 +34,7 @@ require(
         const socket = self.pgAdmin.Browser.psql.psql_socket();
         self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db}}', '{{server_type}}', fitAddon, term);
         self.pgAdmin.Browser.psql.psql_terminal_io(term, socket);
+        self.pgAdmin.Browser.psql.check_db_name_change('{{db}}', '{{o_db_name}}');
 
         <!-- Resize the terminal -->
         function fitToscreen(){

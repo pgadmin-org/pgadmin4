@@ -20,3 +20,4 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #4203 <https://redmine.postgresql.org/issues/4203>`_ -  Fixed the issue of renaming the database by another user.

@@ -17,10 +17,10 @@ class PSQLPanel(BaseTestGenerator):
 
     def runTest(self):
         trans_id = random.randint(1, 9999999)
-        url = '/psql/panel/{trans_id}?sgid={sgid}&sid={sid}&server_type=pg' \
-              '&db={db_name}&theme={theme}'.\
+        url = '/psql/panel/{trans_id}?sgid={sgid}&sid={sid}&did={did}' \
+              '&server_type=pg&db={db_name}&theme={theme}'.\
             format(trans_id=trans_id, sgid=self.sgid, sid=self.sid,
-                   db_name=self.db_name, theme=self.theme)
+                   did=self.did, db_name=self.db_name, theme=self.theme)
 
         response = self.tester.post(
             url, data={"title": "panel_title"},

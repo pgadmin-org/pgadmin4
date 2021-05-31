@@ -13,6 +13,7 @@ __webpack_public_path__ = window.resourceBasePath;
 /* eslint-enable */
 
 import {launchDataGrid} from 'tools/datagrid/static/js/show_query_tool';
+import {generateDatagridTitle} from 'tools/datagrid/static/js/show_data';
 
 define('tools.querytool', [
   'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
@@ -422,6 +423,10 @@ define('tools.querytool', [
       self.render_history_grid();
       pgBrowser.Events.on('pgadmin:query_tool:connected:'+self.handler.transId, ()=>{
         self.fetch_query_history();
+      });
+
+      self.handler.on('pgadmin-sqleditor:check_synchronous_db_name_change', (result)=>{
+        self.handler.check_db_name_change(result);
       });
 
       queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
@@ -5086,6 +5091,65 @@ define('tools.querytool', [
        */
       update_notifications: function (notifications) {
         queryToolNotifications.updateNotifications(notifications);
+      },
+
+      /* This function is used to set editor title based on title
+       * & db_name passed as parameters
+       */
+      set_title_and_render_connection: function(title, db_name) {
+        var self = this;
+        self.gridView.set_editor_title(_.unescape(title));
+        self.gridView.handler.setTitle(_.unescape(title));
+
+        self.gridView.connection_list.forEach(option =>{
+          if(db_name == option['database_name']) {
+            option.database_name = db_name;
+            option.title = title;
+            if('is_selected' in option && option['is_selected']) {
+              self.gridView.$el.find('ul#connections-list li.selected-connection > a').text(title);
+            }
+            return true;
+          }
+        });
+      },
+
+      /* This function is used to check the synchronous db name change by users.
+       * if changed, alert will be generated with message prompting user to
+       * click OK for automatic db node refresh.
+       */
+      check_db_name_change: function(data) {
+
+        var self = this;
+
+        var selected_item = pgWindow.default.pgAdmin.Browser.treeMenu.selected(),
+          tree_data = pgWindow.default.pgAdmin.Browser.treeMenu.translateTreeNodeIdFromACITree(selected_item),
+          server_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,2)),
+          database_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4)),
+          db_name = database_data.data.label;
+
+        if(!_.isEqual(db_name, data.data_obj.db_name)) {
+
+          var message = `Current database has been moved or renamed to ${data.data_obj.db_name}. Click on the OK button to refresh the database name.`,
+            title = self.url_params.title;
+
+          if(self.is_query_tool) {// for query tool
+
+            var qt_title_placeholder = self.gridView.browser_preferences['qt_tab_title_placeholder'];
+            var title_data = {
+              'database': data.data_obj.db_name,
+              'username': server_data.data.user.name,
+              'server': server_data.data.label,
+              'type': 'query_tool'
+            };
+            title = panelTitleFunc.generateTitle(qt_title_placeholder, title_data);
+          }
+          else { // for datagrid
+            title = generateDatagridTitle(pgWindow.default.pgAdmin.Browser, selected_item, null, data.data_obj);
+          }
+
+          panelTitleFunc.refresh_db_node(message, database_data.domNode);
+          self.set_title_and_render_connection(title, database_data.data.label);
+        }
       },
     });
 

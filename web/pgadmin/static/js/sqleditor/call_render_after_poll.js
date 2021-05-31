@@ -50,6 +50,8 @@ export function callRenderAfterPoll(sqlEditor, alertify, res) {
     sqlEditor.disable_tool_buttons(false);
   }
 
+  sqlEditor.trigger('pgadmin-sqleditor:check_synchronous_db_name_change', res);
+
   sqlEditor.setIsQueryRunning(false);
   sqlEditor.trigger('pgadmin-sqleditor:loading-icon:hide');
 }

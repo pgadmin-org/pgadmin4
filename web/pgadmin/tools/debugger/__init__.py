@@ -836,6 +836,7 @@ def initialize_target(debug_type, trans_id, sid, did,
     conn_id = str(random.randint(1, 9999999))
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
     conn = manager.connection(did=did, conn_id=conn_id)
+    data_obj = {}
 
     # Connect the Server
     status, msg = conn.connect()
@@ -903,9 +904,11 @@ def initialize_target(debug_type, trans_id, sid, did,
     }
 
     de_inst.update_session()
+    data_obj['db_name'] = conn.db
 
     return make_json_response(data={'status': status,
-                                    'debuggerTransId': trans_id})
+                                    'debuggerTransId': trans_id,
+                                    'data_obj': data_obj})
 
 
 @blueprint.route(

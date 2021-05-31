@@ -13,6 +13,7 @@ import {getDatabaseLabel, generateTitle} from './datagrid_panel_title';
 import CodeMirror from 'bundled_codemirror';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
 import $ from 'jquery';
+import _ from 'underscore';
 
 export function showDataGrid(
   datagrid,
@@ -289,7 +290,7 @@ function hasSchemaOrCatalogOrViewInformation(parentData) {
     parentData.catalog !== undefined;
 }
 
-export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title=null) {
+export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title=null, backend_entity=null) {
   //const baseTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
   var preferences = pgBrowser.get_preferences_for_module('browser');
   const parentData = getTreeNodeHierarchyFromIdentifier.call(
@@ -298,7 +299,7 @@ export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title
   );
 
   const namespaceName = retrieveNameSpaceName(parentData);
-  const db_label = getDatabaseLabel(parentData);
+  const db_label = !_.isUndefined(backend_entity) && backend_entity != null && backend_entity.hasOwnProperty('db_name') ? backend_entity['db_name'] : getDatabaseLabel(parentData);
   const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
 
   var dtg_title_placeholder = '';

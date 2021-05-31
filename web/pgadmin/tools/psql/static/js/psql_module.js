@@ -16,9 +16,10 @@ import {enable} from 'pgadmin.browser.toolbar';
 import clipboard from 'sources/selection/clipboard';
 import 'wcdocker';
 import {getRandomInt} from 'sources/utils';
+import pgWindow from 'sources/window';
 
 import {getTreeNodeHierarchyFromIdentifier} from 'sources/tree/pgadmin_tree_node';
-import {generateTitle} from 'tools/datagrid/static/js/datagrid_panel_title';
+import {generateTitle, refresh_db_node} from 'tools/datagrid/static/js/datagrid_panel_title';
 
 
 export function setPanelTitle(psqlToolPanel, panelTitle) {
@@ -285,6 +286,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
 
       openUrl += `?sgid=${parentData.server_group._id}`
         +`&sid=${parentData.server._id}`
+        +`&did=${parentData.database._id}`
         +`&server_type=${parentData.server.server_type}`
         + `&theme=${theme}`;
 
@@ -417,7 +419,19 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       term.onKey(function (ev) {
         socket.emit('socket_input', {'input': ev.key, 'key_name': ev.domEvent.code});
       });
-    }
+    },
+    check_db_name_change: function(db_name, o_db_name) {
+      if (db_name != o_db_name) {
+
+        var selected_item = pgWindow.pgAdmin.Browser.treeMenu.selected(),
+          tree_data = pgWindow.pgAdmin.Browser.treeMenu.translateTreeNodeIdFromACITree(selected_item),
+          database_data = pgWindow.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4)),
+          dbNode = database_data.domNode;
+
+        var message = `Current database has been moved or renamed to ${o_db_name}. Click on the OK button to refresh the database name, and reopen the psql again.`;
+        refresh_db_node(message, dbNode);
+      }
+    },
   };
 
   return pgBrowser.psql;

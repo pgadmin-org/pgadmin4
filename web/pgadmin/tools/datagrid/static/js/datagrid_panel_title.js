@@ -9,6 +9,10 @@
 
 import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 import gettext from 'sources/gettext';
+import Alertify from 'pgadmin.alertifyjs';
+import pgWindow from 'sources/window';
+
+const pgAdmin = pgWindow.pgAdmin;
 
 export function getDatabaseLabel(parentData) {
   return parentData.database ? parentData.database.label
@@ -107,4 +111,20 @@ export function generateTitle(title_placeholder, title_data) {
   }
 
   return _.escape(title_placeholder);
+}
+
+/*
+ * This function is used refresh the db node after showing alert to the user
+ */
+export function refresh_db_node(message, dbNode) {
+  Alertify.alert()
+    .setting({
+      'title': gettext('Database moved/renamed'),
+      'label':gettext('OK'),
+      'message': gettext(message),
+      'onok': function(){
+        //Set the original db name as soon as user clicks ok button
+        pgAdmin.Browser.Nodes.database.callbacks.refresh(undefined, dbNode);
+      },
+    }).show();
 }

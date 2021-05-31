@@ -21,6 +21,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
+from pgadmin.utils.ajax import internal_server_error
 
 
 session_input = dict()
@@ -28,6 +29,7 @@ session_input_cursor = dict()
 session_last_cmd = dict()
 pdata = dict()
 cdata = dict()
+_NODES_SQL = 'nodes.sql'
 
 
 class PSQLModule(PgAdminModule):
@@ -95,6 +97,8 @@ def panel(trans_id):
     # Set TERM env for xterm.
     os.environ['TERM'] = 'xterm'
 
+    o_db_name = _get_database(params['sid'], params['did'])
+
     return render_template('editor_template.html',
                            sid=params['sid'],
                            db=underscore_unescape(params['db']) if params[
@@ -102,7 +106,8 @@ def panel(trans_id):
                            server_type=params['server_type'],
                            is_enable=config.ENABLE_PSQL,
                            title=underscore_unescape(params['title']),
-                           theme=params['theme']
+                           theme=params['theme'],
+                           o_db_name=o_db_name
                            )
 
 
@@ -684,3 +689,53 @@ def disconnect_socket():
     os.close(app.config['sessions'][request.sid])
     os.close(cdata[request.sid])
     del app.config['sessions'][request.sid]
+
+
+def _get_database(sid, did):
+    """
+    This method is used to get database based on sid, did.
+    """
+    try:
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(int(sid))
+        conn = manager.connection()
+        db_name = None
+        if conn.connected():
+            is_connected = True
+        else:
+            is_connected = False
+        if is_connected:
+
+            if conn.manager and conn.manager.db_info \
+                    and conn.manager.db_info[int(did)] is not None:
+
+                db_name = conn.manager.db_info[int(did)]['datname']
+                return db_name
+            elif sid:
+                template_path = 'databases/sql/#{0}#'.format(manager.version)
+                last_system_oid = 0
+                server_node_res = manager
+
+                db_disp_res = None
+                params = None
+                if server_node_res and server_node_res.db_res:
+                    db_disp_res = ", ".join(
+                        ['%s'] * len(server_node_res.db_res.split(','))
+                    )
+                    params = tuple(server_node_res.db_res.split(','))
+                sql = render_template(
+                    "/".join([template_path, _NODES_SQL]),
+                    last_system_oid=last_system_oid,
+                    db_restrictions=db_disp_res,
+                    did=did
+                )
+                status, databases = conn.execute_dict(sql, params)
+                database = databases['rows'][0]
+                if database is not None:
+                    db_name = database['name']
+
+            return db_name
+        else:
+            return db_name
+    except Exception:
+        return None

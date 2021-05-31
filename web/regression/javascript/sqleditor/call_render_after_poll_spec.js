@@ -25,6 +25,7 @@ describe('#callRenderAfterPoll', () => {
       disable_transaction_buttons: jasmine.createSpy('SQLEditor.disable_transaction_buttons'),
       reset_data_store: jasmine.createSpy('SQLEditor.reset_data_store'),
       enable_disable_download_btn: jasmine.createSpy('SQLEditor.enable_disable_download_btn'),
+      check_db_name_change: jasmine.createSpy('SQLEditor.check_db_name_change'),
       query_start_time: new Date(),
     };
     alertify = jasmine.createSpyObj('alertify', ['success']);
@@ -226,6 +227,14 @@ describe('#callRenderAfterPoll', () => {
         callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
 
         expect(sqlEditorSpy.enable_disable_download_btn).toHaveBeenCalledWith(true);
+
+        expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
+      });
+
+      it('check whether database has been moved/renamed', () => {
+        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+
+        expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:check_synchronous_db_name_change', queryResult);
 
         expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });
