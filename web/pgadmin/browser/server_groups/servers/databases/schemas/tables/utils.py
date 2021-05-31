@@ -937,7 +937,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 # Get all the supported constraints for partition table
                 self._add_constrints_to_output(part_data, did, row['oid'])
 
-                partition_sql += render_template("/".join(
+                partition_sql = render_template("/".join(
                     [self.partition_template_path, self._CREATE_SQL]),
                     data=part_data, conn=self.conn) + '\n'
 
