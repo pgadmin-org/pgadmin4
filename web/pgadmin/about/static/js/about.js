@@ -9,9 +9,9 @@
 
 define(
   ['jquery', 'alertify', 'sources/pgadmin', 'sources/gettext',
-    'sources/url_for','sources/utils',
+    'sources/url_for','sources/utils','pgadmin.user_management.current_user',
   ],
-  function($, alertify, pgAdmin, gettext, url_for, commonUtils) {
+  function($, alertify, pgAdmin, gettext, url_for, commonUtils, current_user) {
     pgAdmin = pgAdmin || window.pgAdmin || {};
 
     /* Return back, this has been called more than once */
@@ -52,7 +52,6 @@ define(
 
               prepare:function() {
                 this.setContent(this.message);
-
               },
             };
           });
@@ -60,9 +59,15 @@ define(
 
         $.get(url_for('about.index'),
           function(data) {
-            alertify.aboutDialog(
-              gettext('About %s', pgAdmin.Browser.utils.app_name), data
-            ).resizeTo(pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
+            if(!current_user.is_admin && pgAdmin.server_mode){
+              alertify.aboutDialog(
+                gettext('About %s', pgAdmin.Browser.utils.app_name), data
+              ).resizeTo(pgAdmin.Browser.stdW.md, 300);
+            }else{
+              alertify.aboutDialog(
+                gettext('About %s', pgAdmin.Browser.utils.app_name), data
+              ).resizeTo(750, 470);
+            }
           });
       },
     };

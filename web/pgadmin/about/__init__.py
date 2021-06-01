@@ -10,13 +10,16 @@
 """A blueprint module implementing the about box."""
 
 import sys
-from flask import Response, render_template, __version__, url_for
+from flask import Response, render_template, __version__, url_for, request
 from flask_babelex import gettext
 from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 import config
+import httpagentparser
+from pgadmin.model import User
+from user_agents import parse
 
 MODULE_NAME = 'about'
 
@@ -59,21 +62,72 @@ blueprint = AboutModule(MODULE_NAME, __name__, static_url_path='')
 @login_required
 def index():
     """Render the about box."""
-    info = {
-        'python_version': sys.version,
-        'flask_version': __version__
-    }
+    info = {}
+    # Get OS , NW.js, Browser details
+    browser, os_details, nwjs_version = detect_browser(request)
+
+    if nwjs_version:
+        info['nwjs'] = nwjs_version
+
+    info['browser_details'] = browser
+    info['os_details'] = os_details
+    info['config_db'] = config.SQLITE_PATH
+    info['log_file'] = config.LOG_FILE
 
     if config.SERVER_MODE:
         info['app_mode'] = gettext('Server')
+        admin = is_admin(current_user.email)
+        info['admin'] = admin
     else:
         info['app_mode'] = gettext('Desktop')
 
     info['current_user'] = current_user.email
 
+    settings = ''
+    for setting in dir(config):
+        if not setting.startswith('_') and setting.isupper() and \
+            setting not in ['CSRF_SESSION_KEY',
+                            'SECRET_KEY',
+                            'SECURITY_PASSWORD_SALT',
+                            'SECURITY_PASSWORD_HASH',
+                            'ALLOWED_HOSTS']:
+            settings = settings + '{} = {}\n'.format(setting,
+                                                     getattr(config, setting))
+
+    info['settings'] = settings
+
     return render_template(
         MODULE_NAME + '/index.html', info=info, _=gettext
     )
+
+
+def is_admin(load_user):
+    user = User.query.filter_by(email=load_user).first()
+    return user.has_role("Administrator")
+
+
+def detect_browser(request):
+    """This function returns the browser and os details"""
+    nwjs_version = None
+    agent = request.environ.get('HTTP_USER_AGENT')
+    user_agent = parse(agent)
+
+    if 'Nwjs' in agent:
+        agent = agent.split('-')
+        nwjs_version = agent[0].split(':')[1]
+        browser = 'Chromium' + ' ' + agent[2]
+        os_details = user_agent.os.family + ' ' + user_agent.os.version_string
+
+    else:
+        browser = httpagentparser.detect(agent)
+        os_details = user_agent.os.family + ' ' + user_agent.os.version_string
+        if not browser:
+            browser = agent.split('/')[0]
+        else:
+            browser = browser['browser']['name'] + ' ' + browser['browser'][
+                'version']
+
+    return browser, os_details, nwjs_version
 
 
 @blueprint.route("/about.js")

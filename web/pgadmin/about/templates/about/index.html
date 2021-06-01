@@ -4,18 +4,6 @@
         <div class="col-sm-9">{{ config.APP_VERSION }}</div>
     </div>
     <div class="row">
-        <div class="col-sm-3"><strong>{{ _('Copyright') }}</strong></div>
-        <div class="col-sm-9">{{ config.APP_COPYRIGHT }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm-3"><strong>{{ _('Python Version') }}</strong></div>
-        <div class="col-sm-9">{{ info.python_version }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm-3"><strong>{{ _('Flask Version') }}</strong></div>
-        <div class="col-sm-9">{{ info.flask_version }}</div>
-    </div>
-    <div class="row">
         <div class="col-sm-3"><strong>{{ _('Application Mode') }}</strong></div>
         <div class="col-sm-9">{{ info.app_mode }}</div>
     </div>
@@ -23,10 +11,34 @@
         <div class="col-sm-3"><strong>{{ _('Current User') }}</strong></div>
         <div class="col-sm-9">{{ info.current_user }}</div>
     </div>
-    <div class="row">
-        <div class="col-12 text-right"><img
-            src="{{ url_for('static', filename='img/logo-right-128.png') }}"
-            alt="{{ config.APP_NAME }} {{ _('logo') }}"
-        ></div>
+    {% if info.nwjs %}
+        <div class="row">
+        <div class="col-sm-3"><strong>{{ _('NW.js Version') }}</strong></div>
+        <div class="col-sm-9">{{ info.nwjs }}</div>
     </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-sm-3"><strong>{{ _('Browser') }}</strong></div>
+        <div class="col-sm-9">{{ info.browser_details }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3"><strong>{{ _('Operating System') }}</strong></div>
+        <div class="col-sm-9">{{ info.os_details }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3"><strong>{{ _('pgAdmin Database File') }}</strong></div>
+        <div class="col-sm-9">{{ info.config_db }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3"><strong>{{ _('Log File') }}</strong></div>
+        <div class="col-sm-9">{{ info.log_file }}</div>
+    </div>
+    {%if (info.app_mode == 'Desktop') or (info.app_mode == 'Server' and info.admin)%}
+    <div class="row">
+        <div class="col-sm-3"><b>{{ _('Server Configuration') }}</b></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-9"><textarea rows="7" cols="85" style="width:120%; height: 120%; white-space: pre-wrap;" readonly>{{ info.settings|safe }}</textarea></div>
+    </div>
+    {% endif %}
 </div>

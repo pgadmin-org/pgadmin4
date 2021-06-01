@@ -6,6 +6,7 @@
   "author": "pgAdmin Development Team (https://www.pgadmin.org/)",
   "license": "PostgreSQL",
   "chromium-args": "--disable-popup-blocking",
+  "user-agent": "Nwjs:%nwver-%osinfo-%chromium_ver",
   "window": {
     "width": 440,
     "height": 170,
