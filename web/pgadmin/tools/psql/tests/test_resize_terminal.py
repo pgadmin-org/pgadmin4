@@ -1,5 +1,6 @@
 import uuid
 import config
+import sys
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -24,6 +25,8 @@ class PSQLResizeTerminal(BaseTestGenerator):
         self.server_con = server_utils.connect_server(self, self.sid)
 
     def runTest(self):
+        if sys.platform == 'win32':
+            self.skipTest('PSQL disabled for windows')
         # Fetch flask client to access current user and other cookies.
         flask_client = app.test_client()
         flask_client.get('/')

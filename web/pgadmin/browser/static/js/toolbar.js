@@ -59,7 +59,7 @@ let _defaultToolBarButtons = [
   }
 ];
 
-if(pgAdmin['enable_psql']) {
+if(pgAdmin['enable_psql'] && pgAdmin['platform'] != 'win32') {
   _defaultToolBarButtons.unshift({
     label: gettext('PSQL Tool'),
     ariaLabel: gettext('PSQL Tool'),
@@ -119,7 +119,7 @@ export function initializeToolbar(panel, wcDocker) {
       pgAdmin.DataGrid.show_filtered_row({mnuid: 4}, pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('Search objects'))
       pgAdmin.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
-    else if ('name' in data && data.name === gettext('PSQL Tool')){
+    else if ('name' in data && data.name === gettext('PSQL Tool') && pgAdmin['platform'] != 'win32'){
       var input = {},
         t = pgAdmin.Browser.tree,
         i = input.item || t.selected(),

@@ -23,36 +23,40 @@
 require(
     ['sources/generated/psql_tool'],
     function(pgBrowser) {
-        const term = self.pgAdmin.Browser.psql.psql_terminal();
-        <!--Addon for fitAddon, webLinkAddon, SearchAddon  -->
-        const fitAddon = self.pgAdmin.Browser.psql.psql_Addon(term);
-        <!-- Update the theme for terminal as per pgAdmin 4 theme.-->
-        self.pgAdmin.Browser.psql.set_theme(term);
-        <!-- Open the terminal -->
-        term.open(document.getElementById('psql-terminal'));
-        <!-- Socket-->
-        const socket = self.pgAdmin.Browser.psql.psql_socket();
-        self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db}}', '{{server_type}}', fitAddon, term);
-        self.pgAdmin.Browser.psql.psql_terminal_io(term, socket);
-        self.pgAdmin.Browser.psql.check_db_name_change('{{db}}', '{{o_db_name}}');
+        if (self.pgAdmin['platform'] != 'win32') {
+            const term = self.pgAdmin.Browser.psql.psql_terminal();
+            <!--Addon for fitAddon, webLinkAddon, SearchAddon  -->
+            const fitAddon = self.pgAdmin.Browser.psql.psql_Addon(term);
+            <!-- Update the theme for terminal as per pgAdmin 4 theme.-->
+            self.pgAdmin.Browser.psql.set_theme(term);
+            <!-- Open the terminal -->
+            term.open(document.getElementById('psql-terminal'));
+            <!-- Socket-->
+            const socket = self.pgAdmin.Browser.psql.psql_socket();
+            self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db}}', '{{server_type}}', fitAddon, term);
+            self.pgAdmin.Browser.psql.psql_terminal_io(term, socket);
+            self.pgAdmin.Browser.psql.check_db_name_change('{{db}}', '{{o_db_name}}');
 
-        <!-- Resize the terminal -->
-        function fitToscreen(){
-            fitAddon.fit()
-            socket.emit("resize", {"cols": term.cols, "rows": term.rows})
-        }
-
-        function debounce(func, wait_ms) {
-            let timeout
-            return function(...args) {
-              const context = this
-              clearTimeout(timeout)
-              timeout = setTimeout(() => func.apply(context, args), wait_ms)
+            <!-- Resize the terminal -->
+            function fitToscreen(){
+                fitAddon.fit()
+                socket.emit("resize", {"cols": term.cols, "rows": term.rows})
             }
-        }
 
-        const wait_ms = 50;;
-        window.onresize = debounce(fitToscreen, wait_ms)
+            function debounce(func, wait_ms) {
+                let timeout
+                return function(...args) {
+                  const context = this
+                  clearTimeout(timeout)
+                  timeout = setTimeout(() => func.apply(context, args), wait_ms)
+                }
+            }
+
+            const wait_ms = 50;;
+            window.onresize = debounce(fitToscreen, wait_ms)
+        } else {
+            document.getElementById('psql-terminal').innterHTML = 'PSQL not supported'
+        }
     });
 {% endblock %}
 

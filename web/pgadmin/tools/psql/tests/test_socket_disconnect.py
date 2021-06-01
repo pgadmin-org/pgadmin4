@@ -1,5 +1,6 @@
 import uuid
 import config
+import sys
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -17,6 +18,8 @@ class PSQLSocketDisconnect(BaseTestGenerator):
         config.ENABLE_PSQL = True
 
     def runTest(self):
+        if sys.platform == 'win32':
+            self.skipTest('PSQL disabled for windows')
         # Fetch flask client to access current user and other cookies.
         flask_test_client = app.test_client()
         flask_test_client.get('/')

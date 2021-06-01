@@ -66,12 +66,14 @@ define([
             }]);
 
             // show psql tool same as query tool.
-            pgAdmin.Browser.add_menus([{
-              name: 'show_psql_tool', node: this.type, module: this,
-              applies: ['context'], callback: 'show_psql_tool',
-              priority: 998, label: gettext('PSQL Tool (Beta)'),
-              icon: 'fas fa-terminal',
-            }]);
+            if(pgAdmin['enable_psql'] && pgAdmin['platform'] != 'win32') {
+              pgAdmin.Browser.add_menus([{
+                name: 'show_psql_tool', node: this.type, module: this,
+                applies: ['context'], callback: 'show_psql_tool',
+                priority: 998, label: gettext('PSQL Tool (Beta)'),
+                icon: 'fas fa-terminal',
+              }]);
+            }
           }
         }
       },

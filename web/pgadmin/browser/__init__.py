@@ -851,7 +851,8 @@ def utils():
             app_version_int=config.APP_VERSION_INT,
             pg_libpq_version=pg_libpq_version,
             support_ssh_tunnel=config.SUPPORT_SSH_TUNNEL,
-            logout_url=_get_logout_url()
+            logout_url=_get_logout_url(),
+            platform=sys.platform
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 

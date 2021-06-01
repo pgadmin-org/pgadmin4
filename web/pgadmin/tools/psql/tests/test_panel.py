@@ -1,5 +1,6 @@
 import uuid
 import random
+import sys
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -16,6 +17,8 @@ class PSQLPanel(BaseTestGenerator):
         self.theme = 'standard'
 
     def runTest(self):
+        if sys.platform == 'win32':
+            self.skipTest('PSQL disabled for windows')
         trans_id = random.randint(1, 9999999)
         url = '/psql/panel/{trans_id}?sgid={sgid}&sid={sid}&did={did}' \
               '&server_type=pg&db={db_name}&theme={theme}'.\

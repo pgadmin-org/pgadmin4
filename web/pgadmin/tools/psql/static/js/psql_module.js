@@ -54,7 +54,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       }];
 
       this.enable_psql_tool = pgAdmin['enable_psql'];
-      if(pgAdmin['enable_psql']) {
+      if(pgAdmin['enable_psql'] && pgAdmin['platform'] != 'win32') {
         pgBrowser.add_menus(menus);
       }
 

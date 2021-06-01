@@ -210,7 +210,7 @@ define('pgadmin.browser.node', [
           icon: 'fa fa-search', enable: enable,
         }]);
 
-        if(pgAdmin['enable_psql']) {
+        if(pgAdmin['enable_psql'] && pgAdmin['platform'] != 'win32') {
           // show psql tool same as query tool.
           pgAdmin.Browser.add_menus([{
             name: 'show_psql_tool', node: this.type, module: this,

@@ -1,5 +1,6 @@
 import uuid
 import config
+import sys
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -17,6 +18,8 @@ class PSQLStartProcessFail(BaseTestGenerator):
         config.ENABLE_PSQL = True
 
     def runTest(self):
+        if sys.platform == 'win32':
+            self.skipTest('PSQL disabled for windows')
         self.test_client = socketio.test_client(app, namespace='/pty')
         self.assertTrue(self.test_client.is_connected('/pty'))
         received = self.test_client.get_received('/pty')

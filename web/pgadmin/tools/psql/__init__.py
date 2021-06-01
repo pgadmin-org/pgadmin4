@@ -1,35 +1,35 @@
 #!/usr/bin/env python3
-import fcntl
+
 import os
-import pty
 import re
 import select
 import struct
-import termios
 import config
+from sys import platform as _platform
 import eventlet.green.subprocess as subprocess
-
 from config import PG_DEFAULT_DRIVER
 from flask import Response, url_for, request
 from flask import render_template, copy_current_request_context, \
     current_app as app
 from flask_babelex import gettext
 from flask_security import login_required, current_user
-from pgadmin.browser.utils import underscore_unescape
+from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
-from pgadmin.utils.ajax import internal_server_error
 
+if _platform != 'win32':
+    import fcntl
+    import termios
+    import pty
 
 session_input = dict()
 session_input_cursor = dict()
 session_last_cmd = dict()
 pdata = dict()
 cdata = dict()
-_NODES_SQL = 'nodes.sql'
 
 
 class PSQLModule(PgAdminModule):
@@ -225,27 +225,35 @@ def start_process(data):
     """
     @copy_current_request_context
     def read_and_forward_pty_output(sid, data):
+
         max_read_bytes = 1024 * 20
 
-        p, parent, fd = create_pty_terminal(connection_data)
+        if _platform != 'win32':
+            p, parent, fd = create_pty_terminal(connection_data)
 
-        while p and p.poll() is None:
-            if request.sid in app.config['sessions']:
-                # This code is added to make this unit testable.
-                if "is_test" not in data:
-                    sio.sleep(0.01)
-                else:
-                    data['count'] += 1
-                    if data['count'] == 5:
-                        break
+            while p and p.poll() is None:
+                if request.sid in app.config['sessions']:
+                    # This code is added to make this unit testable.
+                    if "is_test" not in data:
+                        sio.sleep(0.01)
+                    else:
+                        data['count'] += 1
+                        if data['count'] == 5:
+                            break
 
-                timeout = 0
-                # module provides access to platform-specific I/O
-                # monitoring functions
-                (data_ready, _, _) = select.select([parent, fd], [], [],
-                                                   timeout)
+                    timeout = 0
+                    # module provides access to platform-specific I/O
+                    # monitoring functions
+                    (data_ready, _, _) = select.select([parent, fd], [], [],
+                                                       timeout)
 
-                read_terminal_data(parent, data_ready, max_read_bytes, sid)
+                    read_terminal_data(parent, data_ready, max_read_bytes, sid)
+        else:
+            sio.emit(
+                'conn_error',
+                {
+                    'error': 'PSQL tool not supported.',
+                }, namespace='/pty', room=request.sid)
 
     # Check user is authenticated and PSQL is enabled in config.
     if current_user.is_authenticated and config.ENABLE_PSQL:
@@ -254,6 +262,8 @@ def start_process(data):
             db = ''
             if data['db']:
                 db = underscore_unescape(data['db']).replace('\\', "\\\\")
+
+            data['db'] = db
 
             conn, manager = _get_connection(int(data['sid']), data)
             psql_utility = manager.utility('sql')
@@ -348,15 +358,15 @@ def get_conn_str(manager, db):
     """
     manager.export_password_env('PGPASSWORD')
     conn_attr =\
-        "host={0} port={1} dbname={2} user={3} sslmode={4} " \
-        "sslcompression={5} " \
-        "".format(
+        'host={0} port={1} dbname={2} user={3} sslmode={4} ' \
+        'sslcompression={5} ' \
+        ''.format(
             manager.local_bind_host if manager.use_ssh_tunnel else
             manager.host,
             manager.local_bind_port if manager.use_ssh_tunnel else
             manager.port,
-            db if db != '' else 'postgres',
-            manager.user if manager.user else 'postgres',
+            underscore_unescape(db) if db != '' else 'postgres',
+            underscore_unescape(manager.user) if manager.user else 'postgres',
             manager.ssl_mode,
             True if manager.sslcompression else False,
         )
@@ -423,7 +433,6 @@ def invalid_cmd():
     :rtype:
     """
     session_last_cmd[request.sid]['invalid_cmd'] = True
-
     for i in range(len(session_input[request.sid])):
         os.write(app.config['sessions'][request.sid],
                  '\b \b'.encode())
@@ -455,6 +464,7 @@ def check_valid_cmd(user_input):
 
     if stop_execution:
         session_last_cmd[request.sid]['invalid_cmd'] = True
+
         # Remove already added command from terminal.
         for i in range(len(user_input)):
             os.write(app.config['sessions'][request.sid],
@@ -482,6 +492,7 @@ def enter_key_press(data):
     # contains \! in input.
     is_new_connection = session_last_cmd[request.sid][
         'is_new_connection']
+
     if user_input.startswith('\\!') and re.match("^\\\!$", user_input) and len(
         user_input) == 2 and not config.ALLOW_PSQL_SHELL_COMMANDS \
             and not is_new_connection:
@@ -490,7 +501,8 @@ def enter_key_press(data):
         not config.ALLOW_PSQL_SHELL_COMMANDS and\
             not session_last_cmd[request.sid]['is_new_connection']:
         check_valid_cmd(user_input)
-    elif user_input == '\q' or user_input == 'q\\q':
+    elif user_input == '\q' or user_input == 'q\\q' or \
+            user_input in ['exit', 'exit;']:
         # If user enter \q to terminate the PSQL, emit the msg to
         # notify user connection is terminated.
         sio.emit('pty-output',
@@ -501,6 +513,7 @@ def enter_key_press(data):
                          ' tool.'),
                      'error': True},
                  namespace='/pty', room=request.sid)
+
         os.write(app.config['sessions'][request.sid],
                  '\n'.encode())
 
