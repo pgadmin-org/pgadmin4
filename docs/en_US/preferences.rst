@@ -211,21 +211,23 @@ files.
     :align: center
 
 Use the fields on the *Binary paths* panel to specify the path to the directory
-that contains the utility programs (pg_dump, pg_restore, and pg_dumpall) for
+that contains the utility programs (pg_dump, pg_dumpall, pg_restore and psql) for
 monitored databases:
 
-* Use the *EDB Advanced Server Binary Path* field to specify the location of the
-  EDB Postgres Advanced Server utility programs.  If this path is not set,
-  pgAdmin will attempt to find the utilities in standard locations used by
-  EnterpriseDB.
+* Use the *EDB Advanced Server Binary Path* grid to specify the location of the
+  EDB Postgres Advanced Server utility programs based on the server version.
+  If the respective path is not set, then pgAdmin will pick up the path for which
+  'Set as default' is checked else pgAdmin will attempt to find the utilities in
+  standard locations used by EnterpriseDB.
 
-* Use the *Greenplum Database Binary Path* field to specify the location of the
-  Greenplum database utility programs.  If this path is not set, pgAdmin will
-  attempt to find the utilities in standard locations used by Greenplum.
+* Use the *PostgreSQL Binary Path* grid to specify the location of the
+  PostgreSQL utility programs based on the server version. If the respective
+  path is not set, then pgAdmin will pick up the path for which 'Set as default'
+  is checked else pgAdmin will attempt to find the utilities in standard
+  locations used by PostgreSQL.
 
-* Use the *PostgreSQL Binary Path* field to specify the location of the
-   PostgreSQL utility programs.  If this path is not set, pgAdmin will attempt
-   to find the utilities in standard locations used by PostgreSQL.
+**Note:** Use the 'Validate path' button to check the existence of the utility
+programs (pg_dump, pg_dumpall, pg_restore and psql) and there respective versions.
 
 .. image:: images/preferences_paths_help.png
     :alt: Preferences dialog binary path help section

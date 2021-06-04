@@ -15,7 +15,8 @@ import Alertify from 'pgadmin.alertifyjs';
 import {enable} from 'pgadmin.browser.toolbar';
 import clipboard from 'sources/selection/clipboard';
 import 'wcdocker';
-import {getRandomInt} from 'sources/utils';
+import {getRandomInt, hasBinariesConfiguration} from 'sources/utils';
+import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
 
 import {getTreeNodeHierarchyFromIdentifier} from 'sources/tree/pgadmin_tree_node';
@@ -114,74 +115,12 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       enable(gettext('PSQL Tool'), isEnabled);
       return isEnabled;
     },
-    retrieveAncestorOfTypeServer: function(item) {
-      let serverInformation = null;
-      // let aciTreeItem = item || pgBrowser.treeMenu.selected();
-      let treeNode = pgBrowser.treeMenu.findNodeByDomElement(item);
-
-      if (treeNode) {
-        let nodeData;
-        let databaseNode = treeNode.ancestorNode(
-          (node) => {
-            nodeData = node.getData();
-            return (nodeData._type === 'database');
-          }
-        );
-        let isServerNode = (node) => {
-          nodeData = node.getData();
-          return nodeData._type === 'server';
-        };
-
-        if (databaseNode !== null) {
-          if (nodeData._label.indexOf('=') >= 0) {
-            this.alertify.alert(
-              gettext(this.errorAlertTitle),
-              gettext(
-                'Databases with = symbols in the name cannot be backed up or restored using this utility.'
-              )
-            );
-          } else {
-            if (databaseNode.anyParent(isServerNode))
-              serverInformation = nodeData;
-          }
-        } else {
-          if (treeNode.anyFamilyMember(isServerNode))
-            serverInformation = nodeData;
-        }
-      }
-
-      if (serverInformation === null) {
-        this.alertify.alert(
-          gettext(this.errorAlertTitle),
-          gettext('Please select server or child node from the browser tree.')
-        );
-      }
-      return serverInformation;
-    },
     psql_tool: function(data, aciTreeIdentifier, gen=false) {
-      const module = 'paths';
-      let preference_name = 'pg_bin_dir';
-      let msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
-      const serverInformation = this.retrieveAncestorOfTypeServer(aciTreeIdentifier);
+      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, aciTreeIdentifier, gettext('PSQL Error'), Alertify);
+      if (!hasBinariesConfiguration(pgBrowser, serverInformation, Alertify)) {
+        return;
+      }
 
-      if ((serverInformation.type && serverInformation.type === 'ppas') ||
-        serverInformation.server_type === 'ppas') {
-        preference_name = 'ppas_bin_dir';
-        msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
-      }
-      const preference = pgBrowser.get_preference(module, preference_name);
-      if (preference) {
-        if (!preference.value) {
-          Alertify.alert(gettext('Configuration required'), msg);
-          return false;
-        }
-      } else {
-        Alertify.alert(
-          gettext(this.errorAlertTitle),
-          gettext('Failed to load preference %s of module %s', preference_name, module)
-        );
-        return false;
-      }
       const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
       if (node === undefined || !node.getData()) {
         Alertify.alert(

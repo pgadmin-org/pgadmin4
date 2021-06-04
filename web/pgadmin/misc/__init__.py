@@ -17,8 +17,11 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.ajax import precondition_required, make_json_response
 import config
-from werkzeug.exceptions import InternalServerError
+import subprocess
+import os
+import json
 
 MODULE_NAME = 'misc'
 
@@ -98,7 +101,8 @@ class MiscModule(PgAdminModule):
         Returns:
             list: a list of url endpoints exposed to the client.
         """
-        return ['misc.ping', 'misc.index', 'misc.cleanup']
+        return ['misc.ping', 'misc.index', 'misc.cleanup',
+                'misc.validate_binary_path']
 
 
 # Initialise the module
@@ -165,3 +169,48 @@ def shutdown():
         return 'SHUTDOWN'
     else:
         return ''
+
+
+##########################################################################
+# A special URL used to validate the binary path
+##########################################################################
+@blueprint.route("/validate_binary_path",
+                 endpoint="validate_binary_path",
+                 methods=["POST"])
+def validate_binary_path():
+    """
+    This function is used to validate the specified utilities path by
+    running the utilities with there versions.
+    """
+    data = None
+    if hasattr(request.data, 'decode'):
+        data = request.data.decode('utf-8')
+
+    if data != '':
+        data = json.loads(data)
+
+    version_str = ''
+    if 'utility_path' in data and data['utility_path'] is not None:
+        for utility in ['pg_dump', 'pg_dumpall', 'pg_restore', 'psql']:
+            full_path = os.path.abspath(
+                os.path.join(data['utility_path'],
+                             (utility if os.name != 'nt' else
+                              (utility + '.exe'))))
+            try:
+                result = subprocess.Popen([full_path, '--version'],
+                                          stdout=subprocess.PIPE)
+            except FileNotFoundError:
+                version_str += "<b>" + utility + ":</b> " + \
+                               "not found on the specified binary path.<br/>"
+                continue
+
+            # Replace the name of the utility from the result to avoid
+            # duplicate name.
+            result_str = \
+                result.stdout.read().decode("utf-8").replace(utility, '')
+
+            version_str += "<b>" + utility + ":</b> " + result_str + "<br/>"
+    else:
+        return precondition_required(gettext('Invalid binary path.'))
+
+    return make_json_response(data=gettext(version_str), status=200)

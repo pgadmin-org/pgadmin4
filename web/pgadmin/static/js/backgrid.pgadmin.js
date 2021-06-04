@@ -10,10 +10,10 @@
 define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
   'moment', 'bignumber', 'codemirror', 'sources/utils', 'sources/keyboard_shortcuts', 'sources/select2/configure_show_on_scroll',
-  'sources/window', 'bootstrap.datetimepicker', 'backgrid.filter', 'bootstrap.toggle',
+  'sources/window', 'sources/url_for', 'bootstrap.datetimepicker', 'backgrid.filter', 'bootstrap.toggle',
 ], function(
   gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber, CodeMirror,
-  commonUtils, keyboardShortcuts, configure_show_on_scroll, pgWindow
+  commonUtils, keyboardShortcuts, configure_show_on_scroll, pgWindow, url_for
 ) {
   /*
    * Add mechanism in backgrid to render different types of cells in
@@ -2154,7 +2154,7 @@ define([
       var editable = Backgrid.callByNeed(column.editable(), column, model);
       var align_center = column.get('align_center') || false;
       let checked =  this.formatter.fromRaw(model.get(column.get('name')), model);
-      let id = `column.get('name')_${_.uniqueId()}`;
+      let id = `${column.get('name')}_${_.uniqueId()}`;
 
       this.$el.empty();
       this.$el.append(
@@ -2249,6 +2249,187 @@ define([
     },
   });
 
-  return Backgrid;
+  Backgrid.RadioCell = Backgrid.BooleanCell.extend({
+    className: 'radio-cell',
 
+    initialize: function() {
+      Backgrid.BooleanCell.prototype.initialize.apply(this, arguments);
+      Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
+    },
+
+    dependentChanged: function() {
+      return this.render();
+    },
+
+    enterEditMode: function() {
+      this.$el.addClass('editor');
+      $(this.$el.find('input[type=radio]')).trigger('focus');
+    },
+
+    exitEditMode: function() {
+      this.$el.removeClass('editor');
+    },
+
+    events: {
+      'change input': 'onChange',
+      'blur input': 'exitEditMode',
+    },
+
+    onChange: function(e) {
+      var model = this.model,
+        column = this.column,
+        val = this.formatter.toRaw(this.$input.prop('checked'), model);
+
+      this.enterEditMode();
+
+      _.each(this.model.collection.models, function(sub_model) {
+        sub_model.set(column.get('name'), false);
+        sub_model.trigger('backgrid:edited', sub_model, column, new Backgrid.Command(e));
+      });
+
+      // on bootstrap change we also need to change model's value
+      model.set(column.get('name'), val);
+      model.trigger('backgrid:edited', model, column, new Backgrid.Command(e));
+    },
+
+    render: function () {
+      this.$el.empty();
+      var model = this.model, column = this.column;
+      var editable = Backgrid.callByNeed(column.editable(), column, model);
+      let checked =  this.formatter.fromRaw(model.get(column.get('name')), model);
+      let id = `${column.get('name')}_${_.uniqueId()}`;
+
+      this.$el.empty();
+      this.$el.append(
+        $(`<div style="text-align: center">
+          <input tabindex="0" type="radio" id="${id}" ${!editable?'disabled':''} ${checked?'checked':''}/>
+        </div>`)
+      );
+      this.$input = this.$el.find('input');
+      this.delegateEvents();
+      return this;
+    },
+  });
+
+  Backgrid.Extension.SelectFileCell = Backgrid.Cell.extend({
+    /** @property */
+    className: 'file-cell',
+    defaults: {
+      supported_types: ['*'],
+      dialog_type: 'select_file',
+      dialog_title: gettext('Select file'),
+      type: 'text',
+      value: '',
+      placeholder: gettext('Select file...'),
+      disabled: false,
+      browse_btn_label: gettext('Select file'),
+      check_btn_label: gettext('Validate file'),
+      browse_btn_visible: true,
+      validate_btn_visible: true,
+    },
+
+    initialize: function() {
+      Backgrid.Cell.prototype.initialize.apply(this, arguments);
+      this.data = _.extend(this.defaults, this.column.toJSON());
+    },
+    template: _.template([
+      '<div class="input-group">',
+      '<input type="<%=type%>" id="<%=cId%>" class="form-control" value="<%-value%>" placeholder="<%-placeholder%>" <%=disabled ? "disabled" : ""%> />',
+      '<% if (browse_btn_visible) { %>',
+      '<div class="input-group-append">',
+      '<button class="btn btn-primary-icon fa fa-ellipsis-h select_item" <%=disabled ? "disabled" : ""%>  aria-hidden="true" aria-label=<%=browse_btn_label%> title=<%=browse_btn_label%>></button>',
+      '</div>',
+      '<% } %>',
+      '<% if (validate_btn_visible) { %>',
+      '<div class="input-group-append">',
+      '<button class="btn btn-primary-icon fa fa-clipboard-check validate_item" <%=disabled ? "disabled" : ""%> <%=(value=="" || value==null) ? "disabled" : ""%>  aria-hidden="true" aria-label=<%=check_btn_label%> title=<%=check_btn_label%>></button>',
+      '</div>',
+      '<% } %>',
+      '</div>',
+    ].join('\n')),
+    events: {
+      'change input': 'onChange',
+      'click .select_item': 'onSelect',
+      'click .validate_item': 'onValidate',
+    },
+
+    render: function() {
+      this.$el.empty();
+      this.data = _.extend(this.data, {value: this.model.get(this.column.get('name'))});
+      // Adding unique id
+      this.data['cId'] = _.uniqueId('pgC_');
+      this.$el.append(this.template(this.data));
+
+      this.$input = this.$el.find('input');
+      this.delegateEvents();
+
+      return this;
+    },
+    onChange: function() {
+      var model = this.model,
+        column = this.column,
+        val = this.formatter.toRaw(this.$input.prop('value'), model);
+
+      model.set(column.get('name'), val);
+    },
+    onSelect: function() {
+      let self = this;
+
+      var params = {
+        supported_types: self.data.supported_types,
+        dialog_type: self.data.dialog_type,
+        dialog_title: self.data.dialog_title
+      };
+
+      pgAdmin.FileManager.init();
+      pgAdmin.FileManager.show_dialog(params);
+      // Listen click events of Storage Manager dialog buttons
+      this.listen_file_dlg_events();
+    },
+    storage_dlg_hander: function(value) {
+      var attrArr = this.column.get('name').split('.'),
+        name = attrArr.shift();
+
+      this.remove_file_dlg_event_listeners();
+
+      // Set selected value into the model
+      this.model.set(name, decodeURI(value));
+    },
+    storage_close_dlg_hander: function() {
+      this.remove_file_dlg_event_listeners();
+    },
+    listen_file_dlg_events: function() {
+      pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:' + this.data.dialog_type, this.storage_dlg_hander, this);
+      pgAdmin.Browser.Events.on('pgadmin-storage:cancel_btn:' + this.data.dialog_type, this.storage_close_dlg_hander, this);
+    },
+    remove_file_dlg_event_listeners: function() {
+      pgAdmin.Browser.Events.off('pgadmin-storage:finish_btn:' + this.data.dialog_type, this.storage_dlg_hander, this);
+      pgAdmin.Browser.Events.off('pgadmin-storage:cancel_btn:' + this.data.dialog_type, this.storage_close_dlg_hander, this);
+    },
+    onValidate: function() {
+      var model = this.model,
+        val = this.formatter.toRaw(this.$input.prop('value'), model);
+
+      if (_.isNull(val) || val.trim() === '') {
+        Alertify.alert(gettext('Validate Path'), gettext('Path should not be empty.'));
+      }
+
+      $.ajax({
+        url: url_for('misc.validate_binary_path'),
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          'utility_path': val,
+        }),
+      })
+        .done(function(res) {
+          Alertify.alert(gettext('Validate binary path'), gettext(res.data));
+        })
+        .fail(function(xhr, error) {
+          Alertify.pgNotifier(error, xhr, gettext('Failed to validate binary path.'));
+        });
+    },
+  });
+
+  return Backgrid;
 });

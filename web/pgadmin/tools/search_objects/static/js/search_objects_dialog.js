@@ -10,6 +10,7 @@
 import gettext from 'sources/gettext';
 import {Dialog} from 'sources/alertify/dialog';
 import {getPanelTitle} from 'tools/datagrid/static/js/datagrid_panel_title';
+import {retrieveAncestorOfTypeDatabase} from 'sources/tree/tree_utils';
 
 export default class SearchObjectsDialog extends Dialog {
   constructor(pgBrowser, $, alertify, BackupModel, backform = null) {
@@ -24,7 +25,7 @@ export default class SearchObjectsDialog extends Dialog {
   }
 
   draw(action, aciTreeItem, params, width=0, height=0) {
-    let dbInfo = this.retrieveAncestorOfTypeDatabase(aciTreeItem);
+    let dbInfo = retrieveAncestorOfTypeDatabase(this.pgBrowser, aciTreeItem, gettext('Search Objects Error'), this.alertify);
     if (!dbInfo) {
       return;
     }

@@ -444,25 +444,7 @@ define([
         return;
       }
 
-      var module = 'paths',
-        preference_name = 'pg_bin_dir',
-        msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
-
-      if ((server_data.type && server_data.type == 'ppas') ||
-        server_data.server_type == 'ppas') {
-        preference_name = 'ppas_bin_dir';
-        msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
-      }
-
-      var preference = pgBrowser.get_preference(module, preference_name);
-
-      if (preference) {
-        if (!preference.value) {
-          Alertify.alert(gettext('Configuration required'), msg);
-          return;
-        }
-      } else {
-        Alertify.alert(gettext('Failed to load preference %s of module %s', preference_name, module));
+      if (!commonUtils.hasBinariesConfiguration(pgBrowser, server_data, Alertify)) {
         return;
       }
 

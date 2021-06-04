@@ -1115,6 +1115,120 @@ define([
       };
     };
 
+  Backform.BinaryPathsGridControl = Backform.Control.extend({
+    initialize: function() {
+      Backform.Control.prototype.initialize.apply(this, arguments);
+
+      var BinaryPathModel = Backbone.Model.extend({
+        idAttribute: 'serverType',
+        defaults: {
+          serverType: undefined,
+          binaryPath: undefined,
+          isDefault: false
+        },
+      });
+
+      this.gridColumns = [{
+        name: 'isDefault',
+        label: 'Set as default',
+        sortable: false,
+        cell: Backgrid.RadioCell,
+        cellHeaderClasses: 'width_percent_10',
+        headerCell: Backgrid.Extension.CustomHeaderCell,
+        deps: ['binaryPath'],
+        editable: function(m) {
+          if (!_.isUndefined(m.get('binaryPath')) && !_.isNull(m.get('binaryPath')) && m.get('binaryPath') !== '') {
+            return true;
+          } else if (!_.isUndefined(m.get('isDefault')) && !_.isNull(m.get('isDefault'))){
+            setTimeout(function() {
+              m.set('isDefault', false);
+            }, 10);
+          }
+
+          return false;
+        }
+      }, {
+        name: 'serverType',
+        label: 'Database Server',
+        editable: false,
+        cell: 'string',
+        cellHeaderClasses: 'width_percent_20',
+        headerCell: Backgrid.Extension.CustomHeaderCell,
+      }, {
+        name: 'binaryPath',
+        label: 'Binary Path',
+        sortable: false,
+        cell: Backgrid.Extension.SelectFileCell,
+        dialog_type: 'select_folder',
+        dialog_title: gettext('Select Folder'),
+        placeholder: gettext('Select binary path ...'),
+        browse_btn_label: gettext('Select path'),
+        check_btn_label: gettext('Validate utilities'),
+        browse_btn_visible: pgAdmin.server_mode === 'False' ? true : pgAdmin.enable_binary_path_browsing ? true : false
+      }];
+
+      var BinPathCollection = this.BinPathCollection =  new (Backbone.Collection.extend({
+        model: BinaryPathModel
+      }))(null);
+
+      let bin_value = JSON.parse(this.model.get(this.field.get('name')));
+      if (this.field.get('label').indexOf('EDB') >= 0) {
+        let as_bin_paths = _.extend([
+          {'version': '90600', 'next_major_version': '100000', 'serverType': gettext('EDB Advanced Server 9.6'), 'binaryPath': null, 'isDefault': false},
+          {'version': '100000', 'next_major_version': '110000', 'serverType': gettext('EDB Advanced Server 10'), 'binaryPath': null, 'isDefault': false},
+          {'version': '110000', 'next_major_version': '120000', 'serverType': gettext('EDB Advanced Server 11'), 'binaryPath': null, 'isDefault': false},
+          {'version': '120000', 'next_major_version': '130000', 'serverType': gettext('EDB Advanced Server 12'), 'binaryPath': null, 'isDefault': false},
+          {'version': '130000', 'next_major_version': '140000', 'serverType': gettext('EDB Advanced Server 13'), 'binaryPath': null, 'isDefault': false},
+        ], bin_value);
+
+        this.BinPathCollection.add(as_bin_paths);
+      } else {
+        let pg_bin_paths = _.extend([
+          {'version': '90600', 'next_major_version': '100000', 'serverType': gettext('PostgreSQL 9.6'), 'binaryPath': null, 'isDefault': false},
+          {'version': '100000', 'next_major_version': '110000', 'serverType': gettext('PostgreSQL 10'), 'binaryPath': null, 'isDefault': false},
+          {'version': '110000', 'next_major_version': '120000', 'serverType': gettext('PostgreSQL 11'), 'binaryPath': null, 'isDefault': false},
+          {'version': '120000', 'next_major_version': '130000', 'serverType': gettext('PostgreSQL 12'), 'binaryPath': null, 'isDefault': false},
+          {'version': '130000', 'next_major_version': '140000', 'serverType': gettext('PostgreSQL 13'), 'binaryPath': null, 'isDefault': false}
+        ], bin_value);
+
+        this.BinPathCollection.add(pg_bin_paths);
+      }
+
+      this.listenTo(BinPathCollection, 'change', this.binPathCollectionChanged);
+    },
+
+    render: function() {
+      var self = this,
+        gridHeader = ['<div class=\'subnode-header\'>',
+          '  <span class=\'control-label pg-el-sm-12\'>' + gettext(this.field.get('label')) + '</span>',
+          '</div>',
+        ].join('\n'),
+        gridBody = $('<div class=\'pgadmin-control-group backgrid form-group pg-el-12 object subnode\'></div>').append(gridHeader);
+
+      self.grid = new Backgrid.Grid({
+        columns: self.gridColumns,
+        collection: self.BinPathCollection,
+        className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
+      });
+
+      this.$el.empty();
+      this.$el.append(gridBody.append(self.grid.render().$el));
+      this.$el.append(['<span class="pg-el-sm-12 form-text text-muted help-block">' +
+      gettext(' Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore' +
+      ' utilities can be found for the corresponding database server version.' +
+      ' The default path will be used for server versions that do not have a' +
+      'path specified.') + '</span>'].join('\n'));
+
+      return this;
+    },
+    binPathCollectionChanged: function() {
+      let bin_value = JSON.stringify(this.BinPathCollection.toJSON());
+      this.model.set(this.field.get('name'), bin_value, {
+        silent: false
+      });
+    }
+  });
+
   Backform.UniqueColCollectionControl = Backform.Control.extend({
     initialize: function() {
       Backform.Control.prototype.initialize.apply(this, arguments);

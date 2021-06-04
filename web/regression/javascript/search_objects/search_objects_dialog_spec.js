@@ -10,6 +10,7 @@ import SearchObjectsDialog from 'tools/search_objects/static/js/search_objects_d
 import {TreeFake} from '../tree/tree_fake';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
+import gettext from 'sources/gettext';
 
 const context = describe;
 
@@ -141,11 +142,11 @@ describe('SearchObjectsDialog', () => {
         expect(alertifySpy['search_objects']).not.toHaveBeenCalled();
       });
 
-      it('display an alert with a Backup Error', () => {
+      it('display an alert with a Search object Error', () => {
         soDialog.draw(null, [{id: 'serverTreeNode'}], null);
         expect(alertifySpy.alert).toHaveBeenCalledWith(
-          'Search Objects Error',
-          'Please select a database or its child node from the browser.'
+          gettext('Search Objects Error'),
+          gettext('Please select a database or its child node from the browser.')
         );
       });
     });

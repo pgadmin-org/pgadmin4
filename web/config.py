@@ -658,7 +658,12 @@ ENABLE_PSQL = True
 # User will able to execute the system level commands through PSQL terminal
 # in pgAdmin.
 ALLOW_PSQL_SHELL_COMMANDS = False
-
+##########################################################################
+# ENABLE_BINARY_PATH_BROWSING setting is used to enable the browse button
+# while selecting binary path for the database server in server mode.
+# In Desktop mode it is always enabled and setting is of no use.
+##########################################################################
+ENABLE_BINARY_PATH_BROWSING = False
 ##########################################################################
 # Local config settings
 ##########################################################################

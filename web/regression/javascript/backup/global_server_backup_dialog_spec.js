@@ -21,8 +21,8 @@ describe('GlobalServerBackupDialog', () => {
   let backupModelSpy;
 
   let rootNode;
-  let serverTreeNode;
-  let ppasServerTreeNode;
+  let serverTreeNode, serverTreeNodeWrongPath;
+  let ppasServerTreeNode, ppasServerTreeNodeWrongPath;
 
   beforeEach(() => {
     pgBrowser = {
@@ -51,12 +51,26 @@ describe('GlobalServerBackupDialog', () => {
     serverTreeNode = pgBrowser.treeMenu.addNewNode('level1.1', {
       _type: 'server',
       _id: 10,
+      server_type: 'pg',
+      version: 100000,
     }, undefined, ['level1']);
-    ppasServerTreeNode = pgBrowser.treeMenu.addNewNode('level1.2', {
+    serverTreeNodeWrongPath = pgBrowser.treeMenu.addNewNode('level1.2', {
+      _type: 'server',
+      _id: 11,
+      server_type: 'pg',
+      version: 90600,
+    }, undefined, ['level1']);
+    ppasServerTreeNode = pgBrowser.treeMenu.addNewNode('level1.3', {
       _type: 'server',
       server_type: 'ppas',
+      version: 130000,
     }, undefined, ['level1']);
-    pgBrowser.treeMenu.addNewNode('level3', {}, undefined, ['level1', 'level1.2']);
+    ppasServerTreeNodeWrongPath = pgBrowser.treeMenu.addNewNode('level1.4', {
+      _type: 'server',
+      server_type: 'ppas',
+      version: 90600,
+    }, undefined, ['level1']);
+    pgBrowser.treeMenu.addNewNode('level3', {}, undefined, ['level1', 'level1.2', 'level1.3', 'level1.4']);
     pgBrowser.treeMenu.addNewNode('level3.1', undefined, undefined, ['level1', 'level1.2', 'level3']);
   });
 
@@ -73,6 +87,7 @@ describe('GlobalServerBackupDialog', () => {
         alertifySpy,
         backupModelSpy
       );
+
       pgBrowser.get_preference = jasmine.createSpy('get_preferences');
     });
 
@@ -103,46 +118,113 @@ describe('GlobalServerBackupDialog', () => {
           pgBrowser.get_preference.and.returnValue(undefined);
         });
 
-        context('server is a ppas server', () => {
-          it('display an alert with "Backup Error"', () => {
+        context('server is a PostgreSQL server', () => {
+          it('display an alert with "Preferences Error"', () => {
             backupDialog.draw(null, [serverTreeNode], null);
             expect(alertifySpy.alert).toHaveBeenCalledWith(
-              'Backup Error',
+              'Preferences Error',
               'Failed to load preference pg_bin_dir of module paths'
             );
           });
         });
 
-        context('server is not a ppas server', () => {
-          it('display an alert with "Backup Error"', () => {
+        context('server is a EPAS server', () => {
+          it('display an alert with "Preferences Error"', () => {
             backupDialog.draw(null, [ppasServerTreeNode], null);
             expect(alertifySpy.alert).toHaveBeenCalledWith(
-              'Backup Error',
+              'Preferences Error',
               'Failed to load preference ppas_bin_dir of module paths'
             );
           });
         });
       });
 
-      context('preference can be found', () => {
+      context('preference can be found for PostgreSQL Server', () => {
         context('binary folder is not configured', () => {
           beforeEach(() => {
-            pgBrowser.get_preference.and.returnValue({});
+            pgBrowser.get_preference.and.returnValue({value: '[{\"serverType\":\"PostgreSQL 9.6\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"90600\",\"next_major_version\":\"100000\"},{\"serverType\":\"PostgreSQL 10\",\"binaryPath\":\"/Library/PostgreSQL/10/bin\",\"isDefault\":false,\"version\":\"100000\",\"next_major_version\":\"110000\"},{\"serverType\":\"PostgreSQL 11\",\"binaryPath\":\"/Library/PostgreSQL/11/bin\",\"isDefault\":false,\"version\":\"110000\",\"next_major_version\":\"120000\"},{\"serverType\":\"PostgreSQL 12\",\"binaryPath\":\"/Library/PostgreSQL/12/bin\",\"isDefault\":false,\"version\":\"120000\",\"next_major_version\":\"130000\"},{\"serverType\":\"PostgreSQL 13\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"130000\",\"next_major_version\":\"140000\"}]'});
           });
 
-          context('server is a ppas server', () => {
+          context('server is a PostgreSQL server', () => {
             it('display an alert with "Configuration required"', () => {
-              backupDialog.draw(null, [serverTreeNode], null);
+              backupDialog.draw(null, [serverTreeNodeWrongPath], null);
               expect(alertifySpy.alert).toHaveBeenCalledWith(
                 'Configuration required',
                 'Please configure the PostgreSQL Binary Path in the Preferences dialog.'
               );
             });
           });
+        });
 
-          context('server is not a ppas server', () => {
+        context('binary folder is configured', () => {
+          let globalResizeToSpy;
+          let serverResizeToSpy;
+          beforeEach(() => {
+            globalResizeToSpy = jasmine.createSpyObj('globals', ['resizeTo']);
+            alertifySpy['BackupDialog_globals'].and
+              .returnValue(globalResizeToSpy);
+            serverResizeToSpy = jasmine.createSpyObj('server', ['resizeTo']);
+            alertifySpy['BackupDialog_server'].and
+              .returnValue(serverResizeToSpy);
+            pgBrowser.get_preference.and.returnValue({value: '[{\"serverType\":\"PostgreSQL 9.6\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"90600\",\"next_major_version\":\"100000\"},{\"serverType\":\"PostgreSQL 10\",\"binaryPath\":\"/Library/PostgreSQL/10/bin\",\"isDefault\":true,\"version\":\"100000\",\"next_major_version\":\"110000\"},{\"serverType\":\"PostgreSQL 11\",\"binaryPath\":\"/Library/PostgreSQL/11/bin\",\"isDefault\":false,\"version\":\"110000\",\"next_major_version\":\"120000\"},{\"serverType\":\"PostgreSQL 12\",\"binaryPath\":\"/Library/PostgreSQL/12/bin\",\"isDefault\":false,\"version\":\"120000\",\"next_major_version\":\"130000\"},{\"serverType\":\"PostgreSQL 13\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"130000\",\"next_major_version\":\"140000\"}]'});
+            spyOn(backupDialog, 'url_for_utility_exists').and.returnValue('/backup/utility_exists/10/servers');
+            networkMock.onGet('/backup/utility_exists/10/servers').reply(200, {'success': 1});
+          });
+
+          context('dialog for global backup ', () => {
+            it('displays the dialog when binary path is for correct server version', (done) => {
+              backupDialog.draw(null, [serverTreeNode], {globals: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
+              setTimeout(() => {
+                expect(alertifySpy['BackupDialog_globals']).toHaveBeenCalledWith(true);
+                expect(globalResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+                done();
+              }, 0);
+            });
+          });
+
+          context('dialog for server backup', () => {
+            it('displays the dialog when binary path is for correct server version', (done) => {
+              backupDialog.draw(null, [serverTreeNode], {server: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
+              setTimeout(() => {
+                expect(alertifySpy['BackupDialog_server']).toHaveBeenCalledWith(true);
+                expect(serverResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+                done();
+              }, 0);
+            });
+          });
+
+          context('dialog for global backup ', () => {
+            it('displays the dialog when default binary path is specified', (done) => {
+              backupDialog.draw(null, [serverTreeNodeWrongPath], {globals: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
+              setTimeout(() => {
+                expect(alertifySpy['BackupDialog_globals']).toHaveBeenCalledWith(true);
+                expect(globalResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+                done();
+              }, 0);
+            });
+          });
+
+          context('dialog for server backup', () => {
+            it('displays the dialog when default binary path is specified', (done) => {
+              backupDialog.draw(null, [serverTreeNodeWrongPath], {server: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
+              setTimeout(() => {
+                expect(alertifySpy['BackupDialog_server']).toHaveBeenCalledWith(true);
+                expect(serverResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+                done();
+              }, 0);
+            });
+          });
+        });
+      });
+      context('preference can be found for EPAS Server', () => {
+        context('binary folder is not configured', () => {
+          beforeEach(() => {
+            pgBrowser.get_preference.and.returnValue({value: '[{\"serverType\":\"EDB Advanced Server 9.6\",\"binaryPath\":\"\",\"isDefault\":false,\"version\":\"90600\",\"next_major_version\":\"100000\"},{\"serverType\":\"EDB Advanced Server 10\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"100000\",\"next_major_version\":\"110000\"},{\"serverType\":\"EDB Advanced Server 11\",\"binaryPath\":\"/Library/EPAS/11/bin/\",\"isDefault\":false,\"version\":\"110000\",\"next_major_version\":\"120000\"},{\"serverType\":\"EDB Advanced Server 12\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"120000\",\"next_major_version\":\"130000\"},{\"serverType\":\"EDB Advanced Server 13\",\"binaryPath\":\"/Library/EPAS/13/bin/\",\"isDefault\":false,\"version\":\"130000\",\"next_major_version\":\"140000\"}]'});
+          });
+
+          context('server is a EPAS server', () => {
             it('display an alert with "Configuration required"', () => {
-              backupDialog.draw(null, [ppasServerTreeNode], null);
+              backupDialog.draw(null, [ppasServerTreeNodeWrongPath], null);
               expect(alertifySpy.alert).toHaveBeenCalledWith(
                 'Configuration required',
                 'Please configure the EDB Advanced Server Binary Path in the Preferences dialog.'
@@ -161,14 +243,14 @@ describe('GlobalServerBackupDialog', () => {
             serverResizeToSpy = jasmine.createSpyObj('server', ['resizeTo']);
             alertifySpy['BackupDialog_server'].and
               .returnValue(serverResizeToSpy);
-            pgBrowser.get_preference.and.returnValue({value: '/some/path'});
+            pgBrowser.get_preference.and.returnValue({value: '[{\"serverType\":\"EDB Advanced Server 9.6\",\"binaryPath\":\"\",\"isDefault\":false,\"version\":\"90600\",\"next_major_version\":\"100000\"},{\"serverType\":\"EDB Advanced Server 10\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"100000\",\"next_major_version\":\"110000\"},{\"serverType\":\"EDB Advanced Server 11\",\"binaryPath\":\"/Library/EPAS/11/bin/\",\"isDefault\":false,\"version\":\"110000\",\"next_major_version\":\"120000\"},{\"serverType\":\"EDB Advanced Server 12\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"120000\",\"next_major_version\":\"130000\"},{\"serverType\":\"EDB Advanced Server 13\",\"binaryPath\":\"/Library/EPAS/13/bin/\",\"isDefault\":true,\"version\":\"130000\",\"next_major_version\":\"140000\"}]'});
             spyOn(backupDialog, 'url_for_utility_exists').and.returnValue('/backup/utility_exists/10/servers');
             networkMock.onGet('/backup/utility_exists/10/servers').reply(200, {'success': 1});
           });
 
-          context('dialog for global backup', () => {
-            it('displays the dialog', (done) => {
-              backupDialog.draw(null, [serverTreeNode], {globals: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
+          context('dialog for global backup ', () => {
+            it('displays the dialog when binary path is for correct server version', (done) => {
+              backupDialog.draw(null, [ppasServerTreeNode], {globals: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
               setTimeout(() => {
                 expect(alertifySpy['BackupDialog_globals']).toHaveBeenCalledWith(true);
                 expect(globalResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
@@ -178,8 +260,30 @@ describe('GlobalServerBackupDialog', () => {
           });
 
           context('dialog for server backup', () => {
-            it('displays the dialog', (done) => {
-              backupDialog.draw(null, [serverTreeNode], {server: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
+            it('displays the dialog when binary path is for correct server version', (done) => {
+              backupDialog.draw(null, [ppasServerTreeNode], {server: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
+              setTimeout(() => {
+                expect(alertifySpy['BackupDialog_server']).toHaveBeenCalledWith(true);
+                expect(serverResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+                done();
+              }, 0);
+            });
+          });
+
+          context('dialog for global backup ', () => {
+            it('displays the dialog when default binary path is specified', (done) => {
+              backupDialog.draw(null, [ppasServerTreeNodeWrongPath], {globals: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
+              setTimeout(() => {
+                expect(alertifySpy['BackupDialog_globals']).toHaveBeenCalledWith(true);
+                expect(globalResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+                done();
+              }, 0);
+            });
+          });
+
+          context('dialog for server backup', () => {
+            it('displays the dialog when default binary path is specified', (done) => {
+              backupDialog.draw(null, [ppasServerTreeNodeWrongPath], {server: true}, pgBrowser.stdW.md, pgBrowser.stdH.md);
               setTimeout(() => {
                 expect(alertifySpy['BackupDialog_server']).toHaveBeenCalledWith(true);
                 expect(serverResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);

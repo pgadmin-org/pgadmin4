@@ -9,13 +9,12 @@
 
 import os
 import sys
+import json
 
 from flask import render_template
 from flask_babelex import gettext as _
 from pgadmin.utils.preferences import Preferences
 from werkzeug.exceptions import InternalServerError
-
-import config
 
 
 class ServerType(object):
@@ -61,14 +60,18 @@ class ServerType(object):
 
         for key in cls.registry:
             st = cls.registry[key]
-            default_path = config.DEFAULT_BINARY_PATHS.get(st.stype, "")
-
-            st.utility_path = paths.register(
-                'bin_paths', st.stype + '_bin_dir',
-                st.UTILITY_PATH_LABEL,
-                'text', default_path, category_label=_('Binary paths'),
-                help_str=st.UTILITY_PATH_HELP
-            )
+            if key == 'pg':
+                st.utility_path = paths.register(
+                    'bin_paths', 'pg_bin_dir',
+                    _("PostgreSQL Binary Path"), 'selectFile', None,
+                    category_label=_('Binary paths')
+                )
+            elif key == 'ppas':
+                st.utility_path = paths.register(
+                    'bin_paths', 'ppas_bin_dir',
+                    _("EDB Advanced Server Binary Path"), 'selectFile', None,
+                    category_label=_('Binary paths')
+                )
 
     @property
     def priority(self):
@@ -120,7 +123,8 @@ class ServerType(object):
                     operation
                 )
             )
-        bin_path = self.utility_path.get()
+
+        bin_path = self.get_utility_path(sversion)
         if "$DIR" in bin_path:
             # When running as an WSGI application, we will not find the
             # '__file__' attribute for the '__main__' module.
@@ -137,6 +141,26 @@ class ServerType(object):
             bin_path,
             (res if os.name != 'nt' else (res + '.exe'))
         ))
+
+    def get_utility_path(self, sverison):
+        """
+        This function is used to get the utility path set by the user in
+        preferences for the specific server version, if not set then check
+        for any default path is set.
+        """
+        default_path = None
+        bin_path_json = json.loads(self.utility_path.get())
+        # iterate through all the path and return appropriate value
+        for bin_path in bin_path_json:
+            if int(bin_path['version']) <= sverison < \
+                int(bin_path['next_major_version']) and \
+                    bin_path['binaryPath'] is not None:
+                return bin_path['binaryPath']
+
+            if bin_path['isDefault']:
+                default_path = bin_path['binaryPath']
+
+        return default_path
 
 
 # Default Server Type

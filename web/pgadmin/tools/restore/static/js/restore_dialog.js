@@ -12,6 +12,8 @@ import Backform from '../../../../static/js/backform.pgadmin';
 import {Dialog} from '../../../../static/js/alertify/dialog';
 import url_for from 'sources/url_for';
 import axios from 'axios/index';
+import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
+import {hasBinariesConfiguration} from 'sources/utils';
 
 export class RestoreDialog extends Dialog {
   constructor(pgBrowser, $, alertify, RestoreModel, backform = Backform) {
@@ -27,14 +29,12 @@ export class RestoreDialog extends Dialog {
   }
 
   draw(action, aciTreeItem, width, height) {
-
-    const serverInformation = this.retrieveAncestorOfTypeServer(aciTreeItem);
-
+    const serverInformation = retrieveAncestorOfTypeServer(this.pgBrowser, aciTreeItem, gettext('Restore Error'), this.alertify);
     if (!serverInformation) {
       return;
     }
 
-    if (!this.hasBinariesConfiguration(serverInformation)) {
+    if (!hasBinariesConfiguration(this.pgBrowser, serverInformation, this.alertify)) {
       return;
     }
 

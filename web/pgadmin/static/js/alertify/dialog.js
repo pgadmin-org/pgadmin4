@@ -79,66 +79,6 @@ export class Dialog {
     return serverInformation;
   }
 
-  retrieveAncestorOfTypeDatabase(item) {
-    let databaseInfo = null;
-    let aciTreeItem = item || this.pgBrowser.treeMenu.selected();
-    let treeNode = this.pgBrowser.treeMenu.findNodeByDomElement(aciTreeItem);
-
-    if (treeNode) {
-      if(treeNode.getData()._type === 'database') {
-        databaseInfo = treeNode.getData();
-      } else {
-        let nodeData = null;
-        treeNode.ancestorNode(
-          (node) => {
-            nodeData = node.getData();
-            if(nodeData._type === 'database') {
-              databaseInfo = nodeData;
-              return true;
-            }
-            return false;
-          }
-        );
-      }
-    }
-
-    if (databaseInfo === null) {
-      this.alertify.alert(
-        gettext(this.errorAlertTitle),
-        gettext('Please select a database or its child node from the browser.')
-      );
-    }
-
-    return databaseInfo;
-  }
-
-  hasBinariesConfiguration(serverInformation) {
-    const module = 'paths';
-    let preference_name = 'pg_bin_dir';
-    let msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
-
-    if ((serverInformation.type && serverInformation.type === 'ppas') ||
-      serverInformation.server_type === 'ppas') {
-      preference_name = 'ppas_bin_dir';
-      msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
-    }
-    const preference = this.pgBrowser.get_preference(module, preference_name);
-
-    if (preference) {
-      if (!preference.value) {
-        this.alertify.alert(gettext('Configuration required'), msg);
-        return false;
-      }
-    } else {
-      this.alertify.alert(
-        gettext(this.errorAlertTitle),
-        gettext('Failed to load preference %s of module %s', preference_name, module)
-      );
-      return false;
-    }
-    return true;
-  }
-
   dialogName() {
     return undefined;
   }

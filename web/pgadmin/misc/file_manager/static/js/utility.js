@@ -1573,7 +1573,6 @@ define([
                   );
                   $('.file_manager button.rename').attr('disabled', 'disabled');
                   // set selected folder name in breadcrums
-                  $('.file_manager #uploader .input-path').hide();
                   $('.file_manager #uploader .show_selected_file').remove();
                   $('<span class="show_selected_file">' + path + '</span>').appendTo(
                     '.file_manager #uploader .filemanager-path-group'

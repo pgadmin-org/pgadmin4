@@ -307,6 +307,8 @@ define('pgadmin.preferences', [
               return 'keyboardShortcut';
             case 'radioModern':
               return 'radioModern';
+            case 'selectFile':
+              return 'binary-paths-grid';
             default:
               if (console && console.warn) {
                 // Warning for developer only.
@@ -476,7 +478,7 @@ define('pgadmin.preferences', [
                 overflow: !1,
                 title: gettext('Preferences'),
                 closableByDimmer: false,
-                modal: false,
+                modal: true,
                 pinnable: false,
               },
             };

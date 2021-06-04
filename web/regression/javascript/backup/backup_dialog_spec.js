@@ -68,6 +68,9 @@ describe('BackupDialog', () => {
               data: {
                 _id: 10,
                 _type: 'server',
+                label: 'some-tree-label',
+                server_type: 'pg',
+                version: 100000,
               },
               children: [
                 {
@@ -89,13 +92,33 @@ describe('BackupDialog', () => {
               ],
             },
             {
+              id: 'serverTreeNodeWrongPath',
+              data: {
+                _id: 12,
+                _type: 'server',
+                label: 'some-tree-label',
+                server_type: 'pg',
+                version: 90600,
+              },
+            },
+            {
               id: 'ppasServer',
               data: {
+                _id: 13,
                 _type: 'server',
+                label: 'some-tree-label',
                 server_type: 'ppas',
-                children: [
-                  {id: 'someNodeUnderneathPPASServer'},
-                ],
+                version: 130000,
+              },
+            },
+            {
+              id: 'ppasServerTreeNodeWrongPath',
+              data: {
+                _id: 14,
+                _type: 'server',
+                label: 'some-tree-label',
+                server_type: 'ppas',
+                version: 90600,
               },
             },
           ],
@@ -148,49 +171,39 @@ describe('BackupDialog', () => {
           pgBrowser.get_preference.and.returnValue(undefined);
         });
 
-        context('server is a ppas server', () => {
-          it('display an alert with "Backup Error"', () => {
-            backupDialog.draw(null, [{id: 'some_database'}], null);
+        context('server is a PostgreSQL server', () => {
+          it('display an alert with "Preferences Error"', () => {
+            backupDialog.draw(null, [{id: 'serverTreeNode'}], null);
             expect(alertifySpy.alert).toHaveBeenCalledWith(
-              'Backup Error',
+              'Preferences Error',
               'Failed to load preference pg_bin_dir of module paths'
             );
           });
         });
 
-        context('server is not a ppas server', () => {
-          it('display an alert with "Backup Error"', () => {
+        context('server is a EPAS server', () => {
+          it('display an alert with "Preferences Error"', () => {
             backupDialog.draw(null, [{id: 'ppasServer'}], null);
             expect(alertifySpy.alert).toHaveBeenCalledWith(
-              'Backup Error',
+              'Preferences Error',
               'Failed to load preference ppas_bin_dir of module paths'
             );
           });
         });
       });
 
-      context('preference can be found', () => {
+      context('preference can be found for PostgreSQL Server', () => {
         context('binary folder is not configured', () => {
           beforeEach(() => {
-            pgBrowser.get_preference.and.returnValue({});
+            pgBrowser.get_preference.and.returnValue({value: '[{\"serverType\":\"PostgreSQL 9.6\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"90600\",\"next_major_version\":\"100000\"},{\"serverType\":\"PostgreSQL 10\",\"binaryPath\":\"/Library/PostgreSQL/10/bin\",\"isDefault\":false,\"version\":\"100000\",\"next_major_version\":\"110000\"},{\"serverType\":\"PostgreSQL 11\",\"binaryPath\":\"/Library/PostgreSQL/11/bin\",\"isDefault\":false,\"version\":\"110000\",\"next_major_version\":\"120000\"},{\"serverType\":\"PostgreSQL 12\",\"binaryPath\":\"/Library/PostgreSQL/12/bin\",\"isDefault\":false,\"version\":\"120000\",\"next_major_version\":\"130000\"},{\"serverType\":\"PostgreSQL 13\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"130000\",\"next_major_version\":\"140000\"}]'});
           });
 
-          context('server is a ppas server', () => {
+          context('server is a PostgreSQL server', () => {
             it('display an alert with "Configuration required"', () => {
-              backupDialog.draw(null, [{id: 'serverTreeNode'}], null);
+              backupDialog.draw(null, [{id: 'serverTreeNodeWrongPath'}], null);
               expect(alertifySpy.alert).toHaveBeenCalledWith(
                 'Configuration required',
                 'Please configure the PostgreSQL Binary Path in the Preferences dialog.'
-              );
-            });
-          });
-
-          context('server is not a ppas server', () => {
-            it('display an alert with "Configuration required"', () => {
-              backupDialog.draw(null, [{id: 'ppasServer'}], null);
-              expect(alertifySpy.alert).toHaveBeenCalledWith(
-                'Configuration required',
-                'Please configure the EDB Advanced Server Binary Path in the Preferences dialog.'
               );
             });
           });
@@ -202,13 +215,22 @@ describe('BackupDialog', () => {
             backupDialogResizeToSpy = jasmine.createSpyObj('backupDialogResizeToSpy', ['resizeTo']);
             alertifySpy['backup_objects'].and
               .returnValue(backupDialogResizeToSpy);
-            pgBrowser.get_preference.and.returnValue({value: '/some/path'});
+            pgBrowser.get_preference.and.returnValue({value: '[{\"serverType\":\"PostgreSQL 9.6\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"90600\",\"next_major_version\":\"100000\"},{\"serverType\":\"PostgreSQL 10\",\"binaryPath\":\"/Library/PostgreSQL/10/bin\",\"isDefault\":true,\"version\":\"100000\",\"next_major_version\":\"110000\"},{\"serverType\":\"PostgreSQL 11\",\"binaryPath\":\"/Library/PostgreSQL/11/bin\",\"isDefault\":false,\"version\":\"110000\",\"next_major_version\":\"120000\"},{\"serverType\":\"PostgreSQL 12\",\"binaryPath\":\"/Library/PostgreSQL/12/bin\",\"isDefault\":false,\"version\":\"120000\",\"next_major_version\":\"130000\"},{\"serverType\":\"PostgreSQL 13\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"130000\",\"next_major_version\":\"140000\"}]'});
             spyOn(backupDialog, 'url_for_utility_exists').and.returnValue('/backup/utility_exists/10/objects');
             networkMock.onGet('/backup/utility_exists/10/objects').reply(200, {'success': 1});
           });
 
-          it('displays the dialog', (done) => {
+          it('displays the dialog when binary path is for correct server version', (done) => {
             backupDialog.draw(null, [{id: 'serverTreeNode'}], null, pgBrowser.stdW.md, pgBrowser.stdH.md);
+            setTimeout(() => {
+              expect(alertifySpy['backup_objects']).toHaveBeenCalledWith(true);
+              expect(backupDialogResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+              done();
+            }, 0);
+          });
+
+          it('displays the dialog when default binary path is specified', (done) => {
+            backupDialog.draw(null, [{id: 'serverTreeNodeWrongPath'}], null, pgBrowser.stdW.md, pgBrowser.stdH.md);
             setTimeout(() => {
               expect(alertifySpy['backup_objects']).toHaveBeenCalledWith(true);
               expect(backupDialogResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
@@ -225,6 +247,54 @@ describe('BackupDialog', () => {
                 done();
               }, 0);
             });
+          });
+        });
+      });
+
+      context('preference can be found for EPAS server', () => {
+        context('binary folder is not configured', () => {
+          beforeEach(() => {
+            pgBrowser.get_preference.and.returnValue({value: '[{\"serverType\":\"EDB Advanced Server 9.6\",\"binaryPath\":\"\",\"isDefault\":false,\"version\":\"90600\",\"next_major_version\":\"100000\"},{\"serverType\":\"EDB Advanced Server 10\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"100000\",\"next_major_version\":\"110000\"},{\"serverType\":\"EDB Advanced Server 11\",\"binaryPath\":\"/Library/EPAS/11/bin/\",\"isDefault\":false,\"version\":\"110000\",\"next_major_version\":\"120000\"},{\"serverType\":\"EDB Advanced Server 12\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"120000\",\"next_major_version\":\"130000\"},{\"serverType\":\"EDB Advanced Server 13\",\"binaryPath\":\"/Library/EPAS/13/bin/\",\"isDefault\":false,\"version\":\"130000\",\"next_major_version\":\"140000\"}]'});
+          });
+
+          context('server is a EPAS server', () => {
+            it('display an alert with "Configuration required"', () => {
+              backupDialog.draw(null, [{id: 'ppasServerTreeNodeWrongPath'}], null);
+              expect(alertifySpy.alert).toHaveBeenCalledWith(
+                'Configuration required',
+                'Please configure the EDB Advanced Server Binary Path in the Preferences dialog.'
+              );
+            });
+          });
+        });
+
+        context('binary folder is configured', () => {
+          let backupDialogResizeToSpy;
+          beforeEach(() => {
+            backupDialogResizeToSpy = jasmine.createSpyObj('backupDialogResizeToSpy', ['resizeTo']);
+            alertifySpy['backup_objects'].and
+              .returnValue(backupDialogResizeToSpy);
+            pgBrowser.get_preference.and.returnValue({value: '[{\"serverType\":\"EDB Advanced Server 9.6\",\"binaryPath\":\"\",\"isDefault\":false,\"version\":\"90600\",\"next_major_version\":\"100000\"},{\"serverType\":\"EDB Advanced Server 10\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"100000\",\"next_major_version\":\"110000\"},{\"serverType\":\"EDB Advanced Server 11\",\"binaryPath\":\"/Library/EPAS/11/bin/\",\"isDefault\":false,\"version\":\"110000\",\"next_major_version\":\"120000\"},{\"serverType\":\"EDB Advanced Server 12\",\"binaryPath\":null,\"isDefault\":false,\"version\":\"120000\",\"next_major_version\":\"130000\"},{\"serverType\":\"EDB Advanced Server 13\",\"binaryPath\":\"/Library/EPAS/13/bin/\",\"isDefault\":true,\"version\":\"130000\",\"next_major_version\":\"140000\"}]'});
+            spyOn(backupDialog, 'url_for_utility_exists').and.returnValue('/backup/utility_exists/10/objects');
+            networkMock.onGet('/backup/utility_exists/10/objects').reply(200, {'success': 1});
+          });
+
+          it('displays the dialog when binary path is for correct server version', (done) => {
+            backupDialog.draw(null, [{id: 'ppasServer'}], null, pgBrowser.stdW.md, pgBrowser.stdH.md);
+            setTimeout(() => {
+              expect(alertifySpy['backup_objects']).toHaveBeenCalledWith(true);
+              expect(backupDialogResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+              done();
+            }, 0);
+          });
+
+          it('displays the dialog when default binary path is specified', (done) => {
+            backupDialog.draw(null, [{id: 'ppasServerTreeNodeWrongPath'}], null, pgBrowser.stdW.md, pgBrowser.stdH.md);
+            setTimeout(() => {
+              expect(alertifySpy['backup_objects']).toHaveBeenCalledWith(true);
+              expect(backupDialogResizeToSpy.resizeTo).toHaveBeenCalledWith(pgBrowser.stdW.md, pgBrowser.stdH.md);
+              done();
+            }, 0);
           });
         });
       });

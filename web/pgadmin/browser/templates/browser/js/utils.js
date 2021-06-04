@@ -57,6 +57,9 @@ define('pgadmin.browser.utils',
   pgAdmin['allow_psql_shell_commands'] =  '{{ current_app.config.get('ALLOW_PSQL_SHELL_COMMANDS') }}'  == 'True';
   pgAdmin['platform'] =  '{{platform}}';
 
+  /* GET Binary Path Browse config */
+  pgAdmin['enable_binary_path_browsing'] = '{{ current_app.config.get('ENABLE_BINARY_PATH_BROWSING') }}' == 'True';
+
   // Define list of nodes on which Query tool option doesn't appears
   var unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',

@@ -10,7 +10,7 @@
 import _ from 'underscore';
 import { getTreeNodeHierarchyFromIdentifier } from 'sources/tree/pgadmin_tree_node';
 import $ from 'jquery';
-
+import gettext from 'sources/gettext';
 
 export function parseShortcutValue(obj) {
   var shortcut = '';
@@ -359,4 +359,52 @@ export function CSVToArray( strData, strDelimiter, quoteChar){
   }
   // Return the parsed data.
   return arrData;
+}
+
+export function hasBinariesConfiguration(pgBrowser, serverInformation, alertify) {
+  const module = 'paths';
+  let preference_name = 'pg_bin_dir';
+  let msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
+
+  if ((serverInformation.type && serverInformation.type === 'ppas') ||
+    serverInformation.server_type === 'ppas') {
+    preference_name = 'ppas_bin_dir';
+    msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
+  }
+
+  const preference = pgBrowser.get_preference(module, preference_name);
+
+  if (preference) {
+    if (_.isUndefined(preference.value) || !checkBinaryPathExists(preference.value, serverInformation.version)) {
+      alertify.alert(gettext('Configuration required'), msg);
+      return false;
+    }
+  } else {
+    alertify.alert(
+      gettext('Preferences Error'),
+      gettext('Failed to load preference %s of module %s', preference_name, module)
+    );
+    return false;
+  }
+  return true;
+}
+
+function checkBinaryPathExists(binaryPathArray, selectedServerVersion) {
+  let foundDefaultPath = false,
+    serverSpecificPathExist = false,
+    binPathArray = JSON.parse(binaryPathArray);
+
+  _.each(binPathArray, function(binPath) {
+    if (selectedServerVersion >= binPath.version && selectedServerVersion < binPath.next_major_version) {
+      if (!_.isUndefined(binPath.binaryPath) && !_.isNull(binPath.binaryPath) && binPath.binaryPath.trim() !== '')
+        serverSpecificPathExist = true;
+    }
+
+    // Check for default path
+    if (binPath.isDefault) {
+      foundDefaultPath = true;
+    }
+  });
+
+  return (serverSpecificPathExist | foundDefaultPath);
 }
