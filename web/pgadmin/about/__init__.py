@@ -20,6 +20,7 @@ import config
 import httpagentparser
 from pgadmin.model import User
 from user_agents import parse
+import platform
 
 MODULE_NAME = 'about'
 
@@ -110,17 +111,15 @@ def detect_browser(request):
     """This function returns the browser and os details"""
     nwjs_version = None
     agent = request.environ.get('HTTP_USER_AGENT')
-    user_agent = parse(agent)
+    os_details = parse(platform.platform()).ua_string
 
     if 'Nwjs' in agent:
         agent = agent.split('-')
         nwjs_version = agent[0].split(':')[1]
         browser = 'Chromium' + ' ' + agent[2]
-        os_details = user_agent.os.family + ' ' + user_agent.os.version_string
 
     else:
         browser = httpagentparser.detect(agent)
-        os_details = user_agent.os.family + ' ' + user_agent.os.version_string
         if not browser:
             browser = agent.split('/')[0]
         else:

@@ -39,4 +39,3 @@ gssapi==1.6.*
 flask-socketio>=5.0.1
 eventlet==0.30.2
 httpagentparser==1.9.*
-user_agents==2.2.*
