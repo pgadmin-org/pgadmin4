@@ -545,6 +545,9 @@ define([
                 case 'Foreign Table':
                   object_type = 'foreign_table';
                   break;
+                case 'Package':
+                  object_type = 'package';
+                  break;
                 default:
                   break;
                 }

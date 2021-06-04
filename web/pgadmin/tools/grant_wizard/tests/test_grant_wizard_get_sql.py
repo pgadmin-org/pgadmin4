@@ -22,6 +22,8 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as grant_wizard_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.packages.tests \
+    import utils as package_utils
 
 
 class GrantWizardSaveGetSQLTestCase(BaseTestGenerator):
@@ -52,12 +54,35 @@ class GrantWizardSaveGetSQLTestCase(BaseTestGenerator):
                                                       self.schema_name)
         if not schema_response:
             raise Exception("Could not find the schema to add a table.")
-        self.table_name = "table_for_wizard%s" % (str(uuid.uuid4())[1:8])
-        self.table_id = tables_utils.create_table(self.server, self.db_name,
-                                                  self.schema_name,
-                                                  self.table_name)
-        self.test_data['objects'][-1]['name'] = self.table_name
-        self.test_data['objects'][-1]['name_with_args'] = self.table_name
+
+        if self.test_data['objects'][-1]['object_type'] == 'Package':
+
+            if self.server_information['type'] == 'pg':
+                message = "Packages are not supported by PG."
+                self.skipTest(message)
+
+            self.pkg_name = "pkg_%s" % str(uuid.uuid4())[1:8]
+            self.proc_name = "proc_%s" % str(uuid.uuid4())[1:8]
+
+            self.package_id = package_utils.create_package(self.server,
+                                                           self.db_name,
+                                                           self.schema_name,
+                                                           self.pkg_name,
+                                                           self.proc_name)
+
+            self.test_data['objects'][-1]['name'] = self.pkg_name
+            self.test_data['objects'][-1]['name_with_args'] = self.pkg_name
+
+        else:
+            self.table_name = "table_for_wizard%s" % (str(uuid.uuid4())[1:8])
+            self.table_id = tables_utils.create_table(self.server,
+                                                      self.db_name,
+                                                      self.schema_name,
+                                                      self.table_name)
+
+            self.test_data['objects'][-1]['name'] = self.table_name
+            self.test_data['objects'][-1]['name_with_args'] = self.table_name
+
         self.test_data['objects'][-1]['nspname'] = self.schema_name
 
         if self.server_information['type'] == 'ppas':

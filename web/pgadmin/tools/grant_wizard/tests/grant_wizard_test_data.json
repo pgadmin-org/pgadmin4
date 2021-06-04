@@ -217,6 +217,38 @@
       "expected_data": {
         "status_code": 200
       }
+    },
+    {
+      "name": "Grant wizard to packages SQL statement",
+      "url": "/grant_wizard/sql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {
+        "objects": [
+            {
+              "selected": true,
+              "name": "auth_group",
+              "name_with_args": "auth_group",
+              "nspname": "public",
+              "object_type": "Package"
+            }
+          ],
+          "acl": [
+            {
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ]
+            }
+          ]
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
     }
   ],
   "grant_wizard_get_acl_list": [

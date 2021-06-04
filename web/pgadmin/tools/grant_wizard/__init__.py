@@ -251,6 +251,15 @@ def _get_rows_for_type(conn, ntype, server_prop, node_id):
 
         status, res = conn.execute_dict(sql)
 
+    # Logic for generating privileges sql only for ppas
+    # Fetch Packages.
+    if server_prop['server_type'] == 'ppas' and ntype in ['package']:
+        sql = render_template("/".join(
+            [server_prop['template_path'], '/sql/package.sql']),
+            node_id=node_id)
+
+        status, res = conn.execute_dict(sql)
+
     return status, res
 
 
@@ -300,7 +309,8 @@ def properties(sid, did, node_id, node_type):
             current_app.logger.error(res)
             failed_objects.append(disp_type)
         else:
-            res_data.extend(res['rows'])
+            if len(res) > 0:
+                res_data.extend(res['rows'])
 
     for row in node_types:
         if 'oid' in row:
@@ -338,6 +348,10 @@ def properties(sid, did, node_id, node_type):
             status, res = _get_rows_for_type(
                 conn, 'foreign_table', server_prop, node_id)
             _append_rows(status, res, 'foreign table')
+
+            status, res = _get_rows_for_type(
+                conn, 'package', server_prop, node_id)
+            _append_rows(status, res, 'package')
         else:
             status, res = _get_rows_for_type(conn, ntype, server_prop, node_id)
             _append_rows(status, res, 'function')
@@ -401,6 +415,12 @@ def msql(sid, did):
                 data['acl'],
                 acls['foreign_table']['acl'])
 
+            # Logic for setting privileges only for ppas
+            if server_prop['server_type'] == 'ppas':
+                data['priv']['package'] = parse_priv_to_db(
+                    data['acl'],
+                    acls['package']['acl'])
+
         # Pass database objects and get SQL for privileges
         sql_data = ''
         data_func = {'objects': data['objects'],
@@ -437,6 +457,17 @@ def msql(sid, did):
             data=data_table, conn=conn)
         if sql and sql.strip('\n') != '':
             sql_data += sql
+
+        # Logic for generating privileges sql only for ppas
+        if server_prop['server_type'] == 'ppas':
+            data_package = {'objects': data['objects'],
+                            'priv': data['priv']['package']}
+            sql = render_template(
+                "/".join([server_prop['template_path'],
+                          '/sql/grant_package.sql']),
+                data=data_package, conn=conn)
+            if sql and sql.strip('\n') != '':
+                sql_data += sql
 
         res = {'data': sql_data}
 
@@ -501,6 +532,12 @@ def save(sid, did):
                 data['acl'],
                 acls['foreign_table']['acl'])
 
+            # Logic for setting privileges only for ppas
+            if server_prop['server_type'] == 'ppas':
+                data['priv']['package'] = parse_priv_to_db(
+                    data['acl'],
+                    acls['package']['acl'])
+
         # Pass database objects and get SQL for privileges
         # Pass database objects and get SQL for privileges
         sql_data = ''
@@ -538,6 +575,17 @@ def save(sid, did):
             data=data_table, conn=conn)
         if sql and sql.strip('\n') != '':
             sql_data += sql
+
+        # Logic for generating privileges sql only for ppas
+        if server_prop['server_type'] == 'ppas':
+            data_package = {'objects': data['objects'],
+                            'priv': data['priv']['package']}
+            sql = render_template(
+                "/".join([server_prop['template_path'],
+                          '/sql/grant_package.sql']),
+                data=data_package, conn=conn)
+            if sql and sql.strip('\n') != '':
+                sql_data += sql
 
         status, res = conn.execute_dict(sql_data)
         if not status:
