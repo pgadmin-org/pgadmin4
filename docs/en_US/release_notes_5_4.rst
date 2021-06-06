@@ -20,6 +20,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #6225 <https://redmine.postgresql.org/issues/6225>`_ -  Updated Flask-Security-Too to the latest v4.
 
 Bug fixes
 *********

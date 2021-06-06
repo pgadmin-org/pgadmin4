@@ -32,7 +32,7 @@ from flask_security.recoverable import reset_password_token_status, \
 from flask_security.signals import reset_password_instructions_sent
 from flask_security.utils import config_value, do_flash, get_url, \
     get_message, slash_url_suffix, login_user, send_mail, logout_user
-from flask_security.views import _security, _commit, _ctx
+from flask_security.views import _security, view_commit, _ctx
 from werkzeug.datastructures import MultiDict
 
 import config
@@ -1144,7 +1144,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                 has_error = True
 
             if request.json is None and not has_error:
-                after_this_request(_commit)
+                after_this_request(view_commit)
                 do_flash(*get_message('PASSWORD_CHANGE'))
 
                 old_key = get_crypt_key()[1]
@@ -1310,7 +1310,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
                 has_error = True
 
             if not has_error:
-                after_this_request(_commit)
+                after_this_request(view_commit)
                 do_flash(*get_message('PASSWORD_RESET'))
                 login_user(user)
                 return redirect(get_url(_security.post_reset_view) or

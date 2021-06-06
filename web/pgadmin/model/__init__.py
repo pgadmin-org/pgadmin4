@@ -20,6 +20,7 @@ things:
 
 from flask_security import UserMixin, RoleMixin
 from flask_sqlalchemy import SQLAlchemy
+import uuid
 
 ##########################################################################
 #
@@ -29,7 +30,7 @@ from flask_sqlalchemy import SQLAlchemy
 #
 ##########################################################################
 
-SCHEMA_VERSION = 29
+SCHEMA_VERSION = 30
 
 ##########################################################################
 #
@@ -76,6 +77,9 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
     auth_source = db.Column(db.String(16), unique=True, nullable=False)
+    # fs_uniquifier is required by flask-security-too >= 4.
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False,
+                              default=(lambda _: uuid.uuid4().hex))
 
 
 class Setting(db.Model):

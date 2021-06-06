@@ -305,7 +305,7 @@ def create_app(app_name=None):
             if current_user.is_authenticated:
                 user_id = current_user.id
             else:
-                user = user_datastore.get_user(config.DESKTOP_USER)
+                user = user_datastore.find_user(email=config.DESKTOP_USER)
                 if user is not None:
                     user_id = user.id
             user_language = Preferences.raw_value(
@@ -697,7 +697,7 @@ def create_app(app_name=None):
             abort(401)
 
         if not config.SERVER_MODE and not current_user.is_authenticated:
-            user = user_datastore.get_user(config.DESKTOP_USER)
+            user = user_datastore.find_user(email=config.DESKTOP_USER)
             # Throw an error if we failed to find the desktop user, to give
             # the sysadmin a hint. We'll continue to try to login anyway as
             # that'll through a nice 500 error for us.
