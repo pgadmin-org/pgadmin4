@@ -8,7 +8,6 @@
 ##########################################################################
 
 
-import fileinput
 import traceback
 import os
 import sys
@@ -36,6 +35,7 @@ import regression
 from regression import test_setup
 
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.constants import BINARY_PATHS
 
 from functools import wraps
 
@@ -767,10 +767,15 @@ def configure_preferences(default_binary_path=None):
             if user_pref_data:
                 cur.execute(
                     'UPDATE user_preferences SET value = ? WHERE pid = ?',
-                    (default_binary_path[server], pref_bin_path.pid)
+                    (pref_bin_path.default, pref_bin_path.pid)
                 )
             else:
-                params = (pref_bin_path.pid, 1, default_binary_path[server])
+                if server == 'ppas':
+                    params = (pref_bin_path.pid, 1,
+                              json.dumps(BINARY_PATHS['as_bin_paths']))
+                else:
+                    params = (pref_bin_path.pid, 1,
+                              json.dumps(BINARY_PATHS['pg_bin_paths']))
                 cur.execute(
                     insert_preferences_query, params
                 )

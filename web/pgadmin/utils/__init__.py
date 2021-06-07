@@ -273,6 +273,11 @@ def does_utility_exist(file):
     :return:
     """
     error_msg = None
+    if file is None:
+        error_msg = gettext("Utility file not found. Please correct the Binary"
+                            " Path in the Preferences dialog")
+        return error_msg
+
     if not os.path.exists(file):
         error_msg = gettext("'%s' file not found. Please correct the Binary"
                             " Path in the Preferences dialog" % file)

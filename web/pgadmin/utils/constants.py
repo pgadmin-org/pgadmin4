@@ -56,3 +56,42 @@ KERBEROS = 'kerberos'
 SUPPORTED_AUTH_SOURCES = [INTERNAL,
                           LDAP,
                           KERBEROS]
+
+BINARY_PATHS = {
+    "as_bin_paths": [
+        {"version": "90600", "next_major_version": "100000",
+         "serverType": gettext("EDB Advanced Server 9.6"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "100000", "next_major_version": "110000",
+         "serverType": gettext("EDB Advanced Server 10"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "110000", "next_major_version": "120000",
+         "serverType": gettext("EDB Advanced Server 11"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "120000", "next_major_version": "130000",
+         "serverType": gettext("EDB Advanced Server 12"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "130000", "next_major_version": "140000",
+         "serverType": gettext("EDB Advanced Server 13"), "binaryPath": None,
+         "isDefault": False}
+    ],
+    "pg_bin_paths": [
+        {"version": "90600", "next_major_version": "100000",
+         "serverType": gettext("PostgreSQL 9.6"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "100000", "next_major_version": "110000",
+         "serverType": gettext("PostgreSQL 10"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "110000", "next_major_version": "120000",
+         "serverType": gettext("PostgreSQL 11"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "120000", "next_major_version": "130000",
+         "serverType": gettext("PostgreSQL 12"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "130000", "next_major_version": "140000",
+         "serverType": gettext("PostgreSQL 13"), "binaryPath": None,
+         "isDefault": False}
+    ]
+}
+
+UTILITIES_ARRAY = ['pg_dump', 'pg_dumpall', 'pg_restore', 'psql']

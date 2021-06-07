@@ -107,8 +107,7 @@
       "enabled": true,
       "default_binary_paths": {
         "pg": "/opt/PostgreSQL/9.4/bin/",
-        "ppas": "/opt/edb/as10/bin/",
-        "gpdb": ""
+        "ppas": "/opt/edb/as10/bin/"
       }
     }
   ],

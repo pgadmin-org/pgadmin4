@@ -1172,28 +1172,7 @@ define([
       }))(null);
 
       let bin_value = JSON.parse(this.model.get(this.field.get('name')));
-      if (this.field.get('label').indexOf('EDB') >= 0) {
-        let as_bin_paths = _.extend([
-          {'version': '90600', 'next_major_version': '100000', 'serverType': gettext('EDB Advanced Server 9.6'), 'binaryPath': null, 'isDefault': false},
-          {'version': '100000', 'next_major_version': '110000', 'serverType': gettext('EDB Advanced Server 10'), 'binaryPath': null, 'isDefault': false},
-          {'version': '110000', 'next_major_version': '120000', 'serverType': gettext('EDB Advanced Server 11'), 'binaryPath': null, 'isDefault': false},
-          {'version': '120000', 'next_major_version': '130000', 'serverType': gettext('EDB Advanced Server 12'), 'binaryPath': null, 'isDefault': false},
-          {'version': '130000', 'next_major_version': '140000', 'serverType': gettext('EDB Advanced Server 13'), 'binaryPath': null, 'isDefault': false},
-        ], bin_value);
-
-        this.BinPathCollection.add(as_bin_paths);
-      } else {
-        let pg_bin_paths = _.extend([
-          {'version': '90600', 'next_major_version': '100000', 'serverType': gettext('PostgreSQL 9.6'), 'binaryPath': null, 'isDefault': false},
-          {'version': '100000', 'next_major_version': '110000', 'serverType': gettext('PostgreSQL 10'), 'binaryPath': null, 'isDefault': false},
-          {'version': '110000', 'next_major_version': '120000', 'serverType': gettext('PostgreSQL 11'), 'binaryPath': null, 'isDefault': false},
-          {'version': '120000', 'next_major_version': '130000', 'serverType': gettext('PostgreSQL 12'), 'binaryPath': null, 'isDefault': false},
-          {'version': '130000', 'next_major_version': '140000', 'serverType': gettext('PostgreSQL 13'), 'binaryPath': null, 'isDefault': false}
-        ], bin_value);
-
-        this.BinPathCollection.add(pg_bin_paths);
-      }
-
+      this.BinPathCollection.add(bin_value);
       this.listenTo(BinPathCollection, 'change', this.binPathCollectionChanged);
     },
 

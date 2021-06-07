@@ -10,11 +10,14 @@
 import os
 import sys
 import json
+import config
+import subprocess
 
 from flask import render_template
 from flask_babelex import gettext as _
 from pgadmin.utils.preferences import Preferences
 from werkzeug.exceptions import InternalServerError
+from pgadmin.utils.constants import BINARY_PATHS, UTILITIES_ARRAY
 
 
 class ServerType(object):
@@ -57,19 +60,26 @@ class ServerType(object):
     @classmethod
     def register_preferences(cls):
         paths = Preferences('paths', _('Paths'))
+        bin_paths = BINARY_PATHS
 
         for key in cls.registry:
             st = cls.registry[key]
+
+            default_bin_path = config.DEFAULT_BINARY_PATHS.get(key, "")
+            if default_bin_path != "":
+                cls.set_default_binary_path(default_bin_path, bin_paths, key)
             if key == 'pg':
                 st.utility_path = paths.register(
                     'bin_paths', 'pg_bin_dir',
-                    _("PostgreSQL Binary Path"), 'selectFile', None,
+                    _("PostgreSQL Binary Path"), 'selectFile',
+                    json.dumps(bin_paths['pg_bin_paths']),
                     category_label=_('Binary paths')
                 )
             elif key == 'ppas':
                 st.utility_path = paths.register(
                     'bin_paths', 'ppas_bin_dir',
-                    _("EDB Advanced Server Binary Path"), 'selectFile', None,
+                    _("EDB Advanced Server Binary Path"), 'selectFile',
+                    json.dumps(bin_paths['as_bin_paths']),
                     category_label=_('Binary paths')
                 )
 
@@ -161,6 +171,43 @@ class ServerType(object):
                 default_path = bin_path['binaryPath']
 
         return default_path
+
+    @classmethod
+    def set_default_binary_path(cls, binary_path, bin_paths, server_type):
+        """
+        This function is used to iterate through the utilities and set the
+        default binary path.
+        """
+        for utility in UTILITIES_ARRAY:
+            full_path = os.path.abspath(
+                os.path.join(binary_path, (utility if os.name != 'nt' else
+                                           (utility + '.exe'))))
+
+            try:
+                # Get the output of the '--version' command
+                version_string = subprocess.getoutput(full_path + ' --version')
+
+                # Get the version number by splitting the result string
+                version_number = \
+                    version_string.split(") ", 1)[1].split('.', 1)[0]
+
+                # Get the paths array based on server type
+                if 'pg_bin_paths' in bin_paths or 'as_bin_paths' in bin_paths:
+                    paths_array = bin_paths['pg_bin_paths']
+                    if server_type == 'ppas':
+                        paths_array = bin_paths['as_bin_paths']
+                else:
+                    paths_array = bin_paths
+
+                for path in paths_array:
+                    if path['version'].find(version_number) == 0 and \
+                            path['binaryPath'] is None:
+                        path['binaryPath'] = binary_path
+                        path['isDefault'] = True
+                        break
+                break
+            except Exception:
+                continue
 
 
 # Default Server Type

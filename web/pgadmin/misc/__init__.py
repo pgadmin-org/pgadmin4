@@ -16,7 +16,7 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
-from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.constants import MIMETYPE_APP_JS, UTILITIES_ARRAY
 from pgadmin.utils.ajax import precondition_required, make_json_response
 import config
 import subprocess
@@ -191,23 +191,24 @@ def validate_binary_path():
 
     version_str = ''
     if 'utility_path' in data and data['utility_path'] is not None:
-        for utility in ['pg_dump', 'pg_dumpall', 'pg_restore', 'psql']:
+        for utility in UTILITIES_ARRAY:
             full_path = os.path.abspath(
                 os.path.join(data['utility_path'],
                              (utility if os.name != 'nt' else
                               (utility + '.exe'))))
             try:
-                result = subprocess.Popen([full_path, '--version'],
-                                          stdout=subprocess.PIPE)
-            except FileNotFoundError:
+                # Get the output of the '--version' command
+                version_string = subprocess.getoutput(full_path + ' --version')
+                # Get the version number by splitting the result string
+                version_string.split(") ", 1)[1].split('.', 1)[0]
+            except Exception:
                 version_str += "<b>" + utility + ":</b> " + \
                                "not found on the specified binary path.<br/>"
                 continue
 
             # Replace the name of the utility from the result to avoid
             # duplicate name.
-            result_str = \
-                result.stdout.read().decode("utf-8").replace(utility, '')
+            result_str = version_string.replace(utility, '')
 
             version_str += "<b>" + utility + ":</b> " + result_str + "<br/>"
     else:
