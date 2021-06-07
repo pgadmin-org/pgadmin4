@@ -505,6 +505,8 @@ def poll(trans_id):
 
     transaction_status = conn.transaction_status()
     data_obj['db_name'] = conn.db
+    data_obj['db_id'] = trans_obj.did \
+        if trans_obj is not None and hasattr(trans_obj, 'did') else 0
 
     return make_json_response(
         data={

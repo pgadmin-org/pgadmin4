@@ -5125,9 +5125,10 @@ define('tools.querytool', [
           tree_data = pgWindow.default.pgAdmin.Browser.treeMenu.translateTreeNodeIdFromACITree(selected_item),
           server_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,2)),
           database_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4)),
-          db_name = database_data.data.label;
+          db_name = database_data.data.label,
+          db_did = database_data.data._id;
 
-        if(!_.isEqual(db_name, data.data_obj.db_name)) {
+        if(data.data_obj.db_id == db_did && !_.isEqual(db_name, data.data_obj.db_name)) {
 
           var message = `Current database has been moved or renamed to ${data.data_obj.db_name}. Click on the OK button to refresh the database name.`,
             title = self.url_params.title;
