@@ -26,5 +26,6 @@ Bug fixes
 *********
 
 | `Issue #4203 <https://redmine.postgresql.org/issues/4203>`_ -  Fixed the issue of renaming the database by another user.
+| `Issue #6404 <https://redmine.postgresql.org/issues/6404>`_ -  Ensure that the Query Tool connection string should not be changed as per the 'Query Tool tab title'.
 | `Issue #6478 <https://redmine.postgresql.org/issues/6478>`_ -  Fixed duplicate SQL issue for tables with more than one partition.
 | `Issue #6482 <https://redmine.postgresql.org/issues/6482>`_ -  Fixed an issue where the Foreground Color property of server dialog does not work.

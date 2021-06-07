@@ -10,7 +10,7 @@ import sys
 from flask_babelex import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_TABS_SETTINGS, \
-    PREF_LABEL_OPTIONS
+    PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER
 from flask_security import current_user
 import config
 
@@ -470,7 +470,7 @@ def register_browser_preferences(self):
     self.qt_tab_title = self.preference.register(
         'tab_settings', 'qt_tab_title_placeholder',
         gettext("Query tool tab title"),
-        'text', '%DATABASE%/%USERNAME%@%SERVER%',
+        'text', QT_DEFAULT_PLACEHOLDER,
         category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
             'Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. '

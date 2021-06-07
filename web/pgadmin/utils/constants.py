@@ -31,6 +31,9 @@ UNAUTH_REQ = "Unauthorized request."
 SERVER_CONNECTION_CLOSED = gettext(
     'Not connected to server or connection with the server has been closed.')
 
+# Query tool placeholder
+QT_DEFAULT_PLACEHOLDER = '%DATABASE%/%USERNAME%@%SERVER%'
+
 # Data Types
 DATATYPE_TIME_WITH_TIMEZONE = 'time with time zone'
 DATATYPE_TIME_WITHOUT_TIMEZONE = 'time without time zone'

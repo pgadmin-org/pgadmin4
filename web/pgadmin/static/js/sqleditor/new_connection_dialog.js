@@ -191,6 +191,17 @@ let NewConnectionDialog = {
               self.showNewConnectionProgress[0]
             ).addClass('d-none');
           },
+          get_title: function(qt_title_placeholder, selected_database_name, newConnCollectionModel, response) {
+            qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%DATABASE%'), selected_database_name);
+            if(newConnCollectionModel['role']) {
+              qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), newConnCollectionModel['role']);
+            } else {
+              qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), newConnCollectionModel['user']);
+            }
+
+            qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%SERVER%'), response.server_name);
+            return qt_title_placeholder;
+          },
           callback: function(e) {
             let self = this;
             if (e.button.element.name == 'dialog_help') {
@@ -210,19 +221,11 @@ let NewConnectionDialog = {
                 }
               });
               let tab_title = '';
-
               var qt_title_placeholder = preferences['qt_tab_title_placeholder'];
-              qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%DATABASE%'), selected_database_name);
 
-              if(newConnCollectionModel['role']) {
-                qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), newConnCollectionModel['role']);
-              } else {
-                qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), newConnCollectionModel['user']);
-              }
-
-              qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%SERVER%'), response.server_name);
-
-              tab_title = qt_title_placeholder;
+              tab_title = this.get_title(qt_title_placeholder, selected_database_name, newConnCollectionModel, response);
+              let qt_default_placeholder = pgAdmin['qt_default_placeholder'];
+              let conn_title = this.get_title(qt_default_placeholder, selected_database_name, newConnCollectionModel, response);
 
               if(!newConnCollectionModel['role']) {
                 newConnCollectionModel['role'] = null;
@@ -247,6 +250,7 @@ let NewConnectionDialog = {
                   'server': newConnCollectionModel['server'],
                   'database': newConnCollectionModel['database'],
                   'title': _.escape(tab_title),
+                  'conn_title': _.escape(conn_title),
                   'user': newConnCollectionModel['user'],
                   'role': newConnCollectionModel['role'],
                   'server_name': _.escape(response.server_name),

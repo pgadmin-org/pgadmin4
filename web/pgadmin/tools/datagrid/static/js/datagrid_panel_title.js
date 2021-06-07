@@ -23,7 +23,7 @@ function isServerInformationAvailable(parentData) {
   return parentData.server === undefined;
 }
 
-export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, parentData=null) {
+export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, parentData=null, conn_title=false) {
   var preferences = pgBrowser.get_preferences_for_module('browser');
   if(selected_item == null && parentData == null) {
     selected_item = pgBrowser.treeMenu.selected();
@@ -38,10 +38,14 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, 
 
   const db_label = getDatabaseLabel(parentData);
   var qt_title_placeholder = '';
-  if (custom_title) {
-    qt_title_placeholder = custom_title;
+  if (!conn_title) {
+    if (custom_title) {
+      qt_title_placeholder = custom_title;
+    } else {
+      qt_title_placeholder = preferences['qt_tab_title_placeholder'];
+    }
   } else {
-    qt_title_placeholder = preferences['qt_tab_title_placeholder'];
+    qt_title_placeholder = pgAdmin['qt_default_placeholder'];
   }
 
   var title_data = {

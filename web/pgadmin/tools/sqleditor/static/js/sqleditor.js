@@ -110,7 +110,7 @@ define('tools.querytool', [
       this.set_server_version(opts.server_ver);
       this.trigger('pgadmin-sqleditor:view:initialised');
       this.connection_list = [
-        {'server_group': null,'server': null, 'database': null, 'user': null, 'role': null, 'title': '&lt;' + gettext('New Connection') + '&gt;'},
+        {'server_group': null,'server': null, 'database': null, 'user': null, 'role': null, 'conn_title': '&lt;' + gettext('New Connection') + '&gt;'},
       ];
     },
 
@@ -184,9 +184,9 @@ define('tools.querytool', [
         data_list.forEach((option, index) => {
           var opt = '';
           if ('is_selected' in option && option['is_selected']) {
-            opt = '<li class="connection-list-item selected-connection" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.title +'</a></li>';
+            opt = '<li class="connection-list-item selected-connection" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.conn_title +'</a></li>';
           } else {
-            opt = '<li class="connection-list-item" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.title +'</a></li>';
+            opt = '<li class="connection-list-item" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.conn_title +'</a></li>';
           }
           $('#connections-list').append(opt);
         });
@@ -2284,7 +2284,7 @@ define('tools.querytool', [
               'sid': connection_details['server'],
               'title': connection_details['title'],
             };
-            self.set_editor_title(_.unescape(self.handler.url_params.title));
+            self.set_editor_title(_.unescape(connection_details['conn_title']));
             self.handler.setTitle(_.unescape(self.handler.url_params.title));
             let success_msg = connection_details['server_name'] + '/' + connection_details['database_name'] + '- Database connected';
             alertify.success(success_msg);
@@ -2295,6 +2295,7 @@ define('tools.querytool', [
                 'database': connection_details['database'],
                 'user': connection_details['user'],
                 'title': connection_details['title'],
+                'conn_title': connection_details['conn_title'],
                 'role': connection_details['role'],
                 'is_allow_new_connection': true,
                 'database_name': connection_details['database_name'],
@@ -2672,10 +2673,8 @@ define('tools.querytool', [
 
           var server_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,2));
           var database_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4));
-
-
-
-          self.gridView.set_editor_title(_.unescape(url_params.title));
+          let conn_title = panelTitleFunc.getPanelTitle(pgWindow.default.pgAdmin.Browser, null, null, null, true);
+          self.gridView.set_editor_title(_.unescape(conn_title));
           let connection_data = {
             'server_group': self.gridView.handler.url_params.sgid,
             'server': self.gridView.handler.url_params.sid,
@@ -2683,6 +2682,7 @@ define('tools.querytool', [
             'user': server_data.data.user.name,
             'role': null,
             'title': _.unescape(url_params.title),
+            'conn_title': _.unescape(conn_title),
             'is_allow_new_connection': false,
             'database_name': _.unescape(database_data.data.label),
             'server_name': _.unescape(server_data.data.label),

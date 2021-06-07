@@ -50,7 +50,7 @@ from pgadmin.utils.master_password import validate_master_password, \
     set_crypt_key, process_masterpass_disabled
 from pgadmin.model import User
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
-    INTERNAL, KERBEROS, LDAP
+    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER
 
 try:
     from flask_security.views import default_render_json
@@ -852,7 +852,8 @@ def utils():
             pg_libpq_version=pg_libpq_version,
             support_ssh_tunnel=config.SUPPORT_SSH_TUNNEL,
             logout_url=_get_logout_url(),
-            platform=sys.platform
+            platform=sys.platform,
+            qt_default_placeholder=QT_DEFAULT_PLACEHOLDER
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 
