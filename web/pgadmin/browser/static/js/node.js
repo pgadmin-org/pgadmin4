@@ -949,7 +949,7 @@ define('pgadmin.browser.node', [
             style_tag += ' background: ' + bgcolor + '} \n';
             if (fgcolor) {
               style_tag += '.' + dynamic_class + ' .aciTreeText {';
-              style_tag += ' color: ' + fgcolor + ';} \n';
+              style_tag += ' color: ' + fgcolor + ' !important;} \n';
             }
             style_tag += '</style>';
 
