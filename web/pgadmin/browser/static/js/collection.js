@@ -66,7 +66,7 @@ define([
             }]);
 
             // show psql tool same as query tool.
-            if(pgAdmin['enable_psql'] && pgAdmin['platform'] != 'win32') {
+            if(pgAdmin['enable_psql']) {
               pgAdmin.Browser.add_menus([{
                 name: 'show_psql_tool', node: this.type, module: this,
                 applies: ['context'], callback: 'show_psql_tool',

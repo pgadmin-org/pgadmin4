@@ -55,7 +55,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       }];
 
       this.enable_psql_tool = pgAdmin['enable_psql'];
-      if(pgAdmin['enable_psql'] && pgAdmin['platform'] != 'win32') {
+      if(pgAdmin['enable_psql']) {
         pgBrowser.add_menus(menus);
       }
 
@@ -156,11 +156,12 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       var tab_title_placeholder = pgBrowser.get_preferences_for_module('browser').psql_tab_title_placeholder;
       panelTitle = generateTitle(tab_title_placeholder, title_data);
 
-      const [panelUrl, panelCloseUrl] = this.getPanelUrls(transId, panelTitle, parentData, gen);
+      const [panelUrl, panelCloseUrl, db_label] = this.getPanelUrls(transId, panelTitle, parentData, gen);
 
       let psqlToolForm = `
         <form id="psqlToolForm" action="${panelUrl}" method="post">
           <input id="title" name="title" hidden />
+          <input id='db' value='${db_label}' hidden />
           <input name="close_url" value="${panelCloseUrl}" hidden />
         </form>
         <script>
@@ -228,9 +229,11 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         +`&did=${parentData.database._id}`
         +`&server_type=${parentData.server.server_type}`
         + `&theme=${theme}`;
-
+      let db_label = '';
       if(parentData.database && parentData.database._id) {
-        let db_label = parentData.database._label.replace('\\', '\\\\');
+        db_label = _.escape(parentData.database._label.replace('\\', '\\\\'));
+        db_label = db_label.replace('\'', '\'');
+        db_label = db_label.replace('"', '\"');
         openUrl += `&db=${db_label}`;
       } else {
         openUrl += `&db=${''}`;
@@ -239,7 +242,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       let closeUrl = url_for('psql.close', {
         trans_id: transId,
       });
-      return [openUrl, closeUrl];
+      return [openUrl, closeUrl, db_label];
     },
     psql_terminal: function() {
       // theme colors
@@ -375,4 +378,3 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
 
   return pgBrowser.psql;
 }
-

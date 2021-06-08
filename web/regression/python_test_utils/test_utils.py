@@ -769,6 +769,10 @@ def configure_preferences(default_binary_path=None):
                 set_default_binary_path(
                     default_binary_path[server], bin_paths, server)
 
+            bin_paths_server_based = json.dumps(bin_paths['pg_bin_paths'])
+            if server == 'ppas':
+                bin_paths_server_based = json.dumps(bin_paths['as_bin_paths'])
+
             pref_bin_path = paths_pref.preference('{0}_bin_dir'.format(server))
             user_pref = cur.execute(
                 'SELECT pid, uid FROM user_preferences '
@@ -779,15 +783,10 @@ def configure_preferences(default_binary_path=None):
             if user_pref_data:
                 cur.execute(
                     'UPDATE user_preferences SET value = ? WHERE pid = ?',
-                    (pref_bin_path.default, pref_bin_path.pid)
+                    (bin_paths_server_based, pref_bin_path.pid)
                 )
             else:
-                if server == 'ppas':
-                    params = (pref_bin_path.pid, 1,
-                              json.dumps(bin_paths['as_bin_paths']))
-                else:
-                    params = (pref_bin_path.pid, 1,
-                              json.dumps(bin_paths['pg_bin_paths']))
+                params = (pref_bin_path.pid, 1, bin_paths_server_based)
                 cur.execute(
                     insert_preferences_query, params
                 )

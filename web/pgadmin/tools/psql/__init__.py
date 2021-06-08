@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import os
 import re
 import select
@@ -20,7 +19,9 @@ from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
 
-if _platform != 'win32':
+if _platform == 'win32':
+    from winpty import PtyProcess
+else:
     import fcntl
     import termios
     import pty
@@ -101,8 +102,8 @@ def panel(trans_id):
 
     return render_template('editor_template.html',
                            sid=params['sid'],
-                           db=underscore_unescape(params['db']) if params[
-                               'db'] else 'postgres',
+                           db=underscore_unescape(
+                               o_db_name) if o_db_name else 'postgres',
                            server_type=params['server_type'],
                            is_enable=config.ENABLE_PSQL,
                            title=underscore_unescape(params['title']),
@@ -120,8 +121,13 @@ def set_term_size(fd, row, col, xpix=0, ypix=0):
     :param xpix:
     :param ypix:
     """
-    term_size = struct.pack('HHHH', row, col, xpix, ypix)
-    fcntl.ioctl(fd, termios.TIOCSWINSZ, term_size)
+    if _platform == 'win32':
+        app.config['sessions'][request.sid].setwinsize(row, col)
+        # data = {'key_name': 'Enter', 'input': '\n'}
+        # socket_input(data)
+    else:
+        term_size = struct.pack('HHHH', row, col, xpix, ypix)
+        fcntl.ioctl(fd, termios.TIOCSWINSZ, term_size)
 
 
 @sio.on('connect', namespace='/pty')
@@ -216,6 +222,19 @@ def read_terminal_data(parent, data_ready, max_read_bytes, sid):
             session_last_cmd[request.sid]['invalid_cmd'] = False
 
 
+def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
+    (data_ready, _, _) = select.select([process.fd], [], [], 0)
+    if process.fd in data_ready:
+        output = process.read(max_read_bytes)
+        if win_emit_output:
+            sio.emit('pty-output',
+                     {'result': output,
+                      'error': False},
+                     namespace='/pty', room=sid)
+
+    sio.sleep(0)
+
+
 @sio.on('start_process', namespace='/pty')
 def start_process(data):
     """
@@ -227,8 +246,24 @@ def start_process(data):
     def read_and_forward_pty_output(sid, data):
 
         max_read_bytes = 1024 * 20
+        import time
+        if _platform == 'win32':
 
-        if _platform != 'win32':
+            os.environ['PYWINPTY_BACKEND'] = '1'
+            process = PtyProcess.spawn('cmd.exe')
+
+            process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
+                                                      connection_data[1]))
+            process.write("\r\n")
+            app.config['sessions'][request.sid] = process
+            pdata[request.sid] = process
+            set_term_size(process, 50, 50)
+
+            while True:
+                read_stdout(process, sid, max_read_bytes,
+                            win_emit_output=True)
+        else:
+
             p, parent, fd = create_pty_terminal(connection_data)
 
             while p and p.poll() is None:
@@ -248,12 +283,6 @@ def start_process(data):
                                                        timeout)
 
                     read_terminal_data(parent, data_ready, max_read_bytes, sid)
-        else:
-            sio.emit(
-                'conn_error',
-                {
-                    'error': 'PSQL tool not supported.',
-                }, namespace='/pty', room=request.sid)
 
     # Check user is authenticated and PSQL is enabled in config.
     if current_user.is_authenticated and config.ENABLE_PSQL:
@@ -342,14 +371,14 @@ def get_connection_str(psql_utility, db, manager):
     :param db: database name to connect specific db.
     :return: connection attribute list for PSQL connection.
     """
-    conn_attr = get_conn_str(manager, db)
+    conn_attr = get_conn_str_win(manager, db)
     conn_attr_list = list()
     conn_attr_list.append(psql_utility)
     conn_attr_list.append(conn_attr)
     return conn_attr_list
 
 
-def get_conn_str(manager, db):
+def get_conn_str_win(manager, db):
     """
     Get connection attributes for psql connection.
     :param manager:
@@ -357,46 +386,48 @@ def get_conn_str(manager, db):
     :return:
     """
     manager.export_password_env('PGPASSWORD')
+    db = db.replace('"', '\\"')
+    db = db.replace("'", "\\'")
     conn_attr =\
-        'host={0} port={1} dbname={2} user={3} sslmode={4} ' \
-        'sslcompression={5} ' \
+        'host=\'{0}\' port=\'{1}\' dbname=\'{2}\' user=\'{3}\' ' \
+        'sslmode=\'{4}\' sslcompression=\'{5}\' ' \
         ''.format(
             manager.local_bind_host if manager.use_ssh_tunnel else
             manager.host,
             manager.local_bind_port if manager.use_ssh_tunnel else
             manager.port,
-            underscore_unescape(db) if db != '' else 'postgres',
+            db if db != '' else 'postgres',
             underscore_unescape(manager.user) if manager.user else 'postgres',
             manager.ssl_mode,
             True if manager.sslcompression else False,
         )
 
     if manager.hostaddr:
-        conn_attr = " {0} hostaddr={1}".format(conn_attr, manager.hostaddr)
+        conn_attr = " {0} hostaddr='{1}'".format(conn_attr, manager.hostaddr)
 
     if manager.passfile:
-        conn_attr = " {0} passfile={1}".format(conn_attr,
-                                               get_complete_file_path(
-                                                   manager.passfile))
+        conn_attr = " {0} passfile='{1}'".format(conn_attr,
+                                                 get_complete_file_path(
+                                                     manager.passfile))
 
     if get_complete_file_path(manager.sslcert):
-        conn_attr = " {0} sslcert={1}".format(
+        conn_attr = " {0} sslcert='{1}'".format(
             conn_attr, get_complete_file_path(manager.sslcert))
 
     if get_complete_file_path(manager.sslkey):
-        conn_attr = " {0} sslkey={1}".format(
+        conn_attr = " {0} sslkey='{1}'".format(
             conn_attr, get_complete_file_path(manager.sslkey))
 
     if get_complete_file_path(manager.sslrootcert):
-        conn_attr = " {0} sslrootcert={1}".format(
+        conn_attr = " {0} sslrootcert='{1}'".format(
             conn_attr, get_complete_file_path(manager.sslrootcert))
 
     if get_complete_file_path(manager.sslcrl):
-        conn_attr = " {0} sslcrl={1}".format(
+        conn_attr = " {0} sslcrl='{1}'".format(
             conn_attr, get_complete_file_path(manager.sslcrl))
 
     if manager.service:
-        conn_attr = " {0} service={1}".format(
+        conn_attr = " {0} service='{1}'".format(
             conn_attr, get_complete_file_path(manager.service))
 
     return conn_attr
@@ -433,12 +464,27 @@ def invalid_cmd():
     :rtype:
     """
     session_last_cmd[request.sid]['invalid_cmd'] = True
-    for i in range(len(session_input[request.sid])):
-        os.write(app.config['sessions'][request.sid],
-                 '\b \b'.encode())
+    if _platform == 'win32':
+        for i in range(len(session_input[request.sid])):
+            app.config['sessions'][request.sid].write('\b \b')
+        app.config['sessions'][request.sid].write('\r\n')
 
-    os.write(app.config['sessions'][request.sid],
-             '\n'.encode())
+        sio.emit(
+            'pty-output',
+            {
+                'result': gettext(
+                    "ERROR: Shell commands are disabled "
+                    "in psql for security\r\n"),
+                'error': True
+            },
+            namespace='/pty', room=request.sid)
+    else:
+        for i in range(len(session_input[request.sid])):
+            os.write(app.config['sessions'][request.sid],
+                     '\b \b'.encode())
+
+        os.write(app.config['sessions'][request.sid],
+                 '\n'.encode())
     session_input[request.sid] = ''
 
 
@@ -464,18 +510,36 @@ def check_valid_cmd(user_input):
 
     if stop_execution:
         session_last_cmd[request.sid]['invalid_cmd'] = True
+        if _platform == 'win32':
+            # Remove already added command from terminal.
+            for i in range(len(user_input)):
+                app.config['sessions'][request.sid].write('\b \b')
+            app.config['sessions'][request.sid].write('\n')
 
-        # Remove already added command from terminal.
-        for i in range(len(user_input)):
+            sio.emit(
+                'pty-output',
+                {
+                    'result': gettext(
+                        "ERROR: Shell commands are disabled "
+                        "in psql for security\r\n"),
+                    'error': True
+                },
+                namespace='/pty', room=request.sid)
+        else:
+            # Remove already added command from terminal.
+            for i in range(len(user_input)):
+                os.write(app.config['sessions'][request.sid],
+                         '\b \b'.encode())
+            # Add Enter event to execute the command.
             os.write(app.config['sessions'][request.sid],
-                     '\b \b'.encode())
-        # Add Enter event to execute the command.
-        os.write(app.config['sessions'][request.sid],
-                 '\n'.encode())
+                     '\n'.encode())
     else:
         session_last_cmd[request.sid]['invalid_cmd'] = False
-        os.write(app.config['sessions'][request.sid],
-                 '\n'.encode())
+        if _platform == 'win32':
+            app.config['sessions'][request.sid].write('\n')
+        else:
+            os.write(app.config['sessions'][request.sid],
+                     '\n'.encode())
 
 
 def enter_key_press(data):
@@ -501,8 +565,8 @@ def enter_key_press(data):
         not config.ALLOW_PSQL_SHELL_COMMANDS and\
             not session_last_cmd[request.sid]['is_new_connection']:
         check_valid_cmd(user_input)
-    elif user_input == '\q' or user_input == 'q\\q' or \
-            user_input in ['exit', 'exit;']:
+    elif user_input == '\q' or user_input == 'q\\q' or user_input in ['exit',
+                                                                      'exit;']:
         # If user enter \q to terminate the PSQL, emit the msg to
         # notify user connection is terminated.
         sio.emit('pty-output',
@@ -514,12 +578,20 @@ def enter_key_press(data):
                      'error': True},
                  namespace='/pty', room=request.sid)
 
-        os.write(app.config['sessions'][request.sid],
-                 '\n'.encode())
+        if _platform == 'win32':
+            app.config['sessions'][request.sid].write('\n')
+            del app.config['sessions'][request.sid]
+        else:
+            os.write(app.config['sessions'][request.sid],
+                     '\n'.encode())
 
     else:
-        os.write(app.config['sessions'][request.sid],
-                 data['input'].encode())
+        if _platform == 'win32':
+            app.config['sessions'][request.sid].write(
+                "{0}".format(data['input']))
+        else:
+            os.write(app.config['sessions'][request.sid],
+                     data['input'].encode())
     session_input[request.sid] = ''
     session_last_cmd[request.sid]['is_new_connection'] = False
 
@@ -619,9 +691,13 @@ def other_key_press(data):
         session_input[request.sid] = data['input']
         session_input_cursor[request.sid] += 1
 
-    # Write user input to terminal parent fd.
-    os.write(app.config['sessions'][request.sid],
-             data['input'].encode())
+    if _platform == 'win32':
+        app.config['sessions'][request.sid].write(
+            "{0}".format(data['input']))
+    else:
+        # Write user input to terminal parent fd.
+        os.write(app.config['sessions'][request.sid],
+                 data['input'].encode())
 
 
 @sio.on('socket_input', namespace='/pty')
@@ -697,11 +773,17 @@ def server_disconnect(data):
 
 
 def disconnect_socket():
-    os.write(app.config['sessions'][request.sid], '\q\n'.encode())
-    sio.sleep(1)
-    os.close(app.config['sessions'][request.sid])
-    os.close(cdata[request.sid])
-    del app.config['sessions'][request.sid]
+    if _platform == 'win32':
+        if request.sid in app.config['sessions']:
+            process = app.config['sessions'][request.sid]
+            process.terminate()
+            del app.config['sessions'][request.sid]
+    else:
+        os.write(app.config['sessions'][request.sid], '\q\n'.encode())
+        sio.sleep(1)
+        os.close(app.config['sessions'][request.sid])
+        os.close(cdata[request.sid])
+        del app.config['sessions'][request.sid]
 
 
 def _get_database(sid, did):
