@@ -9,6 +9,7 @@
 
 import os
 import sys
+import subprocess
 from collections import defaultdict
 from operator import attrgetter
 
@@ -19,7 +20,8 @@ from threading import Lock
 
 from .paths import get_storage_directory
 from .preferences import Preferences
-from pgadmin.model import Server, SharedServer
+from pgadmin.model import Server
+from pgadmin.utils.constants import UTILITIES_ARRAY
 
 
 class PgAdminModule(Blueprint):
@@ -292,6 +294,43 @@ def get_server(sid):
     """
     server = Server.query.filter_by(id=sid).first()
     return server
+
+
+def set_default_binary_path(binary_path, bin_paths, server_type):
+    """
+    This function is used to iterate through the utilities and set the
+    default binary path.
+    """
+    for utility in UTILITIES_ARRAY:
+        full_path = os.path.abspath(
+            os.path.join(binary_path, (utility if os.name != 'nt' else
+                                       (utility + '.exe'))))
+
+        try:
+            # Get the output of the '--version' command
+            version_string = subprocess.getoutput(full_path + ' --version')
+
+            # Get the version number by splitting the result string
+            version_number = \
+                version_string.split(") ", 1)[1].split('.', 1)[0]
+
+            # Get the paths array based on server type
+            if 'pg_bin_paths' in bin_paths or 'as_bin_paths' in bin_paths:
+                paths_array = bin_paths['pg_bin_paths']
+                if server_type == 'ppas':
+                    paths_array = bin_paths['as_bin_paths']
+            else:
+                paths_array = bin_paths
+
+            for path in paths_array:
+                if path['version'].find(version_number) == 0 and \
+                        path['binaryPath'] is None:
+                    path['binaryPath'] = binary_path
+                    path['isDefault'] = True
+                    break
+            break
+        except Exception:
+            continue
 
 
 # Shortcut configuration for Accesskey

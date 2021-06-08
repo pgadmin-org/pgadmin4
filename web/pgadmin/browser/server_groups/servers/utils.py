@@ -12,7 +12,7 @@ from ipaddress import ip_address
 
 from pgadmin.utils.crypto import encrypt, decrypt
 import config
-from pgadmin.model import db, Server, SharedServer
+from pgadmin.model import db, Server
 
 
 def is_valid_ipaddress(address):

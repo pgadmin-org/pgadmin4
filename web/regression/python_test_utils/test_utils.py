@@ -36,6 +36,7 @@ from regression import test_setup
 
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import BINARY_PATHS
+from pgadmin.utils import set_default_binary_path
 
 from functools import wraps
 
@@ -757,6 +758,17 @@ def configure_preferences(default_binary_path=None):
         paths_pref = Preferences.module('paths')
         server_types = default_binary_path.keys()
         for server in server_types:
+            if server != 'ppas' and server != 'pg':
+                continue
+
+            # get the default binary paths array
+            bin_paths = BINARY_PATHS
+            # set the default binary paths based on server version
+            if server in default_binary_path and \
+                    default_binary_path[server] != "":
+                set_default_binary_path(
+                    default_binary_path[server], bin_paths, server)
+
             pref_bin_path = paths_pref.preference('{0}_bin_dir'.format(server))
             user_pref = cur.execute(
                 'SELECT pid, uid FROM user_preferences '
@@ -772,10 +784,10 @@ def configure_preferences(default_binary_path=None):
             else:
                 if server == 'ppas':
                     params = (pref_bin_path.pid, 1,
-                              json.dumps(BINARY_PATHS['as_bin_paths']))
+                              json.dumps(bin_paths['as_bin_paths']))
                 else:
                     params = (pref_bin_path.pid, 1,
-                              json.dumps(BINARY_PATHS['pg_bin_paths']))
+                              json.dumps(bin_paths['pg_bin_paths']))
                 cur.execute(
                     insert_preferences_query, params
                 )
