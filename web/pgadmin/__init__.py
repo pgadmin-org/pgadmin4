@@ -307,12 +307,11 @@ def create_app(app_name=None):
             else:
                 user = user_datastore.find_user(email=config.DESKTOP_USER)
                 if user is not None:
-                    user_id = user.id
-            user_language = Preferences.raw_value(
-                'misc', 'user_language', 'user_language', user_id
-            )
-            if user_language is not None:
-                language = user_language
+                    user_language = Preferences.raw_value(
+                        'misc', 'user_language', 'user_language', user.id
+                    )
+                    if user_language is not None:
+                        language = user_language
         else:
             # If language is available in get request then return the same
             # otherwise check the session or cookie
