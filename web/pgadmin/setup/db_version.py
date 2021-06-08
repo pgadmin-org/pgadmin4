@@ -16,7 +16,10 @@ def get_version():
     except Exception:
         return -1
 
-    return version.value
+    if version:
+        return version.value
+    else:
+        return -1
 
 
 def set_version(new_version):

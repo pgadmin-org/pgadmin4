@@ -594,7 +594,7 @@ define('pgadmin.browser', [
       }, 300000);
 
       obj.set_master_password('');
-
+      obj.check_corrupted_db_file();
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode, obj);
@@ -607,7 +607,35 @@ define('pgadmin.browser', [
       obj.register_to_activity_listener(document);
       obj.start_inactivity_timeout_daemon();
     },
+    check_corrupted_db_file: function() {
+      $.ajax({
+        url: url_for('browser.check_corrupted_db_file'),
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json',
+      }).done((res)=> {
+        if(res.data.length > 0) {
 
+          Alertify.alert(
+            'Warning',
+            'pgAdmin detected unrecoverable corruption in it\'s SQLite configuration database. ' +
+            'The database has been backed up and recreated with default settings. '+
+            'It may be possible to recover data such as query history manually from '+
+            'the original/corrupt file using a tool such as DB Browser for SQLite if desired.'+
+            '<br><br>Original file: ' + res.data + '<br>Replacement file: ' +
+            res.data.substring(0, res.data.length - 14)
+          )
+            .set({'closable': true,
+              'onok': function() {
+              },
+            });
+
+
+        }
+      }).fail(function(xhr, status, error) {
+        Alertify.alert(error);
+      });
+    },
     init_master_password: function() {
       let self = this;
       // Master password dialog

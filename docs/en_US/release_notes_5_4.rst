@@ -21,6 +21,7 @@ Housekeeping
 ************
 
 | `Issue #6225 <https://redmine.postgresql.org/issues/6225>`_ -  Updated Flask-Security-Too to the latest v4.
+| `Issue #6460 <https://redmine.postgresql.org/issues/6460>`_ -  Added a mechanism to detect a corrupt/broken config database file.
 
 Bug fixes
 *********

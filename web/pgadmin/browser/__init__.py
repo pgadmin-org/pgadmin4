@@ -342,6 +342,7 @@ class BrowserModule(PgAdminModule):
             list: a list of url endpoints exposed to the client.
         """
         return [BROWSER_INDEX, 'browser.nodes',
+                'browser.check_corrupted_db_file',
                 'browser.check_master_password',
                 'browser.set_master_password',
                 'browser.reset_master_password',
@@ -949,6 +950,19 @@ def form_master_password_response(existing=True, present=False, errmsg=None):
         ),
         'reset': existing
     })
+
+
+@blueprint.route("/check_corrupted_db_file",
+                 endpoint="check_corrupted_db_file", methods=["GET"])
+def check_corrupted_db_file():
+    """
+    Get the corrupted database file path.
+    """
+    file_location = os.environ['CORRUPTED_DB_BACKUP_FILE'] \
+        if 'CORRUPTED_DB_BACKUP_FILE' in os.environ else ''
+    # reset the corrupted db file path in env.
+    os.environ['CORRUPTED_DB_BACKUP_FILE'] = ''
+    return make_json_response(data=file_location)
 
 
 @blueprint.route("/master_password", endpoint="check_master_password",

@@ -14,6 +14,8 @@ import os
 import sys
 import re
 import ipaddress
+import traceback
+
 from types import MethodType
 from collections import defaultdict
 from importlib import import_module
@@ -38,8 +40,8 @@ from pgadmin.utils import PgAdminModule, driver, KeyManager
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
-from datetime import timedelta
-from pgadmin.setup import get_version, set_version
+from datetime import timedelta, datetime
+from pgadmin.setup import get_version, set_version, check_db_tables
 from pgadmin.utils.ajax import internal_server_error, make_json_response
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
@@ -349,6 +351,44 @@ def create_app(app_name=None):
     ##########################################################################
     # Upgrade the schema (if required)
     ##########################################################################
+    def backup_db_file():
+        """
+        Create a backup of the current database file
+        and create new database file with default settings.
+        """
+        backup_file_name = "{0}.{1}".format(
+            SQLITE_PATH, datetime.now().strftime('%Y%m%d%H%M%S'))
+        os.rename(SQLITE_PATH, backup_file_name)
+        app.logger.error('Exception in database migration.')
+        app.logger.info('Creating new database file.')
+        try:
+            db_upgrade(app)
+            os.environ[
+                'CORRUPTED_DB_BACKUP_FILE'] = backup_file_name
+            app.logger.info('Database migration completed.')
+        except Exception as e:
+            app.logger.error('Database migration failed')
+            app.logger.error(traceback.format_exc())
+            raise RuntimeError('Migration failed')
+
+    def upgrade_db():
+        """
+        Execute the migrations.
+        """
+        try:
+            db_upgrade(app)
+            os.environ['CORRUPTED_DB_BACKUP_FILE'] = ''
+        except Exception as e:
+            backup_db_file()
+
+        # check all tables are present in the db.
+        is_db_error, invalid_tb_names = check_db_tables()
+        if is_db_error:
+            app.logger.error(
+                'Table(s) {0} are missing in the'
+                ' database'.format(invalid_tb_names))
+            backup_db_file()
+
     with app.app_context():
         # Run migration for the first time i.e. create database
         from config import SQLITE_PATH
@@ -356,25 +396,34 @@ def create_app(app_name=None):
 
         # If version not available, user must have aborted. Tables are not
         # created and so its an empty db
-        if not os.path.exists(SQLITE_PATH) or get_version() == -1:
+        version = get_version()
+        if not os.path.exists(SQLITE_PATH) or version == -1:
             # If running in cli mode then don't try to upgrade, just raise
             # the exception
             if not cli_mode:
-                db_upgrade(app)
+                upgrade_db()
             else:
                 if not os.path.exists(SQLITE_PATH):
                     raise FileNotFoundError(
                         'SQLite database file "' + SQLITE_PATH +
                         '" does not exists.')
-                raise RuntimeError('Specified SQLite database file '
-                                   'is not valid.')
+                raise RuntimeError(
+                    'The configuration database file is not valid.')
         else:
             schema_version = get_version()
 
             # Run migration if current schema version is greater than the
             # schema version stored in version table
             if CURRENT_SCHEMA_VERSION >= schema_version:
-                db_upgrade(app)
+                upgrade_db()
+            else:
+                # check all tables are present in the db.
+                is_db_error, invalid_tb_names = check_db_tables()
+                if is_db_error:
+                    app.logger.error(
+                        'Table(s) {0} are missing in the'
+                        ' database'.format(invalid_tb_names))
+                    backup_db_file()
 
             # Update schema version to the latest
             if CURRENT_SCHEMA_VERSION > schema_version:
