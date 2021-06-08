@@ -52,3 +52,10 @@ GRANT {{ conn|qtIdent(data.admins)|join(', ') }} TO {{ conn|qtIdent(data.rolname
 
 COMMENT ON ROLE {{ conn|qtIdent(data.rolname) }} IS {{ data.description|qtLiteral }};
 {% endif %}
+
+{% if data.rol_admins and data.rol_admins|length > 0 %}
+
+GRANT {{ conn|qtIdent(data.rolname) }} TO {{ conn|qtIdent(data.rol_admins)|join(', ') }} WITH ADMIN OPTION;{% endif %}{% if data.rol_members and data.rol_members|length > 0 %}
+
+GRANT {{ conn|qtIdent(data.rolname) }} TO {{ conn|qtIdent(data.rol_members)|join(', ') }};
+{% endif %}
