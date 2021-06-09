@@ -1417,6 +1417,7 @@ def get_parallel_sequential_module_list(module_list):
     sequential_tests_file = [
         'pgadmin.feature_tests.pg_utilities_backup_restore_test',
         'pgadmin.feature_tests.pg_utilities_maintenance_test',
+        'pgadmin.feature_tests.keyboard_shortcut_test'
     ]
 
     #  list of tests can be executed in parallel

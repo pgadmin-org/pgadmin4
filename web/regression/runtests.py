@@ -559,6 +559,9 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         print("Exception in {0} {1}".format(
             threading.current_thread().ident,
             threading.currentThread().getName()))
+        # Mark failure as true
+        global failure
+        failure = True
     finally:
         # Delete web-driver instance
         thread_name = "parallel_tests" + server_passed['name']

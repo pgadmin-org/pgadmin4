@@ -23,7 +23,8 @@
         "spcname": "pg_default"
       },
       "store_object_id": true
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create Rule for insert event",
       "endpoint": "NODE-rule.obj",
@@ -39,7 +40,8 @@
       },
       "expected_sql_file": "create_insert_event_rule.sql",
       "expected_msql_file": "create_insert_event_rule_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Rule for insert event",
       "endpoint": "NODE-rule.obj_id",
@@ -57,7 +59,8 @@
       },
       "expected_sql_file": "alter_insert_event_rule.sql",
       "expected_msql_file": "alter_insert_event_rule_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Rule insert to update event with complex commands",
       "endpoint": "NODE-rule.obj_id",
@@ -68,7 +71,8 @@
       },
       "expected_sql_file": "alter_insert_event_rule_complex.sql",
       "expected_msql_file": "alter_insert_event_rule_complex_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Rule for insert event to statements NOTHING",
       "endpoint": "NODE-rule.obj_id",
@@ -79,7 +83,8 @@
       },
       "expected_sql_file": "alter_insert_event_rule_nothing.sql",
       "expected_msql_file": "alter_insert_event_rule_nothing_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Rule for insert with NOTHING to Update",
       "endpoint": "NODE-rule.obj_id",
@@ -90,14 +95,16 @@
       },
       "expected_sql_file": "alter_insert_event_rule_nothing_update.sql",
       "expected_msql_file": "alter_insert_event_rule_nothing_update_msql.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop Rule",
       "endpoint": "NODE-rule.delete_id",
       "data": {
         "name": "test_insert_rule1_$%{}[]()&*^!@\"'`\\/#"
       }
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create Rule for update event",
       "endpoint": "NODE-rule.obj",
@@ -113,7 +120,8 @@
       },
       "expected_sql_file": "create_update_event_rule.sql",
       "expected_msql_file": "create_update_event_rule_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Rule for update event",
       "endpoint": "NODE-rule.obj_id",
@@ -138,7 +146,8 @@
       "data": {
         "name": "test_update_rule1_$%{}[]()&*^!@\"'`\\/#"
       }
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create Rule for delete event",
       "endpoint": "NODE-rule.obj",
@@ -152,7 +161,8 @@
       },
       "expected_sql_file": "create_delete_event_rule.sql",
       "expected_msql_file": "create_delete_event_rule_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Rule for delete event",
       "endpoint": "NODE-rule.obj_id",

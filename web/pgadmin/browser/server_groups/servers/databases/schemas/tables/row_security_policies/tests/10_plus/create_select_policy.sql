@@ -1,8 +1,8 @@
--- POLICY: select_policy
+-- POLICY: test_select_policy_rls_$%{}[]()&*^!@"'`\/#
 
--- DROP POLICY select_policy ON public.test_rls_policy;
+-- DROP POLICY "test_select_policy_rls_$%{}[]()&*^!@""'`\/#" ON public.test_rls_policy;
 
-CREATE POLICY select_policy
+CREATE POLICY "test_select_policy_rls_$%{}[]()&*^!@""'`\/#"
     ON public.test_rls_policy
     AS PERMISSIVE
     FOR SELECT

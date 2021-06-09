@@ -115,6 +115,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             module_path = resql_module_list[module]
             # Get the folder name based on server version number and
             # their existence.
+            self.module_path = module_path
             status, self.test_folder = self.get_test_folder(module_path)
             if not status:
                 continue
@@ -370,6 +371,39 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         return False, None
 
+    def get_test_file(self, file_name):
+        """
+        This function will get the appropriate test file based on
+        server version and their existence.
+
+        :param file_name: File containing expected output .
+        :return:
+        """
+        # Join the application path, module path and tests folder
+        tests_folder_path = \
+            os.path.join(self.apppath, self.module_path, 'tests')
+
+        # A folder name matching the Server Type (pg, ppas) takes priority so
+        # check whether that exists or not. If so, than check the version
+        # folder in it, else look directly in the 'tests' folder.
+        absolute_path = os.path.join(tests_folder_path, self.server['type'])
+        if not os.path.exists(absolute_path):
+            absolute_path = tests_folder_path
+
+        # Iterate the version mapping directories.
+        for version_mapping in get_version_mapping_directories(
+                self.server['type']):
+            if version_mapping['number'] > \
+                    self.server_information['server_version']:
+                continue
+            complete_path = os.path.join(absolute_path,
+                                         version_mapping['name'], file_name)
+
+            if os.path.exists(complete_path):
+                return True, complete_path
+
+        return False, None
+
     def check_msql(self, scenario, object_id):
         """
         This function is used to check the modified SQL.
@@ -422,10 +456,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Check if expected sql is given in JSON file or path of the output
         # file is given
         if 'expected_msql_file' in scenario:
-            output_file = os.path.join(self.test_folder,
-                                       scenario['expected_msql_file'])
+            file_found, output_file = \
+                self.get_test_file(scenario['expected_msql_file'])
 
-            if os.path.exists(output_file):
+            if file_found:
                 fp = open(output_file, "r")
                 # Used rstrip to remove trailing \n
                 sql = fp.read().rstrip()
@@ -477,8 +511,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Check if expected sql is given in JSON file or path of the output
         # file is given
         if 'expected_sql_file' in scenario:
-            output_file = os.path.join(self.test_folder,
-                                       scenario['expected_sql_file'])
+            file_found, output_file = \
+                self.get_test_file(scenario['expected_sql_file'])
 
             if os.path.exists(output_file):
                 fp = open(output_file, "r")

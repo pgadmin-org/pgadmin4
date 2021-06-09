@@ -20,7 +20,8 @@
         "schema": "public"
       },
       "store_object_id": true
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create btree index with ASC and NULLS LAST",
       "endpoint": "NODE-index.obj",
@@ -54,14 +55,16 @@
       },
       "expected_sql_file": "create_btree_asc_null_last.sql",
       "expected_msql_file": "create_btree_asc_null_last_msql.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop index",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
       }
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create btree index with ASC and NULLS FIRST",
       "endpoint": "NODE-index.obj",
@@ -95,14 +98,16 @@
       },
       "expected_sql_file": "create_btree_asc_null_first.sql",
       "expected_msql_file": "create_btree_asc_null_first_msql.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop index",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
       }
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create btree index with DESC and NULLS LAST",
       "endpoint": "NODE-index.obj",
@@ -136,14 +141,16 @@
       },
       "expected_sql_file": "create_btree_desc_null_last.sql",
       "expected_msql_file": "create_btree_desc_null_last_msql.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop index",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
       }
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create btree index with DESC and NULLS FIRST",
       "endpoint": "NODE-index.obj",
@@ -174,7 +181,8 @@
       },
       "expected_sql_file": "create_btree_desc_null_first.sql",
       "expected_msql_file": "create_btree_desc_null_first_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter index name, fill factor, comment and clustered",
       "endpoint": "NODE-index.obj_id",
@@ -201,14 +209,16 @@
       },
       "expected_sql_file": "alter_reset_fillfactor_cluster.sql",
       "expected_msql_file": "alter_reset_fillfactor_cluster_msql.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop index",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx1_$%{}[]()&*^!@\"'`\\/#"
       }
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create hash index",
       "endpoint": "NODE-index.obj",
@@ -232,14 +242,16 @@
       },
       "expected_sql_file": "create_hash_index.sql",
       "expected_msql_file": "create_hash_index_msql.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop hash index",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
       }
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop Table",
       "endpoint": "NODE-table.delete_id",
