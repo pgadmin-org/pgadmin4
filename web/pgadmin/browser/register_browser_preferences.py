@@ -473,7 +473,7 @@ def register_browser_preferences(self):
         'text', QT_DEFAULT_PLACEHOLDER,
         category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
-            'Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. '
+            'Supported placeholders are %%DATABASE%%, %%USERNAME%%, and %%SERVER%%. '
             'Users can provide any string with or without placeholders of'
             ' their choice. The blank title will be revert back to the'
             ' default title with placeholders.'
@@ -486,8 +486,8 @@ def register_browser_preferences(self):
         'text', '%SCHEMA%.%TABLE%/%DATABASE%/%USERNAME%@%SERVER%',
         category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
-            'Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, '
-            '%USERNAME%, and %SERVER%. Users can provide any string with or '
+            'Supported placeholders are %%SCHEMA%%, %%TABLE%%, %%DATABASE%%, '
+            '%%USERNAME%%, and %%SERVER%%. Users can provide any string with or '
             'without placeholders of their choice. The blank title will be '
             'revert back to the default title with placeholders.'
         )
@@ -499,8 +499,8 @@ def register_browser_preferences(self):
         'text', '%FUNCTION%(%ARGS%)',
         category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
-            'Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and'
-            ' %DATABASE%. Users can provide any string with or '
+            'Supported placeholders are %%FUNCTION%%, %%ARGS%%, %%SCHEMA%% and'
+            ' %%DATABASE%%. Users can provide any string with or '
             'without placeholders of their choice. The blank title will be'
             ' revert back to the default title with placeholders.'
         )

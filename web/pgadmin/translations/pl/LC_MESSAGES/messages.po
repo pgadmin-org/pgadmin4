@@ -573,7 +573,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:473
 msgid ""
-"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
+"Supported placeholders are %%DATABASE%%, %%USERNAME%%, and %%SERVER%%. Users "
 "can provide any string with or without placeholders of their choice. The "
 "blank title will be revert back to the default title with placeholders."
 msgstr ""
@@ -584,8 +584,8 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:486
 msgid ""
-"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and"
-" %SERVER%. Users can provide any string with or without placeholders of "
+"Supported placeholders are %%SCHEMA%%, %%TABLE%%, %%DATABASE%%, %%USERNAME%%, and"
+" %%SERVER%%. Users can provide any string with or without placeholders of "
 "their choice. The blank title will be revert back to the default title "
 "with placeholders."
 msgstr ""
@@ -597,7 +597,7 @@ msgstr ""
 #: pgadmin/browser/register_browser_preferences.py:499
 #, python-format
 msgid ""
-"Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
+"Supported placeholders are %%FUNCTION%%, %%ARGS%%, %%SCHEMA%% and %%DATABASE%%. "
 "Users can provide any string with or without placeholders of their "
 "choice. The blank title will be revert back to the default title with "
 "placeholders."

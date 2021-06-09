@@ -575,12 +575,12 @@ msgstr "クエリツールタブのタイトル"
 
 #: pgadmin/browser/register_browser_preferences.py:473
 msgid ""
-"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
+"Supported placeholders are %%DATABASE%%, %%USERNAME%%, and %%SERVER%%. Users "
 "can provide any string with or without placeholders of their choice. The "
 "blank title will be revert back to the default title with placeholders."
 msgstr ""
-"任意の文字列とプレースホルダ（%DATABASE%, %USERNAME%, "
-"%SERVER%）を指定できます。空欄にすると、既定のタイトルに戻ります"
+"任意の文字列とプレースホルダ（%%DATABASE%%, %%USERNAME%%, "
+"%%SERVER%%）を指定できます。空欄にすると、既定のタイトルに戻ります"
 
 #: pgadmin/browser/register_browser_preferences.py:483
 msgid "View/Edit data tab title"
@@ -588,13 +588,13 @@ msgstr "データの閲覧/編集タブのタイトル"
 
 #: pgadmin/browser/register_browser_preferences.py:486
 msgid ""
-"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and"
-" %SERVER%. Users can provide any string with or without placeholders of "
+"Supported placeholders are %%SCHEMA%%, %%TABLE%%, %%DATABASE%%, %%USERNAME%%, and"
+" %%SERVER%%. Users can provide any string with or without placeholders of "
 "their choice. The blank title will be revert back to the default title "
 "with placeholders."
 msgstr ""
-"任意の文字列とプレースホルダ（%SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, "
-"%SERVER%）を指定できます。空欄にすると、既定のタイトルに戻ります"
+"任意の文字列とプレースホルダ（%%SCHEMA%%, %%TABLE%%, %%DATABASE%%, %%USERNAME%%, "
+"%%SERVER%%）を指定できます。空欄にすると、既定のタイトルに戻ります"
 
 #: pgadmin/browser/register_browser_preferences.py:496
 msgid "Debugger tab title"
@@ -603,13 +603,13 @@ msgstr "デバッガタブのタイトル"
 #: pgadmin/browser/register_browser_preferences.py:499
 #, python-format
 msgid ""
-"Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
+"Supported placeholders are %%FUNCTION%%, %%ARGS%%, %%SCHEMA%% and %%DATABASE%%. "
 "Users can provide any string with or without placeholders of their "
 "choice. The blank title will be revert back to the default title with "
 "placeholders."
 msgstr ""
-"任意の文字列とプレースホルダ（%FUNCTION%, %ARGS%, %SCHEMA%, "
-"%DATABASE%）を指定できます。空欄にすると、既定のタイトルに戻ります"
+"任意の文字列とプレースホルダ（%%FUNCTION%%, %%ARGS%%, %%SCHEMA%%, "
+"%%DATABASE%%）を指定できます。空欄にすると、既定のタイトルに戻ります"
 
 #: pgadmin/browser/register_browser_preferences.py:509
 msgid "Open in new browser tab"

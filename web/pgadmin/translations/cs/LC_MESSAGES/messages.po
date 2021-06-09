@@ -602,11 +602,11 @@ msgstr "Název karty \"Dotazovací nástroj\""
 
 #: pgadmin/browser/register_browser_preferences.py:473
 msgid ""
-"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users can "
+"Supported placeholders are %%DATABASE%%, %%USERNAME%%, and %%SERVER%%. Users can "
 "provide any string with or without placeholders of their choice. The blank "
 "title will be revert back to the default title with placeholders."
 msgstr ""
-"Podporované zástupné znaky jsou %DATABASE%, %USERNAME% a %SERVER%. Můžete "
+"Podporované zástupné znaky jsou %%DATABASE%%, %%USERNAME%% a %%SERVER%%. Můžete "
 "použít libovolný řetězec s nebo bez zástupných znaků podle svého výběru. "
 "Prázdný název vrátí zpět výchozí název se zástupnými znaky."
 
@@ -616,13 +616,13 @@ msgstr "Název karty \"Zobrazit/upravit data\""
 
 #: pgadmin/browser/register_browser_preferences.py:486
 msgid ""
-"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and "
-"%SERVER%. Users can provide any string with or without placeholders of their "
+"Supported placeholders are %%SCHEMA%%, %%TABLE%%, %%DATABASE%%, %%USERNAME%%, and "
+"%%SERVER%%. Users can provide any string with or without placeholders of their "
 "choice. The blank title will be revert back to the default title with "
 "placeholders."
 msgstr ""
-"Podporované zástupné znaky jsou %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME% a "
-"%SERVER%. Můžete použít libovolný řetězec s nebo bez zástupných znaků podle "
+"Podporované zástupné znaky jsou %%SCHEMA%%, %%TABLE%%, %%DATABASE%%, %%USERNAME%% a "
+"%%SERVER%%. Můžete použít libovolný řetězec s nebo bez zástupných znaků podle "
 "svého výběru. Prázdný název vrátí zpět výchozí název se zástupnými znaky."
 
 #: pgadmin/browser/register_browser_preferences.py:496
@@ -632,11 +632,11 @@ msgstr "Název karty ladění"
 #: pgadmin/browser/register_browser_preferences.py:499
 #, python-format
 msgid ""
-"Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
+"Supported placeholders are %%FUNCTION%%, %%ARGS%%, %%SCHEMA%% and %%DATABASE%%. "
 "Users can provide any string with or without placeholders of their choice. "
 "The blank title will be revert back to the default title with placeholders."
 msgstr ""
-"Podporované zástupné znaky jsou %FUNCTION%, %ARGS%, %SCHEMA% a %DATABASE%. "
+"Podporované zástupné znaky jsou %%FUNCTION%%, %%ARGS%%, %%SCHEMA%% a %%DATABASE%%. "
 "Můžete použít libovolný řetězec s nebo bez zástupných znaků podle svého "
 "výběru. Prázdný název vrátí zpět výchozí název se zástupnými znaky."
 

@@ -602,11 +602,11 @@ msgstr "Titolo della scheda Strumento query"
 
 #: pgadmin/browser/register_browser_preferences.py:473
 msgid ""
-"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users can "
+"Supported placeholders are %%DATABASE%%, %%USERNAME%%, and %%SERVER%%. Users can "
 "provide any string with or without placeholders of their choice. The blank title "
 "will be revert back to the default title with placeholders."
 msgstr ""
-"I segnaposto supportati sono%DATABASE%,%USERNAME% e%SERVER%. Gli utenti possono "
+"I segnaposto supportati sono%%DATABASE%%,%%USERNAME%% e%%SERVER%%. Gli utenti possono "
 "fornire qualsiasi stringa con o senza segnaposto di loro scelta. Il titolo vuoto "
 "verrà ripristinato al titolo predefinito con segnaposto."
 
@@ -616,11 +616,11 @@ msgstr "Visualizza / Modifica il titolo della scheda dati"
 
 #: pgadmin/browser/register_browser_preferences.py:486
 msgid ""
-"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and %SERVER"
+"Supported placeholders are %%SCHEMA%%, %%TABLE%%, %%DATABASE%%, %%USERNAME%%, and %SERVER"
 "%. Users can provide any string with or without placeholders of their choice. "
 "The blank title will be revert back to the default title with placeholders."
 msgstr ""
-"I segnaposto supportati sono%SCHEMA%,%TABLE%,%DATABASE%,%USERNAME% e%SERVER%. "
+"I segnaposto supportati sono%%SCHEMA%%,%%TABLE%%,%%DATABASE%%,%%USERNAME%% e%%SERVER%%. "
 "Gli utenti possono fornire qualsiasi stringa con o senza segnaposto di loro "
 "scelta. Il titolo vuoto verrà ripristinato al titolo predefinito con segnaposto."
 
@@ -631,11 +631,11 @@ msgstr "Titolo della scheda Debugger"
 #: pgadmin/browser/register_browser_preferences.py:499
 #, python-format
 msgid ""
-"Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. Users "
+"Supported placeholders are %%FUNCTION%%, %%ARGS%%, %%SCHEMA%% and %%DATABASE%%. Users "
 "can provide any string with or without placeholders of their choice. The blank "
 "title will be revert back to the default title with placeholders."
 msgstr ""
-"I segnaposto supportati sono%FUNCTION%,%ARGS%,%SCHEMA% and %DATABASE%. Gli "
+"I segnaposto supportati sono%%FUNCTION%%,%%ARGS%%,%%SCHEMA%% and %%DATABASE%%. Gli "
 "utenti possono fornire qualsiasi stringa con o senza segnaposto di loro scelta. "
 "Il titolo vuoto verrà ripristinato al titolo predefinito con segnaposto."
 
