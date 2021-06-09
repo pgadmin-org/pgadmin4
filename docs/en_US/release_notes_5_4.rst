@@ -15,7 +15,9 @@ New features
 | `Issue #4064 <https://redmine.postgresql.org/issues/4064>`_ -  Added window maximize/restore functionality for properties dialog.
 | `Issue #5370 <https://redmine.postgresql.org/issues/5370>`_ -  Added support to set the binary path for the different database server versions.
 | `Issue #6231 <https://redmine.postgresql.org/issues/6231>`_ -  Added OS, Browser, Configuration details in the About dialog.
-| `Issue #6395 <https://redmine.postgresql.org/issues/6395>`_ -  Added support to rotate the pgadmin log file on the basis of Size and Age.
+| `Issue #6395 <https://redmine.postgresql.org/issues/6395>`_ -  Added support for rotating the pgAdmin log file on the basis of size and age.
+| `Issue #6524 <https://redmine.postgresql.org/issues/6524>`_ -  Support non-admin installation on Windows.
+
 
 Housekeeping
 ************

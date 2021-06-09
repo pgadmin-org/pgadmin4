@@ -19,7 +19,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={commonpf}\{#MyAppName}\{#MyAppVersion}
+DefaultDirName={autopf}\{#MyAppName}\{#MyAppVersion}
 DefaultGroupName={#MyAppName}
 DisableWelcomePage=no
 DisableProgramGroupPage=auto
@@ -28,9 +28,10 @@ OutputBaseFilename=pgadmin4-setup
 SetupIconFile=Resources\pgAdmin4.ico
 Compression=lzma
 SolidCompression=yes
-PrivilegesRequired=admin
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
 ChangesEnvironment=yes
-;UninstallFilesDir={app}\{#MyAppVersion}
+UninstallDisplayIcon={app}\runtime\{#MyAppExeName}
 ArchitecturesInstallIn64BitMode={#MyAppArchitecturesMode}
 AllowNoIcons=yes
 WizardImageFile=sidebar.bmp
@@ -57,10 +58,10 @@ Source: "..\..\win-build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 Filename: "{app}\installer\{#MyAppVCDist}"; StatusMsg: "VC runtime redistributable package"; Parameters: "/passive /verysilent /norestart"; Check: InstallVC;
 
 [Registry]
-Root: HKLM; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; Flags: uninsdeletekeyifempty
-Root: HKLM; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
-Root: HKLM; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppFullVersion}"
+Root: HKA; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; Flags: uninsdeletekeyifempty
+Root: HKA; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
+Root: HKA; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppFullVersion}"
 
 [Code]
 var
