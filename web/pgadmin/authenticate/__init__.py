@@ -25,7 +25,7 @@ from flask import session
 
 import config
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.constants import KERBEROS
+from pgadmin.utils.constants import KERBEROS, INTERNAL
 from pgadmin.utils.csrf import pgCSRFProtect
 
 from .registry import AuthSourceRegistry
@@ -120,7 +120,7 @@ class AuthSourceManager():
         self.form = form
         self.auth_sources = sources
         self.source = None
-        self.source_friendly_name = None
+        self.source_friendly_name = INTERNAL
         self.current_source = None
 
     def as_dict(self):

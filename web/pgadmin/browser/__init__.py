@@ -51,6 +51,7 @@ from pgadmin.utils.master_password import validate_master_password, \
 from pgadmin.model import User
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
     INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER
+from pgadmin.authenticate import AuthSourceManager
 
 try:
     from flask_security.views import default_render_json
@@ -1326,6 +1327,9 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
             if not has_error:
                 after_this_request(view_commit)
+                auth_obj = AuthSourceManager(form, [INTERNAL])
+                session['_auth_source_manager_obj'] = auth_obj.as_dict()
+
                 do_flash(*get_message('PASSWORD_RESET'))
                 login_user(user)
                 return redirect(get_url(_security.post_reset_view) or
