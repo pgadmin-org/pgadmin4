@@ -32,7 +32,7 @@ def upgrade():
             auth_source VARCHAR(256) NOT NULL DEFAULT 'internal',
             fs_uniquifier NOT NULL UNIQUE,
             PRIMARY KEY (id),
-            UNIQUE (username, auth_source, fs_uniquifier),
+            UNIQUE (username, auth_source),
             CHECK (active IN (0, 1))
         );
         """)

@@ -1134,7 +1134,8 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
 
         if form.validate_on_submit():
             try:
-                change_user_password(current_user, form.new_password.data)
+                change_user_password(current_user._get_current_object(),
+                                     form.new_password.data)
             except SOCKETErrorException as e:
                 # Handle socket errors which are not covered by SMTPExceptions.
                 logging.exception(str(e), exc_info=True)
