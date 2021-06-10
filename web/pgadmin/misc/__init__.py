@@ -12,7 +12,7 @@
 import pgadmin.utils.driver as driver
 from flask import url_for, render_template, Response, request
 from flask_babelex import gettext
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, replace_binary_path
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
@@ -191,11 +191,18 @@ def validate_binary_path():
 
     version_str = ''
     if 'utility_path' in data and data['utility_path'] is not None:
+        # Check if "$DIR" present in binary path
+        binary_path = replace_binary_path(data['utility_path'])
+
         for utility in UTILITIES_ARRAY:
             full_path = os.path.abspath(
-                os.path.join(data['utility_path'],
+                os.path.join(binary_path,
                              (utility if os.name != 'nt' else
                               (utility + '.exe'))))
+
+            # Replace the spaces with '\'
+            full_path = full_path.replace(" ", "\\ ")
+
             try:
                 # Get the output of the '--version' command
                 version_string = subprocess.getoutput(full_path + ' --version')

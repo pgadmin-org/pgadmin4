@@ -1161,7 +1161,7 @@ define([
         cell: Backgrid.Extension.SelectFileCell,
         dialog_type: 'select_folder',
         dialog_title: gettext('Select Folder'),
-        placeholder: gettext('Select binary path ...'),
+        placeholder: pgAdmin.server_mode === 'False' ? gettext('Select binary path...') : pgAdmin.enable_binary_path_browsing ? gettext('Select binary path...') : gettext('Enter binary path...'),
         browse_btn_label: gettext('Select path'),
         check_btn_label: gettext('Validate utilities'),
         browse_btn_visible: pgAdmin.server_mode === 'False' ? true : pgAdmin.enable_binary_path_browsing ? true : false

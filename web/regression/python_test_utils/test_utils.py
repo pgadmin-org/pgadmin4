@@ -36,7 +36,7 @@ from regression import test_setup
 
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import BINARY_PATHS
-from pgadmin.utils import set_default_binary_path
+from pgadmin.utils import set_binary_path
 
 from functools import wraps
 
@@ -766,7 +766,7 @@ def configure_preferences(default_binary_path=None):
             # set the default binary paths based on server version
             if server in default_binary_path and \
                     default_binary_path[server] != "":
-                set_default_binary_path(
+                set_binary_path(
                     default_binary_path[server], bin_paths, server)
 
             bin_paths_server_based = json.dumps(bin_paths['pg_bin_paths'])

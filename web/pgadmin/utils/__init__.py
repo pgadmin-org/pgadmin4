@@ -296,23 +296,31 @@ def get_server(sid):
     return server
 
 
-def set_default_binary_path(binary_path, bin_paths, server_type):
+def set_binary_path(binary_path, bin_paths, server_type,
+                    version_number=None, set_as_default=False):
     """
     This function is used to iterate through the utilities and set the
     default binary path.
     """
+    # Check if "$DIR" present in binary path
+    binary_path = replace_binary_path(binary_path)
+
     for utility in UTILITIES_ARRAY:
         full_path = os.path.abspath(
             os.path.join(binary_path, (utility if os.name != 'nt' else
                                        (utility + '.exe'))))
+        # Replace the spaces with '\'
+        full_path = full_path.replace(" ", "\\ ")
 
         try:
-            # Get the output of the '--version' command
-            version_string = subprocess.getoutput(full_path + ' --version')
+            # if version_number is provided then no need to fetch it.
+            if version_number is None:
+                # Get the output of the '--version' command
+                version_string = subprocess.getoutput(full_path + ' --version')
 
-            # Get the version number by splitting the result string
-            version_number = \
-                version_string.split(") ", 1)[1].split('.', 1)[0]
+                # Get the version number by splitting the result string
+                version_number = \
+                    version_string.split(") ", 1)[1].split('.', 1)[0]
 
             # Get the paths array based on server type
             if 'pg_bin_paths' in bin_paths or 'as_bin_paths' in bin_paths:
@@ -326,11 +334,33 @@ def set_default_binary_path(binary_path, bin_paths, server_type):
                 if path['version'].find(version_number) == 0 and \
                         path['binaryPath'] is None:
                     path['binaryPath'] = binary_path
-                    path['isDefault'] = True
+                    if set_as_default:
+                        path['isDefault'] = True
                     break
             break
         except Exception:
             continue
+
+
+def replace_binary_path(binary_path):
+    """
+    This function is used to check if $DIR is present in
+    the binary path. If it is there then replace it with
+    module.
+    """
+    if "$DIR" in binary_path:
+        # When running as an WSGI application, we will not find the
+        # '__file__' attribute for the '__main__' module.
+        main_module_file = getattr(
+            sys.modules['__main__'], '__file__', None
+        )
+
+        if main_module_file is not None:
+            binary_path = binary_path.replace(
+                "$DIR", os.path.dirname(main_module_file)
+            )
+
+    return binary_path
 
 
 # Shortcut configuration for Accesskey

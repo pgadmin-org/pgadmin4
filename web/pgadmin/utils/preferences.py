@@ -635,3 +635,15 @@ class Preferences(object):
             return False, str(e)
 
         return True, None
+
+    def migrate_user_preferences(self, pid, converter_func):
+        """
+        This function is used to migrate user preferences.
+        """
+        user_prefs = UserPrefTable.query.filter_by(
+            pid=pid
+        )
+        for pref in user_prefs:
+            pref.value = converter_func(pref.value)
+
+        db.session.commit()
