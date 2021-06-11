@@ -28,6 +28,17 @@
           margin-bottom: 10px;
         }
     </style>
+
+    <!-- Disable/block all password saving in nw.js -->
+    <script type="text/javascript">
+      chrome.passwordsPrivate.getSavedPasswordList(function(passwords) {
+        passwords.forEach((p, i) => {
+          chrome.passwordsPrivate.removeSavedPassword(i);
+        });
+      });
+      chrome.privacy.services.passwordSavingEnabled.set({ value: false });
+    </script>
+
     <script type="text/javascript">
       let platform = require("os").platform;
     </script>
