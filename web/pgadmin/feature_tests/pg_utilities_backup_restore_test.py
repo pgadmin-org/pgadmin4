@@ -56,7 +56,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self.server['sslmode']
         )
         test_utils.drop_database(connection, self.database_name)
-        self._update_preferences()
         db_id = test_utils.create_database(self.server, self.database_name)
         if not db_id:
             self.assertTrue(False, "Database {} is not "
@@ -294,13 +293,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                     path_input.clear()
                     path_input.click()
                     path_input.send_keys(default_binary_path['pg'])
-                elif serv == 'gpdb':
-                    path_input = self.page.find_by_xpath(
-                        "//label[text()='Greenplum Database Binary "
-                        "Path']/following-sibling::div//input")
-                    path_input.clear()
-                    path_input.click()
-                    path_input.send_keys(default_binary_path['gpdb'])
                 elif serv == 'ppas':
                     path_input = self.page.find_by_xpath(
                         "//label[text()='EDB Advanced Server Binary "

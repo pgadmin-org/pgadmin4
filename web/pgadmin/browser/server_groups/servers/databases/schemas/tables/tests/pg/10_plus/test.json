@@ -1486,47 +1486,6 @@
       "expected_msql_file": "create_table_with_lik_tbl_msql.sql"
     },
     {
-      "type": "alter",
-      "name": "Alter Table update grants",
-      "endpoint": "NODE-table.obj_id",
-      "sql_endpoint": "NODE-table.sql_id",
-      "msql_endpoint": "NODE-table.msql_id",
-      "data": {
-        "name": "table_like_tbl$%{}[]()&*^!@\"'`\\/#",
-        "description": "test comment",
-        "fillfactor": "13",
-        "replica_identity": "",
-        "relacl": {
-          "added": [
-            {
-              "grantee": "PUBLIC",
-              "grantor": "postgres",
-              "privileges": [
-                {
-                  "privilege_type": "D",
-                  "privilege": true,
-                  "with_grant": false
-                },
-                {
-                  "privilege_type": "x",
-                  "privilege": true,
-                  "with_grant": false
-                },
-                {
-                  "privilege_type": "t",
-                  "privilege": true,
-                  "with_grant": false
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "store_object_id": true,
-      "expected_sql_file": "alter_table_update_grants2.sql",
-      "expected_msql_file": "alter_table_update_grants2_msql.sql"
-    },
-    {
       "type": "delete",
       "name": "Delete Table with advanced options",
       "endpoint": "NODE-table.obj_id",
