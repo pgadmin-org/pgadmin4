@@ -84,16 +84,25 @@ def index():
 
     info['current_user'] = current_user.email
 
-    settings = ''
+    settings = ""
     for setting in dir(config):
         if not setting.startswith('_') and setting.isupper() and \
             setting not in ['CSRF_SESSION_KEY',
                             'SECRET_KEY',
                             'SECURITY_PASSWORD_SALT',
                             'SECURITY_PASSWORD_HASH',
-                            'ALLOWED_HOSTS']:
-            settings = settings + '{} = {}\n'.format(setting,
-                                                     getattr(config, setting))
+                            'ALLOWED_HOSTS'
+                            'MAIL_PASSWORD',
+                            'LDAP_BIND_PASSWORD',
+                            'SECURITY_PASSWORD_HASH']:
+            if isinstance(getattr(config, setting), str):
+                settings = \
+                    settings + '{} = "{}"\n'.format(
+                        setting, gettext(getattr(config, setting)))
+            else:
+                settings = \
+                    settings + '{} = {}\n'.format(
+                        setting, gettext(getattr(config, setting)))
 
     info['settings'] = settings
 

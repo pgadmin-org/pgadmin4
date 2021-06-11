@@ -45,11 +45,26 @@ define(
               },
               hooks:{
                 onshow:function(){
+                  var self = this;
                   var container = $(this.elements.footer).find('button:not([disabled])');
                   commonUtils.findAndSetFocus(container);
+                  $('#copy_textarea').on('click', function(){
+                    //Copy the server configuration details
+                    let textarea = document.getElementById('about-textarea');
+                    textarea.select();
+                    document.execCommand('copy');
+                    $('#copy_textarea').text('Copied');
+                  });
+
+                  $(this.elements.resizeHandle).on('click', function(){
+                    // Set the height of the Textarea
+                    var height = self.elements.dialog.scrollHeight - 300;
+                    if (height < 0)
+                      height = self.elements.dialog.scrollHeight - 150;
+                    $('#about-textarea').css({'height':height});
+                  });
                 },
               },
-
               prepare:function() {
                 this.setContent(this.message);
               },
