@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-05-14 17:37+0530\n"
+"POT-Creation-Date: 2021-06-11 19:14+0530\n"
 "PO-Revision-Date: 2018-07-12 01:04+0900\n"
 "Last-Translator: Ioseph Kim <ioseph@uri.sarang.net>\n"
 "Language: ko\n"
@@ -16,68 +16,69 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.9.1\n"
 
-#: pgadmin/__init__.py:332 pgadmin/authenticate/internal.py:28
+#: pgadmin/__init__.py:346 pgadmin/authenticate/internal.py:28
 msgid "Incorrect username or password."
 msgstr ""
 
-#: pgadmin/__init__.py:535 pgadmin/__init__.py:585
+#: pgadmin/__init__.py:596 pgadmin/__init__.py:646
 msgid "Auto-detected {0} installation with the data directory at {1}"
 msgstr ""
 
-#: pgadmin/__init__.py:665
+#: pgadmin/__init__.py:726
 msgid "403 FORBIDDEN"
 msgstr ""
 
-#: pgadmin/about/__init__.py:36
+#: pgadmin/about/__init__.py:40
 #, python-format
 msgid "About %(appname)s"
 msgstr "%(appname)s 정보"
 
-#: pgadmin/about/__init__.py:68
+#: pgadmin/about/__init__.py:79
 #: pgadmin/browser/server_groups/servers/static/js/server.js:67
 #: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:115
 msgid "Server"
 msgstr "서버"
 
-#: pgadmin/about/__init__.py:70
+#: pgadmin/about/__init__.py:83
 msgid "Desktop"
 msgstr "데스크탑"
 
-#: pgadmin/about/static/js/about.js:32
-#: pgadmin/browser/server_groups/servers/static/js/server.js:303
-#: pgadmin/browser/server_groups/servers/static/js/server.js:478
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1456
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1478
+#: pgadmin/about/static/js/about.js:40
+#: pgadmin/browser/server_groups/servers/static/js/server.js:304
+#: pgadmin/browser/server_groups/servers/static/js/server.js:479
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1465
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1487
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:199
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:276
-#: pgadmin/browser/static/js/browser.js:718
+#: pgadmin/browser/static/js/browser.js:746
 #: pgadmin/static/js/slickgrid/editors.js:63
 #: pgadmin/static/js/slickgrid/editors.js:73
 #: pgadmin/static/js/slickgrid/editors.js:74
 #: pgadmin/static/js/sqleditor/filter_dialog.js:84
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:88
-#: pgadmin/static/js/sqleditor/new_connection_dialog.js:292
+#: pgadmin/static/js/sqleditor/new_connection_dialog.js:296
 #: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:252
 #: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:267
-#: pgadmin/tools/datagrid/static/js/show_data.js:149
-#: pgadmin/tools/datagrid/static/js/show_data.js:225
-#: pgadmin/tools/datagrid/static/js/show_data.js:247
+#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:138
+#: pgadmin/tools/datagrid/static/js/show_data.js:160
+#: pgadmin/tools/datagrid/static/js/show_data.js:242
+#: pgadmin/tools/datagrid/static/js/show_data.js:267
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/DialogWrapper.js:73
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/FloatingNote.jsx:56
-#: pgadmin/tools/import_export/static/js/import_export.js:518
-#: pgadmin/tools/maintenance/static/js/maintenance.js:323
+#: pgadmin/tools/import_export/static/js/import_export.js:500
+#: pgadmin/tools/maintenance/static/js/maintenance.js:305
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:932
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:950
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2590
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2620
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5475
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2600
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2630
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5484
 #: pgadmin/tools/user_management/static/js/user_management.js:752
 msgid "OK"
 msgstr "확인"
 
-#: pgadmin/about/static/js/about.js:64
+#: pgadmin/about/static/js/about.js:72 pgadmin/about/static/js/about.js:76
 #, python-format
 msgid "About %s"
 msgstr "%s 정보"
@@ -88,35 +89,45 @@ msgstr "%s 정보"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/default/stats.sql:10
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/default/stats.sql:10
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/indexes/sql/default/stats.sql:10
-#: pgadmin/browser/server_groups/servers/static/js/server.js:839
+#: pgadmin/browser/server_groups/servers/static/js/server.js:848
 msgid "Version"
 msgstr "버전"
 
 #: pgadmin/about/templates/about/index.html:7
-msgid "Copyright"
-msgstr "Copyright"
-
-#: pgadmin/about/templates/about/index.html:11
-msgid "Python Version"
-msgstr "Python 버전"
-
-#: pgadmin/about/templates/about/index.html:15
-msgid "Flask Version"
-msgstr "Flask 버전"
-
-#: pgadmin/about/templates/about/index.html:19
 msgid "Application Mode"
 msgstr "응용프로그램 모드"
 
-#: pgadmin/about/templates/about/index.html:23
+#: pgadmin/about/templates/about/index.html:11
 msgid "Current User"
 msgstr "현재 사용자"
 
-#: pgadmin/about/templates/about/index.html:29
-#: pgadmin/browser/templates/browser/index.html:103
-#: pgadmin/templates/security/watermark.html:4
-msgid "logo"
+#: pgadmin/about/templates/about/index.html:16
+#, fuzzy
+msgid "NW.js Version"
+msgstr "Flask 버전"
+
+#: pgadmin/about/templates/about/index.html:21 pgadmin/browser/__init__.py:79
+#: pgadmin/browser/static/js/browser.js:260
+msgid "Browser"
+msgstr "탐색기"
+
+#: pgadmin/about/templates/about/index.html:25
+msgid "Operating System"
 msgstr ""
+
+#: pgadmin/about/templates/about/index.html:29
+#, fuzzy
+msgid "pgAdmin Database File"
+msgstr "파일 불러오는 중..."
+
+#: pgadmin/about/templates/about/index.html:33
+msgid "Log File"
+msgstr ""
+
+#: pgadmin/about/templates/about/index.html:38
+#, fuzzy
+msgid "Server Configuration"
+msgstr "서버 환경설정 재반영"
 
 #: pgadmin/authenticate/__init__.py:179
 msgid ""
@@ -208,380 +219,377 @@ msgstr ""
 msgid "Authentication source '{0}' has not been implemented."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:67
+#: pgadmin/browser/__init__.py:68
 msgid "Your password has not been changed."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:68
+#: pgadmin/browser/__init__.py:69
 msgid ""
 "SMTP Socket error: {error}\n"
 " {pass_error}"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:71
+#: pgadmin/browser/__init__.py:72
 msgid ""
 "SMTP error: {error}\n"
 " {pass_error}"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:73
+#: pgadmin/browser/__init__.py:74
 msgid ""
 "Error: {error}\n"
 " {pass_error}"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:78 pgadmin/browser/static/js/browser.js:260
-msgid "Browser"
-msgstr "탐색기"
-
-#: pgadmin/browser/__init__.py:246
-#: pgadmin/browser/register_browser_preferences.py:94
+#: pgadmin/browser/__init__.py:247
+#: pgadmin/browser/register_browser_preferences.py:96
 msgid "Lock Layout"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:253
-#: pgadmin/browser/register_browser_preferences.py:96
+#: pgadmin/browser/__init__.py:254
+#: pgadmin/browser/register_browser_preferences.py:98
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:186
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:236
 msgid "None"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:260
-#: pgadmin/browser/register_browser_preferences.py:97
+#: pgadmin/browser/__init__.py:261
+#: pgadmin/browser/register_browser_preferences.py:99
 msgid "Prevent Docking"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:267
-#: pgadmin/browser/register_browser_preferences.py:99
+#: pgadmin/browser/__init__.py:268
+#: pgadmin/browser/register_browser_preferences.py:101
 msgid "Full Lock"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:276
+#: pgadmin/browser/__init__.py:277
 msgid "Enter Full Screen  (F10)"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:277
+#: pgadmin/browser/__init__.py:278
 msgid "Actual Size (Ctrl 0)"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:278
+#: pgadmin/browser/__init__.py:279
 msgid "Zoom In (Ctrl +)"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:279
+#: pgadmin/browser/__init__.py:280
 msgid "Zoom Out (Ctrl -)"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:282
+#: pgadmin/browser/__init__.py:283
 msgid "Enter Full Screen  (Cmd Ctrl F)"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:283
+#: pgadmin/browser/__init__.py:284
 msgid "Actual Size (Cmd 0)"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:284
+#: pgadmin/browser/__init__.py:285
 msgid "Zoom In (Cmd +)"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:285
+#: pgadmin/browser/__init__.py:286
 msgid "Zoom Out (Cmd -)"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:291
+#: pgadmin/browser/__init__.py:292
 #, fuzzy
 msgid "Runtime"
 msgstr "TRUNCATE"
 
-#: pgadmin/browser/__init__.py:298
+#: pgadmin/browser/__init__.py:299
 #, fuzzy
 msgid "Configure..."
 msgstr "FTS 환경설정..."
 
-#: pgadmin/browser/__init__.py:304
+#: pgadmin/browser/__init__.py:305
 #, fuzzy
 msgid "View log..."
 msgstr "뷰..."
 
-#: pgadmin/browser/__init__.py:603 pgadmin/browser/collection.py:257
+#: pgadmin/browser/__init__.py:605 pgadmin/browser/collection.py:257
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:110
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:676
 msgid "Nodes"
 msgstr "노드"
 
-#: pgadmin/browser/__init__.py:926
+#: pgadmin/browser/__init__.py:930
 msgid "Set Master Password"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:928
+#: pgadmin/browser/__init__.py:932
 msgid "Please set a master password for pgAdmin."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:929
+#: pgadmin/browser/__init__.py:933
 msgid ""
 "This will be used to secure and later unlock saved passwords and other "
 "credentials."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:933
+#: pgadmin/browser/__init__.py:937
 msgid "Unlock Saved Passwords"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:935
+#: pgadmin/browser/__init__.py:939
 msgid "Please enter your master password."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:936
+#: pgadmin/browser/__init__.py:940
 msgid ""
 "This is required to unlock saved passwords and reconnect to the database "
 "server(s)."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:999
+#: pgadmin/browser/__init__.py:1016
 msgid "Incorrect master password"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:1032
+#: pgadmin/browser/__init__.py:1049
 msgid "Master password cannot be empty"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:1212
+#: pgadmin/browser/__init__.py:1230
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
 " the administrators of this service if you need to reset your password."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:25
+#: pgadmin/browser/register_browser_preferences.py:27
 msgid "Show system objects?"
 msgstr "시스템 객체 보기?"
 
-#: pgadmin/browser/register_browser_preferences.py:31
+#: pgadmin/browser/register_browser_preferences.py:33
 msgid "Hide shared servers?"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:32
+#: pgadmin/browser/register_browser_preferences.py:34
 #: pgadmin/utils/constants.py:20
 msgid "Display"
 msgstr "화면"
 
-#: pgadmin/browser/register_browser_preferences.py:33
+#: pgadmin/browser/register_browser_preferences.py:35
 msgid "If set to True, then all shared servers will be hidden from browser tree"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:41
+#: pgadmin/browser/register_browser_preferences.py:43
 msgid "Enable browser tree animation?"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:47
+#: pgadmin/browser/register_browser_preferences.py:49
 msgid "Enable dialogue/notification animation?"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:53
+#: pgadmin/browser/register_browser_preferences.py:55
 msgid "Browser tree state saving interval"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:55
+#: pgadmin/browser/register_browser_preferences.py:57
 msgid ""
 "Browser tree state saving interval in seconds. Use -1 to disable the tree"
 " saving mechanism."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:63
+#: pgadmin/browser/register_browser_preferences.py:65
 msgid "Confirm on close or refresh?"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:65
+#: pgadmin/browser/register_browser_preferences.py:67
 msgid ""
 "Confirm closure or refresh of the browser or browser tab is intended "
 "before proceeding."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:73
+#: pgadmin/browser/register_browser_preferences.py:75
 msgid "Confirm before Close/Reset in object properties dialog?"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:76
+#: pgadmin/browser/register_browser_preferences.py:78
 msgid ""
 "Confirm before closing or resetting the changes in the properties dialog "
 "for an object if the changes are not saved."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:84
+#: pgadmin/browser/register_browser_preferences.py:86
 msgid "Auto-expand sole children"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:86
+#: pgadmin/browser/register_browser_preferences.py:88
 msgid ""
 "If a treeview node is expanded and has only a single child, automatically"
 " expand the child node as well."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:102
+#: pgadmin/browser/register_browser_preferences.py:104
 msgid "Lock the UI layout at different levels"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:109
+#: pgadmin/browser/register_browser_preferences.py:111
 msgid "Count rows if estimated less than"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:110
-#: pgadmin/browser/register_browser_preferences.py:116
+#: pgadmin/browser/register_browser_preferences.py:112
+#: pgadmin/browser/register_browser_preferences.py:118
 #: pgadmin/browser/static/js/browser.js:275
 msgid "Properties"
 msgstr "등록정보"
 
-#: pgadmin/browser/register_browser_preferences.py:115
+#: pgadmin/browser/register_browser_preferences.py:117
 msgid "Maximum job history rows"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:118
+#: pgadmin/browser/register_browser_preferences.py:120
 msgid ""
 "The maximum number of history rows to show on the Statistics tab for "
 "pgAgent jobs"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:125
-#: pgadmin/static/js/sqleditor/macro_model.js:41 pgadmin/utils/__init__.py:297
-#: pgadmin/utils/__init__.py:306
+#: pgadmin/browser/register_browser_preferences.py:127
+#: pgadmin/static/js/sqleditor/macro_model.js:41 pgadmin/utils/__init__.py:371
+#: pgadmin/utils/__init__.py:380
 msgid "Key"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:126
-#: pgadmin/static/js/keyboard_shortcuts.js:77 pgadmin/utils/__init__.py:311
+#: pgadmin/browser/register_browser_preferences.py:128
+#: pgadmin/static/js/keyboard_shortcuts.js:77 pgadmin/utils/__init__.py:385
 msgid "Shift"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:127
-#: pgadmin/static/js/keyboard_shortcuts.js:80 pgadmin/utils/__init__.py:317
+#: pgadmin/browser/register_browser_preferences.py:129
+#: pgadmin/static/js/keyboard_shortcuts.js:80 pgadmin/utils/__init__.py:391
 msgid "Ctrl"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:128
-#: pgadmin/utils/__init__.py:322
+#: pgadmin/browser/register_browser_preferences.py:130
+#: pgadmin/utils/__init__.py:396
 msgid "Alt/Option"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:134
+#: pgadmin/browser/register_browser_preferences.py:136
 msgid "Browser tree"
 msgstr "탐색기"
 
-#: pgadmin/browser/register_browser_preferences.py:149
+#: pgadmin/browser/register_browser_preferences.py:151
 msgid "Tabbed panel backward"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:164
+#: pgadmin/browser/register_browser_preferences.py:166
 msgid "Tabbed panel forward"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:179
+#: pgadmin/browser/register_browser_preferences.py:181
 msgid "File main menu"
 msgstr "파일 메인 메뉴"
 
-#: pgadmin/browser/register_browser_preferences.py:194
+#: pgadmin/browser/register_browser_preferences.py:196
 msgid "Object main menu"
 msgstr "개체 메인 메뉴"
 
-#: pgadmin/browser/register_browser_preferences.py:209
+#: pgadmin/browser/register_browser_preferences.py:211
 msgid "Tools main menu"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:224
+#: pgadmin/browser/register_browser_preferences.py:226
 msgid "Help main menu"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:239
+#: pgadmin/browser/register_browser_preferences.py:241
 msgid "Open query tool"
 msgstr "쿼리 도구 열기"
 
-#: pgadmin/browser/register_browser_preferences.py:254
+#: pgadmin/browser/register_browser_preferences.py:256
 msgid "View data"
 msgstr "자료 보기"
 
-#: pgadmin/browser/register_browser_preferences.py:269
-#: pgadmin/browser/static/js/toolbar.js:60
-#: pgadmin/browser/static/js/toolbar.js:61
-#: pgadmin/browser/static/js/toolbar.js:124
+#: pgadmin/browser/register_browser_preferences.py:271
+#: pgadmin/browser/static/js/toolbar.js:30
+#: pgadmin/browser/static/js/toolbar.js:31
+#: pgadmin/browser/static/js/toolbar.js:138
 #: pgadmin/tools/search_objects/__init__.py:26
 #: pgadmin/tools/search_objects/static/js/search_objects.js:85
 msgid "Search objects"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:284
+#: pgadmin/browser/register_browser_preferences.py:286
 msgid "Create object"
 msgstr "개체 만들기"
 
-#: pgadmin/browser/register_browser_preferences.py:299
+#: pgadmin/browser/register_browser_preferences.py:301
 msgid "Edit object properties"
 msgstr "개체 등록정보 편집"
 
-#: pgadmin/browser/register_browser_preferences.py:314
+#: pgadmin/browser/register_browser_preferences.py:316
 #: pgadmin/static/js/backgrid.pgadmin.js:593
 msgid "Delete object"
 msgstr "개체 없애기"
 
-#: pgadmin/browser/register_browser_preferences.py:329
+#: pgadmin/browser/register_browser_preferences.py:331
 msgid "Delete/Drop multiple objects"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:344
+#: pgadmin/browser/register_browser_preferences.py:346
 msgid "Drop Cascade multiple objects"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:359
+#: pgadmin/browser/register_browser_preferences.py:361
 msgid "Open context menu"
 msgstr "상황별 메뉴 열기"
 
-#: pgadmin/browser/register_browser_preferences.py:374
+#: pgadmin/browser/register_browser_preferences.py:376
 msgid "Direct debugging"
 msgstr "직접 디버깅"
 
-#: pgadmin/browser/register_browser_preferences.py:389
+#: pgadmin/browser/register_browser_preferences.py:391
 msgid "Dialog tab forward"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:404
+#: pgadmin/browser/register_browser_preferences.py:406
 msgid "Dialog tab backward"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:419
+#: pgadmin/browser/register_browser_preferences.py:421
 msgid "Refresh browser tree"
 msgstr "탐색기 새로고침"
 
-#: pgadmin/browser/register_browser_preferences.py:434
+#: pgadmin/browser/register_browser_preferences.py:436
 msgid "Add grid row"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:448
+#: pgadmin/browser/register_browser_preferences.py:450
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:203
 msgid "Quick Search"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:461
+#: pgadmin/browser/register_browser_preferences.py:463
 msgid "Dynamic tab size"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:463
+#: pgadmin/browser/register_browser_preferences.py:465
 msgid ""
 "If set to True, the tabs will take full size as per the title, it will "
 "also applicable for already opened tabs"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:470
+#: pgadmin/browser/register_browser_preferences.py:472
 msgid "Query tool tab title"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:473
+#: pgadmin/browser/register_browser_preferences.py:475
+#: pgadmin/browser/register_browser_preferences.py:537
 msgid ""
 "Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
 "can provide any string with or without placeholders of their choice. The "
 "blank title will be revert back to the default title with placeholders."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:483
+#: pgadmin/browser/register_browser_preferences.py:485
 msgid "View/Edit data tab title"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:486
+#: pgadmin/browser/register_browser_preferences.py:488
 msgid ""
 "Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and"
 " %SERVER%. Users can provide any string with or without placeholders of "
@@ -589,11 +597,11 @@ msgid ""
 "with placeholders."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:496
+#: pgadmin/browser/register_browser_preferences.py:498
 msgid "Debugger tab title"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:499
+#: pgadmin/browser/register_browser_preferences.py:501
 #, python-format
 msgid ""
 "Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
@@ -602,55 +610,67 @@ msgid ""
 "placeholders."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:509
+#: pgadmin/browser/register_browser_preferences.py:511
 msgid "Open in new browser tab"
 msgstr "새 탭으로 열기"
 
-#: pgadmin/browser/register_browser_preferences.py:511
+#: pgadmin/browser/register_browser_preferences.py:513
 #: pgadmin/browser/static/js/collection.js:76
 #: pgadmin/browser/static/js/node.js:235
-#: pgadmin/browser/static/js/toolbar.js:30
-#: pgadmin/browser/static/js/toolbar.js:31
-#: pgadmin/browser/static/js/toolbar.js:118
+#: pgadmin/browser/static/js/toolbar.js:60
+#: pgadmin/browser/static/js/toolbar.js:61
+#: pgadmin/browser/static/js/toolbar.js:132
 #: pgadmin/tools/datagrid/static/js/datagrid.js:113
 #: pgadmin/tools/datagrid/static/js/datagrid.js:126
 #: pgadmin/tools/sqleditor/__init__.py:64
 msgid "Query Tool"
 msgstr "쿼리 도구"
 
-#: pgadmin/browser/register_browser_preferences.py:512
+#: pgadmin/browser/register_browser_preferences.py:514
 #: pgadmin/tools/debugger/__init__.py:63
-#: pgadmin/tools/debugger/static/js/debugger.js:200
+#: pgadmin/tools/debugger/static/js/debugger.js:201
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:1120
 msgid "Debugger"
 msgstr "디버거"
 
-#: pgadmin/browser/register_browser_preferences.py:513
+#: pgadmin/browser/register_browser_preferences.py:515
 #: pgadmin/tools/schema_diff/__init__.py:43
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:50
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:101
 msgid "Schema Diff"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:514
+#: pgadmin/browser/register_browser_preferences.py:516
 msgid "ERD Tool"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:515
-msgid ""
-"Select Query Tool, Debugger, or Schema Diff from the drop-down to set "
-"open in new browser tab for that particular module."
+#: pgadmin/browser/register_browser_preferences.py:517
+#: pgadmin/browser/static/js/toolbar.js:73
+#: pgadmin/browser/static/js/toolbar.js:74
+#: pgadmin/browser/static/js/toolbar.js:140
+#: pgadmin/tools/psql/static/js/psql_module.js:127
+msgid "PSQL Tool"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:523
+#: pgadmin/browser/register_browser_preferences.py:518
+msgid ""
+"Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
+"drop-down to set open in new browser tab for that particular module."
+msgstr ""
+
+#: pgadmin/browser/register_browser_preferences.py:528
 msgid "Select open new tab..."
 msgstr ""
 
-#: pgadmin/browser/utils.py:307
+#: pgadmin/browser/register_browser_preferences.py:534
+msgid "PSQL tool tab title"
+msgstr ""
+
+#: pgadmin/browser/utils.py:309
 msgid "Unimplemented method ({0}) for this url ({1})"
 msgstr "이 URL({1})을 위한 구현되지 않은 메서드 ({0})"
 
-#: pgadmin/browser/utils.py:424
+#: pgadmin/browser/utils.py:426
 msgid "Required properties are missing."
 msgstr "필수 입력 항목이 빠졌습니다."
 
@@ -663,16 +683,16 @@ msgstr "필수 입력 항목이 빠졌습니다."
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:129
 #: pgadmin/browser/templates/browser/js/messages.js:21
 #: pgadmin/browser/templates/browser/js/messages.js:39
-#: pgadmin/browser/utils.py:446
+#: pgadmin/browser/utils.py:448
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:97
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:162
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:323
-#: pgadmin/static/js/sqleditor/new_connection_dialog.js:293
+#: pgadmin/static/js/sqleditor/new_connection_dialog.js:297
 #: pgadmin/tools/grant_wizard/__init__.py:127 pgadmin/utils/exception.py:37
 msgid "Connection to the server has been lost."
 msgstr "서버 접속이 끊겼습니다."
 
-#: pgadmin/browser/utils.py:735
+#: pgadmin/browser/utils.py:737
 msgid "Could not find the specified {}."
 msgstr ""
 
@@ -694,19 +714,19 @@ msgstr "서버 그룹 이름을 지정하지 않았습니다"
 msgid "Could not find the server group."
 msgstr "해당 서버 그룹을 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:122
+#: pgadmin/browser/server_groups/servers/__init__.py:123
 msgid "Servers"
 msgstr "서버들"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:559
+#: pgadmin/browser/server_groups/servers/__init__.py:560
 msgid "The specified server group with id# {0} could not be found."
 msgstr "ID# {0} 번의 서버 그룹이 없습니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:580
+#: pgadmin/browser/server_groups/servers/__init__.py:581
 msgid "Could not find the server with id# {0}."
 msgstr "해당 서버(id# {})을 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:659
+#: pgadmin/browser/server_groups/servers/__init__.py:660
 msgid ""
 "The specified server could not be found.\n"
 "Does the user have permission to access the server?"
@@ -714,78 +734,78 @@ msgstr ""
 "지정한 서버를 찾을 수 없습니다.\n"
 "그 서버에 대한 접근 권한이 있는지 확인하세요."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:682
+#: pgadmin/browser/server_groups/servers/__init__.py:683
 msgid "Server deleted"
 msgstr "서버 삭제됨"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:694
-#: pgadmin/browser/server_groups/servers/__init__.py:1908
+#: pgadmin/browser/server_groups/servers/__init__.py:695
+#: pgadmin/browser/server_groups/servers/__init__.py:1916
 msgid "Could not find the required server."
 msgstr "필요한 해당 서버를 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:735
+#: pgadmin/browser/server_groups/servers/__init__.py:736
 msgid "name"
 msgstr "이름"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:736
+#: pgadmin/browser/server_groups/servers/__init__.py:737
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:156
-#: pgadmin/browser/server_groups/servers/static/js/server.js:871
+#: pgadmin/browser/server_groups/servers/static/js/server.js:880
 msgid "Host name/address"
 msgstr "호스트 이름/주소"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:737
+#: pgadmin/browser/server_groups/servers/__init__.py:738
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:168
-#: pgadmin/browser/server_groups/servers/static/js/server.js:892
+#: pgadmin/browser/server_groups/servers/static/js/server.js:901
 msgid "Port"
 msgstr "포트"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:738
-#: pgadmin/browser/server_groups/servers/static/js/server.js:913
+#: pgadmin/browser/server_groups/servers/__init__.py:739
+#: pgadmin/browser/server_groups/servers/static/js/server.js:922
 msgid "Maintenance database"
 msgstr "접속 데이터베이스"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:739
+#: pgadmin/browser/server_groups/servers/__init__.py:740
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:180
-#: pgadmin/browser/server_groups/servers/static/js/server.js:916
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1098
+#: pgadmin/browser/server_groups/servers/static/js/server.js:925
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1107
 #: pgadmin/tools/user_management/static/js/user_management.js:353
 msgid "Username"
 msgstr "사용자이름"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:740
+#: pgadmin/browser/server_groups/servers/__init__.py:741
 msgid "SSL Mode"
 msgstr "SSL 모드"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:741
+#: pgadmin/browser/server_groups/servers/__init__.py:742
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:476
-#: pgadmin/browser/server_groups/servers/static/js/server.js:868
+#: pgadmin/browser/server_groups/servers/static/js/server.js:877
 #: pgadmin/tools/backup/static/js/backup.js:397
 #: pgadmin/tools/restore/static/js/restore.js:279
 msgid "Comments"
 msgstr "주석"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:742
+#: pgadmin/browser/server_groups/servers/__init__.py:743
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:138
-#: pgadmin/browser/server_groups/servers/static/js/server.js:977
+#: pgadmin/browser/server_groups/servers/static/js/server.js:986
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:177
 #: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:445
 #: pgadmin/tools/user_management/static/js/user_management.js:392
 msgid "Role"
 msgstr "롤"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:757
+#: pgadmin/browser/server_groups/servers/__init__.py:758
 msgid "Host address not valid"
 msgstr "호스트 주소가 바르지 않습니다"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:773
+#: pgadmin/browser/server_groups/servers/__init__.py:774
 msgid "No parameters were changed."
 msgstr "바뀐 매개 변수가 없습니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:849
+#: pgadmin/browser/server_groups/servers/__init__.py:850
 msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "서버에 접속된 상태에서는 '{0}' 변경이 불가능합니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1034
+#: pgadmin/browser/server_groups/servers/__init__.py:1035
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:601
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:394
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:412
@@ -830,85 +850,85 @@ msgstr "서버에 접속된 상태에서는 '{0}' 변경이 불가능합니다."
 msgid "Could not find the required parameter ({})."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1044
+#: pgadmin/browser/server_groups/servers/__init__.py:1045
 msgid "Not a valid Host address"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1133
+#: pgadmin/browser/server_groups/servers/__init__.py:1134
 msgid ""
 "Unable to connect to server:\n"
 "\n"
 "{}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1214
+#: pgadmin/browser/server_groups/servers/__init__.py:1215
 msgid "Server has no active connection for generating statistics."
 msgstr "해당 서버의 통계 정보를 수집할 활성화된 연결이 없습니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1307
+#: pgadmin/browser/server_groups/servers/__init__.py:1308
 msgid "Please enter the server details to connect"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1474
+#: pgadmin/browser/server_groups/servers/__init__.py:1475
 #: pgadmin/tools/schema_diff/__init__.py:370
-#: pgadmin/tools/sqleditor/__init__.py:1807
+#: pgadmin/tools/sqleditor/__init__.py:1812
 msgid "Server connected."
 msgstr "서버 접속됨."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1506
+#: pgadmin/browser/server_groups/servers/__init__.py:1514
 msgid "Server could not be disconnected."
 msgstr "서버와 연결을 끊을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1510
+#: pgadmin/browser/server_groups/servers/__init__.py:1518
 msgid "Server disconnected."
 msgstr "서버 연결 끊김."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1530
+#: pgadmin/browser/server_groups/servers/__init__.py:1538
 msgid "Could not reload the server configuration."
 msgstr "서버 환경 설정을 다시 반영할 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1535
+#: pgadmin/browser/server_groups/servers/__init__.py:1543
 msgid "Server configuration reloaded."
 msgstr "서버 환경 설정 다시 반영 함."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1576
+#: pgadmin/browser/server_groups/servers/__init__.py:1584
 msgid "Named restore point created: {0}"
 msgstr "이름을 가진 복원 지점 만듦: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1582
+#: pgadmin/browser/server_groups/servers/__init__.py:1590
 msgid "Named restore point creation failed ({0})"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1632
-#: pgadmin/browser/server_groups/servers/__init__.py:1644
+#: pgadmin/browser/server_groups/servers/__init__.py:1640
+#: pgadmin/browser/server_groups/servers/__init__.py:1652
 msgid "Could not find the required parameter(s)."
 msgstr "필요한 매개 변수를 찾을 수 없음."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1653
-#: pgadmin/browser/server_groups/servers/static/js/server.js:543
+#: pgadmin/browser/server_groups/servers/__init__.py:1661
+#: pgadmin/browser/server_groups/servers/static/js/server.js:544
 #: pgadmin/tools/user_management/__init__.py:106
 msgid "Passwords do not match."
 msgstr "비밀번호 틀림."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1669
+#: pgadmin/browser/server_groups/servers/__init__.py:1677
 msgid "Incorrect password."
 msgstr "바르지 않은 비밀번호."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1709
+#: pgadmin/browser/server_groups/servers/__init__.py:1717
 msgid "Password changed successfully."
 msgstr "비밀번호 변경 성공."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1759
+#: pgadmin/browser/server_groups/servers/__init__.py:1767
 msgid "WAL replay paused"
 msgstr "WAL 반영을 잠시 멈춤"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1762
-#: pgadmin/browser/server_groups/servers/__init__.py:1820
+#: pgadmin/browser/server_groups/servers/__init__.py:1770
+#: pgadmin/browser/server_groups/servers/__init__.py:1828
 msgid "Please connect the server."
 msgstr "해당 서버에 접속부터 하세요."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1935
-#: pgadmin/browser/server_groups/servers/__init__.py:1968
+#: pgadmin/browser/server_groups/servers/__init__.py:1943
+#: pgadmin/browser/server_groups/servers/__init__.py:1976
 msgid "The saved password cleared successfully."
 msgstr ""
 
@@ -927,6 +947,7 @@ msgid "Greenplum Database"
 msgstr "Greenplum 데이터베이스"
 
 #: pgadmin/browser/server_groups/servers/ppas.py:15
+#: pgadmin/browser/server_groups/servers/types.py:89
 msgid "EDB Advanced Server Binary Path"
 msgstr "EDB Advanced Server 실행 경로"
 
@@ -942,35 +963,37 @@ msgstr ""
 msgid "EDB Advanced Server"
 msgstr "EDB Advanced Server"
 
-#: pgadmin/browser/server_groups/servers/types.py:31
+#: pgadmin/browser/server_groups/servers/types.py:33
+#: pgadmin/browser/server_groups/servers/types.py:78
 msgid "PostgreSQL Binary Path"
 msgstr "PostgreSQL 실행 경로"
 
-#: pgadmin/browser/server_groups/servers/types.py:32
+#: pgadmin/browser/server_groups/servers/types.py:34
 msgid ""
 "Path to the directory containing the PostgreSQL utility programs "
 "(pg_dump, pg_restore etc)."
 msgstr "PostgreSQL 응용 프로그램 (pg_dump, pg_restore 같은 것들)이 있는 디렉터리 경로를 지정하세요."
 
-#: pgadmin/browser/server_groups/servers/types.py:60
+#: pgadmin/browser/server_groups/servers/types.py:62
 #: pgadmin/help/__init__.py:53
 msgid "Paths"
 msgstr "경로"
 
-#: pgadmin/browser/server_groups/servers/types.py:69
+#: pgadmin/browser/server_groups/servers/types.py:80
+#: pgadmin/browser/server_groups/servers/types.py:91
 msgid "Binary paths"
 msgstr "실행 경로"
 
-#: pgadmin/browser/server_groups/servers/types.py:78
+#: pgadmin/browser/server_groups/servers/types.py:125
 msgid "Type: {0}, Description: {1}, Priority: {2}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/types.py:119
+#: pgadmin/browser/server_groups/servers/types.py:166
 #, python-format
 msgid "Could not find the utility for the operation '%s'"
 msgstr "'%s' 작업을 위한 응용 프로그램을 찾을 수 없습니다."
 
-#: pgadmin/browser/server_groups/servers/types.py:143
+#: pgadmin/browser/server_groups/servers/types.py:246
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
@@ -1154,7 +1177,7 @@ msgstr "형변환자..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:349
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:184
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:353
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:159
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:160
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:122
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:131
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:282
@@ -1162,7 +1185,7 @@ msgstr "형변환자..."
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:141
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:108
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:412
-#: pgadmin/browser/server_groups/servers/static/js/server.js:810
+#: pgadmin/browser/server_groups/servers/static/js/server.js:819
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:133
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:342
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
@@ -1224,9 +1247,9 @@ msgstr "이름"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:352
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:187
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:357
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:162
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:163
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:125
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:359
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:362
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:142
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:105
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:415
@@ -1407,18 +1430,18 @@ msgstr "소스 자료형"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:784
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:975
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:984
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:183
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:184
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:185
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:146
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:150
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:388
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:393
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:417
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:425
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:430
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:435
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:391
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:396
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:420
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:428
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:433
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:438
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:442
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:441
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:445
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:419
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:432
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:439
@@ -1489,9 +1512,9 @@ msgstr "시스템 형변환자?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:404
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:519
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:996
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:180
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:181
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:142
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:384
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:387
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:461
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:140
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:205
@@ -1569,9 +1592,9 @@ msgstr "이벤트 트리거..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:385
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:354
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:360
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:165
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:166
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:128
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:362
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:365
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:146
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:356
 #: pgadmin/dashboard/static/js/dashboard.js:840
@@ -1601,7 +1624,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:215
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:202
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:321
-#: pgadmin/browser/server_groups/servers/static/js/server.js:994
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1003
 #: pgadmin/tools/backup/static/js/backup.js:491
 #: pgadmin/tools/backup/static/js/backup.js:501
 #: pgadmin/tools/backup/static/js/backup.js:514
@@ -1662,10 +1685,10 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:1037
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1183
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:1020
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:240
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:241
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:225
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:458
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:563
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:461
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:575
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:382
 msgid "Security labels"
 msgstr "보안 라벨"
@@ -1695,17 +1718,17 @@ msgstr "보안 라벨"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:448
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:1028
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1174
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:178
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:179
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:140
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:367
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:370
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:373
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:376
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:379
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:449
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:461
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:550
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:565
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:382
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:452
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:464
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:553
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:577
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:361
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:376
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:384
@@ -1785,7 +1808,7 @@ msgstr "확장모듈..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:389
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:358
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:365
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:169
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:170
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:131
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:531
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:167
@@ -1822,13 +1845,13 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:185
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:534
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:1050
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:538
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:541
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:539
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:469
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:163
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:220
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:131
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:585
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:597
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:394
 #: pgadmin/browser/server_groups/static/js/server_group.js:76
 msgid "Name cannot be empty."
@@ -2046,12 +2069,12 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1176
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:970
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:1000
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:177
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:231
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:178
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:232
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:139
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:216
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:366
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:445
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:369
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:448
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:447
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:454
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:467
@@ -2062,8 +2085,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/privilege.js:180
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:360
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:375
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:648
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:906
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:651
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:909
 msgid "Privileges"
 msgstr "접근권한"
 
@@ -2099,7 +2122,7 @@ msgid "User Mapping..."
 msgstr "사용자 맵핑..."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/static/js/user_mapping.js:129
-#: pgadmin/browser/server_groups/servers/static/js/server.js:448
+#: pgadmin/browser/server_groups/servers/static/js/server.js:449
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/10_plus/stats.sql:29
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:3
@@ -2260,7 +2283,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:458
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:37
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:471
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:474
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:130
 msgid "Tables"
 msgstr "테이블"
@@ -2353,7 +2376,7 @@ msgid "Schema dropped"
 msgstr "스키마 삭제됨"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:825
-#: pgadmin/static/js/backform.pgadmin.js:1974
+#: pgadmin/static/js/backform.pgadmin.js:1971
 msgid "Definition incomplete."
 msgstr "정의가 충분하지 않습니다."
 
@@ -2445,7 +2468,7 @@ msgstr "자료형"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:85
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:192
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:672
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:424
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:427
 msgid "Collation"
 msgstr "정렬규칙"
 
@@ -2904,7 +2927,7 @@ msgid "System FTS dictionary?"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:158
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:392
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:395
 msgid "Template"
 msgstr "템플릿"
 
@@ -3052,7 +3075,7 @@ msgstr "어휘소 분석 함수를 선택하세요."
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:59
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.js:21
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:472
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:483
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:486
 msgid "Functions"
 msgstr "함수"
 
@@ -3223,8 +3246,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:345
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:268
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1169
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:454
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:557
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:457
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:569
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:370
 #: pgadmin/tools/debugger/static/js/direct.js:1697
 msgid "Parameters"
@@ -3455,7 +3478,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:176
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:203
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:193
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:194
 msgid "Do you want to continue?"
 msgstr ""
 
@@ -3471,7 +3494,7 @@ msgstr "헤더 내용을 입력하세요."
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:25
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:465
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:477
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:480
 msgid "Sequences"
 msgstr "시퀀스"
 
@@ -3634,22 +3657,22 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:819
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:840
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:288
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:262
-#: pgadmin/browser/static/js/browser.js:763
-#: pgadmin/browser/static/js/node.js:953 pgadmin/browser/static/js/node.js:1482
-#: pgadmin/browser/static/js/node.js:1516
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:265
+#: pgadmin/browser/static/js/browser.js:791
+#: pgadmin/browser/static/js/node.js:965 pgadmin/browser/static/js/node.js:1504
+#: pgadmin/browser/static/js/node.js:1538
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:71
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:78
-#: pgadmin/static/js/backform.pgadmin.js:597
+#: pgadmin/static/js/backform.pgadmin.js:574
 #: pgadmin/static/js/backgrid.pgadmin.js:792
 #: pgadmin/static/js/sqleditor/history/query_history_entries.js:276
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:116
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:235
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2119
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2166
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2432
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3070
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4163
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2128
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2175
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2441
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3079
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4172
 msgid "Yes"
 msgstr "Yes"
 
@@ -3661,22 +3684,22 @@ msgstr "Yes"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:841
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:288
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:158
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:263
-#: pgadmin/browser/static/js/browser.js:764
-#: pgadmin/browser/static/js/node.js:954 pgadmin/browser/static/js/node.js:1483
-#: pgadmin/browser/static/js/node.js:1517
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:266
+#: pgadmin/browser/static/js/browser.js:792
+#: pgadmin/browser/static/js/node.js:966 pgadmin/browser/static/js/node.js:1505
+#: pgadmin/browser/static/js/node.js:1539
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:70
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:77
-#: pgadmin/static/js/backform.pgadmin.js:598
+#: pgadmin/static/js/backform.pgadmin.js:575
 #: pgadmin/static/js/backgrid.pgadmin.js:793
 #: pgadmin/static/js/sqleditor/history/query_history_entries.js:276
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:116
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:235
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2120
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2167
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2433
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3071
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4164
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2129
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2176
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2442
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3080
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4173
 msgid "No"
 msgstr "No"
 
@@ -3704,22 +3727,22 @@ msgid "System schema?"
 msgstr "시스템 스키마?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:424
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:369
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:372
 msgid "Default TABLE privileges"
 msgstr "테이블 기본 접근권한"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:427
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:372
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:375
 msgid "Default SEQUENCE privileges"
 msgstr "시퀀스 기본 접근권한"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:430
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:375
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:378
 msgid "Default FUNCTION privileges"
 msgstr "함수 기본 접근권한"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:433
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:378
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:381
 msgid "Default TYPE privileges"
 msgstr "자료형 기본 접근권한"
 
@@ -3730,7 +3753,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:479
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:32
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:494
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:497
 msgid "Types"
 msgstr "자료형"
 
@@ -3875,10 +3898,10 @@ msgid "Scale"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:514
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:207
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:211
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:218
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:222
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:208
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:212
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:219
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:223
 #: pgadmin/misc/file_manager/__init__.py:117
 msgid "Storage"
 msgstr "스토리지"
@@ -4228,10 +4251,10 @@ msgstr "칼럼을 선택하세요"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:485
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:408
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:341
-#: pgadmin/static/js/backform.pgadmin.js:1357
-#: pgadmin/static/js/backform.pgadmin.js:1483
-#: pgadmin/static/js/backform.pgadmin.js:1663
-#: pgadmin/static/js/backform.pgadmin.js:1794
+#: pgadmin/static/js/backform.pgadmin.js:1398
+#: pgadmin/static/js/backform.pgadmin.js:1512
+#: pgadmin/static/js/backform.pgadmin.js:1682
+#: pgadmin/static/js/backform.pgadmin.js:1801
 msgid "Add new row"
 msgstr "새 로우 추가"
 
@@ -4267,8 +4290,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:295
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:401
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:370
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:210
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:416
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:211
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:419
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:40
 #: pgadmin/tools/backup/static/js/backup.js:379
 #: pgadmin/tools/restore/static/js/restore.js:270
@@ -4290,7 +4313,7 @@ msgstr "접근 방법을 바꾸면서 칼럼 정렬 규칙도 함께 지웁니�
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:383
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:761
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:869
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:217
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:218
 msgid "Fill factor"
 msgstr ""
 
@@ -4739,7 +4762,7 @@ msgstr "모두 활성화"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:94
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:108
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:116
-#: pgadmin/browser/static/js/node.js:187 pgadmin/browser/static/js/node.js:275
+#: pgadmin/browser/static/js/node.js:187 pgadmin/browser/static/js/node.js:286
 #: pgadmin/tools/erd/static/js/erd_module.js:53
 msgid "The selected tree node does not support this option."
 msgstr ""
@@ -4819,13 +4842,13 @@ msgstr "파티션 스킴"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:801
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:1043
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:547
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:499
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:503
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1150
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1153
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1158
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1163
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1170
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:502
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:506
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1159
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1162
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1167
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1172
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1179
 msgid "Advanced"
 msgstr "부가정보"
 
@@ -5064,14 +5087,14 @@ msgid "Enabled for hash partition."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:1023
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:225
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:226
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:227
 msgid "Parameter"
 msgstr "매개변수"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:1042
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1188
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:221
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:222
 msgid "Storage settings"
 msgstr "스토리지 설정"
 
@@ -5221,7 +5244,7 @@ msgid "Enabled?"
 msgstr "활성화?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:205
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:272
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:273
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:240
 msgid "Please specify name."
 msgstr "이름을 지정하세요."
@@ -6056,7 +6079,7 @@ msgid "Alias"
 msgstr "별칭"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:974
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:536
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:542
 msgid "Members"
 msgstr "맴버"
 
@@ -6099,12 +6122,12 @@ msgid "Refresh Materialized View"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:145
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:115
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:116
 msgid "With no data"
 msgstr "자료 포함 안함"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:147
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:109
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:110
 msgid "With data"
 msgstr "자료 포함"
 
@@ -6134,7 +6157,7 @@ msgid "Running Query:"
 msgstr "실행한 쿼리:"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:188
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:39
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:40
 msgid "Materialized Views"
 msgstr "구체화된 뷰"
 
@@ -6177,106 +6200,75 @@ msgstr ""
 msgid "Could not find the specified server."
 msgstr "지정한 서버를 찾을 수 없음."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:64
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:65
 msgid "Materialized View"
 msgstr "구체화된 뷰"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:87
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:88
 msgid "Refresh View"
 msgstr "뷰 갱신"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:93
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:99
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:105
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:94
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:100
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:106
 msgid "Materialized View..."
 msgstr "구체화된 뷰..."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:123
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:124
 msgid "With data (concurrently)"
 msgstr "자료 표함 (테이블 잠금 안함)"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:129
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:130
 msgid "With no data (concurrently)"
 msgstr "자료 포함 안함 (테이블 잠금 안함)"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:174
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:175
 msgid "System materialized view?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:191
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:192
 msgid ""
 "Updating the definition will drop and re-create the materialized view. It"
 " may result in loss of information about its dependent objects."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:207
 msgid "With data?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:281
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:282
 msgid "Please enter view definition."
 msgstr "뷰 정의 탭으로 이동하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:324
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:325
 #: pgadmin/tools/import_export/static/js/import_export.js:454
 #: pgadmin/tools/maintenance/static/js/maintenance.js:230
 msgid "Please select server or child node from tree."
 msgstr "탐색기에서 서버 또는 그 하위 노드를 선택하세요."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:335
-#: pgadmin/static/js/alertify/dialog.js:118
-#: pgadmin/tools/import_export/static/js/import_export.js:465
-#: pgadmin/tools/maintenance/static/js/maintenance.js:241
-msgid "Please configure the PostgreSQL Binary Path in the Preferences dialog."
-msgstr "설정창에서 PostgreSQL 실행파일 경로를 지정하세요."
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:340
-#: pgadmin/static/js/alertify/dialog.js:123
-#: pgadmin/tools/import_export/static/js/import_export.js:470
-#: pgadmin/tools/maintenance/static/js/maintenance.js:246
-msgid ""
-"Please configure the EDB Advanced Server Binary Path in the Preferences "
-"dialog."
-msgstr "설정창에서 EDB Advanced Server 실행파일 경로를 지정하세요."
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:347
-#: pgadmin/static/js/alertify/dialog.js:129
-#: pgadmin/tools/import_export/static/js/import_export.js:477
-#: pgadmin/tools/maintenance/static/js/maintenance.js:253
-msgid "Configuration required"
-msgstr "환경설정 필요함"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:351
-#: pgadmin/static/js/alertify/dialog.js:135
-#: pgadmin/tools/import_export/static/js/import_export.js:481
-#: pgadmin/tools/maintenance/static/js/maintenance.js:257
-#, python-format
-msgid "Failed to load preference %s of module %s"
-msgstr "%s 설정(해당 모듈: %s)을 불러오기 실패"
-
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:362
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:395
-#: pgadmin/tools/backup/static/js/backup_dialog.js:51
-#: pgadmin/tools/backup/static/js/backup_dialog.js:71
-#: pgadmin/tools/import_export/static/js/import_export.js:741
-#: pgadmin/tools/import_export/static/js/import_export.js:756
-#: pgadmin/tools/maintenance/static/js/maintenance.js:506
-#: pgadmin/tools/maintenance/static/js/maintenance.js:518
-#: pgadmin/tools/restore/static/js/restore_dialog.js:50
-#: pgadmin/tools/restore/static/js/restore_dialog.js:74
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:345
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:378
+#: pgadmin/tools/backup/static/js/backup_dialog.js:62
+#: pgadmin/tools/backup/static/js/backup_dialog.js:82
+#: pgadmin/tools/import_export/static/js/import_export.js:723
+#: pgadmin/tools/import_export/static/js/import_export.js:738
+#: pgadmin/tools/maintenance/static/js/maintenance.js:488
+#: pgadmin/tools/maintenance/static/js/maintenance.js:500
+#: pgadmin/tools/restore/static/js/restore_dialog.js:59
+#: pgadmin/tools/restore/static/js/restore_dialog.js:83
 msgid "Utility not found"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:383
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:390
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:366
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:373
 msgid "Failed to create materialized view refresh job."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:396
-#: pgadmin/tools/backup/static/js/backup_dialog.js:72
-#: pgadmin/tools/import_export/static/js/import_export.js:757
-#: pgadmin/tools/maintenance/static/js/maintenance.js:519
-#: pgadmin/tools/restore/static/js/restore_dialog.js:75
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:379
+#: pgadmin/tools/backup/static/js/backup_dialog.js:83
+#: pgadmin/tools/import_export/static/js/import_export.js:739
+#: pgadmin/tools/maintenance/static/js/maintenance.js:501
+#: pgadmin/tools/restore/static/js/restore_dialog.js:84
 msgid "Failed to fetch Utility information"
 msgstr ""
 
@@ -6325,7 +6317,7 @@ msgid "Size of temporary files"
 msgstr "임시 파일 크기"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:54
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:356
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:359
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:195
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:2
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:2
@@ -6376,88 +6368,88 @@ msgstr "데이터베이스 연결 끊김."
 msgid "Generate ERD (Beta)"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:179
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1273
-#: pgadmin/static/js/sqleditor/new_connection_dialog.js:291
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2547
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:182
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1282
+#: pgadmin/static/js/sqleditor/new_connection_dialog.js:295
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2557
 msgid "Connection lost"
 msgstr "연결 끊김"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:180
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1274
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:183
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1283
 msgid "Would you like to reconnect to the database?"
 msgstr "다시 해당 데이터베이스로 붙을까요?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:221
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:224
 msgid "Disconnect the database"
 msgstr "데이터베이스 연결 끊기"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:222
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:225
 #, python-format
 msgid "Are you sure you want to disconnect the database - %s?"
 msgstr "%s 데이터베이스 연결을 끊을까요?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:381
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:384
 msgid "System database?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:387
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:390
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:52
 #: pgadmin/tools/backup/static/js/backup.js:205
 #: pgadmin/tools/import_export/static/js/import_export.js:118
 msgid "Encoding"
 msgstr "인코딩"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:429
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:432
 msgid "Character type"
 msgstr "문자 종류"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:434
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:437
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:440
 msgid "Connection limit"
 msgstr "연결 제한"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:437
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:440
 msgid "Template?"
 msgstr "템플릿?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:441
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:444
 msgid "Allow connections?"
 msgstr "접속 허용?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:466
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:469
 msgid "Default Privileges"
 msgstr "기본 접근권한"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:502
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:505
 msgid "Schema restriction"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:505
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:508
 msgid ""
 "Note: Changes to the schema restriction will require the Schemas node in "
 "the browser to be refreshed before they will be shown."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:524
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:527
 msgid ""
 "Please refresh the Schemas node to make changes to the schema restriction"
 " take effect."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:584
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:587
 msgid "Connect  to database."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:599
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:602
 msgid "Connect to database"
 msgstr "데이터베이스 연결"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:626
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:629
 msgid "Database already connected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:671
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:674
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:158
 #, python-format
 msgid "Error: Object not found - %s."
@@ -6506,26 +6498,26 @@ msgstr "함수..."
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:208
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:212
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:217
-#: pgadmin/browser/server_groups/servers/static/js/server.js:835
-#: pgadmin/browser/server_groups/servers/static/js/server.js:871
-#: pgadmin/browser/server_groups/servers/static/js/server.js:892
-#: pgadmin/browser/server_groups/servers/static/js/server.js:913
-#: pgadmin/browser/server_groups/servers/static/js/server.js:916
-#: pgadmin/browser/server_groups/servers/static/js/server.js:938
-#: pgadmin/browser/server_groups/servers/static/js/server.js:943
-#: pgadmin/browser/server_groups/servers/static/js/server.js:948
-#: pgadmin/browser/server_groups/servers/static/js/server.js:953
-#: pgadmin/browser/server_groups/servers/static/js/server.js:966
-#: pgadmin/browser/server_groups/servers/static/js/server.js:977
-#: pgadmin/browser/server_groups/servers/static/js/server.js:982
+#: pgadmin/browser/server_groups/servers/static/js/server.js:844
+#: pgadmin/browser/server_groups/servers/static/js/server.js:880
+#: pgadmin/browser/server_groups/servers/static/js/server.js:901
+#: pgadmin/browser/server_groups/servers/static/js/server.js:922
+#: pgadmin/browser/server_groups/servers/static/js/server.js:925
+#: pgadmin/browser/server_groups/servers/static/js/server.js:947
+#: pgadmin/browser/server_groups/servers/static/js/server.js:952
+#: pgadmin/browser/server_groups/servers/static/js/server.js:957
+#: pgadmin/browser/server_groups/servers/static/js/server.js:962
+#: pgadmin/browser/server_groups/servers/static/js/server.js:975
+#: pgadmin/browser/server_groups/servers/static/js/server.js:986
+#: pgadmin/browser/server_groups/servers/static/js/server.js:991
 msgid "Connection"
 msgstr "연결"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:192
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:418
-#: pgadmin/browser/server_groups/servers/static/js/server.js:952
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1108
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1129
+#: pgadmin/browser/server_groups/servers/static/js/server.js:961
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1117
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1138
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:12
 #: pgadmin/browser/templates/browser/master_password.html:5
 msgid "Password"
@@ -6577,7 +6569,7 @@ msgid "Check connection?"
 msgstr "접속 허용?"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:311
-#: pgadmin/browser/server_groups/servers/static/js/server.js:984
+#: pgadmin/browser/server_groups/servers/static/js/server.js:993
 msgid "SSL mode"
 msgstr "SSL 모드"
 
@@ -6592,77 +6584,77 @@ msgstr "SSL 모드"
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:372
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:380
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:388
-#: pgadmin/browser/server_groups/servers/static/js/server.js:984
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1000
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1006
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1012
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1018
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1024
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1029
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1037
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1045
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1053
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1061
+#: pgadmin/browser/server_groups/servers/static/js/server.js:993
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1009
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1015
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1021
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1027
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1033
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1038
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1046
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1054
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1062
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1070
 msgid "SSL"
 msgstr "SSL"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:318
-#: pgadmin/browser/server_groups/servers/static/js/server.js:991
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1000
 msgid "Allow"
 msgstr "허용"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:319
-#: pgadmin/browser/server_groups/servers/static/js/server.js:992
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1001
 msgid "Prefer"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:320
-#: pgadmin/browser/server_groups/servers/static/js/server.js:993
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1002
 msgid "Require"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:322
-#: pgadmin/browser/server_groups/servers/static/js/server.js:995
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1004
 msgid "Verify-CA"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:323
-#: pgadmin/browser/server_groups/servers/static/js/server.js:996
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1005
 msgid "Verify-Full"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:326
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:355
-#: pgadmin/browser/server_groups/servers/static/js/server.js:999
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1028
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1008
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1037
 msgid "Client certificate"
 msgstr "클라이언트 인증"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:332
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:363
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1005
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1036
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1014
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1045
 msgid "Client certificate key"
 msgstr "클라이언트 인증키"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:338
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:371
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1011
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1044
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1020
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1053
 msgid "Root certificate"
 msgstr "루트 인증서"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:344
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:379
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1017
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1052
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1026
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1061
 msgid "Certificate revocation list"
 msgstr "인증서 폐기 목록"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:350
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:387
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1023
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1060
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1032
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1069
 msgid "SSL compression?"
 msgstr "SSL 압축?"
 
@@ -7374,7 +7366,7 @@ msgstr "일정..."
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.js:279
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:100
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:138
-#: pgadmin/browser/server_groups/servers/static/js/server.js:803
+#: pgadmin/browser/server_groups/servers/static/js/server.js:812
 #: pgadmin/browser/server_groups/static/js/server_group.js:46
 msgid "ID"
 msgstr "ID"
@@ -7590,7 +7582,7 @@ msgstr "종류"
 #: pgadmin/browser/static/js/browser.js:550
 #: pgadmin/browser/templates/browser/js/messages.js:24
 #: pgadmin/dashboard/static/js/dashboard.js:208
-#: pgadmin/static/js/backform.pgadmin.js:2188
+#: pgadmin/static/js/backform.pgadmin.js:2168
 #: pgadmin/static/js/backgrid.pgadmin.js:2271
 #: pgadmin/static/js/sqleditor/macro_model.js:61
 msgid "SQL"
@@ -8122,15 +8114,17 @@ msgid "Member of"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:516
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:536
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:542
 msgid "Membership"
 msgstr "맴버쉽"
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:611
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:535
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:561
 msgid "Select the checkbox for roles to include WITH ADMIN OPTION."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:613
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:537
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:563
 msgid "Roles shown with a check mark have the WITH ADMIN OPTION set."
 msgstr ""
 
@@ -8179,147 +8173,147 @@ msgstr "서버 접속 끊기"
 msgid "Database is already disconnected."
 msgstr "데이터베이스 연결 끊김."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:115
+#: pgadmin/browser/server_groups/servers/static/js/server.js:116
 msgid "Reload Configuration"
 msgstr "설정 다시 적용"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:117
+#: pgadmin/browser/server_groups/servers/static/js/server.js:118
 #, fuzzy
 msgid ""
 "Please select a server from the browser tree to reload the configuration "
 "files."
 msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:122
+#: pgadmin/browser/server_groups/servers/static/js/server.js:123
 msgid "Add Named Restore Point..."
 msgstr "명명된 복원점 추가..."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:124
+#: pgadmin/browser/server_groups/servers/static/js/server.js:125
 #, fuzzy
 msgid "Please select any server from the browser tree to Add Named Restore Point."
 msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:129
+#: pgadmin/browser/server_groups/servers/static/js/server.js:130
 msgid "Change Password..."
 msgstr "비밀번호 변경..."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:131
+#: pgadmin/browser/server_groups/servers/static/js/server.js:132
 #, fuzzy
 msgid "Please connect server to enable change password. "
 msgstr "대시보드를 보려는 서버로 먼저 접속하세요."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:136
+#: pgadmin/browser/server_groups/servers/static/js/server.js:137
 msgid "Pause Replay of WAL"
 msgstr "WAL 반영 일시중지"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:138
+#: pgadmin/browser/server_groups/servers/static/js/server.js:139
 msgid ""
 "Please select a connected database as a Super user and run in Recovery "
 "mode to Pause Replay of WAL."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:143
+#: pgadmin/browser/server_groups/servers/static/js/server.js:144
 msgid "Resume Replay of WAL"
 msgstr "WAL 반영 재개"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:145
+#: pgadmin/browser/server_groups/servers/static/js/server.js:146
 msgid ""
 "Please select a connected database as a Super user and run in Recovery "
 "mode to Resume Replay of WAL."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:150
+#: pgadmin/browser/server_groups/servers/static/js/server.js:151
 msgid "Clear Saved Password"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:162
+#: pgadmin/browser/server_groups/servers/static/js/server.js:163
 msgid "Clear SSH Tunnel Password"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:172
+#: pgadmin/browser/server_groups/servers/static/js/server.js:173
 msgid "SSH Tunnel password is not saved for selected server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:298
+#: pgadmin/browser/server_groups/servers/static/js/server.js:299
 msgid "Disconnect server"
 msgstr "서버 연결 끊기"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:299
+#: pgadmin/browser/server_groups/servers/static/js/server.js:300
 #, python-format
 msgid "Are you sure you want to disconnect the server %s?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:304
-#: pgadmin/browser/server_groups/servers/static/js/server.js:475
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1453
+#: pgadmin/browser/server_groups/servers/static/js/server.js:305
+#: pgadmin/browser/server_groups/servers/static/js/server.js:476
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1462
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:197
-#: pgadmin/browser/static/js/browser.js:715
-#: pgadmin/browser/static/js/node.js:1708
+#: pgadmin/browser/static/js/browser.js:743
+#: pgadmin/browser/static/js/node.js:1730
 #: pgadmin/browser/static/js/wizard.js:137
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:34
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:195
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:98
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:144
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:86
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:131
 #: pgadmin/misc/file_manager/static/js/storage_dialogue.js:25
-#: pgadmin/preferences/static/js/preferences.js:501
+#: pgadmin/preferences/static/js/preferences.js:465
 #: pgadmin/static/js/slickgrid/editors.js:63
 #: pgadmin/static/js/sqleditor/filter_dialog.js:79
 #: pgadmin/static/js/sqleditor/macro.js:68
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:83
 #: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:249
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:74
-#: pgadmin/tools/datagrid/static/js/show_data.js:145
+#: pgadmin/tools/datagrid/static/js/show_data.js:156
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:629
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:985
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/DialogWrapper.js:68
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:263
-#: pgadmin/tools/import_export/static/js/import_export.js:513
-#: pgadmin/tools/maintenance/static/js/maintenance.js:318
+#: pgadmin/tools/import_export/static/js/import_export.js:495
+#: pgadmin/tools/maintenance/static/js/maintenance.js:300
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:57
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:929
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2595
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2784
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5333
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5407
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2605
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2794
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5342
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5416
 #: pgadmin/tools/user_management/static/js/user_management.js:747
 msgid "Cancel"
 msgstr "취소"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:352
+#: pgadmin/browser/server_groups/servers/static/js/server.js:353
 msgid "Reload server configuration"
 msgstr "서버 환경설정 재반영"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:353
+#: pgadmin/browser/server_groups/servers/static/js/server.js:354
 #, python-format
 msgid "Are you sure you want to reload the server configuration on %s?"
 msgstr "%s 서버 환경 설정을 다시 불러올까요?"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:390
+#: pgadmin/browser/server_groups/servers/static/js/server.js:391
 msgid "Enter the name of the restore point to add"
 msgstr "추가할 복원 지점 이름을 입력하세요"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:412
+#: pgadmin/browser/server_groups/servers/static/js/server.js:413
 msgid "Please enter a valid name."
 msgstr "바른 이름을 입력하세요."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:420
+#: pgadmin/browser/server_groups/servers/static/js/server.js:421
 msgid "Restore point name"
 msgstr "복원 지점 이름"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:451
+#: pgadmin/browser/server_groups/servers/static/js/server.js:452
 msgid "Current Password"
 msgstr "현재 비밀번호"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:455
+#: pgadmin/browser/server_groups/servers/static/js/server.js:456
 msgid "New Password"
 msgstr "새 비밀번호"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:459
+#: pgadmin/browser/server_groups/servers/static/js/server.js:460
 msgid "Confirm Password"
 msgstr "비밀번호 확인"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:468
-#: pgadmin/browser/server_groups/servers/static/js/server.js:571
+#: pgadmin/browser/server_groups/servers/static/js/server.js:469
+#: pgadmin/browser/server_groups/servers/static/js/server.js:572
 #: pgadmin/browser/templates/browser/index.html:150
 #: pgadmin/templates/security/change_password.html:20
 #: pgadmin/templates/security/change_password.html:21
@@ -8328,173 +8322,173 @@ msgstr "비밀번호 확인"
 msgid "Change Password"
 msgstr "비밀번호 변경"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:572
+#: pgadmin/browser/server_groups/servers/static/js/server.js:573
 msgid ""
 "Please make sure to disconnect the server and update the new password in "
 "the pgpass file before performing any other operation"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:695
+#: pgadmin/browser/server_groups/servers/static/js/server.js:696
 msgid "Clear saved password"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:696
+#: pgadmin/browser/server_groups/servers/static/js/server.js:697
 #, python-format
 msgid "Are you sure you want to clear the saved password for server %s?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:732
+#: pgadmin/browser/server_groups/servers/static/js/server.js:733
 msgid "Clear SSH Tunnel password"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:733
+#: pgadmin/browser/server_groups/servers/static/js/server.js:734
 #, python-format
 msgid ""
 "Are you sure you want to clear the saved password of SSH Tunnel for "
 "server %s?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:814
+#: pgadmin/browser/server_groups/servers/static/js/server.js:823
 msgid "Server group"
 msgstr "서버 그룹"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:819
+#: pgadmin/browser/server_groups/servers/static/js/server.js:828
 msgid "Shared Server Owner"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:830
+#: pgadmin/browser/server_groups/servers/static/js/server.js:839
 msgid "Server type"
 msgstr "서버 종류"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:834
+#: pgadmin/browser/server_groups/servers/static/js/server.js:843
 msgid "Connected?"
 msgstr "연결됨?"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:836
-#: pgadmin/browser/server_groups/servers/static/js/server.js:939
-#: pgadmin/browser/server_groups/servers/static/js/server.js:944
-#: pgadmin/browser/server_groups/servers/static/js/server.js:949
+#: pgadmin/browser/server_groups/servers/static/js/server.js:845
+#: pgadmin/browser/server_groups/servers/static/js/server.js:948
+#: pgadmin/browser/server_groups/servers/static/js/server.js:953
+#: pgadmin/browser/server_groups/servers/static/js/server.js:958
 #: pgadmin/browser/templates/browser/js/messages.js:35
 #: pgadmin/misc/statistics/static/js/statistics.js:124
-#: pgadmin/preferences/static/js/preferences.js:240
+#: pgadmin/preferences/static/js/preferences.js:215
 msgid "True"
 msgstr "True"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:836
-#: pgadmin/browser/server_groups/servers/static/js/server.js:939
-#: pgadmin/browser/server_groups/servers/static/js/server.js:944
-#: pgadmin/browser/server_groups/servers/static/js/server.js:949
+#: pgadmin/browser/server_groups/servers/static/js/server.js:845
+#: pgadmin/browser/server_groups/servers/static/js/server.js:948
+#: pgadmin/browser/server_groups/servers/static/js/server.js:953
+#: pgadmin/browser/server_groups/servers/static/js/server.js:958
 #: pgadmin/browser/templates/browser/js/messages.js:36
 #: pgadmin/misc/statistics/static/js/statistics.js:125
-#: pgadmin/preferences/static/js/preferences.js:241
+#: pgadmin/preferences/static/js/preferences.js:216
 msgid "False"
 msgstr "False"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:842
+#: pgadmin/browser/server_groups/servers/static/js/server.js:851
 msgid "Background"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:846
+#: pgadmin/browser/server_groups/servers/static/js/server.js:855
 msgid "Foreground"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:849
+#: pgadmin/browser/server_groups/servers/static/js/server.js:858
 msgid "Connect now?"
 msgstr "지금 접속 할까요?"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:852
+#: pgadmin/browser/server_groups/servers/static/js/server.js:861
 msgid "Shared?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:883
-#: pgadmin/browser/server_groups/servers/static/js/server.js:904
-#: pgadmin/browser/server_groups/servers/static/js/server.js:928
+#: pgadmin/browser/server_groups/servers/static/js/server.js:892
+#: pgadmin/browser/server_groups/servers/static/js/server.js:913
+#: pgadmin/browser/server_groups/servers/static/js/server.js:937
 msgid ""
 "To apply changes to the connection configuration, please disconnect from "
 "the server and then reconnect."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:937
+#: pgadmin/browser/server_groups/servers/static/js/server.js:946
 msgid "Kerberos authentication?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:942
+#: pgadmin/browser/server_groups/servers/static/js/server.js:951
 msgid "GSS authenticated?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:947
+#: pgadmin/browser/server_groups/servers/static/js/server.js:956
 msgid "GSS encrypted?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:965
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1137
+#: pgadmin/browser/server_groups/servers/static/js/server.js:974
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1146
 msgid "Save password?"
 msgstr "비밀번호 저장?"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:980
+#: pgadmin/browser/server_groups/servers/static/js/server.js:989
 msgid "Service"
 msgstr "서비스"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1068
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1077
 msgid "Use SSH tunneling"
 msgstr "SSH 터널링 사용"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1069
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1084
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1091
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1098
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1106
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1116
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1130
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1138
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1078
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1093
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1100
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1107
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1115
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1125
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1139
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1147
 msgid "SSH Tunnel"
 msgstr "SSH 터널"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1084
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1093
 msgid "Tunnel host"
 msgstr "터널 호스트"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1091
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1100
 msgid "Tunnel port"
 msgstr "터널 포트"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1105
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1114
 msgid "Authentication"
 msgstr "인증"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1107
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1115
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1116
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1124
 msgid "Identity file"
 msgstr "식별 파일"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1150
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1159
 msgid "Host address"
 msgstr "호스트 주소"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1153
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1162
 msgid "DB restriction"
 msgstr "DB 제한"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1157
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1162
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1166
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1171
 msgid "Password file"
 msgstr "비밀번호 파일"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1169
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1178
 msgid "Connection timeout (seconds)"
 msgstr "연결 제한시간(초)"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1354
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1363
 msgid "Connect to server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1364
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1373
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:895
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2813
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2823
 msgid "Connect to Server"
 msgstr "서버 접속"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1388
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1397
 msgid ""
 "You have connected to a server version that is older than is supported by"
 " pgAdmin. This may cause pgAdmin to break in strange and unpredictable "
@@ -8773,17 +8767,17 @@ msgid "Dependents"
 msgstr "하위의존"
 
 #: pgadmin/browser/static/js/browser.js:455
-#: pgadmin/browser/static/js/toolbar.js:40
-#: pgadmin/browser/static/js/toolbar.js:41
-#: pgadmin/browser/static/js/toolbar.js:120
+#: pgadmin/browser/static/js/toolbar.js:50
+#: pgadmin/browser/static/js/toolbar.js:51
+#: pgadmin/browser/static/js/toolbar.js:134
 #: pgadmin/tools/datagrid/static/js/datagrid.js:84
 msgid "View Data"
 msgstr ""
 
 #: pgadmin/browser/static/js/browser.js:456
-#: pgadmin/browser/static/js/toolbar.js:50
-#: pgadmin/browser/static/js/toolbar.js:51
-#: pgadmin/browser/static/js/toolbar.js:122
+#: pgadmin/browser/static/js/toolbar.js:40
+#: pgadmin/browser/static/js/toolbar.js:41
+#: pgadmin/browser/static/js/toolbar.js:136
 #: pgadmin/tools/datagrid/static/js/datagrid.js:85
 msgid "Filtered Rows"
 msgstr ""
@@ -8792,28 +8786,28 @@ msgstr ""
 msgid "No object selected"
 msgstr "선택된 객체 없음"
 
-#: pgadmin/browser/static/js/browser.js:707
+#: pgadmin/browser/static/js/browser.js:735
 msgid "Master password"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:713
-#: pgadmin/browser/static/js/browser.js:752
+#: pgadmin/browser/static/js/browser.js:741
+#: pgadmin/browser/static/js/browser.js:780
 msgid "Reset Master Password"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:753
+#: pgadmin/browser/static/js/browser.js:781
 msgid ""
 "This will remove all the saved passwords. This will also remove "
 "established connections to the server and you may need to reconnect "
 "again. Do you wish to continue?"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:861
+#: pgadmin/browser/static/js/browser.js:889
 #, python-format
 msgid "Are you sure you want to close the %s browser?"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:2069
+#: pgadmin/browser/static/js/browser.js:2097
 msgid "Error retrieving details for the node."
 msgstr "해당 노드 상세 정보 처리 중 오류 발생."
 
@@ -8826,18 +8820,24 @@ msgstr "새로고침..."
 #: pgadmin/browser/static/js/node.js:245
 #: pgadmin/tools/search_objects/static/js/search_objects.js:47
 #: pgadmin/tools/search_objects/static/js/search_objects.js:58
-#: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:35
+#: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:44
 msgid "Search Objects..."
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:215
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:102
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:124
+#: pgadmin/browser/static/js/collection.js:95
+#: pgadmin/browser/static/js/node.js:255
+#: pgadmin/tools/psql/static/js/psql_module.js:63
+msgid "PSQL Tool (Beta)"
+msgstr ""
+
+#: pgadmin/browser/static/js/collection.js:226
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:90
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:112
 #: pgadmin/static/js/backgrid.pgadmin.js:2255
 msgid "Select"
 msgstr "선택"
 
-#: pgadmin/browser/static/js/collection.js:243
+#: pgadmin/browser/static/js/collection.js:254
 #: pgadmin/dashboard/static/js/dashboard.js:474
 #: pgadmin/misc/dependencies/static/js/dependencies.js:112
 #: pgadmin/misc/dependents/static/js/dependents.js:112
@@ -8850,36 +8850,36 @@ msgstr "선택"
 msgid "No data found"
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:279
-#: pgadmin/browser/static/js/collection.js:340
-#: pgadmin/browser/static/js/node.js:482
+#: pgadmin/browser/static/js/collection.js:290
+#: pgadmin/browser/static/js/collection.js:351
+#: pgadmin/browser/static/js/node.js:493
 #: pgadmin/browser/templates/browser/js/messages.js:42
 #: pgadmin/misc/sql/static/js/sql.js:134
 #: pgadmin/misc/statistics/static/js/statistics.js:258
 msgid "Retrieving data from the server..."
 msgstr "서버에서 자료 가져오는 중..."
 
-#: pgadmin/browser/static/js/collection.js:294
+#: pgadmin/browser/static/js/collection.js:305
 #: pgadmin/browser/static/js/node.js:184
 msgid "Delete/Drop"
 msgstr "삭제"
 
-#: pgadmin/browser/static/js/collection.js:308
+#: pgadmin/browser/static/js/collection.js:319
 #: pgadmin/browser/static/js/node.js:204
 msgid "Drop Cascade"
 msgstr "삭제(관련하위모두)"
 
-#: pgadmin/browser/static/js/collection.js:390
+#: pgadmin/browser/static/js/collection.js:401
 msgid "No properties are available for the selected object."
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:403
-#: pgadmin/browser/static/js/node.js:527
+#: pgadmin/browser/static/js/collection.js:414
+#: pgadmin/browser/static/js/node.js:538
 #, python-format
 msgid "Error retrieving properties - %s"
 msgstr "다음 속성 처리 중 오류 - %s"
 
-#: pgadmin/browser/static/js/collection.js:415
+#: pgadmin/browser/static/js/collection.js:426
 #: pgadmin/browser/templates/browser/js/messages.js:43
 #: pgadmin/misc/dependencies/static/js/dependencies.js:309
 #: pgadmin/misc/dependents/static/js/dependents.js:315
@@ -8887,33 +8887,33 @@ msgstr "다음 속성 처리 중 오류 - %s"
 msgid "Failed to retrieve data from the server."
 msgstr "서버에서 관련 자료를 가져옵니다."
 
-#: pgadmin/browser/static/js/collection.js:440
+#: pgadmin/browser/static/js/collection.js:451
 msgid "Drop Multiple"
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:441
+#: pgadmin/browser/static/js/collection.js:452
 msgid "Please select at least one object to delete."
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:451
+#: pgadmin/browser/static/js/collection.js:462
 msgid ""
 "Are you sure you want to drop all the selected objects and all the "
 "objects that depend on them?"
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:452
+#: pgadmin/browser/static/js/collection.js:463
 msgid "DROP CASCADE multiple objects?"
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:455
+#: pgadmin/browser/static/js/collection.js:466
 msgid "Are you sure you want to drop all the selected objects?"
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:456
+#: pgadmin/browser/static/js/collection.js:467
 msgid "DROP multiple objects?"
 msgstr ""
 
-#: pgadmin/browser/static/js/collection.js:481
+#: pgadmin/browser/static/js/collection.js:492
 #, python-format
 msgid "Error dropping %s"
 msgstr ""
@@ -8943,146 +8943,146 @@ msgstr "속성..."
 msgid "Remove %s"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:258
+#: pgadmin/browser/static/js/node.js:269
 #, python-format
 msgid "%s Script"
 msgstr "%s 스크립트"
 
-#: pgadmin/browser/static/js/node.js:272
+#: pgadmin/browser/static/js/node.js:283
 msgid "Scripts"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:591
+#: pgadmin/browser/static/js/node.js:603
 msgid "Please wait while we fetch information about the node from the server..."
 msgstr "서버에서 각 노드 정보를 가져오고 있습니다. 기다려주세요..."
 
-#: pgadmin/browser/static/js/node.js:815
+#: pgadmin/browser/static/js/node.js:827
 #, python-format
 msgid "Create - %s"
 msgstr "만들기 - %s"
 
-#: pgadmin/browser/static/js/node.js:831
+#: pgadmin/browser/static/js/node.js:843
 #, python-format
 msgid "Are you sure want to stop editing the properties of %s \"%s\"?"
 msgstr "%s \"%s\" 속성 편집을 중지할까요?"
 
-#: pgadmin/browser/static/js/node.js:833
+#: pgadmin/browser/static/js/node.js:845
 #, python-format
 msgid ""
 "Are you sure want to reset the current changes and re-open the panel for "
 "%s \"%s\"?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:837
+#: pgadmin/browser/static/js/node.js:849
 msgid "Edit in progress?"
 msgstr "편집 중인가요?"
 
-#: pgadmin/browser/static/js/node.js:892
+#: pgadmin/browser/static/js/node.js:904
 #, python-format
 msgid ""
 "Are you sure you want to drop %s \"%s\" and all the objects that depend "
 "on it?"
 msgstr "%s \"%s\" 객체를 삭제하면서 의존하는 모든 하위 객체들도 함께 삭제할까요?"
 
-#: pgadmin/browser/static/js/node.js:893
+#: pgadmin/browser/static/js/node.js:905
 #, python-format
 msgid "DROP CASCADE %s?"
 msgstr "DROP CASCADE %s?"
 
-#: pgadmin/browser/static/js/node.js:898
+#: pgadmin/browser/static/js/node.js:910
 #, python-format
 msgid "The %s \"%s\" cannot be dropped."
 msgstr "%s \"%s\" 없애지 못했습니다."
 
-#: pgadmin/browser/static/js/node.js:905
+#: pgadmin/browser/static/js/node.js:917
 #, python-format
 msgid "Are you sure you want to remove %s \"%s\"?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:906
+#: pgadmin/browser/static/js/node.js:918
 #, python-format
 msgid "Remove %s?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:908
+#: pgadmin/browser/static/js/node.js:920
 #, python-format
 msgid "Are you sure you want to drop %s \"%s\"?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:909
+#: pgadmin/browser/static/js/node.js:921
 #, python-format
 msgid "Drop %s?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:915
+#: pgadmin/browser/static/js/node.js:927
 #, python-format
 msgid "The %s \"%s\" cannot be dropped/removed."
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:947
+#: pgadmin/browser/static/js/node.js:959
 #, python-format
 msgid "Error dropping/removing %s: \"%s\""
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1401
-#: pgadmin/browser/static/js/node.js:1403
+#: pgadmin/browser/static/js/node.js:1423
+#: pgadmin/browser/static/js/node.js:1425
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:165
 msgid "Edit"
 msgstr "편집"
 
-#: pgadmin/browser/static/js/node.js:1417
-#: pgadmin/browser/static/js/node.js:1686
+#: pgadmin/browser/static/js/node.js:1439
+#: pgadmin/browser/static/js/node.js:1708
 msgid "SQL help for this object type."
 msgstr "이 객체에 대한 SQL 도움말을 봅니다."
 
-#: pgadmin/browser/static/js/node.js:1470
-#: pgadmin/browser/static/js/node.js:1504
-#: pgadmin/browser/static/js/node.js:1534
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5464
+#: pgadmin/browser/static/js/node.js:1492
+#: pgadmin/browser/static/js/node.js:1526
+#: pgadmin/browser/static/js/node.js:1556
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5473
 msgid "Warning"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1594
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1268
+#: pgadmin/browser/static/js/node.js:1616
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1271
 msgid "Error saving properties"
 msgstr "속성 저장 중 오류 발생"
 
-#: pgadmin/browser/static/js/node.js:1698
+#: pgadmin/browser/static/js/node.js:1720
 #: pgadmin/browser/static/js/wizard.js:131
 msgid "Help for this dialog."
 msgstr "이 대화창 도움말."
 
-#: pgadmin/browser/static/js/node.js:1710
+#: pgadmin/browser/static/js/node.js:1732
 msgid "Cancel changes to this object."
 msgstr "이 객체의 변경 사항을 저장하지 않습니다."
 
-#: pgadmin/browser/static/js/node.js:1723
+#: pgadmin/browser/static/js/node.js:1745
 msgid "Reset"
 msgstr "초기화"
 
-#: pgadmin/browser/static/js/node.js:1725
+#: pgadmin/browser/static/js/node.js:1747
 msgid "Reset the fields on this dialog."
 msgstr "이 대화창 각 값들을 초기화 합니다."
 
-#: pgadmin/browser/static/js/node.js:1733
+#: pgadmin/browser/static/js/node.js:1755
 msgid "Changes will be lost. Are you sure you want to reset?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1743
-#: pgadmin/preferences/static/js/preferences.js:505
-#: pgadmin/preferences/static/js/preferences.js:530
+#: pgadmin/browser/static/js/node.js:1765
+#: pgadmin/preferences/static/js/preferences.js:469
+#: pgadmin/preferences/static/js/preferences.js:494
 #: pgadmin/static/js/sqleditor/macro.js:73
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:48
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:272
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5416
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5425
 msgid "Save"
 msgstr "저장"
 
-#: pgadmin/browser/static/js/node.js:1745
+#: pgadmin/browser/static/js/node.js:1767
 msgid "Save this object."
 msgstr "이 개체를 저장하세요."
 
-#: pgadmin/browser/static/js/node.js:1906
+#: pgadmin/browser/static/js/node.js:1928
 msgid "Changes will be lost. Are you sure you want to close the dialog?"
 msgstr ""
 
@@ -9109,7 +9109,7 @@ msgstr ""
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:488
 #: pgadmin/templates/security/messages.html:7
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:524
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2548
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2558
 #: pgadmin/tools/user_management/static/js/user_management.js:134
 #: pgadmin/tools/user_management/static/js/user_management.js:234
 #: pgadmin/tools/user_management/static/js/user_management.js:968
@@ -9131,14 +9131,14 @@ msgstr ""
 #: pgadmin/browser/static/js/wizard.js:124
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:131
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/DialogWrapper.js:114
-#: pgadmin/tools/import_export/static/js/import_export.js:659
+#: pgadmin/tools/import_export/static/js/import_export.js:641
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:110
 msgid "Close error bar"
 msgstr ""
 
 #: pgadmin/browser/static/js/wizard.js:131
 #: pgadmin/browser/templates/browser/index.html:135 pgadmin/help/__init__.py:59
-#: pgadmin/help/__init__.py:71 pgadmin/preferences/static/js/preferences.js:493
+#: pgadmin/help/__init__.py:71 pgadmin/preferences/static/js/preferences.js:457
 #: pgadmin/static/js/sqleditor/filter_dialog.js:72
 #: pgadmin/static/js/sqleditor/filter_dialog.js:73
 #: pgadmin/static/js/sqleditor/macro.js:61
@@ -9147,9 +9147,9 @@ msgstr ""
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:76
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:67
 #: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:68
-#: pgadmin/tools/datagrid/static/js/show_data.js:139
+#: pgadmin/tools/datagrid/static/js/show_data.js:150
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:878
-#: pgadmin/tools/maintenance/static/js/maintenance.js:310
+#: pgadmin/tools/maintenance/static/js/maintenance.js:292
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:51
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:517
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:518
@@ -9236,6 +9236,11 @@ msgstr ""
 msgid "Loading {0} v{1}..."
 msgstr "{0} v{1} 로딩중…"
 
+#: pgadmin/browser/templates/browser/index.html:103
+#: pgadmin/templates/security/watermark.html:4
+msgid "logo"
+msgstr ""
+
 #: pgadmin/browser/templates/browser/index.html:107
 msgid "Toggle navigation"
 msgstr ""
@@ -9295,7 +9300,7 @@ msgid "Click here for details."
 msgstr ""
 
 #: pgadmin/browser/templates/browser/js/messages.js:23
-#: pgadmin/static/js/backform.pgadmin.js:2103
+#: pgadmin/static/js/backform.pgadmin.js:2090
 #: pgadmin/tools/user_management/static/js/user_management.js:712
 msgid "General"
 msgstr "일반"
@@ -9339,7 +9344,7 @@ msgid "No statistics are available for the selected object."
 msgstr "선택된 객체를 위한 사용가능한 통계정보가 없음."
 
 #: pgadmin/browser/templates/browser/js/messages.js:37
-#: pgadmin/static/js/backform.pgadmin.js:2868
+#: pgadmin/static/js/backform.pgadmin.js:2805
 #: pgadmin/tools/backup/static/js/backup.js:106
 #: pgadmin/tools/backup/static/js/backup.js:243
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/FloatingNote.jsx:45
@@ -9353,8 +9358,8 @@ msgstr "노트"
 msgid "Error retrieving the information - %s"
 msgstr "다음 정보를 가져오는 중 오류 발생 - %s"
 
-#: pgadmin/browser/templates/browser/js/utils.js:135
-#: pgadmin/browser/templates/browser/js/utils.js:143
+#: pgadmin/browser/templates/browser/js/utils.js:144
+#: pgadmin/browser/templates/browser/js/utils.js:152
 msgid "Error loading script - "
 msgstr ""
 
@@ -9728,7 +9733,7 @@ msgstr "Pre.XID"
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:29
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:31
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:36
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:780
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:783
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:77
 #: pgadmin/tools/user_management/static/js/user_management.js:1156
 msgid "Search"
@@ -9737,8 +9742,8 @@ msgstr ""
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:33
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:38
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:27
-#: pgadmin/preferences/static/js/preferences.js:569
-#: pgadmin/preferences/static/js/preferences.js:586
+#: pgadmin/preferences/static/js/preferences.js:533
+#: pgadmin/preferences/static/js/preferences.js:550
 msgid "Refresh"
 msgstr "새로고침"
 
@@ -9916,7 +9921,7 @@ msgid ""
 " with the major.minor version number."
 msgstr "EDB Advanced Server 문서 경로. $VERSION$ 문자열은 해당 버전으로 대체됩니다."
 
-#: pgadmin/misc/__init__.py:27 pgadmin/tools/backup/static/js/backup.js:87
+#: pgadmin/misc/__init__.py:30 pgadmin/tools/backup/static/js/backup.js:87
 #: pgadmin/tools/backup/static/js/backup.js:94
 #: pgadmin/tools/backup/static/js/backup.js:100
 #: pgadmin/tools/backup/static/js/backup.js:519
@@ -9933,23 +9938,28 @@ msgstr "EDB Advanced Server 문서 경로. $VERSION$ 문자열은 해당 버전�
 msgid "Miscellaneous"
 msgstr "기타"
 
-#: pgadmin/misc/__init__.py:65 pgadmin/misc/__init__.py:66
+#: pgadmin/misc/__init__.py:68 pgadmin/misc/__init__.py:69
 msgid "User language"
 msgstr "표시 언어"
 
-#: pgadmin/misc/__init__.py:87
+#: pgadmin/misc/__init__.py:90
 msgid "Theme"
 msgstr ""
 
-#: pgadmin/misc/__init__.py:88
+#: pgadmin/misc/__init__.py:91
 msgid "Themes"
 msgstr ""
 
-#: pgadmin/misc/__init__.py:90
+#: pgadmin/misc/__init__.py:93
 msgid ""
 "A refresh is required to apply the theme. Below is the preview of the "
 "theme"
 msgstr ""
+
+#: pgadmin/misc/__init__.py:222
+#, fuzzy
+msgid "Invalid binary path."
+msgstr "실행 경로"
 
 #: pgadmin/misc/bgprocess/processes.py:43
 msgid "Could not find a process with the specified ID."
@@ -10106,6 +10116,7 @@ msgid "Select File"
 msgstr ""
 
 #: pgadmin/misc/file_manager/__init__.py:404
+#: pgadmin/static/js/backform.pgadmin.js:1163
 msgid "Select Folder"
 msgstr ""
 
@@ -10144,8 +10155,10 @@ msgstr "해당 파일의 이름을 바꾸는데 오류가 발생했습니다:"
 msgid "Error occurred while checking access permission."
 msgstr "접근 권한 검사 도중 오류가 발생했습니다."
 
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:36
-#: pgadmin/static/js/backform.pgadmin.js:2919
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:25
+#: pgadmin/static/js/backform.pgadmin.js:2856
+#: pgadmin/static/js/backgrid.pgadmin.js:2412
+#: pgadmin/static/js/backgrid.pgadmin.js:2417
 msgid "Select file"
 msgstr ""
 
@@ -10161,7 +10174,7 @@ msgstr "모든 파일"
 msgid "Format"
 msgstr "형식"
 
-#: pgadmin/misc/file_manager/static/js/utility.js:1771
+#: pgadmin/misc/file_manager/static/js/utility.js:1770
 msgid "Drop files here to upload."
 msgstr ""
 
@@ -10376,8 +10389,8 @@ msgid "Summary:"
 msgstr ""
 
 #: pgadmin/preferences/__init__.py:57
-#: pgadmin/preferences/static/js/preferences.js:492
-#: pgadmin/preferences/static/js/preferences.js:515
+#: pgadmin/preferences/static/js/preferences.js:456
+#: pgadmin/preferences/static/js/preferences.js:479
 msgid "Preferences"
 msgstr "설정"
 
@@ -10390,36 +10403,36 @@ msgstr "라벨"
 msgid "help_str"
 msgstr "help_str"
 
-#: pgadmin/preferences/static/js/preferences.js:249
+#: pgadmin/preferences/static/js/preferences.js:224
 msgid "Show"
 msgstr "보임"
 
-#: pgadmin/preferences/static/js/preferences.js:250
+#: pgadmin/preferences/static/js/preferences.js:225
 msgid "Hide"
 msgstr "숨김"
 
-#: pgadmin/preferences/static/js/preferences.js:454
+#: pgadmin/preferences/static/js/preferences.js:420
 msgid "Category is not selected."
 msgstr "카테고리가 선택되지 않았음."
 
-#: pgadmin/preferences/static/js/preferences.js:553
+#: pgadmin/preferences/static/js/preferences.js:517
 msgid "Browser tree refresh required"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:554
+#: pgadmin/preferences/static/js/preferences.js:518
 msgid "A browser tree refresh is required. Do you wish to refresh the tree?"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:570
-#: pgadmin/preferences/static/js/preferences.js:587
+#: pgadmin/preferences/static/js/preferences.js:534
+#: pgadmin/preferences/static/js/preferences.js:551
 msgid "Later"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:577
+#: pgadmin/preferences/static/js/preferences.js:541
 msgid "Refresh required"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:578
+#: pgadmin/preferences/static/js/preferences.js:542
 msgid ""
 "A page refresh is required to apply the theme. Do you wish to refresh the"
 " page now?"
@@ -10468,34 +10481,61 @@ msgstr "알 수 없는 오류"
 msgid "INTERNAL SERVER ERROR"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:614
+#: pgadmin/static/js/backform.pgadmin.js:591
 msgid "Toggle button"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:640
-#: pgadmin/static/js/backform.pgadmin.js:644
+#: pgadmin/static/js/backform.pgadmin.js:617
+#: pgadmin/static/js/backform.pgadmin.js:621
 msgid "Toggle"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:1663
+#: pgadmin/static/js/backform.pgadmin.js:1164
+#, fuzzy
+msgid "Select binary path..."
+msgstr "실행 경로"
+
+#: pgadmin/static/js/backform.pgadmin.js:1164
+#, fuzzy
+msgid "Enter binary path..."
+msgstr "실행 경로"
+
+#: pgadmin/static/js/backform.pgadmin.js:1165
+#, fuzzy
+msgid "Select path"
+msgstr "전체 해제"
+
+#: pgadmin/static/js/backform.pgadmin.js:1166
+msgid "Validate utilities"
+msgstr ""
+
+#: pgadmin/static/js/backform.pgadmin.js:1196
+msgid ""
+" Enter the directory in which the psql, pg_dump, pg_dumpall, and "
+"pg_restore utilities can be found for the corresponding database server "
+"version. The default path will be used for server versions that do not "
+"have apath specified."
+msgstr ""
+
+#: pgadmin/static/js/backform.pgadmin.js:1682
 #: pgadmin/static/js/backgrid.pgadmin.js:1253
 #: pgadmin/tools/user_management/static/js/user_management.js:1158
 msgid "Add"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:1978
+#: pgadmin/static/js/backform.pgadmin.js:1975
 msgid "No updates."
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:2326
+#: pgadmin/static/js/backform.pgadmin.js:2300
 msgid "Preview not available..."
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:3295
+#: pgadmin/static/js/backform.pgadmin.js:3223
 msgid "No color"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:3492
+#: pgadmin/static/js/backform.pgadmin.js:3414
 msgid "Space"
 msgstr ""
 
@@ -10547,6 +10587,35 @@ msgstr ""
 msgid "Array Values"
 msgstr "배열 값"
 
+#: pgadmin/static/js/backgrid.pgadmin.js:2415
+#, fuzzy
+msgid "Select file..."
+msgstr "목록에서 선택..."
+
+#: pgadmin/static/js/backgrid.pgadmin.js:2418
+#, fuzzy
+msgid "Validate file"
+msgstr "유효성검사?"
+
+#: pgadmin/static/js/backgrid.pgadmin.js:2509
+#, fuzzy
+msgid "Validate Path"
+msgstr "유효성검사?"
+
+#: pgadmin/static/js/backgrid.pgadmin.js:2509
+#, fuzzy
+msgid "Path should not be empty."
+msgstr "옵션을 입력하세요."
+
+#: pgadmin/static/js/backgrid.pgadmin.js:2521
+#, fuzzy
+msgid "Validate binary path"
+msgstr "실행 경로"
+
+#: pgadmin/static/js/backgrid.pgadmin.js:2524
+msgid "Failed to validate binary path."
+msgstr ""
+
 #: pgadmin/static/js/keyboard_shortcuts.js:74
 msgid "Alt"
 msgstr ""
@@ -10564,20 +10633,42 @@ msgstr "예상치 못한 오류 발생 - 접속 상태를 확인 하세요."
 msgid "Transaction status check failed."
 msgstr "트랜잭션 상태 검사 실패."
 
-#: pgadmin/static/js/alertify/dialog.js:58
-#: pgadmin/static/js/alertify/dialog.js:175
+#: pgadmin/static/js/utils.js:407
+msgid "Please configure the PostgreSQL Binary Path in the Preferences dialog."
+msgstr "설정창에서 PostgreSQL 실행파일 경로를 지정하세요."
+
+#: pgadmin/static/js/utils.js:412
+msgid ""
+"Please configure the EDB Advanced Server Binary Path in the Preferences "
+"dialog."
+msgstr "설정창에서 EDB Advanced Server 실행파일 경로를 지정하세요."
+
+#: pgadmin/static/js/utils.js:419
+msgid "Configuration required"
+msgstr "환경설정 필요함"
+
+#: pgadmin/static/js/utils.js:424
+#, fuzzy
+msgid "Preferences Error"
+msgstr "설정"
+
+#: pgadmin/static/js/utils.js:425
+#, python-format
+msgid "Failed to load preference %s of module %s"
+msgstr "%s 설정(해당 모듈: %s)을 불러오기 실패"
+
+#: pgadmin/static/js/alertify/dialog.js:66
+#: pgadmin/static/js/alertify/dialog.js:123
+#: pgadmin/static/js/tree/tree_utils.js:43
 msgid ""
 "Databases with = symbols in the name cannot be backed up or restored "
 "using this utility."
 msgstr ""
 
-#: pgadmin/static/js/alertify/dialog.js:75
+#: pgadmin/static/js/alertify/dialog.js:83
+#: pgadmin/static/js/tree/tree_utils.js:60
 msgid "Please select server or child node from the browser tree."
 msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
-
-#: pgadmin/static/js/alertify/dialog.js:108
-msgid "Please select a database or its child node from the browser."
-msgstr ""
 
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:48
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:55
@@ -10694,13 +10785,13 @@ msgstr ""
 msgid "msec"
 msgstr ""
 
-#: pgadmin/static/js/sqleditor/call_render_after_poll.js:36
+#: pgadmin/static/js/sqleditor/call_render_after_poll.js:44
 #, python-format
 msgid "Query returned successfully in %s."
 msgstr "쿼리 실행 완료 시간: %s."
 
 #: pgadmin/static/js/sqleditor/execute_query.js:230
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3103
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3112
 msgid "Running query..."
 msgstr ""
 
@@ -10721,8 +10812,8 @@ msgstr "검색 조건이 적용되었음"
 
 #: pgadmin/static/js/sqleditor/filter_dialog.js:245
 #: pgadmin/static/js/sqleditor/macro.js:338
-#: pgadmin/tools/datagrid/static/js/show_data.js:246
-#: pgadmin/tools/datagrid/static/js/show_data.js:261
+#: pgadmin/tools/datagrid/static/js/show_data.js:266
+#: pgadmin/tools/datagrid/static/js/show_data.js:281
 msgid "Validation Error"
 msgstr "유효성 오류"
 
@@ -10903,7 +10994,7 @@ msgstr ""
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:113
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:115
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:341
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:342
 #: pgadmin/utils/constants.py:22
 msgid "Explain"
 msgstr "EXPLAIN"
@@ -10925,14 +11016,14 @@ msgstr ""
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:137
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:139
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5342
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5351
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:661
 msgid "Commit"
 msgstr ""
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:143
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:145
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5339
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5348
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:679
 msgid "Rollback"
 msgstr ""
@@ -10966,7 +11057,7 @@ msgstr ""
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:182
 #: pgadmin/tools/debugger/static/js/direct.js:1720
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:351
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:352
 msgid "Messages"
 msgstr "메시지"
 
@@ -10984,6 +11075,10 @@ msgstr ""
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:149
 msgid "Error fetching the tree state."
+msgstr ""
+
+#: pgadmin/static/js/tree/tree_utils.js:93
+msgid "Please select a database or its child node from the browser."
 msgstr ""
 
 #: pgadmin/templates/security/change_password.html:11
@@ -11290,7 +11385,7 @@ msgstr "SET SESSION AUTHORIZATION 사용"
 
 #: pgadmin/tools/backup/static/js/backup.js:597
 #: pgadmin/tools/backup/static/js/backup.js:622
-#: pgadmin/tools/backup/static/js/backup_dialog.js:94
+#: pgadmin/tools/backup/static/js/backup_dialog.js:105
 msgid "Backup Globals..."
 msgstr "전역 객체 백업..."
 
@@ -11303,7 +11398,7 @@ msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
 
 #: pgadmin/tools/backup/static/js/backup.js:609
 #: pgadmin/tools/backup/static/js/backup.js:635
-#: pgadmin/tools/backup/static/js/backup_dialog.js:95
+#: pgadmin/tools/backup/static/js/backup_dialog.js:106
 msgid "Backup Server..."
 msgstr "서버 백업..."
 
@@ -11326,7 +11421,8 @@ msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
 msgid "Backup..."
 msgstr "백업..."
 
-#: pgadmin/tools/backup/static/js/backup_dialog.js:18
+#: pgadmin/tools/backup/static/js/backup_dialog.js:28
+#: pgadmin/tools/backup/static/js/backup_dialog.js:42
 msgid "Backup Error"
 msgstr ""
 
@@ -11382,53 +11478,58 @@ msgid "View/Edit Data"
 msgstr "자료 보기/편집"
 
 #: pgadmin/tools/datagrid/static/js/datagrid.js:333
-#: pgadmin/tools/debugger/static/js/debugger.js:497
-#: pgadmin/tools/debugger/static/js/debugger.js:669
+#: pgadmin/tools/debugger/static/js/debugger.js:511
+#: pgadmin/tools/debugger/static/js/debugger.js:697
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:873
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:158
 msgid "Rename Panel"
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:69
+#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:77
 msgid "File - "
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:75
+#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:83
 msgid "View/Edit Data - "
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:80
+#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:88
 msgid "Query Tool - "
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:30
+#: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:137
+msgid "Database moved/renamed"
+msgstr ""
+
+#: pgadmin/tools/datagrid/static/js/show_data.js:39
 msgid "Data Grid Error"
 msgstr "자료 그리드 오류"
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:31
+#: pgadmin/tools/datagrid/static/js/show_data.js:40
 #: pgadmin/tools/datagrid/static/js/show_query_tool.js:67
 #: pgadmin/tools/erd/static/js/erd_module.js:119
+#: pgadmin/tools/psql/static/js/psql_module.js:140
 msgid "No object selected."
 msgstr "선택한 객체 없음."
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:64
+#: pgadmin/tools/datagrid/static/js/show_data.js:73
 #, python-format
 msgid "Data Filter - %s"
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:138
+#: pgadmin/tools/datagrid/static/js/show_data.js:149
 msgid "Data Filter"
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:167
+#: pgadmin/tools/datagrid/static/js/show_data.js:179
 msgid "Use SHIFT + ENTER to apply filter..."
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:202
+#: pgadmin/tools/datagrid/static/js/show_data.js:218
 msgid "Filter SQL"
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/show_data.js:257
+#: pgadmin/tools/datagrid/static/js/show_data.js:277
 #, python-format
 msgid "Error filtering rows - %s."
 msgstr ""
@@ -11750,63 +11851,63 @@ msgstr ""
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
 msgstr "pldbgapi 확장 묘듈을 1.1 이상 버전으로 업그레이드 한 뒤 다시 해보세요."
 
-#: pgadmin/tools/debugger/__init__.py:1289
+#: pgadmin/tools/debugger/__init__.py:1292
 msgid "Debugging aborted successfully."
 msgstr "디버깅이 잘 중지되었습니다."
 
-#: pgadmin/tools/debugger/__init__.py:1645
+#: pgadmin/tools/debugger/__init__.py:1648
 msgid "Value deposited successfully"
 msgstr "값 해제 성공"
 
-#: pgadmin/tools/debugger/__init__.py:1647
+#: pgadmin/tools/debugger/__init__.py:1650
 msgid "Error while setting the value"
 msgstr "값 지정 중 오류"
 
-#: pgadmin/tools/debugger/__init__.py:2025
-#: pgadmin/tools/debugger/__init__.py:2085
+#: pgadmin/tools/debugger/__init__.py:2028
+#: pgadmin/tools/debugger/__init__.py:2088
 msgid "Execution completed with an error."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:2040
-#: pgadmin/tools/debugger/__init__.py:2101
+#: pgadmin/tools/debugger/__init__.py:2043
+#: pgadmin/tools/debugger/__init__.py:2104
 msgid "Execution Completed."
 msgstr "실행 완료."
 
-#: pgadmin/tools/debugger/static/js/debugger.js:54
-#: pgadmin/tools/debugger/static/js/debugger.js:68
-#: pgadmin/tools/debugger/static/js/debugger.js:83
-#: pgadmin/tools/debugger/static/js/debugger.js:97
-#: pgadmin/tools/debugger/static/js/debugger.js:114
-#: pgadmin/tools/debugger/static/js/debugger.js:129
-#: pgadmin/tools/debugger/static/js/debugger.js:142
-#: pgadmin/tools/debugger/static/js/debugger.js:156
-#: pgadmin/tools/debugger/static/js/debugger.js:171
-#: pgadmin/tools/debugger/static/js/debugger.js:185
+#: pgadmin/tools/debugger/static/js/debugger.js:55
+#: pgadmin/tools/debugger/static/js/debugger.js:69
+#: pgadmin/tools/debugger/static/js/debugger.js:84
+#: pgadmin/tools/debugger/static/js/debugger.js:98
+#: pgadmin/tools/debugger/static/js/debugger.js:115
+#: pgadmin/tools/debugger/static/js/debugger.js:130
+#: pgadmin/tools/debugger/static/js/debugger.js:143
+#: pgadmin/tools/debugger/static/js/debugger.js:157
+#: pgadmin/tools/debugger/static/js/debugger.js:172
+#: pgadmin/tools/debugger/static/js/debugger.js:186
 msgid "Debugging"
 msgstr "디버깅"
 
-#: pgadmin/tools/debugger/static/js/debugger.js:56
-#: pgadmin/tools/debugger/static/js/debugger.js:85
-#: pgadmin/tools/debugger/static/js/debugger.js:144
-#: pgadmin/tools/debugger/static/js/debugger.js:173
+#: pgadmin/tools/debugger/static/js/debugger.js:57
+#: pgadmin/tools/debugger/static/js/debugger.js:86
+#: pgadmin/tools/debugger/static/js/debugger.js:145
+#: pgadmin/tools/debugger/static/js/debugger.js:174
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:633
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:656
 msgid "Debug"
 msgstr "디버그"
 
-#: pgadmin/tools/debugger/static/js/debugger.js:70
-#: pgadmin/tools/debugger/static/js/debugger.js:99
-#: pgadmin/tools/debugger/static/js/debugger.js:113
-#: pgadmin/tools/debugger/static/js/debugger.js:128
-#: pgadmin/tools/debugger/static/js/debugger.js:158
-#: pgadmin/tools/debugger/static/js/debugger.js:187
+#: pgadmin/tools/debugger/static/js/debugger.js:71
+#: pgadmin/tools/debugger/static/js/debugger.js:100
+#: pgadmin/tools/debugger/static/js/debugger.js:114
+#: pgadmin/tools/debugger/static/js/debugger.js:129
+#: pgadmin/tools/debugger/static/js/debugger.js:159
+#: pgadmin/tools/debugger/static/js/debugger.js:188
 msgid "Set breakpoint"
 msgstr "중단점 지정"
 
-#: pgadmin/tools/debugger/static/js/debugger.js:344
-#: pgadmin/tools/debugger/static/js/debugger.js:511
-#: pgadmin/tools/debugger/static/js/debugger.js:516
-#: pgadmin/tools/debugger/static/js/debugger.js:685
+#: pgadmin/tools/debugger/static/js/debugger.js:345
+#: pgadmin/tools/debugger/static/js/debugger.js:525
+#: pgadmin/tools/debugger/static/js/debugger.js:530
+#: pgadmin/tools/debugger/static/js/debugger.js:713
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:288
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:922
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:975
@@ -11847,7 +11948,7 @@ msgstr "중단점 지정"
 msgid "Debugger Error"
 msgstr "디버거 오류"
 
-#: pgadmin/tools/debugger/static/js/debugger.js:675
+#: pgadmin/tools/debugger/static/js/debugger.js:703
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:929
 msgid "Debugger Target Initialization Error"
 msgstr "디버거 타겟 초기화 오류"
@@ -12002,12 +12103,12 @@ msgid "Debugger SQL editor"
 msgstr ""
 
 #: pgadmin/tools/debugger/static/js/direct.js:1891
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:808
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:813
 msgid "Timeout"
 msgstr ""
 
 #: pgadmin/tools/debugger/static/js/direct.js:1891
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:808
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:813
 msgid ""
 "Your session has timed out due to inactivity. Please close the window and"
 " login again."
@@ -12207,12 +12308,12 @@ msgid "Preparing..."
 msgstr "로딩중..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:269
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5413
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5422
 msgid "Don't save"
 msgstr "저장안함"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:304
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5496
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5505
 msgid "Save changes?"
 msgstr "바뀐 내용을 저장할까요?"
 
@@ -12307,7 +12408,7 @@ msgid "Many-to-Many link"
 msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ConnectionBar.jsx:50
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2858
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2868
 msgid "Obtaining connection..."
 msgstr ""
 
@@ -12323,7 +12424,7 @@ msgstr ""
 msgid "Show more details"
 msgstr ""
 
-#: pgadmin/tools/grant_wizard/__init__.py:348
+#: pgadmin/tools/grant_wizard/__init__.py:362
 msgid "Unable to fetch the {} objects"
 msgstr ""
 
@@ -12351,56 +12452,56 @@ msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
 msgid "Search by object type or name"
 msgstr "객체 종류와 이름 찾기"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:641
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:644
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:647
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:349
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:351
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:353
 msgid "Objects"
 msgstr "객체"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:675
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:735
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:678
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:738
 msgid "Please wait while fetching records..."
 msgstr "목록을 구성 중입니다..."
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:692
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:696
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:695
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:699
 msgid "Unable to fetch the database objects"
 msgstr ""
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:731
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:734
 msgid "Object Selection (step 1 of 3)"
 msgstr "객체 선택 (1/3)"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:774
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:777
 msgid "Please select the objects to grant privileges to from the list below."
 msgstr ""
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:874
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:877
 msgid "Privilege Selection (step 2 of 3)"
 msgstr ""
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:875
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:878
 msgid "Please add the required privileges for the selected objects."
 msgstr ""
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1088
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1091
 msgid "Sql Tab"
 msgstr "SQL 탭"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1165
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1168
 msgid "Final (Review Selection) (step 3 of 3)"
 msgstr "마무리 (선택 확인) (3/3)"
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1166
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1169
 msgid ""
 "The SQL below will be executed on the database server to grant the "
 "selected privileges. Please click on <strong>Finish</strong> to complete "
 "the process."
 msgstr ""
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1228
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1231
 msgid "Grant Wizard"
 msgstr "GRANT 마법사"
 
@@ -12565,43 +12666,43 @@ msgstr "가져오기/내보내기..."
 msgid "Please select any table from the browser tree to Import/Export data."
 msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
 
-#: pgadmin/tools/import_export/static/js/import_export.js:567
+#: pgadmin/tools/import_export/static/js/import_export.js:549
 msgid "Import/Export job created."
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.js:571
+#: pgadmin/tools/import_export/static/js/import_export.js:553
 msgid "Import/Export job creation failed."
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.js:580
+#: pgadmin/tools/import_export/static/js/import_export.js:562
 msgid "Import/Export job failed."
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.js:699
+#: pgadmin/tools/import_export/static/js/import_export.js:681
 msgid "Escape should contain only one character"
 msgstr "이스케이프 문자는 단일 문자여야 함"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:704
+#: pgadmin/tools/import_export/static/js/import_export.js:686
 msgid "Quote should contain only one character"
 msgstr "따옴표는 단일 문자여야 함"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:709
+#: pgadmin/tools/import_export/static/js/import_export.js:691
 msgid "Delimiter should contain only one character"
 msgstr "구분문자는 하나의 문자여야 함"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:714
+#: pgadmin/tools/import_export/static/js/import_export.js:696
 msgid "Please provide filename"
 msgstr "파일 이름을 지정하세요"
 
-#: pgadmin/tools/import_export/static/js/import_export.js:750
+#: pgadmin/tools/import_export/static/js/import_export.js:732
 #, python-format
 msgid "Import/Export data - table '%s'"
 msgstr "자료 가져오기/내보내기 - '%s' 테이블"
 
 #: pgadmin/tools/maintenance/__init__.py:44
 #: pgadmin/tools/maintenance/__init__.py:99
-#: pgadmin/tools/maintenance/static/js/maintenance.js:299
-#: pgadmin/tools/maintenance/static/js/maintenance.js:309
+#: pgadmin/tools/maintenance/static/js/maintenance.js:281
+#: pgadmin/tools/maintenance/static/js/maintenance.js:291
 msgid "Maintenance"
 msgstr "관리"
 
@@ -12683,7 +12784,7 @@ msgstr "자세한 메시지"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:180
 #: pgadmin/tools/maintenance/static/js/maintenance.js:200
-#: pgadmin/tools/maintenance/static/js/maintenance.js:513
+#: pgadmin/tools/maintenance/static/js/maintenance.js:495
 msgid "Maintenance..."
 msgstr "유지보수..."
 
@@ -12693,25 +12794,55 @@ msgstr "유지보수..."
 msgid "Please select any database from the browser tree to do Maintenance."
 msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:276
+#: pgadmin/tools/maintenance/static/js/maintenance.js:258
 msgid "Maintenance error"
 msgstr "유지보수 오류"
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:277
+#: pgadmin/tools/maintenance/static/js/maintenance.js:259
 msgid ""
 "Maintenance job creation failed. Databases with = symbols in the name "
 "cannot be maintained using this utility."
 msgstr ""
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:300
+#: pgadmin/tools/maintenance/static/js/maintenance.js:282
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:41
 msgid "Object Help"
 msgstr ""
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:413
-#: pgadmin/tools/maintenance/static/js/maintenance.js:420
+#: pgadmin/tools/maintenance/static/js/maintenance.js:395
+#: pgadmin/tools/maintenance/static/js/maintenance.js:402
 msgid "Maintenance job creation failed."
 msgstr "관리 작업 프로세스 만들기 실패."
+
+#: pgadmin/tools/psql/__init__.py:42
+msgid "PSQL"
+msgstr ""
+
+#: pgadmin/tools/psql/__init__.py:209 pgadmin/tools/psql/__init__.py:475
+#: pgadmin/tools/psql/__init__.py:522
+msgid "ERROR: Shell commands are disabled in psql for security\r\n"
+msgstr ""
+
+#: pgadmin/tools/psql/__init__.py:574
+msgid ""
+"Connection terminated, To create new connection please open another psql "
+"tool."
+msgstr ""
+
+#: pgadmin/tools/psql/__init__.py:724
+msgid "Invalid session.\r\n"
+msgstr ""
+
+#: pgadmin/tools/psql/static/js/psql_module.js:131
+#: pgadmin/tools/psql/static/js/psql_module.js:139
+#: pgadmin/tools/psql/static/js/psql_module.js:152
+msgid "PSQL Error"
+msgstr ""
+
+#: pgadmin/tools/psql/static/js/psql_module.js:153
+#, fuzzy
+msgid "Please select a server/database object."
+msgstr "데이터베이스를 선택하세요."
 
 #: pgadmin/tools/restore/__init__.py:42
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:40
@@ -12782,11 +12913,12 @@ msgstr "복원..."
 msgid "Please select any schema or table from the browser tree to Restore data."
 msgstr "탐색기에서 서버나 그 하위 노드를 선택하세요."
 
-#: pgadmin/tools/restore/static/js/restore_dialog.js:18
+#: pgadmin/tools/restore/static/js/restore_dialog.js:28
+#: pgadmin/tools/restore/static/js/restore_dialog.js:40
 msgid "Restore Error"
 msgstr ""
 
-#: pgadmin/tools/restore/static/js/restore_dialog.js:68
+#: pgadmin/tools/restore/static/js/restore_dialog.js:77
 #, python-format
 msgid "Restore (%s: %s)"
 msgstr "복원 (%s: %s)"
@@ -13039,11 +13171,12 @@ msgid ""
 "objects."
 msgstr ""
 
-#: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:16
+#: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:25
+#: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:36
 msgid "Search Objects Error"
 msgstr ""
 
-#: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:33
+#: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:42
 msgid "Search Objects - "
 msgstr ""
 
@@ -13105,28 +13238,28 @@ msgstr ""
 msgid "An unexpected occurred: %s"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:373
+#: pgadmin/tools/sqleditor/__init__.py:374
 msgid "******* Error *******"
 msgstr "******* 오류 *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:709
+#: pgadmin/tools/sqleditor/__init__.py:714
 msgid "No primary key found for this object, so unable to save records."
 msgstr "이 객체에는 기본키가 없어, 자료를 저장할 수는 없습니다."
 
-#: pgadmin/tools/sqleditor/__init__.py:1032
+#: pgadmin/tools/sqleditor/__init__.py:1037
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:104
 msgid "Either transaction object or session object not found."
 msgstr "트랜잭션 객체도 세션 객체도 찾을 수 없음."
 
-#: pgadmin/tools/sqleditor/__init__.py:1262
+#: pgadmin/tools/sqleditor/__init__.py:1267
 msgid "File type not supported"
 msgstr "지원하지 않는 파일 형식"
 
-#: pgadmin/tools/sqleditor/__init__.py:1306
+#: pgadmin/tools/sqleditor/__init__.py:1311
 msgid "Error: {0}"
 msgstr "오류: {0}"
 
-#: pgadmin/tools/sqleditor/__init__.py:1347
+#: pgadmin/tools/sqleditor/__init__.py:1352
 msgid "Could not find the required parameter (query)."
 msgstr ""
 
@@ -13146,303 +13279,303 @@ msgstr "현재 객체에 대해서 자료를 저장할 수 없습니다."
 msgid "Resultset is not updatable."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:99
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:100
 msgid "No data output. Execute a query to get output."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:103
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:104
 msgid ""
 "Use Explain/Explain analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:123
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:124
 msgid "New Connection"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:321
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:322
 msgid "Query Editor"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:330
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:331
 msgid "Data Output"
 msgstr "자료 출력"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:361
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:362
 msgid "Query History"
 msgstr "쿼리 내역"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:371
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:372
 msgid "Scratch Pad"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:381
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:382
 msgid "Notifications"
 msgstr "알림"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:391
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:392
 msgid "Geometry Viewer"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:430
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:431
 msgid "Panel Loading Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:431
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:432
 msgid ""
 "Something went wrong while loading the panels. Please make sure to reset "
 "the layout (File > Reset Layout) for the better user experience."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:472
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:477
 msgid "SQL editor"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1029
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1034
 msgid "Editable column"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1031
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1036
 msgid "Read-only column"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1567
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1576
 msgid "Fetching all records..."
 msgstr "모든 자료를 가져오는 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2107
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3049
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4152
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2116
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3058
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4161
 msgid "Unsaved changes"
 msgstr "저장되지 않은 변경사항"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2108
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4153
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2117
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4162
 msgid "Are you sure you wish to discard the current changes?"
 msgstr "현재 변경 내용을 버릴까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2139
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2148
 msgid "Clear history"
 msgstr "내역 지우기"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2140
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2149
 msgid "Are you sure you wish to clear the history?"
 msgstr "내역을 정말 다 지울까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2141
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2150
 msgid ""
 "This will remove all of your query history from this and other sessions "
 "for this database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2420
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2429
 msgid "Change connection"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2421
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2430
 msgid ""
 "By changing the connection you will lose all your unsaved data for the "
 "current connection. <br> Do you want to continue?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2549
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2559
 msgid ""
 "The pgAdmin browser window has been closed and the connection to the "
 "server is lost. Please close this window and open a new pgAdmin session."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2684
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2686
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2694
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2696
 #, python-format
 msgid "Error fetching rows - %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2741
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2751
 msgid "Connection Warning"
 msgstr "접속 경고"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2748
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2758
 msgid "The application has lost the database connection:"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2752
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2762
 msgid "⁃ If the connection was idle it may have been forcibly disconnected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2754
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2764
 msgid "⁃ The application server or database server may have been restarted."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2756
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2766
 msgid "⁃ The user session may have timed out."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2760
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2770
 msgid "Do you want to continue and establish a new session?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2783
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2793
 msgid "Continue"
 msgstr "계속"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2949
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2951
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2958
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2960
 #, python-format
 msgid "Error fetching SQL for script - %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3050
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3059
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr "자료가 변경되었지만 아직 저장되지 않았습니다. 저장할까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3111
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3120
 msgid "Waiting for the query to complete..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3315
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3324
 msgid "Loading data from the database server and rendering..."
 msgstr "데이터베이스 서버에서 자료를 불러와서 랜더링 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3325
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3334
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "실행 완료. 총 쿼리 실행시간: %s."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3326
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3335
 #, python-format
 msgid "%s rows affected."
 msgstr "%s 로우가 영향받았음."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3638
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3647
 msgid ""
 "This query was generated by pgAdmin as part of a \"View/Edit Data\" "
 "operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3754
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3763
 msgid "Row(s) deleted."
 msgstr "로우가 삭제됨."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3834
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3843
 msgid "Saving the updated data..."
 msgstr "변경된 자료를 저장 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3969
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3978
 msgid "Data saved successfully."
 msgstr "자료 저장 성공."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3972
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3981
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3979
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3988
 #, python-format
 msgid "%s."
 msgstr "%s."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3986
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3995
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4011
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4020
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4196
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4205
 msgid "Loading the file..."
 msgstr "파일 불러오는 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4257
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4266
 msgid "Saving the queries in the file..."
 msgstr "쿼리를 파일에 저장 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4270
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4279
 msgid "File saved successfully."
 msgstr "파일 저장 성공."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4438
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4504
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4447
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4513
 msgid "Applying the new filter..."
 msgstr "새 필터 적용 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4460
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4471
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4469
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4480
 msgid "Filter By Selection Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4526
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4537
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4535
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4546
 msgid "Filter Exclude Selection Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4548
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4557
 msgid "Removing the filter..."
 msgstr "필터 삭제 중..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4568
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4579
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4577
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4588
 msgid "Remove Filter Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4737
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4746
 msgid "Setting the limit on the result..."
 msgstr "결과 제한 설정 중 ..."
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4758
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4769
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4767
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4778
 msgid "Change limit Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4916
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4935
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4925
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4944
 msgid "Cancel Query Error"
 msgstr "쿼리 실행 취소 오류"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4956
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4965
 msgid "Downloading Results..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5014
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5023
 msgid "CSV Download cancelled."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5023
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5032
 msgid "Download CSV error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5058
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5066
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5067
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5075
 msgid "Auto Rollback Error"
 msgstr "자동 롤백 오류"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5093
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5100
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5102
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5109
 msgid "Auto Commit Error"
 msgstr "자동 커밋 오류"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5287
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5296
 msgid "The data has changed. Do you want to save changes?"
 msgstr "자료가 바뀌었습니다. 저장할까요?"
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5294
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5303
 msgid "The query text has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5385
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5394
 msgid ""
 "The current transaction is not commited to the database. Do you want to "
 "commit or rollback the transaction?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5388
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5397
 msgid "Commit transaction?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5465
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5474
 msgid ""
 "The current transaction has been rolled back because the server was "
 "disconnected."
@@ -14085,7 +14218,14 @@ msgid ""
 "lost."
 msgstr "이 대화창을 닫을까요? 닫으면 모든 저장되지 않은 변경 사항을 버립니다."
 
-#: pgadmin/utils/__init__.py:277
+#: pgadmin/utils/__init__.py:279
+#, fuzzy
+msgid ""
+"Utility file not found. Please correct the Binary Path in the Preferences"
+" dialog"
+msgstr "설정창에서 PostgreSQL 실행파일 경로를 지정하세요."
+
+#: pgadmin/utils/__init__.py:284
 #, python-format
 msgid ""
 "'%s' file not found. Please correct the Binary Path in the Preferences "
@@ -14124,16 +14264,61 @@ msgstr ""
 msgid "Tab settings"
 msgstr ""
 
-#: pgadmin/utils/constants.py:42
+#: pgadmin/utils/constants.py:45
 msgid "Transaction ID not found in the session."
 msgstr "해당 세션에 트랜잭션 ID가 없음."
 
-#: pgadmin/utils/constants.py:46
+#: pgadmin/utils/constants.py:49
 msgid "Error fetching role information from the database server."
 msgstr ""
 
-#: pgadmin/utils/constants.py:49
+#: pgadmin/utils/constants.py:52
 msgid "Unable to fetch data."
+msgstr ""
+
+#: pgadmin/utils/constants.py:66
+#, fuzzy
+msgid "EDB Advanced Server 9.6"
+msgstr "EDB Advanced Server"
+
+#: pgadmin/utils/constants.py:69
+#, fuzzy
+msgid "EDB Advanced Server 10"
+msgstr "EDB Advanced Server"
+
+#: pgadmin/utils/constants.py:72
+#, fuzzy
+msgid "EDB Advanced Server 11"
+msgstr "EDB Advanced Server"
+
+#: pgadmin/utils/constants.py:75
+#, fuzzy
+msgid "EDB Advanced Server 12"
+msgstr "EDB Advanced Server"
+
+#: pgadmin/utils/constants.py:78
+#, fuzzy
+msgid "EDB Advanced Server 13"
+msgstr "EDB Advanced Server"
+
+#: pgadmin/utils/constants.py:83
+msgid "PostgreSQL 9.6"
+msgstr ""
+
+#: pgadmin/utils/constants.py:86
+msgid "PostgreSQL 10"
+msgstr ""
+
+#: pgadmin/utils/constants.py:89
+msgid "PostgreSQL 11"
+msgstr ""
+
+#: pgadmin/utils/constants.py:92
+msgid "PostgreSQL 12"
+msgstr ""
+
+#: pgadmin/utils/constants.py:95
+msgid "PostgreSQL 13"
 msgstr ""
 
 #: pgadmin/utils/exception.py:70
@@ -14142,23 +14327,23 @@ msgid ""
 "the database server."
 msgstr "'{0}' 호스트용 SSH 터널 연결이 끊겼습니다. 서버 접속을 다시 하세요."
 
-#: pgadmin/utils/preferences.py:208
+#: pgadmin/utils/preferences.py:209
 msgid "Invalid value for {0} option."
 msgstr ""
 
-#: pgadmin/utils/preferences.py:590
+#: pgadmin/utils/preferences.py:595
 msgid "Could not find the specified module."
 msgstr "지정한 모듈을 찾을 수 없습니다."
 
-#: pgadmin/utils/preferences.py:595
+#: pgadmin/utils/preferences.py:600
 msgid "Module '{0}' is no longer in use."
 msgstr "'{0}' 모듈을 더 이상 사용하지 않음."
 
-#: pgadmin/utils/preferences.py:608
+#: pgadmin/utils/preferences.py:613
 msgid "Module '{0}' does not have category with id '{1}'"
 msgstr "'{0}' 모듈은 '{1}' id 카테고리에 없습니다."
 
-#: pgadmin/utils/preferences.py:622
+#: pgadmin/utils/preferences.py:627
 msgid "Could not find the specified preference."
 msgstr "지정한 설정을 찾을 수 없습니다."
 
@@ -15586,4 +15771,17 @@ msgstr ""
 
 #~ msgid "The text has changed. Do you want to save changes?"
 #~ msgstr "텍스트가 바뀌었습니다. 저장할까요?"
+
+#~ msgid "Copyright"
+#~ msgstr "Copyright"
+
+#~ msgid "Python Version"
+#~ msgstr "Python 버전"
+
+#~ msgid ""
+#~ "Select Query Tool, Debugger, or Schema"
+#~ " Diff from the drop-down to set"
+#~ " open in new browser tab for "
+#~ "that particular module."
+#~ msgstr ""
 
