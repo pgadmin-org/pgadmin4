@@ -1357,7 +1357,8 @@ def start_query_download_tool(trans_id):
     try:
 
         # This returns generator of records.
-        status, gen = sync_conn.execute_on_server_as_csv(records=2000)
+        status, gen, conn_obj = \
+            sync_conn.execute_on_server_as_csv(records=2000)
 
         if not status:
             return make_json_response(
@@ -1367,13 +1368,13 @@ def start_query_download_tool(trans_id):
             )
 
         r = Response(
-            gen(
+            gen(conn_obj,
                 trans_obj,
                 quote=blueprint.csv_quoting.get(),
                 quote_char=blueprint.csv_quote_char.get(),
                 field_separator=blueprint.csv_field_separator.get(),
                 replace_nulls_with=blueprint.replace_nulls_with.get()
-            ),
+                ),
             mimetype='text/csv' if
             blueprint.csv_field_separator.get() == ','
             else 'text/plain'

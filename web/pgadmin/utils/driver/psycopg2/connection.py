@@ -879,7 +879,7 @@ WHERE db.datname = current_database()""")
 
             return results
 
-        def gen(trans_obj, quote='strings', quote_char="'",
+        def gen(conn_obj, trans_obj, quote='strings', quote_char="'",
                 field_separator=',', replace_nulls_with=None):
 
             cur.scroll(0, mode='absolute')
@@ -889,7 +889,7 @@ WHERE db.datname = current_database()""")
                 return
 
             # Type cast the numeric values
-            results = numeric_typecasters(results)
+            results = numeric_typecasters(results, conn_obj)
 
             header = []
             json_columns = []
@@ -958,7 +958,7 @@ WHERE db.datname = current_database()""")
         # Registering back type caster for large size data types to string
         # which was unregistered at starting
         register_string_typecasters(self.conn)
-        return True, gen
+        return True, gen, self
 
     def execute_scalar(self, query, params=None,
                        formatted_exception_msg=False):

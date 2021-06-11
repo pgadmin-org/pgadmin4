@@ -198,25 +198,21 @@ def register_string_typecasters(connection):
         psycopg2.extensions.register_type(unicode_array_type, connection)
 
 
-def is_numeric(val):
-    """Check if value is numeric or not"""
-    try:
-        if '.' in val:
-            float(val)
-        else:
-            int(val)
-    except ValueError:
-        return False
-    return True
-
-
-def numeric_typecasters(results):
+def numeric_typecasters(results, conn_obj):
     # This function is to convert pg types to numeic type caster
+
+    data = []
+    for obj_type in conn_obj.column_info:
+        if obj_type['type_code'] in TO_STRING_NUMERIC_DATATYPES:
+            data.append(obj_type['name'])
 
     for result in results:
         for key, value in result.items():
-            if isinstance(result[key], str) and is_numeric(result[key]):
+            if isinstance(result[key],
+                          str) and key in data and not value.isdigit():
                 result[key] = float(result[key])
+            elif isinstance(result[key], str) and key in data:
+                result[key] = int(result[key])
     return results
 
 

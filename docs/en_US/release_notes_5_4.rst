@@ -35,3 +35,4 @@ Bug fixes
 | `Issue #6478 <https://redmine.postgresql.org/issues/6478>`_ -  Fixed duplicate SQL issue for tables with more than one partition.
 | `Issue #6482 <https://redmine.postgresql.org/issues/6482>`_ -  Fixed an issue where the Foreground Color property of server dialog does not work.
 | `Issue #6513 <https://redmine.postgresql.org/issues/6513>`_ -  Fixed an issue where pgAdmin does not open after password reset in server mode.
+| `Issue #6520 <https://redmine.postgresql.org/issues/6520>`_ -  Fixed an issue where a decimal number is appended for character varying fields while downloading the data in CSV format.
