@@ -620,7 +620,6 @@ LDAP_CA_CERT_FILE = ''
 LDAP_CERT_FILE = ''
 LDAP_KEY_FILE = ''
 
-
 ##########################################################################
 # Kerberos Configuration
 ##########################################################################
@@ -645,18 +644,12 @@ KERBEROS_CCACHE_DIR = os.path.join(DATA_DIR, 'krbccache')
 ##########################################################################
 # PSQL tool settings
 ##########################################################################
-# This will enable PSQL tool in pgAdmin. So user can execute the commands
-# using PSQL terminal in pgAdmin.
-ENABLE_PSQL = True
+# This will enable PSQL tool in pgAdmin when running in server mode.
+# PSQL is always enabled in Desktop mode, however in server mode it is
+# disabled by default because users can run arbitrary commands on the
+# server through it.
+ENABLE_PSQL = False
 
-# ALLOW_PSQL_SHELL_COMMAND = True will disable the execution of os level
-# commands using meta command \! from PSQL terminal.
-# As PSQL allow user to execute the os level commands from the PSQL terminal
-# user can execute any system level command as per the system login user
-# privileges. Default this setting is set to False but if it set to True
-# User will able to execute the system level commands through PSQL terminal
-# in pgAdmin.
-ALLOW_PSQL_SHELL_COMMANDS = False
 ##########################################################################
 # ENABLE_BINARY_PATH_BROWSING setting is used to enable the browse button
 # while selecting binary path for the database server in server mode.
@@ -702,3 +695,5 @@ if 'PGADMIN_CONFIG_DEFAULT_SERVER' in os.environ:
 # Disable USER_INACTIVITY_TIMEOUT when SERVER_MODE=False
 if not SERVER_MODE:
     USER_INACTIVITY_TIMEOUT = 0
+    # Enable PSQL in Desktop Mode.
+    ENABLE_PSQL = True

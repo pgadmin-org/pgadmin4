@@ -128,8 +128,6 @@ def set_term_size(fd, row, col, xpix=0, ypix=0):
     """
     if _platform == 'win32':
         app.config['sessions'][request.sid].setwinsize(row, col)
-        # data = {'key_name': 'Enter', 'input': '\n'}
-        # socket_input(data)
     else:
         term_size = struct.pack('HHHH', row, col, xpix, ypix)
         fcntl.ioctl(fd, termios.TIOCSWINSZ, term_size)
@@ -462,91 +460,6 @@ def check_last_exe_cmd(data):
     return user_input
 
 
-def invalid_cmd():
-    """
-    Invalid command
-    :return:
-    :rtype:
-    """
-    session_last_cmd[request.sid]['invalid_cmd'] = True
-    if _platform == 'win32':
-        for i in range(len(session_input[request.sid])):
-            app.config['sessions'][request.sid].write('\b \b')
-        app.config['sessions'][request.sid].write('\r\n')
-
-        sio.emit(
-            'pty-output',
-            {
-                'result': gettext(
-                    "ERROR: Shell commands are disabled "
-                    "in psql for security\r\n"),
-                'error': True
-            },
-            namespace='/pty', room=request.sid)
-    else:
-        for i in range(len(session_input[request.sid])):
-            os.write(app.config['sessions'][request.sid],
-                     '\b \b'.encode())
-
-        os.write(app.config['sessions'][request.sid],
-                 '\n'.encode())
-    session_input[request.sid] = ''
-
-
-def check_valid_cmd(user_input):
-    """
-    Check if user entered a valid cmd and \\! command is preset as a string
-    only in current executing command. if \\! is present as command don't
-    allow the execution of command.
-    :param user_input:
-    :return:
-    """
-    stop_execution = True
-    # Check \! is passed as string or not.
-    double_quote_strs = re.findall('"([^"]*)"', user_input)
-    if not double_quote_strs:
-        double_quote_strs = re.findall("'([^']*)'", user_input)
-
-    if double_quote_strs:
-        for sub_str in double_quote_strs:
-            if re.search("\\\!", sub_str):
-                stop_execution = False
-                # break
-
-    if stop_execution:
-        session_last_cmd[request.sid]['invalid_cmd'] = True
-        if _platform == 'win32':
-            # Remove already added command from terminal.
-            for i in range(len(user_input)):
-                app.config['sessions'][request.sid].write('\b \b')
-            app.config['sessions'][request.sid].write('\n')
-
-            sio.emit(
-                'pty-output',
-                {
-                    'result': gettext(
-                        "ERROR: Shell commands are disabled "
-                        "in psql for security\r\n"),
-                    'error': True
-                },
-                namespace='/pty', room=request.sid)
-        else:
-            # Remove already added command from terminal.
-            for i in range(len(user_input)):
-                os.write(app.config['sessions'][request.sid],
-                         '\b \b'.encode())
-            # Add Enter event to execute the command.
-            os.write(app.config['sessions'][request.sid],
-                     '\n'.encode())
-    else:
-        session_last_cmd[request.sid]['invalid_cmd'] = False
-        if _platform == 'win32':
-            app.config['sessions'][request.sid].write('\n')
-        else:
-            os.write(app.config['sessions'][request.sid],
-                     '\n'.encode())
-
-
 def enter_key_press(data):
     """
     Handel the Enter key press event.
@@ -555,23 +468,8 @@ def enter_key_press(data):
     user_input = check_last_exe_cmd(data)
     session_input_cursor[request.sid] = 0
 
-    # If ALLOW_PSQL_SHELL_COMMANDS is False then user can't execute
-    # \! meta command to run shell commands through PSQL terminal.
-    # Check before executing the user entered command does not
-    # contains \! in input.
-    is_new_connection = session_last_cmd[request.sid][
-        'is_new_connection']
-
-    if user_input.startswith('\\!') and re.match("^\\\!$", user_input) and len(
-        user_input) == 2 and not config.ALLOW_PSQL_SHELL_COMMANDS \
-            and not is_new_connection:
-        invalid_cmd()
-    elif re.search("\\\!", user_input) and \
-        not config.ALLOW_PSQL_SHELL_COMMANDS and\
-            not session_last_cmd[request.sid]['is_new_connection']:
-        check_valid_cmd(user_input)
-    elif user_input == '\q' or user_input == 'q\\q' or user_input in ['exit',
-                                                                      'exit;']:
+    if user_input == '\q' or user_input == 'q\\q' or user_input in\
+            ['\quit', 'exit', 'exit;']:
         # If user enter \q to terminate the PSQL, emit the msg to
         # notify user connection is terminated.
         sio.emit('pty-output',
