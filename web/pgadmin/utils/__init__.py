@@ -309,14 +309,13 @@ def set_binary_path(binary_path, bin_paths, server_type,
         full_path = os.path.abspath(
             os.path.join(binary_path, (utility if os.name != 'nt' else
                                        (utility + '.exe'))))
-        # Replace the spaces with '\'
-        full_path = full_path.replace(" ", "\\ ")
 
         try:
             # if version_number is provided then no need to fetch it.
             if version_number is None:
                 # Get the output of the '--version' command
-                version_string = subprocess.getoutput(full_path + ' --version')
+                version_string = \
+                    subprocess.getoutput('"{0}" --version'.format(full_path))
 
                 # Get the version number by splitting the result string
                 version_number = \

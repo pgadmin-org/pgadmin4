@@ -200,12 +200,10 @@ def validate_binary_path():
                              (utility if os.name != 'nt' else
                               (utility + '.exe'))))
 
-            # Replace the spaces with '\'
-            full_path = full_path.replace(" ", "\\ ")
-
             try:
                 # Get the output of the '--version' command
-                version_string = subprocess.getoutput(full_path + ' --version')
+                version_string = \
+                    subprocess.getoutput('"{0}" --version'.format(full_path))
                 # Get the version number by splitting the result string
                 version_string.split(") ", 1)[1].split('.', 1)[0]
             except Exception:
