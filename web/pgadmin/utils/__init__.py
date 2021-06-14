@@ -302,6 +302,8 @@ def set_binary_path(binary_path, bin_paths, server_type,
     This function is used to iterate through the utilities and set the
     default binary path.
     """
+    path_with_dir = binary_path if "$DIR" in binary_path else None
+
     # Check if "$DIR" present in binary path
     binary_path = replace_binary_path(binary_path)
 
@@ -332,7 +334,8 @@ def set_binary_path(binary_path, bin_paths, server_type,
             for path in paths_array:
                 if path['version'].find(version_number) == 0 and \
                         path['binaryPath'] is None:
-                    path['binaryPath'] = binary_path
+                    path['binaryPath'] = path_with_dir \
+                        if path_with_dir is not None else binary_path
                     if set_as_default:
                         path['isDefault'] = True
                     break
