@@ -201,17 +201,17 @@ def register_string_typecasters(connection):
 def numeric_typecasters(results, conn_obj):
     # This function is to convert pg types to numeic type caster
 
-    data = []
+    numeric_cols = []
     for obj_type in conn_obj.column_info:
         if obj_type['type_code'] in TO_STRING_NUMERIC_DATATYPES:
-            data.append(obj_type['name'])
+            numeric_cols.append(obj_type['name'])
 
     for result in results:
         for key, value in result.items():
             if isinstance(result[key],
-                          str) and key in data and not value.isdigit():
+                          str) and key in numeric_cols and not value.isdigit():
                 result[key] = float(result[key])
-            elif isinstance(result[key], str) and key in data:
+            elif isinstance(result[key], str) and key in numeric_cols:
                 result[key] = int(result[key])
     return results
 
