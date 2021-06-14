@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-11 19:14+0530\n"
-"PO-Revision-Date: 2021-05-15 22:02+0900\n"
+"PO-Revision-Date: 2021-06-13 02:02+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: pgadmin/__init__.py:346 pgadmin/authenticate/internal.py:28
 msgid "Incorrect username or password."
@@ -102,9 +102,8 @@ msgid "Current User"
 msgstr "現在のユーザ"
 
 #: pgadmin/about/templates/about/index.html:16
-#, fuzzy
 msgid "NW.js Version"
-msgstr "Flask のバージョン"
+msgstr "NW.js のバージョン"
 
 #: pgadmin/about/templates/about/index.html:21 pgadmin/browser/__init__.py:79
 #: pgadmin/browser/static/js/browser.js:260
@@ -113,22 +112,19 @@ msgstr "ブラウザ"
 
 #: pgadmin/about/templates/about/index.html:25
 msgid "Operating System"
-msgstr ""
+msgstr "オペレーティングシステム"
 
 #: pgadmin/about/templates/about/index.html:29
-#, fuzzy
 msgid "pgAdmin Database File"
-msgstr "ファイルを読み込んでいます..."
+msgstr "pgAdmin のデータベースファイル"
 
 #: pgadmin/about/templates/about/index.html:33
-#, fuzzy
 msgid "Log File"
-msgstr "ログイン失敗"
+msgstr "ログファイル"
 
 #: pgadmin/about/templates/about/index.html:38
-#, fuzzy
 msgid "Server Configuration"
-msgstr "サーバ設定を再読み込み"
+msgstr "サーバ設定"
 
 #: pgadmin/authenticate/__init__.py:179
 msgid ""
@@ -660,23 +656,21 @@ msgstr "ERD ツール"
 #: pgadmin/browser/static/js/toolbar.js:140
 #: pgadmin/tools/psql/static/js/psql_module.js:127
 msgid "PSQL Tool"
-msgstr ""
+msgstr "PSQL ツール"
 
 #: pgadmin/browser/register_browser_preferences.py:518
-#, fuzzy
 msgid ""
 "Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
 "drop-down to set open in new browser tab for that particular module."
-msgstr "クエリツール、デバッガ、スキーマ比較ツールのうち、新しいブラウザタブに開くモジュールを選択します"
+msgstr "クエリツール、デバッガ、スキーマ比較、ERD ツール、PSQL ツールのうち、新しいブラウザタブに開くモジュールを選択します"
 
 #: pgadmin/browser/register_browser_preferences.py:528
 msgid "Select open new tab..."
 msgstr "モジュールを選択..."
 
 #: pgadmin/browser/register_browser_preferences.py:534
-#, fuzzy
 msgid "PSQL tool tab title"
-msgstr "クエリツールタブのタイトル"
+msgstr "PSQL ツールタブのタイトル"
 
 #: pgadmin/browser/utils.py:309
 msgid "Unimplemented method ({0}) for this url ({1})"
@@ -6424,7 +6418,7 @@ msgstr "選択したデータベースはすでに切断されています"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:101
 msgid "Generate ERD (Beta)"
-msgstr "ERD を生成 (ベータ版)"
+msgstr "ERD を生成 （ベータ版）"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:182
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1282
@@ -9002,7 +8996,7 @@ msgstr "オブジェクトの検索..."
 #: pgadmin/browser/static/js/node.js:255
 #: pgadmin/tools/psql/static/js/psql_module.js:63
 msgid "PSQL Tool (Beta)"
-msgstr ""
+msgstr "PSQL ツール （ベータ版）"
 
 #: pgadmin/browser/static/js/collection.js:226
 #: pgadmin/misc/file_manager/static/js/select_dialogue.js:90
@@ -10136,9 +10130,8 @@ msgid ""
 msgstr "テーマの適用には、再読み込みが必要です。以下はテーマのプレビューです"
 
 #: pgadmin/misc/__init__.py:222
-#, fuzzy
 msgid "Invalid binary path."
-msgstr "バイナリパス"
+msgstr "無効なバイナリパスです"
 
 #: pgadmin/misc/bgprocess/processes.py:43
 msgid "Could not find a process with the specified ID."
@@ -10670,23 +10663,20 @@ msgid "Toggle"
 msgstr "切り替え"
 
 #: pgadmin/static/js/backform.pgadmin.js:1164
-#, fuzzy
 msgid "Select binary path..."
-msgstr "項目を選択..."
+msgstr "バイナリパスを選択..."
 
 #: pgadmin/static/js/backform.pgadmin.js:1164
-#, fuzzy
 msgid "Enter binary path..."
-msgstr "バイナリパス"
+msgstr "バイナリパスを入力..."
 
 #: pgadmin/static/js/backform.pgadmin.js:1165
-#, fuzzy
 msgid "Select path"
-msgstr "比較対象を選択"
+msgstr "パスを選択"
 
 #: pgadmin/static/js/backform.pgadmin.js:1166
 msgid "Validate utilities"
-msgstr ""
+msgstr "ユーティリティを検証"
 
 #: pgadmin/static/js/backform.pgadmin.js:1196
 msgid ""
@@ -10695,6 +10685,8 @@ msgid ""
 "version. The default path will be used for server versions that do not "
 "have apath specified."
 msgstr ""
+" 対応するバージョンの psql, pg_dump, pg_dumpall, pg_restore "
+"ユーティリティが入ったディレクトリを入力してください。既定のパスとして指定されたものは、パスが未指定のサーババージョンに対しても使われるようになります"
 
 #: pgadmin/static/js/backform.pgadmin.js:1682
 #: pgadmin/static/js/backgrid.pgadmin.js:1253
@@ -10767,33 +10759,28 @@ msgid "Array Values"
 msgstr "配列値"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:2415
-#, fuzzy
 msgid "Select file..."
-msgstr "ファイルを選択"
+msgstr "ファイルを選択..."
 
 #: pgadmin/static/js/backgrid.pgadmin.js:2418
-#, fuzzy
 msgid "Validate file"
-msgstr "検証"
+msgstr "ファイルを検証"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:2509
-#, fuzzy
 msgid "Validate Path"
-msgstr "検証"
+msgstr "パスを検証"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:2509
-#, fuzzy
 msgid "Path should not be empty."
-msgstr "オプションは必須です"
+msgstr "パスは必須です"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:2521
-#, fuzzy
 msgid "Validate binary path"
-msgstr "バイナリパス"
+msgstr "バイナリパスを検証"
 
 #: pgadmin/static/js/backgrid.pgadmin.js:2524
 msgid "Failed to validate binary path."
-msgstr ""
+msgstr "バイナリパスの検証に失敗しました"
 
 #: pgadmin/static/js/keyboard_shortcuts.js:74
 msgid "Alt"
@@ -10827,9 +10814,8 @@ msgid "Configuration required"
 msgstr "設定が必要です"
 
 #: pgadmin/static/js/utils.js:424
-#, fuzzy
 msgid "Preferences Error"
-msgstr "設定"
+msgstr "設定エラー"
 
 #: pgadmin/static/js/utils.js:425
 #, python-format
@@ -11672,7 +11658,7 @@ msgstr "クエリツール - "
 
 #: pgadmin/tools/datagrid/static/js/datagrid_panel_title.js:137
 msgid "Database moved/renamed"
-msgstr ""
+msgstr "データベースが移動/リネームされました"
 
 #: pgadmin/tools/datagrid/static/js/show_data.js:39
 msgid "Data Grid Error"
@@ -12404,7 +12390,7 @@ msgstr "画面に合わせてズーム"
 
 #: pgadmin/tools/erd/static/js/erd_module.js:50
 msgid "New ERD Project (Beta)"
-msgstr "新しい ERD プロジェクト (ベータ版)"
+msgstr "新しい ERD プロジェクト （ベータ版）"
 
 #: pgadmin/tools/erd/static/js/erd_module.js:118
 #: pgadmin/tools/erd/static/js/erd_module.js:131
@@ -12522,7 +12508,7 @@ msgstr "プロジェクトを正常に保存しました"
 msgid ""
 "-- This script was generated by a beta version of the ERD tool in pgAdmin"
 " 4.\n"
-msgstr "-- このスクリプトは pgAdmin 4 の ERD ツール (ベータ版) により生成されたものです。\n"
+msgstr "-- このスクリプトは pgAdmin 4 の ERD ツール （ベータ版） により生成されたものです。\n"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:530
 msgid ""
@@ -12983,34 +12969,32 @@ msgstr "メンテナンスジョブの作成に失敗しました"
 
 #: pgadmin/tools/psql/__init__.py:42
 msgid "PSQL"
-msgstr ""
+msgstr "PSQL"
 
 #: pgadmin/tools/psql/__init__.py:209 pgadmin/tools/psql/__init__.py:475
 #: pgadmin/tools/psql/__init__.py:522
 msgid "ERROR: Shell commands are disabled in psql for security\r\n"
-msgstr ""
+msgstr "エラー: セキュリティ上の観点から、psql 上でのシェルコマンドの使用はできません\r\n"
 
 #: pgadmin/tools/psql/__init__.py:574
 msgid ""
 "Connection terminated, To create new connection please open another psql "
 "tool."
-msgstr ""
+msgstr "接続が中断されました。再接続するには、新しく psql ツールを開き直してください"
 
 #: pgadmin/tools/psql/__init__.py:724
 msgid "Invalid session.\r\n"
-msgstr ""
+msgstr "無効なセッションです\r\n"
 
 #: pgadmin/tools/psql/static/js/psql_module.js:131
 #: pgadmin/tools/psql/static/js/psql_module.js:139
 #: pgadmin/tools/psql/static/js/psql_module.js:152
-#, fuzzy
 msgid "PSQL Error"
-msgstr "ポールエラー"
+msgstr "PSQL エラー"
 
 #: pgadmin/tools/psql/static/js/psql_module.js:153
-#, fuzzy
 msgid "Please select a server/database object."
-msgstr "データベース/データベースオブジェクトを選択してください"
+msgstr "サーバ/データベースオブジェクトを選択してください"
 
 #: pgadmin/tools/restore/__init__.py:42
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:40
@@ -14402,11 +14386,10 @@ msgid ""
 msgstr "ダイアログを閉じますか？保存されていない変更は破棄されます"
 
 #: pgadmin/utils/__init__.py:279
-#, fuzzy, python-format
 msgid ""
 "Utility file not found. Please correct the Binary Path in the Preferences"
 " dialog"
-msgstr "ファイル「%s」が見つかりませんでした。設定ダイアログでバイナリパスを修正してください"
+msgstr "ユーティリティファイルが見つかりませんでした。設定ダイアログでバイナリパスを修正してください"
 
 #: pgadmin/utils/__init__.py:284
 #, python-format
@@ -14460,49 +14443,44 @@ msgid "Unable to fetch data."
 msgstr "データを取得できません"
 
 #: pgadmin/utils/constants.py:66
-#, fuzzy
 msgid "EDB Advanced Server 9.6"
-msgstr "EDB Advanced Server"
+msgstr "EDB Advanced Server 9.6"
 
 #: pgadmin/utils/constants.py:69
-#, fuzzy
 msgid "EDB Advanced Server 10"
-msgstr "EDB Advanced Server"
+msgstr "EDB Advanced Server 10"
 
 #: pgadmin/utils/constants.py:72
-#, fuzzy
 msgid "EDB Advanced Server 11"
-msgstr "EDB Advanced Server"
+msgstr "EDB Advanced Server 11"
 
 #: pgadmin/utils/constants.py:75
-#, fuzzy
 msgid "EDB Advanced Server 12"
-msgstr "EDB Advanced Server"
+msgstr "EDB Advanced Server 12"
 
 #: pgadmin/utils/constants.py:78
-#, fuzzy
 msgid "EDB Advanced Server 13"
-msgstr "EDB Advanced Server"
+msgstr "EDB Advanced Server 13"
 
 #: pgadmin/utils/constants.py:83
 msgid "PostgreSQL 9.6"
-msgstr ""
+msgstr "PostgreSQL 9.6"
 
 #: pgadmin/utils/constants.py:86
 msgid "PostgreSQL 10"
-msgstr ""
+msgstr "PostgreSQL 10"
 
 #: pgadmin/utils/constants.py:89
 msgid "PostgreSQL 11"
-msgstr ""
+msgstr "PostgreSQL 11"
 
 #: pgadmin/utils/constants.py:92
 msgid "PostgreSQL 12"
-msgstr ""
+msgstr "PostgreSQL 12"
 
 #: pgadmin/utils/constants.py:95
 msgid "PostgreSQL 13"
-msgstr ""
+msgstr "PostgreSQL 13"
 
 #: pgadmin/utils/exception.py:70
 msgid ""
@@ -14657,19 +14635,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー： {0}"
-
-#~ msgid "delete"
-#~ msgstr "delete"
-
-#~ msgid "has"
-#~ msgstr "has"
-
-#~ msgid "get"
-#~ msgstr "get"
-
-#~ msgid "Copyright"
-#~ msgstr "著作権"
-
-#~ msgid "Python Version"
-#~ msgstr "Python のバージョン"
 
