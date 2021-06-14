@@ -3104,6 +3104,11 @@ define([
             return (_.isFunction(f) ? !!f(m) : !!f);
           };
 
+        // disable when mode is properties.
+        if(data.mode == 'properties') {
+          data.disabled = true;
+        }
+
         // Evaluate the disabled, visible, and required option
         _.extend(data, {
           disabled: evalF(data.disabled, this.model),

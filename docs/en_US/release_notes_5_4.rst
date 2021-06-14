@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #4203 <https://redmine.postgresql.org/issues/4203>`_ -  Fixed the issue of renaming the database by another user.
 | `Issue #6404 <https://redmine.postgresql.org/issues/6404>`_ -  Ensure that the Query Tool connection string should not be changed as per the 'Query Tool tab title'.
 | `Issue #6466 <https://redmine.postgresql.org/issues/6466>`_ -  Ensure that the user should be able to add members in Login/Role group while creating it.
+| `Issue #6469 <https://redmine.postgresql.org/issues/6469>`_ -  Ensure that the calendar control should be disabled in the properties panel for Role.
 | `Issue #6473 <https://redmine.postgresql.org/issues/6473>`_ -  Disable browser password saving in the runtime.
 | `Issue #6478 <https://redmine.postgresql.org/issues/6478>`_ -  Fixed duplicate SQL issue for tables with more than one partition.
 | `Issue #6482 <https://redmine.postgresql.org/issues/6482>`_ -  Fixed an issue where the Foreground Color property of server dialog does not work.
