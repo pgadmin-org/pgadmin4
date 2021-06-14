@@ -855,7 +855,8 @@ def utils():
             support_ssh_tunnel=config.SUPPORT_SSH_TUNNEL,
             logout_url=_get_logout_url(),
             platform=sys.platform,
-            qt_default_placeholder=QT_DEFAULT_PLACEHOLDER
+            qt_default_placeholder=QT_DEFAULT_PLACEHOLDER,
+            enable_psql=config.ENABLE_PSQL
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 

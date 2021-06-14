@@ -53,7 +53,7 @@ define('pgadmin.browser.utils',
   pgAdmin['override_user_inactivity_timeout'] = '{{ current_app.config.get('OVERRIDE_USER_INACTIVITY_TIMEOUT') }}' == 'True';
 
   /* GET PSQL Tool related config */
-  pgAdmin['enable_psql'] =  '{{ current_app.config.get('ENABLE_PSQL') }}' == 'True';
+  pgAdmin['enable_psql'] =  '{{enable_psql}}' == 'True';
   pgAdmin['allow_psql_shell_commands'] =  '{{ current_app.config.get('ALLOW_PSQL_SHELL_COMMANDS') }}'  == 'True';
   pgAdmin['platform'] =  '{{platform}}';
   pgAdmin['qt_default_placeholder'] = '{{qt_default_placeholder}}'

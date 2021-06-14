@@ -20,7 +20,12 @@ from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
 
 if _platform == 'win32':
-    from winpty import PtyProcess
+    # Check Windows platform support for WinPty api, Disable psql
+    # if not supporting
+    try:
+        from winpty import PtyProcess
+    except ImportError as error:
+        config.ENABLE_PSQL = False
 else:
     import fcntl
     import termios

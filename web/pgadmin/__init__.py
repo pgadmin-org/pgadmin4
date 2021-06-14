@@ -60,7 +60,7 @@ winreg = None
 if os.name == 'nt':
     import winreg
 
-socketio = SocketIO(manage_session=False, async_mode='eventlet',
+socketio = SocketIO(manage_session=False, async_mode='threading',
                     logger=False, engineio_logger=False, debug=False,
                     ping_interval=25, ping_timeout=120)
 
