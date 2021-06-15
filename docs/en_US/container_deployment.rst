@@ -23,8 +23,17 @@ server:
 * PostgreSQL 12: */usr/local/pgsql-12*
 * PostgreSQL 13: */usr/local/pgsql-13*
 
-The most recent version of the utilities is used by default; this may be
-changed in the :ref:`preferences`.
+The default binary paths set in the container are as follows:
+
+DEFAULT_BINARY_PATHS = {
+        'pg-13': '/usr/local/pgsql-13'
+        'pg-12': '/usr/local/pgsql-12'
+        'pg-11': '/usr/local/pgsql-12'
+        'pg-10': '/usr/local/pgsql-10'
+        'pg-9.6': '/usr/local/pgsql-9.6'
+}
+
+this may be changed in the :ref:`preferences`.
 
 Environment Variables
 *********************
