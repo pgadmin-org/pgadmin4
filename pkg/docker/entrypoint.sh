@@ -10,10 +10,10 @@ CA_FILE = '/etc/ssl/certs/ca-certificates.crt'
 LOG_FILE = '/dev/null'
 HELP_PATH = '../../docs'
 DEFAULT_BINARY_PATHS = {
-        'pg-13': '/usr/local/pgsql-13'
-        'pg-12': '/usr/local/pgsql-12'
-        'pg-11': '/usr/local/pgsql-11'
-        'pg-10': '/usr/local/pgsql-10'
+        'pg-13': '/usr/local/pgsql-13',
+        'pg-12': '/usr/local/pgsql-12',
+        'pg-11': '/usr/local/pgsql-11',
+        'pg-10': '/usr/local/pgsql-10',
         'pg-9.6': '/usr/local/pgsql-9.6'
 }
 EOF
