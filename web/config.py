@@ -423,6 +423,10 @@ STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
 #
 # A default location can be specified for each database driver ID, in
 # a dictionary. Either an absolute or relative path can be specified.
+#
+# Version-specific defaults can also be specified, which will take priority
+# over un-versioned paths.
+#
 # In cases where it may be difficult to know what the working directory
 # is, "$DIR" can be specified. This will be replaced with the path to the
 # top-level pgAdmin4.py file. For example, on macOS we might use:
@@ -432,7 +436,17 @@ STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
 ##########################################################################
 DEFAULT_BINARY_PATHS = {
     "pg": "",
-    "ppas": ""
+    "pg-9.6": "",
+    "pg-10": "",
+    "pg-11": "",
+    "pg-12": "",
+    "pg-13": "",
+    "ppas": "",
+    "ppas-9.6": "",
+    "ppas-10": "",
+    "ppas-11": "",
+    "ppas-12": "",
+    "ppas-13": ""
 }
 
 ##########################################################################
