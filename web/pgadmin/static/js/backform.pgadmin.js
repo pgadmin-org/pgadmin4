@@ -1196,7 +1196,7 @@ define([
       gettext(' Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore' +
       ' utilities can be found for the corresponding database server version.' +
       ' The default path will be used for server versions that do not have a' +
-      'path specified.') + '</span>'].join('\n'));
+      ' path specified.') + '</span>'].join('\n'));
 
       return this;
     },

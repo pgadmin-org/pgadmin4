@@ -322,6 +322,8 @@ def set_binary_path(binary_path, bin_paths, server_type,
                 # Get the version number by splitting the result string
                 version_number = \
                     version_string.split(") ", 1)[1].split('.', 1)[0]
+            elif version_number.find('.'):
+                version_number = version_number.split('.', 1)[0]
 
             # Get the paths array based on server type
             if 'pg_bin_paths' in bin_paths or 'as_bin_paths' in bin_paths:
