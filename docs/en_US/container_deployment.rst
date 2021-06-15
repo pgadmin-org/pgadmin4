@@ -25,13 +25,15 @@ server:
 
 The default binary paths set in the container are as follows:
 
-DEFAULT_BINARY_PATHS = {
-        'pg-13': '/usr/local/pgsql-13'
-        'pg-12': '/usr/local/pgsql-12'
-        'pg-11': '/usr/local/pgsql-12'
-        'pg-10': '/usr/local/pgsql-10'
-        'pg-9.6': '/usr/local/pgsql-9.6'
-}
+.. code-block:: bash
+
+    DEFAULT_BINARY_PATHS = {
+            'pg-13': '/usr/local/pgsql-13'
+            'pg-12': '/usr/local/pgsql-12'
+            'pg-11': '/usr/local/pgsql-11'
+            'pg-10': '/usr/local/pgsql-10'
+            'pg-9.6': '/usr/local/pgsql-9.6'
+    }
 
 this may be changed in the :ref:`preferences`.
 
