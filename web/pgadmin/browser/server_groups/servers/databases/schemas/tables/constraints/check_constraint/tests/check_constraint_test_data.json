@@ -469,7 +469,7 @@
       },
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_void",
         "return_value": "(False,'Mocked Internal Server Error')"
       },
       "expected_data": {
@@ -547,7 +547,7 @@
       "test_data": {},
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_void",
         "return_value": "(False,'Mocked Internal Server Error')"
       },
       "expected_data": {

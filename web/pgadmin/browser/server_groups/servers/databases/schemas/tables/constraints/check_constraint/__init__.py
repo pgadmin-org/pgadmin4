@@ -228,8 +228,7 @@ class CheckConstraintView(PGChildNodeView):
         Returns:
 
         """
-        SQL = "END;"
-        self.conn.execute_scalar(SQL)
+        self.conn.execute_void("END;")
 
     @check_precondition
     def list(self, gid, sid, did, scid, tid, cid=None):
@@ -536,8 +535,9 @@ class CheckConstraintView(PGChildNodeView):
             if 'name' not in data or data['name'] == "":
                 sql = "BEGIN;"
                 # Start transaction.
-                status, res = self.conn.execute_scalar(sql)
+                status, res = self.conn.execute_void(sql)
                 if not status:
+                    self.conn.execute_void('ROLLBACK;')
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
@@ -549,6 +549,7 @@ class CheckConstraintView(PGChildNodeView):
 
             status, msg = self.conn.execute_scalar(sql)
             if not status:
+                self.conn.execute_void('ROLLBACK;')
                 self.end_transaction()
                 return internal_server_error(errormsg=msg)
 
@@ -561,6 +562,7 @@ class CheckConstraintView(PGChildNodeView):
 
                 status, res = self.conn.execute_dict(sql)
                 if not status:
+                    self.conn.execute_void('ROLLBACK;')
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
@@ -576,6 +578,7 @@ class CheckConstraintView(PGChildNodeView):
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
+                    self.conn.execute_void('ROLLBACK;')
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
@@ -592,6 +595,7 @@ class CheckConstraintView(PGChildNodeView):
             )
 
         except Exception as e:
+            self.conn.execute_void('ROLLBACK;')
             self.end_transaction()
             return make_json_response(
                 status=400,
