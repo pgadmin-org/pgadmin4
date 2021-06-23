@@ -43,7 +43,7 @@ The configuration files are as follows:
 
      Linux,/etc/pgadmin/config_system.py
      macOS,/Library/Preferences/pgadmin/config_system.py
-     Windows,%CommonProgramFiles%\pgadmin\config_system.py
+     Windows,%CommonProgramFiles%\\pgadmin\\config_system.py
 
 .. note:: If the SERVER_MODE setting is changed in ``config_distro.py``,
      ``config_local.py``, or ``config_system.py`` you will most likely need to
