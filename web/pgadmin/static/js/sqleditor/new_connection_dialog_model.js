@@ -382,7 +382,11 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
             && m.get('server') !== '') {
             setTimeout(function() {
               if(self_local.options.length) {
-                m.set('database', self_local.options[0].value);
+                self_local.options.forEach(db => {
+                  if (db.selected) {
+                    m.set('database', db.value);
+                  }
+                });
               }
             }, 10);
             return false;

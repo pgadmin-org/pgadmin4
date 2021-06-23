@@ -1620,9 +1620,13 @@ def get_new_connection_database(sgid, sid=None):
                     db_restrictions=db_disp_res
                 )
                 status, databases = conn.execute_dict(sql, params)
+                _db = manager.db
                 database_list = [
-                    {'label': database['name'], 'value': database['did']} for
-                    database in databases['rows']]
+                    {
+                        'label': database['name'],
+                        'value': database['did'],
+                        'selected': True if database['name'] == _db else False
+                    } for database in databases['rows']]
             else:
                 status = False
 
