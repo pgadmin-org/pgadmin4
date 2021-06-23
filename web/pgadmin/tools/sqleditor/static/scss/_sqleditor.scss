@@ -18,6 +18,25 @@
   z-index: 0;
 }
 
+.data-output-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.sql-editor-busy-text-status {
+  position: absolute;
+  padding: 0.25rem;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: $color-warning-light;
+  color: $color-warning-fg;
+}
+
 .connection_status {
   background-color: $sql-title-bg;
   color: $sql-title-fg;

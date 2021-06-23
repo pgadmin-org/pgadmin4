@@ -435,7 +435,7 @@
 
         </div>
         <div id="editor-panel" tabindex="0">
-            <div id="fetching_data" class="pg-sp-container sql-editor-busy-fetching">
+            <div id="main_loader" class="pg-sp-container sql-editor-busy-fetching">
                 <div class="pg-sp-content">
                     <div class="row">
                         <div class="col-12 pg-sp-icon sql-editor-busy-icon"></div>
@@ -444,6 +444,7 @@
                 </div>
             </div>
         </div>
+        <div class="sql-editor-busy-text-status d-none"></div>
     </div>
 </div>
 {% endblock %}
@@ -453,9 +454,7 @@ require(['sources/generated/browser_nodes', 'sources/generated/codemirror', 'sou
     require(['sources/generated/sqleditor'], function(ctx) {
         var $ = pgAdmin.SqlEditor.jquery,
             S = pgAdmin.SqlEditor.S,
-            editorPanel = $('.sql-editor'),
-            loadingDiv = $('#fetching_data'),
-            msgDiv = loadingDiv.find('.sql-editor-busy-text');
+            editorPanel = $('.sql-editor');
 
         // Register unload event on window close.
         /* If opened in new tab, close the connection only on tab/window close and
@@ -481,14 +480,6 @@ require(['sources/generated/browser_nodes', 'sources/generated/codemirror', 'sou
         var sqlEditorController = pgAdmin.SqlEditor.create(editorPanel);
 
         // Listen on events to show/hide loading-icon and change messages.
-        sqlEditorController.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
-            msgDiv.text(msg);
-          }).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
-            loadingDiv.removeClass('d-none');
-            msgDiv.text(msg);
-          }).on('pgadmin-sqleditor:loading-icon:hide', function() {
-            loadingDiv.addClass('d-none');
-          });
         {% if script_type_url %}
             var script_type_url = '{{ script_type_url }}';
         {% else %}

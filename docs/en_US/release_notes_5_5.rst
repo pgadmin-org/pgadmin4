@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #3920 <https://redmine.postgresql.org/issues/3920>`_ -  Do not block the query editor window when running a query.
 
 Housekeeping
 ************

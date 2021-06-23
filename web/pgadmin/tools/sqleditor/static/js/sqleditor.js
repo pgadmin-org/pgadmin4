@@ -312,7 +312,17 @@ define('tools.querytool', [
         isCloseable: false,
         isPrivate: true,
         extraClasses: 'hide-vertical-scrollbar',
-        content: `<div id ="datagrid" class="sql-editor-grid-container text-12" tabindex="0">${EMPTY_DATA_OUTPUT_CONTENT}</div>`,
+        content: `<div class="data-output-container">
+          <div id="fetching_data" class="pg-sp-container sql-editor-busy-fetching">
+              <div class="pg-sp-content">
+                  <div class="row">
+                      <div class="col-12 pg-sp-icon sql-editor-busy-icon"></div>
+                  </div>
+                  <div class="row"><div class="col-12 pg-sp-text sql-editor-busy-text">${gettext('Loading...')}</div></div>
+              </div>
+          </div>
+          <div id ="datagrid" class="sql-editor-grid-container text-12" tabindex="0">${EMPTY_DATA_OUTPUT_CONTENT}</div>
+        </div>`,
       });
 
       var explain = new pgAdmin.Browser.Panel({
@@ -2231,7 +2241,7 @@ define('tools.querytool', [
               self.change_connection(connection_details, ref, true);
             },
             function() {
-              var loadingDiv = $('#fetching_data');
+              var loadingDiv = $('#main_loader');
               loadingDiv.addClass('d-none');
               alertify.newConnectionDialog().destroy();
               return true;
@@ -2256,7 +2266,7 @@ define('tools.querytool', [
         msgDiv = loadingDiv.find('.sql-editor-busy-text');
         msgDiv.text('Connecting to database...');
       } else{
-        loadingDiv = $('#fetching_data');
+        loadingDiv = $('#main_loader');
         loadingDiv.removeClass('d-none');
       }
       self.set_selected_option(connection_details);
@@ -2650,6 +2660,27 @@ define('tools.querytool', [
         // Render the header
         self.gridView.render();
 
+        // Listen on events to show/hide loading-icon and change messages.
+        // Parallelly, also update the bottom message.
+        let loadingDiv = self.gridView.data_output_panel.$container.find('#fetching_data'),
+          msgDiv = loadingDiv.find('.sql-editor-busy-text'),
+          statusDiv = $('.sql-editor-busy-text-status');
+
+        self.on('pgadmin-sqleditor:loading-icon:message', function(msg) {
+          msgDiv.text(msg);
+          statusDiv.text(msg);
+        }).on('pgadmin-sqleditor:loading-icon:show', function(msg) {
+          loadingDiv.removeClass('d-none');
+          statusDiv.removeClass('d-none');
+
+          msgDiv.text(msg);
+          statusDiv.text(msg);
+        }).on('pgadmin-sqleditor:loading-icon:hide', function() {
+          loadingDiv.addClass('d-none');
+          statusDiv.addClass('d-none');
+        });
+
+        $('#main_loader').addClass('d-none');
         self.trigger('pgadmin-sqleditor:loading-icon:hide');
 
         self.gridView.set_editor_title('(' + gettext('Obtaining connection...') + ` ${_.unescape(url_params.title)}`);

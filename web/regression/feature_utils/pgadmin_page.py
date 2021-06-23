@@ -1143,8 +1143,10 @@ class PgadminPage:
     def wait_for_query_tool_loading_indicator_to_disappear(self, timeout=20):
         def spinner_has_disappeared(driver):
             try:
+                # Refer the status message as spinner appears only on the
+                # the data output panel
                 spinner = driver.find_element_by_css_selector(
-                    "#editor-panel .pg-sp-container"
+                    ".sql-editor .sql-editor-busy-text-status"
                 )
                 return "d-none" in spinner.get_attribute("class")
             except NoSuchElementException:
@@ -1309,13 +1311,15 @@ class PgadminPage:
             # Must step
             el.click()
             if 'mac' in platform:
-                # FF step
-                el.send_keys(Keys.COMMAND + "v")
                 # Chrome Step
-                actions.key_down(Keys.SHIFT)
-                actions.send_keys(Keys.INSERT)
-                actions.key_up(Keys.SHIFT)
-                actions.perform()
+                if self.driver.capabilities['browserName'] == 'chrome':
+                    actions.key_down(Keys.SHIFT)
+                    actions.send_keys(Keys.INSERT)
+                    actions.key_up(Keys.SHIFT)
+                    actions.perform()
+                else:
+                    # FF step
+                    el.send_keys(Keys.COMMAND + "v")
             else:
                 el.send_keys(Keys.CONTROL + "v")
 
