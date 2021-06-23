@@ -89,7 +89,23 @@ class SearchObjectsHelper:
             **kwargs
         )
 
+    def _check_permission(self, obj_type, conn, skip_obj_type):
+        """
+        This function return whether user has permission to see type
+        :param obj_type:
+        :param conn:
+        :return:
+        """
+
+        if obj_type == 'all':
+            status, error = conn.execute_dict('select * from pg_subscription')
+            if 'permission denied' in error:
+                skip_obj_type.append('subscription')
+
+        return skip_obj_type
+
     def search(self, text, obj_type=None):
+        skip_obj_type = []
         conn = self.manager.connection(did=self.did)
         last_system_oid = (self.manager.db_info[self.did])['datlastsysoid'] \
             if self.manager.db_info is not None and self.did in \
@@ -99,6 +115,8 @@ class SearchObjectsHelper:
         node_labels = self.get_supported_types(skip_check=True)
         # escape the single quote from search text
         text = text.replace("'", "''")
+        skip_obj_type = self._check_permission(obj_type, conn,
+                                               skip_obj_type)
 
         # Column catalog_level has values as
         # N - Not a catalog schema
@@ -109,7 +127,8 @@ class SearchObjectsHelper:
                          search_text=text.lower(), obj_type=obj_type,
                          show_system_objects=self.show_system_objects,
                          show_node_prefs=show_node_prefs, _=gettext,
-                         last_system_oid=last_system_oid)
+                         last_system_oid=last_system_oid,
+                         skip_obj_type=skip_obj_type)
         )
 
         if not status:

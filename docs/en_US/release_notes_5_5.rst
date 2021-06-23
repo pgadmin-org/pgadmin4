@@ -20,5 +20,6 @@ Bug fixes
 
 | `Issue #6388 <https://redmine.postgresql.org/issues/6388>`_ -  Fixed replace keyboard shortcut issue in the query tool on the normal keyboard layout.
 | `Issue #6398 <https://redmine.postgresql.org/issues/6398>`_ -  Fixed an issue where detaching the query editor panel gives a blank white panel.
+| `Issue #6448 <https://redmine.postgresql.org/issues/6448>`_ -  Fixed an issue in the search object when searching in 'all types' or 'subscription' if the user doesn't have access to the subscription.
 | `Issue #6489 <https://redmine.postgresql.org/issues/6489>`_ -  Fixed an issue where Execute/Refresh button should not be disabled when we run the empty query.
 | `Issue #6541 <https://redmine.postgresql.org/issues/6541>`_ -  Ensure that setting 'Open in new browser tab' should be visible, it should not be based on the value of 'ENABLE_PSQL'.

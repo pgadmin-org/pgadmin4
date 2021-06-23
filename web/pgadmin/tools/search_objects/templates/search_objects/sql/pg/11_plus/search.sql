@@ -346,7 +346,7 @@ FROM (
 {% if all_obj %}
     UNION
 {% endif %}
-
+{% if 'subscription' not in skip_obj_type%}
 {% if all_obj or obj_type in ['subscription'] %}
     SELECT 'subscription'::text AS obj_type, subname AS obj_name, ':subscription.'||pub.oid||':/' || subname AS obj_path, ''::text AS schema_name,
     {{ show_node_prefs['subscription'] }} AS show_node, NULL AS other_info
@@ -354,6 +354,7 @@ FROM (
 {% endif %}
 {% if all_obj %}
     UNION
+{% endif %}
 {% endif %}
 {% if all_obj or obj_type in ['language'] %}
     SELECT 'language'::text AS obj_type, lanname AS obj_name, ':language.'||lan.oid||':/' || lanname AS obj_path, ''::text AS schema_name,
