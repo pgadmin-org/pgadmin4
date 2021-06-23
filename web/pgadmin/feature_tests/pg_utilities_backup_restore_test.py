@@ -56,6 +56,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             self.server['sslmode']
         )
         test_utils.drop_database(connection, self.database_name)
+        self._update_preferences()
         db_id = test_utils.create_database(self.server, self.database_name)
         if not db_id:
             self.assertTrue(False, "Database {} is not "
@@ -273,7 +274,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         path = self.page.find_by_xpath(
             NavMenuLocators.specified_preference_tree_node.format('Paths'))
         if self.page.find_by_xpath(
-            NavMenuLocators.specified_pref_node_exp_status.format('Paths')). \
+            NavMenuLocators.specified_pref_node_exp_status.format('Paths')).\
                 get_attribute('aria-expanded') == 'false':
             ActionChains(self.driver).double_click(path).perform()
 
@@ -284,24 +285,33 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         default_binary_path = self.server['default_binary_paths']
         if default_binary_path is not None:
+            def get_server_version_string():
+                server_version = {130000: '13', 120000: '12', 110000: '11',
+                                  100000: '10', 90600: '9.6'}
+                for k, v in server_version.items():
+                    if k <= self.server_information['server_version']:
+                        return v
+                return None
+            server_version = get_server_version_string()
             server_types = default_binary_path.keys()
             for serv in server_types:
-                if serv == 'pg':
+                if serv == 'pg' and server_version is not None:
                     path_input = self.page.find_by_xpath(
-                        "//label[text()='PostgreSQL Binary "
-                        "Path']/following-sibling::div//input")
-                    path_input.clear()
+                        "//td[span[text()='PostgreSQL {0}']]"
+                        "/following-sibling::td//input".format(server_version))
+                    self.page.clear_edit_box(path_input)
                     path_input.click()
                     path_input.send_keys(default_binary_path['pg'])
-                elif serv == 'ppas':
+                elif serv == 'ppas' and server_version is not None:
                     path_input = self.page.find_by_xpath(
-                        "//label[text()='EDB Advanced Server Binary "
-                        "Path']/following-sibling::div//input")
-                    path_input.clear()
+                        "//td[span[text()='EDB Advanced Server {0}']]"
+                        "/following-sibling::td//input".format(server_version))
+                    self.page.clear_edit_box(path_input)
                     path_input.click()
                     path_input.send_keys(default_binary_path['ppas'])
                 else:
-                    print('Binary path Key is Incorrect')
+                    print('Binary path Key is Incorrect or '
+                          'server version is None.')
 
         # save and close the preference dialog.
         self.page.click_modal('Save')

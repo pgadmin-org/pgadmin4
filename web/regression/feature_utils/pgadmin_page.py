@@ -1329,3 +1329,7 @@ class PgadminPage:
         except TimeoutException:
             element_located_status = False
         return element_located_status
+
+    def clear_edit_box(self, edit_box_webelement):
+        while not edit_box_webelement.get_attribute("value") == "":
+            edit_box_webelement.send_keys(Keys.BACK_SPACE)
