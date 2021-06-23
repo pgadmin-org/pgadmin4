@@ -56,7 +56,11 @@ class ExecuteQuery {
 
   execute(sqlStatement, explainPlan, connect) {
     // If it is an empty query, do nothing.
-    if (sqlStatement.length <= 0) return;
+    if (sqlStatement.length <= 0) {
+      // Enable query execution button if user execute empty query.
+      $('#btn-flash').prop('disabled', false);
+      return;
+    }
 
     const self = this;
     self.explainPlan = explainPlan;
