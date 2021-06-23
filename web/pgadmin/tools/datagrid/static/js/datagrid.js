@@ -213,6 +213,19 @@ define('pgadmin.datagrid', [
         showQueryTool.showQueryTool(this, pgBrowser, alertify, url, aciTreeIdentifier, transId);
       },
 
+      resize_the_queryTool: function(){
+        var docker = this.docker(this._panel);
+        var dockerPos = docker.$container.offset();
+        var pos = this.$container.offset();
+        var width = this.$container.width();
+        var height = this.$container.height();
+
+        $(wcDocker).find('.wcIFrameFloating').css('top', pos.top - dockerPos.top);
+        $(wcDocker).find('.wcIFrameFloating').css('left', pos.left - dockerPos.left);
+        $(wcDocker).find('.wcIFrameFloating').css('width', width);
+        $(wcDocker).find('.wcIFrameFloating').css('height', height);
+      },
+
       launch_grid: function(trans_id, panel_url, is_query_tool, panel_title, sURL=null, sql_filter=null) {
 
         let queryToolForm = `
@@ -269,6 +282,20 @@ define('pgadmin.datagrid', [
               method: 'DELETE',
             });
           });
+
+          queryToolPanel.on(wcDocker.EVENT.DETACHED, function() {
+            $(wcDocker).find('.wcIFrameFloating').attr({
+              style: 'z-index: 1200'
+            });
+          });
+
+          queryToolPanel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
+            $(wcDocker).find('.wcIFrameFloating').attr({
+              style: 'z-index: 1200'
+            });
+          });
+
+          queryToolPanel.on(wcDocker.EVENT.ORDER_CHANGED, this.resize_the_queryTool);
 
           // Listen on the panelRename event.
           queryToolPanel.on(wcDocker.EVENT.RENAME, function(panel_data) {

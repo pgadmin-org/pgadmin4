@@ -17,4 +17,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #6398 <https://redmine.postgresql.org/issues/6398>`_ -  Fixed an issue where detaching the query editor panel gives a blank white panel.
 | `Issue #6489 <https://redmine.postgresql.org/issues/6489>`_ -  Fixed an issue where Execute/Refresh button should not be disabled when we run the empty query.
