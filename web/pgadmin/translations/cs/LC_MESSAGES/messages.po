@@ -11454,7 +11454,7 @@ msgstr "Formulář zapomenutého hesla"
 #: pgadmin/templates/security/login_user.html:7
 #: pgadmin/templates/security/login_user.html:15
 msgid "Login"
-msgstr "Uživatelské jméno"
+msgstr "Přihlásit"
 
 #: pgadmin/templates/security/login_user.html:17
 #, python-format

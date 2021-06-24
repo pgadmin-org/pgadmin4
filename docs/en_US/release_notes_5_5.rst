@@ -25,3 +25,4 @@ Bug fixes
 | `Issue #6489 <https://redmine.postgresql.org/issues/6489>`_ -  Fixed an issue where Execute/Refresh button should not be disabled when we run the empty query.
 | `Issue #6505 <https://redmine.postgresql.org/issues/6505>`_ -  Fixed an issue where the New Connection Drop Down has lost default maintenance database, auto-select, and tab-through functionality.
 | `Issue #6541 <https://redmine.postgresql.org/issues/6541>`_ -  Ensure that setting 'Open in new browser tab' should be visible, it should not be based on the value of 'ENABLE_PSQL'.
+| `Issue #6555 <https://redmine.postgresql.org/issues/6555>`_ -  Fixed Czech translation string for 'Login' keyword.
