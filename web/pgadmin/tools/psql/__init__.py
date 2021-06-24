@@ -1,4 +1,12 @@
-#!/usr/bin/env python3
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+
 import os
 import re
 import select
@@ -32,8 +40,6 @@ else:
     import pty
 
 session_input = dict()
-session_input_cursor = dict()
-session_last_cmd = dict()
 pdata = dict()
 cdata = dict()
 
@@ -113,7 +119,8 @@ def panel(trans_id):
                            is_enable=config.ENABLE_PSQL,
                            title=underscore_unescape(params['title']),
                            theme=params['theme'],
-                           o_db_name=o_db_name
+                           o_db_name=o_db_name,
+                           platform=_platform
                            )
 
 
@@ -143,13 +150,6 @@ def connect():
     if config.ENABLE_PSQL:
         sio.emit('connected', {'sid': request.sid}, namespace='/pty',
                  to=request.sid)
-
-        if request.sid in session_last_cmd:
-            session_last_cmd[request.sid]['is_new_connection'] = False
-        else:
-            session_last_cmd[request.sid] = {'cmd': '', 'arrow_up': False,
-                                             'invalid_cmd': False,
-                                             'is_new_connection': False}
     else:
         sio.emit('conn_not_allow', {'sid': request.sid}, namespace='/pty',
                  to=request.sid)
@@ -193,36 +193,11 @@ def read_terminal_data(parent, data_ready, max_read_bytes, sid):
     if parent in data_ready:
         # Read the output from parent fd (terminal).
         output = os.read(parent, max_read_bytes)
-        emit_output = True
 
-        if sid in session_last_cmd and session_last_cmd[sid][
-            'arrow_up'] and not session_last_cmd[request.sid][
-                'arrow_left_right']:
-            session_last_cmd[sid]['cmd'] = output.decode()
-            session_input_cursor[request.sid] = len(
-                session_last_cmd[sid]['cmd'])
-            session_last_cmd[sid]['arrow_up'] = True
-
-        if sid in session_last_cmd and session_last_cmd[sid]['invalid_cmd']:
-            # If command is invalid then emit error to user.
-            emit_output = False
-            sio.emit(
-                'pty-output',
-                {
-                    'result': gettext(
-                        "ERROR: Shell commands are disabled "
-                        "in psql for security\r\n"),
-                    'error': True
-                },
-                namespace='/pty', room=sid)
-        # If command is valid then emit output to user.
-        if emit_output:
-            sio.emit('pty-output',
-                     {'result': output.decode(),
-                      'error': False},
-                     namespace='/pty', room=sid)
-        else:
-            session_last_cmd[request.sid]['invalid_cmd'] = False
+        sio.emit('pty-output',
+                 {'result': output.decode(),
+                  'error': False},
+                 namespace='/pty', room=sid)
 
 
 def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
@@ -436,37 +411,12 @@ def get_conn_str_win(manager, db):
     return conn_attr
 
 
-def check_last_exe_cmd(data):
-    """
-    Check the is user try to execute last executed command.
-    :param data:
-    :return:
-    """
-    # If user get previous executed command from history then set
-    # current command as previous executed command.
-    if session_last_cmd[request.sid]['cmd'] and session_last_cmd[request.sid][
-            'arrow_up']:
-        user_input = str(
-            session_last_cmd[request.sid]['cmd']).strip()
-        session_last_cmd[request.sid]['arrow_up'] = False
-        session_last_cmd[request.sid]['cmd'] = ''
-    else:
-        if request.sid not in session_input:
-            session_input[request.sid] = data['input']
-            user_input = str(session_input[request.sid]).strip()
-        else:
-            user_input = str(session_input[request.sid]).strip()
-
-    return user_input
-
-
 def enter_key_press(data):
     """
     Handel the Enter key press event.
     :param data:
     """
-    user_input = check_last_exe_cmd(data)
-    session_input_cursor[request.sid] = 0
+    user_input = data['input']
 
     if user_input == '\q' or user_input == 'q\\q' or user_input in\
             ['\quit', 'exit', 'exit;']:
@@ -496,63 +446,6 @@ def enter_key_press(data):
             os.write(app.config['sessions'][request.sid],
                      data['input'].encode())
     session_input[request.sid] = ''
-    session_last_cmd[request.sid]['is_new_connection'] = False
-
-
-def backspace_key_press():
-    """
-    Handel the backspace key press event.
-    :return:
-    :rtype:
-    """
-    session_last_cmd[request.sid]['arrow_left_right'] = True
-
-    if session_last_cmd[request.sid]['cmd']:
-        session_input[request.sid] = \
-            session_last_cmd[request.sid]['cmd']
-
-    user_input = list(session_input[request.sid])
-
-    if session_input_cursor[request.sid] == 1:
-        index = 0
-        session_input_cursor[request.sid] -= 1
-    else:
-        if session_input_cursor[request.sid] > 0:
-            index = (session_input_cursor[request.sid]) - 1
-            session_input_cursor[request.sid] -= 1
-        else:
-            index = session_input_cursor[request.sid]
-            session_input_cursor[request.sid] = 0
-
-    if len(user_input):
-        del user_input[index]
-    session_input[request.sid] = "".join(user_input)
-
-    if len(session_input[request.sid]) == 0:
-        session_input_cursor[request.sid] = 0
-    session_last_cmd[request.sid]['cmd'] = ''
-
-
-def set_user_input(data):
-    """
-    Check and set current input as user input in session_input.
-    :param data:
-    """
-    if session_last_cmd[request.sid]['cmd'] and \
-            session_input[request.sid] == '':
-        session_input[request.sid] = \
-            session_last_cmd[request.sid]['cmd']
-        session_input_cursor[request.sid] = len(
-            session_input[request.sid])
-    else:
-        session_last_cmd[request.sid]['arrow_up'] = False
-        session_last_cmd[request.sid]['cmd'] = ''
-    user_input = list(session_input[request.sid])
-    user_input.insert(session_input_cursor[request.sid],
-                      data['input'])
-    session_input[request.sid] = ''.join(user_input)
-    session_input_cursor[request.sid] += 1
-    session_last_cmd[request.sid]['arrow_left_right'] = False
 
 
 def other_key_press(data):
@@ -563,36 +456,7 @@ def other_key_press(data):
     :return:
     :rtype:
     """
-    if data['key_name'] == 'ArrowLeft':
-        session_last_cmd[request.sid]['arrow_left_right'] = True
-        if session_input_cursor[request.sid] > 0:
-            session_input_cursor[request.sid] -= 1
-
-    elif data['key_name'] == 'ArrowRight':
-        session_last_cmd[request.sid]['arrow_left_right'] = True
-        if session_input_cursor[request.sid] < len(
-                session_input[request.sid]):
-            session_input_cursor[request.sid] += 1
-
-    elif data['key_name'] == 'ArrowUp':
-        session_last_cmd[request.sid]['arrow_up'] = True
-        session_last_cmd[request.sid]['arrow_left_right'] = False
-        session_input[request.sid] = session_last_cmd[request.sid][
-            'cmd']
-        session_input_cursor[request.sid] = len(
-            session_last_cmd[request.sid]['cmd'])
-
-    elif request.sid in session_input and \
-        data['key_name'] == 'Backspace' and \
-        (len(session_input[request.sid]) or
-            len(session_last_cmd[request.sid])):
-        backspace_key_press()
-    elif request.sid in session_input:
-        set_user_input(data)
-    else:
-        session_input_cursor[request.sid] = 0
-        session_input[request.sid] = data['input']
-        session_input_cursor[request.sid] += 1
+    session_input[request.sid] = data['input']
 
     if _platform == 'win32':
         app.config['sessions'][request.sid].write(

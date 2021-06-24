@@ -13,7 +13,6 @@ import { SearchAddon } from 'xterm-addon-search';
 import { io } from 'socketio';
 import Alertify from 'pgadmin.alertifyjs';
 import {enable} from 'pgadmin.browser.toolbar';
-import clipboard from 'sources/selection/clipboard';
 import 'wcdocker';
 import {getRandomInt, hasBinariesConfiguration} from 'sources/utils';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
@@ -354,33 +353,31 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         term.write('\r\nServer disconnected, Connection terminated, To create new connection please open another psql tool.');
       });
     },
-    psql_terminal_io: function(term, socket) {
+    psql_terminal_io: function(term, socket, platform) {
       // Listen key press event from terminal and emit socket event.
-      let selected_text = '';
       term.attachCustomKeyEventHandler(e => {
         e.stopPropagation();
-        if(e.type=='keydown' && e.metaKey &&(e.key == 'v' || e.key == 'V')) {
-          if(selected_text != '') {
-            if (selected_text.length > 0) {
-              socket.emit('socket_input', {'input': selected_text, 'key_name': e.code});
-              selected_text = '';
+        if(e.type=='keydown' && (e.metaKey || e.ctrlKey) &&(e.key == 'v' || e.key == 'V')) {
+          navigator.permissions.query({ name: 'clipboard-read' }).then(function(result) {
+            if(result.state === 'granted' || result.state === 'prompt') {
+              navigator.clipboard.readText().then( clipText => {
+                var selected_text = clipText;
+                if (selected_text.length > 0) {
+                  socket.emit('socket_input', {'input': selected_text, 'key_name': e.code});
+                }
+              });
+            } else{
+              Alertify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
             }
-          } else {
-            navigator.clipboard.readText().then( clipText => {
-              selected_text = clipText;
-              if (selected_text.length > 0) {
-                socket.emit('socket_input', {'input': selected_text, 'key_name': e.code});
-                selected_text = '';
-              }
-            });
-          }
-        }else if(e.type=='keydown' && e.metaKey && (e.key == 'c' || e.key == 'C')) {
-          if (term.hasSelection()) {
-            selected_text = term.getSelection();
-          } else {
-            selected_text = clipboard.readText();
-          }
+          });
+        }else if(e.type=='keydown' && (e.metaKey || e.ctrlKey) && (e.key == 'c' || e.key == 'C')) {
+          document.execCommand('copy');
         }
+
+        if (e.ctrlKey && platform == 'win32') {
+          return false;
+        }
+
         return true;
       });
 

@@ -33,7 +33,7 @@ require(
         <!-- Socket-->
         const socket = self.pgAdmin.Browser.psql.psql_socket();
         self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db | replace("'", "\'")| replace('"', '\"') | replace('\\', '\\\\')}}', '{{server_type}}', fitAddon, term);
-        self.pgAdmin.Browser.psql.psql_terminal_io(term, socket);
+        self.pgAdmin.Browser.psql.psql_terminal_io(term, socket, '{{platform}}');
         self.pgAdmin.Browser.psql.check_db_name_change('{{db}}', '{{o_db_name}}');
 
         <!-- Resize the terminal -->
@@ -51,8 +51,8 @@ require(
             }
         }
 
-        const wait_ms = 50;;
-        window.onresize = debounce(fitToscreen, wait_ms)
+        const wait_ms = 25;
+        window.onresize = debounce(fitToscreen, wait_ms);
 
     });
 {% endblock %}
