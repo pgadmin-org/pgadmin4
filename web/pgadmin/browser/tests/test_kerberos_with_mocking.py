@@ -101,7 +101,7 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
 
         del_crads = delCrads()
 
-        AuthSourceRegistry.registry['kerberos'].negotiate_start = MagicMock(
+        AuthSourceRegistry._registry['kerberos'].negotiate_start = MagicMock(
             return_value=[True, del_crads])
         return del_crads
 

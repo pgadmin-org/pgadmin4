@@ -57,13 +57,13 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
         app_config.LDAP_BIND_USER = None
         app_config.LDAP_BIND_PASSWORD = None
 
-    @patch.object(AuthSourceRegistry.registry['ldap'], 'connect',
+    @patch.object(AuthSourceRegistry._registry['ldap'], 'connect',
                   return_value=[True, "Done"])
-    @patch.object(AuthSourceRegistry.registry['ldap'], 'search_ldap_user',
+    @patch.object(AuthSourceRegistry._registry['ldap'], 'search_ldap_user',
                   return_value=[True, ''])
     def runTest(self, conn_mock_obj, search_mock_obj):
         """This function checks ldap login functionality."""
-        AuthSourceRegistry.registry['ldap'].dedicated_user = False
+        AuthSourceRegistry._registry['ldap'].dedicated_user = False
         res = self.tester.login(self.username, self.password, True)
         respdata = 'Gravatar image for %s' % self.username
         self.assertTrue(respdata in res.data.decode('utf8'))

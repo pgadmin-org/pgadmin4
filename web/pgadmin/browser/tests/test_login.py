@@ -29,7 +29,7 @@ class LoginTestCase(BaseTestGenerator):
                 ['login_username']),
             password=str(uuid.uuid4())[4:8],
             is_gravtar_image_check=False,
-            respdata='Invalid password')),
+            respdata='Incorrect username or password')),
 
         # This test case validates the empty password field
         ('Empty_Password', dict(
@@ -45,13 +45,13 @@ class LoginTestCase(BaseTestGenerator):
                 config_data['pgAdmin4_login_credentials']
                 ['login_password']),
             is_gravtar_image_check=False,
-            respdata='Email not provided')),
+            respdata='Email/Username is not valid')),
 
         # This test case validates empty email and password
         ('Empty_Credentials', dict(
             email='', password='',
             is_gravtar_image_check=False,
-            respdata='Email not provided')),
+            respdata='Email/Username is not valid')),
 
         # This test case validates the invalid/incorrect email id
         ('Invalid_Email', dict(
@@ -60,14 +60,14 @@ class LoginTestCase(BaseTestGenerator):
                 config_data['pgAdmin4_login_credentials']
                 ['login_password']),
             is_gravtar_image_check=False,
-            respdata='Specified user does not exist')),
+            respdata='Incorrect username or password')),
 
         # This test case validates invalid email and password
         ('Invalid_Credentials', dict(
             email=str(uuid.uuid4())[1:8] + '@xyz.com',
             password=str(uuid.uuid4())[4:8],
             is_gravtar_image_check=False,
-            respdata='Specified user does not exist')),
+            respdata='Incorrect username or password')),
 
         # This test case validates the valid/correct credentials and allow user
         # to login pgAdmin 4
@@ -106,8 +106,6 @@ class LoginTestCase(BaseTestGenerator):
         if self.is_gravtar_image_check:
             if app_config.SHOW_GRAVATAR_IMAGE:
                 self.assertTrue(self.respdata in res.data.decode('utf8'))
-            else:
-                print(self.respdata_without_gravtar in res.data.decode('utf8'))
         else:
             self.assertTrue(self.respdata in res.data.decode('utf8'))
 

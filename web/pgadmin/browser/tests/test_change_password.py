@@ -62,7 +62,7 @@ class ChangePasswordTestCase(BaseTestGenerator):
             new_password_confirm=(
                 config_data['pgAdmin4_login_credentials']
                 ['new_password']),
-            respdata='Invalid password')),
+            respdata='Incorrect username or password')),
 
         # This test case checks for valid password
         ('TestCase for Changing Valid_Password', dict(

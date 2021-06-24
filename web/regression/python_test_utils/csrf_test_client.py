@@ -76,6 +76,10 @@ class TestClient(testing.FlaskClient):
             b' value="([^"]*)">', res.data
         )
 
+        if m is None:
+            # When login through Kerberos, we won't find the CSRF
+            return None
+
         return m.group(1).decode("utf-8")
 
     def generate_csrf_token(self, *args, **kwargs):
