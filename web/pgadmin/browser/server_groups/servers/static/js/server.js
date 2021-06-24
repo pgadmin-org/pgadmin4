@@ -121,7 +121,7 @@ define('pgadmin.node.server', [
           applies: ['object'], callback: 'change_password',
           label: gettext('Change Password...'), priority: 10,
           icon: 'fa fa-lock', enable : 'is_connected',data: {
-            data_disabled: gettext('Please connect server to enable change password. '),
+            data_disabled: gettext('Please connect server to enable change password.'),
           },
         },{
           name: 'wal_replay_pause', node: 'server', module: this,

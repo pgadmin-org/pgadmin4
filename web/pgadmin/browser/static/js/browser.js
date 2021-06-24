@@ -920,7 +920,7 @@ define('pgadmin.browser', [
         $dropdown.empty();
         if(o.menu == 'help'){
           $dropdown.append('<div id="quick-search-component"></div>');
-          $dropdown.append('<div class="menu-groups"><span class="fa fa-list" style="font-weight:900 !important;"></span> &nbsp;SUGGESTED SITES</div>');
+          $dropdown.append('<div class="menu-groups"><span class="fa fa-list" style="font-weight:900 !important;"></span> &nbsp;' + gettext('SUGGESTED SITES') + '</div>');
         }
 
         if (pgAdmin.Browser.MenuCreator(

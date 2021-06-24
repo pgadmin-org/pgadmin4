@@ -1130,7 +1130,7 @@ define([
 
       this.gridColumns = [{
         name: 'isDefault',
-        label: 'Set as default',
+        label: gettext('Set as default'),
         sortable: false,
         cell: Backgrid.RadioCell,
         cellHeaderClasses: 'width_percent_10',
@@ -1149,14 +1149,14 @@ define([
         }
       }, {
         name: 'serverType',
-        label: 'Database Server',
+        label: gettext('Database Server'),
         editable: false,
         cell: 'string',
         cellHeaderClasses: 'width_percent_20',
         headerCell: Backgrid.Extension.CustomHeaderCell,
       }, {
         name: 'binaryPath',
-        label: 'Binary Path',
+        label: gettext('Binary Path'),
         sortable: false,
         cell: Backgrid.Extension.SelectFileCell,
         dialog_type: 'select_folder',
@@ -1193,7 +1193,7 @@ define([
       this.$el.empty();
       this.$el.append(gridBody.append(self.grid.render().$el));
       this.$el.append(['<span class="pg-el-sm-12 form-text text-muted help-block">' +
-      gettext(' Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore' +
+      gettext('Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore' +
       ' utilities can be found for the corresponding database server version.' +
       ' The default path will be used for server versions that do not have a' +
       ' path specified.') + '</span>'].join('\n'));

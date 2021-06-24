@@ -332,12 +332,12 @@ export default class BodyWidget extends React.Component {
     let dialog = this.getDialog('entity_dialog');
     if(node) {
       let [schema, table] = node.getSchemaTableName();
-      dialog(_.escape(`Table: ${table} (${schema})`), node.getData(), false, (newData)=>{
+      dialog(gettext('Table: %s (%s)', _.escape(table),_.escape(schema)), node.getData(), false, (newData)=>{
         node.setData(newData);
         this.diagram.repaint();
       });
     } else {
-      dialog('New table', {name: this.diagram.getNextTableName()}, true, (newData)=>{
+      dialog(gettext('New table'), {name: this.diagram.getNextTableName()}, true, (newData)=>{
         let newNode = this.diagram.addNode(newData);
         newNode.setSelected(true);
       });
@@ -655,7 +655,7 @@ export default class BodyWidget extends React.Component {
   onOneToManyClick() {
     let dialog = this.getDialog('onetomany_dialog');
     let initData = {local_table_uid: this.diagram.getSelectedNodes()[0].getID()};
-    dialog('One to many relation', initData, (newData)=>{
+    dialog(gettext('One to many relation'), initData, (newData)=>{
       let newLink = this.diagram.addLink(newData, 'onetomany');
       this.diagram.clearSelection();
       newLink.setSelected(true);
@@ -666,7 +666,7 @@ export default class BodyWidget extends React.Component {
   onManyToManyClick() {
     let dialog = this.getDialog('manytomany_dialog');
     let initData = {left_table_uid: this.diagram.getSelectedNodes()[0].getID()};
-    dialog('Many to many relation', initData, (newData)=>{
+    dialog(gettext('Many to many relation'), initData, (newData)=>{
       let nodes = this.diagram.getModel().getNodesDict();
       let left_table = nodes[newData.left_table_uid];
       let right_table = nodes[newData.right_table_uid];

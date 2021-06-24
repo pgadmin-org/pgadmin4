@@ -405,13 +405,13 @@ define('pgadmin.node.subscription', [
           type: 'switch', mode: ['create','edit', 'properties'],
           group: gettext('With'),
           readonly: 'isConnect', deps :['connect'],
-          helpMessage: gettext('Specifies whether the subscription should be actively replicating, or whether it should be just setup but not started yet. '),
+          helpMessage: gettext('Specifies whether the subscription should be actively replicating, or whether it should be just setup but not started yet.'),
         },
         {
           id: 'refresh_pub', label: gettext('Refresh publication?'),
           type: 'switch', mode: ['edit'],
           group: gettext('With'),
-          helpMessage: gettext('Fetch missing table information from publisher. '),
+          helpMessage: gettext('Fetch missing table information from publisher.'),
           deps:['enabled'], disabled: function(m){
             if (m.get('enabled'))
               return false;
