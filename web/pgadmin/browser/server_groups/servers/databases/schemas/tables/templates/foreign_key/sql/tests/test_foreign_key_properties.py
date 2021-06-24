@@ -14,7 +14,7 @@ from regression.python_test_utils.template_helper import file_as_template
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils
 
-DriverRegistry.load_drivers()
+DriverRegistry.load_modules()
 
 
 class TestColumnForeignKeyGetConstraintCols(BaseTestGenerator):

@@ -15,7 +15,7 @@ from pgadmin.utils.driver import DriverRegistry
 from pgadmin.utils.versioned_template_loader \
     import get_version_mapping_directories
 
-DriverRegistry.load_drivers()
+DriverRegistry.load_modules()
 
 
 class SQLTemplateTestBase(BaseTestGenerator):

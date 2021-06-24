@@ -223,7 +223,7 @@ def get_auth_sources(type):
     if type in auth_sources:
         return auth_sources[type]
 
-    auth_source = AuthSourceRegistry.create(type)
+    auth_source = AuthSourceRegistry.get(type)
 
     if auth_source is not None:
         auth_sources[type] = auth_source
@@ -236,7 +236,7 @@ def init_app(app):
     auth_sources = dict()
 
     setattr(app, '_pgadmin_auth_sources', auth_sources)
-    AuthSourceRegistry.load_auth_sources()
+    AuthSourceRegistry.load_modules(app)
 
     return auth_sources
 

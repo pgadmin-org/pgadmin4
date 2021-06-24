@@ -12,32 +12,19 @@ from flask import current_app
 from .registry import DriverRegistry
 
 
-def get_driver(type, app=None):
+def get_driver(_type, app=None):
+
     if app is not None:
-        DriverRegistry.load_drivers()
+        DriverRegistry.load_modules(app)
 
-    drivers = getattr(app or current_app, '_pgadmin_server_drivers', None)
-
-    if drivers is None or not isinstance(drivers, dict):
-        drivers = dict()
-
-    if type in drivers:
-        return drivers[type]
-
-    driver = DriverRegistry.create(type)
-
-    if driver is not None:
-        drivers[type] = driver
-        setattr(app or current_app, '_pgadmin_server_drivers', drivers)
-
-    return driver
+    return DriverRegistry.get(_type)
 
 
 def init_app(app):
     drivers = dict()
 
     setattr(app, '_pgadmin_server_drivers', drivers)
-    DriverRegistry.load_drivers()
+    DriverRegistry.load_modules(app)
 
     return drivers
 
