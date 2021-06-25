@@ -91,7 +91,7 @@ def index():
                             'SECRET_KEY',
                             'SECURITY_PASSWORD_SALT',
                             'SECURITY_PASSWORD_HASH',
-                            'ALLOWED_HOSTS'
+                            'ALLOWED_HOSTS',
                             'MAIL_PASSWORD',
                             'LDAP_BIND_PASSWORD',
                             'SECURITY_PASSWORD_HASH']:
