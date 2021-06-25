@@ -11,6 +11,9 @@ import _ from 'underscore';
 import { getTreeNodeHierarchyFromIdentifier } from 'sources/tree/pgadmin_tree_node';
 import $ from 'jquery';
 import gettext from 'sources/gettext';
+import 'wcdocker';
+
+var wcDocker = window.wcDocker;
 
 export function parseShortcutValue(obj) {
   var shortcut = '';
@@ -407,4 +410,30 @@ function checkBinaryPathExists(binaryPathArray, selectedServerVersion) {
   });
 
   return (serverSpecificPathExist | foundDefaultPath);
+}
+
+export function registerDetachEvent(panel){
+  panel.on(wcDocker.EVENT.DETACHED, function() {
+    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').attr({
+      style: 'z-index: 1200'
+    });
+  });
+  panel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
+    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').attr({
+      style: 'z-index: 1200'
+    });
+  });
+  panel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
+    var docker = this.docker(this._panel);
+    var dockerPos = docker.$container.offset();
+    var pos = this.$container.offset();
+    var width = this.$container.width();
+    var height = this.$container.height();
+
+    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('top', pos.top - dockerPos.top);
+    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('left', pos.left - dockerPos.left);
+    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('width', width);
+    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').find('.wcIFrameFloating').css('height', height);
+  });
+
 }

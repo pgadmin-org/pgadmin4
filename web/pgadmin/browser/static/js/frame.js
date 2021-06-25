@@ -18,7 +18,7 @@ define([
   pgAdmin.Browser.Frame = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-      'isPrivate', 'url', 'icon', 'onCreate',
+      'isPrivate', 'url', 'icon', 'onCreate', 'isLayoutMember',
     ];
     _.extend(this, _.pick(options, defaults));
   };
@@ -32,6 +32,7 @@ define([
     isClosable: true,
     isRenamable: false,
     isPrivate: false,
+    isLayoutMember: false,
     url: '',
     icon: '',
     panel: null,
@@ -43,6 +44,7 @@ define([
         docker.registerPanelType(this.name, {
           title: that.title,
           isPrivate: that.isPrivate,
+          isLayoutMember: that.isLayoutMember,
           onCreate: function(myPanel) {
             $(myPanel).data('pgAdminName', that.name);
             myPanel.initSize(that.width, that.height);

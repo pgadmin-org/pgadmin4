@@ -10,7 +10,7 @@
 import Alertify from 'pgadmin.alertifyjs';
 import {getTreeNodeHierarchyFromIdentifier} from 'sources/tree/pgadmin_tree_node';
 import {getPanelTitle} from 'tools/datagrid/static/js/datagrid_panel_title';
-import {getRandomInt} from 'sources/utils';
+import {getRandomInt, registerDetachEvent} from 'sources/utils';
 
 
 export function setPanelTitle(erdToolPanel, panelTitle) {
@@ -165,7 +165,8 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
             method: 'DELETE',
           });
         });
-
+        // Register detach event.
+        registerDetachEvent(erdToolPanel);
         var openErdToolURL = function(j) {
           // add spinner element
           let $spinner_el =

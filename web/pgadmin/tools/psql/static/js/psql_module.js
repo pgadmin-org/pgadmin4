@@ -14,7 +14,7 @@ import { io } from 'socketio';
 import Alertify from 'pgadmin.alertifyjs';
 import {enable} from 'pgadmin.browser.toolbar';
 import 'wcdocker';
-import {getRandomInt, hasBinariesConfiguration} from 'sources/utils';
+import {getRandomInt, hasBinariesConfiguration, registerDetachEvent} from 'sources/utils';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
 
@@ -180,19 +180,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         var propertiesPanel = pgBrowser.docker.findPanels('properties');
         var psqlToolPanel = pgBrowser.docker.addPanel('frm_psqltool', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
-        psqlToolPanel.on(wcDocker.EVENT.DETACHED, function() {
-          $(wcDocker).find('.wcIFrameFloating').attr({
-            style: 'z-index: 1200'
-          });
-        });
-
-        psqlToolPanel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
-          $(wcDocker).find('.wcIFrameFloating').attr({
-            style: 'z-index: 1200'
-          });
-        });
-
-        psqlToolPanel.on(wcDocker.EVENT.ORDER_CHANGED, this.resize_the_psql);
+        registerDetachEvent(psqlToolPanel);
 
         // Set panel title and icon
         setPanelTitle(psqlToolPanel, panelTitle);
@@ -229,18 +217,6 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
 
       }
 
-    },
-    resize_the_psql: function(){
-      var docker = this.docker(this._panel);
-      var dockerPos = docker.$container.offset();
-      var pos = this.$container.offset();
-      var width = this.$container.width();
-      var height = this.$container.height();
-
-      $(wcDocker).find('.wcIFrameFloating').css('top', pos.top - dockerPos.top);
-      $(wcDocker).find('.wcIFrameFloating').css('left', pos.left - dockerPos.left);
-      $(wcDocker).find('.wcIFrameFloating').css('width', width);
-      $(wcDocker).find('.wcIFrameFloating').css('height', height);
     },
     getPanelUrls: function(transId, panelTitle, parentData) {
       let openUrl = url_for('psql.panel', {

@@ -10,11 +10,11 @@
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backgrid', 'sources/window', 'pgadmin.tools.debugger.utils',
+  'pgadmin.backgrid', 'sources/window', 'pgadmin.tools.debugger.utils','sources/utils',
   'wcdocker',
 ], function(
   gettext, url_for, $, _, Backbone, Alertify, pgAdmin, pgBrowser, Backgrid,
-  pgWindow, debuggerUtils,
+  pgWindow, debuggerUtils, commonUtils,
 ) {
 
   var wcDocker = window.wcDocker;
@@ -796,7 +796,7 @@ define([
                           method: 'DELETE',
                         });
                       });
-
+                      commonUtils.registerDetachEvent(panel);
                       // Panel Rename event
                       panel.on(wcDocker.EVENT.RENAME, function(panel_data) {
                         Alertify.prompt('', panel_data.$titleText[0].textContent,
