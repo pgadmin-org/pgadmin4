@@ -130,8 +130,8 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
 
         # We need same data as string to display in properties window
         # If multiple column then separate it by colon
-        cols_str = row['attdef']
-        cols_str += _get_column_property_display_data(row, cols_str, data)
+        cols_str = ''
+        cols_str += _get_column_property_display_data(row, row['attdef'], data)
 
         cols.append(cols_str)
 

@@ -27,3 +27,4 @@ Bug fixes
 | `Issue #6541 <https://redmine.postgresql.org/issues/6541>`_ -  Ensure that setting 'Open in new browser tab' should be visible, it should not be based on the value of 'ENABLE_PSQL'.
 | `Issue #6547 <https://redmine.postgresql.org/issues/6547>`_ -  Fixed copy/paste issues for PSQL tool terminal.
 | `Issue #6555 <https://redmine.postgresql.org/issues/6555>`_ -  Fixed Czech translation string for 'Login' keyword.
+| `Issue #6557 <https://redmine.postgresql.org/issues/6557>`_ -  Fixed an issue where incorrect column name listed in the properties of Index.
