@@ -115,7 +115,7 @@ Adjust the number of threads the Gunicorn server uses to handle incoming
 requests. This should typically be left as-is, except in highly loaded systems
 where it may be increased.
 
-**PGADMIN_CONFIG_**
+**PGADMIN_CONFIG_***
 
 This is a variable prefix that can be used to override any of the configuration
 options in pgAdmin's *config.py* file. Add the *PGADMIN_CONFIG_* prefix to any
@@ -127,6 +127,12 @@ Settings are written to */pgadmin4/config_distro.py* within the container, which
 is read after */pgadmin4/config.py* and before */pgadmin4/config_local.py*.
 Any settings given will therefore override anything in config.py, but can be
 overridden by settings in config_local.py.
+
+Settings are only written to */pgadmin4/config_distro.py* once, typically on
+first launch of the container. If */pgadmin4/config_distro.py* contains one or
+more lines, then no changes are made; for example, if the container instance is
+restarted, or */pgadmin4/config_distro.py* is mapped to a file on persistent
+storage (not recommended - use */pgadmin4/config_local.py* instead)!
 
 See :ref:`config_py` for more information on the available configuration settings.
 
