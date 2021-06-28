@@ -10,7 +10,7 @@
 define('pgadmin.misc.explain', [
   'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'backbone', 'explain_statistics',
-  'svg_downloader', 'image_maper', 'sources/gettext', 'bootstrap',
+  'svg_downloader', 'image_mapper', 'sources/gettext', 'bootstrap',
 ], function(
   url_for, $, _, pgAdmin, Backbone, StatisticsModel,
   svgDownloader, imageMapper, gettext
