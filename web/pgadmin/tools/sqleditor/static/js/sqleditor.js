@@ -1189,7 +1189,7 @@ define('tools.querytool', [
         grid.render();
         // Resize all columns if column_data_auto_resize is true.
         if (self.preferences.column_data_auto_resize) {
-          grid.resizeAllColumns && grid.resizeAllColumns();
+          grid.resizeAllColumns && grid.resizeAllColumns(self.preferences.column_data_max_width);
         }
       });
 

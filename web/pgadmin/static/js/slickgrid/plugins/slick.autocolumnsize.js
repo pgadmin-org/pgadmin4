@@ -39,7 +39,7 @@
       }
     }
 
-    function resizeAllColumns() {
+    function resizeAllColumns(maxWidth) {
       var elHeaders = $container.find('.slick-header-column');
       var allColumns = grid.getColumns();
       elHeaders.each(function(index, el) {
@@ -53,6 +53,10 @@
         var colIndex = grid.getColumnIndex(columnDef.id);
         var column = allColumns[colIndex];
         var autoSizeWidth = Math.max(headerWidth, getMaxColumnTextWidth(columnDef, colIndex)) + 1;
+        // If max width is provided and it is greater than 0
+        if (typeof(maxWidth) !== 'undefined' && maxWidth > 0) {
+          autoSizeWidth = Math.min(maxWidth, autoSizeWidth);
+        }
         column.width = autoSizeWidth + (columnDef.addWidth || 0);
       });
       grid.setColumns(allColumns);

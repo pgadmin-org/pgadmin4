@@ -374,6 +374,10 @@ Use the fields on the *Options* panel to manage editor preferences.
 Use the fields on the *Results grid* panel to specify your formatting
 preferences for copied data.
 
+* Specify the maximum width of the column when 'Resize by data?' is set to True.
+  If it is set to 0 then columns will auto-size to the maximum width of the data
+  in the column. If 'Resize by data?' is set to False then this setting won't
+  take any effect.
 * When the *Resize by data?* switch is set to *True*, then data columns will
   auto-size to the maximum width of the data in the column as loaded in the
   first batch. If False, the column will be sized to the widest of the data
