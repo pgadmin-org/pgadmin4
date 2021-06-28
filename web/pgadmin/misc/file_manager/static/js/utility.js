@@ -410,6 +410,13 @@ define([
           $('.file_manager_ok').attr('disabled', true);
           Alertify.error(data.Error);
         }
+
+        // Disable select button if user select file.
+        if (pgAdmin.FileUtils.data.Capabilities.includes('select_folder')) {
+          $('.file_manager_ok').addClass('disabled');
+          $('.file_manager_ok').attr('disabled', true);
+        }
+
       });
     return is_file_valid;
   };
@@ -655,6 +662,13 @@ define([
       file_type = '';
     }
     var capabilities = pgAdmin.FileUtils.data.Capabilities;
+
+    // Enable select button if user select folder.
+    if (pgAdmin.FileUtils.data.Capabilities.includes('select_folder')) {
+      $('.file_manager_ok').removeClass('disabled');
+      $('.file_manager_ok').attr('disabled', false);
+    }
+
     // Update location for status, upload, & new folder functions.
     pgAdmin.FileUtils.setUploader(path);
     if(user_input) {
