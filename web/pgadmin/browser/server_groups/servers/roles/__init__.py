@@ -23,6 +23,9 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.constants import ERROR_FETCHING_ROLE_INFORMATION
 
 from config import PG_DEFAULT_DRIVER
+from flask_babelex import gettext
+
+_REASSIGN_OWN_SQL = 'reassign_own.sql'
 
 
 class RoleModule(CollectionNodeModule):
@@ -100,7 +103,7 @@ class RoleView(PGChildNodeView):
     operations = dict({
         'obj': [
             {'get': 'properties', 'delete': 'drop', 'put': 'update'},
-            {'get': 'list', 'post': 'create', 'delete': 'drop'}
+            {'get': 'list', 'post': 'create', 'delete': 'drop'},
         ],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -110,6 +113,8 @@ class RoleView(PGChildNodeView):
         'children': [{'get': 'children'}],
         'vopts': [{}, {'get': 'voptions'}],
         'variables': [{'get': 'variables'}],
+        'reassign': [{'get': 'get_reassign_own_sql',
+                      'post': 'role_reassign_own'}]
     })
 
     def _validate_input_dict_for_new(self, data, req_keys):
@@ -1273,6 +1278,126 @@ WHERE
         return make_json_response(
             data=res['rows']
         )
+
+    def _execute_role_reassign(self, conn, rid=None, data=None):
+
+        """
+        This function is used for executing reassign/drop
+        query
+        :param conn:
+        :param rid:
+        :param data:
+        :return: status & result object
+        """
+
+        SQL = render_template(
+            "/".join([self.sql_path, _REASSIGN_OWN_SQL]),
+            rid=rid, data=data
+        )
+        status, res = conn.execute_scalar(SQL)
+
+        if not status:
+            return status, res
+
+        return status, res
+
+    @check_precondition()
+    def role_reassign_own(self, gid, sid, rid):
+
+        """
+        This function is used to reassign/drop role for the selected database.
+
+        Args:
+            sid: Server ID
+            rid: Role Id.
+
+        Returns: Json object with success/failure status
+        """
+        if request.data:
+            data = json.loads(request.data, encoding='utf-8')
+        else:
+            data = request.args or request.form
+
+        did = int(data['did'])
+        is_already_connected = False
+        can_disconn = True
+
+        try:
+
+            # Connect to the database where operation needs to carry out.
+            from pgadmin.utils.driver import get_driver
+            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+            conn = manager.connection(did=did, auto_reconnect=True)
+            is_already_connected = conn.connected()
+
+            pg_db = self.manager.db_info[self.manager.did]
+
+            if did == pg_db['did']:
+                can_disconn = False
+
+            # if database is not connected, try connecting it and get
+            # the connection object.
+            if not is_already_connected:
+                status, errmsg = conn.connect()
+                if not status:
+                    current_app.logger.error(
+                        "Could not connect to database(#{0}).\nError: {1}"
+                        .format(
+                            did, errmsg
+                        )
+                    )
+                    return internal_server_error(errmsg)
+                else:
+                    current_app.logger.info(
+                        'Connection Established for Database Id: \
+                        %s' % did
+                    )
+
+            status, old_role_name = self._execute_role_reassign(conn, rid)
+
+            if not status:
+                raise Exception(old_role_name)
+
+            data['old_role_name'] = old_role_name
+
+            is_reassign = True if data['role_op'] == 'reassign' else False
+            data['is_reassign'] = is_reassign
+
+            # check whether role operation is to reassign or drop
+            if is_reassign \
+                and (data['new_role_name'] == 'CURRENT_USER' or
+                     data['new_role_name'] == 'SESSION_USER' or
+                     data['new_role_name'] == 'CURRENT_ROLE') is False:
+
+                status, new_role_name = \
+                    self._execute_role_reassign(conn, data['new_role_id'])
+
+                if not status:
+                    raise Exception(new_role_name)
+
+                data['new_role_name'] = new_role_name
+
+            status, res = self._execute_role_reassign(conn, None, data)
+
+            if not status:
+                raise Exception(res)
+
+            if is_already_connected is False and can_disconn:
+                manager.release(did=did)
+
+            return make_json_response(
+                success=1,
+                info=gettext("Reassign owned successfully!") if is_reassign
+                else gettext("Drop owned successfully!")
+            )
+
+        except Exception as e:
+            # Release Connection
+            current_app.logger.exception(e)
+            if is_already_connected is False and can_disconn:
+                self.manager.release(did=did)
+
+            return internal_server_error(errormsg=str(e))
 
 
 RoleView.register_node_view(blueprint)

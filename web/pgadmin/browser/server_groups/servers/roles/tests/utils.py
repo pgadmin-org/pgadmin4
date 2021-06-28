@@ -9,15 +9,18 @@
 
 
 import os
-import pickle
 import sys
 import uuid
+import json
 
 from regression.python_test_utils import test_utils as utils
-from regression.test_setup import config_data
 
 ROLE_URL = '/browser/role/obj/'
 file_name = os.path.basename(__file__)
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+with open(CURRENT_PATH + "/role_test_data.json") as data_file:
+    test_cases = json.load(data_file)
 
 
 def verify_role(server, role_name):

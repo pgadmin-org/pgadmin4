@@ -19,3 +19,4 @@ database, right-click on the *Databases* node, and select *Create Database...*
    resource_group_dialog
    role_dialog
    tablespace_dialog
+   role_reassign_dialog
