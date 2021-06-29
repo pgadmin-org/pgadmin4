@@ -412,6 +412,14 @@ function checkBinaryPathExists(binaryPathArray, selectedServerVersion) {
   return (serverSpecificPathExist | foundDefaultPath);
 }
 
+/* If a function, then evaluate */
+export function evalFunc(obj, func, param) {
+  if(_.isFunction(func)) {
+    return func.apply(obj, [param]);
+  }
+  return func;
+}
+
 export function registerDetachEvent(panel){
   panel.on(wcDocker.EVENT.DETACHED, function() {
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').attr({
@@ -435,11 +443,4 @@ export function registerDetachEvent(panel){
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('width', width);
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').find('.wcIFrameFloating').css('height', height);
   });
-
-/* If a function, then evaluate */
-export function evalFunc(obj, func, param) {
-  if(_.isFunction(func)) {
-    return func.apply(obj, [param]);
-  }
-  return func;
 }
