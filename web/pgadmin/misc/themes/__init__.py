@@ -42,7 +42,7 @@ def themes(app):
                 # Let the default theme go if exception occurs
                 pass
 
-            return theme_css
+            return theme_css, theme
 
         return {
             'get_theme_css': get_theme_css,

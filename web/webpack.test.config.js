@@ -160,6 +160,8 @@ module.exports = {
       'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),
       'sources': sourcesDir + '/js',
       'translations': regressionDir + '/javascript/fake_translations',
+      'pgadmin.browser.messages': regressionDir + '/javascript/fake_messages',
+      'pgadmin.server.supported_servers': regressionDir + '/javascript/fake_supported_servers',
       'pgadmin.browser.endpoints': regressionDir + '/javascript/fake_endpoints',
       'slickgrid': nodeModulesDir + '/slickgrid/',
       'slickgrid.plugins': nodeModulesDir + '/slickgrid/plugins/',

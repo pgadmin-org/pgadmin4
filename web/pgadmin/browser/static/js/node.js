@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import {getNodeView, removeNodeView} from './node_view';
+
 define('pgadmin.browser.node', [
   'sources/tree/pgadmin_tree_node', 'sources/url_for',
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
@@ -1240,6 +1242,22 @@ define('pgadmin.browser.node', [
           // Cache the current IDs for next time
           $(this).data('node-prop', treeHierarchy);
 
+          /* Remove any dom rendered by getNodeView */
+          removeNodeView(j[0]);
+          /* getSchema is a schema for React. Get the react node view */
+          if(that.getSchema) {
+            let treeNodeInfo = that.getTreeNodeHierarchy.apply(this, [item]);
+            getNodeView(
+              that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onCancelFunc, onEdit,
+              (nodeData)=>{
+                if(nodeData.node) {
+                  onSaveFunc(nodeData.node, treeNodeInfo);
+                }
+              }
+            );
+            return;
+          }
+
           if (!content.hasClass('has-pg-prop-btn-group'))
             content.addClass('has-pg-prop-btn-group');
 
@@ -1484,6 +1502,28 @@ define('pgadmin.browser.node', [
             action = 'edit';
           }
           self.$container.attr('action-mode', action);
+
+          self.icon(
+            _.isFunction(that['node_image']) ?
+              (that['node_image']).apply(that, [data]) :
+              (that['node_image'] || ('icon-' + that.type))
+          );
+          /* Remove any dom rendered by getNodeView */
+          removeNodeView(j[0]);
+          /* getSchema is a schema for React. Get the react node view */
+          if(that.getSchema) {
+            let treeNodeInfo = that.getTreeNodeHierarchy.apply(this, [item]);
+            getNodeView(
+              that.type, treeNodeInfo, action, data, 'dialog', j[0], this, onCancelFunc, onEdit,
+              (nodeData)=>{
+                if(nodeData.node) {
+                  onSaveFunc(nodeData.node, treeNodeInfo);
+                }
+              }
+            );
+            return;
+          }
+
           // We need to release any existing view, before
           // creating the new view.
           if (view) {
@@ -1678,10 +1718,10 @@ define('pgadmin.browser.node', [
           // Closing this panel
           this.close();
         }.bind(panel),
-        updateTreeItem = function(obj) {
+        updateTreeItem = function(obj, tnode, node_info) {
           var _old = data,
-            _new = _.clone(view.model.tnode),
-            info = _.clone(view.model.node_info);
+            _new = tnode || _.clone(view.model.tnode),
+            info = node_info || _.clone(view.model.node_info);
 
           // Clear the cache for this node now.
           setTimeout(function() {
@@ -1705,7 +1745,7 @@ define('pgadmin.browser.node', [
           );
           closePanel(false);
         },
-        saveNewNode = function(obj) {
+        saveNewNode = function(obj, tnode, node_info) {
           var $props = this.$container.find('.obj_properties').first(),
             objview = $props.data('obj-view');
 
@@ -1715,8 +1755,8 @@ define('pgadmin.browser.node', [
           }, 0);
           try {
             pgBrowser.Events.trigger(
-              'pgadmin:browser:tree:add', _.clone(objview.model.tnode),
-              _.clone(objview.model.node_info)
+              'pgadmin:browser:tree:add', _.clone(tnode || objview.model.tnode),
+              _.clone(node_info || objview.model.node_info)
             );
           } catch (e) {
             console.warn(e.stack || e);
@@ -1748,10 +1788,10 @@ define('pgadmin.browser.node', [
         }
       } else {
         /* Show properties */
-        properties();
         onEdit = editInNewPanel.bind(panel);
+        properties();
       }
-      if (panel.closeable()) {
+      if (panel.closeable() && !that.getSchema) {
         panel.on(wcDocker.EVENT.CLOSING, warnBeforeChangesLost.bind(
           panel,
           gettext('Changes will be lost. Are you sure you want to close the dialog?'),

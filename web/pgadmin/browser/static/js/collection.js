@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import {removeNodeView} from './node_view';
+
 define([
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'backbone', 'alertify', 'backform', 'backgrid', 'sources/browser/generate_url',
@@ -239,6 +241,8 @@ define([
           j.data('obj-view', null);
         }
 
+        /* Remove any dom rendered by getNodeView */
+        removeNodeView(j[0]);
         // Make sure the HTML element is empty.
         j.empty();
         j.data('obj-view', gridView);

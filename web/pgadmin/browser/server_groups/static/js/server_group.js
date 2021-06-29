@@ -6,6 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import ServerGroupSchema from './server_group.ui';
 
 define('pgadmin.node.server_group', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -35,52 +36,7 @@ define('pgadmin.node.server_group', [
           data: {'action': 'create'}, icon: 'wcTabIcon icon-server_group',
         }]);
       },
-      model: pgAdmin.Browser.Node.Model.extend({
-        defaults: {
-          id: undefined,
-          name: null,
-          user_id: undefined,
-        },
-        schema: [
-          {
-            id: 'id', label: gettext('ID'), type: 'int', group: null,
-            mode: ['properties'],
-            visible: function(model){
-              if (model.attributes.user_id != current_user.id && !current_user.is_admin)
-                return false;
-              return true;
-            },
-          },{
-            id: 'name', label: gettext('Name'), type: 'text', group: null,
-            mode: ['properties', 'edit', 'create'],
-            disabled: function(model){
-              if (model.attributes.user_id != current_user.id && !_.isUndefined(model.attributes.user_id))
-                return true;
-              return false;
-            },
-          },
-        ],
-        validate: function() {
-          var errmsg = null;
-
-          this.errorModel.clear();
-
-          if (!this.isNew() && 'id' in this.changed) {
-            errmsg = gettext('The ID cannot be changed.');
-            this.errorModel.set('id', errmsg);
-            return errmsg;
-          }
-          if (_.isUndefined(this.get('name')) ||
-            _.isNull(this.get('name')) ||
-              String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', errmsg);
-            return errmsg;
-          }
-          return null;
-        },
-      }),
-
+      getSchema: ()=>new ServerGroupSchema(),
       canDrop: function(itemData) {
         var serverOwner = itemData.user_id;
         if (serverOwner != current_user.id && !_.isUndefined(serverOwner))

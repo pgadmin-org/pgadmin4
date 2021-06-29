@@ -107,7 +107,7 @@ legend {
 	  color: $btn-secondary-hover-fg !important;
 	} &.disabled, &:disabled {
 	  color: $btn-secondary-disabled-fg !important;
-	  border-color: $btn-secondary-disabled-bg !important;
+	  border-color: $btn-secondary-disabled-border-color !important;
 	}
 	color: $btn-secondary-fg !important;
 

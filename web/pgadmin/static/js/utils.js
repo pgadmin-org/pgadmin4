@@ -436,4 +436,10 @@ export function registerDetachEvent(panel){
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').find('.wcIFrameFloating').css('height', height);
   });
 
+/* If a function, then evaluate */
+export function evalFunc(func, param) {
+  if(_.isFunction(func)) {
+    return func.apply(null, [param]);
+  }
+  return func;
 }
