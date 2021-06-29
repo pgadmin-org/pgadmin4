@@ -257,16 +257,16 @@ export default function DataGridView({
                     (viewHelperProps.serverInfo.version <= field.max_version))));
                 let _readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
                 if(!_readonly) {
-                  _readonly = evalFunc(readonly, row.original || {});
+                  _readonly = evalFunc(schema, readonly, row.original || {});
                 }
 
                 let _visible = true;
                 if(visible) {
-                  _visible = evalFunc(visible, row.original || {});
+                  _visible = evalFunc(schema, visible, row.original || {});
                 }
                 _visible = _visible && verInLimit;
 
-                disabled = evalFunc(disabled, row.original || {});
+                disabled = evalFunc(schema, disabled, row.original || {});
 
                 return <MappedCellControl rowIndex={row.index} value={value}
                   row={row.original} {..._field}

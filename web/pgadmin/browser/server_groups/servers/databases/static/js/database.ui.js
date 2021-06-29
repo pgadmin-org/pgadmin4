@@ -17,7 +17,7 @@ export class DefaultPrivSchema extends BaseUISchema {
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
   }
 
-  get fields() {
+  get baseFields() {
     return [
       {
         id: 'deftblacl', type: 'collection', group: gettext('Tables'),
@@ -89,7 +89,7 @@ export default class DatabaseSchema extends BaseUISchema {
     return 'did';
   }
 
-  get fields() {
+  get baseFields() {
     let obj = this;
     return [
       {

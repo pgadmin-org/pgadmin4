@@ -251,17 +251,17 @@ function getFinalTheme(baseTheme) {
           fontSize: baseTheme.typography.fontSize,
           height: 'unset',
           backgroundColor: baseTheme.palette.background.default,
-          '&[readonly]': {
-            backgroundColor: baseTheme.palette.inputDisabledBg,
-          }
+          '&[readonly], &.Mui-disabled': {
+            backgroundColor: baseTheme.otherVars.inputDisabledBg,
+          },
         },
         input: {
           fontSize: baseTheme.typography.fontSize,
           height: 'unset',
           backgroundColor: baseTheme.palette.background.default,
-          '&[readonly]': {
+          '&[readonly], &.Mui-disabled': {
             backgroundColor: baseTheme.otherVars.inputDisabledBg,
-          }
+          },
         }
       },
       MuiIconButton: {

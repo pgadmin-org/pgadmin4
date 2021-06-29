@@ -17,6 +17,7 @@ export default class BaseUISchema {
     this._defaults = defaults;
 
     this.keys = null; // If set, other fields except keys will be filtered
+    this.filterGroups = []; // If set, these groups will be filtered out
     this.informText = null; // Inform text to show after save, this only saves it
     this._top = null;
   }
@@ -59,13 +60,26 @@ export default class BaseUISchema {
   concat base fields with extraFields.
   */
   get fields() {
-    /* Select only keys if specified */
     return this.baseFields
-      .filter((field)=>this.keys ? this.keys.indexOf(field.id) > -1 : true);
+      .filter((field)=>{
+        let retval;
+
+        /* If any groups are to be filtered */
+        retval = this.filterGroups.indexOf(field.group) == -1;
+
+        /* Select only keys, if specified */
+        if(this.keys) {
+          retval = retval && this.keys.indexOf(field.id) > -1;
+        }
+        return retval;
+      });
   }
 
   /* Check if current data is new or existing */
   isNew(state) {
+    if(_.isUndefined(state)) {
+      state = this.origData;
+    }
     if(_.has(state, this.idAttribute)) {
       return _.isUndefined(state[this.idAttribute])
         || _.isNull(state[this.idAttribute]);

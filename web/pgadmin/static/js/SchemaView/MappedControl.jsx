@@ -158,7 +158,7 @@ const ALLOWED_PROPS_FIELD_COMMON = [
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [
-  'type', 'onChange'
+  'type', 'onChange', 'state',
 ];
 
 const ALLOWED_PROPS_FIELD_CELL = [
@@ -168,7 +168,7 @@ const ALLOWED_PROPS_FIELD_CELL = [
 
 export const MappedFormControl = (props)=>{
   let newProps = {...props};
-  let typeProps = evalFunc(newProps.type, newProps.value);
+  let typeProps = evalFunc(null, newProps.type, newProps.state);
   if(typeof(typeProps) === 'object') {
     newProps = {
       ...newProps,
@@ -184,7 +184,7 @@ export const MappedFormControl = (props)=>{
 
 export const MappedCellControl = (props)=>{
   let newProps = {...props};
-  let cellProps = evalFunc(newProps.cell, newProps.row);
+  let cellProps = evalFunc(null, newProps.cell, newProps.row);
   if(typeof(cellProps) === 'object') {
     newProps = {
       ...newProps,

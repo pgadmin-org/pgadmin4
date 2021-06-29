@@ -85,7 +85,10 @@ function getChangedData(topSchema, mode, sessData, stringify=false) {
       return;
     } else {
       change = change || _.get(sessData, currPath);
-      _.set(changedData, currPath, stringify ? JSON.stringify(change) : change);
+      if(stringify && (_.isArray(change) || _.isObject(change))) {
+        change = JSON.stringify(change);
+      }
+      _.set(changedData, currPath, change);
     }
   };
 
@@ -104,8 +107,8 @@ function getChangedData(topSchema, mode, sessData, stringify=false) {
             /* Use diffArray package to get the array diff and extract the info
             cid is used to identify the rows uniquely */
             const changeDiff = diffArray(
-              _.get(topSchema.origData, currPath),
-              _.get(sessData, currPath),
+              _.get(topSchema.origData, currPath) || [],
+              _.get(sessData, currPath) || [],
               'cid'
             );
             change = {};
@@ -437,7 +440,13 @@ function SchemaDialogView({
     /* Called when SQL tab is active */
     if(dirty) {
       if(!formErr.name) {
-        let changeData = getChangedData(schema, viewHelperProps.mode, sessData, true);
+        let changeData = {};
+        if(viewHelperProps.mode === 'edit') {
+          changeData = getChangedData(schema, viewHelperProps.mode, sessData, true);
+        } else {
+          /* If new then merge the changed data with origData */
+          changeData = _.merge(schema.origData, sessData);
+        }
         /* Call the passed incoming getSQLValue func to get the SQL
         return of getSQLValue should be a promise.
         */
@@ -566,10 +575,10 @@ function SchemaPropertiesView({
       _visible = (field.mode.indexOf(viewHelperProps.mode) > -1);
     }
     if(_visible && visible) {
-      _visible = evalFunc(visible, origData);
+      _visible = evalFunc(schema, visible, origData);
     }
 
-    disabled = evalFunc(disabled, origData);
+    disabled = evalFunc(schema, disabled, origData);
     readonly = true;
     if(_visible && verInLimit) {
       if(!tabs[group]) tabs[group] = [];

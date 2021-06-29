@@ -563,7 +563,9 @@ export function InputSelect({
     }
   }, [onChange]);
 
-  const realValue = getRealValue(finalOptions, value, controlProps.creatable);
+  /* Apply filter if any */
+  const filteredOptions = (controlProps.filter && controlProps.filter(finalOptions)) || finalOptions;
+  const realValue = getRealValue(filteredOptions, value, controlProps.creatable);
   const otherProps = {
     isSearchable: !readonly,
     isClearable: !readonly && (!_.isUndefined(controlProps.allowClear) ? controlProps.allowClear : true),
@@ -581,7 +583,7 @@ export function InputSelect({
     openMenuOnClick: !readonly,
     onChange: onChangeOption,
     isLoading: isLoading,
-    options: finalOptions,
+    options: filteredOptions,
     value: realValue,
     menuPortalTarget: document.body,
     styles: styles,

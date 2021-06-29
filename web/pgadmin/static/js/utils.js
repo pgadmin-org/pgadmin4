@@ -437,9 +437,9 @@ export function registerDetachEvent(panel){
   });
 
 /* If a function, then evaluate */
-export function evalFunc(func, param) {
+export function evalFunc(obj, func, param) {
   if(_.isFunction(func)) {
-    return func.apply(null, [param]);
+    return func.apply(obj, [param]);
   }
   return func;
 }

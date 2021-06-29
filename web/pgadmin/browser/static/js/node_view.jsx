@@ -171,12 +171,18 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
     inCatalog: inCatalog,
   };
 
+  let schema = nodeObj.getSchema.call(nodeObj, treeNodeInfo, itemNodeData);
+  // Show/Hide security group for nodes under the catalog
+  if('catalog' in treeNodeInfo) {
+    schema.filterGroups = [gettext('Security')];
+  }
+
   /* Fire at will, mount the DOM */
   ReactDOM.render(
     <SchemaView
       formType={formType}
       getInitData={initData}
-      schema={nodeObj.getSchema.call(nodeObj, treeNodeInfo, itemNodeData)}
+      schema={schema}
       viewHelperProps={viewHelperProps}
       onSave={onSaveClick}
       onClose={()=>containerPanel.close()}

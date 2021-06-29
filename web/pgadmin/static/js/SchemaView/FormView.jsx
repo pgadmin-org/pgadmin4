@@ -105,17 +105,17 @@ export default function FormView({
 
       let _readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
       if(!_readonly) {
-        _readonly = evalFunc(readonly, value);
+        _readonly = evalFunc(schema, readonly, value);
       }
 
       let _visible = true;
 
       if(visible) {
-        _visible = evalFunc(visible, value);
+        _visible = evalFunc(schema, visible, value);
       }
       _visible = _visible && verInLimit;
 
-      disabled = evalFunc(disabled, value);
+      disabled = evalFunc(schema, disabled, value);
 
 
       if(!tabs[group]) tabs[group] = [];
@@ -151,6 +151,7 @@ export default function FormView({
                 firstEleRef.current = ele;
               }
             }}
+            state={value}
             key={field.id}
             viewHelperProps={viewHelperProps}
             name={field.id}
