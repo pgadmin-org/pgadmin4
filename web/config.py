@@ -382,6 +382,15 @@ SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = \
     "Your password for %s has been changed" % APP_NAME
 
 ##########################################################################
+# Email address validation
+##########################################################################
+
+# flask-security-too will validate email addresses and check deliverability
+# by default. Disable the deliverability check by default, which was the old
+# behaviour in <= v5.3
+SECURITY_EMAIL_VALIDATOR_ARGS={"check_deliverability": False}
+
+##########################################################################
 # Upgrade checks
 ##########################################################################
 
@@ -670,6 +679,7 @@ ENABLE_PSQL = False
 # In Desktop mode it is always enabled and setting is of no use.
 ##########################################################################
 ENABLE_BINARY_PATH_BROWSING = False
+
 ##########################################################################
 # Local config settings
 ##########################################################################
