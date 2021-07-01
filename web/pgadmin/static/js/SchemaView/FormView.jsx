@@ -69,6 +69,7 @@ export default function FormView({
   const [tabValue, setTabValue] = useState(0);
   const classes = useStyles();
   const firstElement = useRef();
+  let groupLabels = {};
 
   schema = schema || {fields: []};
 
@@ -93,7 +94,7 @@ export default function FormView({
     }
     if(modeSuppoted) {
       let {visible, disabled, group, readonly, ...field} = f;
-      group = group || defaultTab;
+      group = groupLabels[group] || group || defaultTab;
 
       let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
         ((_.isUndefined(field.server_type) ? true :
@@ -137,6 +138,11 @@ export default function FormView({
             schema={field.schema} accessPath={accessPath.concat(field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}
             {...field}/>, [value[field.id]])
         );
+      } else if(field.type === 'group') {
+        groupLabels[field.id] = field.label;
+        if(!_visible) {
+          schema.filterGroups.push(field.label);
+        }
       } else {
         /* Its a form control */
         const hasError = field.id == formErr.name;

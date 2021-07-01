@@ -63,6 +63,17 @@ const useDialogStyles = makeStyles((theme)=>({
   },
 }));
 
+function getForQueryParams(data) {
+  let retData = {...data};
+  Object.keys(retData).forEach((key)=>{
+    let value = retData[key];
+    if(_.isArray(value) || _.isObject(value)) {
+      retData[key] = JSON.stringify(value);
+    }
+  });
+  return retData;
+}
+
 /* Compare the sessData with schema.origData
 schema.origData is set to incoming or default data
 */
@@ -78,8 +89,9 @@ function getChangedData(topSchema, mode, sessData, stringify=false) {
 
     /* If the orig value was null and new one is empty string, then its a "no change" */
     /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
+    /* If the orig value is undefined or null and new value is boolean false "no change" */
     if ((_.isEqual(origVal, sessVal)
-      || ((origVal === null || _.isUndefined(origVal)) && sessVal === '')
+      || ((origVal === null || _.isUndefined(origVal)) && !Boolean(sessVal))
       || (attrDefined ? _.isEqual(origVal.toString(), sessVal.toString()) : false))
        && !force) {
       return;
@@ -442,7 +454,7 @@ function SchemaDialogView({
       if(!formErr.name) {
         let changeData = {};
         if(viewHelperProps.mode === 'edit') {
-          changeData = getChangedData(schema, viewHelperProps.mode, sessData, true);
+          changeData = getChangedData(schema, viewHelperProps.mode, sessData);
         } else {
           /* If new then merge the changed data with origData */
           changeData = _.merge(schema.origData, sessData);
@@ -450,7 +462,7 @@ function SchemaDialogView({
         /* Call the passed incoming getSQLValue func to get the SQL
         return of getSQLValue should be a promise.
         */
-        return props.getSQLValue(isNew, changeData);
+        return props.getSQLValue(isNew, getForQueryParams(changeData));
       } else {
         return Promise.resolve('-- ' + gettext('Definition incomplete.'));
       }

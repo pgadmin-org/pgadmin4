@@ -238,6 +238,7 @@ function getFinalTheme(baseTheme) {
         root: {
           color: baseTheme.palette.text.primary,
           fontSize: baseTheme.typography.fontSize,
+          wordBreak: 'break-word',
         },
         asterisk: {
           color: baseTheme.palette.error.main,

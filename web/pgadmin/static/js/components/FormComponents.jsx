@@ -105,7 +105,7 @@ export function FormInput({children, error, className, label, helpMessage, requi
       <Grid item lg={3} md={3} sm={3} xs={12}>
         <InputLabel htmlFor={cid} className={clsx(classes.formLabel, error?classes.formLabelError : null)} required={required}>
           {label}
-          {error && <FormIcon type={MESSAGE_TYPE.ERROR} style={{marginLeft: 'auto'}}/>}
+          <FormIcon type={MESSAGE_TYPE.ERROR} style={{marginLeft: 'auto', visibility: error ? 'unset' : 'hidden'}}/>
         </InputLabel>
       </Grid>
       <Grid item lg={9} md={9} sm={9} xs={12}>
@@ -186,7 +186,7 @@ export const InputText = forwardRef(({
       disabled={Boolean(disabled)}
       rows={4}
       notched={false}
-      value={value || ''}
+      value={(_.isNull(value) || _.isUndefined(value)) ? '' : value}
       onChange={onChange}
       {...controlProps}
       {...props}
@@ -442,7 +442,7 @@ const customReactSelectStyles = (theme, readonly)=>({
     ...provided,
     padding: '0rem 0.25rem',
   }),
-  valueContainer: (provided)=>({
+  valueContainer: (provided, state)=>({
     ...provided,
     padding: theme.otherVars.reactSelect.padding,
   }),
@@ -471,7 +471,7 @@ const customReactSelectStyles = (theme, readonly)=>({
   multiValueLabel: (provided)=>({
     ...provided,
     fontSize: '1em',
-    zIndex: 9999,
+    zIndex: 99,
     color: theme.palette.text.primary
   }),
   multiValueRemove: (provided)=>({
@@ -520,13 +520,18 @@ CustomSelectSingleValue.propTypes = {
   data: PropTypes.object,
 };
 
-function getRealValue(options, value, creatable) {
+function getRealValue(options, value, creatable, formatter) {
   let realValue = null;
   if(_.isArray(value)) {
+    realValue = [...value];
+    /* If multi select options need to be in some format by UI, use formatter */
+    if(formatter) {
+      realValue = formatter.toSelect(realValue);
+    }
     if(creatable) {
-      realValue = value.map((val)=>({label:val, value: val}));
+      realValue = realValue.map((val)=>({label:val, value: val}));
     } else {
-      realValue = value.map((val)=>(_.find(options, (option)=>option.value==val)));
+      realValue = realValue.map((val)=>(_.find(options, (option)=>option.value==val)));
     }
   } else {
     realValue = _.find(options, (option)=>option.value==value) || null;
@@ -557,7 +562,12 @@ export function InputSelect({
 
   const onChangeOption = useCallback((selectVal, action)=>{
     if(_.isArray(selectVal)) {
-      onChange && onChange(selectVal.map((option)=>option.value, action.name));
+      /* If multi select options need to be in some format by UI, use formatter */
+      selectVal = selectVal.map((option)=>option.value);
+      if(controlProps.formatter) {
+        selectVal = controlProps.formatter.fromSelect(selectVal);
+      }
+      onChange && onChange(selectVal, action.name);
     } else {
       onChange && onChange(selectVal ? selectVal.value : null, action.name);
     }
@@ -565,7 +575,7 @@ export function InputSelect({
 
   /* Apply filter if any */
   const filteredOptions = (controlProps.filter && controlProps.filter(finalOptions)) || finalOptions;
-  const realValue = getRealValue(filteredOptions, value, controlProps.creatable);
+  const realValue = getRealValue(filteredOptions, value, controlProps.creatable, controlProps.formatter);
   const otherProps = {
     isSearchable: !readonly,
     isClearable: !readonly && (!_.isUndefined(controlProps.allowClear) ? controlProps.allowClear : true),
