@@ -103,12 +103,21 @@
 
   function TextFormatter(row, cell, value, columnDef) {
     // If column has default value, set placeholder
-    var data = NullAndDefaultFormatter(row, cell, value, columnDef);
-    if (data) {
-      return data;
+    var raw = NullAndDefaultFormatter(row, cell, value, columnDef);
+
+    var data;
+    if (raw) {
+      data = raw;
     } else {
-      return _.escape(value);
+      data = _.escape(value);
     }
+
+    // Replace leading whitespace with a marker so we don't just show blank lines
+    if (data.trimStart() != data) {
+      data = '[...] ' + data.trimStart();
+    }
+
+    return data;
   }
 
   function BinaryFormatter(row, cell, value, columnDef) {

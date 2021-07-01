@@ -23,6 +23,7 @@ Bug fixes
 | `Issue #4189 <https://redmine.postgresql.org/issues/4189>`_ -  Ensure that the Data Output panel can be snapped back after it is detached.
 | `Issue #6388 <https://redmine.postgresql.org/issues/6388>`_ -  Fixed replace keyboard shortcut issue in the query tool on the normal keyboard layout.
 | `Issue #6398 <https://redmine.postgresql.org/issues/6398>`_ -  Fixed an issue where detaching the query editor panel gives a blank white panel.
+| `Issue #6427 <https://redmine.postgresql.org/issues/6427>`_ -  Remove leading whitespace and replace it with '[...] ' in the Query Tool data grid so cells don't look empty.
 | `Issue #6448 <https://redmine.postgresql.org/issues/6448>`_ -  Fixed an issue in the search object when searching in 'all types' or 'subscription' if the user doesn't have access to the subscription.
 | `Issue #6489 <https://redmine.postgresql.org/issues/6489>`_ -  Fixed an issue where Execute/Refresh button should not be disabled when we run the empty query.
 | `Issue #6505 <https://redmine.postgresql.org/issues/6505>`_ -  Fixed an issue where the New Connection Drop Down has lost default maintenance database, auto-select, and tab-through functionality.
