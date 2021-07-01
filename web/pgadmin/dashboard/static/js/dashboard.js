@@ -437,12 +437,31 @@ define('pgadmin.dashboard', [
 
       var data = new Data();
 
+      var HighlightedRow = Backgrid.Row.extend({
+        render: function() {
+          Backgrid.Row.prototype.render.call(this);
+          var row_type = this.model.get('row_type');
+
+          if (_.isUndefined(row_type) || _.isNull(row_type)) {
+            this.$el.removeClass('alert');
+            this.$el.removeClass('warning');
+          } else if (row_type === 'warning') {
+            this.$el.addClass('warning');
+          } else if (row_type === 'alert') {
+            this.$el.addClass('alert');
+          }
+
+          return this;
+        }
+      });
+
       // Set up the grid
       var grid = new Backgrid.Grid({
         emptyText: gettext('No data found'),
         columns: columns,
         collection: data,
         className: 'backgrid presentation table table-bordered table-noouter-border table-hover',
+        row: HighlightedRow
       });
 
       // Render the grid

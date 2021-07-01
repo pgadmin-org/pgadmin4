@@ -339,6 +339,14 @@ table.backgrid {
       border-bottom-color: $color-gray-light !important;
     }
   }
+
+  tr.warning {
+    background-color: $color-warning !important;
+  }
+
+  tr.alert {
+    background-color: $color-danger-light !important;
+  }
 }
 
 table tr th button {

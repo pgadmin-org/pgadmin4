@@ -437,7 +437,7 @@ class Preferences(object):
         assert _type in (
             'boolean', 'integer', 'numeric', 'date', 'datetime',
             'options', 'multiline', 'switch', 'node', 'text', 'radioModern',
-            'keyboardshortcut', 'select2', 'selectFile',
+            'keyboardshortcut', 'select2', 'selectFile', 'threshold'
         ), "Type cannot be found in the defined list!"
 
         (cat['preferences'])[name] = res = _Preference(

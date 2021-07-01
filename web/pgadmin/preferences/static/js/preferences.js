@@ -309,6 +309,11 @@ define('pgadmin.preferences', [
               return 'radioModern';
             case 'selectFile':
               return 'binary-paths-grid';
+            case 'threshold':
+              p.warning_label = gettext('Warning');
+              p.alert_label = gettext('Alert');
+              p.unit = gettext('(in minutes)');
+              return 'threshold';
             default:
               if (console && console.warn) {
                 // Warning for developer only.

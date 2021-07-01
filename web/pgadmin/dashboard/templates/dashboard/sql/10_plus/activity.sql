@@ -12,7 +12,8 @@ SELECT
     query,
     pg_catalog.to_char(state_change, 'YYYY-MM-DD HH24:MI:SS TZ') AS state_change,
     pg_catalog.to_char(query_start, 'YYYY-MM-DD HH24:MI:SS TZ') AS query_start,
-    backend_type
+    backend_type,
+    CASE WHEN state = 'active' THEN ROUND((extract(epoch from now() - query_start) / 60)::numeric, 2) ELSE 0 END AS active_since
 FROM
     pg_catalog.pg_stat_activity
 {% if did %}WHERE

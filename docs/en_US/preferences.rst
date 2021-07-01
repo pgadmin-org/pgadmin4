@@ -154,6 +154,9 @@ the graphs on the *Dashboard* tab:
     :alt: Preferences dialog dashboard display options
     :align: center
 
+* Set the warning and alert threshold value to highlight the long-running
+  queries on the dashboard.
+
 * When the *Show activity?* switch is set to *True*, activity tables will be
   displayed on dashboards.
 

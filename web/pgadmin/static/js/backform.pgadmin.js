@@ -3584,5 +3584,61 @@ define([
     },
   });
 
+  Backform.ThresholdControl = Backform.Control.extend({
+    template: _.template([
+      '<label class="<%=Backform.controlLabelClassName%>"><%=label%></label>',
+      '<div class="<%=Backform.controlContainerClassName%>">',
+      '  <span class="control-label pg-el-sm-2 pg-el-12"><%=warning_label%></span>',
+      '  <input type="text" id="warning_threshold" class="pg-el-sm-2" value="<%=warning_value%>" />',
+      '  <span class="control-label pg-el-sm-1 pg-el-12"><%=alert_label%></span>',
+      '  <input type="text" id="alert_threshold" class="pg-el-sm-2" value="<%=alert_value%>" />',
+      '  <span class="control-label pg-el-sm-3 pg-el-12"><%=unit%></span>',
+      '  <% if (helpMessage && helpMessage.length) { %>',
+      '    <span class="<%=Backform.helpMessageClassName%>"><%=helpMessage%></span>',
+      '  <% } %>',
+      '</div>',
+    ].join('\n')),
+
+    events: {
+      'change input#warning_threshold': 'onChange',
+      'change input#alert_threshold': 'onChange',
+    },
+    initialize: function() {
+      Backform.Control.prototype.initialize.apply(this, arguments);
+    },
+
+    render: function() {
+      var field = _.defaults(this.field.toJSON(), this.defaults),
+        attributes = this.model.toJSON(),
+        threshold_val = [];
+
+      if (!_.isUndefined(this.model.get('value')) && !_.isNull(this.model.get('value'))){
+        threshold_val = this.model.get('value').split('|');
+      }
+
+      var data = _.extend(field, {
+        attributes: attributes,
+        'warning_value': threshold_val.length > 0 ? threshold_val[0] : '',
+        'alert_value': threshold_val.length > 1 ? threshold_val[1] : ''
+      });
+
+      this.$el.html(this.template(data));
+
+      return this;
+    },
+
+    onChange: function() {
+      // Get the value from raw jquery and concat it using |
+      // and set the value
+      var warning_threshold = $('input#warning_threshold').val(),
+        alert_threshold = $('input#alert_threshold').val();
+
+      var threshold_val = warning_threshold + '|' + alert_threshold;
+      this.model.set(this.field.get('name'), threshold_val, {
+        silent: false
+      });
+    }
+  });
+
   return Backform;
 });

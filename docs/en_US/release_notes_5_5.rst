@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #1975 <https://redmine.postgresql.org/issues/1975>`_ -  Highlighted long running queries on the dashboards.
 | `Issue #3893 <https://redmine.postgresql.org/issues/3893>`_ -  Added support for Reassign/Drop Owned for login roles.
 | `Issue #3920 <https://redmine.postgresql.org/issues/3920>`_ -  Do not block the query editor window when running a query.
 | `Issue #6559 <https://redmine.postgresql.org/issues/6559>`_ -  Added option to provide maximum width of the column when 'Resize by data?’ option in the preferences is set to True.
