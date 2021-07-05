@@ -7,20 +7,21 @@
 #
 ##########################################################################
 
-import re
+from email_validator import validate_email as email_validate, \
+    EmailNotValidError
+import config
 
 
 def validate_email(email):
-    if email == '' or email is None:
+    try:
+        # Validate.
+        valid = email_validate(
+            email, check_deliverability=config.CHECK_EMAIL_DELIVERABILITY)
+
+        # Update with the normalized form.
+        email = valid.email
+        return True
+    except EmailNotValidError as e:
+        # email is not valid, exception message is human-readable
+        print(str(e))
         return False
-
-    email_filter = re.compile(
-        "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9]"
-        "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9]"
-        "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-    )
-
-    if not email_filter.match(email):
-        return False
-
-    return True

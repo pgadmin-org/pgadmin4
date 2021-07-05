@@ -388,7 +388,9 @@ SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = \
 # flask-security-too will validate email addresses and check deliverability
 # by default. Disable the deliverability check by default, which was the old
 # behaviour in <= v5.3
-SECURITY_EMAIL_VALIDATOR_ARGS = {"check_deliverability": False}
+CHECK_EMAIL_DELIVERABILITY = False
+SECURITY_EMAIL_VALIDATOR_ARGS = \
+    {"check_deliverability": CHECK_EMAIL_DELIVERABILITY}
 
 ##########################################################################
 # Upgrade checks

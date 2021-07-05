@@ -98,3 +98,5 @@ BINARY_PATHS = {
 }
 
 UTILITIES_ARRAY = ['pg_dump', 'pg_dumpall', 'pg_restore', 'psql']
+
+ENTER_EMAIL_ADDRESS = "Email address: "

@@ -13,6 +13,7 @@ import random
 import os
 import re
 import getpass
+from pgadmin.utils.constants import ENTER_EMAIL_ADDRESS
 
 from pgadmin.utils.validation_utils import validate_email
 
@@ -25,6 +26,10 @@ def user_info_desktop():
         for _ in range(32)
     ])
     return email, p1
+
+
+def pprompt():
+    return getpass.getpass(), getpass.getpass('Retype password:')
 
 
 def user_info_server():
@@ -45,13 +50,10 @@ def user_info_server():
             "pgAdmin user account:\n"
         )
 
-        email = input("Email address: ")
+        email = input(ENTER_EMAIL_ADDRESS)
         while not validate_email(email):
             print('Invalid email address. Please try again.')
-            email = input("Email address: ")
-
-        def pprompt():
-            return getpass.getpass(), getpass.getpass('Retype password:')
+            email = input(ENTER_EMAIL_ADDRESS)
 
         p1, p2 = pprompt()
         while p1 != p2 or len(p1) < 6:

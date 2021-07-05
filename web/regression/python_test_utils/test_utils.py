@@ -17,6 +17,7 @@ import sqlite3
 import shutil
 from functools import partial
 import random
+import importlib
 
 from selenium.webdriver.support.wait import WebDriverWait
 from testtools.testcase import clone_test_with_new_id
@@ -1747,3 +1748,34 @@ def create_users_for_parallel_tests(tester):
     user_id = json.loads(response.data.decode('utf-8'))['id']
     user_details['user_id'] = user_id
     return user_details
+
+
+def module_patch(*args):
+    """
+    This is a helper function responsible to import a function inside
+    a module with the same name
+
+    e.g. user_info module has user_info function in it.
+
+    :param args:
+    :return:
+    """
+
+    target = args[0]
+    components = target.split('.')
+    from unittest import mock
+    for i in range(len(components), 0, -1):
+        try:
+            # attempt to import the module
+            imported = importlib.import_module('.'.join(components[:i]))
+
+            # module was imported, let's use it in the patch
+            patch = mock.patch(*args)
+            patch.getter = lambda: imported
+            patch.attribute = '.'.join(components[i:])
+            return patch
+        except Exception as exc:
+            pass
+
+    # did not find a module, just return the default mock
+    return mock.patch(*args)

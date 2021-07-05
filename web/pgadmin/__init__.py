@@ -465,6 +465,8 @@ def create_app(app_name=None):
         # CSRF Token expiration till session expires
         'WTF_CSRF_TIME_LIMIT': getattr(config, 'CSRF_TIME_LIMIT', None),
         'WTF_CSRF_METHODS': ['GET', 'POST', 'PUT', 'DELETE'],
+        # Disable deliverable check for email addresss
+        'SECURITY_EMAIL_VALIDATOR_ARGS': config.SECURITY_EMAIL_VALIDATOR_ARGS
     }))
 
     security.init_app(app, user_datastore)
