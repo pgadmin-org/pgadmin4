@@ -142,7 +142,7 @@ msg-extract:
 	cd web && pybabel extract -F babel.cfg -o pgadmin/messages.pot pgadmin
 
 msg-update:
-	cd web && pybabel update -i pgadmin/messages.pot -d pgadmin/translations
+	cd web && pybabel update --no-fuzzy-matching -i pgadmin/messages.pot -d pgadmin/translations
 
 .PHONY: docs
 
