@@ -9,7 +9,7 @@
 
 /* The DataGridView component is based on react-table component */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PgIconButton } from '../components/Buttons';
@@ -92,6 +92,15 @@ const useStyles = makeStyles((theme)=>({
     zIndex: 1,
     touchAction: 'none',
   },
+  expandedForm: {
+    borderTopWidth: theme.spacing(0.5),
+    borderStyle: 'solid ',
+    borderColor: theme.palette.grey[400],
+  },
+  expandedIconCell: {
+    backgroundColor: theme.palette.grey[400],
+    borderBottom: 'none',
+  }
 }));
 
 function DataTableHeader({headerGroups}) {
@@ -129,38 +138,31 @@ DataTableHeader.propTypes = {
   headerGroups: PropTypes.array.isRequired,
 };
 
-function DataTableRow({row, totalRows, canExpand, isResizing, viewHelperProps, formErr, schema, dataDispatch, accessPath}) {
+function DataTableRow({row, totalRows, isResizing}) {
   const classes = useStyles();
   const [key, setKey] = useState(false);
-  // let key = useRef(true);
   /* Memoize the row to avoid unnecessary re-render.
    * If table data changes, then react-table re-renders the complete tables
    * We can avoid re-render by if row data is not changed
    */
-  let depsMap = _.values(row.original, Object.keys(row.original).filter((k)=>!k.startsWith('btn')));
+  let depsMap = _.values(row.values, Object.keys(row.values).filter((k)=>!k.startsWith('btn')));
   depsMap = depsMap.concat([totalRows, row.isExpanded, key, isResizing]);
-  return (
-    useMemo(()=>
-      <>
-        <div {...row.getRowProps()} className="tr">
-          {row.cells.map((cell, ci) => {
-            return (
-              <div key={ci} {...cell.getCellProps()} className={classes.tableCell}>
-                {cell.render('Cell', {
-                  reRenderRow: ()=>{setKey((currKey)=>!currKey);}
-                })}
-              </div>
-            );
-          })}
-        </div>
-        {
-          canExpand && row.isExpanded &&
-          <FormView key={row.index} value={row.original} viewHelperProps={viewHelperProps} formErr={formErr} dataDispatch={dataDispatch}
-            schema={schema} accessPath={accessPath} isNested={true}/>
+  return useMemo(()=>
+    <div {...row.getRowProps()} className="tr">
+      {row.cells.map((cell, ci) => {
+        let classNames = [classes.tableCell];
+        if(cell.column.id == 'btn-edit' && row.isExpanded) {
+          classNames.push(classes.expandedIconCell);
         }
-      </>
-    , depsMap)
-  );
+        return (
+          <div key={ci} {...cell.getCellProps()} className={clsx(classNames)}>
+            {cell.render('Cell', {
+              reRenderRow: ()=>{setKey((currKey)=>!currKey);}
+            })}
+          </div>
+        );
+      })}
+    </div>, depsMap);
 }
 
 export default function DataGridView({
@@ -178,6 +180,8 @@ export default function DataGridView({
     });
     return res;
   }, []);
+  /* Using ref so that schema variable is not frozen in columns closure */
+  const schemaRef = useRef(schema);
   let columns = useMemo(
     ()=>{
       let cols = [];
@@ -236,86 +240,96 @@ export default function DataGridView({
       }
 
       cols = cols.concat(
-        schema.fields
-          .map((field)=>{
-            let colInfo = {
-              Header: field.label,
-              accessor: field.id,
-              field: field,
-              resizable: true,
-              sortable: true,
-              ...(field.minWidth ?  {minWidth: field.minWidth} : {}),
-              Cell: ({value, row, ...other}) => {
-                let {visible, disabled, readonly, ..._field} = field;
+        schemaRef.current.fields.filter((f)=>{
+          return _.isArray(props.columns) ? props.columns.indexOf(f.id) > -1 : true;
+        }).sort((firstF, secondF)=>{
+          if(_.isArray(props.columns)) {
+            return props.columns.indexOf(firstF.id) < props.columns.indexOf(secondF.id) ? -1 : 1;
+          }
+          return 0;
+        }).map((field)=>{
+          let colInfo = {
+            Header: field.label,
+            accessor: field.id,
+            field: field,
+            resizable: true,
+            sortable: true,
+            ...(field.minWidth ?  {minWidth: field.minWidth} : {}),
+            ...(field.width ?  {width: field.width} : {}),
+            Cell: ({value, row, ...other}) => {
+              let {visible, editable, readonly, ..._field} = field;
 
-                let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
-                  ((_.isUndefined(field.server_type) ? true :
-                    (viewHelperProps.serverInfo.type in field.server_type)) &&
-                  (_.isUndefined(field.min_version) ? true :
-                    (viewHelperProps.serverInfo.version >= field.min_version)) &&
-                  (_.isUndefined(field.max_version) ? true :
-                    (viewHelperProps.serverInfo.version <= field.max_version))));
-                let _readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
-                if(!_readonly) {
-                  _readonly = evalFunc(schema, readonly, row.original || {});
-                }
+              let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
+                ((_.isUndefined(field.server_type) ? true :
+                  (viewHelperProps.serverInfo.type in field.server_type)) &&
+                (_.isUndefined(field.min_version) ? true :
+                  (viewHelperProps.serverInfo.version >= field.min_version)) &&
+                (_.isUndefined(field.max_version) ? true :
+                  (viewHelperProps.serverInfo.version <= field.max_version))));
+              let _readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
+              if(!_readonly) {
+                _readonly = evalFunc(schemaRef.current, readonly, row.original || {});
+              }
 
-                let _visible = true;
-                if(visible) {
-                  _visible = evalFunc(schema, visible, row.original || {});
-                }
-                _visible = _visible && verInLimit;
+              visible = _.isUndefined(visible) ? true : visible;
+              let _visible = true;
+              if(visible) {
+                _visible = evalFunc(schemaRef.current, visible, row.original || {});
+              }
+              _visible = _visible && verInLimit;
 
-                disabled = evalFunc(schema, disabled, row.original || {});
+              editable = _.isUndefined(editable) ? true : editable;
+              editable = evalFunc(schemaRef.current, editable, row.original || {});
 
-                return <MappedCellControl rowIndex={row.index} value={value}
-                  row={row.original} {..._field}
-                  readonly={_readonly}
-                  disabled={disabled}
-                  visible={_visible}
-                  onCellChange={(value)=>{
-                    /* Get the changes on dependent fields as well.
-                     * The return value of depChange function is merged and passed to state.
-                     */
-                    const depChange = (state)=>{
-                      let rowdata = _.get(state, accessPath.concat(row.index));
-                      _field.depChange && _.merge(rowdata, _field.depChange(rowdata, _field.id) || {});
-                      (dependsOnField[_field.id] || []).forEach((d)=>{
-                        d = _.find(schema.fields, (f)=>f.id==d);
-                        if(d.depChange) {
-                          _.merge(rowdata, d.depChange(rowdata, _field.id) || {});
-                        }
-                      });
-                      return state;
-                    };
-                    dataDispatch({
-                      type: SCHEMA_STATE_ACTIONS.SET_VALUE,
-                      path: accessPath.concat([row.index, _field.id]),
-                      value: value,
-                      depChange: depChange,
+              return <MappedCellControl rowIndex={row.index} value={value}
+                row={row.original} {..._field}
+                readonly={_readonly}
+                disabled={!editable}
+                visible={_visible}
+                onCellChange={(value)=>{
+                  /* Get the changes on dependent fields as well.
+                    * The return value of depChange function is merged and passed to state.
+                    */
+                  const depChange = (state)=>{
+                    let rowdata = _.get(state, accessPath.concat(row.index));
+                    _field.depChange && _.merge(rowdata, _field.depChange(rowdata, _field.id) || {});
+                    (dependsOnField[_field.id] || []).forEach((d)=>{
+                      d = _.find(schemaRef.current.fields, (f)=>f.id==d);
+                      if(d.depChange) {
+                        _.merge(rowdata, d.depChange(rowdata, _field.id) || {});
+                      }
                     });
-                  }}
-                  reRenderRow={other.reRenderRow}
-                />;
-              },
-            };
-            colInfo.Cell.displayName = 'Cell',
-            colInfo.Cell.propTypes = {
-              row: PropTypes.object.isRequired,
-              value: PropTypes.any,
-              onCellChange: PropTypes.func,
-            };
-            return colInfo;
-          })
+                    return state;
+                  };
+                  dataDispatch({
+                    type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+                    path: accessPath.concat([row.index, _field.id]),
+                    value: value,
+                    depChange: depChange,
+                  });
+                }}
+                reRenderRow={other.reRenderRow}
+              />;
+            },
+          };
+          colInfo.Cell.displayName = 'Cell',
+          colInfo.Cell.propTypes = {
+            row: PropTypes.object.isRequired,
+            value: PropTypes.any,
+            onCellChange: PropTypes.func,
+          };
+          return colInfo;
+        })
       );
       return cols;
-    },[]);
+    },[]
+  );
 
   const onAddClick = useCallback(()=>{
     let newRow = {};
     columns.forEach((column)=>{
       if(column.field) {
-        newRow[column.field.id] = schema.defaults[column.field.id];
+        newRow[column.field.id] = schemaRef.current.defaults[column.field.id];
       }
     });
     dataDispatch({
@@ -327,6 +341,7 @@ export default function DataGridView({
 
   const defaultColumn = useMemo(()=>({
     minWidth: 175,
+    width: 0,
   }));
 
   let tablePlugins = [
@@ -371,9 +386,15 @@ export default function DataGridView({
           <div {...getTableBodyProps()}>
             {rows.map((row, i) => {
               prepareRow(row);
-              return <DataTableRow key={i} row={row} totalRows={rows.length} canExpand={props.canEdit}
-                value={value} viewHelperProps={viewHelperProps} formErr={formErr} isResizing={isResizing}
-                schema={schema} accessPath={accessPath.concat([row.index])} dataDispatch={dataDispatch} />;
+              return <React.Fragment key={i}>
+                <DataTableRow row={row} totalRows={rows.length} canExpand={props.canEdit}
+                  value={value} viewHelperProps={viewHelperProps} formErr={formErr} isResizing={isResizing}
+                  schema={schemaRef.current} accessPath={accessPath.concat([row.index])} dataDispatch={dataDispatch} />
+                {props.canEdit && row.isExpanded &&
+                  <FormView value={row.original} viewHelperProps={viewHelperProps} formErr={formErr} dataDispatch={dataDispatch}
+                    schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}/>
+                }
+              </React.Fragment>
             })}
           </div>
         </div>

@@ -11,6 +11,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, makeStyles, Tab, Tabs } from '@material-ui/core';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 import { MappedFormControl } from './MappedControl';
 import TabPanel from '../components/TabPanel';
@@ -28,6 +29,9 @@ const useStyles = makeStyles((theme)=>({
   },
   controlRow: {
     paddingBottom: theme.spacing(1),
+  },
+  nestedTabPanel: {
+    backgroundColor: theme.otherVars.headerBg,
   },
 }));
 
@@ -62,7 +66,7 @@ SQLTab.propTypes = {
 
 /* The first component of schema view form */
 export default function FormView({
-  value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab, getSQLValue, onTabChange, firstEleRef}) {
+  value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab, getSQLValue, onTabChange, firstEleRef, className}) {
   let defaultTab = 'General';
   let tabs = {};
   let tabsClassname = {};
@@ -109,8 +113,8 @@ export default function FormView({
         _readonly = evalFunc(schema, readonly, value);
       }
 
+      visible = _.isUndefined(visible) ? true : visible;
       let _visible = true;
-
       if(visible) {
         _visible = evalFunc(schema, visible, value);
       }
@@ -223,29 +227,31 @@ export default function FormView({
 
   return (
     <>
-      <Box>
-        <Tabs
-          value={tabValue}
-          onChange={(event, selTabValue) => {
-            setTabValue(selTabValue);
-          }}
-          // indicatorColor="primary"
-          variant="scrollable"
-          scrollButtons="auto"
-          action={(ref)=>ref && ref.updateIndicator()}
-        >
-          {Object.keys(tabs).map((tabName)=>{
-            return <Tab key={tabName} label={tabName} />;
-          })}
-        </Tabs>
+      <Box height="100%" display="flex" flexDirection="column" className={className}>
+        <Box>
+          <Tabs
+            value={tabValue}
+            onChange={(event, selTabValue) => {
+              setTabValue(selTabValue);
+            }}
+            // indicatorColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            action={(ref)=>ref && ref.updateIndicator()}
+          >
+            {Object.keys(tabs).map((tabName)=>{
+              return <Tab key={tabName} label={tabName} />;
+            })}
+          </Tabs>
+        </Box>
+        {Object.keys(tabs).map((tabName, i)=>{
+          return (
+            <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}>
+              {tabs[tabName]}
+            </TabPanel>
+          );
+        })}
       </Box>
-      {Object.keys(tabs).map((tabName, i)=>{
-        return (
-          <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={isNested ? classes.fullSpace : tabsClassname[tabName]}>
-            {tabs[tabName]}
-          </TabPanel>
-        );
-      })}
     </>);
 }
 

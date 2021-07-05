@@ -247,6 +247,7 @@ function getFinalTheme(baseTheme) {
       MuiInputBase: {
         root: {
           backgroundColor: baseTheme.palette.background.default,
+          textOverflow: 'ellipsis',
         },
         inputMultiline: {
           fontSize: baseTheme.typography.fontSize,
