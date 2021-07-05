@@ -267,4 +267,5 @@ FormView.propTypes = {
   getSQLValue: PropTypes.func,
   onTabChange: PropTypes.func,
   firstEleRef: CustomPropTypes.ref,
+  className: CustomPropTypes.className,
 };

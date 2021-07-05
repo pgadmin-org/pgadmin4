@@ -442,7 +442,7 @@ const customReactSelectStyles = (theme, readonly)=>({
     ...provided,
     padding: '0rem 0.25rem',
   }),
-  valueContainer: (provided, state)=>({
+  valueContainer: (provided)=>({
     ...provided,
     padding: theme.otherVars.reactSelect.padding,
   }),

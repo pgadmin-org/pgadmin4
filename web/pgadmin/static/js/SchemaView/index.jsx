@@ -91,7 +91,7 @@ function getChangedData(topSchema, mode, sessData, stringify=false) {
     /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
     /* If the orig value is undefined or null and new value is boolean false "no change" */
     if ((_.isEqual(origVal, sessVal)
-      || ((origVal === null || _.isUndefined(origVal)) && !Boolean(sessVal))
+      || ((origVal === null || _.isUndefined(origVal)) && !sessVal)
       || (attrDefined ? _.isEqual(origVal.toString(), sessVal.toString()) : false))
        && !force) {
       return;
@@ -412,16 +412,19 @@ function SchemaDialogView({
     setSaving(true);
     setLoaderText('Saving...');
     /* Get the changed data */
-    let data = getChangedData(schema, viewHelperProps.mode, sessData);
+    let changeData = {};
 
     /* Add the id when in edit mode */
     if(viewHelperProps.mode === 'edit') {
-      data[schema.idAttribute] = schema.origData[schema.idAttribute];
+      changeData = getChangedData(schema, viewHelperProps.mode, sessData);
+      changeData[schema.idAttribute] = schema.origData[schema.idAttribute];
     } else {
       /* If new then merge the changed data with origData */
-      data = _.merge(schema.origData, data);
+      changeData = {...schema.origData};
+      _.merge(changeData, sessData);
     }
-    props.onSave(isNew, data)
+
+    props.onSave(isNew, changeData)
       .then(()=>{
         if(schema.informText) {
           pgAlertify().alert(
@@ -457,7 +460,8 @@ function SchemaDialogView({
           changeData = getChangedData(schema, viewHelperProps.mode, sessData);
         } else {
           /* If new then merge the changed data with origData */
-          changeData = _.merge(schema.origData, sessData);
+          changeData = {...schema.origData};
+          _.merge(changeData, sessData);
         }
         /* Call the passed incoming getSQLValue func to get the SQL
         return of getSQLValue should be a promise.

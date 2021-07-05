@@ -394,7 +394,7 @@ export default function DataGridView({
                   <FormView value={row.original} viewHelperProps={viewHelperProps} formErr={formErr} dataDispatch={dataDispatch}
                     schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}/>
                 }
-              </React.Fragment>
+              </React.Fragment>;
             })}
           </div>
         </div>
@@ -412,6 +412,7 @@ DataGridView.propTypes = {
   accessPath: PropTypes.array.isRequired,
   dataDispatch: PropTypes.func.isRequired,
   containerClassName: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+  columns: PropTypes.array,
   canEdit: PropTypes.bool,
   canAdd: PropTypes.bool,
   canDelete: PropTypes.bool,
