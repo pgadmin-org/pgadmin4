@@ -652,6 +652,20 @@ define([
     return ret_ele;
   };
 
+  var enableSelect = function() {
+    // Enable select button if user select folder.
+    if (pgAdmin.FileUtils.data && pgAdmin.FileUtils.data.Capabilities.includes('select_folder')) {
+      $('.file_manager_ok').removeClass('disabled');
+      $('.file_manager_ok').attr('disabled', false);
+    }
+  };
+
+  var disableSelect = function() {
+    // Disable select button if user select file.
+    $('.file_manager_ok').addClass('disabled');
+    $('.file_manager_ok').attr('disabled', true);
+  };
+
   /*
    * Retrieves data for all items within the given folder and
    * creates a list view.
@@ -662,12 +676,7 @@ define([
       file_type = '';
     }
     var capabilities = pgAdmin.FileUtils.data.Capabilities;
-
-    // Enable select button if user select folder.
-    if (pgAdmin.FileUtils.data.Capabilities.includes('select_folder')) {
-      $('.file_manager_ok').removeClass('disabled');
-      $('.file_manager_ok').attr('disabled', false);
-    }
+    enableSelect();
 
     // Update location for status, upload, & new folder functions.
     pgAdmin.FileUtils.setUploader(path);
@@ -1604,6 +1613,10 @@ define([
                   }
                 }
               } else {
+                if (has_capability(self.data_cap, 'select_folder')) {
+                  disableSelect();
+                }
+
                 if (
                   has_capability(self.data_cap, 'select_file')
                 ) {
@@ -1830,6 +1843,7 @@ define([
 
       $('.storage_dialog #uploader .input-path').attr('title', path);
       $('.storage_dialog #uploader .input-path').attr('data-path', path);
+      enableSelect();
 
       // create new folder
       $('.create').off().on('click', function() {
