@@ -7,6 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
+
+import { getNodeAjaxOptions,getNodeListByName } from '../../../../../../static/js/node_ajax';
+import ExtensionsSchema from './extension.ui';
+
 define('pgadmin.node.extension', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser',
@@ -216,7 +220,6 @@ define('pgadmin.node.extension', [
               var res = [],
                 control = cell || this,
                 extension = control.model.get('name');
-
               _.each(data, function(dt) {
                 if(dt.name == extension) {
                   if(dt.version && _.isArray(dt.version)) {
@@ -258,6 +261,25 @@ define('pgadmin.node.extension', [
           return null;
         },
       }),
+      getSchema: (treeNodeInfo, itemNodeData)=>{
+        let nodeObj = pgAdmin.Browser.Nodes['extension'];
+        let schema = new ExtensionsSchema(
+          {
+            extensionsList:()=>getNodeAjaxOptions('avails', nodeObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'}, 
+              (data)=>{
+                let res = [];
+                if (data && _.isArray(data)) {
+                  _.each(data, function(d) {
+                    res.push({label: d.name, value: d.name, data:d});
+                  });
+                }
+                return res;
+              }),
+            schemaList:()=>getNodeListByName('schema', treeNodeInfo, itemNodeData)
+          }
+        );
+        return schema;
+      }
     });
   }
 
