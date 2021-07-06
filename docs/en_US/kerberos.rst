@@ -34,6 +34,7 @@ from *config.py* file and modify the values for the following parameters.
    Please note that if it is not set, it will take the value of
    *default_server* parameter."
 
+
 Keytab file for HTTP Service
 ============================
 
@@ -116,3 +117,13 @@ PostgreSQL Server settings to configure Kerberos Authentication
 
 * Note that, you have to login into pgAdmin with Kerberos authentication to
   then connect to PostgreSQL using Kerberos.
+
+
+Master Password
+===============
+
+In the multi user mode, pgAdmin uses user's login password to encrypt/decrypt the PostgreSQL server password.
+In the Kerberos authentication, the pgAdmin user does not have the password, so we need an encryption key to store
+the PostgreSQL server password for the servers which are not configured to use the Kerberos authentication.
+To accomplish this, set the configuration parameter MASTER_PASSWORD to *True*, so upon setting the master password,
+it will be used as an encryption key while storing the password. If it is False, the server password can not be stored.

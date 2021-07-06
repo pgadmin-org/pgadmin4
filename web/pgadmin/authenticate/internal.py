@@ -10,7 +10,7 @@
 """Implements Internal Authentication"""
 
 import six
-from flask import current_app
+from flask import current_app, flash
 from flask_security import login_user
 from abc import abstractmethod, abstractproperty
 from flask_babelex import gettext
@@ -31,6 +31,8 @@ class BaseAuthentication(object):
         'PASSWORD_NOT_PROVIDED': gettext('Password not provided'),
         'INVALID_EMAIL': gettext('Email/Username is not valid')
     }
+    LOGIN_VIEW = 'security.login'
+    LOGOUT_VIEW = 'security.logout'
 
     @abstractmethod
     def get_source_name(self):
@@ -97,7 +99,7 @@ class InternalAuthentication(BaseAuthentication):
         """User validation"""
         # validate the email id first
         if not validate_email(form.data['email']):
-            form.errors['email'] = [self.messages('INVALID_EMAIL')]
+            flash(self.messages('INVALID_EMAIL'), 'warning')
             return False
         # Flask security validation
         return form.validate_on_submit()

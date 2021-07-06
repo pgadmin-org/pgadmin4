@@ -55,10 +55,12 @@ ERROR_FETCHING_DATA = gettext('Unable to fetch data.')
 INTERNAL = 'internal'
 LDAP = 'ldap'
 KERBEROS = 'kerberos'
+OAUTH2 = "oauth2"
 
 SUPPORTED_AUTH_SOURCES = [INTERNAL,
                           LDAP,
-                          KERBEROS]
+                          KERBEROS,
+                          OAUTH2]
 
 BINARY_PATHS = {
     "as_bin_paths": [

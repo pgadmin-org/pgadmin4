@@ -37,6 +37,7 @@ Mode is pre-configured for security.
    change_user_password
    ldap
    kerberos
+   oauth2
 
 
 .. note:: Pre-compiled and configured installation packages are available for

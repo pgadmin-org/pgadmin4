@@ -31,13 +31,11 @@ def get_crypt_key():
         return True, current_user.password
     # if desktop mode and master pass enabled
     elif config.MASTER_PASSWORD_REQUIRED \
-            and not config.SERVER_MODE and enc_key is None:
+            and enc_key is None:
         return False, None
-    elif config.SERVER_MODE and \
-            session['_auth_source_manager_obj']['current_source']\
-            == KERBEROS:
-        return True, session['kerberos_key'] if 'kerberos_key' in session \
-            else None
+    elif not config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
+            'pass_enc_key' in session:
+        return True, session['pass_enc_key']
     else:
         return True, enc_key
 

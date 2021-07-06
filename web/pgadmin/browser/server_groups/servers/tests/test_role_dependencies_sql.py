@@ -7,6 +7,7 @@
 #
 ##########################################################################
 import os
+import uuid
 
 import jinja2
 from regression.python_test_utils import test_utils
@@ -24,20 +25,21 @@ class TestRoleDependenciesSql(SQLTemplateTestBase):
     def __init__(self):
         super(TestRoleDependenciesSql, self).__init__()
         self.table_id = -1
+        self.role_name = "testpgadmin%s" % str(uuid.uuid4())[1:8]
 
     def setUp(self):
         with test_utils.Database(self.server) as (connection, database_name):
             cursor = connection.cursor()
             try:
                 cursor.execute(
-                    "CREATE ROLE testpgadmin LOGIN PASSWORD '%s'"
-                    % self.server['db_password'])
+                    "CREATE ROLE %s LOGIN PASSWORD '%s'"
+                    % (self.role_name, self.server['db_password']))
             except Exception as exception:
                 print(exception)
             connection.commit()
 
         self.server_with_modified_user = self.server.copy()
-        self.server_with_modified_user['username'] = "testpgadmin"
+        self.server_with_modified_user['username'] = self.role_name
 
     def runTest(self):
         if hasattr(self, "ignore_test"):
@@ -61,7 +63,7 @@ class TestRoleDependenciesSql(SQLTemplateTestBase):
     def tearDown(self):
         with test_utils.Database(self.server) as (connection, database_name):
             cursor = connection.cursor()
-            cursor.execute("DROP ROLE testpgadmin")
+            cursor.execute("DROP ROLE %s" % self.role_name)
             connection.commit()
 
     def generate_sql(self, version):

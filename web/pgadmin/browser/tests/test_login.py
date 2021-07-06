@@ -12,6 +12,7 @@ import config as app_config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression.test_setup import config_data
+from pgadmin.utils.constants import INTERNAL
 
 
 class LoginTestCase(BaseTestGenerator):
@@ -98,7 +99,7 @@ class LoginTestCase(BaseTestGenerator):
 
     # No need to call base class setup function
     def setUp(self):
-        pass
+        app_config.AUTHENTICATION_SOURCES = [INTERNAL]
 
     def runTest(self):
         """This function checks login functionality."""

@@ -10,22 +10,28 @@
 """A blueprint module implementing the Spnego/Kerberos authentication."""
 
 import base64
-from os import environ, path
+from os import environ, path, remove
 
-from werkzeug.datastructures import Headers
+from werkzeug.datastructures import Headers, MultiDict
 from flask_babelex import gettext
-from flask import Flask, request, Response, session,\
-    current_app, render_template, flash
+from flask import request, Response, session,\
+    current_app, render_template, flash, url_for
+from flask_security.views import _security
+from flask_security.utils import logout_user
+from flask_security import login_required
 
 import config
 from pgadmin.model import User
 from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import KERBEROS
+from pgadmin.utils import PgAdminModule
+from pgadmin.utils.ajax import make_json_response, internal_server_error
 
-from flask_security.views import _security
-from werkzeug.datastructures import MultiDict
 
-from .internal import BaseAuthentication
+from pgadmin.authenticate.internal import BaseAuthentication
+from pgadmin.authenticate import get_auth_sources
+from pgadmin.utils.csrf import pgCSRFProtect
+
 
 try:
     import gssapi
@@ -46,7 +52,109 @@ if config.KRB_KTNAME and config.KRB_KTNAME != '<KRB5_KEYTAB_FILE>':
     environ['KRB5_KTNAME'] = config.KRB_KTNAME
 
 
+class KerberosModule(PgAdminModule):
+    def register(self, app, options, first_registration=False):
+        # Do not look for the sub_modules,
+        # instead call blueprint.register(...) directly
+        super(PgAdminModule, self).register(app, options, first_registration)
+
+    def get_exposed_url_endpoints(self):
+        return ['kerberos.login',
+                'kerberos.logout',
+                'kerberos.update_ticket',
+                'kerberos.validate_ticket']
+
+
+def init_app(app):
+    MODULE_NAME = 'kerberos'
+
+    blueprint = KerberosModule(MODULE_NAME, __name__, static_url_path='')
+
+    @blueprint.route("/login",
+                     endpoint="login", methods=["GET"])
+    @pgCSRFProtect.exempt
+    def kerberos_login():
+        logout_user()
+        return Response(render_template("browser/kerberos_login.html",
+                                        login_url=url_for('security.login'),
+                                        ))
+
+    @blueprint.route("/logout",
+                     endpoint="logout", methods=["GET"])
+    @pgCSRFProtect.exempt
+    def kerberos_logout():
+        logout_user()
+        if 'KRB5CCNAME' in session:
+            # Remove the credential cache
+            cache_file_path = session['KRB5CCNAME'].split(":")[1]
+            if path.exists(cache_file_path):
+                remove(cache_file_path)
+
+        return Response(render_template("browser/kerberos_logout.html",
+                                        login_url=url_for('security.login'),
+                                        ))
+
+    @blueprint.route("/update_ticket",
+                     endpoint="update_ticket", methods=["GET"])
+    @pgCSRFProtect.exempt
+    @login_required
+    def kerberos_update_ticket():
+        """
+        Update the kerberos ticket.
+        """
+        from werkzeug.datastructures import Headers
+        headers = Headers()
+
+        authorization = request.headers.get("Authorization", None)
+
+        if authorization is None:
+            # Send the Negotiate header to the client
+            # if Kerberos ticket is not found.
+            headers.add('WWW-Authenticate', 'Negotiate')
+            return Response("Unauthorised", 401, headers)
+        else:
+            source = get_auth_sources(KERBEROS)
+            auth_header = authorization.split()
+            in_token = auth_header[1]
+
+            # Validate the Kerberos ticket
+            status, context = source.negotiate_start(in_token)
+            if status:
+                return Response("Ticket updated successfully.")
+
+            return Response(context, 500)
+
+    @blueprint.route("/validate_ticket",
+                     endpoint="validate_ticket", methods=["GET"])
+    @pgCSRFProtect.exempt
+    @login_required
+    def kerberos_validate_ticket():
+        """
+        Return the kerberos ticket lifetime left after getting the
+        ticket from the credential cache
+        """
+        import gssapi
+
+        try:
+            del_creds = gssapi.Credentials(store={
+                'ccache': session['KRB5CCNAME']})
+            creds = del_creds.acquire(store={'ccache': session['KRB5CCNAME']})
+        except Exception as e:
+            current_app.logger.exception(e)
+            return internal_server_error(errormsg=str(e))
+
+        return make_json_response(
+            data={'ticket_lifetime': creds.lifetime},
+            status=200
+        )
+
+    app.register_blueprint(blueprint)
+
+
 class KerberosAuthentication(BaseAuthentication):
+
+    LOGIN_VIEW = 'kerberos.login'
+    LOGOUT_VIEW = 'kerberos.logout'
 
     def get_source_name(self):
         return KERBEROS
@@ -85,7 +193,7 @@ class KerberosAuthentication(BaseAuthentication):
                     if status:
                         # Saving the first 15 characters of the kerberos key
                         # to encrypt/decrypt database password
-                        session['kerberos_key'] = auth_header[1][0:15]
+                        session['pass_enc_key'] = auth_header[1][0:15]
                         # Create user
                         retval = self.__auto_create_user(
                             str(negotiate.initiator_name))
@@ -162,7 +270,7 @@ class KerberosAuthentication(BaseAuthentication):
         username = str(username)
         if config.KRB_AUTO_CREATE_USER:
             user = User.query.filter_by(
-                username=username).first()
+                username=username, auth_source=KERBEROS).first()
             if user is None:
                 return create_user({
                     'username': username,

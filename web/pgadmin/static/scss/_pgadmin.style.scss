@@ -946,6 +946,9 @@ table.table-empty-rows{
   & .btn-login {
     background-color: $security-btn-color;
   }
+  & .btn-oauth {
+    background-color: $security-btn-color;
+  }
   & .user-language {
     & select{
       background-color: $color-primary;

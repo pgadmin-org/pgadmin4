@@ -562,10 +562,11 @@ ENHANCED_COOKIE_PROTECTION = True
 ##########################################################################
 
 # Default setting is internal
-# External Supported Sources: ldap, kerberos
+# External Supported Sources: ldap, kerberos, oauth2
 # Multiple authentication can be achieved by setting this parameter to
-# ['ldap', 'internal']. pgAdmin will authenticate the user with ldap first,
-# in case of failure internal authentication will be done.
+# ['ldap', 'internal'] or ['oauth2', 'internal'] etc.
+# pgAdmin will authenticate the user with ldap/oauth2 whatever first in the
+# list, in case of failure the second authentication option will be considered.
 
 AUTHENTICATION_SOURCES = ['internal']
 
@@ -665,6 +666,47 @@ KRB_KTNAME = '<KRB5_KEYTAB_FILE>'
 KRB_AUTO_CREATE_USER = True
 
 KERBEROS_CCACHE_DIR = os.path.join(DATA_DIR, 'krbccache')
+
+##########################################################################
+# OAuth2 Configuration
+##########################################################################
+
+# Multiple OAUTH2 providers can be added in the list like [{...},{...}]
+# All parameters are required
+
+OAUTH2_CONFIG = [
+    {
+        # The name of the of the oauth provider, ex: github, google
+        'OAUTH2_NAME': None,
+        # The display name, ex: Google
+        'OAUTH2_DISPLAY_NAME': '<Oauth2 Display Name>',
+        # Oauth client id
+        'OAUTH2_CLIENT_ID': None,
+        # Oauth secret
+        'OAUTH2_CLIENT_SECRET': None,
+        # URL to generate a token,
+        # Ex: https://github.com/login/oauth/access_token
+        'OAUTH2_TOKEN_URL': None,
+        # URL is used for authentication,
+        # Ex: https://github.com/login/oauth/authorize
+        'OAUTH2_AUTHORIZATION_URL': None,
+        # Oauth base url, ex: https://api.github.com/
+        'OAUTH2_API_BASE_URL': None,
+        # Name of the Endpoint, ex: user
+        'OAUTH2_USERINFO_ENDPOINT': None,
+        # Font-awesome icon, ex: fa-github
+        'OAUTH2_ICON': None,
+        # UI button colour, ex: #0000ff
+        'OAUTH2_BUTTON_COLOR': None,
+    }
+]
+
+# After Oauth authentication, user will be added into the SQLite database
+# automatically, if set to True.
+# Set it to False, if user should not be added automatically,
+# in this case Admin has to add the user manually in the SQLite database.
+
+OAUTH2_AUTO_CREATE_USER = True
 
 ##########################################################################
 # PSQL tool settings

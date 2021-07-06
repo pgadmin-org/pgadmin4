@@ -56,6 +56,7 @@ eventlet                                                         0.31.0         
 httpagentparser                                                  1.9.1            http://www.opensource.org/licenses/mit-license.php http://shon.github.com/httpagentparser
 user-agents                                                      2.2.0            MIT                                  https://github.com/selwin/python-user-agents
 pywinpty                                                         1.1.1            Unknown                              Unknown
+authlib                                                          0.15.3           BSD                                  https://github.com/lepture/authlib
 
 NOTE: This report was generated using Python 3.9. Full information may not be
 shown for Python modules that are not required with this version.

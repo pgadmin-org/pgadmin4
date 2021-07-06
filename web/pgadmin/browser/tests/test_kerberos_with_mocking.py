@@ -13,6 +13,7 @@ from regression.python_test_utils import test_utils as utils
 from pgadmin.authenticate.registry import AuthSourceRegistry
 from unittest.mock import patch, MagicMock
 from werkzeug.datastructures import Headers
+from pgadmin.utils.constants import LDAP, INTERNAL, KERBEROS
 
 
 class KerberosLoginMockTestCase(BaseTestGenerator):
@@ -23,17 +24,17 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
 
     scenarios = [
         ('Spnego/Kerberos Authentication: Test Unauthorized', dict(
-            auth_source=['kerberos'],
+            auth_source=[KERBEROS],
             auto_create_user=True,
             flag=1
         )),
         ('Spnego/Kerberos Authentication: Test Authorized', dict(
-            auth_source=['kerberos'],
+            auth_source=[KERBEROS],
             auto_create_user=True,
             flag=2
         )),
         ('Spnego/Kerberos Update Ticket', dict(
-            auth_source=['kerberos'],
+            auth_source=[KERBEROS],
             auto_create_user=True,
             flag=3
         ))
@@ -49,7 +50,7 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
 
     def setUp(self):
         app_config.AUTHENTICATION_SOURCES = self.auth_source
-        self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = 'kerberos'
+        self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = KERBEROS
 
     def runTest(self):
         """This function checks spnego/kerberos login functionality."""
@@ -100,14 +101,13 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
                 self.initiator_name = 'user@PGADMIN.ORG'
 
         del_crads = delCrads()
-
-        AuthSourceRegistry._registry['kerberos'].negotiate_start = MagicMock(
+        AuthSourceRegistry._registry[KERBEROS].negotiate_start = MagicMock(
             return_value=[True, del_crads])
         return del_crads
 
     def test_update_ticket(self):
         # Response header should include the Negotiate header in the first call
-        response = self.tester.get('/authenticate/kerberos/update_ticket')
+        response = self.tester.get('/kerberos/update_ticket')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.headers.get('www-authenticate'), 'Negotiate')
 
@@ -117,12 +117,13 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         krb_token = Headers({})
         krb_token['Authorization'] = 'Negotiate CTOKEN'
 
-        response = self.tester.get('/authenticate/kerberos/update_ticket',
+        response = self.tester.get('/kerberos/update_ticket',
                                    headers=krb_token)
         self.assertEqual(response.status_code, 200)
+        self.tester.logout()
 
     def tearDown(self):
-        self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = 'ldap'
+        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -130,5 +131,6 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         We need to again login the test client as soon as test scenarios
         finishes.
         """
-        app_config.AUTHENTICATION_SOURCES = ['internal']
+        cls.tester.logout()
+        app_config.AUTHENTICATION_SOURCES = [INTERNAL]
         utils.login_tester_account(cls.tester)

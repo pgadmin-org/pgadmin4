@@ -11,6 +11,7 @@ import json
 
 from pgadmin.utils.route import BaseTestGenerator
 import config
+from pgadmin.utils.constants import INTERNAL
 
 
 class MasterPasswordTestCase(BaseTestGenerator):
@@ -53,6 +54,7 @@ class MasterPasswordTestCase(BaseTestGenerator):
 
     def setUp(self):
         config.MASTER_PASSWORD_REQUIRED = True
+        config.AUTHENTICATION_SOURCES = [INTERNAL]
 
     def runTest(self):
         """This function will check change password functionality."""

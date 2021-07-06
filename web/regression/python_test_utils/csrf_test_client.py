@@ -92,9 +92,7 @@ class TestClient(testing.FlaskClient):
         # and make a test request context that has those cookies in it.
         environ_overrides = {}
         self.cookie_jar.inject_wsgi(environ_overrides)
-        with self.app.test_request_context(
-            "/login", environ_overrides=environ_overrides,
-        ):
+        with self.app.test_request_context():
             # Now, we call Flask-WTF's method of generating a CSRF token...
             csrf_token = generate_csrf()
             # ...which also sets a value in `flask.session`, so we need to
@@ -106,18 +104,27 @@ class TestClient(testing.FlaskClient):
             return csrf_token
 
     def login(self, email, password, _follow_redirects=False,
-              headers=None):
+              headers=None, extra_form_data=dict()):
+        csrf_token = None
         if config.SERVER_MODE is True:
-            res = self.get('/login', follow_redirects=True)
+            res = self.get('/login',
+                           follow_redirects=_follow_redirects)
             csrf_token = self.fetch_csrf(res)
-        else:
+
+        if csrf_token is None:
             csrf_token = self.generate_csrf_token()
 
+        form_data = dict(
+            email=email,
+            password=password,
+            csrf_token=csrf_token
+        )
+
+        if extra_form_data:
+            form_data.update(extra_form_data)
+
         res = self.post(
-            '/authenticate/login', data=dict(
-                email=email, password=password,
-                csrf_token=csrf_token,
-            ),
+            '/authenticate/login', data=form_data,
             follow_redirects=_follow_redirects,
             headers=headers
         )

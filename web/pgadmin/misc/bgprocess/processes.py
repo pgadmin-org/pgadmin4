@@ -280,7 +280,7 @@ class BatchProcess(object):
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
         if config.SERVER_MODE and session and \
-                session['_auth_source_manager_obj']['current_source'] == \
+                session['auth_source_manager']['current_source'] == \
                 KERBEROS:
             env['KRB5CCNAME'] = session['KRB5CCNAME']
 

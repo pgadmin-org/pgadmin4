@@ -319,7 +319,7 @@ class Connection(BaseConnection):
                 config.APP_NAME, conn_id)
 
             if config.SERVER_MODE and \
-                    session['_auth_source_manager_obj']['current_source'] == \
+                    session['auth_source_manager']['current_source'] == \
                     KERBEROS and 'KRB5CCNAME' in session\
                     and manager.kerberos_conn:
                 lock.acquire()
@@ -353,7 +353,7 @@ class Connection(BaseConnection):
                 self._wait(pg_conn)
 
             if config.SERVER_MODE and \
-                    session['_auth_source_manager_obj']['current_source'] == \
+                    session['auth_source_manager']['current_source'] == \
                     KERBEROS:
                 environ['KRB5CCNAME'] = ''
 
@@ -378,7 +378,7 @@ class Connection(BaseConnection):
             return False, msg
         finally:
             if config.SERVER_MODE and \
-                    session['_auth_source_manager_obj']['current_source'] == \
+                    session['auth_source_manager']['current_source'] == \
                     KERBEROS and lock.locked():
                 lock.release()
 

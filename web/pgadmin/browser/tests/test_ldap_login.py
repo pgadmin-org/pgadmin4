@@ -11,6 +11,7 @@ import config as app_config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression.test_setup import config_data
+from pgadmin.utils.constants import LDAP, INTERNAL
 
 
 class LDAPLoginTestCase(BaseTestGenerator):
@@ -50,7 +51,7 @@ class LDAPLoginTestCase(BaseTestGenerator):
             ldap_config = config_data['ldap_config'][0][self.config_key_param]
         except (KeyError, TypeError, IndexError):
             self.skipTest("LDAP config not set.")
-        app_config.AUTHENTICATION_SOURCES = ['ldap']
+        app_config.AUTHENTICATION_SOURCES = [LDAP]
         app_config.LDAP_AUTO_CREATE_USER = True
         app_config.LDAP_SERVER_URI = ldap_config['uri']
         app_config.LDAP_BASE_DN = ldap_config['base_dn']
@@ -70,6 +71,7 @@ class LDAPLoginTestCase(BaseTestGenerator):
         if ldap_config['anonymous_bind'] != "" and\
                 ldap_config['anonymous_bind']:
             app_config.LDAP_ANONYMOUS_BIND = True
+        self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = LDAP
 
     def runTest(self):
         """This function checks login functionality."""
@@ -92,5 +94,5 @@ class LDAPLoginTestCase(BaseTestGenerator):
         finishes.
         """
         cls.tester.logout()
-        app_config.AUTHENTICATION_SOURCES = ['internal']
+        app_config.AUTHENTICATION_SOURCES = [INTERNAL]
         utils.login_tester_account(cls.tester)

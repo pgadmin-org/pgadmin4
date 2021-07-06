@@ -50,7 +50,7 @@ from pgadmin.utils.master_password import validate_master_password, \
     set_crypt_key, process_masterpass_disabled
 from pgadmin.model import User
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
-    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER
+    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2
 from pgadmin.authenticate import AuthSourceManager
 
 try:
@@ -607,14 +607,8 @@ class BrowserPluginModule(PgAdminModule):
 
 
 def _get_logout_url():
-    if config.SERVER_MODE and\
-            session['_auth_source_manager_obj']['current_source'] == \
-            KERBEROS:
-        return '{0}?next={1}'.format(url_for(
-            'authenticate.kerberos_logout'), url_for(BROWSER_INDEX))
-
     return '{0}?next={1}'.format(
-        url_for('security.logout'), url_for(BROWSER_INDEX))
+        url_for(current_app.login_manager.logout_view), url_for(BROWSER_INDEX))
 
 
 def _get_supported_browser():
@@ -748,10 +742,10 @@ def index():
         if len(config.AUTHENTICATION_SOURCES) == 1\
                 and INTERNAL in config.AUTHENTICATION_SOURCES:
             auth_only_internal = True
-        auth_source = session['_auth_source_manager_obj'][
+        auth_source = session['auth_source_manager'][
             'source_friendly_name']
 
-        if session['_auth_source_manager_obj']['current_source'] == KERBEROS:
+        if not config.MASTER_PASSWORD_REQUIRED and 'pass_enc_key' in session:
             session['allow_save_password'] = False
 
     response = Response(render_template(
@@ -877,7 +871,8 @@ def app_constants():
         render_template('browser/js/constants.js',
                         INTERNAL=INTERNAL,
                         LDAP=LDAP,
-                        KERBEROS=KERBEROS),
+                        KERBEROS=KERBEROS,
+                        OAUTH2=OAUTH2),
         200, {'Content-Type': MIMETYPE_APP_JS}
     )
 
@@ -1005,8 +1000,9 @@ def set_master_password():
         data = json.loads(data)
 
     # Master password is not applicable for server mode
-    if not config.SERVER_MODE and config.MASTER_PASSWORD_REQUIRED:
-
+    # Enable master password if oauth is used
+    if not config.SERVER_MODE or OAUTH2 in config.AUTHENTICATION_SOURCES\
+            and config.MASTER_PASSWORD_REQUIRED:
         # if master pass is set previously
         if current_user.masterpass_check is not None and \
             data.get('button_click') and \
@@ -1043,7 +1039,7 @@ def set_master_password():
                 existing=True,
                 present=False,
             )
-        elif not get_crypt_key()[0]:
+        elif not get_crypt_key()[1]:
             error_message = None
             if data.get('button_click') and data.get('password') == '':
                 # If user attempted to enter a blank password, then throw error
@@ -1334,6 +1330,9 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
                 do_flash(*get_message('PASSWORD_RESET'))
                 login_user(user)
+                auth_obj = AuthSourceManager(form, [INTERNAL])
+                session['auth_source_manager'] = auth_obj.as_dict()
+
                 return redirect(get_url(_security.post_reset_view) or
                                 get_url(_security.post_login_view))
 

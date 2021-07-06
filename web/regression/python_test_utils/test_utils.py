@@ -1656,14 +1656,14 @@ def create_user(user_details):
         cur = conn.cursor()
         user_details = (
             user_details['login_username'], user_details['login_username'],
-            user_details['login_password'], 1)
+            user_details['login_password'], 1, uuid.uuid4().hex)
 
         cur.execute(
             'select * from user where username = "%s"' % user_details[0])
         user = cur.fetchone()
         if user is None:
-            cur.execute('INSERT INTO user (username, email, password, active) '
-                        'VALUES (?,?,?,?)', user_details)
+            cur.execute('INSERT INTO user (username, email, password, active,'
+                        ' fs_uniquifier) VALUES (?,?,?,?,?)', user_details)
             user_id = cur.lastrowid
             conn.commit()
         else:

@@ -1,10 +1,19 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import url_for from 'sources/url_for';
 import userInfo from 'pgadmin.user_management.current_user';
 import pgConst from 'pgadmin.browser.constants';
 
 function fetch_ticket() {
   // Fetch the Kerberos Updated ticket through SPNEGO
-  return fetch(url_for('authenticate.kerberos_update_ticket')
+  return fetch(url_for('kerberos.update_ticket')
   )
     .then(function(response){
       if (response.status >= 200 && response.status < 300) {
@@ -18,7 +27,7 @@ function fetch_ticket() {
 function fetch_ticket_lifetime () {
   // Fetch the Kerberos ticket lifetime left
 
-  return fetch(url_for('authenticate.kerberos_validate_ticket')
+  return fetch(url_for('kerberos.validate_ticket')
   )
     .then(
       function(response){

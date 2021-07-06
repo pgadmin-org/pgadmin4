@@ -176,7 +176,7 @@ def current_user_info():
             config.ALLOW_SAVE_TUNNEL_PASSWORD and session[
                 'allow_save_password'] else 'false',
             auth_sources=config.AUTHENTICATION_SOURCES,
-            current_auth_source=session['_auth_source_manager_obj'][
+            current_auth_source=session['auth_source_manager'][
                 'current_source'] if config.SERVER_MODE is True else INTERNAL
         ),
         status=200,

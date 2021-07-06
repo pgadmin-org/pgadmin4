@@ -97,6 +97,7 @@ from regression.python_test_utils import test_utils
 from regression.python_test_utils.csrf_test_client import TestClient
 
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
+from pgadmin.utils.constants import LDAP
 
 # Override some other defaults
 from logging import WARNING
@@ -117,7 +118,7 @@ if config.SERVER_MODE is True:
 app.config['WTF_CSRF_ENABLED'] = True
 
 # Authentication sources
-app.PGADMIN_EXTERNAL_AUTH_SOURCE = 'ldap'
+app.PGADMIN_EXTERNAL_AUTH_SOURCE = LDAP
 
 app.test_client_class = TestClient
 test_client = app.test_client()
