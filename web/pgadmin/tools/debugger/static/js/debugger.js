@@ -614,6 +614,7 @@ define([
                       'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                     ),
                     db_label = newTreeInfo.database.label;
+                  pgadminUtils.registerDetachEvent(panel);
 
                   if(data && data.data_obj && data.data_obj.db_name != newTreeInfo.database.label) {
                     db_label = data.data_obj.db_name;

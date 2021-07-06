@@ -9,9 +9,9 @@
 
 define('pgadmin.schemadiff', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'sources/csrf', 'pgadmin.alertifyjs', 'pgadmin.browser.node',
+  'sources/pgadmin', 'sources/csrf', 'pgadmin.alertifyjs', 'sources/utils', 'pgadmin.browser.node',
 ], function(
-  gettext, url_for, $, _, pgAdmin, csrfToken, Alertify,
+  gettext, url_for, $, _, pgAdmin, csrfToken, Alertify, commonUtils,
 ) {
 
   var wcDocker = window.wcDocker,
@@ -118,6 +118,8 @@ define('pgadmin.schemadiff', [
 
         var propertiesPanel = pgBrowser.docker.findPanels('properties'),
           schemaDiffPanel = pgBrowser.docker.addPanel('frm_schemadiff', wcDocker.DOCK.STACKED, propertiesPanel[0]);
+
+        commonUtils.registerDetachEvent(schemaDiffPanel);
 
         // Rename schema diff tab
         schemaDiffPanel.on(wcDocker.EVENT.RENAME, function(panel_data) {
