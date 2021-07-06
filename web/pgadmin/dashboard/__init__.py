@@ -154,7 +154,7 @@ class DashboardModule(PgAdminModule):
         self.long_running_query_threshold = self.dashboard_preference.register(
             'display', 'long_running_query_threshold',
             gettext('Long running query thresholds'), 'threshold',
-            None, category_label=PREF_LABEL_DISPLAY,
+            '2|5', category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('Set the warning and alert threshold value to '
                              'highlight the long-running queries on the '
                              'dashboard.')
