@@ -18,7 +18,6 @@ New features
 Housekeeping
 ************
 
-| `Issue #6130 <https://redmine.postgresql.org/issues/6130>`_ -  Added React framework for the properties dialog and port server group, server, and database dialogs.
 
 Bug fixes
 *********
