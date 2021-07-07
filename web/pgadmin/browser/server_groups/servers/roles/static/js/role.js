@@ -392,7 +392,7 @@ define('pgadmin.node.role', [
         var tree = pgBrowser.tree,
           _i = tree.selected(),
           _d = _i && _i.length == 1 ? tree.itemData(_i) : undefined,
-          obj = this, finalUrl;
+          obj = this, finalUrl, old_role_name;
 
         //RoleReassign Model (Objects like role, database)
         var RoleReassignObjectModel = Backbone.Model.extend({
@@ -402,6 +402,7 @@ define('pgadmin.node.role', [
             did: undefined,
             new_role_id: undefined,
             new_role_name: undefined,
+            old_role_name: undefined,
             drop_with_cascade: false
           },
 
@@ -413,7 +414,7 @@ define('pgadmin.node.role', [
           schema: [
             {
               id: 'role_op',
-              label: gettext('Role operation'),
+              label: gettext('Operation'),
               cell: 'string',
               type: 'radioModern',
               controlsClassName: 'pgadmin-controls col-12 col-sm-8',
@@ -538,7 +539,7 @@ define('pgadmin.node.role', [
             },
             {
               id: 'drop_with_cascade',
-              label: gettext('Drop with'),
+              label: gettext('Cascade?'),
               cell: 'string',
               type: 'switch',
               controlsClassName: 'pgadmin-controls col-12 col-sm-8',
@@ -546,8 +547,8 @@ define('pgadmin.node.role', [
               disabled: 'isDisabled',
               group: gettext('General'),
               options: {
-                'onText':  gettext('CASCADE'),
-                'offText':  gettext('RESTRICT'), 'size': 'mini', width: '90'
+                'onText':  gettext('Yes'),
+                'offText':  gettext('No'), 'size': 'mini'
               },
               deps: ['role_op'],
               helpMessage: gettext('Note: CASCADE will automatically drop objects that depend on the affected objects, and in turn all objects that depend on those objects'),
@@ -577,6 +578,38 @@ define('pgadmin.node.role', [
               },
               first_empty: false,
               helpMessage: gettext('Target database on which the operation will be carried out'),
+            },
+            {
+              id: 'sqltab', label: gettext('SQL'), group: gettext('SQL'),
+              type: 'text', disabled: false, control: Backform.SqlTabControl.extend({
+                initialize: function() {
+                  // Initialize parent class
+                  Backform.SqlTabControl.prototype.initialize.apply(this, arguments);
+                },
+                onTabChange: function(sql_tab_obj) {
+                  // Fetch the information only if the SQL tab is visible at the moment.
+                  if (this.dialog && sql_tab_obj.shown == this.tabIndex) {
+                    var self = this,
+                      roleReassignData = self.model.toJSON(),
+                      getUrl;
+                    // Add existing role
+                    roleReassignData.old_role_name = old_role_name;
+
+                    getUrl = obj.generate_url(_i, 'reassign' , _d, true);
+
+                    $.ajax({
+                      url: getUrl,
+                      type: 'GET',
+                      cache: false,
+                      data: roleReassignData,
+                      dataType: 'json',
+                      contentType: 'application/json',
+                    }).done(function(res) {
+                      self.sqlCtrl.setValue(res.data);
+                    });
+                  }
+                },
+              }),
             }
           ],
           validate: function() {
@@ -668,6 +701,7 @@ define('pgadmin.node.role', [
                   node = _d && pgBrowser.Nodes[_d._type];
 
                 finalUrl = obj.generate_url(_i, 'reassign' , _d, true);
+                old_role_name = _d.label;
 
                 if (!_d)
                   return;

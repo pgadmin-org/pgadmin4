@@ -1302,6 +1302,61 @@ WHERE
         return status, res
 
     @check_precondition()
+    def get_reassign_own_sql(self, gid, sid, rid):
+
+        """
+        This function is used to generate sql for reassign/drop role.
+
+        Args:
+            sid: Server ID
+            rid: Role Id.
+
+        Returns: Json object with sql generate
+        """
+
+        try:
+
+            data = dict()
+
+            if request.data:
+                data = json.loads(request.data, encoding='utf-8')
+            else:
+                rargs = request.args or request.form
+                for k, v in rargs.items():
+                    try:
+                        data[k] = json.loads(v, encoding='utf-8')
+                    except ValueError as ve:
+                        data[k] = v
+
+            required_args = ['role_op', 'did', 'old_role_name',
+                             'new_role_name'] \
+                if 'role_op' in data and data['role_op'] == 'reassign' \
+                else ['role_op', 'did', 'drop_with_cascade']
+
+            for arg in required_args:
+                if arg not in data:
+                    return make_json_response(
+                        data=gettext("-- definition incomplete"),
+                        status=200
+                    )
+
+            is_reassign = True if data['role_op'] == 'reassign' else False
+            data['is_reassign'] = is_reassign
+
+            sql = render_template(
+                "/".join([self.sql_path, _REASSIGN_OWN_SQL]),
+                data=data
+            )
+
+            return make_json_response(
+                data=sql.strip('\n'),
+                status=200
+            )
+
+        except Exception as e:
+            return False, internal_server_error(errormsg=str(e))
+
+    @check_precondition()
     def role_reassign_own(self, gid, sid, rid):
 
         """
@@ -1387,8 +1442,9 @@ WHERE
 
             return make_json_response(
                 success=1,
-                info=gettext("Reassign owned successfully!") if is_reassign
-                else gettext("Drop owned successfully!")
+                info=gettext("Reassign owned executed successfully!")
+                if is_reassign
+                else gettext("Drop owned executed successfully!")
             )
 
         except Exception as e:
