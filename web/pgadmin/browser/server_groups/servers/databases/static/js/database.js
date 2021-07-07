@@ -337,7 +337,7 @@ define('pgadmin.node.database', [
                 return res;
               }),
             spcname:
-              ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, (m)=>{
+              ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
                 return (m.label != 'pg_global');
               }),
             datcollate:

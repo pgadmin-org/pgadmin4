@@ -12,21 +12,19 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getNodeListByName } from '../../../../static/js/node_ajax';
 
 export function getNodePrivilegeRoleSchema(nodeObj, treeNodeInfo, itemNodeData, privileges) {
-  let keys = ['grantee', 'privileges', 'grantor'];
   return new PrivilegeRoleSchema(
-    ()=>getNodeListByName('role', treeNodeInfo, itemNodeData, ()=>true, (res)=>{
+    ()=>getNodeListByName('role', treeNodeInfo, itemNodeData, {}, ()=>true, (res)=>{
       res.unshift({label: 'PUBLIC', value: 'PUBLIC'});
       return res;
     }),
     ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
-    keys,
     treeNodeInfo,
     privileges
   );
 }
 
 export default class PrivilegeRoleSchema extends BaseUISchema {
-  constructor(granteeOptions, grantorOptions, keys, nodeInfo, supportedPrivs) {
+  constructor(granteeOptions, grantorOptions, nodeInfo, supportedPrivs) {
     super({
       grantee: undefined,
       grantor: nodeInfo?.server?.user?.name,
@@ -36,7 +34,6 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
     this.grantorOptions = grantorOptions;
     this.nodeInfo = nodeInfo;
     this.supportedPrivs = supportedPrivs || [];
-    this.keys = keys;
   }
 
   get baseFields() {

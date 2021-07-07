@@ -16,7 +16,6 @@ export default class SecLabelSchema extends BaseUISchema {
       provider: undefined,
       label: undefined,
     });
-    this.keys = ['provider', 'label'];
   }
 
   get baseFields() {
