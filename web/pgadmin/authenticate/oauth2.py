@@ -58,8 +58,9 @@ def init_app(app):
             session['auth_source_manager'] = auth_obj.as_dict()
             session['auth_obj'] = None
             return redirect(get_post_login_redirect())
+        session['auth_obj'] = None
         logout_user()
-        flash(msg)
+        flash(msg, 'danger')
         return redirect(get_post_login_redirect())
 
     @blueprint.route('/logout', endpoint="logout",
@@ -115,13 +116,14 @@ class OAuth2Authentication(BaseAuthentication):
 
     def login(self, form):
         profile = self.get_user_profile()
-        print(profile)
         if 'email' not in profile or not profile['email']:
             current_app.logger.exception(
-                'An email is required for authentication'
+                "An email id is required to login into pgAdmin. "
+                "Please update your Oauth2 profile."
             )
             return False, gettext(
-                "An email is required for the oauth authentication.")
+                "An email id is required to login into pgAdmin. "
+                "Please update your Oauth2 profile.")
 
         user, msg = self.__auto_create_user(profile)
         if user:
