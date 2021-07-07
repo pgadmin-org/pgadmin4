@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import CatalogObjectSchema from './catalog_object.ui';
+
 define('pgadmin.node.catalog_object', [
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
@@ -40,12 +42,15 @@ define('pgadmin.node.catalog_object', [
         this.initialized = true;
 
       },
+      getSchema: ()=>new CatalogObjectSchema(),
+      /* Few fields are kept since the properties tab for collection is not
+      yet migrated to new react schema. Once the properties for collection
+      is removed, remove this model */
       model: pgAdmin.Browser.Node.Model.extend({
         defaults: {
           name: undefined,
           namespaceowner: undefined,
           nspacl: undefined,
-          is_sys_obj: undefined,
           description: undefined,
         },
         schema: [{
@@ -58,14 +63,12 @@ define('pgadmin.node.catalog_object', [
           id: 'owner', label: gettext('Owner'), cell: 'string',
           type: 'text', readonly: true,
         },{
-          id: 'is_sys_obj', label: gettext('System catalog object?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline' ,  readonly: true,
         },
         ],
       }),
+
     });
 
   }
