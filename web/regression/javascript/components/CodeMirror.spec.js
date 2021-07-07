@@ -26,6 +26,7 @@ describe('CodeMirror', ()=>{
     cmInstance = mount(
       <CodeMirror
         value={'Init text'}
+        isAsync={true}
         options={options}
         className="testClass"
       />);

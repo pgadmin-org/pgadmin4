@@ -10,7 +10,7 @@
 import React, { useCallback } from 'react';
 import _ from 'lodash';
 
-import { FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, InputSQL, FormInputColor, FormInputFileSelect, FormInputToggle, InputSwitch } from '../components/FormComponents';
+import { FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor, FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL } from '../components/FormComponents';
 import { InputSelect, InputText } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
@@ -26,6 +26,10 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
       value = e.target.value;
     }
     onChange && onChange(value);
+  });
+
+  const onSqlChange = useCallback((e, cm) => {
+    onChange && onChange(cm.getValue());
   });
 
   const onIntChange = useCallback((e) => {
@@ -73,7 +77,7 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
   case 'file':
     return <FormInputFileSelect name={name} value={value} onChange={onTextChange} className={className} {...props} />;
   case 'sql':
-    return <InputSQL name={name} value={value} onChange={onTextChange} className={className} {...props}/>;
+    return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} {...props}/>;
   default:
     return <></>;
   }

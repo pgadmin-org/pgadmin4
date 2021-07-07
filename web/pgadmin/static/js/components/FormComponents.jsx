@@ -127,8 +127,9 @@ FormInput.propTypes = {
   testcid: PropTypes.any,
 };
 
-export function InputSQL({value, options}) {
+export function InputSQL({value, options, onChange, ...props}) {
   const classes = useStyles();
+
   return (
     <CodeMirror
       value={value||''}
@@ -138,18 +139,26 @@ export function InputSQL({value, options}) {
         ...options,
       }}
       className={classes.sql}
+      events={{
+        change: (cm)=>{
+          onChange && onChange(cm.getValue(), cm);
+        },
+      }}
+      {...props}
     />
   );
 }
 InputSQL.propTypes = {
   value: PropTypes.string,
   options: PropTypes.object,
+  onChange: PropTypes.func
+
 };
 
-export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, controlProps}) {
+export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, controlProps, ...props}) {
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputSQL value={value} options={controlProps}/>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} >
+      <InputSQL value={value} options={controlProps} {...props}/>
     </FormInput>
   );
 }
@@ -162,6 +171,7 @@ FormInputSQL.propTypes = {
   testcid: PropTypes.string,
   value: PropTypes.string,
   controlProps: PropTypes.object,
+  change: PropTypes.func,
 };
 
 

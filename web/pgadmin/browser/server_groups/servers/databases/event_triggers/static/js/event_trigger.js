@@ -7,6 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
+import EventTriggerSchema from './event_trigger.ui';
+import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../static/js/node_ajax';
+
 define('pgadmin.node.event_trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser',
@@ -63,6 +66,19 @@ define('pgadmin.node.event_trigger', [
           enable: pgBrowser.Nodes['database'].is_conn_allow,
         },
         ]);
+      },
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new EventTriggerSchema(
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            function_names: ()=>getNodeAjaxOptions('fopts', this, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'trigger_function',
+            }),
+          },
+          {
+            eventowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+          }
+        );
       },
       // Define the model for event trigger node
       model: pgAdmin.Browser.Node.Model.extend({

@@ -56,6 +56,7 @@ function SQLTab({active, getSQLValue}) {
     options={{
       readOnly: true,
     }}
+    isAsync={true}
   />;
 }
 

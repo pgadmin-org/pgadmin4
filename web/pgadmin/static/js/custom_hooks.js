@@ -1,4 +1,4 @@
-import {useRef, useEffect} from 'react';
+import {useRef, useEffect, useState} from 'react';
 
 /* React hook for setInterval */
 export function useInterval(callback, delay) {
@@ -37,5 +37,23 @@ export function useDelayDebounce(callback, args, delay) {
     }, delay);
     return () => clearTimeout(delayDebounceFn);
   }, [args]);
+}
+
+export function useOnScreen(ref) {
+  const [isIntersecting, setIntersecting] = useState(false);
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      setIntersecting(entry.isIntersecting);
+    }
+  );
+  useEffect(() => {
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+    // Remove the observer as soon as the component is unmounted
+    return () => { observer.disconnect(); };
+  }, []);
+
+  return isIntersecting;
 }
 
