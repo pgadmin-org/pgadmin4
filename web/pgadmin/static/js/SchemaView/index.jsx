@@ -251,7 +251,7 @@ const sessDataReducer = (state, action)=>{
     _.set(data, action.path, action.value);
     /* If there is any dep listeners get the changes */
     if(action.depChange) {
-      _.set(data, action.depChange(data));
+      data = action.depChange(data);
     }
     break;
   case SCHEMA_STATE_ACTIONS.ADD_ROW:
@@ -412,16 +412,14 @@ function SchemaDialogView({
     setSaving(true);
     setLoaderText('Saving...');
     /* Get the changed data */
-    let changeData = {};
+    let changeData = getChangedData(schema, viewHelperProps.mode, sessData);
 
     /* Add the id when in edit mode */
-    if(viewHelperProps.mode === 'edit') {
-      changeData = getChangedData(schema, viewHelperProps.mode, sessData);
-      changeData[schema.idAttribute] = schema.origData[schema.idAttribute];
-    } else {
+    if(viewHelperProps.mode !== 'edit') {
       /* If new then merge the changed data with origData */
-      changeData = {...schema.origData};
-      _.merge(changeData, sessData);
+      changeData = _.assign({}, schema.origData, changeData);
+    } else {
+      changeData[schema.idAttribute] = schema.origData[schema.idAttribute];
     }
 
     props.onSave(isNew, changeData)
@@ -455,13 +453,10 @@ function SchemaDialogView({
     /* Called when SQL tab is active */
     if(dirty) {
       if(!formErr.name) {
-        let changeData = {};
-        if(viewHelperProps.mode === 'edit') {
-          changeData = getChangedData(schema, viewHelperProps.mode, sessData);
-        } else {
+        let changeData = getChangedData(schema, viewHelperProps.mode, sessData);
+        if(viewHelperProps.mode !== 'edit') {
           /* If new then merge the changed data with origData */
-          changeData = {...schema.origData};
-          _.merge(changeData, sessData);
+          changeData = _.assign({}, schema.origData, changeData);
         }
         /* Call the passed incoming getSQLValue func to get the SQL
         return of getSQLValue should be a promise.
