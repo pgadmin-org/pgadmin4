@@ -56,9 +56,11 @@ def init_app(app):
         status, msg = auth_obj.login()
         if status:
             session['auth_source_manager'] = auth_obj.as_dict()
-            session['auth_obj'] = None
+            if 'auth_obj' in session:
+                session.pop('auth_obj')
             return redirect(get_post_login_redirect())
-        session['auth_obj'] = None
+        if 'auth_obj' in session:
+            session.pop('auth_obj')
         logout_user()
         flash(msg, 'danger')
         return redirect(get_post_login_redirect())

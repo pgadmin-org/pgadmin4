@@ -75,13 +75,15 @@ def login():
             return redirect(get_post_logout_redirect())
         session['auth_source_manager'] = current_auth_obj
         if 'auth_obj' in session:
-            session['auth_obj'] = None
+            session.pop('auth_obj')
         return redirect(get_post_login_redirect())
 
     elif isinstance(msg, Response):
         return msg
     elif 'oauth2_button' in request.form and not isinstance(msg, str):
         return msg
+    if 'auth_obj' in session:
+        session.pop('auth_obj')
     flash(msg, 'danger')
     response = redirect(get_post_logout_redirect())
     return response
@@ -116,8 +118,11 @@ class AuthSourceManager:
             if auth_src in self.auth_sources:
                 if 'internal_button' in request.form:
                     self.auth_sources.remove(auth_src)
-                elif INTERNAL in self.auth_sources:
-                    self.auth_sources.remove(INTERNAL)
+                else:
+                    if INTERNAL in self.auth_sources:
+                        self.auth_sources.remove(INTERNAL)
+                    if LDAP in self.auth_sources:
+                        self.auth_sources.remove(LDAP)
 
     def set_current_source(self, source):
         self.current_source = source
