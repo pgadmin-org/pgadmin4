@@ -1001,7 +1001,8 @@ def set_master_password():
 
     # Master password is not applicable for server mode
     # Enable master password if oauth is used
-    if not config.SERVER_MODE or OAUTH2 in config.AUTHENTICATION_SOURCES\
+    if not config.SERVER_MODE or OAUTH2 in config.AUTHENTICATION_SOURCES \
+        or KERBEROS in config.AUTHENTICATION_SOURCES \
             and config.MASTER_PASSWORD_REQUIRED:
         # if master pass is set previously
         if current_user.masterpass_check is not None and \
