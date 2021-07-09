@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-06-11 19:14+0530\n"
+"POT-Creation-Date: 2021-07-09 21:51+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: pgadmin/__init__.py:346 pgadmin/authenticate/internal.py:28
+#: pgadmin/__init__.py:347 pgadmin/authenticate/internal.py:28
 msgid "Incorrect username or password."
 msgstr ""
 
-#: pgadmin/__init__.py:596 pgadmin/__init__.py:646
+#: pgadmin/__init__.py:606 pgadmin/__init__.py:656
 msgid "Auto-detected {0} installation with the data directory at {1}"
 msgstr ""
 
-#: pgadmin/__init__.py:726
+#: pgadmin/__init__.py:736
 msgid "403 FORBIDDEN"
 msgstr ""
 
@@ -45,6 +45,8 @@ msgid "Desktop"
 msgstr ""
 
 #: pgadmin/about/static/js/about.js:40
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:684
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:827
 #: pgadmin/browser/server_groups/servers/static/js/server.js:304
 #: pgadmin/browser/server_groups/servers/static/js/server.js:479
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1465
@@ -70,14 +72,14 @@ msgstr ""
 #: pgadmin/tools/maintenance/static/js/maintenance.js:305
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:932
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:950
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2600
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2630
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5484
-#: pgadmin/tools/user_management/static/js/user_management.js:752
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2610
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2640
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5517
+#: pgadmin/tools/user_management/static/js/user_management.js:763
 msgid "OK"
 msgstr ""
 
-#: pgadmin/about/static/js/about.js:72 pgadmin/about/static/js/about.js:76
+#: pgadmin/about/static/js/about.js:89 pgadmin/about/static/js/about.js:93
 #, python-format
 msgid "About %s"
 msgstr ""
@@ -125,12 +127,6 @@ msgstr ""
 msgid "Server Configuration"
 msgstr ""
 
-#: pgadmin/authenticate/__init__.py:179
-msgid ""
-"pgAdmin internal user authentication is not enabled, please contact "
-"administrator."
-msgstr ""
-
 #: pgadmin/authenticate/internal.py:29
 msgid "Login failed"
 msgstr ""
@@ -147,23 +143,23 @@ msgstr ""
 msgid "Email/Username is not valid"
 msgstr ""
 
-#: pgadmin/authenticate/internal.py:94
+#: pgadmin/authenticate/internal.py:96
 msgid "internal"
 msgstr ""
 
-#: pgadmin/authenticate/kerberos.py:55
+#: pgadmin/authenticate/kerberos.py:163
 msgid "kerberos"
 msgstr ""
 
-#: pgadmin/authenticate/kerberos.py:63
+#: pgadmin/authenticate/kerberos.py:171
 msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
 msgstr ""
 
-#: pgadmin/authenticate/kerberos.py:103
+#: pgadmin/authenticate/kerberos.py:211
 msgid "Kerberos authentication failed. Couldn't find kerberos ticket."
 msgstr ""
 
-#: pgadmin/authenticate/kerberos.py:133
+#: pgadmin/authenticate/kerberos.py:241
 msgid "Delegated credentials not supplied."
 msgstr ""
 
@@ -211,8 +207,14 @@ msgstr ""
 msgid "Could not find the specified user."
 msgstr ""
 
-#: pgadmin/authenticate/registry.py:50
-msgid "Authentication source '{0}' has not been implemented."
+#: pgadmin/authenticate/oauth2.py:126
+msgid ""
+"An email id is required to login into pgAdmin. Please update your Oauth2 "
+"profile."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:158
+msgid "Please set the configuration parameters properly."
 msgstr ""
 
 #: pgadmin/browser/__init__.py:68
@@ -309,43 +311,43 @@ msgstr ""
 msgid "Nodes"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:930
+#: pgadmin/browser/__init__.py:926
 msgid "Set Master Password"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:932
+#: pgadmin/browser/__init__.py:928
 msgid "Please set a master password for pgAdmin."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:933
+#: pgadmin/browser/__init__.py:929
 msgid ""
 "This will be used to secure and later unlock saved passwords and other "
 "credentials."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:937
+#: pgadmin/browser/__init__.py:933
 msgid "Unlock Saved Passwords"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:939
+#: pgadmin/browser/__init__.py:935
 msgid "Please enter your master password."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:940
+#: pgadmin/browser/__init__.py:936
 msgid ""
 "This is required to unlock saved passwords and reconnect to the database "
 "server(s)."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:1016
+#: pgadmin/browser/__init__.py:1014
 msgid "Incorrect master password"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:1049
+#: pgadmin/browser/__init__.py:1047
 msgid "Master password cannot be empty"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:1230
+#: pgadmin/browser/__init__.py:1228
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
 " the administrators of this service if you need to reset your password."
@@ -441,23 +443,23 @@ msgid ""
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:127
-#: pgadmin/static/js/sqleditor/macro_model.js:41 pgadmin/utils/__init__.py:371
-#: pgadmin/utils/__init__.py:380
+#: pgadmin/static/js/sqleditor/macro_model.js:41 pgadmin/utils/__init__.py:375
+#: pgadmin/utils/__init__.py:384
 msgid "Key"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:128
-#: pgadmin/static/js/keyboard_shortcuts.js:77 pgadmin/utils/__init__.py:385
+#: pgadmin/static/js/keyboard_shortcuts.js:77 pgadmin/utils/__init__.py:389
 msgid "Shift"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:129
-#: pgadmin/static/js/keyboard_shortcuts.js:80 pgadmin/utils/__init__.py:391
+#: pgadmin/static/js/keyboard_shortcuts.js:80 pgadmin/utils/__init__.py:395
 msgid "Ctrl"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:130
-#: pgadmin/utils/__init__.py:396
+#: pgadmin/utils/__init__.py:400
 msgid "Alt/Option"
 msgstr ""
 
@@ -571,7 +573,7 @@ msgid "Query tool tab title"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:475
-#: pgadmin/browser/register_browser_preferences.py:537
+#: pgadmin/browser/register_browser_preferences.py:546
 msgid ""
 "Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
 "can provide any string with or without placeholders of their choice. The "
@@ -603,11 +605,7 @@ msgid ""
 "placeholders."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:511
-msgid "Open in new browser tab"
-msgstr ""
-
-#: pgadmin/browser/register_browser_preferences.py:513
+#: pgadmin/browser/register_browser_preferences.py:510
 #: pgadmin/browser/static/js/collection.js:76
 #: pgadmin/browser/static/js/node.js:235
 #: pgadmin/browser/static/js/toolbar.js:60
@@ -619,43 +617,47 @@ msgstr ""
 msgid "Query Tool"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:514
+#: pgadmin/browser/register_browser_preferences.py:511
 #: pgadmin/tools/debugger/__init__.py:63
 #: pgadmin/tools/debugger/static/js/debugger.js:201
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:1120
 msgid "Debugger"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:515
+#: pgadmin/browser/register_browser_preferences.py:512
 #: pgadmin/tools/schema_diff/__init__.py:43
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:50
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:101
 msgid "Schema Diff"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:516
+#: pgadmin/browser/register_browser_preferences.py:513
 msgid "ERD Tool"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:517
+#: pgadmin/browser/register_browser_preferences.py:518
 #: pgadmin/browser/static/js/toolbar.js:73
 #: pgadmin/browser/static/js/toolbar.js:74
 #: pgadmin/browser/static/js/toolbar.js:140
-#: pgadmin/tools/psql/static/js/psql_module.js:127
+#: pgadmin/tools/psql/static/js/psql_module.js:126
 msgid "PSQL Tool"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:518
+#: pgadmin/browser/register_browser_preferences.py:522
+msgid "Open in new browser tab"
+msgstr ""
+
+#: pgadmin/browser/register_browser_preferences.py:525
 msgid ""
 "Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
 "drop-down to set open in new browser tab for that particular module."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:528
+#: pgadmin/browser/register_browser_preferences.py:535
 msgid "Select open new tab..."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:534
+#: pgadmin/browser/register_browser_preferences.py:543
 msgid "PSQL tool tab title"
 msgstr ""
 
@@ -672,10 +674,10 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:188
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:204
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:237
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:660
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:665
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:129
-#: pgadmin/browser/templates/browser/js/messages.js:21
-#: pgadmin/browser/templates/browser/js/messages.js:39
+#: pgadmin/browser/templates/browser/js/messages.js:29
+#: pgadmin/browser/templates/browser/js/messages.js:47
 #: pgadmin/browser/utils.py:448
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:97
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:162
@@ -759,7 +761,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:180
 #: pgadmin/browser/server_groups/servers/static/js/server.js:925
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1107
-#: pgadmin/tools/user_management/static/js/user_management.js:353
+#: pgadmin/tools/user_management/static/js/user_management.js:354
 msgid "Username"
 msgstr ""
 
@@ -768,7 +770,7 @@ msgid "SSL Mode"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:742
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:476
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:955
 #: pgadmin/browser/server_groups/servers/static/js/server.js:877
 #: pgadmin/tools/backup/static/js/backup.js:397
 #: pgadmin/tools/restore/static/js/restore.js:279
@@ -779,8 +781,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.js:138
 #: pgadmin/browser/server_groups/servers/static/js/server.js:986
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:177
-#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:445
-#: pgadmin/tools/user_management/static/js/user_management.js:392
+#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:449
+#: pgadmin/tools/user_management/static/js/user_management.js:393
 msgid "Role"
 msgstr ""
 
@@ -862,7 +864,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1475
 #: pgadmin/tools/schema_diff/__init__.py:370
-#: pgadmin/tools/sqleditor/__init__.py:1812
+#: pgadmin/tools/sqleditor/__init__.py:1817
 msgid "Server connected."
 msgstr ""
 
@@ -1173,15 +1175,15 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:97
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:141
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:108
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:412
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:891
 #: pgadmin/browser/server_groups/servers/static/js/server.js:819
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:133
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:342
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
-#: pgadmin/browser/server_groups/static/js/server_group.js:54
-#: pgadmin/dashboard/static/js/dashboard.js:830
-#: pgadmin/dashboard/static/js/dashboard.js:857
-#: pgadmin/dashboard/static/js/dashboard.js:1099
+#: pgadmin/browser/server_groups/static/js/server_group.js:62
+#: pgadmin/dashboard/static/js/dashboard.js:849
+#: pgadmin/dashboard/static/js/dashboard.js:876
+#: pgadmin/dashboard/static/js/dashboard.js:1118
 #: pgadmin/misc/dependencies/static/js/dependencies.js:131
 #: pgadmin/misc/dependents/static/js/dependents.js:131
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:42
@@ -1241,7 +1243,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:362
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:142
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:105
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:415
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:894
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:345
 #: pgadmin/tools/import_export/static/js/import_export.js:278
 msgid "OID"
@@ -1431,9 +1433,9 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:438
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:441
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:445
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:419
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:432
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:439
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:898
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:911
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:918
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:349
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:132
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:138
@@ -1586,8 +1588,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:365
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:146
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:356
-#: pgadmin/dashboard/static/js/dashboard.js:840
-#: pgadmin/dashboard/static/js/dashboard.js:1104
+#: pgadmin/dashboard/static/js/dashboard.js:859
+#: pgadmin/dashboard/static/js/dashboard.js:1123
 #: pgadmin/tools/backup/static/js/backup.js:361
 #: pgadmin/tools/restore/static/js/restore.js:252
 msgid "Owner"
@@ -1677,7 +1679,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:241
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:225
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:461
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:575
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1054
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:382
 msgid "Security labels"
 msgstr ""
@@ -1717,7 +1719,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:452
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:464
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:553
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:577
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1056
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:361
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:376
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:384
@@ -1840,9 +1842,9 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:163
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:220
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:131
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:597
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1076
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:394
-#: pgadmin/browser/server_groups/static/js/server_group.js:76
+#: pgadmin/browser/server_groups/static/js/server_group.js:84
 msgid "Name cannot be empty."
 msgstr ""
 
@@ -1985,7 +1987,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:313
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:55
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:171
-#: pgadmin/browser/templates/browser/js/messages.js:32
+#: pgadmin/browser/templates/browser/js/messages.js:40
 #: pgadmin/misc/statistics/static/js/statistics.js:156
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:333
 #: pgadmin/tools/debugger/static/js/direct.js:1010
@@ -2064,13 +2066,13 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:216
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:369
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:448
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:447
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:454
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:467
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:481
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:492
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:499
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:506
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:926
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:933
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:946
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:960
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:971
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:978
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:985
 #: pgadmin/browser/server_groups/servers/static/js/privilege.js:180
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:360
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:375
@@ -2120,10 +2122,10 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:29
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:26
-#: pgadmin/dashboard/static/js/dashboard.js:666
-#: pgadmin/dashboard/static/js/dashboard.js:943
-#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:419
-#: pgadmin/tools/user_management/static/js/user_management.js:717
+#: pgadmin/dashboard/static/js/dashboard.js:685
+#: pgadmin/dashboard/static/js/dashboard.js:962
+#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:423
+#: pgadmin/tools/user_management/static/js/user_management.js:728
 msgid "User"
 msgstr ""
 
@@ -2676,7 +2678,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:223
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:510
 #: pgadmin/browser/static/js/browser.js:292
-#: pgadmin/browser/templates/browser/js/messages.js:31
+#: pgadmin/browser/templates/browser/js/messages.js:39
 #: pgadmin/misc/static/explain/js/explain.js:1241
 #: pgadmin/misc/static/explain/js/explain.js:1373
 #: pgadmin/misc/static/explain/js/explain.js:1374
@@ -2836,7 +2838,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:183
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/static/js/fts_parser.js:161
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:515
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:520
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:40
 msgid "Name must be specified."
 msgstr ""
@@ -3090,8 +3092,8 @@ msgid "Trigger Functions"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:62
-#: pgadmin/dashboard/static/js/dashboard.js:818
-#: pgadmin/dashboard/static/js/dashboard.js:1087
+#: pgadmin/dashboard/static/js/dashboard.js:837
+#: pgadmin/dashboard/static/js/dashboard.js:1106
 msgid "Mode"
 msgstr ""
 
@@ -3218,7 +3220,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:268
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:1169
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:457
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:569
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1048
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:370
 #: pgadmin/tools/debugger/static/js/direct.js:1697
 msgid "Parameters"
@@ -3629,6 +3631,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:840
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:288
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:265
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:570
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:857
 #: pgadmin/browser/static/js/browser.js:791
 #: pgadmin/browser/static/js/node.js:965 pgadmin/browser/static/js/node.js:1504
 #: pgadmin/browser/static/js/node.js:1538
@@ -3639,11 +3643,11 @@ msgstr ""
 #: pgadmin/static/js/sqleditor/history/query_history_entries.js:276
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:116
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:235
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2128
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2175
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2441
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3079
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4172
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2138
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2185
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2451
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3112
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4205
 msgid "Yes"
 msgstr ""
 
@@ -3656,6 +3660,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:288
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:158
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:266
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:571
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:858
 #: pgadmin/browser/static/js/browser.js:792
 #: pgadmin/browser/static/js/node.js:966 pgadmin/browser/static/js/node.js:1505
 #: pgadmin/browser/static/js/node.js:1539
@@ -3666,11 +3672,11 @@ msgstr ""
 #: pgadmin/static/js/sqleditor/history/query_history_entries.js:276
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:116
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/TableDialog.js:235
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2129
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2176
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2442
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3080
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4173
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2139
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2186
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2452
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3113
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4206
 msgid "No"
 msgstr ""
 
@@ -3817,6 +3823,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/utils.py:195
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:203
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1476
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1339
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:877
 msgid "-- definition incomplete"
 msgstr ""
@@ -5237,6 +5244,7 @@ msgid "Partition key expression cannot be empty."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:259
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:435
 msgid "Operation"
 msgstr ""
 
@@ -5779,6 +5787,7 @@ msgid "Transition"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:494
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:355
 msgid "New table"
 msgstr ""
 
@@ -6048,7 +6057,7 @@ msgid "Alias"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:974
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:542
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1021
 msgid "Members"
 msgstr ""
 
@@ -6301,9 +6310,9 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:30
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:27
-#: pgadmin/dashboard/static/js/dashboard.js:661
-#: pgadmin/dashboard/static/js/dashboard.js:768
-#: pgadmin/dashboard/static/js/dashboard.js:835
+#: pgadmin/dashboard/static/js/dashboard.js:680
+#: pgadmin/dashboard/static/js/dashboard.js:787
+#: pgadmin/dashboard/static/js/dashboard.js:854
 #: pgadmin/misc/dependents/static/js/dependents.js:217
 #: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:384
 msgid "Database"
@@ -6338,7 +6347,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:182
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1282
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:295
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2557
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2567
 msgid "Connection lost"
 msgstr ""
 
@@ -6372,7 +6381,7 @@ msgid "Character type"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:437
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:440
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:919
 msgid "Connection limit"
 msgstr ""
 
@@ -6475,7 +6484,7 @@ msgid "Connection"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:192
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:418
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:897
 #: pgadmin/browser/server_groups/servers/static/js/server.js:961
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1117
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1138
@@ -6640,7 +6649,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:423
 msgid ""
 "Specifies whether the subscription should be actively replicating, or "
-"whether it should be just setup but not started yet. "
+"whether it should be just setup but not started yet."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:426
@@ -6648,7 +6657,7 @@ msgid "Refresh publication?"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:429
-msgid "Fetch missing table information from publisher. "
+msgid "Fetch missing table information from publisher."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:439
@@ -7315,7 +7324,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:100
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:138
 #: pgadmin/browser/server_groups/servers/static/js/server.js:812
-#: pgadmin/browser/server_groups/static/js/server_group.js:46
+#: pgadmin/browser/server_groups/static/js/server_group.js:54
 msgid "ID"
 msgstr ""
 
@@ -7525,10 +7534,11 @@ msgid "Kind"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:150
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:603
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:139
 #: pgadmin/browser/static/js/browser.js:306
 #: pgadmin/browser/static/js/browser.js:550
-#: pgadmin/browser/templates/browser/js/messages.js:24
+#: pgadmin/browser/templates/browser/js/messages.js:32
 #: pgadmin/dashboard/static/js/dashboard.js:208
 #: pgadmin/static/js/backform.pgadmin.js:2168
 #: pgadmin/static/js/backgrid.pgadmin.js:2271
@@ -7588,7 +7598,7 @@ msgid "Fail"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:199
-#: pgadmin/dashboard/__init__.py:449 pgadmin/dashboard/__init__.py:476
+#: pgadmin/dashboard/__init__.py:495 pgadmin/dashboard/__init__.py:522
 #: pgadmin/dashboard/static/js/dashboard.js:120
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:37
 msgid "Success"
@@ -7712,20 +7722,20 @@ msgstr ""
 msgid "Dirty rate limit cannot be empty."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:30
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:29
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:33
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:30
 msgid "Login/Group Roles"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:175
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:180
 msgid "Date format is invalid."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:194
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:199
 msgid "Connection limit must be an integer value or equal to -1."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:289
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:294
 msgid ""
 "\n"
 "Role members information must be passed as an array of JSON objects in "
@@ -7740,7 +7750,7 @@ msgid ""
 "]"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:307
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:312
 msgid ""
 "\n"
 "Role membership information must be passed as a string representing an "
@@ -7767,7 +7777,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:348
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:353
 msgid ""
 "\n"
 "Role membership information must be passed as an array of JSON objects in"
@@ -7782,7 +7792,7 @@ msgid ""
 "]"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:366
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:371
 msgid ""
 "\n"
 "Role membership information must be passed as a string representing an "
@@ -7809,7 +7819,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:406
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:411
 msgid ""
 "\n"
 "Security Label must be passed as an array of JSON objects in the "
@@ -7823,7 +7833,7 @@ msgid ""
 "]"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:421
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:426
 msgid ""
 "\n"
 "Security Label must be passed as an array of JSON objects in the "
@@ -7850,7 +7860,7 @@ msgid ""
 "        ]\n"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:460
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:465
 msgid ""
 "\n"
 "Configuration parameters/variables must be passed as an array of JSON "
@@ -7865,7 +7875,7 @@ msgid ""
 "]"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:476
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:481
 msgid ""
 "\n"
 "Configuration parameters/variables must be passed as an array of JSON "
@@ -7895,176 +7905,307 @@ msgid ""
 "    ]\n"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:572
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:577
 msgid "The current user does not have permission to drop the role."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:577
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:582
 msgid "The current user does not have permission to update the role."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:583
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:588
 msgid "The current user does not have permission to create the role."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:616
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:869
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:621
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:874
 msgid ""
 "Error retrieving the role information.\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:623
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:876
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:628
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:881
 msgid "Could not find the role on the database server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:717
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:735
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:766
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:834
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:943
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:953
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:998
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:722
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:740
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:771
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:839
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:948
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:958
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1003
 msgid ""
 "\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:888
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:893
 msgid ""
 "Could not drop the role.\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:905
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:910
 msgid ""
 "Could not generate reversed engineered query for the role.\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:913
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:918
 msgid "Could not generate reversed engineered query for the role."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:933
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:987
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:938
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:992
 msgid ""
 "Could not create the role.\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:1236
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1241
 msgid ""
 "Error retrieving variable information for the role.\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:1269
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1274
 msgid ""
 "Error retrieving the variable options for the role.\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:48
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1445
+msgid "Reassign owned executed successfully!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1447
+msgid "Drop owned executed successfully!"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:49
 #: pgadmin/browser/server_groups/servers/static/js/server.js:41
 msgid "Provider"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:52
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:53
 #: pgadmin/browser/server_groups/servers/static/js/server.js:45
 msgid "Security label"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:61
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:71
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:62
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:72
 msgid "Please specify the value for all the security providers."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:259
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:260
 msgid "Select roles"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:319
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:320
 msgid "Login/Group Role"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:354
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:355
 msgid "Login Role"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:356
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:357
 msgid "Group Role"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:368
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:374
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:380
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:369
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:375
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:381
 msgid "Login/Group Role..."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:432
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:388
+msgid "Reassign/Drop Owned..."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:440
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:541
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:568
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:582
+#: pgadmin/browser/templates/browser/js/messages.js:31
+#: pgadmin/static/js/backform.pgadmin.js:2090
+#: pgadmin/tools/user_management/static/js/user_management.js:723
+msgid "General"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:450
+msgid ""
+"Change the ownership or\n"
+"drop the database objects owned by a database role"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:454
+msgid "Reassign objects to"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:458
+msgid "New owner of the affected objects"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:562
+msgid "Cascade?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:574
+msgid ""
+"Note: CASCADE will automatically drop objects that depend on the affected"
+" objects, and in turn all objects that depend on those objects"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:578
+msgid "From database"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:600
+msgid "Target database on which the operation will be carried out"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:677
+#: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:194
+#: pgadmin/browser/templates/browser/index.html:156
+#: pgadmin/tools/user_management/__init__.py:47
+#: pgadmin/tools/user_management/static/js/user_management.js:972
+msgid "Users"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:680
+#: pgadmin/browser/server_groups/servers/static/js/server.js:305
+#: pgadmin/browser/server_groups/servers/static/js/server.js:476
+#: pgadmin/browser/server_groups/servers/static/js/server.js:1462
+#: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:197
+#: pgadmin/browser/static/js/browser.js:743
+#: pgadmin/browser/static/js/node.js:1730
+#: pgadmin/browser/static/js/wizard.js:137
+#: pgadmin/misc/file_manager/static/js/create_dialogue.js:34
+#: pgadmin/misc/file_manager/static/js/create_dialogue.js:195
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:86
+#: pgadmin/misc/file_manager/static/js/select_dialogue.js:131
+#: pgadmin/misc/file_manager/static/js/storage_dialogue.js:25
+#: pgadmin/preferences/static/js/preferences.js:508
+#: pgadmin/static/js/slickgrid/editors.js:63
+#: pgadmin/static/js/sqleditor/filter_dialog.js:79
+#: pgadmin/static/js/sqleditor/macro.js:68
+#: pgadmin/static/js/sqleditor/new_connection_dialog.js:83
+#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:249
+#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:74
+#: pgadmin/tools/datagrid/static/js/show_data.js:156
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:629
+#: pgadmin/tools/debugger/static/js/debugger_ui.js:985
+#: pgadmin/tools/erd/static/js/erd_tool/dialogs/DialogWrapper.js:68
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:263
+#: pgadmin/tools/import_export/static/js/import_export.js:495
+#: pgadmin/tools/maintenance/static/js/maintenance.js:300
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:57
+#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:929
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2615
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2804
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5375
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5449
+#: pgadmin/tools/user_management/static/js/user_management.js:758
+msgid "Cancel"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:769
+#: pgadmin/browser/static/js/wizard.js:124
+#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:131
+#: pgadmin/tools/erd/static/js/erd_tool/dialogs/DialogWrapper.js:114
+#: pgadmin/tools/import_export/static/js/import_export.js:641
+#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:110
+msgid "Close error bar"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:804
+msgid "Please provide a new role name"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:834
+#, python-format
+msgid "%s Objects"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:835
+#, python-format
+msgid "Are you sure you wish to %s all the objects owned by the selected role?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:847
+msgid "Role reassign/drop failed."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:867
+#, python-format
+msgid "Reassign/Drop Owned - '%s'"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:911
 msgid "Account expires"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:435
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:914
 msgid "No Expiry"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:436
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:915
 msgid ""
 "Please note that if you leave this field blank, then password will never "
 "expire."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:443
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:922
 msgid "Can login?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:450
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:929
 msgid "Superuser?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:466
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:945
 msgid "Create roles?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:473
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:952
 msgid "System role?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:480
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:959
 msgid "Create databases?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:487
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:966
 msgid "Update catalog?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:500
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:979
 msgid "Inherit rights from the parent roles?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:507
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:986
 msgid "Can initiate streaming replication and backups?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:515
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:994
 msgid "Member of"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:516
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:542
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:995
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1021
 msgid "Membership"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:535
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:561
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1014
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1040
 msgid "Select the checkbox for roles to include WITH ADMIN OPTION."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:537
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:563
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1016
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:1042
 msgid "Roles shown with a check mark have the WITH ADMIN OPTION set."
 msgstr ""
 
@@ -8134,7 +8275,7 @@ msgid "Change Password..."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:132
-msgid "Please connect server to enable change password. "
+msgid "Please connect server to enable change password."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:137
@@ -8178,42 +8319,6 @@ msgstr ""
 msgid "Are you sure you want to disconnect the server %s?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:305
-#: pgadmin/browser/server_groups/servers/static/js/server.js:476
-#: pgadmin/browser/server_groups/servers/static/js/server.js:1462
-#: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:197
-#: pgadmin/browser/static/js/browser.js:743
-#: pgadmin/browser/static/js/node.js:1730
-#: pgadmin/browser/static/js/wizard.js:137
-#: pgadmin/misc/file_manager/static/js/create_dialogue.js:34
-#: pgadmin/misc/file_manager/static/js/create_dialogue.js:195
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:86
-#: pgadmin/misc/file_manager/static/js/select_dialogue.js:131
-#: pgadmin/misc/file_manager/static/js/storage_dialogue.js:25
-#: pgadmin/preferences/static/js/preferences.js:465
-#: pgadmin/static/js/slickgrid/editors.js:63
-#: pgadmin/static/js/sqleditor/filter_dialog.js:79
-#: pgadmin/static/js/sqleditor/macro.js:68
-#: pgadmin/static/js/sqleditor/new_connection_dialog.js:83
-#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:249
-#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:74
-#: pgadmin/tools/datagrid/static/js/show_data.js:156
-#: pgadmin/tools/debugger/static/js/debugger_ui.js:629
-#: pgadmin/tools/debugger/static/js/debugger_ui.js:985
-#: pgadmin/tools/erd/static/js/erd_tool/dialogs/DialogWrapper.js:68
-#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:263
-#: pgadmin/tools/import_export/static/js/import_export.js:495
-#: pgadmin/tools/maintenance/static/js/maintenance.js:300
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:57
-#: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:929
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2605
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2794
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5342
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5416
-#: pgadmin/tools/user_management/static/js/user_management.js:747
-msgid "Cancel"
-msgstr ""
-
 #: pgadmin/browser/server_groups/servers/static/js/server.js:353
 msgid "Reload server configuration"
 msgstr ""
@@ -8252,8 +8357,8 @@ msgstr ""
 #: pgadmin/browser/templates/browser/index.html:150
 #: pgadmin/templates/security/change_password.html:20
 #: pgadmin/templates/security/change_password.html:21
-#: pgadmin/tools/user_management/static/js/user_management.js:101
-#: pgadmin/tools/user_management/static/js/user_management.js:127
+#: pgadmin/tools/user_management/static/js/user_management.js:102
+#: pgadmin/tools/user_management/static/js/user_management.js:128
 msgid "Change Password"
 msgstr ""
 
@@ -8303,9 +8408,9 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/server.js:948
 #: pgadmin/browser/server_groups/servers/static/js/server.js:953
 #: pgadmin/browser/server_groups/servers/static/js/server.js:958
-#: pgadmin/browser/templates/browser/js/messages.js:35
+#: pgadmin/browser/templates/browser/js/messages.js:43
 #: pgadmin/misc/statistics/static/js/statistics.js:124
-#: pgadmin/preferences/static/js/preferences.js:215
+#: pgadmin/preferences/static/js/preferences.js:240
 msgid "True"
 msgstr ""
 
@@ -8313,9 +8418,9 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/server.js:948
 #: pgadmin/browser/server_groups/servers/static/js/server.js:953
 #: pgadmin/browser/server_groups/servers/static/js/server.js:958
-#: pgadmin/browser/templates/browser/js/messages.js:36
+#: pgadmin/browser/templates/browser/js/messages.js:44
 #: pgadmin/misc/statistics/static/js/statistics.js:125
-#: pgadmin/preferences/static/js/preferences.js:216
+#: pgadmin/preferences/static/js/preferences.js:241
 msgid "False"
 msgstr ""
 
@@ -8419,7 +8524,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1373
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:895
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2823
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2833
 msgid "Connect to Server"
 msgstr ""
 
@@ -8501,13 +8606,6 @@ msgstr ""
 msgid "Move objects to another tablespace"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:194
-#: pgadmin/browser/templates/browser/index.html:156
-#: pgadmin/tools/user_management/__init__.py:47
-#: pgadmin/tools/user_management/static/js/user_management.js:961
-msgid "Users"
-msgstr ""
-
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:264
 msgid "Please select tablespace."
 msgstr ""
@@ -8575,8 +8673,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:31
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:28
-#: pgadmin/dashboard/static/js/dashboard.js:681
-#: pgadmin/dashboard/static/js/dashboard.js:958
+#: pgadmin/dashboard/static/js/dashboard.js:700
+#: pgadmin/dashboard/static/js/dashboard.js:977
 msgid "Backend start"
 msgstr ""
 
@@ -8588,8 +8686,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:41
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:13
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:36
-#: pgadmin/dashboard/static/js/dashboard.js:676
-#: pgadmin/dashboard/static/js/dashboard.js:953
+#: pgadmin/dashboard/static/js/dashboard.js:695
+#: pgadmin/dashboard/static/js/dashboard.js:972
 msgid "Client"
 msgstr ""
 
@@ -8601,8 +8699,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:14
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:37
-#: pgadmin/dashboard/static/js/dashboard.js:671
-#: pgadmin/dashboard/static/js/dashboard.js:948
+#: pgadmin/dashboard/static/js/dashboard.js:690
+#: pgadmin/dashboard/static/js/dashboard.js:967
 msgid "Application"
 msgstr ""
 
@@ -8664,20 +8762,20 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:42
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:15
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:38
-#: pgadmin/dashboard/static/js/dashboard.js:695
-#: pgadmin/dashboard/static/js/dashboard.js:972
+#: pgadmin/dashboard/static/js/dashboard.js:714
+#: pgadmin/dashboard/static/js/dashboard.js:991
 msgid "Waiting?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/static/js/server_group.js:20
+#: pgadmin/browser/server_groups/static/js/server_group.js:28
 msgid "Server Group"
 msgstr ""
 
-#: pgadmin/browser/server_groups/static/js/server_group.js:34
+#: pgadmin/browser/server_groups/static/js/server_group.js:42
 msgid "Server Group..."
 msgstr ""
 
-#: pgadmin/browser/server_groups/static/js/server_group.js:69
+#: pgadmin/browser/server_groups/static/js/server_group.js:77
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:34
 msgid "The ID cannot be changed."
 msgstr ""
@@ -8742,6 +8840,10 @@ msgstr ""
 msgid "Are you sure you want to close the %s browser?"
 msgstr ""
 
+#: pgadmin/browser/static/js/browser.js:1003
+msgid "SUGGESTED SITES"
+msgstr ""
+
 #: pgadmin/browser/static/js/browser.js:2097
 msgid "Error retrieving details for the node."
 msgstr ""
@@ -8761,7 +8863,7 @@ msgstr ""
 
 #: pgadmin/browser/static/js/collection.js:95
 #: pgadmin/browser/static/js/node.js:255
-#: pgadmin/tools/psql/static/js/psql_module.js:63
+#: pgadmin/tools/psql/static/js/psql_module.js:62
 msgid "PSQL Tool (Beta)"
 msgstr ""
 
@@ -8773,7 +8875,7 @@ msgid "Select"
 msgstr ""
 
 #: pgadmin/browser/static/js/collection.js:254
-#: pgadmin/dashboard/static/js/dashboard.js:474
+#: pgadmin/dashboard/static/js/dashboard.js:492
 #: pgadmin/misc/dependencies/static/js/dependencies.js:112
 #: pgadmin/misc/dependents/static/js/dependents.js:112
 #: pgadmin/misc/statistics/static/js/statistics.js:299
@@ -8788,7 +8890,7 @@ msgstr ""
 #: pgadmin/browser/static/js/collection.js:290
 #: pgadmin/browser/static/js/collection.js:351
 #: pgadmin/browser/static/js/node.js:493
-#: pgadmin/browser/templates/browser/js/messages.js:42
+#: pgadmin/browser/templates/browser/js/messages.js:50
 #: pgadmin/misc/sql/static/js/sql.js:134
 #: pgadmin/misc/statistics/static/js/statistics.js:258
 msgid "Retrieving data from the server..."
@@ -8815,7 +8917,7 @@ msgid "Error retrieving properties - %s"
 msgstr ""
 
 #: pgadmin/browser/static/js/collection.js:426
-#: pgadmin/browser/templates/browser/js/messages.js:43
+#: pgadmin/browser/templates/browser/js/messages.js:51
 #: pgadmin/misc/dependencies/static/js/dependencies.js:309
 #: pgadmin/misc/dependents/static/js/dependents.js:315
 #: pgadmin/misc/statistics/static/js/statistics.js:344
@@ -8973,7 +9075,8 @@ msgstr ""
 #: pgadmin/browser/static/js/node.js:1492
 #: pgadmin/browser/static/js/node.js:1526
 #: pgadmin/browser/static/js/node.js:1556
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5473
+#: pgadmin/preferences/static/js/preferences.js:339
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5506
 msgid "Warning"
 msgstr ""
 
@@ -9004,12 +9107,12 @@ msgid "Changes will be lost. Are you sure you want to reset?"
 msgstr ""
 
 #: pgadmin/browser/static/js/node.js:1765
-#: pgadmin/preferences/static/js/preferences.js:469
-#: pgadmin/preferences/static/js/preferences.js:494
+#: pgadmin/preferences/static/js/preferences.js:512
+#: pgadmin/preferences/static/js/preferences.js:537
 #: pgadmin/static/js/sqleditor/macro.js:73
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:48
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:272
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5425
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5458
 msgid "Save"
 msgstr ""
 
@@ -9022,13 +9125,13 @@ msgid "Changes will be lost. Are you sure you want to close the dialog?"
 msgstr ""
 
 #: pgadmin/browser/static/js/node.ui.js:37
-#: pgadmin/browser/templates/browser/js/messages.js:40
+#: pgadmin/browser/templates/browser/js/messages.js:48
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:130
 msgid "Select All"
 msgstr ""
 
 #: pgadmin/browser/static/js/node.ui.js:45
-#: pgadmin/browser/templates/browser/js/messages.js:41
+#: pgadmin/browser/templates/browser/js/messages.js:49
 msgid "Unselect All"
 msgstr ""
 
@@ -9044,10 +9147,10 @@ msgstr ""
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:488
 #: pgadmin/templates/security/messages.html:7
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:524
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2558
-#: pgadmin/tools/user_management/static/js/user_management.js:134
-#: pgadmin/tools/user_management/static/js/user_management.js:234
-#: pgadmin/tools/user_management/static/js/user_management.js:968
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2568
+#: pgadmin/tools/user_management/static/js/user_management.js:135
+#: pgadmin/tools/user_management/static/js/user_management.js:235
+#: pgadmin/tools/user_management/static/js/user_management.js:979
 msgid "Close"
 msgstr ""
 
@@ -9063,17 +9166,9 @@ msgstr ""
 msgid "Left panel logo"
 msgstr ""
 
-#: pgadmin/browser/static/js/wizard.js:124
-#: pgadmin/tools/backup/static/js/backup_dialog_wrapper.js:131
-#: pgadmin/tools/erd/static/js/erd_tool/dialogs/DialogWrapper.js:114
-#: pgadmin/tools/import_export/static/js/import_export.js:641
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:110
-msgid "Close error bar"
-msgstr ""
-
 #: pgadmin/browser/static/js/wizard.js:131
 #: pgadmin/browser/templates/browser/index.html:135 pgadmin/help/__init__.py:59
-#: pgadmin/help/__init__.py:71 pgadmin/preferences/static/js/preferences.js:457
+#: pgadmin/help/__init__.py:71 pgadmin/preferences/static/js/preferences.js:500
 #: pgadmin/static/js/sqleditor/filter_dialog.js:72
 #: pgadmin/static/js/sqleditor/filter_dialog.js:73
 #: pgadmin/static/js/sqleditor/macro.js:61
@@ -9127,7 +9222,7 @@ msgid "HELP ARTICLES"
 msgstr ""
 
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:235
-#: pgadmin/misc/file_manager/static/js/utility.js:728
+#: pgadmin/misc/file_manager/static/js/utility.js:754
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:62
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:443
 #: pgadmin/tools/debugger/static/js/direct.js:1861
@@ -9226,55 +9321,49 @@ msgid ""
 "target=\"_new\">here</a> for more information."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:22
+#: pgadmin/browser/templates/browser/js/messages.js:30
 msgid "Click here for details."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:23
-#: pgadmin/static/js/backform.pgadmin.js:2090
-#: pgadmin/tools/user_management/static/js/user_management.js:712
-msgid "General"
-msgstr ""
-
-#: pgadmin/browser/templates/browser/js/messages.js:25
+#: pgadmin/browser/templates/browser/js/messages.js:33
 msgid "Definition incomplete"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:26
+#: pgadmin/browser/templates/browser/js/messages.js:34
 msgid "Nothing changed"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:27
+#: pgadmin/browser/templates/browser/js/messages.js:35
 #, python-format
 msgid "'%s' must be an integer."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:28
+#: pgadmin/browser/templates/browser/js/messages.js:36
 #, python-format
 msgid "'%s' must be a numeric."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:29
+#: pgadmin/browser/templates/browser/js/messages.js:37
 #, python-format
 msgid "'%s' must be greater than or equal to %s."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:30
+#: pgadmin/browser/templates/browser/js/messages.js:38
 #, python-format
 msgid "'%s' must be less than or equal to %s."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:33
+#: pgadmin/browser/templates/browser/js/messages.js:41
 #: pgadmin/misc/sql/static/js/sql.js:102
 msgid "No SQL could be generated for the selected object."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:34
+#: pgadmin/browser/templates/browser/js/messages.js:42
 #: pgadmin/misc/statistics/static/js/statistics.js:220
 msgid "No statistics are available for the selected object."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:37
+#: pgadmin/browser/templates/browser/js/messages.js:45
 #: pgadmin/static/js/backform.pgadmin.js:2805
 #: pgadmin/tools/backup/static/js/backup.js:106
 #: pgadmin/tools/backup/static/js/backup.js:243
@@ -9282,99 +9371,109 @@ msgstr ""
 msgid "Note"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/messages.js:38
+#: pgadmin/browser/templates/browser/js/messages.js:46
 #: pgadmin/misc/sql/static/js/sql.js:154
 #: pgadmin/misc/statistics/static/js/statistics.js:332
 #, python-format
 msgid "Error retrieving the information - %s"
 msgstr ""
 
-#: pgadmin/browser/templates/browser/js/utils.js:144
-#: pgadmin/browser/templates/browser/js/utils.js:152
+#: pgadmin/browser/templates/browser/js/utils.js:143
+#: pgadmin/browser/templates/browser/js/utils.js:151
 msgid "Error loading script - "
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:57
+#: pgadmin/dashboard/__init__.py:58
 msgid "Dashboard"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:73
+#: pgadmin/dashboard/__init__.py:74
 msgid "The number of seconds between graph samples."
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:77
+#: pgadmin/dashboard/__init__.py:78
 msgid "Dashboards"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:82
+#: pgadmin/dashboard/__init__.py:83
 msgid "Session statistics refresh rate"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:84 pgadmin/dashboard/__init__.py:92
-#: pgadmin/dashboard/__init__.py:100 pgadmin/dashboard/__init__.py:108
-#: pgadmin/dashboard/__init__.py:116
+#: pgadmin/dashboard/__init__.py:85 pgadmin/dashboard/__init__.py:93
+#: pgadmin/dashboard/__init__.py:101 pgadmin/dashboard/__init__.py:109
+#: pgadmin/dashboard/__init__.py:117
 msgid "Graphs"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:90
+#: pgadmin/dashboard/__init__.py:91
 msgid "Transaction throughput refresh rate"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:98
+#: pgadmin/dashboard/__init__.py:99
 msgid "Tuples in refresh rate"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:106
+#: pgadmin/dashboard/__init__.py:107
 msgid "Tuples out refresh rate"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:114
+#: pgadmin/dashboard/__init__.py:115
 msgid "Block I/O statistics refresh rate"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:122
+#: pgadmin/dashboard/__init__.py:123
 msgid "Show graphs?"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:124
+#: pgadmin/dashboard/__init__.py:125
 msgid "If set to True, graphs will be displayed on dashboards."
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:130
+#: pgadmin/dashboard/__init__.py:131
 msgid "Show activity?"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:132
+#: pgadmin/dashboard/__init__.py:133
 msgid "If set to True, activity tables will be displayed on dashboards."
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:138
+#: pgadmin/dashboard/__init__.py:139
 msgid "Show graph data points?"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:140
+#: pgadmin/dashboard/__init__.py:141
 msgid "If set to True, data points will be visible on graph lines."
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:146
+#: pgadmin/dashboard/__init__.py:147
 msgid "Show mouse hover tooltip?"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:148
+#: pgadmin/dashboard/__init__.py:149
 msgid ""
 "If set to True, tooltip will appear on mouse hover on the graph lines "
 "giving the data point details"
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:202
+#: pgadmin/dashboard/__init__.py:156
+msgid "Long running query thresholds"
+msgstr ""
+
+#: pgadmin/dashboard/__init__.py:158
+msgid ""
+"Set the warning and alert threshold value to highlight the long-running "
+"queries on the dashboard."
+msgstr ""
+
+#: pgadmin/dashboard/__init__.py:212
 msgid "Please connect to the selected {0} to view the table."
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:207
+#: pgadmin/dashboard/__init__.py:217
 msgid "Please connect to the selected {0} to view the graph."
 msgstr ""
 
-#: pgadmin/dashboard/__init__.py:449 pgadmin/dashboard/__init__.py:476
+#: pgadmin/dashboard/__init__.py:495 pgadmin/dashboard/__init__.py:522
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:498
 msgid "Failed"
 msgstr ""
@@ -9388,8 +9487,8 @@ msgid "An error occurred whilst rendering the graph."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:222
-#: pgadmin/dashboard/static/js/dashboard.js:533
-#: pgadmin/static/js/sqleditor/execute_query.js:341
+#: pgadmin/dashboard/static/js/dashboard.js:552
+#: pgadmin/static/js/sqleditor/execute_query.js:346
 #: pgadmin/static/js/sqleditor/query_tool_http_error_handler.js:51
 #: pgadmin/static/js/sqleditor_utils.js:211
 msgid ""
@@ -9507,137 +9606,137 @@ msgstr ""
 msgid "Please connect to the selected server to view the dashboard."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:542
+#: pgadmin/dashboard/static/js/dashboard.js:561
 msgid "Please connect to the selected server to view the table."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:545
+#: pgadmin/dashboard/static/js/dashboard.js:564
 msgid "An error occurred whilst rendering the table."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:656
-#: pgadmin/dashboard/static/js/dashboard.js:763
-#: pgadmin/dashboard/static/js/dashboard.js:938
-#: pgadmin/dashboard/static/js/dashboard.js:1037
+#: pgadmin/dashboard/static/js/dashboard.js:675
+#: pgadmin/dashboard/static/js/dashboard.js:782
+#: pgadmin/dashboard/static/js/dashboard.js:957
+#: pgadmin/dashboard/static/js/dashboard.js:1056
 msgid "PID"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:686
-#: pgadmin/dashboard/static/js/dashboard.js:963
+#: pgadmin/dashboard/static/js/dashboard.js:705
+#: pgadmin/dashboard/static/js/dashboard.js:982
 msgid "State"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:703
-#: pgadmin/dashboard/static/js/dashboard.js:980
+#: pgadmin/dashboard/static/js/dashboard.js:722
+#: pgadmin/dashboard/static/js/dashboard.js:999
 msgid "Wait event"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:708
-#: pgadmin/dashboard/static/js/dashboard.js:985
+#: pgadmin/dashboard/static/js/dashboard.js:727
+#: pgadmin/dashboard/static/js/dashboard.js:1004
 msgid "Blocking PIDs"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:773
-#: pgadmin/dashboard/static/js/dashboard.js:1042
+#: pgadmin/dashboard/static/js/dashboard.js:792
+#: pgadmin/dashboard/static/js/dashboard.js:1061
 msgid "Lock type"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:778
-#: pgadmin/dashboard/static/js/dashboard.js:1047
+#: pgadmin/dashboard/static/js/dashboard.js:797
+#: pgadmin/dashboard/static/js/dashboard.js:1066
 msgid "Target relation"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:783
-#: pgadmin/dashboard/static/js/dashboard.js:1052
+#: pgadmin/dashboard/static/js/dashboard.js:802
+#: pgadmin/dashboard/static/js/dashboard.js:1071
 msgid "Page"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:788
-#: pgadmin/dashboard/static/js/dashboard.js:1057
+#: pgadmin/dashboard/static/js/dashboard.js:807
+#: pgadmin/dashboard/static/js/dashboard.js:1076
 msgid "Tuple"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:793
-#: pgadmin/dashboard/static/js/dashboard.js:1062
+#: pgadmin/dashboard/static/js/dashboard.js:812
+#: pgadmin/dashboard/static/js/dashboard.js:1081
 msgid "vXID (target)"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:798
-#: pgadmin/dashboard/static/js/dashboard.js:1067
+#: pgadmin/dashboard/static/js/dashboard.js:817
+#: pgadmin/dashboard/static/js/dashboard.js:1086
 msgid "XID (target)"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:803
-#: pgadmin/dashboard/static/js/dashboard.js:1072
+#: pgadmin/dashboard/static/js/dashboard.js:822
+#: pgadmin/dashboard/static/js/dashboard.js:1091
 msgid "Class"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:808
-#: pgadmin/dashboard/static/js/dashboard.js:1077
+#: pgadmin/dashboard/static/js/dashboard.js:827
+#: pgadmin/dashboard/static/js/dashboard.js:1096
 msgid "Object ID"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:813
-#: pgadmin/dashboard/static/js/dashboard.js:1082
+#: pgadmin/dashboard/static/js/dashboard.js:832
+#: pgadmin/dashboard/static/js/dashboard.js:1101
 msgid "vXID (owner)"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:823
-#: pgadmin/dashboard/static/js/dashboard.js:1092
+#: pgadmin/dashboard/static/js/dashboard.js:842
+#: pgadmin/dashboard/static/js/dashboard.js:1111
 msgid "Granted?"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:845
-#: pgadmin/dashboard/static/js/dashboard.js:1109
+#: pgadmin/dashboard/static/js/dashboard.js:864
+#: pgadmin/dashboard/static/js/dashboard.js:1128
 msgid "XID"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:850
-#: pgadmin/dashboard/static/js/dashboard.js:1114
+#: pgadmin/dashboard/static/js/dashboard.js:869
+#: pgadmin/dashboard/static/js/dashboard.js:1133
 msgid "Prepared at"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:862
+#: pgadmin/dashboard/static/js/dashboard.js:881
 msgid "Category"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:867
+#: pgadmin/dashboard/static/js/dashboard.js:886
 msgid "Setting"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:872
+#: pgadmin/dashboard/static/js/dashboard.js:891
 msgid "Unit"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:877
+#: pgadmin/dashboard/static/js/dashboard.js:896
 msgid "Description"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1195
+#: pgadmin/dashboard/static/js/dashboard.js:1214
 msgid "You cannot cancel background worker processes."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1197
+#: pgadmin/dashboard/static/js/dashboard.js:1216
 msgid "You cannot terminate background worker processes."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1206
+#: pgadmin/dashboard/static/js/dashboard.js:1225
 msgid "You are not allowed to cancel the main active session."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1208
+#: pgadmin/dashboard/static/js/dashboard.js:1227
 msgid "You are not allowed to terminate the main active session."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1216
+#: pgadmin/dashboard/static/js/dashboard.js:1235
 msgid "The session is already in idle state."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1235
+#: pgadmin/dashboard/static/js/dashboard.js:1254
 msgid "Superuser privileges are required to cancel another users query."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/dashboard.js:1237
+#: pgadmin/dashboard/static/js/dashboard.js:1256
 msgid "Superuser privileges are required to terminate another users query."
 msgstr ""
 
@@ -9666,15 +9765,15 @@ msgstr ""
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:36
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:783
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:77
-#: pgadmin/tools/user_management/static/js/user_management.js:1156
+#: pgadmin/tools/user_management/static/js/user_management.js:1167
 msgid "Search"
 msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:33
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:38
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:27
-#: pgadmin/preferences/static/js/preferences.js:533
-#: pgadmin/preferences/static/js/preferences.js:550
+#: pgadmin/preferences/static/js/preferences.js:576
+#: pgadmin/preferences/static/js/preferences.js:593
 msgid "Refresh"
 msgstr ""
 
@@ -9762,7 +9861,7 @@ msgstr ""
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/dashboard_stats.sql:8
 #: pgadmin/dashboard/templates/dashboard/sql/gpdb_5.0_plus/dashboard_stats.sql:8
-#: pgadmin/tools/user_management/static/js/user_management.js:432
+#: pgadmin/tools/user_management/static/js/user_management.js:433
 msgid "Active"
 msgstr ""
 
@@ -9884,7 +9983,7 @@ msgid ""
 "theme"
 msgstr ""
 
-#: pgadmin/misc/__init__.py:222
+#: pgadmin/misc/__init__.py:220
 msgid "Invalid binary path."
 msgstr ""
 
@@ -10026,7 +10125,7 @@ msgid "Grid"
 msgstr ""
 
 #: pgadmin/misc/file_manager/__init__.py:177
-#: pgadmin/misc/file_manager/static/js/utility.js:1444
+#: pgadmin/misc/file_manager/static/js/utility.js:1470
 msgid "Show hidden files and folders?"
 msgstr ""
 
@@ -10078,7 +10177,7 @@ msgid "There was an error renaming the file:"
 msgstr ""
 
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:145
-#: pgadmin/misc/file_manager/static/js/utility.js:473
+#: pgadmin/misc/file_manager/static/js/utility.js:481
 msgid "Error occurred while checking access permission."
 msgstr ""
 
@@ -10089,19 +10188,19 @@ msgstr ""
 msgid "Select file"
 msgstr ""
 
-#: pgadmin/misc/file_manager/static/js/utility.js:1432
-#: pgadmin/misc/file_manager/static/js/utility.js:1439
+#: pgadmin/misc/file_manager/static/js/utility.js:1458
+#: pgadmin/misc/file_manager/static/js/utility.js:1465
 msgid "All Files"
 msgstr ""
 
-#: pgadmin/misc/file_manager/static/js/utility.js:1448
+#: pgadmin/misc/file_manager/static/js/utility.js:1474
 #: pgadmin/tools/backup/static/js/backup.js:156
 #: pgadmin/tools/import_export/static/js/import_export.js:97
 #: pgadmin/tools/restore/static/js/restore.js:100
 msgid "Format"
 msgstr ""
 
-#: pgadmin/misc/file_manager/static/js/utility.js:1770
+#: pgadmin/misc/file_manager/static/js/utility.js:1800
 msgid "Drop files here to upload."
 msgstr ""
 
@@ -10316,8 +10415,8 @@ msgid "Summary:"
 msgstr ""
 
 #: pgadmin/preferences/__init__.py:57
-#: pgadmin/preferences/static/js/preferences.js:456
-#: pgadmin/preferences/static/js/preferences.js:479
+#: pgadmin/preferences/static/js/preferences.js:499
+#: pgadmin/preferences/static/js/preferences.js:522
 msgid "Preferences"
 msgstr ""
 
@@ -10330,36 +10429,44 @@ msgstr ""
 msgid "help_str"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:224
+#: pgadmin/preferences/static/js/preferences.js:249
 msgid "Show"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:225
+#: pgadmin/preferences/static/js/preferences.js:250
 msgid "Hide"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:420
+#: pgadmin/preferences/static/js/preferences.js:340
+msgid "Alert"
+msgstr ""
+
+#: pgadmin/preferences/static/js/preferences.js:341
+msgid "(in minutes)"
+msgstr ""
+
+#: pgadmin/preferences/static/js/preferences.js:461
 msgid "Category is not selected."
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:517
+#: pgadmin/preferences/static/js/preferences.js:560
 msgid "Browser tree refresh required"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:518
+#: pgadmin/preferences/static/js/preferences.js:561
 msgid "A browser tree refresh is required. Do you wish to refresh the tree?"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:534
-#: pgadmin/preferences/static/js/preferences.js:551
+#: pgadmin/preferences/static/js/preferences.js:577
+#: pgadmin/preferences/static/js/preferences.js:594
 msgid "Later"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:541
+#: pgadmin/preferences/static/js/preferences.js:584
 msgid "Refresh required"
 msgstr ""
 
-#: pgadmin/preferences/static/js/preferences.js:542
+#: pgadmin/preferences/static/js/preferences.js:585
 msgid ""
 "A page refresh is required to apply the theme. Do you wish to refresh the"
 " page now?"
@@ -10417,6 +10524,18 @@ msgstr ""
 msgid "Toggle"
 msgstr ""
 
+#: pgadmin/static/js/backform.pgadmin.js:1133
+msgid "Set as default"
+msgstr ""
+
+#: pgadmin/static/js/backform.pgadmin.js:1152
+msgid "Database Server"
+msgstr ""
+
+#: pgadmin/static/js/backform.pgadmin.js:1159
+msgid "Binary Path"
+msgstr ""
+
 #: pgadmin/static/js/backform.pgadmin.js:1164
 msgid "Select binary path..."
 msgstr ""
@@ -10435,15 +10554,15 @@ msgstr ""
 
 #: pgadmin/static/js/backform.pgadmin.js:1196
 msgid ""
-" Enter the directory in which the psql, pg_dump, pg_dumpall, and "
+"Enter the directory in which the psql, pg_dump, pg_dumpall, and "
 "pg_restore utilities can be found for the corresponding database server "
 "version. The default path will be used for server versions that do not "
-"have apath specified."
+"have a path specified."
 msgstr ""
 
 #: pgadmin/static/js/backform.pgadmin.js:1682
 #: pgadmin/static/js/backgrid.pgadmin.js:1253
-#: pgadmin/tools/user_management/static/js/user_management.js:1158
+#: pgadmin/tools/user_management/static/js/user_management.js:1169
 msgid "Add"
 msgstr ""
 
@@ -10455,11 +10574,11 @@ msgstr ""
 msgid "Preview not available..."
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:3223
+#: pgadmin/static/js/backform.pgadmin.js:3228
 msgid "No color"
 msgstr ""
 
-#: pgadmin/static/js/backform.pgadmin.js:3414
+#: pgadmin/static/js/backform.pgadmin.js:3419
 msgid "Space"
 msgstr ""
 
@@ -10552,25 +10671,25 @@ msgstr ""
 msgid "Transaction status check failed."
 msgstr ""
 
-#: pgadmin/static/js/utils.js:407
+#: pgadmin/static/js/utils.js:410
 msgid "Please configure the PostgreSQL Binary Path in the Preferences dialog."
 msgstr ""
 
-#: pgadmin/static/js/utils.js:412
+#: pgadmin/static/js/utils.js:415
 msgid ""
 "Please configure the EDB Advanced Server Binary Path in the Preferences "
 "dialog."
 msgstr ""
 
-#: pgadmin/static/js/utils.js:419
+#: pgadmin/static/js/utils.js:422
 msgid "Configuration required"
 msgstr ""
 
-#: pgadmin/static/js/utils.js:424
+#: pgadmin/static/js/utils.js:427
 msgid "Preferences Error"
 msgstr ""
 
-#: pgadmin/static/js/utils.js:425
+#: pgadmin/static/js/utils.js:428
 #, python-format
 msgid "Failed to load preference %s of module %s"
 msgstr ""
@@ -10661,9 +10780,9 @@ msgstr ""
 #: pgadmin/static/js/selection/clipboard.js:83
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:178
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:657
-#: pgadmin/tools/user_management/static/js/user_management.js:922
-#: pgadmin/tools/user_management/static/js/user_management.js:1184
-#: pgadmin/tools/user_management/static/js/user_management.js:1201
+#: pgadmin/tools/user_management/static/js/user_management.js:933
+#: pgadmin/tools/user_management/static/js/user_management.js:1195
+#: pgadmin/tools/user_management/static/js/user_management.js:1212
 msgid "Error"
 msgstr ""
 
@@ -10706,8 +10825,8 @@ msgstr ""
 msgid "Query returned successfully in %s."
 msgstr ""
 
-#: pgadmin/static/js/sqleditor/execute_query.js:230
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3112
+#: pgadmin/static/js/sqleditor/execute_query.js:235
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3145
 msgid "Running query..."
 msgstr ""
 
@@ -10804,11 +10923,11 @@ msgstr ""
 msgid "Connect to server"
 msgstr ""
 
-#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:463
+#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:467
 msgid "Please select database"
 msgstr ""
 
-#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:467
+#: pgadmin/static/js/sqleditor/new_connection_dialog_model.js:471
 msgid "Please select user"
 msgstr ""
 
@@ -10910,7 +11029,7 @@ msgstr ""
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:113
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:115
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:342
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:352
 #: pgadmin/utils/constants.py:22
 msgid "Explain"
 msgstr ""
@@ -10932,15 +11051,15 @@ msgstr ""
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:137
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:139
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5351
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:661
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5384
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:674
 msgid "Commit"
 msgstr ""
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:143
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:145
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5348
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:679
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5381
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:692
 msgid "Rollback"
 msgstr ""
 
@@ -10973,7 +11092,7 @@ msgstr ""
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:182
 #: pgadmin/tools/debugger/static/js/direct.js:1720
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:352
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:362
 msgid "Messages"
 msgstr ""
 
@@ -11034,6 +11153,11 @@ msgstr ""
 #: pgadmin/templates/security/login_user.html:17
 #, python-format
 msgid "<a href=\"%(url)s\" class=\"text-white\">Forgotten your password</a>?"
+msgstr ""
+
+#: pgadmin/templates/security/login_user.html:30
+#, python-format
+msgid "Login with %(oauth_name)s"
 msgstr ""
 
 #: pgadmin/templates/security/reset_password.html:2
@@ -11389,11 +11513,11 @@ msgstr ""
 msgid "View/Edit Data"
 msgstr ""
 
-#: pgadmin/tools/datagrid/static/js/datagrid.js:333
+#: pgadmin/tools/datagrid/static/js/datagrid.js:335
 #: pgadmin/tools/debugger/static/js/debugger.js:511
-#: pgadmin/tools/debugger/static/js/debugger.js:697
+#: pgadmin/tools/debugger/static/js/debugger.js:698
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:873
-#: pgadmin/tools/schema_diff/static/js/schema_diff.js:158
+#: pgadmin/tools/schema_diff/static/js/schema_diff.js:160
 msgid "Rename Panel"
 msgstr ""
 
@@ -11420,7 +11544,7 @@ msgstr ""
 #: pgadmin/tools/datagrid/static/js/show_data.js:40
 #: pgadmin/tools/datagrid/static/js/show_query_tool.js:67
 #: pgadmin/tools/erd/static/js/erd_module.js:119
-#: pgadmin/tools/psql/static/js/psql_module.js:140
+#: pgadmin/tools/psql/static/js/psql_module.js:139
 msgid "No object selected."
 msgstr ""
 
@@ -11510,7 +11634,7 @@ msgid "Replace"
 msgstr ""
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:110
-msgid " (Cmd+Shift+F)"
+msgid " (Cmd+Option+F)"
 msgstr ""
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:112
@@ -11692,17 +11816,17 @@ msgid "Edit grid values"
 msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:180
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:411
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:424
 msgid "Previous tab"
 msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:198
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:429
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:442
 msgid "Next tab"
 msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:216
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:447
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:460
 msgid "Switch Panel"
 msgstr ""
 
@@ -11817,7 +11941,7 @@ msgstr ""
 #: pgadmin/tools/debugger/static/js/debugger.js:345
 #: pgadmin/tools/debugger/static/js/debugger.js:525
 #: pgadmin/tools/debugger/static/js/debugger.js:530
-#: pgadmin/tools/debugger/static/js/debugger.js:713
+#: pgadmin/tools/debugger/static/js/debugger.js:714
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:288
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:922
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:975
@@ -11858,7 +11982,7 @@ msgstr ""
 msgid "Debugger Error"
 msgstr ""
 
-#: pgadmin/tools/debugger/static/js/debugger.js:703
+#: pgadmin/tools/debugger/static/js/debugger.js:704
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:929
 msgid "Debugger Target Initialization Error"
 msgstr ""
@@ -12013,12 +12137,12 @@ msgid "Debugger SQL editor"
 msgstr ""
 
 #: pgadmin/tools/debugger/static/js/direct.js:1891
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:813
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:823
 msgid "Timeout"
 msgstr ""
 
 #: pgadmin/tools/debugger/static/js/direct.js:1891
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:813
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:823
 msgid ""
 "Your session has timed out due to inactivity. Please close the window and"
 " login again."
@@ -12215,17 +12339,22 @@ msgid "Preparing..."
 msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:269
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5422
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5455
 msgid "Don't save"
 msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:304
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5505
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5538
 msgid "Save changes?"
 msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:304
 msgid "The diagram has changed. Do you want to save changes?"
+msgstr ""
+
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:350
+#, python-format
+msgid "Table: %s (%s)"
 msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:394
@@ -12278,6 +12407,14 @@ msgstr ""
 msgid "Unknown error. Check console logs"
 msgstr ""
 
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:675
+msgid "One to many relation"
+msgstr ""
+
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:686
+msgid "Many to many relation"
+msgstr ""
+
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:751
 msgid "Initializing connection..."
 msgstr ""
@@ -12311,7 +12448,7 @@ msgid "Many-to-Many link"
 msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ConnectionBar.jsx:50
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2868
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2901
 msgid "Obtaining connection..."
 msgstr ""
 
@@ -12703,33 +12840,36 @@ msgstr ""
 msgid "Maintenance job creation failed."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:42
+#: pgadmin/tools/psql/__init__.py:53
 msgid "PSQL"
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:209 pgadmin/tools/psql/__init__.py:475
-#: pgadmin/tools/psql/__init__.py:522
-msgid "ERROR: Shell commands are disabled in psql for security\r\n"
-msgstr ""
-
-#: pgadmin/tools/psql/__init__.py:574
+#: pgadmin/tools/psql/__init__.py:427
 msgid ""
 "Connection terminated, To create new connection please open another psql "
 "tool."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:724
+#: pgadmin/tools/psql/__init__.py:491
 msgid "Invalid session.\r\n"
 msgstr ""
 
-#: pgadmin/tools/psql/static/js/psql_module.js:131
-#: pgadmin/tools/psql/static/js/psql_module.js:139
-#: pgadmin/tools/psql/static/js/psql_module.js:152
+#: pgadmin/tools/psql/static/js/psql_module.js:130
+#: pgadmin/tools/psql/static/js/psql_module.js:138
+#: pgadmin/tools/psql/static/js/psql_module.js:151
 msgid "PSQL Error"
 msgstr ""
 
-#: pgadmin/tools/psql/static/js/psql_module.js:153
+#: pgadmin/tools/psql/static/js/psql_module.js:152
 msgid "Please select a server/database object."
+msgstr ""
+
+#: pgadmin/tools/psql/static/js/psql_module.js:365
+msgid "Clipboard read permission required"
+msgstr ""
+
+#: pgadmin/tools/psql/static/js/psql_module.js:365
+msgid "To paste data on the PSQL terminal, Clipboard read permission required."
 msgstr ""
 
 #: pgadmin/tools/restore/__init__.py:42
@@ -13188,281 +13328,281 @@ msgstr ""
 msgid "Data Output"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:362
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:372
 msgid "Query History"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:372
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:382
 msgid "Scratch Pad"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:382
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:392
 msgid "Notifications"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:392
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:402
 msgid "Geometry Viewer"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:431
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:441
 msgid "Panel Loading Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:432
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:442
 msgid ""
 "Something went wrong while loading the panels. Please make sure to reset "
 "the layout (File > Reset Layout) for the better user experience."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:477
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:487
 msgid "SQL editor"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1034
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1044
 msgid "Editable column"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1036
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1046
 msgid "Read-only column"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1576
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:1586
 msgid "Fetching all records..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2116
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3058
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4161
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2126
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3091
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4194
 msgid "Unsaved changes"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2117
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4162
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2127
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4195
 msgid "Are you sure you wish to discard the current changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2148
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2158
 msgid "Clear history"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2149
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2159
 msgid "Are you sure you wish to clear the history?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2150
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2160
 msgid ""
 "This will remove all of your query history from this and other sessions "
 "for this database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2429
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2439
 msgid "Change connection"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2430
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2440
 msgid ""
 "By changing the connection you will lose all your unsaved data for the "
 "current connection. <br> Do you want to continue?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2559
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2569
 msgid ""
 "The pgAdmin browser window has been closed and the connection to the "
 "server is lost. Please close this window and open a new pgAdmin session."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2694
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2696
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2704
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2706
 #, python-format
 msgid "Error fetching rows - %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2751
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2761
 msgid "Connection Warning"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2758
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2768
 msgid "The application has lost the database connection:"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2762
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2772
 msgid "⁃ If the connection was idle it may have been forcibly disconnected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2764
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2774
 msgid "⁃ The application server or database server may have been restarted."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2766
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2776
 msgid "⁃ The user session may have timed out."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2770
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2780
 msgid "Do you want to continue and establish a new session?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2793
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2803
 msgid "Continue"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2958
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2960
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2991
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:2993
 #, python-format
 msgid "Error fetching SQL for script - %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3059
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3092
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3120
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3153
 msgid "Waiting for the query to complete..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3324
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3357
 msgid "Loading data from the database server and rendering..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3334
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3367
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3335
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3368
 #, python-format
 msgid "%s rows affected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3647
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3680
 msgid ""
 "This query was generated by pgAdmin as part of a \"View/Edit Data\" "
 "operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3763
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3796
 msgid "Row(s) deleted."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3843
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3876
 msgid "Saving the updated data..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3978
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4011
 msgid "Data saved successfully."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3981
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4014
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3988
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4021
 #, python-format
 msgid "%s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:3995
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4028
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4020
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4053
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4205
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4238
 msgid "Loading the file..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4266
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4299
 msgid "Saving the queries in the file..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4279
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4312
 msgid "File saved successfully."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4447
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4513
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4480
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4546
 msgid "Applying the new filter..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4469
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4480
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4502
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4513
 msgid "Filter By Selection Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4535
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4546
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4568
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4579
 msgid "Filter Exclude Selection Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4557
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4590
 msgid "Removing the filter..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4577
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4588
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4610
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4621
 msgid "Remove Filter Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4746
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4779
 msgid "Setting the limit on the result..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4767
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4778
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4800
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4811
 msgid "Change limit Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4925
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4944
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4958
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4977
 msgid "Cancel Query Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4965
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:4998
 msgid "Downloading Results..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5023
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5056
 msgid "CSV Download cancelled."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5032
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5065
 msgid "Download CSV error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5067
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5075
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5100
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5108
 msgid "Auto Rollback Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5102
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5109
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5135
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5142
 msgid "Auto Commit Error"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5296
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5329
 msgid "The data has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5303
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5336
 msgid "The query text has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5394
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5427
 msgid ""
 "The current transaction is not commited to the database. Do you want to "
 "commit or rollback the transaction?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5397
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5430
 msgid "Commit transaction?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5474
+#: pgadmin/tools/sqleditor/static/js/sqleditor.js:5507
 msgid ""
 "The current transaction has been rolled back because the server was "
 "disconnected."
@@ -13694,16 +13834,28 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:275
 msgid ""
-"If set to True then data columns will auto-size to the maximumwidth of "
+"If set to True then data columns will auto-size to the maximum width of "
 "the data in the column as loaded in the first batch. If False, the column"
 " will be sized to the widest of the data type or column name."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:285
+msgid "Maximum column width"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:287
+msgid ""
+"Specify the maximum width of the column when 'Resize by data?' is set to "
+"True. If it is set to 0 then columns will auto-size to the maximum width "
+"of the data in the column. If 'Resize by data?' is set to False then this"
+" setting won't take any effect."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:298
 msgid "Font size"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:289
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:302
 msgid ""
 "The font size to use for the SQL text boxes and editors. The value "
 "specified is in \"em\" units, in which 1 is the default relative font "
@@ -13712,210 +13864,210 @@ msgid ""
 "maximum 10."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:300
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:313
 msgid "Connection status"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:302
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:315
 msgid ""
 "If set to True, the Query Tool will monitor and display the connection "
 "and transaction status."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:309
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:322
 msgid "Connection status refresh rate"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:312
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:325
 msgid "The number of seconds between connection/transaction status polls."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:321
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:334
 msgid "Execute query"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:339
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:352
 msgid "Save data changes"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:357
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:370
 msgid "EXPLAIN query"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:375
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:388
 msgid "EXPLAIN ANALYZE query"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:393
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:406
 msgid "Download Results"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:465
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:478
 msgid "Accesskey (Open file)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:478
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:491
 msgid "Accesskey (Save file)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:491
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:504
 msgid "Accesskey (Copy rows)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:504
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:517
 msgid "Accesskey (Paste rows)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:517
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:530
 msgid "Accesskey (Delete rows)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:530
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:543
 msgid "Accesskey (Filter dialog)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:543
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:556
 msgid "Accesskey (Filter options)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:556
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:569
 msgid "Accesskey (Rows limit)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:569
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:582
 msgid "Accesskey (Execute options)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:582
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:595
 msgid "Accesskey (Cancel query)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:595
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:608
 msgid "Accesskey (Clear editor options)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:608
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:621
 msgid "Accesskey (Connection status)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:621
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:634
 msgid "Accesskey (Find options)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:635
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:648
 msgid "Toggle case of selected text"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:652
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:665
 msgid "Keywords in uppercase"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:653
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:666
 msgid "Auto completion"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:654
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:667
 msgid ""
 "If set to True, Keywords will be displayed in upper case for auto "
 "completion."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:696
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:709
 msgid "Keyword case"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:697
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:709
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:710
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:722
 msgid "Upper case"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:698
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:710
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:711
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:723
 msgid "Lower case"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:699
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:711
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:712
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:724
 msgid "Capitalized"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:701
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:714
 msgid "Convert keywords to upper, lower, or capitalized casing."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:708
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:721
 msgid "Identifier case"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:713
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:726
 msgid "Convert identifiers to upper, lower, or capitalized casing."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:720
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:733
 msgid "Strip comments?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:722
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:735
 msgid "If set to True, comments will be removed."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:727
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:740
 msgid "Re-indent?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:729
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:742
 msgid "If set to True, the indentations of the statements are changed."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:735
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:748
 msgid "Re-indent aligned?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:737
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:750
 msgid ""
 "If set to True, the indentations of the statements are changed, and "
 "statements are aligned by keywords."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:744
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:757
 msgid "Spaces around operators?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:746
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:759
 msgid "If set to True, spaces are used around all operators."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:752
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:765
 msgid "Comma-first notation?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:754
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:767
 msgid "If set to True, comma-first notation for column names is used."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:760
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:773
 msgid "Wrap after N characters"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:762
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:775
 msgid ""
 "The column limit (in characters) for wrapping comma-separated lists. If "
 "zero, it puts every item in the list on its own line."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:769
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:782
 msgid "Tab size"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:773
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:786
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:780
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:793
 msgid "Use spaces?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:782
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:795
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
 "key or auto-indent are used."
@@ -13934,8 +14086,8 @@ msgid "Missing field: '{0}'"
 msgstr ""
 
 #: pgadmin/tools/user_management/__init__.py:367
-#: pgadmin/tools/user_management/static/js/user_management.js:807
-#: pgadmin/tools/user_management/static/js/user_management.js:859
+#: pgadmin/tools/user_management/static/js/user_management.js:818
+#: pgadmin/tools/user_management/static/js/user_management.js:870
 msgid "User deleted."
 msgstr ""
 
@@ -13956,149 +14108,150 @@ msgstr ""
 msgid "'{0}' is not allowed to modify."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:44
+#: pgadmin/tools/user_management/static/js/user_management.js:45
 msgid "Filter by email"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:214
+#: pgadmin/tools/user_management/static/js/user_management.js:215
 msgid "pgAdmin 4 login"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:326
+#: pgadmin/tools/user_management/static/js/user_management.js:327
 msgid "Authentication source"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:372
+#: pgadmin/tools/user_management/static/js/user_management.js:373
 msgid "Email"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:445
+#: pgadmin/tools/user_management/static/js/user_management.js:446
 msgid "New password"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:458
+#: pgadmin/tools/user_management/static/js/user_management.js:459
 msgid "Confirm password"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:478
+#: pgadmin/tools/user_management/static/js/user_management.js:479
 msgid "Email address cannot be empty."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:484
+#: pgadmin/tools/user_management/static/js/user_management.js:485
 #, python-format
 msgid "Invalid email address: %s."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:492
+#: pgadmin/tools/user_management/static/js/user_management.js:493
 #, python-format
 msgid "The email address %s already exists."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:506
+#: pgadmin/tools/user_management/static/js/user_management.js:507
 #, python-format
 msgid "Role cannot be empty for user %s."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:524
+#: pgadmin/tools/user_management/static/js/user_management.js:525
 #, python-format
 msgid "Password cannot be empty for user %s."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:534
-#: pgadmin/tools/user_management/static/js/user_management.js:595
+#: pgadmin/tools/user_management/static/js/user_management.js:535
+#: pgadmin/tools/user_management/static/js/user_management.js:596
 #, python-format
 msgid "Password must be at least 6 characters for user %s."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:548
-#: pgadmin/tools/user_management/static/js/user_management.js:605
+#: pgadmin/tools/user_management/static/js/user_management.js:549
+#: pgadmin/tools/user_management/static/js/user_management.js:606
 #, python-format
 msgid "Confirm Password cannot be empty for user %s."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:561
-#: pgadmin/tools/user_management/static/js/user_management.js:614
+#: pgadmin/tools/user_management/static/js/user_management.js:562
+#: pgadmin/tools/user_management/static/js/user_management.js:615
 #, python-format
 msgid "Passwords do not match for user %s."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:629
-#: pgadmin/tools/user_management/static/js/user_management.js:639
+#: pgadmin/tools/user_management/static/js/user_management.js:630
+#: pgadmin/tools/user_management/static/js/user_management.js:640
+#: pgadmin/tools/user_management/static/js/user_management.js:650
 #, python-format
 msgid "The username %s already exists."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:727
+#: pgadmin/tools/user_management/static/js/user_management.js:738
 msgid "Note: If no user is selected, the shared servers will be deleted."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:800
-#: pgadmin/tools/user_management/static/js/user_management.js:853
+#: pgadmin/tools/user_management/static/js/user_management.js:811
+#: pgadmin/tools/user_management/static/js/user_management.js:864
 msgid "Delete user?"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:801
+#: pgadmin/tools/user_management/static/js/user_management.js:812
 msgid ""
 "The shared servers owned by <b></b> will be deleted. Do you wish to "
 "continue?"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:813
-#: pgadmin/tools/user_management/static/js/user_management.js:863
+#: pgadmin/tools/user_management/static/js/user_management.js:824
+#: pgadmin/tools/user_management/static/js/user_management.js:874
 msgid "Error during deleting user."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:847
+#: pgadmin/tools/user_management/static/js/user_management.js:858
 msgid "Unable to change owner."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:854
+#: pgadmin/tools/user_management/static/js/user_management.js:865
 msgid "Are you sure you wish to delete this user?"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:879
+#: pgadmin/tools/user_management/static/js/user_management.js:890
 msgid "Cannot delete user."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:880
+#: pgadmin/tools/user_management/static/js/user_management.js:891
 msgid "Cannot delete currently logged in user."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:923
+#: pgadmin/tools/user_management/static/js/user_management.js:934
 msgid "This user cannot be deleted."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:979
+#: pgadmin/tools/user_management/static/js/user_management.js:990
 msgid "User Management"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:1134
+#: pgadmin/tools/user_management/static/js/user_management.js:1145
 #, python-format
 msgid "User '%s' saved."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:1140
+#: pgadmin/tools/user_management/static/js/user_management.js:1151
 #, python-format
 msgid "Error saving user: '%s'"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:1167
+#: pgadmin/tools/user_management/static/js/user_management.js:1178
 msgid "Add new user"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:1185
+#: pgadmin/tools/user_management/static/js/user_management.js:1196
 msgid "Cannot load user roles."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:1202
+#: pgadmin/tools/user_management/static/js/user_management.js:1213
 msgid "Cannot load user Sources."
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:1277
+#: pgadmin/tools/user_management/static/js/user_management.js:1288
 msgid "Discard unsaved changes?"
 msgstr ""
 
-#: pgadmin/tools/user_management/static/js/user_management.js:1278
+#: pgadmin/tools/user_management/static/js/user_management.js:1289
 msgid ""
 "Are you sure you want to close the dialog? Any unsaved changes will be "
 "lost."
@@ -14161,43 +14314,43 @@ msgstr ""
 msgid "Unable to fetch data."
 msgstr ""
 
-#: pgadmin/utils/constants.py:66
+#: pgadmin/utils/constants.py:68
 msgid "EDB Advanced Server 9.6"
 msgstr ""
 
-#: pgadmin/utils/constants.py:69
+#: pgadmin/utils/constants.py:71
 msgid "EDB Advanced Server 10"
 msgstr ""
 
-#: pgadmin/utils/constants.py:72
+#: pgadmin/utils/constants.py:74
 msgid "EDB Advanced Server 11"
 msgstr ""
 
-#: pgadmin/utils/constants.py:75
+#: pgadmin/utils/constants.py:77
 msgid "EDB Advanced Server 12"
 msgstr ""
 
-#: pgadmin/utils/constants.py:78
+#: pgadmin/utils/constants.py:80
 msgid "EDB Advanced Server 13"
 msgstr ""
 
-#: pgadmin/utils/constants.py:83
+#: pgadmin/utils/constants.py:85
 msgid "PostgreSQL 9.6"
 msgstr ""
 
-#: pgadmin/utils/constants.py:86
+#: pgadmin/utils/constants.py:88
 msgid "PostgreSQL 10"
 msgstr ""
 
-#: pgadmin/utils/constants.py:89
+#: pgadmin/utils/constants.py:91
 msgid "PostgreSQL 11"
 msgstr ""
 
-#: pgadmin/utils/constants.py:92
+#: pgadmin/utils/constants.py:94
 msgid "PostgreSQL 12"
 msgstr ""
 
-#: pgadmin/utils/constants.py:95
+#: pgadmin/utils/constants.py:97
 msgid "PostgreSQL 13"
 msgstr ""
 
@@ -14225,10 +14378,6 @@ msgstr ""
 
 #: pgadmin/utils/preferences.py:627
 msgid "Could not find the specified preference."
-msgstr ""
-
-#: pgadmin/utils/driver/registry.py:75
-msgid "Driver '{0}' has not been implemented."
 msgstr ""
 
 #: pgadmin/utils/driver/psycopg2/connection.py:148
