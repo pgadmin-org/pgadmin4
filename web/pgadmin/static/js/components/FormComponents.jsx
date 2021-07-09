@@ -181,6 +181,18 @@ export const InputText = forwardRef(({
 
   const classes = useStyles();
 
+  let onChangeFinal = (changeVal)=>{
+    if(controlProps?.formatter) {
+      changeVal = controlProps.formatter.toRaw(changeVal);
+    }
+    onChange && onChange(changeVal);
+  }
+
+  let finalValue = (_.isNull(value) || _.isUndefined(value)) ? '' : value;
+  if(controlProps?.formatter) {
+    finalValue = controlProps.formatter.fromRaw(finalValue);
+  }
+
   return(
     <OutlinedInput
       ref={ref}
@@ -196,8 +208,8 @@ export const InputText = forwardRef(({
       disabled={Boolean(disabled)}
       rows={4}
       notched={false}
-      value={(_.isNull(value) || _.isUndefined(value)) ? '' : value}
-      onChange={onChange}
+      value={(_.isNull(finalValue) || _.isUndefined(finalValue)) ? '' : finalValue}
+      onChange={onChangeFinal}
       {...controlProps}
       {...props}
     />
@@ -536,7 +548,7 @@ function getRealValue(options, value, creatable, formatter) {
     realValue = [...value];
     /* If multi select options need to be in some format by UI, use formatter */
     if(formatter) {
-      realValue = formatter.toSelect(realValue);
+      realValue = formatter.fromRaw(realValue);
     }
     if(creatable) {
       realValue = realValue.map((val)=>({label:val, value: val}));
@@ -550,10 +562,15 @@ function getRealValue(options, value, creatable, formatter) {
 }
 
 export function InputSelect({
-  cid, onChange, options, readonly=false, value, controlProps={}, optionsLoaded, disabled, ...props}) {
+    cid, onChange, options, readonly=false, value, controlProps={}, optionsLoaded, optionsReloadBasis, disabled, ...props}) {
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
   const theme = useTheme();
 
+  /* React will always take options var as changed parameter. So,
+  We cannot run the below effect with options dependency as it will keep on
+  loading the options. optionsReloadBasis is helpful to avoid repeated
+  options load. If optionsReloadBasis value changes, then options will be loaded again.
+  */
   useEffect(()=>{
     let optPromise = options, umounted=false;
     if(typeof options === 'function') {
@@ -568,14 +585,14 @@ export function InputSelect({
         }
       });
     return ()=>umounted=true;
-  }, []);
+  }, [optionsReloadBasis]);
 
   const onChangeOption = useCallback((selectVal, action)=>{
     if(_.isArray(selectVal)) {
       /* If multi select options need to be in some format by UI, use formatter */
       selectVal = selectVal.map((option)=>option.value);
       if(controlProps.formatter) {
-        selectVal = controlProps.formatter.fromSelect(selectVal);
+        selectVal = controlProps.formatter.toRaw(selectVal);
       }
       onChange && onChange(selectVal, action.name);
     } else {
