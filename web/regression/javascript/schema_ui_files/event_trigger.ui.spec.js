@@ -72,7 +72,7 @@ describe('EventTriggerSchema', ()=>{
       schema={schemaObj}
       getInitData={getInitData}
       viewHelperProps={{
-        mode: 'create',
+        mode: 'edit',
       }}
       onSave={()=>{}}
       onClose={()=>{}}

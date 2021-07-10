@@ -194,72 +194,10 @@ define('pgadmin.node.extension', [
             cache_level: 'server',
           },
           {
-            id: 'schema', label: gettext('Schema'), type: 'text',
-            control: 'node-list-by-name', group: gettext('Definition'),
-            mode: ['properties', 'create', 'edit'], deps: ['relocatable'],
-            node: 'schema', first_empty: true,
-            disabled: function(m) {
-              /*
-               * enable or disable schema field if model's relocatable
-               * attribute is True or False
-               */
-              return (m.has('relocatable') ? !m.get('relocatable') : false);
-            },
-          },
-          {
-            id: 'relocatable', label: gettext('Relocatable?'), cell: 'switch',
-            group: gettext('Definition'), type: 'switch', mode: ['properties'],
-          },
-          {
-            id: 'version', label: gettext('Version'), cell: 'string',
-            mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
-            control: 'node-ajax-options', url:'avails', first_empty: true,
-
-            // Transform the data into version for the selected extension.
-            transform: function(data, cell) {
-              var res = [],
-                control = cell || this,
-                extension = control.model.get('name');
-              _.each(data, function(dt) {
-                if(dt.name == extension) {
-                  if(dt.version && _.isArray(dt.version)) {
-                    _.each(dt.version, function(v) {
-                      res.push({ label: v, value: v });
-                    });
-                  }
-                }
-              });
-              return res;
-            },
-          },{
-            id: 'is_sys_obj', label: gettext('System extension?'),
-            cell:'boolean', type: 'switch', mode: ['properties'],
-          },{
             id: 'comment', label: gettext('Comment'), cell: 'string',
             type: 'multiline', readonly: true,
           },
         ],
-        validate: function() {
-
-          /*
-          * Triggers error messages for name
-          * if it is empty/undefined/null
-          */
-          var err = {},
-            errmsg,
-            name = this.get('name');
-          if (_.isUndefined(name) || _.isNull(name) ||
-            String(name).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = gettext('Name cannot be empty.');
-            errmsg = err['name'];
-            this.errorModel.set('name', errmsg);
-            return errmsg;
-          }
-          else {
-            this.errorModel.unset('name');
-          }
-          return null;
-        },
       }),
       getSchema: (treeNodeInfo, itemNodeData)=>{
         let nodeObj = pgAdmin.Browser.Nodes['extension'];

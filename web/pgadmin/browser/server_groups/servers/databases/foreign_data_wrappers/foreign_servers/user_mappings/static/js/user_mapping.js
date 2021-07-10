@@ -7,47 +7,14 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
+import UserMappingSchema from './user_mapping.ui';
+
 define('pgadmin.node.user_mapping', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.backform', 'pgadmin.browser.collection',
 ], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
-
-  // Extend the browser's node model class to create a Options model
-  var OptionsModel = pgAdmin.Browser.Node.Model.extend({
-    idAttribute: 'umoption',
-    defaults: {
-      umoption: undefined,
-      umvalue: undefined,
-    },
-
-    // Defining schema for the Options model
-    schema: [{
-      id: 'umoption', label: gettext('Options'), type:'text',
-      cellHeaderClasses:'width_percent_50', group: null, editable: true,
-    }, {
-      id: 'umvalue', label: gettext('Value'), type: 'text',
-      cellHeaderClasses:'width_percent_50', group:null, editable: true,
-    }],
-
-    /* validate function is used to validate the input given by
-         * the user. In case of error, message will be displayed on
-         * the browser for the respective control.
-         */
-    validate: function() {
-      // Validation for the option value
-      if (_.isUndefined(this.get('umoption')) ||
-            _.isNull(this.get('umoption')) ||
-            String(this.get('umoption')).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = gettext('Please enter an option name.');
-        this.errorModel.set('umoption', msg);
-        return msg;
-      } else {
-        this.errorModel.unset('umoption');
-      }
-      return null;
-    },
-  });
 
   // Extend the browser's collection class for user mapping collection
   if (!pgBrowser.Nodes['coll-user_mapping']) {
@@ -103,14 +70,28 @@ define('pgadmin.node.user_mapping', [
         ]);
       },
 
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new UserMappingSchema(
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData, {}, ()=>true, (res)=>{
+              res.unshift({
+                label: 'CURRENT_USER', value: 'CURRENT_USER',
+                image: 'icon-role',
+              },{
+                label: 'PUBLIC', value: 'PUBLIC', image: 'icon-role',
+              });
+              return res;
+            })
+          },
+          {
+            name: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+          }
+        );
+      },
+
       // Defining model for user mapping node
       model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'um_oid',
-        defaults: {
-          name: undefined,
-          is_sys_obj: undefined,
-          um_options: [],
-        },
+        idAttribute: 'oid',
 
         // Default values!
         initialize: function(attrs, args) {
@@ -125,56 +106,32 @@ define('pgadmin.node.user_mapping', [
         },
 
         // Defining schema for the user mapping node
-        schema: [{
-          id: 'name', label: gettext('User'), type: 'text',
-          control: Backform.NodeListByNameControl, node: 'role',
-          mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
-          disabled: function(m) { return !m.isNew(); },
-          transform: function() {
-            var self = this,
-              node = self.field.get('schema_node');
-            var res =
-            Backform.NodeListByNameControl.prototype.defaults.transform.apply(
-              this, arguments
-            );
-            res.unshift({
-              label: 'CURRENT_USER', value: 'CURRENT_USER',
-              image: 'icon-' + node.type,
-            },{
-              label: 'PUBLIC', value: 'PUBLIC', image: 'icon-' + node.type,
-            });
-            return res;
-          },
-        },{
-          id: 'um_oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        }, {
-          id: 'is_sys_obj', label: gettext('System user mapping?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
-          id: 'umoptions', label: gettext('Options'), type: 'collection', group: gettext('Options'),
-          model: OptionsModel, control: 'unique-col-collection', mode: ['create', 'edit'],
-          canAdd: true, canDelete: true, uniqueCol : ['umoption'],
-        },
-        ],
-
-        /* validate function is used to validate the input given by
-         * the user. In case of error, message will be displayed on
-         * the browser for the respective control.
-         */
-        validate: function() {
-          var name = this.get('name');
-
-          if (_.isUndefined(name) || _.isNull(name) ||
-            String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('name');
+        schema: [
+          {
+            id: 'name', label: gettext('User'), type: 'text',
+            control: Backform.NodeListByNameControl, node: 'role',
+            mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
+            disabled: function(m) { return !m.isNew(); },
+            transform: function() {
+              var self = this,
+                node = self.field.get('schema_node');
+              var res =
+              Backform.NodeListByNameControl.prototype.defaults.transform.apply(
+                this, arguments
+              );
+              res.unshift({
+                label: 'CURRENT_USER', value: 'CURRENT_USER',
+                image: 'icon-' + node.type,
+              },{
+                label: 'PUBLIC', value: 'PUBLIC', image: 'icon-' + node.type,
+              });
+              return res;
+            },
+          }, {
+            id: 'oid', label: gettext('OID'), cell: 'string',
+            type: 'text', mode: ['properties'],
           }
-          return null;
-        },
+        ],
       }),
     });
 

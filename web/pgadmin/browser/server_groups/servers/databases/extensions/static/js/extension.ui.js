@@ -42,6 +42,7 @@ export default class ExtensionsSchema extends BaseUISchema {
         id: 'name', label: gettext('Name'),
         mode: ['properties', 'create', 'edit'],
         editable: false,
+        noEmpty: true,
         readonly: function (state) {
           return !obj.isNew(state);
         },

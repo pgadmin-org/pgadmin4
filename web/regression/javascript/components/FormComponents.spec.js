@@ -96,7 +96,6 @@ describe('FormComponents', ()=>{
       expect(ctrl.find(OutlinedInput).prop('readOnly')).toBe(true);
       expect(ctrl.find(OutlinedInput).prop('disabled')).toBe(true);
       expect(ctrl.find(OutlinedInput).prop('value')).toBe('new value');
-      expect(ctrl.find(OutlinedInput).prop('onChange')).toBe(onChange);
     });
 
     it('accessibility', ()=>{

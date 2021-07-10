@@ -7,45 +7,15 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/js/node_ajax';
+import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
+import ForeignDataWrapperSchema from './foreign_data_wrapper.ui';
+
 define('pgadmin.node.foreign_data_wrapper', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
 ], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
-
-  // Extend the browser's node model class to create a Options model
-  var OptionsModel = pgBrowser.Node.Model.extend({
-    idAttribute: 'fdwoption',
-    defaults: {
-      fdwoption: undefined,
-      fdwvalue: undefined,
-    },
-    // Defining schema for the Options model
-    schema: [{
-      id: 'fdwoption', label: gettext('Option'), type:'text',
-      cellHeaderClasses:'width_percent_50', editable: true,
-    },{
-      id: 'fdwvalue', label: gettext('Value'), type: 'text',
-      cellHeaderClasses:'width_percent_50', group:null, editable: true,
-    }],
-    /* validate function is used to validate the input given by
-         * the user. In case of error, message will be displayed on
-         * the browser for the respective control.
-         */
-    validate: function() {
-      // Validation for the option name
-      if (_.isUndefined(this.get('fdwoption')) ||
-            _.isNull(this.get('fdwoption')) ||
-            String(this.get('fdwoption')).replace(/^\s+|\s+$/g, '') == '') {
-        var msg = gettext('Please enter an option name.');
-        this.errorModel.set('fdwoption', msg);
-        return msg;
-      } else {
-        this.errorModel.unset('fdwoption');
-      }
-      return null;
-    },
-  });
 
   // Extend the browser's collection class for foreign data wrapper collection
   if (!pgBrowser.Nodes['coll-foreign_data_wrapper']) {
@@ -102,19 +72,25 @@ define('pgadmin.node.foreign_data_wrapper', [
         ]);
       },
 
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new ForeignDataWrapperSchema(
+          (privileges)=>getNodePrivilegeRoleSchema(this, treeNodeInfo, itemNodeData, privileges),
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            fdwhan:
+              ()=>getNodeAjaxOptions('get_handlers', this, treeNodeInfo, itemNodeData),
+            fdwvalue:
+              ()=>getNodeAjaxOptions('get_validators', this, treeNodeInfo, itemNodeData),
+          },
+          {
+            fdwowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+          }
+        );
+      },
+
       // Defining model for foreign data wrapper node
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          fdwowner: undefined,
-          is_sys_obj: undefined,
-          comment: undefined,
-          fdwvalue: undefined,
-          fdwhan: undefined,
-          fdwoption: undefined,
-          fdwacl: [],
-        },
 
         // Default values!
         initialize: function(attrs, args) {
@@ -137,60 +113,17 @@ define('pgadmin.node.foreign_data_wrapper', [
               this.mode == 'edit'
             );
           },
-        },{
+        }, {
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text', mode: ['properties'],
-        },{
+        }, {
           id: 'fdwowner', label: gettext('Owner'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
-        },{
-          id: 'fdwhan', label: gettext('Handler'), type: 'text', control: 'node-ajax-options',
-          group: gettext('Definition'), mode: ['edit', 'create', 'properties'], url:'get_handlers',
-        },{
-          id: 'is_sys_obj', label: gettext('System foreign data wrapper?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
+        }, {
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
-        },{
-          id: 'fdwoptions', label: gettext('Options'), type: 'collection', group: gettext('Options'),
-          model: OptionsModel, control: 'unique-col-collection', mode: ['edit', 'create'],
-          canAdd: true, canDelete: true, uniqueCol : ['fdwoption'],
-          columns: ['fdwoption','fdwvalue'],
-        },{
-          id: 'fdwvalue', label: gettext('Validator'), type: 'text', control: 'node-ajax-options',
-          group: gettext('Definition'), mode: ['edit', 'create', 'properties'], url:'get_validators',
-        },{
-          id: 'security', label: gettext('Security'), type: 'group',
-        },{
-          id: 'fdwacl', label: gettext('Privileges'), type: 'collection',
-          group: 'security', mode: ['edit', 'create'], canAdd: true,
-          canDelete: true, uniqueCol : ['grantee'],
-          model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['U'],
-          }), control: 'unique-col-collection',
-        },{
-          id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
         }],
-        /* validate function is used to validate the input given by
-          * the user. In case of error, message will be displayed on
-          * the browser for the respective control.
-          */
-        validate: function() {
-          var name = this.get('name');
-
-          if (_.isUndefined(name) || _.isNull(name) ||
-               String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('name');
-          }
-          return null;
-        },
       }),
     });
   }

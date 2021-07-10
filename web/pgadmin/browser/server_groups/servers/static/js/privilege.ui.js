@@ -55,7 +55,7 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
       type: 'text', group: null,
       cell: ()=>({cell: 'privilege', controlProps: {
         supportedPrivs: this.supportedPrivs,
-      }}), minWidth: 280,
+      }}), minWidth: 230,
       disabled : function(state) {
         return !(
           obj.nodeInfo &&

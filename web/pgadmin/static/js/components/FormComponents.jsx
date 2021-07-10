@@ -186,7 +186,7 @@ export const InputText = forwardRef(({
       changeVal = controlProps.formatter.toRaw(changeVal);
     }
     onChange && onChange(changeVal);
-  }
+  };
 
   let finalValue = (_.isNull(value) || _.isUndefined(value)) ? '' : value;
   if(controlProps?.formatter) {
@@ -562,7 +562,7 @@ function getRealValue(options, value, creatable, formatter) {
 }
 
 export function InputSelect({
-    cid, onChange, options, readonly=false, value, controlProps={}, optionsLoaded, optionsReloadBasis, disabled, ...props}) {
+  cid, onChange, options, readonly=false, value, controlProps={}, optionsLoaded, optionsReloadBasis, disabled, ...props}) {
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
   const theme = useTheme();
 

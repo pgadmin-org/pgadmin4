@@ -46,7 +46,6 @@ export default class EventTriggerSchema extends BaseUISchema {
 
 
   get baseFields() {
-    //let obj = this;
     return [
       {
         id: 'name', label: gettext('Name'), cell: 'text',
