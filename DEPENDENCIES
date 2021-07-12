@@ -56,12 +56,13 @@ eventlet                                                         0.31.0         
 httpagentparser                                                  1.9.1            http://www.opensource.org/licenses/mit-license.php http://shon.github.com/httpagentparser
 user-agents                                                      2.2.0            MIT                                  https://github.com/selwin/python-user-agents
 pywinpty                                                         1.1.1            Unknown                              Unknown
-authlib                                                          0.15.3           BSD                                  https://github.com/lepture/authlib
+Authlib                                                          0.15.4           BSD-3-Clause                         https://authlib.org/
+requests                                                         2.25.1           Apache 2.0                           https://requests.readthedocs.io
 
 NOTE: This report was generated using Python 3.9. Full information may not be
 shown for Python modules that are not required with this version.
 
-33 dependencies listed.
+35 dependencies listed.
 
 Javascript Dependencies
 =======================
