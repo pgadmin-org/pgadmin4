@@ -7,6 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
+import FTSParserSchema from './fts_parser.ui';
+import { getNodeAjaxOptions, getNodeListById } from '../../../../../../../static/js/node_ajax';
+
 define('pgadmin.node.fts_parser', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
@@ -74,12 +77,6 @@ define('pgadmin.node.fts_parser', [
           name: undefined,          // Fts parser name
           is_sys_obj: undefined,  // Is system object
           description: undefined,   // Comment on parser
-          schema: undefined,        // Schema name to which parser belongs
-          prsstart: undefined,      // Start function for fts parser
-          prstoken: undefined,       // Token function for fts parser
-          prsend: undefined,        // End function for fts parser
-          prslextype: undefined,    // Lextype function for fts parser
-          prsheadline: undefined,    // Headline function for fts parse
         },
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
@@ -98,46 +95,8 @@ define('pgadmin.node.fts_parser', [
           id: 'oid', label: gettext('OID'), cell: 'string',
           editable: false, type: 'text', mode:['properties'],
         },{
-          id: 'schema', label: gettext('Schema'), cell: 'string',
-          type: 'text', mode: ['create','edit'], node: 'schema',
-          control: 'node-list-by-id', cache_node: 'database',
-          cache_level: 'database',
-        },{
-          id: 'is_sys_obj', label: gettext('System FTS parser?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50',
-        },{
-          id: 'prsstart', label: gettext('Start function'),
-          type: 'text', readonly: function(m) { return !m.isNew(); },
-          control: 'node-ajax-options', url: 'start_functions',
-          group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema',
-        },{
-          id: 'prstoken', label: gettext('Get next token function'),
-          type: 'text', readonly: function(m) { return !m.isNew(); },
-          control: 'node-ajax-options', url: 'token_functions',
-          group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema',
-        },{
-          id: 'prsend', label: gettext('End function'),
-          type: 'text', readonly: function(m) { return !m.isNew(); },
-          control: 'node-ajax-options', url: 'end_functions',
-          group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema',
-        },{
-          id: 'prslextype', label: gettext('Lextypes function'),
-          type: 'text', readonly: function(m) { return !m.isNew(); },
-          control: 'node-ajax-options', url: 'lextype_functions',
-          group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema',
-        },{
-          id: 'prsheadline', label: gettext('Headline function'),
-          type: 'text', readonly: function(m) { return !m.isNew(); },
-          control: 'node-ajax-options', url: 'headline_functions',
-          group: gettext('Definition'), cache_level: 'database',
-          cache_node: 'schema',
         }],
 
         /*
@@ -213,6 +172,34 @@ define('pgadmin.node.fts_parser', [
           return null;
         },
       }),
+      getSchema: (treeNodeInfo, itemNodeData) => {
+        let nodeObj = pgAdmin.Browser.Nodes['fts_parser'];
+        return new FTSParserSchema(
+          {
+            prsstartList: () => getNodeAjaxOptions('start_functions', nodeObj, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database',
+            }),
+            prstokenList: () => getNodeAjaxOptions('token_functions', nodeObj, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database',
+            }),
+            prsendList: () => getNodeAjaxOptions('end_functions', nodeObj, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database',
+            }),
+            prslextypeList: () => getNodeAjaxOptions('lextype_functions', nodeObj, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database',
+            }),
+            prsheadlineList: () => getNodeAjaxOptions('headline_functions', nodeObj, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database',
+            }),
+            schemaList:() => getNodeListById(pgBrowser.Nodes['schema'], treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database'
+            })
+          },
+          {
+            schema: treeNodeInfo.schema._id,
+          }
+        );
+      }
     });
   }
 

@@ -7,6 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
+import FTSTemplateSchema from './fts_template.ui';
+import { getNodeAjaxOptions, getNodeListById } from '../../../../../../../static/js/node_ajax';
+
 define('pgadmin.node.fts_template', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
@@ -70,14 +73,6 @@ define('pgadmin.node.fts_template', [
       // Defining backform model for fts template node
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          name: undefined,      // Fts template name
-          is_sys_obj: undefined,  // Is system object
-          description: undefined,   // Comment on template
-          schema: undefined,        // Schema name to which template belongs
-          tmplinit: undefined,      // Init function for fts template
-          tmpllexize: undefined,     // Lexize function for fts template
-        },
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
@@ -93,27 +88,8 @@ define('pgadmin.node.fts_template', [
           id: 'oid', label: gettext('OID'), cell: 'string',
           editable: false, type: 'text', mode:['properties'],
         },{
-          id: 'schema', label: gettext('Schema'), cell: 'string',
-          type: 'text', mode: ['create','edit'], node: 'schema',
-          control: 'node-list-by-id', cache_node: 'database',
-          cache_level: 'database',
-        },{
-          id: 'is_sys_obj', label: gettext('System FTS template?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', cellHeaderClasses: 'width_percent_50',
-        },{
-          id: 'tmplinit', label: gettext('Init function'),
-          group: gettext('Definition'), type: 'text', readonly: function(m) {
-            return !m.isNew();
-          }, control: 'node-ajax-options', url: 'get_init',
-          cache_level: 'database', cache_node: 'schema',
-        },{
-          id: 'tmpllexize', label: gettext('Lexize function'), group: gettext('Definition'),
-          type: 'text', readonly: function(m) { return !m.isNew(); },
-          control: 'node-ajax-options', url: 'get_lexize', cache_level: 'database',
-          cache_node: 'schema',
         }],
 
         /*
@@ -153,6 +129,23 @@ define('pgadmin.node.fts_template', [
           return null;
         },
       }),
+      getSchema: (treeNodeInfo, itemNodeData) => {
+        let nodeObj = pgAdmin.Browser.Nodes['fts_template'];
+        return new FTSTemplateSchema(
+          {
+            initFunctionList:()=>getNodeAjaxOptions('get_init', nodeObj, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database'
+            }),
+            lexisFunctionList:()=>getNodeAjaxOptions('get_lexize', nodeObj, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database'
+            }),
+            schemaList:()=>getNodeListById(pgBrowser.Nodes['schema'], treeNodeInfo, itemNodeData),
+          },
+          {
+            schema: treeNodeInfo.schema._id,
+          }
+        );
+      }
     });
   }
 
