@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-09 21:51+0530\n"
-"PO-Revision-Date: 2021-06-13 02:02+0900\n"
+"PO-Revision-Date: 2021-07-11 05:14+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: pgadmin/__init__.py:347 pgadmin/authenticate/internal.py:28
 msgid "Incorrect username or password."
@@ -212,11 +212,11 @@ msgstr "指定されたユーザが見つかりませんでした"
 msgid ""
 "An email id is required to login into pgAdmin. Please update your Oauth2 "
 "profile."
-msgstr ""
+msgstr "pgAdmin へのログインにはメールアドレス ID が必要です。お使いの OAuth2 プロフィールを更新してください"
 
 #: pgadmin/authenticate/oauth2.py:158
 msgid "Please set the configuration parameters properly."
-msgstr ""
+msgstr "構成パラメータを正しく設定してください"
 
 #: pgadmin/browser/__init__.py:68
 msgid "Your password has not been changed."
@@ -2501,7 +2501,7 @@ msgstr "照合順序"
 msgid ""
 "Definition incomplete. Please provide Locale OR Copy Collation OR "
 "LC_TYPE/LC_COLLATE."
-msgstr "定義が不完全です。ロケール、照合順序のコピーもしくはLC_TYPE/LC_COLLATEを入力してください"
+msgstr "定義が不完全です。ロケール、照合順序のコピーもしくは LC_TYPE/LC_COLLATE を入力してください"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:570
 msgid "Collation dropped"
@@ -6735,7 +6735,7 @@ msgstr "パブリッシャー上にレプリケーションスロットを作成
 msgid ""
 "Specifies whether the subscription should be actively replicating, or "
 "whether it should be just setup but not started yet."
-msgstr ""
+msgstr "サブスクリプションをすぐに処理するか、或いは後で行えるように準備だけしておくかを指定します"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:426
 msgid "Refresh publication?"
@@ -6743,7 +6743,7 @@ msgstr "パブリケーションを再読み込み"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:429
 msgid "Fetch missing table information from publisher."
-msgstr ""
+msgstr "パブリッシャーから足りないテーブル情報を取得します"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:439
 msgid "Connect?"
@@ -8211,11 +8211,11 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1445
 msgid "Reassign owned executed successfully!"
-msgstr ""
+msgstr "REASSIGN OWNED を正常に実行しました！"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1447
 msgid "Drop owned executed successfully!"
-msgstr ""
+msgstr "DROP OWNED を正常に実行しました！"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:49
 #: pgadmin/browser/server_groups/servers/static/js/server.js:41
@@ -8256,7 +8256,7 @@ msgstr "ログイン/グループロール..."
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:388
 msgid "Reassign/Drop Owned..."
-msgstr ""
+msgstr "所有オブジェクトを移譲/削除..."
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:440
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:541
@@ -8273,32 +8273,34 @@ msgid ""
 "Change the ownership or\n"
 "drop the database objects owned by a database role"
 msgstr ""
+"所有権を移譲するか、\n"
+"ロールが所有しているデータベースオブジェクトを削除します"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:454
 msgid "Reassign objects to"
-msgstr ""
+msgstr "オブジェクトの移譲先"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:458
 msgid "New owner of the affected objects"
-msgstr ""
+msgstr "影響するオブジェクトの新しい所有者です"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:562
 msgid "Cascade?"
-msgstr ""
+msgstr "強制"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:574
 msgid ""
 "Note: CASCADE will automatically drop objects that depend on the affected"
 " objects, and in turn all objects that depend on those objects"
-msgstr ""
+msgstr "注： 強制（CASCADE）を使うと、影響するオブジェクトに依存しているオブジェクトも芋づる式に削除していきます"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:578
 msgid "From database"
-msgstr ""
+msgstr "対象データベース"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:600
 msgid "Target database on which the operation will be carried out"
-msgstr ""
+msgstr "操作を実行する対象のデータベースです"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:677
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:194
@@ -8356,26 +8358,26 @@ msgstr "エラーバーを閉じる"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:804
 msgid "Please provide a new role name"
-msgstr ""
+msgstr "新しいロール名を指定してください"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:834
 #, python-format
 msgid "%s Objects"
-msgstr ""
+msgstr "オブジェクトの %s"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:835
 #, python-format
 msgid "Are you sure you wish to %s all the objects owned by the selected role?"
-msgstr ""
+msgstr "選択したロールが所有しているオブジェクトすべてを %s しますか？"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:847
 msgid "Role reassign/drop failed."
-msgstr ""
+msgstr "ロールの移譲/削除に失敗しました"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:867
 #, python-format
 msgid "Reassign/Drop Owned - '%s'"
-msgstr ""
+msgstr "所有オブジェクトを移譲/削除 - '%s'"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:911
 msgid "Account expires"
@@ -8509,7 +8511,7 @@ msgstr "パスワードを変更..."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:132
 msgid "Please connect server to enable change password."
-msgstr ""
+msgstr "パスワードを変更するには、サーバに接続してください"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:137
 msgid "Pause Replay of WAL"
@@ -9075,7 +9077,7 @@ msgstr "%s ブラウザを閉じてもよろしいですか？"
 
 #: pgadmin/browser/static/js/browser.js:1003
 msgid "SUGGESTED SITES"
-msgstr ""
+msgstr "関連サイト"
 
 #: pgadmin/browser/static/js/browser.js:2097
 msgid "Error retrieving details for the node."
@@ -9700,13 +9702,13 @@ msgstr "True の場合、グラフ線上のデータにマウスを合わせる�
 
 #: pgadmin/dashboard/__init__.py:156
 msgid "Long running query thresholds"
-msgstr ""
+msgstr "長時間実行中のクエリを通知するまでの時間"
 
 #: pgadmin/dashboard/__init__.py:158
 msgid ""
 "Set the warning and alert threshold value to highlight the long-running "
 "queries on the dashboard."
-msgstr ""
+msgstr "実行に時間が掛かりすぎているクエリを、ダッシュボード上に警告やアラートとして強調表示するまでの時間です"
 
 #: pgadmin/dashboard/__init__.py:212
 msgid "Please connect to the selected {0} to view the table."
@@ -10684,11 +10686,11 @@ msgstr "非表示"
 
 #: pgadmin/preferences/static/js/preferences.js:340
 msgid "Alert"
-msgstr ""
+msgstr "アラート"
 
 #: pgadmin/preferences/static/js/preferences.js:341
 msgid "(in minutes)"
-msgstr ""
+msgstr "（分）"
 
 #: pgadmin/preferences/static/js/preferences.js:461
 msgid "Category is not selected."
@@ -10771,15 +10773,15 @@ msgstr "切り替え"
 
 #: pgadmin/static/js/backform.pgadmin.js:1133
 msgid "Set as default"
-msgstr ""
+msgstr "既定値として使用"
 
 #: pgadmin/static/js/backform.pgadmin.js:1152
 msgid "Database Server"
-msgstr ""
+msgstr "データベースサーバ"
 
 #: pgadmin/static/js/backform.pgadmin.js:1159
 msgid "Binary Path"
-msgstr ""
+msgstr "バイナリパス"
 
 #: pgadmin/static/js/backform.pgadmin.js:1164
 msgid "Select binary path..."
@@ -10804,6 +10806,8 @@ msgid ""
 "version. The default path will be used for server versions that do not "
 "have a path specified."
 msgstr ""
+"対応するバージョンの psql, pg_dump, pg_dumpall, pg_restore "
+"ユーティリティが置かれているディレクトリを入力してください。既定のパスとして指定されたものは、パスが未指定のサーババージョンに対しても使われるようになります"
 
 #: pgadmin/static/js/backform.pgadmin.js:1682
 #: pgadmin/static/js/backgrid.pgadmin.js:1253
@@ -11403,7 +11407,7 @@ msgstr "<a href=\"%(url)s\" class=\"text-white\">パスワードをお忘れで�
 #: pgadmin/templates/security/login_user.html:30
 #, python-format
 msgid "Login with %(oauth_name)s"
-msgstr ""
+msgstr "%(oauth_name)s でログイン"
 
 #: pgadmin/templates/security/reset_password.html:2
 #, python-format
@@ -11882,7 +11886,7 @@ msgstr "置換"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:110
 msgid " (Cmd+Option+F)"
-msgstr ""
+msgstr " (Cmd+Option+F)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:112
 msgid " (Ctrl+Shift+F)"
@@ -12604,7 +12608,7 @@ msgstr "ダイヤグラムが変更されています。保存しますか？"
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:350
 #, python-format
 msgid "Table: %s (%s)"
-msgstr ""
+msgstr "テーブル： %s (%s)"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:394
 msgid "Delete ?"
@@ -12660,11 +12664,11 @@ msgstr "不明なエラーです。コンソールのログを確認してくだ
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:675
 msgid "One to many relation"
-msgstr ""
+msgstr "一対多のリレーション"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:686
 msgid "Many to many relation"
-msgstr ""
+msgstr "多対多のリレーション"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:751
 msgid "Initializing connection..."
@@ -13128,11 +13132,11 @@ msgstr "サーバ/データベースオブジェクトを選択してくださ�
 
 #: pgadmin/tools/psql/static/js/psql_module.js:365
 msgid "Clipboard read permission required"
-msgstr ""
+msgstr "クリップボードからの読み取り権限が必要です"
 
 #: pgadmin/tools/psql/static/js/psql_module.js:365
 msgid "To paste data on the PSQL terminal, Clipboard read permission required."
-msgstr ""
+msgstr "PSQL 端末にデータを貼り付けるには、クリップボードからの読み取り権限が必要です"
 
 #: pgadmin/tools/restore/__init__.py:42
 #: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:40
@@ -14113,11 +14117,11 @@ msgid ""
 "If set to True then data columns will auto-size to the maximum width of "
 "the data in the column as loaded in the first batch. If False, the column"
 " will be sized to the widest of the data type or column name."
-msgstr ""
+msgstr "True の場合、列に含まれているデータの最大幅に合わせて、表示領域の広さを調整します。False にすると、データ型の名前や、列名の幅に合わせます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:285
 msgid "Maximum column width"
-msgstr ""
+msgstr "列の最大幅"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:287
 msgid ""
@@ -14126,6 +14130,9 @@ msgid ""
 "of the data in the column. If 'Resize by data?' is set to False then this"
 " setting won't take any effect."
 msgstr ""
+"'データに合わせてリサイズ' が True の場合、ここで列の最大幅を指定できます。0 "
+"にすると、列のデータ全体が表示領域に収まるまで、最大限リサイズします。'データに合わせてリサイズ' が False "
+"の場合、ここの設定は単に無視されます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:298
 msgid "Font size"
@@ -14782,59 +14789,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー： {0}"
-
-#~ msgid ""
-#~ "pgAdmin internal user authentication is "
-#~ "not enabled, please contact administrator."
-#~ msgstr "pgAdmin の内部ユーザ認証が有効になっていません。管理者に連絡してください"
-
-#~ msgid "Authentication source '{0}' has not been implemented."
-#~ msgstr "認証ソース「{0}」は実装されていません"
-
-#~ msgid ""
-#~ "Specifies whether the subscription should "
-#~ "be actively replicating, or whether it"
-#~ " should be just setup but not "
-#~ "started yet. "
-#~ msgstr "サブスクリプションをすぐに処理するか、或いは後で行えるように準備だけしておくかを指定します"
-
-#~ msgid "Fetch missing table information from publisher. "
-#~ msgstr "パブリッシャーから足りないテーブル情報を取得します"
-
-#~ msgid "Please connect server to enable change password. "
-#~ msgstr "パスワードを変更するには、サーバに接続してください "
-
-#~ msgid ""
-#~ " Enter the directory in which the"
-#~ " psql, pg_dump, pg_dumpall, and pg_restore"
-#~ " utilities can be found for the "
-#~ "corresponding database server version. The "
-#~ "default path will be used for "
-#~ "server versions that do not have "
-#~ "apath specified."
-#~ msgstr ""
-#~ " 対応するバージョンの psql, pg_dump, pg_dumpall, "
-#~ "pg_restore "
-#~ "ユーティリティが入ったディレクトリを入力してください。既定のパスとして指定されたものは、パスが未指定のサーババージョンに対しても使われるようになります"
-
-#~ msgid " (Cmd+Shift+F)"
-#~ msgstr " (Cmd+Shift+F)"
-
-#~ msgid "ERROR: Shell commands are disabled in psql for security\r\n"
-#~ msgstr "エラー: セキュリティ上の観点から、psql 上でのシェルコマンドの使用はできません\r\n"
-
-#~ msgid ""
-#~ "If set to True then data columns"
-#~ " will auto-size to the maximumwidth"
-#~ " of the data in the column as"
-#~ " loaded in the first batch. If "
-#~ "False, the column will be sized to"
-#~ " the widest of the data type or"
-#~ " column name."
-#~ msgstr ""
-#~ "True の場合、列に含まれているデータの最大幅に合わせて、表示領域の広さを調整します。False "
-#~ "にすると、データ型の名前や、列名の幅に合わせます"
-
-#~ msgid "Driver '{0}' has not been implemented."
-#~ msgstr "ドライバ「{0}」が実装されていません"
 
