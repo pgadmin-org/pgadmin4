@@ -86,7 +86,9 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
       var data = cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel);
 
       if (_.isUndefined(data) || _.isNull(data)) {
-        api.get(fullUrl)
+        api.get(fullUrl, {
+          params: otherParams.urlParams,
+        })
           .then((res)=>{
             data = res.data.data;
             cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, data);
