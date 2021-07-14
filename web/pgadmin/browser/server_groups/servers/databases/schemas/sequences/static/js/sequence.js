@@ -83,12 +83,12 @@ define('pgadmin.node.sequence', [
           {
             role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
             schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {}, (m)=>{
-                // If schema name start with pg_* then we need to exclude them
-                if (m.label.match(/^pg_/)) {
-                  return false;
-                }
-                return true;
-              }),
+              // If schema name start with pg_* then we need to exclude them
+              if (m.label.match(/^pg_/)) {
+                return false;
+              }
+              return true;
+            }),
           },
           {
             seqowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
