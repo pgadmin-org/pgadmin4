@@ -5,9 +5,9 @@ CREATE CAST ({{ conn|qtTypeIdent(data.srctyp) }} AS {{ conn|qtTypeIdent(data.trg
 {% if data.proname and data.proname != 'binary compatible'%}
     WITH FUNCTION {{data.proname}}{% else %}
     WITHOUT FUNCTION{% endif %}
-{% if data.castcontext and data.castcontext != 'EXPLICIT' %}
+{% if data.castcontext and data.castcontext != 'false' %}
 
-    AS {{data.castcontext}}{% endif %};
+    AS {{'IMPLICIT'}}{% endif %};
 {# Description for CAST #}
 {% if data.description %}
 COMMENT ON CAST ({{ conn|qtTypeIdent(data.srctyp) }} AS {{ conn|qtTypeIdent(data.trgtyp) }})
