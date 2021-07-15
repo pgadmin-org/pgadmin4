@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import _ from "lodash";
+
 /* This is the base schema class for SchemaView.
  * A UI schema must inherit this to use SchemaView for UI.
  */
@@ -28,8 +30,7 @@ export default class BaseUISchema {
   }
 
   get top() {
-    /* If no top, I'm the top */
-    return this._top || this;
+    return this._top;
   }
 
   /* The original data before any changes */
@@ -39,6 +40,16 @@ export default class BaseUISchema {
 
   get origData() {
     return this._origData || {};
+  }
+
+  /* The session data, can be useful but setting this will not affect UI
+  this._sessData is set by SchemaView directly. set sessData should not be allowed anywhere */
+  get sessData() {
+    return this._sessData || {};
+  }
+
+  set sessData(val) {
+    throw new Error('Property sessData is readonly.', val);
   }
 
   /* Property allows to restrict setting this later */
@@ -101,5 +112,18 @@ export default class BaseUISchema {
   */
   validate() {
     return false;
+  }
+
+  /* Returns the new data row for the schema based on defaults and input */
+  getNewData(data={}) {
+    let newRow = {};
+    this.fields.forEach((field)=>{
+      if(!_.isUndefined(data[field.id])){
+        newRow[field.id] = data[field.id];
+      } else {
+        newRow[field.id] = this.defaults[field.id];
+      }
+    });
+    return newRow;
   }
 }

@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Box, makeStyles, Tab, Tabs } from '@material-ui/core';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -21,6 +21,8 @@ import { InputSQL } from '../components/FormComponents';
 import gettext from 'sources/gettext';
 import { evalFunc } from 'sources/utils';
 import CustomPropTypes from '../custom_prop_types';
+import { useOnScreen } from '../custom_hooks';
+import { DepListenerContext } from './DepListener';
 
 const useStyles = makeStyles((theme)=>({
   fullSpace: {
@@ -33,6 +35,9 @@ const useStyles = makeStyles((theme)=>({
   nestedTabPanel: {
     backgroundColor: theme.otherVars.headerBg,
   },
+  nestedControl: {
+    height: 'unset',
+  }
 }));
 
 /* Optional SQL tab */
@@ -67,28 +72,52 @@ SQLTab.propTypes = {
 
 /* The first component of schema view form */
 export default function FormView({
-  value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab, getSQLValue, onTabChange, firstEleRef, className}) {
+    value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab,
+    getSQLValue, onTabChange, firstEleRef, className, isDataGridForm=false}) {
   let defaultTab = 'General';
   let tabs = {};
   let tabsClassname = {};
   const [tabValue, setTabValue] = useState(0);
   const classes = useStyles();
   const firstElement = useRef();
+  const formRef = useRef();
+  const onScreenTracker = useRef(false);
+  const depListener = useContext(DepListenerContext);
   let groupLabels = {};
 
   schema = schema || {fields: []};
 
-  /* Calculate the fields which depends on the current field
-  deps has info on fields which the current field depends on. */
-  const dependsOnField = useMemo(()=>{
-    let res = {};
-    schema.fields.forEach((field)=>{
-      (field.deps || []).forEach((dep)=>{
-        res[dep] = res[dep] || [];
-        res[dep].push(field.id);
+  let isOnScreen = useOnScreen(formRef);
+  if(isOnScreen) {
+    /* Don't do it when the form is alredy visible */
+    if(onScreenTracker.current == false) {
+      /* Re-select the tab. If form is hidden then sometimes it is not selected */
+      setTabValue(tabValue);
+      onScreenTracker.current = true;
+    }
+  } else {
+    onScreenTracker.current = false;
+  }
+
+  useEffect(()=>{
+    /* Calculate the fields which depends on the current field */
+    if(!isDataGridForm) {
+      schema.fields.forEach((field)=>{
+        /* Self change is also dep change */
+        if(field.depChange || field.deferredDepChange) {
+          depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+        }
+        (evalFunc(null, field.deps) || []).forEach((dep)=>{
+          let source = accessPath.concat(dep);
+          if(_.isArray(dep)) {
+            source = dep;
+          }
+          if(field.depChange) {
+            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
+          }
+        });
       });
-    });
-    return res;
+    }
   }, []);
 
   /* Prepare the array of components based on the types */
@@ -127,19 +156,36 @@ export default function FormView({
       /* Lets choose the path based on type */
       if(field.type === 'nested-tab') {
         /* Pass on the top schema */
-        field.schema.top = schema.top;
+        if(isNested) {
+          field.schema.top = schema.top;
+        } else {
+          field.schema.top = schema;
+        }
+
         tabs[group].push(
           <FormView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps} formErr={formErr}
-            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} />
+            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} {...field}/>
         );
       } else if(field.type === 'collection') {
-        /* Pass on the top schema */
-        field.schema.top = schema.top;
         /* If its a collection, let data grid view handle it */
+        let depsMap = [value[field.id]];
+        /* Pass on the top schema */
+        if(isNested) {
+          field.schema.top = schema.top;
+        } else {
+          field.schema.top = schema;
+        }
+
+        /* Eval the params based on state */
+        let {canAdd, canEdit, canDelete, ..._field} = field;
+        canAdd = evalFunc(schema, canAdd, value);
+        canEdit = evalFunc(schema, canAdd, value);
+        canDelete = evalFunc(schema, canAdd, value);
+
         tabs[group].push(
-          useMemo(()=><DataGridView key={field.id} value={value[field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
-            schema={field.schema} accessPath={accessPath.concat(field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}
-            {...field}/>, [value[field.id]])
+          useMemo(()=><DataGridView key={_field.id} value={value[_field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
+            schema={_field.schema} accessPath={accessPath.concat(_field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}
+            canAdd={canAdd} canEdit={canEdit} canDelete={canDelete} {..._field}/>, depsMap)
         );
       } else if(field.type === 'group') {
         groupLabels[field.id] = field.label;
@@ -171,21 +217,10 @@ export default function FormView({
             {...field}
             onChange={(value)=>{
               /* Get the changes on dependent fields as well */
-              const depChange = (state)=>{
-                field.depChange && _.merge(state, field.depChange(state) || {});
-                (dependsOnField[field.id] || []).forEach((d)=>{
-                  d = _.find(schema.fields, (f)=>f.id==d);
-                  if(d.depChange) {
-                    _.merge(state, d.depChange(state) || {});
-                  }
-                });
-                return state;
-              };
               dataDispatch({
                 type: SCHEMA_STATE_ACTIONS.SET_VALUE,
                 path: accessPath.concat(field.id),
                 value: value,
-                depChange: depChange,
               });
             }}
             hasError={hasError}
@@ -197,7 +232,7 @@ export default function FormView({
             _visible,
             hasError,
             classes.controlRow,
-            ...(field.deps || []).map((dep)=>value[dep])
+            ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
           ])
         );
       }
@@ -206,8 +241,8 @@ export default function FormView({
 
   /* Add the SQL tab if required */
   let sqlTabActive = false;
+  let sqlTabName = gettext('SQL');
   if(hasSQLTab) {
-    let sqlTabName = gettext('SQL');
     sqlTabActive = (Object.keys(tabs).length === tabValue);
     /* Re-render and fetch the SQL tab when it is active */
     tabs[sqlTabName] = [
@@ -226,7 +261,7 @@ export default function FormView({
 
   return (
     <>
-      <Box height="100%" display="flex" flexDirection="column" className={className}>
+      <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
         <Box>
           <Tabs
             value={tabValue}
@@ -245,7 +280,8 @@ export default function FormView({
         </Box>
         {Object.keys(tabs).map((tabName, i)=>{
           return (
-            <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}>
+            <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
+                className={tabName != sqlTabName ? classes.nestedControl : null}>
               {tabs[tabName]}
             </TabPanel>
           );

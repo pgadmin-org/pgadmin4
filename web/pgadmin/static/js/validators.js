@@ -47,14 +47,14 @@ export function integerValidator(label, value) {
 
 /* Validate value to check if it is empty */
 export function emptyValidator(label, value) {
-  if(isEmptyString(value) || String(value).replace(/^\s+|\s+$/g, '') == '') {
+  if(isEmptyString(value)) {
     return sprintf(pgAdmin.Browser.messages.CANNOT_BE_EMPTY, label);
   }
   return null;
 }
 
-export function isEmptyString(string) {
-  return _.isUndefined(string) || _.isNull(string) || String(string).trim() === '';
+export function isEmptyString(value) {
+  return _.isUndefined(value) || _.isNull(value) || String(value).trim() === '' || String(value).replace(/^\s+|\s+$/g, '') == '';
 }
 
 /* Validate rows to check for any duplicate rows based on uniqueCols-columns array */

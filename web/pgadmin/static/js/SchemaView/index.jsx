@@ -34,6 +34,7 @@ import { evalFunc } from 'sources/utils';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import { parseApiError } from '../api_instance';
+import DepListener, {DepListenerContext} from './DepListener';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -221,7 +222,35 @@ export const SCHEMA_STATE_ACTIONS = {
   ADD_ROW: 'add_row',
   DELETE_ROW: 'delete_row',
   RERENDER: 'rerender',
+  CLEAR_DEFERRED_QUEUE: 'clear_deferred_queue',
+  DEFERRED_DEPCHANGE: 'deferred_depchange',
 };
+
+const getDepChange = (currPath, newState, oldState, action)=>{
+  if(action.depChange) {
+    newState = action.depChange(currPath, newState, {
+      type: action.type,
+      path: action.path,
+      value: action.value,
+      oldState: _.cloneDeep(oldState),
+      depChangeResolved: action.depChangeResolved,
+    });
+  }
+  return newState;
+}
+
+const getDeferredDepChange = (currPath, newState, oldState, action)=>{
+  if(action.deferredDepChange) {
+    let deferredPromiseList = action.deferredDepChange(currPath, newState, {
+      type: action.type,
+      path: action.path,
+      value: action.value,
+      depChange: action.depChange,
+      oldState: _.cloneDeep(oldState),
+    });
+    return deferredPromiseList
+  }
+}
 
 /* The main function which manipulates the session state based on actions */
 /*
@@ -243,6 +272,7 @@ The state starts with path []
 const sessDataReducer = (state, action)=>{
   let data = _.cloneDeep(state);
   let rows, cid;
+  data.__deferred__ = data.__deferred__ || [];
   switch(action.type) {
   case SCHEMA_STATE_ACTIONS.INIT:
     data = action.payload;
@@ -250,9 +280,10 @@ const sessDataReducer = (state, action)=>{
   case SCHEMA_STATE_ACTIONS.SET_VALUE:
     _.set(data, action.path, action.value);
     /* If there is any dep listeners get the changes */
-    if(action.depChange) {
-      data = action.depChange(data);
-    }
+    data = getDepChange(action.path, data, state, action);
+    let deferredList = getDeferredDepChange(action.path, data, state, action);
+    // let deferredInfo = getDeferredDepChange(action.path, data, state, action);
+    data.__deferred__ = deferredList || [];
     break;
   case SCHEMA_STATE_ACTIONS.ADD_ROW:
     /* Create id to identify a row uniquely, usefull when getting diff */
@@ -260,11 +291,21 @@ const sessDataReducer = (state, action)=>{
     action.value['cid'] = cid;
     rows = (_.get(data, action.path)||[]).concat(action.value);
     _.set(data, action.path, rows);
+    /* If there is any dep listeners get the changes */
+    data = getDepChange(action.path, data, state, action);
     break;
   case SCHEMA_STATE_ACTIONS.DELETE_ROW:
     rows = _.get(data, action.path)||[];
     rows.splice(action.value, 1);
     _.set(data, action.path, rows);
+    /* If there is any dep listeners get the changes */
+    data = getDepChange(action.path, data, state, action);
+    break;
+  case SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE:
+    data.__deferred__ = [];
+    break;
+  case SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE:
+    data = getDepChange(action.path, data, state, action);
     break;
   }
   return data;
@@ -317,12 +358,16 @@ function SchemaDialogView({
   const [formReady, setFormReady] = useState(false);
   const firstEleRef = useRef();
   const isNew = schema.isNew(schema.origData);
+
+  const depListenerObj = useRef(new DepListener());
   /* The session data */
   const [sessData, sessDispatch] = useReducer(sessDataReducer, {});
 
   useEffect(()=>{
     /* if sessData changes, validate the schema */
     if(!formReady) return;
+    /* Set the _sessData, can be usefull to some deep controls */
+    schema._sessData = sessData;
     let isNotValid = validateSchema(schema, sessData, (name, message)=>{
       if(message) {
         setFormErr({
@@ -340,6 +385,25 @@ function SchemaDialogView({
     /* tell the callbacks the data has changed */
     props.onDataChange && props.onDataChange(dataChanged);
   }, [sessData]);
+
+  useEffect(()=>{
+    if(sessData.__deferred__?.length > 0) {
+      sessDispatch({
+        type: SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE,
+      });
+
+      // let deferredDepChang = sessData.__deferred__[0];
+      let item = sessData.__deferred__[0];
+      item.promise.then((resFunc)=>{
+        sessDispatch({
+          type: SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
+          path: item.action.path,
+          depChange: item.action.depChange,
+          depChangeResolved: resFunc,
+        });
+      });
+    }
+  }, [sessData.__deferred__?.length]);
 
   useEffect(()=>{
     /* Docker on load focusses itself, so our focus should execute later */
@@ -470,37 +534,47 @@ function SchemaDialogView({
     }
   };
 
+  const sessDispatchWithListener = (action)=>{
+    sessDispatch({
+      ...action,
+      depChange: (...args)=>depListenerObj.current.getDepChange(...args),
+      deferredDepChange: (...args)=>depListenerObj.current.getDeferredDepChange(...args),
+    });
+  };
+
   /* I am Groot */
   return (
-    <Box className={classes.root}>
-      <Box className={classes.form}>
-        <Loader message={loaderText}/>
-        <FormView value={sessData} viewHelperProps={viewHelperProps} formErr={formErr}
-          schema={schema} accessPath={[]} dataDispatch={sessDispatch}
-          hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} onTabChange={(i, tabName, sqlActive)=>setSqlTabActive(sqlActive)}
-          firstEleRef={firstEleRef} />
-        <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={sqlTabActive ? '' : formErr.message}
-          onClose={onErrClose} />
-      </Box>
-      <Box className={classes.footer}>
-        {useMemo(()=><Box>
-          <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
-            disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
-          <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."/>
-        </Box>, [])}
-        <Box marginLeft="auto">
-          <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className={classes.buttonMargin}>
-            {gettext('Close')}
-          </DefaultButton>
-          <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
-            {gettext('Reset')}
-          </DefaultButton>
-          <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={<SaveIcon />} disabled={!dirty || saving || Boolean(formErr.name) || !formReady}>
-            {gettext('Save')}
-          </PrimaryButton>
+    <DepListenerContext.Provider value={depListenerObj.current}>
+      <Box className={classes.root}>
+        <Box className={classes.form}>
+          <Loader message={loaderText}/>
+          <FormView value={sessData} viewHelperProps={viewHelperProps} formErr={formErr}
+            schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
+            hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} onTabChange={(i, tabName, sqlActive)=>setSqlTabActive(sqlActive)}
+            firstEleRef={firstEleRef} />
+          <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
+            onClose={onErrClose} />
+        </Box>
+        <Box className={classes.footer}>
+          {useMemo(()=><Box>
+            <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
+              disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
+            <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."/>
+          </Box>, [])}
+          <Box marginLeft="auto">
+            <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className={classes.buttonMargin}>
+              {gettext('Close')}
+            </DefaultButton>
+            <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
+              {gettext('Reset')}
+            </DefaultButton>
+            <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={<SaveIcon />} disabled={!dirty || saving || Boolean(formErr.name) || !formReady}>
+              {gettext('Save')}
+            </PrimaryButton>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </DepListenerContext.Provider>
   );
 }
 

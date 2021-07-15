@@ -9,7 +9,7 @@
 
 /* The DataGridView component is based on react-table component */
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PgIconButton } from '../components/Buttons';
@@ -28,6 +28,9 @@ import FormView from './FormView';
 import { confirmDeleteRow } from '../helpers/legacyConnector';
 import CustomPropTypes from 'sources/custom_prop_types';
 import { evalFunc } from 'sources/utils';
+import { useOnScreen } from '../custom_hooks';
+import { DepListenerContext } from './DepListener';
+import { getSchemaRow } from '../utils';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -57,6 +60,9 @@ const useStyles = makeStyles((theme)=>({
     padding: 0,
     minWidth: 0,
     backgroundColor: 'inherit',
+    '&.Mui-disabled': {
+      border: 0,
+    },
   },
   gridTableContainer: {
     overflow: 'auto',
@@ -138,13 +144,33 @@ DataTableHeader.propTypes = {
   headerGroups: PropTypes.array.isRequired,
 };
 
-function DataTableRow({row, totalRows, isResizing}) {
+function DataTableRow({row, totalRows, isResizing, schema, accessPath}) {
   const classes = useStyles();
   const [key, setKey] = useState(false);
+  const depListener = useContext(DepListenerContext);
   /* Memoize the row to avoid unnecessary re-render.
    * If table data changes, then react-table re-renders the complete tables
    * We can avoid re-render by if row data is not changed
    */
+
+  useEffect(()=>{
+    /* Calculate the fields which depends on the current field
+    deps has info on fields which the current field depends on. */
+    schema.fields.forEach((field)=>{
+      /* Self change is also dep change */
+      if(field.depChange) {
+        depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange);
+      }
+      (evalFunc(null, field.deps) || []).forEach((dep)=>{
+        let source = accessPath.concat(dep);
+        if(_.isArray(dep)) {
+          source = dep;
+        }
+        depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
+      });
+    });
+  }, []);
+
   let depsMap = _.values(row.values, Object.keys(row.values).filter((k)=>!k.startsWith('btn')));
   depsMap = depsMap.concat([totalRows, row.isExpanded, key, isResizing]);
   return useMemo(()=>
@@ -168,18 +194,7 @@ function DataTableRow({row, totalRows, isResizing}) {
 export default function DataGridView({
   value, viewHelperProps, formErr, schema, accessPath, dataDispatch, containerClassName, ...props}) {
   const classes = useStyles();
-  /* Calculate the fields which depends on the current field
-  deps has info on fields which the current field depends on. */
-  const dependsOnField = useMemo(()=>{
-    let res = {};
-    schema.fields.forEach((field)=>{
-      (field.deps || []).forEach((dep)=>{
-        res[dep] = res[dep] || [];
-        res[dep].push(field.id);
-      });
-    });
-    return res;
-  }, []);
+
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
   let columns = useMemo(
@@ -195,11 +210,17 @@ export default function DataGridView({
           dataType: 'edit',
           width: 30,
           minWidth: '0',
-          Cell: ({row})=><PgIconButton data-test="expand-row" title={gettext('Edit row')} icon={<EditRoundedIcon />} className={classes.gridRowButton}
-            onClick={()=>{
-              row.toggleRowExpanded(!row.isExpanded);
-            }}
-          />
+          Cell: ({row})=>{
+            let canEditRow = true;
+            if(props.canEditRow) {
+              canEditRow = evalFunc(schemaRef.current, props.canEditRow, row.original || {});
+            }
+            return <PgIconButton data-test="expand-row" title={gettext('Edit row')} icon={<EditRoundedIcon />} className={classes.gridRowButton}
+              onClick={()=>{
+                row.toggleRowExpanded(!row.isExpanded);
+              }} disabled={!canEditRow}
+            />
+          }
         };
         colInfo.Cell.displayName = 'Cell',
         colInfo.Cell.propTypes = {
@@ -218,17 +239,23 @@ export default function DataGridView({
           width: 30,
           minWidth: '0',
           Cell: ({row}) => {
+            let canDeleteRow = true;
+            if(props.canDeleteRow) {
+              canDeleteRow = evalFunc(schemaRef.current, props.canDeleteRow, row.original || {});
+            }
+
             return (
               <PgIconButton data-test="delete-row" title={gettext('Delete row')} icon={<DeleteRoundedIcon />}
                 onClick={()=>{
                   confirmDeleteRow(()=>{
+                    /* Get the changes on dependent fields as well */
                     dataDispatch({
                       type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
                       path: accessPath,
                       value: row.index,
                     });
                   }, ()=>{}, props.customDeleteTitle, props.customDeleteMsg);
-                }} className={classes.gridRowButton} />
+                }} className={classes.gridRowButton} disabled={!canDeleteRow} />
             );
           }
         };
@@ -287,25 +314,10 @@ export default function DataGridView({
                 disabled={!editable}
                 visible={_visible}
                 onCellChange={(value)=>{
-                  /* Get the changes on dependent fields as well.
-                    * The return value of depChange function is merged and passed to state.
-                    */
-                  const depChange = (state)=>{
-                    let rowdata = _.get(state, accessPath.concat(row.index));
-                    _field.depChange && _.merge(rowdata, _field.depChange(rowdata, _field.id) || {});
-                    (dependsOnField[_field.id] || []).forEach((d)=>{
-                      d = _.find(schemaRef.current.fields, (f)=>f.id==d);
-                      if(d.depChange) {
-                        _.merge(rowdata, d.depChange(rowdata, _field.id) || {});
-                      }
-                    });
-                    return state;
-                  };
                   dataDispatch({
                     type: SCHEMA_STATE_ACTIONS.SET_VALUE,
                     path: accessPath.concat([row.index, _field.id]),
                     value: value,
-                    depChange: depChange,
                   });
                 }}
                 reRenderRow={other.reRenderRow}
@@ -326,12 +338,7 @@ export default function DataGridView({
   );
 
   const onAddClick = useCallback(()=>{
-    let newRow = {};
-    columns.forEach((column)=>{
-      if(column.field) {
-        newRow[column.field.id] = schemaRef.current.defaults[column.field.id];
-      }
-    });
+    let newRow = schemaRef.current.getNewData();
     dataDispatch({
       type: SCHEMA_STATE_ACTIONS.ADD_ROW,
       path: accessPath,
@@ -387,12 +394,12 @@ export default function DataGridView({
             {rows.map((row, i) => {
               prepareRow(row);
               return <React.Fragment key={i}>
-                <DataTableRow row={row} totalRows={rows.length} canExpand={props.canEdit}
-                  value={value} viewHelperProps={viewHelperProps} formErr={formErr} isResizing={isResizing}
-                  schema={schemaRef.current} accessPath={accessPath.concat([row.index])} dataDispatch={dataDispatch} />
+                <DataTableRow row={row} totalRows={rows.length} isResizing={isResizing}
+                  schema={schemaRef.current} accessPath={accessPath.concat([row.index])} />
                 {props.canEdit && row.isExpanded &&
                   <FormView value={row.original} viewHelperProps={viewHelperProps} formErr={formErr} dataDispatch={dataDispatch}
-                    schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}/>
+                    schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
+                    isDataGridForm={true}/>
                 }
               </React.Fragment>;
             })}

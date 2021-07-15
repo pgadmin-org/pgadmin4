@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme)=>({
     padding: theme.spacing(1),
     overflow: 'auto',
     backgroundColor: theme.palette.grey[400]
+  },
+  content: {
+    height: '100%',
   }
 }));
 
@@ -28,7 +31,7 @@ export default function TabPanel({children, classNameRoot, className, value, ind
   const active = value === index;
   return (
     <Box className={clsx(classes.root, classNameRoot)} component="div" hidden={!active}>
-      <Box style={{height: '100%'}} className={className}>{children}</Box>
+      <Box className={clsx(classes.content, className)}>{children}</Box>
     </Box>
   );
 }
