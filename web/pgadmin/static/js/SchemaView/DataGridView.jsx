@@ -28,9 +28,7 @@ import FormView from './FormView';
 import { confirmDeleteRow } from '../helpers/legacyConnector';
 import CustomPropTypes from 'sources/custom_prop_types';
 import { evalFunc } from 'sources/utils';
-import { useOnScreen } from '../custom_hooks';
 import { DepListenerContext } from './DepListener';
-import { getSchemaRow } from '../utils';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -219,7 +217,7 @@ export default function DataGridView({
               onClick={()=>{
                 row.toggleRowExpanded(!row.isExpanded);
               }} disabled={!canEditRow}
-            />
+            />;
           }
         };
         colInfo.Cell.displayName = 'Cell',
@@ -420,9 +418,21 @@ DataGridView.propTypes = {
   dataDispatch: PropTypes.func.isRequired,
   containerClassName: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   columns: PropTypes.array,
-  canEdit: PropTypes.bool,
-  canAdd: PropTypes.bool,
-  canDelete: PropTypes.bool,
+  canEdit: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.func,
+  ]),
+  canAdd: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.func,
+  ]),
+  canDelete: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.func,
+  ]),
+  canEditRow: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.func,
+  ]),
+  canDeleteRow: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.func,
+  ]),
   customDeleteTitle: PropTypes.string,
   customDeleteMsg: PropTypes.string,
 };

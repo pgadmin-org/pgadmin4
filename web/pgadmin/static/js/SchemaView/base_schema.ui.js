@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import _ from "lodash";
+import _ from 'lodash';
 
 /* This is the base schema class for SchemaView.
  * A UI schema must inherit this to use SchemaView for UI.

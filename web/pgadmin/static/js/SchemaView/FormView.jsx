@@ -72,8 +72,8 @@ SQLTab.propTypes = {
 
 /* The first component of schema view form */
 export default function FormView({
-    value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab,
-    getSQLValue, onTabChange, firstEleRef, className, isDataGridForm=false}) {
+  value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab,
+  getSQLValue, onTabChange, firstEleRef, className, isDataGridForm=false}) {
   let defaultTab = 'General';
   let tabs = {};
   let tabsClassname = {};
@@ -281,7 +281,7 @@ export default function FormView({
         {Object.keys(tabs).map((tabName, i)=>{
           return (
             <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-                className={tabName != sqlTabName ? classes.nestedControl : null}>
+              className={tabName != sqlTabName ? classes.nestedControl : null}>
               {tabs[tabName]}
             </TabPanel>
           );
@@ -296,6 +296,7 @@ FormView.propTypes = {
   schema: CustomPropTypes.schemaUI.isRequired,
   viewHelperProps: PropTypes.object,
   isNested: PropTypes.bool,
+  isDataGridForm: PropTypes.bool,
   accessPath: PropTypes.array.isRequired,
   dataDispatch: PropTypes.func,
   hasSQLTab: PropTypes.bool,

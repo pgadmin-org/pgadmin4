@@ -237,7 +237,7 @@ const getDepChange = (currPath, newState, oldState, action)=>{
     });
   }
   return newState;
-}
+};
 
 const getDeferredDepChange = (currPath, newState, oldState, action)=>{
   if(action.deferredDepChange) {
@@ -248,9 +248,9 @@ const getDeferredDepChange = (currPath, newState, oldState, action)=>{
       depChange: action.depChange,
       oldState: _.cloneDeep(oldState),
     });
-    return deferredPromiseList
+    return deferredPromiseList;
   }
-}
+};
 
 /* The main function which manipulates the session state based on actions */
 /*
@@ -271,7 +271,7 @@ The state starts with path []
 */
 const sessDataReducer = (state, action)=>{
   let data = _.cloneDeep(state);
-  let rows, cid;
+  let rows, cid, deferredList;
   data.__deferred__ = data.__deferred__ || [];
   switch(action.type) {
   case SCHEMA_STATE_ACTIONS.INIT:
@@ -281,7 +281,7 @@ const sessDataReducer = (state, action)=>{
     _.set(data, action.path, action.value);
     /* If there is any dep listeners get the changes */
     data = getDepChange(action.path, data, state, action);
-    let deferredList = getDeferredDepChange(action.path, data, state, action);
+    deferredList = getDeferredDepChange(action.path, data, state, action);
     // let deferredInfo = getDeferredDepChange(action.path, data, state, action);
     data.__deferred__ = deferredList || [];
     break;
@@ -354,7 +354,6 @@ function SchemaDialogView({
   const [formErr, setFormErr] = useState({});
   const [loaderText, setLoaderText] = useState('');
   const [saving, setSaving] = useState(false);
-  const [sqlTabActive, setSqlTabActive] = useState(false);
   const [formReady, setFormReady] = useState(false);
   const firstEleRef = useRef();
   const isNew = schema.isNew(schema.origData);
@@ -550,8 +549,7 @@ function SchemaDialogView({
           <Loader message={loaderText}/>
           <FormView value={sessData} viewHelperProps={viewHelperProps} formErr={formErr}
             schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
-            hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} onTabChange={(i, tabName, sqlActive)=>setSqlTabActive(sqlActive)}
-            firstEleRef={firstEleRef} />
+            hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} />
           <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
             onClose={onErrClose} />
         </Box>

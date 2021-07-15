@@ -822,6 +822,7 @@ const useStylesFormFooter = makeStyles((theme)=>({
     bottom: 0,
     left: 0,
     right: 0,
+    zIndex: 10,
   },
   container: {
     borderWidth: '1px',

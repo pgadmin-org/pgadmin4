@@ -26,7 +26,7 @@ export default class DepListener {
     if(dataPath.length > 0) {
       data = _.get(state, dataPath);
     }
-    data = _.assign(data, listener.callback && listener.callback(data, listener.source, state, actionObj) || {});
+    _.assign(data, listener.callback && listener.callback(data, listener.source, state, actionObj) || {});
     return state;
   }
 
