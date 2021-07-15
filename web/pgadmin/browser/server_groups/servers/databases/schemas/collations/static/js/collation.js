@@ -7,6 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
+import CollationSchema from './collation.ui';
+import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../static/js/node_ajax';
+
 define('pgadmin.node.collation', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser',
@@ -68,14 +71,6 @@ define('pgadmin.node.collation', [
       },
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          owner: undefined,
-          lc_type: undefined,
-          lc_collate: undefined,
-          description: undefined,
-        },
 
         // Default values!
         initialize: function(attrs, args) {
@@ -104,135 +99,28 @@ define('pgadmin.node.collation', [
           disabled: 'inSchema', control: 'node-list-by-name',
           node: 'role',
         },{
-          id: 'schema', label: gettext('Schema'), cell: 'string',
-          type: 'text', mode: ['create', 'edit'], node: 'schema',
-          disabled: 'inSchema', filter: function(d) {
-            // If schema name start with pg_* then we need to exclude them
-            if(d && d.label.match(/^pg_/))
-            {
-              return false;
-            }
-            return true;
-          }, control: 'node-list-by-name',
-          cache_node: 'database', cached_level: 'database',
-        },{
-          id: 'copy_collation', label: gettext('Copy collation'), cell: 'string',
-          control: 'node-ajax-options',
-          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
-          url: 'get_collations', disabled: 'inSchemaWithModelCheck',
-          readonly: function(m) {return !m.isNew;},
-          deps: ['locale', 'lc_collate', 'lc_type'],
-        },{
-          id: 'locale', label: gettext('Locale'), cell: 'string',
-          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
-          disabled: 'inSchemaWithModelCheck', readonly: function(m) {return !m.isNew;},
-          deps: ['lc_collate', 'lc_type', 'copy_collation'],
-        },{
-          id: 'lc_collate', label: gettext('LC_COLLATE'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
-          deps: ['locale', 'copy_collation'], disabled: 'inSchemaWithModelCheck',
-          readonly: function(m) {return !m.isNew;},
-        },{
-          id: 'lc_type', label: gettext('LC_TYPE'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
-          disabled: 'inSchemaWithModelCheck', readonly: function(m) {return !m.isNew;},
-          deps: ['locale', 'copy_collation'],
-        },{
-          id: 'is_sys_obj', label: gettext('System collation?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           disabled: 'inSchema',
-        },
+        }
         ],
-        validate: function() {
-          var err = {},
-            msg = undefined,
-            changedAttrs = this.changed,
-            locale_flag = false,
-            lc_type_flag = false,
-            lc_coll_flag = false,
-            copy_coll_flag = false,
-            data = this.toJSON();
-
-          this.errorModel.clear();
-
-          if (_.has(changedAttrs,data.name) && _.isUndefined(this.get('name'))
-              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', msg);
-          }
-          if (_.has(changedAttrs,data.locale) && (_.isUndefined(this.get('locale'))
-              || String(this.get('locale')).replace(/^\s+|\s+$/g, '') == '')) {
-            locale_flag = true;
-          }
-          if (_.has(changedAttrs,data.lc_collate) && (_.isUndefined(this.get('lc_collate'))
-              || String(this.get('lc_collate')).replace(/^\s+|\s+$/g, '') == '')) {
-            lc_coll_flag = true;
-          }
-          if (_.has(changedAttrs,data.lc_type) && (_.isUndefined(this.get('lc_type'))
-              || String(this.get('lc_type')).replace(/^\s+|\s+$/g, '') == '')) {
-            lc_type_flag = true;
-          }
-          if (_.has(changedAttrs,data.copy_collation) && (_.isUndefined(this.get('copy_collation'))
-              || String(this.get('copy_collation')).replace(/^\s+|\s+$/g, '') == '')) {
-            copy_coll_flag = true;
-          }
-          if (locale_flag && (lc_coll_flag || lc_type_flag) && copy_coll_flag) {
-            msg = gettext('Definition incomplete. Please provide Locale OR Copy Collation OR LC_TYPE/LC_COLLATE.');
-            err['locale'] = msg;
-          }
-          return null;
-        },
-        // We will disable everything if we are under catalog node
-        inSchema: function() {
-          if(this.node_info &&  'catalog' in this.node_info)
-          {
-            return true;
-          }
-          return false;
-        },
-        // We will check if we are under schema node & in 'create' mode
-        inSchemaWithModelCheck: function(m) {
-          if(this.node_info &&  'schema' in this.node_info)
-          {
-            // Enable copy_collation only if locale & lc_* is not provided
-            if (m.isNew() && this.name == 'copy_collation')
-            {
-              if(m.get('locale'))
-                return true;
-              if(m.get('lc_collate') || m.get('lc_type'))
-                return true;
-              return false;
-            }
-
-            // Enable lc_* only if copy_collation & locale is not provided
-            if (m.isNew() && (this.name == 'lc_collate' || this.name == 'lc_type'))
-            {
-              if(m.get('locale'))
-                return true;
-              if(m.get('copy_collation'))
-                return true;
-              return false;
-            }
-
-            // Enable localy only if lc_* & copy_collation is not provided
-            if (m.isNew() && this.name == 'locale')
-            {
-              if(m.get('lc_collate') || m.get('lc_type'))
-                return true;
-              if(m.get('copy_collation'))
-                return true;
-              return false;
-            }
-          }
-          return true;
-        },
       }),
+      getSchema: (treeNodeInfo, itemNodeData)=>{
+        let nodeObj = pgAdmin.Browser.Nodes['collation'];
+        let schema = new CollationSchema(
+          {
+            rolesList: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData, {cacheLevel: 'server'}),
+            schemaList: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {cacheLevel: 'database'}),
+            collationsList: ()=>getNodeAjaxOptions('get_collations', nodeObj, treeNodeInfo, itemNodeData, {cacheLevel: 'server'})
+          },
+          {
+            owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+            schema: ('schema' in treeNodeInfo)? treeNodeInfo.schema.label : ''
+          }
+        );
+        return schema;
+      }
     });
-
   }
-
   return pgBrowser.Nodes['collation'];
 });
