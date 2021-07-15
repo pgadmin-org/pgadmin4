@@ -597,6 +597,7 @@ function SchemaPropertiesView({
         <MappedFormControl
           key={field.id}
           viewHelperProps={viewHelperProps}
+          state={origData}
           name={field.id}
           value={origData[field.id]}
           readonly={readonly}

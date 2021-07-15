@@ -7,6 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../static/js/node_ajax';
+import SynonymSchema from './synonym.ui';
+
 define('pgadmin.node.synonym', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
@@ -68,6 +71,35 @@ define('pgadmin.node.synonym', [
         ]);
 
       },
+
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new SynonymSchema(
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database',
+              cacheNode: 'database'
+            }),
+            synobjschema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {}, (m)=>{
+              // Exclude PPAS catalogs
+              var exclude_catalogs = ['pg_catalog', 'sys', 'dbo', 'pgagent', 'information_schema', 'dbms_job_procedure'];
+              return m && _.indexOf(exclude_catalogs, m.label) == -1;
+            }),
+            getTargetObjectOptions: (targettype, synobjschema) =>
+            {
+              return getNodeAjaxOptions('get_target_objects', this, treeNodeInfo,
+                itemNodeData, {urlParams: {'trgTyp' : targettype, 'trgSchema' : synobjschema}, useCache: false});
+            },
+          },
+          treeNodeInfo,
+          {
+            owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+            schema: itemNodeData.label,
+            synobjschema: itemNodeData.label,
+          }
+        );
+      },
+
       model: pgAdmin.Browser.Node.Model.extend({
         isNew: function() {
           return !this.fetchFromServer;
@@ -104,123 +136,8 @@ define('pgadmin.node.synonym', [
           type: 'text', mode: ['properties', 'create', 'edit'],
           readonly: true , control: 'node-list-by-name',
           node: 'role', visible: false,
-        },{
-          id: 'schema', label: gettext('Schema'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          readonly: function(m) { return !m.isNew(); }, node: 'schema',
-          control: 'node-list-by-name', cache_node: 'database',
-          cache_level: 'database',
-        },{
-          id: 'targettype', label: gettext('Target type'), cell: 'string',
-          disabled: 'inSchema', group: gettext('Definition'),
-          select2: { width: '50%', allowClear: false },
-          options: function() {
-            return [
-              {label: gettext('Function'), value: 'f'},
-              {label: gettext('Package'), value: 'P'},
-              {label: gettext('Procedure'), value: 'p'},
-              {label: gettext('Public Synonym'), value: 's'},
-              {label: gettext('Sequence'), value: 'S'},
-              {label: gettext('Table'), value: 'r'},
-              {label: gettext('View'), value: 'v'},
-            ];
-          },
-          control: 'select2',
-        },{
-          id: 'synobjschema', label: gettext('Target schema'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          group: gettext('Definition'), deps: ['targettype'],
-          select2: { allowClear: false }, control: 'node-list-by-name',
-          node: 'schema', filter: function(d) {
-            // Exclude PPAS catalogs
-            var exclude_catalogs = ['pg_catalog', 'sys', 'dbo',
-              'pgagent', 'information_schema',
-              'dbms_job_procedure'];
-            return d && _.indexOf(exclude_catalogs, d.label) == -1;
-          },
-          disabled: function(m) {
-            // If tagetType is synonym then disable it
-            if(!m.inSchema.apply(this, [m])) {
-              var is_synonym = (m.get('targettype') == 's');
-              if(is_synonym) {
-                m.set('synobjschema', 'public', {silent: true});
-                return true;
-              } else {
-                return false;
-              }
-            }
-            return true;
-          },
-        },{
-          id: 'synobjname', label: gettext('Target object'), cell: 'string',
-          type: 'text', group: gettext('Definition'),
-          deps: ['targettype', 'synobjschema'],
-          control: 'node-ajax-options',
-          options: function(control) {
-            var trgTyp = control.model.get('targettype');
-            var trgSchema = control.model.get('synobjschema');
-            var res = [];
-            var node = control.field.get('schema_node'),
-              _url = node.generate_url.apply(
-                node, [
-                  null, 'get_target_objects', control.field.get('node_data'), false,
-                  control.field.get('node_info') ]);
-            $.ajax({
-              type: 'GET',
-              timeout: 30000,
-              url: _url,
-              cache: false,
-              async: false,
-              data: {'trgTyp' : trgTyp, 'trgSchema' : trgSchema},
-            })
-            // On success return function list from server
-              .done(function(result) {
-                res = result.data;
-                return res;
-              })
-            // On failure show error appropriate error message to user
-              .fail(function(xhr, status, error) {
-                alertify.pgRespErrorNotify(xhr, error);
-              });
-            return res;
-          },
-          disabled: function(m) {
-            if (this.node_info &&  'catalog' in this.node_info) {
-              return true;
-            }
-            // Check the changed attributes if targettype or synobjschema
-            // is changed then reset the target object
-            if ('changed' in m && !('name' in m.changed) &&
-               ('targettype' in m.changed || 'synobjschema' in m.changed)) {
-              m.set('synobjname', undefined);
-            }
+        }],
 
-            return false;
-          },
-        },{
-          id: 'is_sys_obj', label: gettext('System synonym?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },
-        ],
-        validate: function() {
-          var msg = undefined;
-          this.errorModel.clear();
-
-          if (_.isUndefined(this.get('name'))
-              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', msg);
-          } else if (_.isUndefined(this.get('synobjschema'))
-              || String(this.get('synobjschema')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Target schema cannot be empty.');
-            this.errorModel.set('synobjschema', msg);
-          } else if (_.isUndefined(this.get('synobjname'))
-              || String(this.get('synobjname')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Target object cannot be empty.');
-            this.errorModel.set('synobjname', msg);
-          }
-          return null;
-        },
         // We will disable everything if we are under catalog node
         inSchema: function() {
           if(this.node_info &&  'catalog' in this.node_info)

@@ -64,6 +64,7 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
   let otherParams = {
     urlWithId: false,
     jumpAfterNode: null,
+    useCache: true,
     ...params
   };
   return new Promise((resolve, reject)=>{
@@ -91,7 +92,7 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
         })
           .then((res)=>{
             data = res.data.data;
-            cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, data);
+            otherParams.useCache && cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, data);
             resolve(transform(data));
           })
           .catch((err)=>{

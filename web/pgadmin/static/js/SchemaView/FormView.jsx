@@ -116,9 +116,7 @@ export default function FormView({
 
       visible = _.isUndefined(visible) ? true : visible;
       let _visible = true;
-      if(visible) {
-        _visible = evalFunc(schema, visible, value);
-      }
+      _visible = evalFunc(schema, visible, value);
       _visible = _visible && verInLimit;
 
       disabled = evalFunc(schema, disabled, value);
