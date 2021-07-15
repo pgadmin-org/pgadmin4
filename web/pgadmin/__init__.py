@@ -681,14 +681,14 @@ def create_app(app_name=None):
         from pgadmin.utils.driver import get_driver
         from flask import current_app
 
-        # remove key
-        current_app.keyManager.reset()
-
         for mdl in current_app.logout_hooks:
             try:
                 mdl.on_logout(user)
             except Exception as e:
                 current_app.logger.exception(e)
+
+        # remove key
+        current_app.keyManager.reset()
 
         _driver = get_driver(PG_DEFAULT_DRIVER)
         _driver.gc_own()
