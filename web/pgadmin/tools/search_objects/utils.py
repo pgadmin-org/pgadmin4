@@ -98,8 +98,12 @@ class SearchObjectsHelper:
         """
 
         if obj_type == 'all':
-            status, error = conn.execute_dict('select * from pg_subscription')
-            if 'permission denied' in error:
+            status, result = conn.execute_dict(
+                "SELECT COUNT(1) FROM information_schema.table_privileges  "
+                "WHERE table_name = 'pg_subscription' "
+                "AND privilege_type = 'SELECT'")
+            if 'count' in result['rows'][0] and \
+                    result['rows'][0]['count'] == '0':
                 skip_obj_type.append('subscription')
 
         return skip_obj_type

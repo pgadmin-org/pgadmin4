@@ -18,4 +18,5 @@ Bug fixes
 *********
 
 | `Issue #6369 <https://redmine.postgresql.org/issues/6369>`_ -  Fixed CSRF errors for stale sessions by increasing the session expiration time for desktop mode.
+| `Issue #6448 <https://redmine.postgresql.org/issues/6448>`_ -  Fixed an issue in the search object when searching in 'all types' or 'subscription' if the user doesn't have access to the subscription.
 | `Issue #6580 <https://redmine.postgresql.org/issues/6580>`_ -  Fixed TypeError 'NoneType' object is not sub scriptable.
