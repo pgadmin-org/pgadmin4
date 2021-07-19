@@ -388,7 +388,7 @@ export function InputToggle({cid, value, onChange, options, disabled, readonly, 
           const isSelected = option.value === value;
           const isDisabled = disabled || (readonly && isSelected);
           return (
-            <ToggleButton key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
+            <ToggleButton key={option.label} value={option.value || ''} component={isSelected ? PrimaryButton : DefaultButton}
               disabled={isDisabled} aria-label={option.label}>
               <CheckRoundedIcon style={{visibility: isSelected ? 'visible': 'hidden'}}/>&nbsp;{option.label}
             </ToggleButton>
@@ -556,7 +556,8 @@ function getRealValue(options, value, creatable, formatter) {
       realValue = realValue.map((val)=>(_.find(options, (option)=>option.value==val)));
     }
   } else {
-    realValue = _.find(options, (option)=>option.value==value) || null;
+    realValue = _.find(options, (option)=>option.value==value) ||
+        (creatable && !_.isUndefined(value) ? {label:value, value: value} : null);
   }
   return realValue;
 }

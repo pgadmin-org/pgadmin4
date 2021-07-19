@@ -7,6 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/js/node_ajax';
+import LanguageSchema from './language.ui';
+import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
+
 define('pgadmin.node.language', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
@@ -65,24 +69,10 @@ define('pgadmin.node.language', [
           icon: 'wcTabIcon icon-language', data: {action: 'create'},
         }]);
       },
+
       // Define the model for language node
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          lanowner: undefined,
-          comment: undefined,
-          lanacl: [],
-          seclabels:[],
-          trusted: true,
-          lanproc: undefined,
-          laninl: undefined,
-          lanval: undefined,
-          is_template: false,
-          template_list: [],
-        },
-
-        // Default values!
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
           if (isNew) {
@@ -96,48 +86,7 @@ define('pgadmin.node.language', [
         // Define the schema for the language node
         schema: [{
           id: 'name', label: gettext('Name'), type: 'text',
-          control: 'node-ajax-options', mode: ['properties', 'create', 'edit'],
-          url:'get_templates', select2: { allowClear: false, tags: true, multiple: false },
-          transform: function(data, cell) {
-            var res = [],
-              control = cell || this,
-              label = control.model.get('name');
-
-            if (!control.model.isNew()) {
-              res.push({label: label, value: label});
-            }
-            else {
-              var tmp_list = [];
-              if (data && _.isArray(data)) {
-                _.each(data, function(d) {
-                  res.push({label: d.tmplname, value: d.tmplname});
-                  tmp_list.push(d.tmplname);
-                });
-              }
-              this.model.set({'template_list': tmp_list});
-            }
-
-            return res;
-          },
-          visible: function() {
-            if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
-              && !_.isUndefined(this.node_info.server.version) &&
-                this.node_info.server.version < 130000) {
-              return true;
-            }
-            return false;
-          },
-        }, {
-          id: 'name', label: gettext('Name'), type: 'text',
-          mode: ['properties', 'create', 'edit'],
-          visible: function() {
-            if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
-              && !_.isUndefined(this.node_info.server.version) &&
-                this.node_info.server.version >= 130000) {
-              return true;
-            }
-            return false;
-          },
+          mode: ['properties'],
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
           type: 'text',
@@ -145,145 +94,29 @@ define('pgadmin.node.language', [
           id: 'lanowner', label: gettext('Owner'), type: 'text',
           control: Backform.NodeListByNameControl, node: 'role',
           mode: ['edit', 'properties', 'create'], select2: { allowClear: false },
-        },{
-          id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'is_sys_obj', label: gettext('System language?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
+        },
+        {
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline',
-        },{
-          id: 'trusted', label: gettext('Trusted?'), type: 'switch',
-          group: gettext('Definition'), mode: ['edit', 'properties', 'create'], deps: ['name'],
-          disabled: function(m) {
-            if (m.isNew()) {
-              if (m.get('template_list').indexOf(m.get('name')) == -1) {
-                m.set({'is_template': false});
-                return false;
-              }
-              else {
-                m.set({'is_template': true});
-                return true;
-              }
-            }
-            return false;
-          },
-          readonly: function(m) {return !m.isNew();},
-        },{
-          id: 'lanproc', label: gettext('Handler function'), type: 'text', control: 'node-ajax-options',
-          group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
-          deps: ['name'], first_empty: false,
-          /* This function is used to populate the handler function
-           * for the selected language node. It will check if the property
-           * type is 'handler' then push the data into the result array.
-           */
-          transform: function(data) {
-            var res = [];
-            if (data && _.isArray(data)) {
-              _.each(data, function(d) {
-                if (d.prop_type == 'handler') {
-                  res.push({label: d.label, value: d.label});
-                }
-              });
-            }
-            return res;
-          }, disabled: 'isDisabled',
-          readonly: function(m) {return !m.isNew();},
-        },{
-          id: 'laninl', label: gettext('Inline function'), type: 'text', control: 'node-ajax-options',
-          group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
-          deps: ['name'], first_empty: false,
-          /* This function is used to populate the inline function
-           * for the selected language node. It will check if the property
-           * type is 'inline' then push the data into the result array.
-           */
-          transform: function(data) {
-            var res = [];
-            if (data && _.isArray(data)) {
-              _.each(data, function(d) {
-                if (d.prop_type == 'inline') {
-                  res.push({label: d.label, value: d.label});
-                }
-              });
-            }
-            return res;
-          }, disabled: 'isDisabled',
-          readonly: function(m) {return !m.isNew();},
-        },{
-          id: 'lanval', label: gettext('Validator function'), type: 'text', control: 'node-ajax-options',
-          group: gettext('Definition'), mode: ['edit', 'properties', 'create'], url:'get_functions',
-          deps: ['name'],
-          /* This function is used to populate the validator function
-           * for the selected language node. It will check if the property
-           * type is 'validator' then push the data into the result array.
-           */
-          transform: function(data) {
-            var res = [];
-            if (data && _.isArray(data)) {
-              _.each(data, function(d) {
-                if (d.prop_type == 'validator') {
-                  res.push({label: d.label, value: d.label});
-                }
-              });
-            }
-            return res;
-          }, disabled: 'isDisabled',
-          readonly: function(m) {return !m.isNew();},
-        }, {
-          id: 'lanacl', label: gettext('Privileges'), type: 'collection',
-          group: gettext('Security'), control: 'unique-col-collection', mode: ['edit', 'create'],
-          model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['U'],
-          }), canAdd: true, canDelete: true, uniqueCol : ['grantee'],
-        },{
-          id: 'seclabels', label: gettext('Security labels'), mode: ['edit', 'create'],
-          model: pgBrowser.SecLabelModel, editable: false,
-          type: 'collection', group: gettext('Security'), min_version: 90200,
-          canAdd: true, canEdit: false, canDelete: true,
-          control: 'unique-col-collection',
         },
         ],
-        /* validate function is used to validate the input given by
-         * the user. In case of error, message will be displayed on
-         * the GUI for the respective control.
-         */
-        validate: function() {
-          var name = this.get('name'),
-            msg;
-
-          if (_.isUndefined(name) || _.isNull(name) ||
-            String(name).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('name');
-          }
-
-          // If predefined template is selected then no need to validate it.
-          if (!this.get('is_template')) {
-            var handler_func = this.get('lanproc');
-            if (_.isUndefined(handler_func) || _.isNull(handler_func) ||
-              String(handler_func).replace(/^\s+|\s+$/g, '') == '') {
-              msg = gettext('Handler function cannot be empty.');
-              this.errorModel.set('lanproc', msg);
-              return msg;
-            } else {
-              this.errorModel.unset('lanproc');
-            }
-          }
-
-          return null;
-        },
-        isDisabled: function(m){
-          if (m.isNew()) {
-            return m.get('template_list').indexOf(m.get('name')) != -1;
-          }
-          return false;
-        },
       }),
+
+      getSchema: function(treeNodeInfo, itemNodeData){
+        let schema = new LanguageSchema(
+          (privileges)=>getNodePrivilegeRoleSchema(this, treeNodeInfo, itemNodeData, privileges),
+          {
+            lan_functions: ()=>getNodeAjaxOptions('get_functions', this, treeNodeInfo, itemNodeData),
+            templates_data: ()=>getNodeAjaxOptions('get_templates', this, treeNodeInfo, itemNodeData),
+            role:()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+
+          },
+          {
+            node_info: treeNodeInfo.server,
+          },
+        );
+        return schema;
+      },
     });
   }
   return pgBrowser.Nodes['coll-language'];
