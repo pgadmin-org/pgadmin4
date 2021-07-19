@@ -21,8 +21,8 @@ class SetSessionExpirationTimeTestCase(BaseTestGenerator):
 
     scenarios = [
         (
-            'TestCase for verifying session expire time is set to {0} days for '
-            'desktop mode'.format(SESSION_EXP_TIME_DESKTOP),
+            'TestCase for verifying session expire time is set to {0} days '
+            'for desktop mode'.format(SESSION_EXP_TIME_DESKTOP),
             dict(
                 session_expiration_time=SESSION_EXP_TIME_DESKTOP,
                 is_desktop_mode=True

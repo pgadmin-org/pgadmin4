@@ -7,7 +7,6 @@
 #
 ##########################################################################
 
-from pgadmin.model import Version
 from pgadmin.model import db
 
 
@@ -22,9 +21,14 @@ def check_db_tables():
     db_table_names = get_db_table_names()
     # check table is actually present in the db.
     for table_name in db_table_names:
-        if not db.engine.dialect.has_table(db.engine, table_name):
-            invalid_tb_names.append(table_name)
-            is_error = True
+        try:
+            if not db.inspect(db.engine).has_table(table_name=table_name):
+                invalid_tb_names.append(table_name)
+                is_error = True
+        except AttributeError:
+            if not db.engine.dialect.has_table(db.engine, table_name):
+                invalid_tb_names.append(table_name)
+                is_error = True
 
     if is_error:
         return True, invalid_tb_names
