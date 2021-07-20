@@ -9,6 +9,14 @@
 
 from pgadmin.utils.route import BaseTestGenerator
 import config
+from unittest.mock import patch
+
+if not config.SERVER_MODE:
+    MODE = 'Desktop Mode'
+    SESSION_EXP_TIME_CONSTANT = 7
+else:
+    MODE = 'Server Mode'
+    SESSION_EXP_TIME_CONSTANT = 1
 
 
 class SetSessionExpirationTimeTestCase(BaseTestGenerator):
@@ -16,34 +24,20 @@ class SetSessionExpirationTimeTestCase(BaseTestGenerator):
     This class verifies whether session expire time has been appropriately
     set to desktop & server mode respectively.
     """
-    SESSION_EXP_TIME_DESKTOP = 7
-    SESSION_EXP_TIME_SERVER = 1
 
     scenarios = [
         (
-            'TestCase for verifying session expire time is set to {0} days '
-            'for desktop mode'.format(SESSION_EXP_TIME_DESKTOP),
+            'TestCase for verifying session expire time is set to {0} '
+            'days for {1}'.format(SESSION_EXP_TIME_CONSTANT, MODE),
             dict(
-                session_expiration_time=SESSION_EXP_TIME_DESKTOP,
-                is_desktop_mode=True
-            )),
-        (
-            'TestCase for verifying session expire time is set to {0} day for '
-            'server mode'.format(SESSION_EXP_TIME_SERVER),
-            dict(
-                session_expiration_time=SESSION_EXP_TIME_SERVER,
-                is_desktop_mode=False
-            )),
+                session_expiration_time=SESSION_EXP_TIME_CONSTANT
+            ))
     ]
 
-    def runTest(self):
+    @patch('config.SESSION_EXPIRATION_TIME',
+           side_effect=SESSION_EXP_TIME_CONSTANT)
+    def runTest(self, mock_session_expiration_time):
 
-        if config.SERVER_MODE and not self.is_desktop_mode or \
-                not config.SERVER_MODE and self.is_desktop_mode:
-            self.assertEqual(
-                self.session_expiration_time, config.SESSION_EXPIRATION_TIME)
-        else:
-            self.skipTest(
-                'Not recommended to run in {0}'.format(
-                    'Server Mode' if config.SERVER_MODE is True
-                    else 'Desktop Mode'))
+        self.assertEqual(
+            self.session_expiration_time,
+            config.SESSION_EXPIRATION_TIME.side_effect)
