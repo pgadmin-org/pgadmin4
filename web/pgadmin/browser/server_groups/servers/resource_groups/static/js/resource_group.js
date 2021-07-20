@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import ResourceGroupSchema from './resource_group.ui';
+
 define('pgadmin.node.resource_group', [
   'sources/gettext', 'sources/url_for', 'underscore', 'pgadmin.browser',
   'pgadmin.browser.collection',
@@ -75,73 +77,24 @@ define('pgadmin.node.resource_group', [
         ]);
       },
 
+      getSchema: ()=>{
+        return new ResourceGroupSchema();
+      },
+
       // Defining model for resource group node
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          oid: undefined,
-          name: undefined,
-          is_sys_obj: undefined,
-          cpu_rate_limit: 0.0,
-          dirty_rate_limit: 0.0,
-        },
-
         // Defining schema for the resource group node
         schema: [{
-          id: 'oid', label: gettext('OID'), type: 'text',
-          editable: false, mode:['properties'],
-        },{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text',
-        },{
-          id: 'is_sys_obj', label: gettext('System resource group?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
+        }, {
           id: 'cpu_rate_limit', label: gettext('CPU rate limit (percentage)'), cell: 'string',
           type: 'numeric', min:0, max:16777216,
-        },{
+        }, {
           id: 'dirty_rate_limit', label: gettext('Dirty rate limit (KB)'), cell: 'string',
           type: 'numeric', min:0, max:16777216,
         }],
-
-        /* validate function is used to validate the input given by
-         * the user. In case of error, message will be displayed on
-         * the GUI for the respective control.
-         */
-        validate: function() {
-          var msg,
-            name = this.get('name');
-
-          if (_.isUndefined(name) || _.isNull(name) ||
-            String(name).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('name');
-          }
-
-          var cpu_rate_limit = this.get('cpu_rate_limit');
-          if (_.isUndefined(cpu_rate_limit) || _.isNull(cpu_rate_limit) ||
-            String(cpu_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('CPU rate limit cannot be empty.');
-            this.errorModel.set('cpu_rate_limit', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('cpu_rate_limit');
-          }
-
-          var dirty_rate_limit = this.get('dirty_rate_limit');
-          if (_.isUndefined(dirty_rate_limit) || _.isNull(dirty_rate_limit) ||
-            String(dirty_rate_limit).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Dirty rate limit cannot be empty.');
-            this.errorModel.set('dirty_rate_limit', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('dirty_rate_limit');
-          }
-          return null;
-        },
       }),
     });
   }

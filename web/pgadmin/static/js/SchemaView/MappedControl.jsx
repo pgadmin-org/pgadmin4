@@ -130,7 +130,7 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     if(!isNaN(parseInt(value))) {
       value = parseInt(value);
     }
-    onChange && onChange(value);
+    onCellChange && onCellChange(value);
   }, []);
 
   const onNumChange = useCallback((e) => {
@@ -141,7 +141,7 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     if(!isNaN(parseFloat(value))) {
       value = parseFloat(value);
     }
-    onChange && onChange(value);
+    onCellChange && onCellChange(value);
   }, []);
 
   /* Some grid cells are based on options selected in other cells.
