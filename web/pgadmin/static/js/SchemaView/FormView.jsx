@@ -79,13 +79,13 @@ export function getFieldMetaData(field, schema, value, viewHelperProps) {
     canAdd: true,
     canEdit: true,
     canDelete: true,
-    modeSuppoted: true,
+    modeSupported: true,
   };
 
   if(field.mode) {
-    retData.modeSuppoted = (field.mode.indexOf(viewHelperProps.mode) > -1);
+    retData.modeSupported = (field.mode.indexOf(viewHelperProps.mode) > -1);
   }
-  if(!retData.modeSuppoted) {
+  if(!retData.modeSupported) {
     return retData;
   }
 
@@ -169,10 +169,10 @@ export default function FormView({
 
   /* Prepare the array of components based on the types */
   schema.fields.forEach((field)=>{
-    let {visible, disabled, readonly, canAdd, canEdit, canDelete, modeSuppoted} =
+    let {visible, disabled, readonly, canAdd, canEdit, canDelete, modeSupported} =
       getFieldMetaData(field, schema, value, viewHelperProps);
 
-    if(modeSuppoted) {
+    if(modeSupported) {
       let {group} = field;
       group = groupLabels[group] || group || defaultTab;
 
@@ -213,12 +213,12 @@ export default function FormView({
           field.schema.top = schema;
         }
 
-        depsMap.push(canAdd, canEdit, canDelete);
+        depsMap.push(canAdd, canEdit, canDelete, visible);
 
         tabs[group].push(
           useMemo(()=><DataGridView key={field.id} value={value[field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
             schema={field.schema} accessPath={accessPath.concat(field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}
-            {...field} canAdd={canAdd} canEdit={canEdit} canDelete={canDelete}/>, depsMap)
+            {...field} canAdd={canAdd} canEdit={canEdit} canDelete={canDelete} visible={visible}/>, depsMap)
         );
       } else if(field.type === 'group') {
         groupLabels[field.id] = field.label;

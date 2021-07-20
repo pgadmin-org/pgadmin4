@@ -142,7 +142,7 @@ DataTableHeader.propTypes = {
   headerGroups: PropTypes.array.isRequired,
 };
 
-function DataTableRow({row, totalRows, isResizing, schema, accessPath}) {
+function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath}) {
   const classes = useStyles();
   const [key, setKey] = useState(false);
   const depListener = useContext(DepListenerContext);
@@ -151,6 +151,7 @@ function DataTableRow({row, totalRows, isResizing, schema, accessPath}) {
    * We can avoid re-render by if row data is not changed
    */
 
+  let depsMap = _.values(row.values, Object.keys(row.values).filter((k)=>!k.startsWith('btn')));
   useEffect(()=>{
     /* Calculate the fields which depends on the current field
     deps has info on fields which the current field depends on. */
@@ -163,13 +164,13 @@ function DataTableRow({row, totalRows, isResizing, schema, accessPath}) {
         let source = accessPath.concat(dep);
         if(_.isArray(dep)) {
           source = dep;
+          depsMap.push(_.get(schemaRef.current.sessData, source));
         }
         depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
       });
     });
   }, []);
 
-  let depsMap = _.values(row.values, Object.keys(row.values).filter((k)=>!k.startsWith('btn')));
   depsMap = depsMap.concat([totalRows, row.isExpanded, key, isResizing]);
   return useMemo(()=>
     <div {...row.getRowProps()} className="tr">
@@ -198,8 +199,15 @@ export default function DataGridView({
   let columns = useMemo(
     ()=>{
       let cols = [];
+      let colInfo = {
+        Cell: ()=>{},
+      };
+      colInfo.Cell.displayName = 'Cell',
+      colInfo.Cell.propTypes = {
+        row: PropTypes.object.isRequired,
+      };
       if(props.canEdit) {
-        let colInfo = {
+        colInfo = {
           Header: <>&nbsp;</>,
           id: 'btn-edit',
           accessor: ()=>{},
@@ -220,14 +228,10 @@ export default function DataGridView({
             />;
           }
         };
-        colInfo.Cell.displayName = 'Cell',
-        colInfo.Cell.propTypes = {
-          row: PropTypes.object.isRequired,
-        };
         cols.push(colInfo);
       }
       if(props.canDelete) {
-        let colInfo = {
+        colInfo = {
           Header: <>&nbsp;</>,
           id: 'btn-delete',
           accessor: ()=>{},
@@ -256,10 +260,6 @@ export default function DataGridView({
                 }} className={classes.gridRowButton} disabled={!canDeleteRow} />
             );
           }
-        };
-        colInfo.Cell.displayName = 'Cell',
-        colInfo.Cell.propTypes = {
-          row: PropTypes.object.isRequired,
         };
         cols.push(colInfo);
       }
@@ -353,10 +353,9 @@ export default function DataGridView({
     useBlockLayout,
     useResizeColumns,
     useSortBy,
+    useExpanded,
   ];
-  if(props.canEdit) {
-    tablePlugins.push(useExpanded);
-  }
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -377,6 +376,10 @@ export default function DataGridView({
 
   const isResizing = _.flatMap(headerGroups, headerGroup => headerGroup.headers.map(col=>col.isResizing)).includes(true);
 
+  if(!props.visible) {
+    return <></>;
+  }
+
   return (
     <Box className={containerClassName}>
       <Box className={classes.grid}>
@@ -393,7 +396,7 @@ export default function DataGridView({
               prepareRow(row);
               return <React.Fragment key={i}>
                 <DataTableRow row={row} totalRows={rows.length} isResizing={isResizing}
-                  schema={schemaRef.current} accessPath={accessPath.concat([row.index])} />
+                  schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])} />
                 {props.canEdit && row.isExpanded &&
                   <FormView value={row.original} viewHelperProps={viewHelperProps} formErr={formErr} dataDispatch={dataDispatch}
                     schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
@@ -418,15 +421,10 @@ DataGridView.propTypes = {
   dataDispatch: PropTypes.func.isRequired,
   containerClassName: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   columns: PropTypes.array,
-  canEdit: PropTypes.oneOfType([
-    PropTypes.bool, PropTypes.func,
-  ]),
-  canAdd: PropTypes.oneOfType([
-    PropTypes.bool, PropTypes.func,
-  ]),
-  canDelete: PropTypes.oneOfType([
-    PropTypes.bool, PropTypes.func,
-  ]),
+  canEdit: PropTypes.bool,
+  canAdd: PropTypes.bool,
+  canDelete: PropTypes.bool,
+  visible: PropTypes.bool,
   canEditRow: PropTypes.oneOfType([
     PropTypes.bool, PropTypes.func,
   ]),
