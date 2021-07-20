@@ -26,11 +26,11 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
       value = e.target.value;
     }
     onChange && onChange(value);
-  });
+  }, []);
 
   const onSqlChange = useCallback((e, cm) => {
     onChange && onChange(cm.getValue());
-  });
+  }, []);
 
   const onIntChange = useCallback((e) => {
     let value = e;
@@ -41,7 +41,7 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
       value = parseInt(value);
     }
     onChange && onChange(value);
-  });
+  }, []);
 
   if(!visible) {
     return <></>;
@@ -107,7 +107,7 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     }
 
     onCellChange(value);
-  });
+  }, []);
 
   /* Some grid cells are based on options selected in other cells.
    * lets trigger a re-render for the row if optionsLoaded
@@ -116,7 +116,7 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     /* optionsLoaded is called when select options are fetched */
     optionsLoaded && optionsLoaded(res);
     reRenderRow && reRenderRow();
-  });
+  }, []);
 
   if(!visible) {
     return <></>;

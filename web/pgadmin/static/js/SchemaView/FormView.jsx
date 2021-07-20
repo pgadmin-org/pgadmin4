@@ -23,6 +23,7 @@ import { evalFunc } from 'sources/utils';
 import CustomPropTypes from '../custom_prop_types';
 import { useOnScreen } from '../custom_hooks';
 import { DepListenerContext } from './DepListener';
+import FieldSetView from './FieldSetView';
 
 const useStyles = makeStyles((theme)=>({
   fullSpace: {
@@ -70,6 +71,54 @@ SQLTab.propTypes = {
   getSQLValue: PropTypes.func.isRequired,
 };
 
+export function getFieldMetaData(field, schema, value, viewHelperProps) {
+  let retData = {
+    readonly: false,
+    disabled: false,
+    visible: true,
+    canAdd: true,
+    canEdit: true,
+    canDelete: true,
+    modeSuppoted: true,
+  };
+
+  if(field.mode) {
+    retData.modeSuppoted = (field.mode.indexOf(viewHelperProps.mode) > -1);
+  }
+  if(!retData.modeSuppoted) {
+    return retData;
+  }
+
+  let {visible, disabled, readonly} = field;
+
+  let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
+    ((_.isUndefined(field.server_type) ? true :
+      (viewHelperProps.serverInfo.type in field.server_type)) &&
+      (_.isUndefined(field.min_version) ? true :
+        (viewHelperProps.serverInfo.version >= field.min_version)) &&
+      (_.isUndefined(field.max_version) ? true :
+        (viewHelperProps.serverInfo.version <= field.max_version))));
+
+  let _readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
+  if(!_readonly) {
+    _readonly = evalFunc(schema, readonly, value);
+  }
+  retData.readonly = _readonly;
+
+  let _visible = verInLimit;
+  _visible = _visible && evalFunc(schema, _.isUndefined(visible) ? true : visible, value);
+  retData.visible = Boolean(_visible);
+
+  retData.disabled = Boolean(evalFunc(schema, disabled, value));
+
+  let {canAdd, canEdit, canDelete } = field;
+  retData.canAdd = _.isUndefined(canAdd) ? true : evalFunc(schema, canAdd, value);
+  retData.canEdit = _.isUndefined(canEdit) ? true : evalFunc(schema, canEdit, value);
+  retData.canDelete = _.isUndefined(canDelete) ? true : evalFunc(schema, canDelete, value);
+
+  return retData;
+}
+
 /* The first component of schema view form */
 export default function FormView({
   value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab,
@@ -84,8 +133,6 @@ export default function FormView({
   const onScreenTracker = useRef(false);
   const depListener = useContext(DepListenerContext);
   let groupLabels = {};
-
-  schema = schema || {fields: []};
 
   let isOnScreen = useOnScreen(formRef);
   if(isOnScreen) {
@@ -121,35 +168,13 @@ export default function FormView({
   }, []);
 
   /* Prepare the array of components based on the types */
-  schema.fields.forEach((f)=>{
-    let modeSuppoted = true;
-    if(f.mode) {
-      modeSuppoted = (f.mode.indexOf(viewHelperProps.mode) > -1);
-    }
+  schema.fields.forEach((field)=>{
+    let {visible, disabled, readonly, canAdd, canEdit, canDelete, modeSuppoted} =
+      getFieldMetaData(field, schema, value, viewHelperProps);
+
     if(modeSuppoted) {
-      let {visible, disabled, group, readonly, ...field} = f;
+      let {group} = field;
       group = groupLabels[group] || group || defaultTab;
-
-      let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
-        ((_.isUndefined(field.server_type) ? true :
-          (viewHelperProps.serverInfo.type in field.server_type)) &&
-          (_.isUndefined(field.min_version) ? true :
-            (viewHelperProps.serverInfo.version >= field.min_version)) &&
-          (_.isUndefined(field.max_version) ? true :
-            (viewHelperProps.serverInfo.version <= field.max_version))));
-
-      let _readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
-      if(!_readonly) {
-        _readonly = evalFunc(schema, readonly, value);
-      }
-
-      visible = _.isUndefined(visible) ? true : visible;
-      let _visible = true;
-      _visible = evalFunc(schema, visible, value);
-      _visible = _visible && verInLimit;
-
-      disabled = evalFunc(schema, disabled, value);
-
 
       if(!tabs[group]) tabs[group] = [];
 
@@ -161,10 +186,22 @@ export default function FormView({
         } else {
           field.schema.top = schema;
         }
-
         tabs[group].push(
           <FormView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps} formErr={formErr}
-            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} {...field}/>
+            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm} {...field}/>
+        );
+      } else if(field.type === 'nested-fieldset') {
+        /* Pass on the top schema */
+        if(isNested) {
+          field.schema.top = schema.top;
+        } else {
+          field.schema.top = schema;
+        }
+        tabs[group].push(
+          <FieldSetView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps} formErr={formErr}
+            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm}
+            controlClassName={classes.controlRow}
+            {...field} />
         );
       } else if(field.type === 'collection') {
         /* If its a collection, let data grid view handle it */
@@ -176,20 +213,16 @@ export default function FormView({
           field.schema.top = schema;
         }
 
-        /* Eval the params based on state */
-        let {canAdd, canEdit, canDelete, ..._field} = field;
-        canAdd = evalFunc(schema, canAdd, value);
-        canEdit = evalFunc(schema, canAdd, value);
-        canDelete = evalFunc(schema, canAdd, value);
+        depsMap.push(canAdd, canEdit, canDelete);
 
         tabs[group].push(
-          useMemo(()=><DataGridView key={_field.id} value={value[_field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
-            schema={_field.schema} accessPath={accessPath.concat(_field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}
-            canAdd={canAdd} canEdit={canEdit} canDelete={canDelete} {..._field}/>, depsMap)
+          useMemo(()=><DataGridView key={field.id} value={value[field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
+            schema={field.schema} accessPath={accessPath.concat(field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}
+            {...field} canAdd={canAdd} canEdit={canEdit} canDelete={canDelete}/>, depsMap)
         );
       } else if(field.type === 'group') {
         groupLabels[field.id] = field.label;
-        if(!_visible) {
+        if(!visible) {
           schema.filterGroups.push(field.label);
         }
       } else {
@@ -211,10 +244,10 @@ export default function FormView({
             viewHelperProps={viewHelperProps}
             name={field.id}
             value={value[field.id]}
-            readonly={_readonly}
-            disabled={disabled}
-            visible={_visible}
             {...field}
+            readonly={readonly}
+            disabled={disabled}
+            visible={visible}
             onChange={(value)=>{
               /* Get the changes on dependent fields as well */
               dataDispatch({
@@ -227,9 +260,9 @@ export default function FormView({
             className={classes.controlRow}
           />, [
             value[field.id],
-            _readonly,
+            readonly,
             disabled,
-            _visible,
+            visible,
             hasError,
             classes.controlRow,
             ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
