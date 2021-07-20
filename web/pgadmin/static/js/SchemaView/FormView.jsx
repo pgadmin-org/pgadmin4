@@ -77,7 +77,7 @@ export function getFieldMetaData(field, schema, value, viewHelperProps) {
     disabled: false,
     visible: true,
     canAdd: true,
-    canEdit: true,
+    canEdit: false,
     canDelete: true,
     modeSupported: true,
   };
@@ -112,9 +112,9 @@ export function getFieldMetaData(field, schema, value, viewHelperProps) {
   retData.disabled = Boolean(evalFunc(schema, disabled, value));
 
   let {canAdd, canEdit, canDelete } = field;
-  retData.canAdd = _.isUndefined(canAdd) ? true : evalFunc(schema, canAdd, value);
-  retData.canEdit = _.isUndefined(canEdit) ? true : evalFunc(schema, canEdit, value);
-  retData.canDelete = _.isUndefined(canDelete) ? true : evalFunc(schema, canDelete, value);
+  retData.canAdd = _.isUndefined(canAdd) ? retData.canAdd : evalFunc(schema, canAdd, value);
+  retData.canEdit = _.isUndefined(canEdit) ? retData.canEdit : evalFunc(schema, canEdit, value);
+  retData.canDelete = _.isUndefined(canDelete) ? retData.canDelete : evalFunc(schema, canDelete, value);
 
   return retData;
 }
@@ -216,9 +216,9 @@ export default function FormView({
         depsMap.push(canAdd, canEdit, canDelete, visible);
 
         tabs[group].push(
-          useMemo(()=><DataGridView key={field.id} value={value[field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
+          <DataGridView key={field.id} value={value[field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
             schema={field.schema} accessPath={accessPath.concat(field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}
-            {...field} canAdd={canAdd} canEdit={canEdit} canDelete={canDelete} visible={visible}/>, depsMap)
+            {...field} canAdd={canAdd} canEdit={canEdit} canDelete={canDelete} visible={visible}/>
         );
       } else if(field.type === 'group') {
         groupLabels[field.id] = field.label;

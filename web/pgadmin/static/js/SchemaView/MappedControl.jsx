@@ -43,6 +43,17 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
     onChange && onChange(value);
   }, []);
 
+  const onNumChange = useCallback((e) => {
+    let value = e;
+    if(e && e.target) {
+      value = e.target.value;
+    }
+    if(!isNaN(parseFloat(value))) {
+      value = parseFloat(value);
+    }
+    onChange && onChange(value);
+  }, []);
+
   if(!visible) {
     return <></>;
   }
@@ -51,6 +62,8 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
   switch (type) {
   case 'int':
     return <FormInputText name={name} value={value} onChange={onIntChange} className={className} inputRef={inputRef} {...props}/>;
+  case 'numeric':
+    return <FormInputText name={name} value={value} onChange={onNumChange} className={className} inputRef={inputRef} {...props}/>;
   case 'text':
     return <FormInputText name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props}/>;
   case 'multiline':
@@ -109,6 +122,28 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     onCellChange(value);
   }, []);
 
+  const onIntChange = useCallback((e) => {
+    let value = e;
+    if(e && e.target) {
+      value = e.target.value;
+    }
+    if(!isNaN(parseInt(value))) {
+      value = parseInt(value);
+    }
+    onChange && onChange(value);
+  }, []);
+
+  const onNumChange = useCallback((e) => {
+    let value = e;
+    if(e && e.target) {
+      value = e.target.value;
+    }
+    if(!isNaN(parseFloat(value))) {
+      value = parseFloat(value);
+    }
+    onChange && onChange(value);
+  }, []);
+
   /* Some grid cells are based on options selected in other cells.
    * lets trigger a re-render for the row if optionsLoaded
    */
@@ -125,7 +160,9 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
   /* The mapping does not need Form* components as labels are not needed for grid cells */
   switch(cell) {
   case 'int':
-  case 'number':
+    return <InputText name={name} value={value} onChange={onIntChange} {...props}/>;
+  case 'numeric':
+    return <InputText name={name} value={value} onChange={onNumChange} {...props}/>;
   case 'text':
     return <InputText name={name} value={value} onChange={onTextChange} {...props}/>;
   case 'password':

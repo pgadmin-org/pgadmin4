@@ -781,9 +781,6 @@ export function InputColor({value, controlProps, disabled, onChange, currObj}) {
 
   let btnStyles = {backgroundColor: value};
   return (
-    // <Button variant="contained" ref={eleRef} className={classes.colorBtn} style={btnStyles} disabled={pickrOptions.disabled}>
-    //   {(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon />}
-    // </Button>
     <PgIconButton ref={eleRef} title={gettext('Select the color')} className={classes.colorBtn} style={btnStyles} disabled={pickrOptions.disabled}
       icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon />}
     />

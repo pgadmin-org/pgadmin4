@@ -9,7 +9,7 @@
 
 /* The DataGridView component is based on react-table component */
 
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PgIconButton } from '../components/Buttons';
@@ -85,6 +85,9 @@ const useStyles = makeStyles((theme)=>({
     padding: theme.spacing(1, 0.5),
     textAlign: 'left',
   },
+  btnCell: {
+    padding: theme.spacing(0.5, 0),
+  },
   resizer: {
     display: 'inline-block',
     width: '5px',
@@ -146,13 +149,14 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
   const classes = useStyles();
   const [key, setKey] = useState(false);
   const depListener = useContext(DepListenerContext);
+
   /* Memoize the row to avoid unnecessary re-render.
    * If table data changes, then react-table re-renders the complete tables
    * We can avoid re-render by if row data is not changed
    */
-
   let depsMap = _.values(row.values, Object.keys(row.values).filter((k)=>!k.startsWith('btn')));
-  useEffect(()=>{
+  const externalDeps = useMemo(()=>{
+    let retVal = [];
     /* Calculate the fields which depends on the current field
     deps has info on fields which the current field depends on. */
     schema.fields.forEach((field)=>{
@@ -164,18 +168,25 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
         let source = accessPath.concat(dep);
         if(_.isArray(dep)) {
           source = dep;
-          depsMap.push(_.get(schemaRef.current.sessData, source));
+          /* If its an array, then dep is from the top schema */
+          retVal.push(source);
         }
         depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
       });
     });
+    return retVal;
   }, []);
 
+  /* External deps values are from top schema sess data */
+  depsMap = depsMap.concat(externalDeps.map((source)=>_.get(schemaRef.current.top?.sessData, source)));
   depsMap = depsMap.concat([totalRows, row.isExpanded, key, isResizing]);
   return useMemo(()=>
     <div {...row.getRowProps()} className="tr">
       {row.cells.map((cell, ci) => {
         let classNames = [classes.tableCell];
+        if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
+          classNames.push(classes.btnCell);
+        }
         if(cell.column.id == 'btn-edit' && row.isExpanded) {
           classNames.push(classes.expandedIconCell);
         }
@@ -207,14 +218,14 @@ export default function DataGridView({
           resizable: false,
           sortable: false,
           dataType: 'edit',
-          width: 30,
+          width: 26,
           minWidth: '0',
           Cell: ({row})=>{
             let canEditRow = true;
             if(props.canEditRow) {
               canEditRow = evalFunc(schemaRef.current, props.canEditRow, row.original || {});
             }
-            return <PgIconButton data-test="expand-row" title={gettext('Edit row')} icon={<EditRoundedIcon />} className={classes.gridRowButton}
+            return <PgIconButton data-test="expand-row" title={gettext('Edit row')} icon={<EditRoundedIcon fontSize="small" />} className={classes.gridRowButton}
               onClick={()=>{
                 row.toggleRowExpanded(!row.isExpanded);
               }} disabled={!canEditRow}
@@ -235,7 +246,7 @@ export default function DataGridView({
           resizable: false,
           sortable: false,
           dataType: 'delete',
-          width: 30,
+          width: 26,
           minWidth: '0',
           Cell: ({row}) => {
             let canDeleteRow = true;
@@ -244,7 +255,7 @@ export default function DataGridView({
             }
 
             return (
-              <PgIconButton data-test="delete-row" title={gettext('Delete row')} icon={<DeleteRoundedIcon />}
+              <PgIconButton data-test="delete-row" title={gettext('Delete row')} icon={<DeleteRoundedIcon fontSize="small" />}
                 onClick={()=>{
                   confirmDeleteRow(()=>{
                     /* Get the changes on dependent fields as well */
