@@ -108,7 +108,7 @@ function getChangedData(topSchema, mode, sessData, stringify=false) {
   /* Will be called recursively as data can be nested */
   const parseChanges = (schema, accessPath, changedData)=>{
     schema.fields.forEach((field)=>{
-      if(field.type === 'nested-tab') {
+      if((field.type||'').startsWith('nested-')) {
         /* its nested */
         parseChanges(field.schema, accessPath, changedData);
       } else {

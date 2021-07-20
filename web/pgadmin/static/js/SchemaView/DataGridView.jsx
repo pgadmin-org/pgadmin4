@@ -199,15 +199,8 @@ export default function DataGridView({
   let columns = useMemo(
     ()=>{
       let cols = [];
-      let colInfo = {
-        Cell: ()=>{},
-      };
-      colInfo.Cell.displayName = 'Cell',
-      colInfo.Cell.propTypes = {
-        row: PropTypes.object.isRequired,
-      };
       if(props.canEdit) {
-        colInfo = {
+        let colInfo = {
           Header: <>&nbsp;</>,
           id: 'btn-edit',
           accessor: ()=>{},
@@ -228,10 +221,14 @@ export default function DataGridView({
             />;
           }
         };
+        colInfo.Cell.displayName = 'Cell',
+        colInfo.Cell.propTypes = {
+          row: PropTypes.object.isRequired,
+        };
         cols.push(colInfo);
       }
       if(props.canDelete) {
-        colInfo = {
+        let colInfo = {
           Header: <>&nbsp;</>,
           id: 'btn-delete',
           accessor: ()=>{},
@@ -260,6 +257,10 @@ export default function DataGridView({
                 }} className={classes.gridRowButton} disabled={!canDeleteRow} />
             );
           }
+        };
+        colInfo.Cell.displayName = 'Cell',
+        colInfo.Cell.propTypes = {
+          row: PropTypes.object.isRequired,
         };
         cols.push(colInfo);
       }
