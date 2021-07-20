@@ -7,6 +7,7 @@ Create Date: 2021-06-04 14:42:12.843116
 
 """
 from pgadmin.model import db, User
+from sqlalchemy.sql import text
 import uuid
 
 
@@ -42,7 +43,13 @@ def upgrade():
         'confirmed_at, masterpass_check, auth_source '
         'from user_old')
 
-    db.engine.execute(User.__table__.insert(), [
+    statement = text("""
+            INSERT INTO user(id, username, email, password, active,
+            confirmed_at, masterpass_check, auth_source, fs_uniquifier)
+            VALUES(:id, :username, :email, :password, :active, :confirmed_at,
+            :masterpass_check, :auth_source, :fs_uniquifier)""")
+
+    db.engine.execute(statement, [
         {
             **row,
             'fs_uniquifier': uuid.uuid4().hex
