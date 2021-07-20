@@ -47,10 +47,10 @@ export default function FieldSetView({
   let viewFields = [];
   /* Prepare the array of components based on the types */
   schema.fields.forEach((field)=>{
-    let {visible, disabled, readonly, modeSuppoted} =
+    let {visible, disabled, readonly, modeSupported} =
       getFieldMetaData(field, schema, value, viewHelperProps);
 
-    if(modeSuppoted) {
+    if(modeSupported) {
       /* Its a form control */
       const hasError = field.id == formErr.name;
       /* When there is a change, the dependent values can change
