@@ -5,6 +5,9 @@ if [ "$EUID" -ne 0 ]
   exit 1
 fi
 
+echo "Running apt update..."
+apt update
+
 echo "Installing system pre-requisites..."
 apt install -y curl apt-transport-https ca-certificates gnupg
 
