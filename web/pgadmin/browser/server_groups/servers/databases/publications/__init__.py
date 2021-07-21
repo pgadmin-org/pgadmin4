@@ -236,20 +236,6 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         return wrap
 
-    @staticmethod
-    def _parser_data_input_from_client(data):
-        """
-
-        :param data:
-        :return: data
-        """
-
-        if 'pubtable' in data and data['pubtable'] != '':
-            data['pubtable'] = json.loads(
-                data['pubtable'], encoding='utf-8'
-            )
-        return data
-
     @check_precondition
     def list(self, gid, sid, did):
         """
@@ -438,10 +424,6 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
         try:
-            data = self._parser_data_input_from_client(data)
-
-            # unquote the table data
-            data = self.unquote_the_table(data)
 
             sql, name = self.get_sql(data, pbid)
 
@@ -463,22 +445,6 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
-
-    def unquote_the_table(self, data):
-        """
-        This function unquote the table value
-        :param data:
-        :return: data
-        """
-        pubtable = []
-
-        # Unquote the values
-        if 'pubtable' in data:
-            for table in data['pubtable']:
-                pubtable.append(unquote(table))
-            data['pubtable'] = pubtable
-
-        return data
 
     @check_precondition
     def create(self, gid, sid, did):
@@ -508,10 +474,6 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
 
         try:
-            data = self._parser_data_input_from_client(data)
-
-            # unquote the table data
-            data = self.unquote_the_table(data)
 
             sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]),
@@ -621,8 +583,6 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             except ValueError:
                 data[k] = v
         try:
-            # unquote the table data
-            data = self.unquote_the_table(data)
 
             sql, name = self.get_sql(data, pbid)
             # Most probably this is due to error

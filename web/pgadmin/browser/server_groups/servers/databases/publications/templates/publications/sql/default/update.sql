@@ -10,7 +10,7 @@
 {###  Alter publication owner ###}
 {% if data.pubowner %}
 ALTER PUBLICATION {{ conn|qtIdent(o_data.name) }}
-    OWNER TO {{ data.pubowner }};
+    OWNER TO {{ conn|qtIdent(data.pubowner) }};
 
 {% endif %}
 {###  Alter publication event ###}

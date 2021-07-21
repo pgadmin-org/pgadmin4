@@ -35,6 +35,7 @@ import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import { parseApiError } from '../api_instance';
 import DepListener, {DepListenerContext} from './DepListener';
+import FieldSetView from './FieldSetView';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -665,20 +666,34 @@ function SchemaPropertiesView({
     readonly = true;
     if(_visible && verInLimit) {
       if(!tabs[group]) tabs[group] = [];
-      tabs[group].push(
-        <MappedFormControl
-          key={field.id}
-          viewHelperProps={viewHelperProps}
-          state={origData}
-          name={field.id}
-          value={origData[field.id]}
-          readonly={readonly}
-          disabled={disabled}
-          visible={_visible}
-          {...field}
-          className={classes.controlRow}
-        />
-      );
+      if(field && field.type === 'nested-fieldset') {
+        tabs[group].push(
+          <FieldSetView
+            key={`nested${tabs[group].length}`}
+            value={origData}
+            viewHelperProps={viewHelperProps}
+            schema={field.schema}
+            accessPath={[]}
+            formErr={{}}
+            controlClassName={classes.controlRow}
+            {...field} />
+        );
+      }else{
+        tabs[group].push(
+          <MappedFormControl
+            key={field.id}
+            viewHelperProps={viewHelperProps}
+            state={origData}
+            name={field.id}
+            value={origData[field.id]}
+            readonly={readonly}
+            disabled={disabled}
+            visible={_visible}
+            {...field}
+            className={classes.controlRow}
+          />
+        );
+      }
     }
   });
 
