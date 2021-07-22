@@ -129,6 +129,10 @@ def validate_user(data):
     if 'auth_source' in data and data['auth_source'] != "":
         new_data['auth_source'] = data['auth_source']
 
+    if 'locked' in data and not data['locked']:
+        new_data['locked'] = data['locked']
+        new_data['login_attempts'] = 0
+
     return new_data
 
 
@@ -207,7 +211,8 @@ def user(uid):
                'email': u.email,
                'active': u.active,
                'role': u.roles[0].id,
-               'auth_source': u.auth_source
+               'auth_source': u.auth_source,
+               'locked': u.locked
                }
     else:
         users = User.query.all()
@@ -219,7 +224,8 @@ def user(uid):
                                'email': u.email,
                                'active': u.active,
                                'role': u.roles[0].id,
-                               'auth_source': u.auth_source
+                               'auth_source': u.auth_source,
+                               'locked': u.locked
                                })
 
         res = users_data
@@ -316,7 +322,8 @@ def create_user(data):
         'username': usr.username,
         'email': usr.email,
         'active': usr.active,
-        'role': usr.roles[0].id
+        'role': usr.roles[0].id,
+        'locked': usr.locked
     }
 
 
@@ -599,7 +606,8 @@ def update(uid):
                'email': usr.email,
                'active': usr.active,
                'role': usr.roles[0].id,
-               'auth_source': usr.auth_source
+               'auth_source': usr.auth_source,
+               'locked': usr.locked
                }
 
         return ajax_response(

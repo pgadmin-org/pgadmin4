@@ -10,16 +10,16 @@ Use the *Login* dialog to log in to pgAdmin:
     :alt: pgAdmin login dialog
     :align: center
 
-Use the fields in the *Login* dialog to authenticate your connection. There are
+Use the fields in the *Login* dialog to authenticate your connection. There are
 two ways to authenticate your connection:
 
 - From pgAdmin version 4.21 onwards, support for LDAP authentication
   has been added. If LDAP authentication has been enabled for your pgAdmin
   application, you can use your LDAP credentials to log in to pgAdmin:
 
-  * Provide the LDAP username in the *Email Address/Username* field.
+  * Provide the LDAP username in the *Email Address/Username* field.
 
-  * Provide your LDAP password in the Password field.
+  * Provide your LDAP password in the Password field.
 
 - Alternatively, you can use the following information to log in to pgAdmin:
 
@@ -53,6 +53,13 @@ If you have forgotten the email associated with your account, please contact
 your administrator.
 
 Please note that your LDAP password cannot be recovered using this dialog. If
-you enter your LDAP username in the *Email Address/Username* field, and then
+you enter your LDAP username in the *Email Address/Username* field, and then
 enter your email to recover your password, an error message will be displayed
 asking you to contact the LDAP administrator to recover your LDAP password.
+
+Avoiding a bruteforce attack
+****************************
+
+You have the possibility to lock an account by setting ``MAX_LOGIN_ATTEMPTS``
+once it has reached the maximum number of login attempts.
+You can disable this feature by setting the value to zero.

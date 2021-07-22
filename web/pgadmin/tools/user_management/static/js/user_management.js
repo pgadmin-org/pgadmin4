@@ -436,6 +436,19 @@ define([
             editable: function(m) {
               return (m.get('auth_source') == DEFAULT_AUTH_SOURCE);
             },
+          },{
+            id: 'locked',
+            label: gettext('Locked'),
+            type: 'switch',
+            cell: 'switch',
+            disabled: false,
+            sortable: false,
+            editable: function (m){
+              if (!m.get('locked')) {
+                return false;
+              }
+              return (m.get('id') != userInfo['id']);
+            },
           }],
           validate: function() {
             var errmsg = null,

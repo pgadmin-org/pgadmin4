@@ -30,7 +30,7 @@ import uuid
 #
 ##########################################################################
 
-SCHEMA_VERSION = 30
+SCHEMA_VERSION = 31
 
 ##########################################################################
 #
@@ -80,6 +80,8 @@ class User(db.Model, UserMixin):
     # fs_uniquifier is required by flask-security-too >= 4.
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False,
                               default=(lambda _: uuid.uuid4().hex))
+    login_attempts = db.Column(db.Integer, default=0)
+    locked = db.Column(db.Boolean(), default=False)
 
 
 class Setting(db.Model):

@@ -575,6 +575,14 @@ ENHANCED_COOKIE_PROTECTION = True
 AUTHENTICATION_SOURCES = ['internal']
 
 ##########################################################################
+# MAX_LOGIN_ATTEMPTS which sets the number of failed login attempts that
+# are allowed. If this value is exceeded the account is locked and can be
+# reset by an administrator. By setting the variable to the value zero
+# this feature is deactivated.
+##########################################################################
+MAX_LOGIN_ATTEMPTS = 3
+
+##########################################################################
 # LDAP Configuration
 ##########################################################################
 
