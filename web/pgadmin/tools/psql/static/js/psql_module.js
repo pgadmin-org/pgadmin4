@@ -344,19 +344,19 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         return true;
       });
 
-      term.textarea.addEventListener('paste', function(e) {
+      term.textarea.addEventListener('paste', function() {
         navigator.permissions.query({ name: 'clipboard-read' }).then(function(result) {
-            if(result.state === 'granted' || result.state === 'prompt') {
-              navigator.clipboard.readText().then( clipText => {
-                var selected_text = clipText;
-                if (selected_text.length > 0) {
-                  socket.emit('socket_input', {'input': selected_text, 'key_name': 'paste'});
-                }
-              });
-            } else{
-              Alertify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
-            }
-          });
+          if(result.state === 'granted' || result.state === 'prompt') {
+            navigator.clipboard.readText().then( clipText => {
+              var selected_text = clipText;
+              if (selected_text.length > 0) {
+                socket.emit('socket_input', {'input': selected_text, 'key_name': 'paste'});
+              }
+            });
+          } else{
+            Alertify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
+          }
+        });
       });
 
       term.onKey(function (ev) {
