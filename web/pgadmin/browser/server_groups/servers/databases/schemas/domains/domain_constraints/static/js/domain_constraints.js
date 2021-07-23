@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import DomainConstraintSchema from './domain_constraints.ui';
+
 // Domain Constraint Module: Collection and Node
 define('pgadmin.node.domain_constraints', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -69,47 +71,19 @@ define('pgadmin.node.domain_constraints', [
 
       },
       canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+
+      getSchema: function() {
+        return new DomainConstraintSchema();
+      },
+
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          description: undefined,
-          consrc: undefined,
-          connoinherit: undefined,
-          convalidated: true,
-        },
         // Domain Constraint Schema
         schema: [{
           id: 'name', label: gettext('Name'), type:'text', cell:'string',
         },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties'],
-        },{
-          id: 'is_sys_obj', label: gettext('System domain constraint?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
           id: 'description', label: gettext('Comment'), type: 'multiline', cell:
           'string', mode: ['properties', 'create', 'edit'], min_version: 90500,
-        },{
-          id: 'consrc', label: gettext('Check'), type: 'multiline', cel:
-          'string', group: gettext('Definition'), mode: ['properties',
-            'create', 'edit'], readonly: function(m) { return !m.isNew(); },
-        },{
-          id: 'connoinherit', label: gettext('No inherit?'), type:
-          'switch', cell: 'boolean', group: gettext('Definition'), mode:
-          ['properties', 'create', 'edit'],
-          visible: false,
-        },{
-          id: 'convalidated', label: gettext('Validate?'), type: 'switch', cell:
-          'boolean', group: gettext('Definition'), min_version: 90200,
-          disabled: function(m) {
-            if (!m.isNew() && m.get('convalidated')) {
-              return true;
-            }
-            return false;
-          },
-          mode: ['properties', 'create', 'edit'],
         }],
         // Client Side Validation
         validate: function() {

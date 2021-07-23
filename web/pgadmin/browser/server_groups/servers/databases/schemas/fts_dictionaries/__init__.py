@@ -781,9 +781,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=rset)
 
-        # Empty set is added before actual list as initially it will be visible
-        # at template control while creating a new FTS Dictionary
-        res = [{'label': '', 'value': ''}]
+        res = []
         for row in rset['rows']:
             if row['nspname'] != "pg_catalog":
                 row['tmplname'] = self.qtIdent(

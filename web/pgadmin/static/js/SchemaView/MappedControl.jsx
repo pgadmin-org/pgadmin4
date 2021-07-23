@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import _ from 'lodash';
 
 import { FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor, FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL } from '../components/FormComponents';
-import { InputSelect, InputText } from '../components/FormComponents';
+import { InputSelect, InputText, InputCheckbox } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
 import PropTypes from 'prop-types';
@@ -171,6 +171,9 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     return <InputSelect name={name} value={value} onChange={onTextChange} optionsLoaded={optionsLoadedRerender} {...props}/>;
   case 'switch':
     return <InputSwitch name={name} value={value}
+      onChange={(e)=>onTextChange(e.target.checked, e.target.name)} {...props} />;
+  case 'checkbox':
+    return <InputCheckbox name={name} value={value}
       onChange={(e)=>onTextChange(e.target.checked, e.target.name)} {...props} />;
   case 'privilege':
     return <Privilege name={name} value={value} onChange={onTextChange} {...props}/>;

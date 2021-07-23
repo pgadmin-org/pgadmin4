@@ -38,7 +38,7 @@ class MockSchema extends BaseUISchema {
   }
 }
 
-describe('PrivilegeSchema', ()=>{
+describe('VariableSchema', ()=>{
   let mount;
   let schemaObj = new VariableSchema(
     ()=>[],
