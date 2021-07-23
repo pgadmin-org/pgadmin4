@@ -333,20 +333,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       // Listen key press event from terminal and emit socket event.
       term.attachCustomKeyEventHandler(e => {
         e.stopPropagation();
-        if(e.type=='keydown' && (e.metaKey || e.ctrlKey) &&(e.key == 'v' || e.key == 'V')) {
-          navigator.permissions.query({ name: 'clipboard-read' }).then(function(result) {
-            if(result.state === 'granted' || result.state === 'prompt') {
-              navigator.clipboard.readText().then( clipText => {
-                var selected_text = clipText;
-                if (selected_text.length > 0) {
-                  socket.emit('socket_input', {'input': selected_text, 'key_name': e.code});
-                }
-              });
-            } else{
-              Alertify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
-            }
-          });
-        }else if(e.type=='keydown' && (e.metaKey || e.ctrlKey) && (e.key == 'c' || e.key == 'C')) {
+        if(e.type=='keydown' && (e.metaKey || e.ctrlKey) && (e.key == 'c' || e.key == 'C')) {
           document.execCommand('copy');
         }
 
@@ -355,6 +342,21 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         }
 
         return true;
+      });
+
+      term.textarea.addEventListener('paste', function(e) {
+        navigator.permissions.query({ name: 'clipboard-read' }).then(function(result) {
+            if(result.state === 'granted' || result.state === 'prompt') {
+              navigator.clipboard.readText().then( clipText => {
+                var selected_text = clipText;
+                if (selected_text.length > 0) {
+                  socket.emit('socket_input', {'input': selected_text, 'key_name': 'paste'});
+                }
+              });
+            } else{
+              Alertify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
+            }
+          });
       });
 
       term.onKey(function (ev) {
