@@ -36,7 +36,7 @@ class SharedServersGetTestCase(BaseTestGenerator):
 
         if config.SERVER_MODE is False:
             self.skipTest(
-                "Can not run shared servers test cases in the SERVER mode."
+                "Can not run shared servers test cases in the Desktop mode."
             )
         self.server['shared'] = True
         url = "{0}{1}/".format(self.url, utils.SERVER_GROUP)
