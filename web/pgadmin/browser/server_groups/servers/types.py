@@ -192,7 +192,8 @@ class ServerType(object):
         for bin_path in bin_path_json:
             if int(bin_path['version']) <= sverison < \
                 int(bin_path['next_major_version']) and \
-                    bin_path['binaryPath'] is not None:
+                    bin_path['binaryPath'] is not None and \
+                    bin_path['binaryPath'].strip() != '':
                 return bin_path['binaryPath']
 
             if bin_path['isDefault']:
