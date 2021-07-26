@@ -485,7 +485,25 @@ function SchemaDialogView({
     } else {
       changeData[schema.idAttribute] = schema.origData[schema.idAttribute];
     }
+    if (schema.warningText) {
+      pgAlertify().confirm(
+        gettext('Warning'),
+        schema.warningText,
+        ()=> {
+          save(changeData);
+        },
+        () => {
+          setSaving(false);
+          setLoaderText('');
+          return true;
+        }
+      );
+    } else {
+      save(changeData);
+    }
+  };
 
+  const save = (changeData) => {
     props.onSave(isNew, changeData)
       .then(()=>{
         if(schema.informText) {

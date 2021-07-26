@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
 /* Control mapping for form view */
-function MappedFormControlBase({type, value, id, onChange, className, visible, inputRef, ...props}) {
+function MappedFormControlBase({type, value, id, onChange, className, visible, inputRef, noLabel, ...props}) {
   const name = id;
   const onTextChange = useCallback((e) => {
     let value = e;
@@ -90,7 +90,7 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
   case 'file':
     return <FormInputFileSelect name={name} value={value} onChange={onTextChange} className={className} {...props} />;
   case 'sql':
-    return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} {...props}/>;
+    return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} noLabel={noLabel} {...props} />;
   default:
     return <></>;
   }
@@ -108,6 +108,7 @@ MappedFormControlBase.propTypes = {
   ]),
   visible: PropTypes.bool,
   inputRef: CustomPropTypes.ref,
+  noLabel: PropTypes.bool
 };
 
 /* Control mapping for grid cell view */
@@ -202,7 +203,7 @@ const ALLOWED_PROPS_FIELD_COMMON = [
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [
-  'type', 'onChange', 'state',
+  'type', 'onChange', 'state', 'noLabel'
 ];
 
 const ALLOWED_PROPS_FIELD_CELL = [

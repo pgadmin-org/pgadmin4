@@ -14,18 +14,28 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import EventTriggerSchema from '../../../pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.ui';
+import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import ViewSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js';
 
 
-describe('EventTriggerSchema', ()=>{
+class MockSchema extends BaseUISchema {
+  get baseFields() {
+    return [];
+  }
+}
+
+describe('ViewSchema', ()=>{
   let mount;
-  let schemaObj = new EventTriggerSchema(
+  let schemaObj = new ViewSchema(
+    ()=>new MockSchema(),
+    {server: {server_type: 'pg'}},
     {
       role: ()=>[],
-      function_names: ()=>[],
+      schema: ()=>[],
     },
     {
-      eventowner: 'postgres'
+      owner: 'postgres',
+      schema: 'public'
     }
   );
   let getInitData = ()=>Promise.resolve({});
@@ -102,18 +112,22 @@ describe('EventTriggerSchema', ()=>{
     let state = {};
     let setError = jasmine.createSpy('setError');
 
-    state.eventfunname = null;
+    state.definition = null;
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('eventfunname', 'Event trigger function cannot be empty.');
+    expect(setError).toHaveBeenCalledWith('definition', 'Please enter view code.');
 
-    state.eventfunname = 'Test';
+    state.definition = 'SELECT 1;';
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('eventfunname', null);
+    expect(setError).toHaveBeenCalledWith('definition', null);
+
+    state.definition = 'SELECT 1';
+    schemaObj.validate(state, setError);
+    expect(setError).toHaveBeenCalledWith('definition', null);
 
     state.service = 'Test';
-    state.eventfunname = 'Test';
+    state.definition = 'SELECT 1';
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('eventfunname', null);
+    expect(setError).toHaveBeenCalledWith('definition', null);
 
   });
 });

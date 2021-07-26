@@ -155,12 +155,16 @@ InputSQL.propTypes = {
 
 };
 
-export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, controlProps, ...props}) {
-  return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} >
-      <InputSQL value={value} options={controlProps} {...props}/>
-    </FormInput>
-  );
+export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, controlProps, noLabel, ...props}) {
+  if(noLabel) {
+    return <InputSQL value={value} options={controlProps} {...props}/>;
+  } else {
+    return (
+      <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} >
+        <InputSQL value={value} options={controlProps} {...props}/>
+      </FormInput>
+    );
+  }
 }
 FormInputSQL.propTypes = {
   hasError: PropTypes.bool,

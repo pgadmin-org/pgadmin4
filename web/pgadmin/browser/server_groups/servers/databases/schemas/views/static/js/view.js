@@ -7,6 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
+import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
+import ViewSchema from './view.ui';
+
 define('pgadmin.node.view', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
@@ -90,11 +94,24 @@ define('pgadmin.node.view', [
         },
         ]);
       },
-
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new ViewSchema(
+          (privileges)=>getNodePrivilegeRoleSchema('', treeNodeInfo, itemNodeData, privileges),
+          treeNodeInfo,
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {cacheLevel: 'database'}),
+          },
+          {
+            owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+            schema: treeNodeInfo.schema.label
+          }
+        );
+      },
       /**
         Define model for the view node and specify the
         properties of the model in schema.
-        */
+      */
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
         initialize: function(attrs, args) {

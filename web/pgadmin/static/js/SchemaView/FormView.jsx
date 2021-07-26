@@ -167,6 +167,8 @@ export default function FormView({
     }
   }, []);
 
+  let fullTabs = [];
+
   /* Prepare the array of components based on the types */
   schema.fields.forEach((field)=>{
     let {visible, disabled, readonly, canAdd, canEdit, canDelete, modeSupported} =
@@ -232,6 +234,10 @@ export default function FormView({
          * lets pass the new changes to dependent and get the new values
          * from there as well.
          */
+        if(field.noLabel) {
+          tabsClassname[group] = classes.fullSpace;
+          fullTabs.push(group);
+        }
         tabs[group].push(
           useMemo(()=><MappedFormControl
             inputRef={(ele)=>{
@@ -282,6 +288,7 @@ export default function FormView({
       useMemo(()=><SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />, [sqlTabActive]),
     ];
     tabsClassname[sqlTabName] = classes.fullSpace;
+    fullTabs.push(sqlTabName);
   }
 
   useEffect(()=>{
@@ -314,7 +321,7 @@ export default function FormView({
         {Object.keys(tabs).map((tabName, i)=>{
           return (
             <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-              className={tabName != sqlTabName ? classes.nestedControl : null}>
+              className={fullTabs.indexOf(tabName) == -1 ? classes.nestedControl : null}>
               {tabs[tabName]}
             </TabPanel>
           );
