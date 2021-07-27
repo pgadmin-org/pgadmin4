@@ -123,7 +123,7 @@ describe('VariableSchema', ()=>{
       cell: 'select',
     }));
     expect(schemaObj.getValueFieldProps({vartype: 'integer'})).toBe('int');
-    expect(schemaObj.getValueFieldProps({vartype: 'real'})).toBe('number');
+    expect(schemaObj.getValueFieldProps({vartype: 'real'})).toBe('numeric');
     expect(schemaObj.getValueFieldProps({vartype: 'string'})).toBe('text');
     expect(schemaObj.getValueFieldProps({})).toBe('');
   });

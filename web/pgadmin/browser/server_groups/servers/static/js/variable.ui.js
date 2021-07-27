@@ -11,6 +11,7 @@ import gettext from 'sources/gettext';
 import _ from 'lodash';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../static/js/node_ajax';
+import { isEmptyString } from '../../../../../static/js/validators';
 
 export function getNodeVariableSchema(nodeObj, treeNodeInfo, itemNodeData, hasDatabase, hasRole) {
   let keys = ['name', 'value'];
@@ -81,7 +82,7 @@ export default class VariableSchema extends BaseUISchema {
     case 'integer':
       return 'int';
     case 'real':
-      return 'number';
+      return 'numeric';
     case 'string':
       return 'text';
     default:
@@ -107,11 +108,10 @@ export default class VariableSchema extends BaseUISchema {
           optionsLoaded: (options)=>{obj.setVarTypes(options);},
           controlProps: { allowClear: false },
         }),
-        noEmpty: true,
       },
       {
         id: 'value', label: gettext('Value'), type: 'text',
-        noEmpty: true, deps: ['name'],
+        deps: ['name'],
         depChange: (state, changeSource)=>{
           if(changeSource == 'name') {
             return {...state
@@ -135,5 +135,22 @@ export default class VariableSchema extends BaseUISchema {
         }),
       },
     ];
+  }
+
+  validate(state, setError) {
+    if (isEmptyString(state.name)) {
+      setError('name', gettext('Please select a parameter name.'));
+      return true;
+    } else {
+      setError('name', null);
+    }
+
+    if (isEmptyString(state.value)) {
+      setError('value', gettext('Please enter a value for the parameter.'));
+      return true;
+    } else {
+      setError('value', null);
+    }
+
   }
 }

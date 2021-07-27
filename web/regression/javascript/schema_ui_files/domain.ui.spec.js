@@ -24,7 +24,7 @@ describe('DomainSchema', ()=>{
     {
       role: ()=>[],
       schema: ()=>[],
-      basetype: ()=>[],
+      basetype: ()=>['character varying', 'numeric'],
       collation: ()=>[],
     },
     [],
