@@ -23,4 +23,5 @@ Bug fixes
 | `Issue #6448 <https://redmine.postgresql.org/issues/6448>`_ -  Fixed an issue in the search object when searching in 'all types' or 'subscription' if the user doesn't have access to the subscription.
 | `Issue #6574 <https://redmine.postgresql.org/issues/6574>`_ -  Fixed an issue where paste is not working through Right-Click option on PSQL.
 | `Issue #6580 <https://redmine.postgresql.org/issues/6580>`_ -  Fixed TypeError 'NoneType' object is not sub scriptable.
+| `Issue #6586 <https://redmine.postgresql.org/issues/6586>`_ -  Fixed incorrect tablespace options in the drop-down for move objects dialog.
 | `Issue #6619 <https://redmine.postgresql.org/issues/6619>`_ -  Fixed incorrect binary path issue when the user deletes the binary path from the preferences.

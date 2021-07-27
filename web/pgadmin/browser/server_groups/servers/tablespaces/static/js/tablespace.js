@@ -114,12 +114,16 @@ define('pgadmin.node.tablespace', [
               obj_type: 'all',
               user: undefined,
             },
+            initialize: function(attrs, otherArgs) {
+              this.selected_ts = otherArgs.selected_ts;
+              Backbone.Model.prototype.initialize.apply(this, [attrs, otherArgs]);
+            },
             schema: [{
               id: 'tblspc', label: gettext('New tablespace'),
               type: 'text', disabled: false, control: 'node-list-by-name',
               node: 'tablespace', select2: {allowClear: false},
               filter: function(o) {
-                return o && (o.label != d.label);
+                return o && (o.label != this.model.selected_ts);
               },
             },{
               id: 'obj_type', label: gettext('Object type'),
@@ -148,7 +152,7 @@ define('pgadmin.node.tablespace', [
                     var self = this,
                       sql_tab_args = self.model.toJSON();
                     // Add existing tablespace
-                    sql_tab_args.old_tblspc = d.label;
+                    sql_tab_args.old_tblspc = this.model.selected_ts;
 
                     // Fetches modified SQL
                     $.ajax({
@@ -236,7 +240,7 @@ define('pgadmin.node.tablespace', [
                   // Create treeInfo
                   var treeInfo = node.getTreeNodeHierarchy.apply(node, [_i]);
                   // Instance of backbone model
-                  var newModel = new objModel({}, {node_info: treeInfo}),
+                  var newModel = new objModel({}, {node_info: treeInfo, selected_ts: _d.label}),
                     fields = Backform.generateViewSchema(
                       treeInfo, newModel, 'create', node,
                       treeInfo.server, true
