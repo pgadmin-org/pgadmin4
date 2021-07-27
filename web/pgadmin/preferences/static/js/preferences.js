@@ -83,7 +83,8 @@ define('pgadmin.preferences', [
         });
 
         preferences.on('change', function(m) {
-          var id = m.get('id');
+          var id = m.get('id'),
+            dependents = m.get('dependents');
           if (!(id in changed)) {
             // Keep track of the original value
             changed[id] = m._previousAttributes.value;
@@ -91,7 +92,45 @@ define('pgadmin.preferences', [
             // Remove unchanged models.
             delete changed[id];
           }
+
+          // Check dependents exist or not. If exists then call dependentsFound function.
+          if (!_.isNull(dependents) && Array.isArray(dependents) && dependents.length > 0) {
+            dependentsFound(m.get('name'), m.get('value'), dependents);
+          }
         });
+
+        /*
+         * Function: dependentsFound
+         *
+         * This method will be used to iterate through all the controls and
+         * dependents. If found then perform the appropriate action.
+         */
+        var dependentsFound = function(pref_name, pref_val, dependents) {
+          // Iterate through all the controls and check the dependents
+          _.each(controls, function(c) {
+            let ctrl_name = c.model.get('name');
+            _.each(dependents, function(deps) {
+              if (ctrl_name === deps) {
+                // Create methods to take appropriate actions and call here.
+                enableDisableMaxWidth(pref_name, pref_val, c);
+              }
+            });
+          });
+        };
+
+        /*
+         * Function: enableDisableMaxWidth
+         *
+         * This method will be used to enable and disable Maximum Width control
+         */
+        var enableDisableMaxWidth = function(pref_name, pref_val, control) {
+          if (pref_name === 'column_data_auto_resize' && pref_val === 'by_name') {
+            control.$el.find('input').prop('disabled', true);
+            control.$el.find('input').val(0);
+          } else if (pref_name === 'column_data_auto_resize' && pref_val === 'by_data') {
+            control.$el.find('input').prop('disabled', false);
+          }
+        };
 
         /*
          * Function: renderPreferencePanel
@@ -144,6 +183,16 @@ define('pgadmin.preferences', [
             controls.push(cntr);
           });
 
+          /* Iterate through all preferences and check if dependents found.
+           * If found then call the dependentsFound method
+           */
+          _.each(prefs, function(p) {
+            let m = preferences.get(p.id);
+            let dependents = m.get('dependents');
+            if (!_.isNull(dependents) && Array.isArray(dependents) && dependents.length > 0) {
+              dependentsFound(m.get('name'), m.get('value'), dependents);
+            }
+          });
         };
 
         /*
@@ -383,6 +432,7 @@ define('pgadmin.preferences', [
                     'category_id': d.id,
                     'mid': d.mid,
                     'name': p.name,
+                    'dependents': p.dependents,
                   });
                   /*
                      * We don't know until now, how to render the control for

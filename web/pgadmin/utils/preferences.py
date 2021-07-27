@@ -73,6 +73,7 @@ class _Preference(object):
         self.fields = kwargs.get('fields', None)
         self.allow_blanks = kwargs.get('allow_blanks', None)
         self.disabled = kwargs.get('disabled', False)
+        self.dependents = kwargs.get('dependents', None)
 
         # Look into the configuration table to find out the id of the specific
         # preference.
@@ -254,6 +255,7 @@ class _Preference(object):
             'value': self.get(),
             'fields': self.fields,
             'disabled': self.disabled,
+            'dependents': self.dependents
         }
         return res
 
@@ -427,6 +429,7 @@ class Preferences(object):
         fields = kwargs.get('fields', None)
         allow_blanks = kwargs.get('allow_blanks', None)
         disabled = kwargs.get('disabled', False)
+        dependents = kwargs.get('dependents', None)
 
         cat = self.__category(category, category_label)
         if name in cat['preferences']:
@@ -444,7 +447,7 @@ class Preferences(object):
             cat['id'], name, label, _type, default, help_str=help_str,
             min_val=min_val, max_val=max_val, options=options,
             select2=select2, fields=fields, allow_blanks=allow_blanks,
-            disabled=disabled
+            disabled=disabled, dependents=dependents
         )
 
         return res

@@ -892,6 +892,13 @@ define('tools.querytool', [
         column_size[table_name] = {};
       }
 
+      // Keep track of column_data_max_width
+      self.max_width_changed = false;
+      if (_.isUndefined(self.old_column_data_max_width) || self.old_column_data_max_width != self.preferences.column_data_max_width) {
+        self.old_column_data_max_width = self.preferences.column_data_max_width;
+        self.max_width_changed = true;
+      }
+
 
       _.each(columns, function(c) {
         c.display_name = _.escape(c.display_name);
@@ -931,12 +938,12 @@ define('tools.querytool', [
         }
 
         if (_.isUndefined(column_size[table_name][options.nonative_field])) {
-          /* If column_data_auto_resize is true then for the first time set
-           * the addWidth parameter to iconWidth and if it is false then
+          /* If column_data_auto_resize is 'by_data' then for the first time set
+           * the addWidth parameter to iconWidth and if it is 'by_name' then
            * calculate width based on longer string among data type or
            * column name.
            */
-          if (self.preferences.column_data_auto_resize) {
+          if (self.preferences.column_data_auto_resize === 'by_data') {
             options['addWidth'] = iconWidth;
             options['width'] = NaN;
           } else {
@@ -1187,9 +1194,9 @@ define('tools.querytool', [
       dataView.onRowsChanged.subscribe(function(e, args) {
         grid.invalidateRows(args.rows);
         grid.render();
-        // Resize all columns if column_data_auto_resize is true.
-        if (self.preferences.column_data_auto_resize) {
-          grid.resizeAllColumns && grid.resizeAllColumns(self.preferences.column_data_max_width);
+        // Resize all columns if column_data_auto_resize is 'by_data'.
+        if (self.preferences.column_data_auto_resize === 'by_data') {
+          grid.resizeAllColumns && grid.resizeAllColumns(self.preferences.column_data_max_width, self.max_width_changed);
         }
       });
 
@@ -1430,7 +1437,7 @@ define('tools.querytool', [
       }
       dataView.setItems(collection, self.client_primary_key);
       /* Resize the columns once if data empty */
-      if (collection.length === 0 && self.preferences.column_data_auto_resize) {
+      if (collection.length === 0 && self.preferences.column_data_auto_resize === 'by_data') {
         self.grid.resizeAllColumns && self.grid.resizeAllColumns();
       }
     },

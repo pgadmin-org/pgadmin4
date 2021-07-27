@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #6622 <https://redmine.postgresql.org/issues/6622>`_ -  Rename the "Resize by data?" to "Columns sized by" and disabled the 'Maximum column width' button if 'Columns sized by' is set to 'Column data'.
 
 Bug fixes
 *********

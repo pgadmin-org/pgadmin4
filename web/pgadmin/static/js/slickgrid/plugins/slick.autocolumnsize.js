@@ -39,13 +39,13 @@
       }
     }
 
-    function resizeAllColumns(maxWidth) {
+    function resizeAllColumns(maxWidth, max_width_changed=false) {
       var elHeaders = $container.find('.slick-header-column');
       var allColumns = grid.getColumns();
       elHeaders.each(function(index, el) {
         var columnDef = $(el).data('column');
         // Check if width is set then no need to resize that column.
-        if (typeof(columnDef.width) !== 'undefined' && !isNaN(columnDef.width)) {
+        if (typeof(columnDef.width) !== 'undefined' && !isNaN(columnDef.width) && !max_width_changed) {
           return;
         }
 
