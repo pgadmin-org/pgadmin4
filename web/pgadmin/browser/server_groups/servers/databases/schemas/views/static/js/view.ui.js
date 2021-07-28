@@ -95,7 +95,7 @@ export default class ViewSchema extends BaseUISchema {
     },{
       id: 'definition', label: gettext('Code'), cell: 'text',
       type: 'sql', mode: ['create', 'edit'], group: gettext('Code'),
-      noLabel: true,
+      isFullTab: true,
       disabled: obj.notInSchema,
       controlProps: {
         className: ['sql-code-control'],

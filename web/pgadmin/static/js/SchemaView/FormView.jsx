@@ -234,7 +234,7 @@ export default function FormView({
          * lets pass the new changes to dependent and get the new values
          * from there as well.
          */
-        if(field.noLabel) {
+        if(field.isFullTab) {
           tabsClassname[group] = classes.fullSpace;
           fullTabs.push(group);
         }
@@ -264,6 +264,7 @@ export default function FormView({
             }}
             hasError={hasError}
             className={classes.controlRow}
+            noLabel={field.isFullTab}
           />, [
             value[field.id],
             readonly,
