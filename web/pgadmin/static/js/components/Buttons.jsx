@@ -92,9 +92,11 @@ export const PgIconButton = forwardRef(({icon, title, className, ...props}, ref)
   /* Tooltip does not work for disabled items */
   return (
     <Tooltip title={title || ''} aria-label={title || ''}>
-      <DefaultButton ref={ref} style={{minWidth: 0}} className={clsx(classes.iconButton, className)} {...props}>
-        {icon}
-      </DefaultButton>
+      <span>
+        <DefaultButton ref={ref} style={{minWidth: 0}} className={clsx(classes.iconButton, className)} {...props}>
+          {icon}
+        </DefaultButton>
+      </span>
     </Tooltip>
   );
 });

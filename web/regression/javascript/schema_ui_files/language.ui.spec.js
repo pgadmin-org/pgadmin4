@@ -114,10 +114,13 @@ describe('LanguageSchema', ()=>{
     let state = {};
     let setError = jasmine.createSpy('setError');
 
-    state.lanproc = null;
+    state.lanproc = '';
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('lanproc', 'Handler function cannot be empty.');
 
+    state.lanproc = 'my_len';
+    schemaObj.validate(state, setError);
+    expect(setError).toHaveBeenCalledWith('lanproc', null);
   });
 });
 

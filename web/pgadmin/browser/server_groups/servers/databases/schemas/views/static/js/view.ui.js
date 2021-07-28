@@ -97,9 +97,6 @@ export default class ViewSchema extends BaseUISchema {
       type: 'sql', mode: ['create', 'edit'], group: gettext('Code'),
       isFullTab: true,
       disabled: obj.notInSchema,
-      controlProps: {
-        className: ['sql-code-control'],
-      },
     },
 
     {
@@ -117,7 +114,6 @@ export default class ViewSchema extends BaseUISchema {
       editable: false, type: 'collection',
       canEdit: false, group: gettext('Security'), canDelete: true,
       mode: ['edit', 'create'], canAdd: true,
-      control: 'unique-col-collection',
       uniqueCol : ['provider'],
     }
     ];
