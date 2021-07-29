@@ -217,6 +217,11 @@ export default function FormView({
 
         depsMap.push(canAdd, canEdit, canDelete, visible);
 
+        if(!_.isUndefined(field.fixedRows)) {
+          canAdd = false;
+          canDelete = false;
+        }
+
         tabs[group].push(
           <DataGridView key={field.id} value={value[field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
             schema={field.schema} accessPath={accessPath.concat(field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}

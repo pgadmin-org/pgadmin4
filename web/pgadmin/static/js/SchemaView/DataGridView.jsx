@@ -9,7 +9,7 @@
 
 /* The DataGridView component is based on react-table component */
 
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PgIconButton } from '../components/Buttons';
@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import gettext from 'sources/gettext';
-import { SCHEMA_STATE_ACTIONS } from '.';
+import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
 import FormView from './FormView';
 import { confirmDeleteRow } from '../helpers/legacyConnector';
 import CustomPropTypes from 'sources/custom_prop_types';
@@ -78,7 +78,6 @@ const useStyles = makeStyles((theme)=>({
     ...theme.mixins.panelBorder.bottom,
     ...theme.mixins.panelBorder.right,
     position: 'relative',
-    textAlign: 'center'
   },
   tableCellHeader: {
     fontWeight: theme.typography.fontWeightBold,
@@ -87,6 +86,7 @@ const useStyles = makeStyles((theme)=>({
   },
   btnCell: {
     padding: theme.spacing(0.5, 0),
+    textAlign: 'center',
   },
   resizer: {
     display: 'inline-block',
@@ -202,8 +202,10 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
 }
 
 export default function DataGridView({
-  value, viewHelperProps, formErr, schema, accessPath, dataDispatch, containerClassName, ...props}) {
+  value, viewHelperProps, formErr, schema, accessPath, dataDispatch, containerClassName,
+  fixedRows, ...props}) {
   const classes = useStyles();
+  const stateUtils = useContext(StateUtilsContext);
 
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
@@ -386,6 +388,23 @@ export default function DataGridView({
     ...tablePlugins,
   );
 
+  useEffect(()=>{
+    let rowsPromise = fixedRows, umounted=false;
+    if(typeof rowsPromise === 'function') {
+      rowsPromise = rowsPromise();
+    }
+    if(rowsPromise) {
+      Promise.resolve(rowsPromise)
+        .then((res)=>{
+          /* If component unmounted, dont update state */
+          if(!umounted) {
+            stateUtils.initOrigData(accessPath, res);
+          }
+        });
+    }
+    return ()=>umounted=true;
+  }, []);
+
   const isResizing = _.flatMap(headerGroups, headerGroup => headerGroup.headers.map(col=>col.isResizing)).includes(true);
 
   if(!props.visible) {
@@ -395,12 +414,12 @@ export default function DataGridView({
   return (
     <Box className={containerClassName}>
       <Box className={classes.grid}>
-        <Box className={classes.gridHeader}>
+        {(props.label || props.canAdd) && <Box className={classes.gridHeader}>
           <Box className={classes.gridHeaderText}>{props.label}</Box>
           <Box className={classes.gridControls}>
             {props.canAdd && <PgIconButton data-test="add-row" title={gettext('Add row')} onClick={onAddClick} icon={<AddIcon />} className={classes.gridControlsButton} />}
           </Box>
-        </Box>
+        </Box>}
         <div {...getTableProps()} className={classes.table}>
           <DataTableHeader headerGroups={headerGroups} />
           <div {...getTableBodyProps()}>
@@ -432,6 +451,7 @@ DataGridView.propTypes = {
   accessPath: PropTypes.array.isRequired,
   dataDispatch: PropTypes.func.isRequired,
   containerClassName: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+  fixedRows: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Promise), PropTypes.func]),
   columns: PropTypes.array,
   canEdit: PropTypes.bool,
   canAdd: PropTypes.bool,

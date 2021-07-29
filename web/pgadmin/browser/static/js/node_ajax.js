@@ -89,15 +89,16 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
       if (_.isUndefined(data) || _.isNull(data)) {
         api.get(fullUrl, {
           params: otherParams.urlParams,
-        })
-          .then((res)=>{
+        }).then((res)=>{
+          data = res.data;
+          if(res.data.data) {
             data = res.data.data;
-            otherParams.useCache && cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, data);
-            resolve(transform(data));
-          })
-          .catch((err)=>{
-            reject(err);
-          });
+          }
+          otherParams.useCache && cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, data);
+          resolve(transform(data));
+        }).catch((err)=>{
+          reject(err);
+        });
       } else {
         // To fetch only options from cache, we do not need time from 'at'
         // attribute but only options.

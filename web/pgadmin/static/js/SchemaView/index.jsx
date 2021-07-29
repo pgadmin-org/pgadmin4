@@ -65,11 +65,13 @@ const useDialogStyles = makeStyles((theme)=>({
   },
 }));
 
+export const StateUtilsContext = React.createContext();
+
 function getForQueryParams(data) {
   let retData = {...data};
   Object.keys(retData).forEach((key)=>{
     let value = retData[key];
-    if(_.isArray(value) || _.isObject(value)) {
+    if(_.isObject(value)) {
       retData[key] = JSON.stringify(value);
     }
   });
@@ -79,6 +81,38 @@ function getForQueryParams(data) {
 /* Compare the sessData with schema.origData
 schema.origData is set to incoming or default data
 */
+function isValueEqual(val1, val2) {
+  let attrDefined = !_.isUndefined(val1) && !_.isUndefined(val2) && !_.isNull(val1) && !_.isNull(val2);
+
+  /* If the orig value was null and new one is empty string, then its a "no change" */
+  /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
+  /* If the orig value is undefined or null and new value is boolean false "no change" */
+  if ((_.isEqual(val1, val2)
+    || ((val1 === null || _.isUndefined(val1)) && !val2)
+    || (attrDefined ? _.isEqual(val1.toString(), val2.toString()) : false
+    ))) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function objectComparator(obj1, obj2) {
+  for(const key of _.union(Object.keys(obj1), Object.keys(obj2))) {
+    let equal = isValueEqual(obj1[key], obj2[key]);
+    if(equal) {
+      continue;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
+const diffArrayOptions = {
+  compareFunction: objectComparator,
+};
+
 function getChangedData(topSchema, mode, sessData, stringify=false) {
   let changedData = {};
   let isEdit = mode === 'edit';
@@ -87,15 +121,8 @@ function getChangedData(topSchema, mode, sessData, stringify=false) {
   const attrChanged = (currPath, change, force=false)=>{
     let origVal = _.get(topSchema.origData, currPath);
     let sessVal = _.get(sessData, currPath);
-    let attrDefined = !_.isUndefined(origVal) && !_.isUndefined(sessVal) && !_.isNull(origVal) && !_.isNull(sessVal);
 
-    /* If the orig value was null and new one is empty string, then its a "no change" */
-    /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
-    /* If the orig value is undefined or null and new value is boolean false "no change" */
-    if ((_.isEqual(origVal, sessVal)
-      || ((origVal === null || _.isUndefined(origVal)) && !sessVal)
-      || (attrDefined ? _.isEqual(origVal.toString(), sessVal.toString()) : false))
-       && !force) {
+    if(isValueEqual(origVal, sessVal) && !force) {
       return;
     } else {
       change = change || _.get(sessData, currPath);
@@ -146,8 +173,22 @@ function getChangedData(topSchema, mode, sessData, stringify=false) {
           }
         } else if(!isEdit) {
           if(field.type === 'collection') {
-            let change = cleanCid(_.get(sessData, currPath));
-            attrChanged(currPath, change);
+            /* For fixed rows, check the updated changes */
+            if(!_.isUndefined(field.fixedRows)) {
+              const changeDiff = diffArray(
+                _.get(topSchema.origData, currPath) || [],
+                _.get(sessData, currPath) || [],
+                'cid',
+                diffArrayOptions
+              );
+              if(changeDiff.updated.length > 0) {
+                let change = cleanCid(_.get(sessData, currPath));
+                attrChanged(currPath, change, true);
+              }
+            } else {
+              let change = cleanCid(_.get(sessData, currPath));
+              attrChanged(currPath, change);
+            }
           } else {
             attrChanged(currPath);
           }
@@ -320,27 +361,28 @@ function cleanCid(coll) {
   return coll.map((o)=>_.pickBy(o, (v, k)=>k!='cid'));
 }
 
-function prepareData(origData) {
-  _.forIn(origData, function (val) {
-    if (_.isArray(val)) {
-      val.forEach(function(el) {
-        if (_.isObject(el)) {
-          /* The each row in collection need to have an id to identify them uniquely
-          This helps in easily getting what has changed */
-          /* Nested collection rows may or may not have idAttribute.
-          So to decide whether row is new or not set, the cid starts with
-          nn (not new) for existing rows. Newly added will start with 'c' (created)
-          */
-          el['cid'] = _.uniqueId('nn');
-          prepareData(el);
-        }
-      });
-    }
-    if (_.isObject(val)) {
-      prepareData(val);
-    }
-  });
-  return origData;
+function prepareData(val) {
+  if(_.isPlainObject(val)) {
+    _.forIn(val, function (el) {
+      if (_.isObject(el)) {
+        prepareData(el);
+      }
+    });
+  } else if(_.isArray(val)) {
+    val.forEach(function(el) {
+      if (_.isPlainObject(el)) {
+        /* The each row in collection need to have an id to identify them uniquely
+        This helps in easily getting what has changed */
+        /* Nested collection rows may or may not have idAttribute.
+        So to decide whether row is new or not set, the cid starts with
+        nn (not new) for existing rows. Newly added will start with 'c' (created)
+        */
+        el['cid'] = _.uniqueId('nn');
+        prepareData(el);
+      }
+    });
+  }
+  return val;
 }
 
 /* If its the dialog */
@@ -560,38 +602,55 @@ function SchemaDialogView({
     });
   };
 
+  const stateUtils = useMemo(()=>({
+    dataDispatch: sessDispatchWithListener,
+    initOrigData: (path, value)=>{
+      if(path) {
+        let data = prepareData(value);
+        _.set(schema.origData, path, data);
+        sessDispatchWithListener({
+          type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+          path: path,
+          value: data,
+        });
+      }
+    }
+  }), []);
+
   /* I am Groot */
   return (
-    <DepListenerContext.Provider value={depListenerObj.current}>
-      <Box className={classes.root}>
-        <Box className={classes.form}>
-          <Loader message={loaderText}/>
-          <FormView value={sessData} viewHelperProps={viewHelperProps} formErr={formErr}
-            schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
-            hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} />
-          <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
-            onClose={onErrClose} />
-        </Box>
-        <Box className={classes.footer}>
-          {useMemo(()=><Box>
-            <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
-              disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
-            <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."/>
-          </Box>, [])}
-          <Box marginLeft="auto">
-            <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className={classes.buttonMargin}>
-              {gettext('Close')}
-            </DefaultButton>
-            <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
-              {gettext('Reset')}
-            </DefaultButton>
-            <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={<SaveIcon />} disabled={!dirty || saving || Boolean(formErr.name) || !formReady}>
-              {gettext('Save')}
-            </PrimaryButton>
+    <StateUtilsContext.Provider value={stateUtils}>
+      <DepListenerContext.Provider value={depListenerObj.current}>
+        <Box className={classes.root}>
+          <Box className={classes.form}>
+            <Loader message={loaderText}/>
+            <FormView value={sessData} viewHelperProps={viewHelperProps} formErr={formErr}
+              schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
+              hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} />
+            <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
+              onClose={onErrClose} />
+          </Box>
+          <Box className={classes.footer}>
+            {useMemo(()=><Box>
+              <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
+                disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
+              <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."/>
+            </Box>, [])}
+            <Box marginLeft="auto">
+              <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className={classes.buttonMargin}>
+                {gettext('Close')}
+              </DefaultButton>
+              <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
+                {gettext('Reset')}
+              </DefaultButton>
+              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={<SaveIcon />} disabled={!dirty || saving || Boolean(formErr.name) || !formReady}>
+                {gettext('Save')}
+              </PrimaryButton>
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </DepListenerContext.Provider>
+      </DepListenerContext.Provider>
+    </StateUtilsContext.Provider>
   );
 }
 

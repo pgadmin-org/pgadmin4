@@ -204,8 +204,6 @@ describe('SchemaView', ()=>{
         ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          /* Dont show error message */
-          expect(ctrl.find('FormFooterMessage').prop('message')).toBe('');
           expect(ctrl.find('CodeMirror').prop('value')).toBe('-- No updates.');
           done();
         }, 0);

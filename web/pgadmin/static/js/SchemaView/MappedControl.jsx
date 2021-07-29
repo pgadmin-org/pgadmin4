@@ -92,7 +92,7 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
   case 'sql':
     return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} noLabel={noLabel} {...props} />;
   default:
-    return <></>;
+    return <span>{value}</span>;
   }
 }
 
@@ -120,7 +120,7 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
       value = e.target.value;
     }
 
-    onCellChange(value);
+    onCellChange && onCellChange(value);
   }, []);
 
   const onIntChange = useCallback((e) => {
@@ -179,7 +179,7 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
   case 'privilege':
     return <Privilege name={name} value={value} onChange={onTextChange} {...props}/>;
   default:
-    return <></>;
+    return <span>{value}</span>;
   }
 }
 
