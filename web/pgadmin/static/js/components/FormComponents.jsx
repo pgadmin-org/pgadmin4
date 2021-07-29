@@ -829,13 +829,14 @@ export function FormNote({text, className}) {
     <Box className={className}>
       <Paper elevation={0} className={classes.noteRoot}>
         <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>
-        <Box>{HTMLReactParse(text)}</Box>
+        <Box>{HTMLReactParse(text || '')}</Box>
       </Paper>
     </Box>
   );
 }
 FormNote.propTypes = {
   text: PropTypes.string,
+  className: CustomPropTypes.className,
 };
 
 const useStylesFormFooter = makeStyles((theme)=>({
