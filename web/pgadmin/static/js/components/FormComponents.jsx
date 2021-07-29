@@ -11,7 +11,7 @@
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, FormControl, OutlinedInput, FormHelperText,
-  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel } from '@material-ui/core';
+  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import ReportProblemIcon from '@material-ui/icons/ReportProblemRounded';
 import InfoIcon from '@material-ui/icons/InfoRounded';
@@ -19,11 +19,13 @@ import CloseIcon from '@material-ui/icons/CloseRounded';
 import CheckIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
+import DescriptionIcon from '@material-ui/icons/Description';
 import Select, {components as RSComponents} from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import Pickr from '@simonwep/pickr';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
+import HTMLReactParse from 'html-react-parser';
 
 import CodeMirror from './CodeMirror';
 import gettext from 'sources/gettext';
@@ -64,6 +66,11 @@ const useStyles = makeStyles((theme) => ({
     minHeight: theme.spacing(3.5),
     width: theme.spacing(3.5),
     minWidth: theme.spacing(3.5),
+  },
+  noteRoot: {
+    display: 'flex',
+    backgroundColor: theme.otherVars.borderColor,
+    padding: theme.spacing(1),
   }
 }));
 
@@ -816,6 +823,18 @@ FormInputColor.propTypes = {
   testcid: PropTypes.string,
 };
 
+export function FormNote({text}) {
+  const classes = useStyles();
+  return (
+    <Paper elevation={0} className={classes.noteRoot}>
+      <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>
+      <Box>{HTMLReactParse(text)}</Box>
+    </Paper>
+  );
+}
+FormNote.propTypes = {
+  text: PropTypes.string,
+};
 
 const useStylesFormFooter = makeStyles((theme)=>({
   root: {

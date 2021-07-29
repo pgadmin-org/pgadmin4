@@ -10,7 +10,7 @@
 import React, { useCallback } from 'react';
 import _ from 'lodash';
 
-import { FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor, FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL } from '../components/FormComponents';
+import { FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor, FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, FormNote } from '../components/FormComponents';
 import { InputSelect, InputText, InputCheckbox } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
@@ -91,6 +91,8 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
     return <FormInputFileSelect name={name} value={value} onChange={onTextChange} className={className} {...props} />;
   case 'sql':
     return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} noLabel={noLabel} {...props} />;
+  case 'note':
+    return <FormNote {...props}/>;
   default:
     return <span>{value}</span>;
   }
@@ -203,7 +205,7 @@ const ALLOWED_PROPS_FIELD_COMMON = [
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [
-  'type', 'onChange', 'state', 'noLabel'
+  'type', 'onChange', 'state', 'noLabel', 'text',
 ];
 
 const ALLOWED_PROPS_FIELD_CELL = [
