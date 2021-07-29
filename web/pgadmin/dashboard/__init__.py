@@ -365,15 +365,15 @@ def get_long_running_query_status(activities):
         for row in activities:
             row['row_type'] = None
 
-            # We care for only those queries which are in active state.
-            if row['state'] != 'active':
-                continue
-
-            active_since = float(row['active_since'])
-            if active_since > warning_value:
-                row['row_type'] = 'warning'
-            if active_since > alert_value:
-                row['row_type'] = 'alert'
+            # We care for only those queries which are in active state and
+            # have active_since parameter and not None
+            if row['state'] == 'active' and 'active_since' in row and \
+                    row['active_since'] is not None:
+                active_since = float(row['active_since'])
+                if active_since > warning_value:
+                    row['row_type'] = 'warning'
+                if active_since > alert_value:
+                    row['row_type'] = 'alert'
 
 
 @blueprint.route('/dashboard_stats',
