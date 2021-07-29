@@ -823,13 +823,15 @@ FormInputColor.propTypes = {
   testcid: PropTypes.string,
 };
 
-export function FormNote({text}) {
+export function FormNote({text, className}) {
   const classes = useStyles();
   return (
-    <Paper elevation={0} className={classes.noteRoot}>
-      <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>
-      <Box>{HTMLReactParse(text)}</Box>
-    </Paper>
+    <Box className={className}>
+      <Paper elevation={0} className={classes.noteRoot}>
+        <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>
+        <Box>{HTMLReactParse(text)}</Box>
+      </Paper>
+    </Box>
   );
 }
 FormNote.propTypes = {

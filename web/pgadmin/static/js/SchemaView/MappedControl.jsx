@@ -92,7 +92,7 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
   case 'sql':
     return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} noLabel={noLabel} {...props} />;
   case 'note':
-    return <FormNote {...props}/>;
+    return <FormNote className={className} {...props}/>;
   default:
     return <span>{value}</span>;
   }
