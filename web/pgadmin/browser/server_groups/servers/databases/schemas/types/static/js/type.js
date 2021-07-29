@@ -579,18 +579,18 @@ define('pgadmin.node.type', [
           },{
             id: 'opcname', label: gettext('Subtype operator class'), cell: 'string',
             mode: ['properties', 'create', 'edit'], group: gettext('Range Type'),
-            disabled: 'inSchema', readonly: 'inEditMode', deps: ['typname'],
-            control: 'select', options: function() {
-              var l_typname = this.model.get('typname'),
-                self = this,
+            disabled: 'inSchema', readonly: 'inEditMode',  deps: ['typname'],
+            control: 'select2', options: function(control) {
+              var l_typname = control.model.get('typname'),
                 result = [];
+
               if(!_.isUndefined(l_typname) && l_typname != '')
               {
-                var node = this.field.get('schema_node'),
+                var node = control.field.get('schema_node'),
                   _url = node.generate_url.apply(
                     node, [
-                      null, 'get_subopclass', this.field.get('node_data'), false,
-                      this.field.get('node_info'),
+                      null, 'get_subopclass', control.field.get('node_data'), false,
+                      control.field.get('node_info'),
                     ]);
                 $.ajax({
                   async: false,
@@ -602,7 +602,7 @@ define('pgadmin.node.type', [
                     result = res.data;
                   })
                   .fail(function() {
-                    self.model.trigger('pgadmin:view:fetch:error', self.model, self.field);
+                    control.model.trigger('pgadmin:view:fetch:error', control.model, control.field);
                   });
                 //
               }
@@ -640,6 +640,11 @@ define('pgadmin.node.type', [
                 });
               }
               // If is_collate is true then do not disable
+              if(!is_collate) {
+                m.set({'collname': '', silent: true});
+                this.options = [];
+              }
+
               return is_collate ? false : true;
             },
           },{
@@ -647,18 +652,17 @@ define('pgadmin.node.type', [
             type: 'text', mode: ['properties', 'create', 'edit'],
             group: gettext('Range Type'),
             disabled: 'inSchema', readonly: 'inEditMode', deps: ['name', 'typname'],
-            control: 'select', options: function() {
-              var name = this.model.get('name'),
-                self = this,
+            control: 'select2', options: function(control) {
+              var name = control.model.get('name'),
                 result = [];
 
               if(!_.isUndefined(name) && name != '')
               {
-                var node = this.field.get('schema_node'),
+                var node = control.field.get('schema_node'),
                   _url = node.generate_url.apply(
                     node, [
-                      null, 'get_canonical', this.field.get('node_data'), false,
-                      this.field.get('node_info'),
+                      null, 'get_canonical', control.field.get('node_data'), false,
+                      control.field.get('node_info'),
                     ]);
                 $.ajax({
                   async: false,
@@ -670,8 +674,7 @@ define('pgadmin.node.type', [
                     result = res.data;
                   })
                   .fail(function() {
-                    self.model.trigger('pgadmin:view:fetch:error',
-                      self.model, self.field);
+                    control.model.trigger('pgadmin:view:fetch:error', control.model, control.field);
                   });
               }
               return result;
@@ -680,21 +683,22 @@ define('pgadmin.node.type', [
             id: 'rngsubdiff', label: gettext('Subtype diff function'), cell: 'string',
             type: 'text', mode: ['properties', 'create', 'edit'],
             group: gettext('Range Type'),
-            disabled: 'inSchema', readonly: 'inEditMode', deps: ['opcname'],
-            control: 'select', options: function() {
-              var l_typname = this.model.get('typname'),
-                l_opcname = this.model.get('opcname'),
-                self = this,
+            disabled: 'inSchema', readonly: 'inEditMode', deps: ['typname', 'opcname'],
+            control: 'select2', options: function(control) {
+              var l_typname = control.model.get('typname'),
+                l_opcname = control.model.get('opcname'),
                 result = [];
+              this.options = [];
+              control.model.set({'rngsubdiff': [], silent: true});
 
               if(!_.isUndefined(l_typname) && l_typname != '' &&
                 !_.isUndefined(l_opcname) && l_opcname != '') {
-                var node = this.field.get('schema_node'),
+                var node = control.field.get('schema_node'),
                   _url = node.generate_url.apply(
                     node, [
                       null, 'get_stypediff',
-                      this.field.get('node_data'), false,
-                      this.field.get('node_info'),
+                      control.field.get('node_data'), false,
+                      control.field.get('node_info'),
                     ]);
                 $.ajax({
                   async: false,
@@ -706,8 +710,7 @@ define('pgadmin.node.type', [
                     result = res.data;
                   })
                   .fail(function() {
-                    self.model.trigger('pgadmin:view:fetch:error',
-                      self.model, self.field);
+                    control.model.trigger('pgadmin:view:fetch:error', control.model, control.field);
                   });
               }
               return result;

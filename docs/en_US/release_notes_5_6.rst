@@ -25,3 +25,4 @@ Bug fixes
 | `Issue #6580 <https://redmine.postgresql.org/issues/6580>`_ -  Fixed TypeError 'NoneType' object is not sub scriptable.
 | `Issue #6586 <https://redmine.postgresql.org/issues/6586>`_ -  Fixed incorrect tablespace options in the drop-down for move objects dialog.
 | `Issue #6619 <https://redmine.postgresql.org/issues/6619>`_ -  Fixed incorrect binary path issue when the user deletes the binary path from the preferences.
+| `Issue #6643 <https://redmine.postgresql.org/issues/6643>`_ -  Ensure that all the required options should be loaded when the Range data type is selected while creating a custom data type.
