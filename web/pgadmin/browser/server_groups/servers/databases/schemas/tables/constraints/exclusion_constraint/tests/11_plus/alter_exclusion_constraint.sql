@@ -1,8 +1,8 @@
 -- Constraint: Exclusion_$%{}[]()&*^!@"'`\/#a
 
--- ALTER TABLE testschema.tableforexclusion DROP CONSTRAINT "Exclusion_$%{}[]()&*^!@""'`\/#a";
+-- ALTER TABLE IF EXISTS testschema.tableforexclusion DROP CONSTRAINT IF EXISTS "Exclusion_$%{}[]()&*^!@""'`\/#a";
 
-ALTER TABLE testschema.tableforexclusion
+ALTER TABLE IF EXISTS testschema.tableforexclusion
     ADD CONSTRAINT "Exclusion_$%{}[]()&*^!@""'`\/#a" EXCLUDE USING btree (
     col2 text_pattern_ops WITH =)
     INCLUDE (col1)

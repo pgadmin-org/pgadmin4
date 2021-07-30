@@ -1,6 +1,6 @@
 -- Type: shell_type_$%{}[]()&*^!@"'`\/#
 
--- DROP TYPE public."shell_type_$%{}[]()&*^!@""'`\/#";
+-- DROP TYPE IF EXISTS public."shell_type_$%{}[]()&*^!@""'`\/#";
 
 CREATE TYPE public."shell_type_$%{}[]()&*^!@""'`\/#";
 

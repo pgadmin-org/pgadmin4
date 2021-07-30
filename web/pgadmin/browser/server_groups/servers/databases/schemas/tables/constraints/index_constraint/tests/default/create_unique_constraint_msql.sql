@@ -1,4 +1,4 @@
-ALTER TABLE testschema.tablefor_unique_cons
+ALTER TABLE IF EXISTS testschema.tablefor_unique_cons
     ADD CONSTRAINT "UC_$%{}[]()&*^!@""'`\/#" UNIQUE (col1)
     WITH (FILLFACTOR=20)
     DEFERRABLE INITIALLY DEFERRED;

@@ -1,6 +1,6 @@
 -- Trigger: trig_test_statement_$%{}[]()&*^!@\"'`\\/#"
 
--- DROP TRIGGER "trig_test_statement_$%{}[]()&*^!@\""'`\\/#""" ON public.tablefortrigger;
+-- DROP TRIGGER IF EXISTS "trig_test_statement_$%{}[]()&*^!@\""'`\\/#""" ON public.tablefortrigger;
 
 CREATE TRIGGER "trig_test_statement_$%{}[]()&*^!@\""'`\\/#"""
     BEFORE INSERT OR DELETE OR TRUNCATE OR UPDATE OF col1, col2, col3

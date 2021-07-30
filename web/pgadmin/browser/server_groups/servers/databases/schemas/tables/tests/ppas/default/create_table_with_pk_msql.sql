@@ -8,7 +8,7 @@ WITH (
     OIDS = FALSE
 );
 
-ALTER TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"

@@ -6,7 +6,7 @@ WITH (
     OIDS = FALSE
 );
 
-ALTER TABLE public."test_table_$%{}[]()&*^!@""""'`\/#"
+ALTER TABLE IF EXISTS public."test_table_$%{}[]()&*^!@""""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."test_table_$%{}[]()&*^!@""""'`\/#"

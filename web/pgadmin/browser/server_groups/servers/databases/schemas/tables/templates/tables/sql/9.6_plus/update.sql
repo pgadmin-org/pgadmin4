@@ -5,7 +5,7 @@
 {## Rename table ##}
 {#####################################################}
 {% if data.name and data.name != o_data.name %}
-ALTER TABLE {{conn|qtIdent(o_data.schema, o_data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(o_data.schema, o_data.name)}}
     RENAME TO {{conn|qtIdent(data.name)}};
 
 {% endif %}
@@ -13,7 +13,7 @@ ALTER TABLE {{conn|qtIdent(o_data.schema, o_data.name)}}
 {## Change table schema ##}
 {#####################################################}
 {% if data.schema and data.schema != o_data.schema %}
-ALTER TABLE {{conn|qtIdent(o_data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(o_data.schema, data.name)}}
   SET SCHEMA {{conn|qtIdent(data.schema)}};
 
 {% endif %}
@@ -21,7 +21,7 @@ ALTER TABLE {{conn|qtIdent(o_data.schema, data.name)}}
 {## Change table owner ##}
 {#####################################################}
 {% if data.relowner and data.relowner != o_data.relowner %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     OWNER TO {{conn|qtIdent(data.relowner)}};
 
 {% endif %}
@@ -30,14 +30,14 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {#####################################################}
 {% if data.coll_inherits_added|length > 0 %}
 {% for val in data.coll_inherits_added %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     INHERIT {{val}};
 
 {% endfor %}
 {% endif %}
 {% if data.coll_inherits_removed|length > 0 %}
 {% for val in data.coll_inherits_removed %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     NO INHERIT {{val}};
 
 {% endfor %}
@@ -47,10 +47,10 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {## Enable Row Level Security Policy on table ##}
 {#####################################################}
 {% if data.rlspolicy %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     ENABLE ROW LEVEL SECURITY;
 {% elif  data.rlspolicy is defined and data.rlspolicy != o_data.rlspolicy%}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     DISABLE ROW LEVEL SECURITY;
 
 {% endif %}
@@ -59,10 +59,10 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {## Force Enable Row Level Security Policy on table ##}
 {#####################################################}
 {% if data.forcerlspolicy %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     FORCE ROW LEVEL SECURITY;
 {% elif  data.forcerlspolicy is defined and data.forcerlspolicy != o_data.forcerlspolicy%}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     NO FORCE ROW LEVEL SECURITY;
 
 {% endif %}
@@ -71,7 +71,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {## Change hasOID attribute of table ##}
 {#####################################################}
 {% if data.relhasoids is defined and data.relhasoids != o_data.relhasoids %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     SET {% if data.relhasoids %}WITH{% else %}WITHOUT{% endif %} OIDS;
 
 {% endif %}
@@ -79,7 +79,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {## Change tablespace ##}
 {#####################################################}
 {% if data.spcname and data.spcname != o_data.spcname %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     SET TABLESPACE {{conn|qtIdent(data.spcname)}};
 
 {% endif %}
@@ -87,10 +87,10 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {## change fillfactor settings ##}
 {#####################################################}
 {% if data.fillfactor and data.fillfactor != o_data.fillfactor %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     SET (FILLFACTOR={{data.fillfactor}});
 {% elif (data.fillfactor == '' or data.fillfactor == None) and data.fillfactor != o_data.fillfactor %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     RESET (FILLFACTOR);
 
 {% endif %}
@@ -98,10 +98,10 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {## change parallel_workers settings ##}
 {#####################################################}
 {% if (data.parallel_workers == '' or data.parallel_workers == None) and data.parallel_workers != o_data.parallel_workers %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     RESET (parallel_workers);
 {% elif data.parallel_workers is defined and data.parallel_workers != o_data.parallel_workers %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     SET (parallel_workers={{data.parallel_workers}});
 
 {% endif %}
@@ -115,7 +115,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% set has_vacuum_reset = true %}
 {% endif %}
 {% if o_data.autovacuum_custom and data.autovacuum_custom == false %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}} RESET (
     autovacuum_enabled,
     autovacuum_analyze_scale_factor,
     autovacuum_analyze_threshold,
@@ -129,7 +129,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
 );
 {% else %}
 {% if (data.autovacuum_enabled in ('t', 'f') and data.autovacuum_enabled != o_data.autovacuum_enabled) or has_vacuum_set %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} SET (
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}} SET (
 {% if data.autovacuum_enabled in ('t', 'f') and data.autovacuum_enabled != o_data.autovacuum_enabled %}
     autovacuum_enabled = {% if data.autovacuum_enabled == 't' %}true{% else %}false{% endif %}{% if has_vacuum_set %},
 {% endif %}
@@ -145,7 +145,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} SET (
 );
 {% endif %}
 {% if (data.autovacuum_enabled == 'x' and data.autovacuum_enabled != o_data.autovacuum_enabled) or has_vacuum_reset %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}} RESET (
 {% if data.autovacuum_enabled =='x' and data.autovacuum_enabled != o_data.autovacuum_enabled %}
     autovacuum_enabled{% if has_vacuum_reset %},
 {% endif %}
@@ -171,7 +171,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
 {% set has_vacuum_toast_reset = true %}
 {% endif %}
 {% if o_data.toast_autovacuum and data.toast_autovacuum == false %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}} RESET (
     toast.autovacuum_enabled,
     toast.autovacuum_freeze_max_age,
     toast.autovacuum_vacuum_cost_delay,
@@ -185,7 +185,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
 );
 {% else %}
 {% if (data.toast_autovacuum_enabled in ('t', 'f') and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled) or has_vacuum_toast_set %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} SET (
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}} SET (
 {% if data.toast_autovacuum_enabled in ('t', 'f') and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled %}
     toast.autovacuum_enabled = {% if data.toast_autovacuum_enabled == 't' %}true{% else %}false{% endif %}{% if has_vacuum_toast_set %},
 {% endif %}
@@ -201,7 +201,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} SET (
 );
 {% endif %}
 {% if (data.toast_autovacuum_enabled == 'x' and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled) or has_vacuum_toast_reset %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}} RESET (
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}} RESET (
 {% if data.toast_autovacuum_enabled == 'x' and data.toast_autovacuum_enabled != o_data.toast_autovacuum_enabled %}
     toast.autovacuum_enabled{% if has_vacuum_toast_reset %},
 {% endif %}

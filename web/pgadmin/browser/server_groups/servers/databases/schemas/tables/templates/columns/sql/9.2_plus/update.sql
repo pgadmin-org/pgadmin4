@@ -4,7 +4,7 @@
 {% import 'types/macros/get_full_type_sql_format.macros' as GET_TYPE %}
 {###  Rename column name ###}
 {% if data.name and data.name != o_data.name %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     RENAME {{conn|qtIdent(o_data.name)}} TO {{conn|qtIdent(data.name)}};
 
 {% endif %}
@@ -22,35 +22,35 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {% endif %}
 {###  Alter column default value ###}
 {% if is_view_only and data.defval is defined and data.defval is not none and data.defval != '' and data.defval != o_data.defval %}
-ALTER VIEW {{conn|qtIdent(data.schema, data.table)}}
+ALTER VIEW IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET DEFAULT {{data.defval}};
 
 {% elif data.defval is defined and data.defval is not none and data.defval != '' and data.defval != o_data.defval %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET DEFAULT {{data.defval}};
 
 {% endif %}
 {###  Drop column default value ###}
 {% if data.defval is defined and (data.defval == '' or data.defval is none) and data.defval != o_data.defval %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} DROP DEFAULT;
 
 {% endif %}
 {###  Alter column not null value ###}
 {% if 'attnotnull' in data and data.attnotnull != o_data.attnotnull %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} {% if data.attnotnull %}SET{% else %}DROP{% endif %} NOT NULL;
 
 {% endif %}
 {###  Alter column statistics value ###}
 {% if data.attstattarget is defined and data.attstattarget != o_data.attstattarget %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET STATISTICS {{data.attstattarget}};
 
 {% endif %}
 {###  Alter column storage value ###}
 {% if data.attstorage is defined and data.attstorage != o_data.attstorage %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} SET STORAGE {%if data.attstorage == 'p' %}
 PLAIN{% elif data.attstorage == 'm'%}MAIN{% elif data.attstorage == 'e'%}
 EXTERNAL{% elif data.attstorage == 'x'%}EXTENDED{% endif %};
@@ -69,7 +69,7 @@ COMMENT ON COLUMN {{conn|qtIdent(data.schema, data.table, o_data.name)}}
 {% if 'attoptions' in data and data.attoptions != None and data.attoptions|length > 0 %}
 {% set variables = data.attoptions %}
 {% if 'deleted' in variables and variables.deleted|length > 0 %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if data.name %}
     {{ VARIABLE.UNSET(conn, 'COLUMN', data.name, variables.deleted) }}
 {% else %}
@@ -77,7 +77,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {% endif %}
 {% endif %}
 {% if 'added' in variables and variables.added|length > 0 %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if data.name %}
     {{ VARIABLE.SET(conn, 'COLUMN', data.name, variables.added) }}
 {% else %}
@@ -85,7 +85,7 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
 {% endif %}
 {% endif %}
 {% if 'changed' in variables and variables.changed|length > 0 %}
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if data.name %}
     {{ VARIABLE.SET(conn, 'COLUMN', data.name, variables.changed) }}
 {% else %}

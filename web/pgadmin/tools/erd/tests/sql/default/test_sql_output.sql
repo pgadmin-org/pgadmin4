@@ -28,7 +28,7 @@ WITH (
     OIDS = FALSE
 );
 
-ALTER TABLE public.newtable2
+ALTER TABLE IF EXISTS public.newtable2
     ADD FOREIGN KEY (table1_id)
     REFERENCES public.newtable1 (id)
     NOT VALID;

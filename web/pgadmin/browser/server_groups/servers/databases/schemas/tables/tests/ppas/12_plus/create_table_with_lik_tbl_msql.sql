@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"
 
 );
 
-ALTER TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"

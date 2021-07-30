@@ -17,7 +17,7 @@ WITH (
     autovacuum_freeze_table_age = 1300000
 );
 
-ALTER TABLE public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"

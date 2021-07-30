@@ -1,6 +1,6 @@
 -- Compound Trigger: test_compound_trigger_$%{}[]()&*^!@"'`\/#
 
--- DROP TRIGGER "test_compound_trigger_$%{}[]()&*^!@""'`\/#" ON testschema.table_for_compound_trigger;
+-- DROP TRIGGER IF EXISTS "test_compound_trigger_$%{}[]()&*^!@""'`\/#" ON testschema.table_for_compound_trigger;
 
 CREATE OR REPLACE TRIGGER "test_compound_trigger_$%{}[]()&*^!@""'`\/#"
     FOR INSERT OR UPDATE

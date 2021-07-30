@@ -2,12 +2,12 @@
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {% if data %}
 {% if data.name != o_data.name %}
-ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, o_data.name) }}
+ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, o_data.name) }}
     RENAME TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}
 {% if data.seqowner and data.seqowner != o_data.seqowner %}
-ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }}
+ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.seqowner) }};
 
 {% endif %}
@@ -38,11 +38,11 @@ SELECT setval({{ seqname|qtLiteral }}, {{ data.current_value }}, true);
 {% set defquery = defquery+'\n    NO CYCLE' %}
 {% endif %}
 {% if defquery and defquery != '' %}
-ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }}{{ defquery }};
+ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}{{ defquery }};
 
 {% endif %}
 {% if data.schema and data.schema != o_data.schema %}
-ALTER SEQUENCE {{ conn|qtIdent(o_data.schema, data.name) }}
+ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
     SET SCHEMA {{ conn|qtIdent(data.schema) }};
 
 {% set seqname = conn|qtIdent(data.schema, data.name) %}

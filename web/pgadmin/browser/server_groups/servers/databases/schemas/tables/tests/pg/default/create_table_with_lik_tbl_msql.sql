@@ -12,7 +12,7 @@ WITH (
     OIDS = FALSE
 );
 
-ALTER TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"

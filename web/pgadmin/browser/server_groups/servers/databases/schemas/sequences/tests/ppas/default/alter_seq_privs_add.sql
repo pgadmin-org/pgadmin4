@@ -2,7 +2,7 @@
 
 -- DROP SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#";
 
-CREATE SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
+CREATE SEQUENCE IF NOT EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#"
     CYCLE
     INCREMENT 12
     START 5

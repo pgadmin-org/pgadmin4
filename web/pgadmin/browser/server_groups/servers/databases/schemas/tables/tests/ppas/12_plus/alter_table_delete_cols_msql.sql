@@ -1,1 +1,1 @@
-ALTER TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#" DROP COLUMN "col2_$%{}[]()&*^!@\""'`\\/#";
+ALTER TABLE IF EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#" DROP COLUMN IF EXISTS "col2_$%{}[]()&*^!@\""'`\\/#";

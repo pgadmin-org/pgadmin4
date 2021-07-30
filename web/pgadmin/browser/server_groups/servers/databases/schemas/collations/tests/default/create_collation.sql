@@ -1,6 +1,6 @@
 -- Collation: Cl1_$%{}[]()&*^!@"'`\/#;
 
--- DROP COLLATION testschema."Cl1_$%{}[]()&*^!@""'`\/#";
+-- DROP COLLATION IF EXISTS testschema."Cl1_$%{}[]()&*^!@""'`\/#";
 
 CREATE COLLATION testschema."Cl1_$%{}[]()&*^!@""'`\/#"
     (LC_COLLATE = 'C', LC_CTYPE = 'C');

@@ -1,6 +1,6 @@
 -- Table: public.table_with_advanced_options_$%{}[]()&*^!@"'`\/#
 
--- DROP TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#";
+-- DROP TABLE IF EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#";
 
 CREATE UNLOGGED TABLE IF NOT EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
 (
@@ -13,13 +13,13 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
-ALTER TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
     ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
     FORCE ROW LEVEL SECURITY;
 
 COMMENT ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"

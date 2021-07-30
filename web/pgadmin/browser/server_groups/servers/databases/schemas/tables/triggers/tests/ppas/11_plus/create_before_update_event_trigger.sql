@@ -1,6 +1,6 @@
 -- Trigger: trig_be4r_update_$%{}[]()&*^!@"'`\/#
 
--- DROP TRIGGER "trig_be4r_update_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
+-- DROP TRIGGER IF EXISTS "trig_be4r_update_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
 
 CREATE TRIGGER "trig_be4r_update_$%{}[]()&*^!@""'`\/#"
     BEFORE UPDATE OF col1

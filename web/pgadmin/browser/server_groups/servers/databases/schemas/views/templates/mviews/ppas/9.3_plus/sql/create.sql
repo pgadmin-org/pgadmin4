@@ -6,7 +6,7 @@
 
 {% endif %}
 {% if data.name and data.schema and data.definition %}
-CREATE MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }}
+CREATE MATERIALIZED VIEW IF NOT EXISTS {{ conn|qtIdent(data.schema, data.name) }}
 {% if(data.fillfactor or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum_enabled in ('t', 'f') or data['vacuum_data']|length > 0) %}
 {% set ns = namespace(add_comma=false) %}
 WITH (
@@ -34,7 +34,7 @@ WITH NO DATA;
 {% endif %}
 {% if data.owner %}
 
-ALTER TABLE {{ conn|qtIdent(data.schema, data.name) }}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.owner) }};
 {% endif %}
 {% if data.comment %}

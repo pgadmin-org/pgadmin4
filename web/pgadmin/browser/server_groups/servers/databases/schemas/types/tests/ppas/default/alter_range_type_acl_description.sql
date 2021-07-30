@@ -1,6 +1,6 @@
 -- Type: range_type_$%{}[]()&*^!@"'`\/#
 
--- DROP TYPE public."range_type_$%{}[]()&*^!@""'`\/#";
+-- DROP TYPE IF EXISTS public."range_type_$%{}[]()&*^!@""'`\/#";
 
 CREATE TYPE public."range_type_$%{}[]()&*^!@""'`\/#" AS RANGE
 (

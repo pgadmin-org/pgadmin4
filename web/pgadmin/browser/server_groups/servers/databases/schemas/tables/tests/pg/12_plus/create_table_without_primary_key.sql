@@ -1,6 +1,6 @@
 -- Table: public.simple_table_$%{}[]()&*^!@"'`\/#
 
--- DROP TABLE public."simple_table_$%{}[]()&*^!@""'`\/#";
+-- DROP TABLE IF EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#";
 
 CREATE TABLE IF NOT EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
 (
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
 
 TABLESPACE pg_default;
 
-ALTER TABLE public."simple_table_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."simple_table_$%{}[]()&*^!@""'`\/#"

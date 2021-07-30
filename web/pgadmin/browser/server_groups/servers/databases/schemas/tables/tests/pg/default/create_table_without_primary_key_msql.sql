@@ -11,7 +11,7 @@ WITH (
     OIDS = FALSE
 );
 
-ALTER TABLE public."simple_table_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."simple_table_$%{}[]()&*^!@""'`\/#"

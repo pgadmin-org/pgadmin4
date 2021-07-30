@@ -4,7 +4,7 @@ WITH (
 ) AS
 select col1 from test_view_table;
 
-ALTER TABLE public."testview_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."testview_$%{}[]()&*^!@""'`\/#"
     OWNER TO enterprisedb;
 COMMENT ON VIEW public."testview_$%{}[]()&*^!@""'`\/#"
     IS 'Testcomment';

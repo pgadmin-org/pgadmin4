@@ -1,6 +1,6 @@
 -- Table: public.table_with_pk_chk_constraints$%{}[]()&*^!@"'`\/#
 
--- DROP TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#";
+-- DROP TABLE IF EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#";
 
 CREATE TABLE IF NOT EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
 (
@@ -15,7 +15,7 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"

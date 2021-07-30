@@ -1,6 +1,6 @@
 -- Trigger: trig_b4r_update_mul_events_$%{}[]()&*^!@"'`\/#
 
--- DROP TRIGGER "trig_b4r_update_mul_events_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
+-- DROP TRIGGER IF EXISTS "trig_b4r_update_mul_events_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
 
 CREATE TRIGGER "trig_b4r_update_mul_events_$%{}[]()&*^!@""'`\/#"
     BEFORE INSERT OR UPDATE OF col3

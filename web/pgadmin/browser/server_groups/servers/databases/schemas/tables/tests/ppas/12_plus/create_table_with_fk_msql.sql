@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#
         NOT VALID
 );
 
-ALTER TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"

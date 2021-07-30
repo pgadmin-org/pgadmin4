@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'
     CONSTRAINT chk_const CHECK (col2  != null)
 );
 
-ALTER TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"

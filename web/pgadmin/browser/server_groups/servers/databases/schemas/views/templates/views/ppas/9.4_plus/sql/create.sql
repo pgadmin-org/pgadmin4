@@ -18,7 +18,7 @@ WITH ({% if data.check_option and data.check_option.lower() != 'no' %}
 {{ data.definition.rstrip(';') }};
 {% if data.owner and data.m_view is undefined %}
 
-ALTER TABLE {{ conn|qtIdent(data.schema, data.name) }}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.owner) }};
 {% endif %}
 {% if data.comment %}

@@ -12,5 +12,5 @@ WHERE
     rw.oid={{ rid }};
 {% endif %}
 {% if rulename and relname and nspname %}
-DROP RULE {{ conn|qtIdent(rulename) }} ON {{ conn|qtIdent(nspname, relname) }} {% if cascade %} CASCADE {% endif %};
+DROP RULE IF EXISTS {{ conn|qtIdent(rulename) }} ON {{ conn|qtIdent(nspname, relname) }} {% if cascade %} CASCADE {% endif %};
 {% endif %}

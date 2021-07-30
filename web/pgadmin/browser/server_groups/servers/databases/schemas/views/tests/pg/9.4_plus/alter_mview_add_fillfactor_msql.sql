@@ -1,4 +1,4 @@
-ALTER MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
+ALTER MATERIALIZED VIEW IF EXISTS public."testmview_$%{}[]()&*^!/@`#"
 SET(
   FILLFACTOR = 18
 );

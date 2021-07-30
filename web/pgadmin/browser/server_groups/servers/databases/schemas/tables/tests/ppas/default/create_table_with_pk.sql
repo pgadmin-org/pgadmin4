@@ -1,6 +1,6 @@
 -- Table: public.simple_table_with_pk$%{}[]()&*^!@"'`\/#
 
--- DROP TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#";
+-- DROP TABLE IF EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#";
 
 CREATE TABLE IF NOT EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
 (
@@ -13,7 +13,7 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"

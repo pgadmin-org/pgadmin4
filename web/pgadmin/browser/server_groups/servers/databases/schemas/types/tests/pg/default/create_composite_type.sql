@@ -1,6 +1,6 @@
 -- Type: composite_type_$%{}[]()&*^!@"'`\/#
 
--- DROP TYPE public."composite_type_$%{}[]()&*^!@""'`\/#";
+-- DROP TYPE IF EXISTS public."composite_type_$%{}[]()&*^!@""'`\/#";
 
 CREATE TYPE public."composite_type_$%{}[]()&*^!@""'`\/#" AS
 (

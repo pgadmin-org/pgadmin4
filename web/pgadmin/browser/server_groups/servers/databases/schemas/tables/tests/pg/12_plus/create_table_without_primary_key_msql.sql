@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
     col6 timestamp(5) with time zone
 );
 
-ALTER TABLE public."simple_table_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."simple_table_$%{}[]()&*^!@""'`\/#"

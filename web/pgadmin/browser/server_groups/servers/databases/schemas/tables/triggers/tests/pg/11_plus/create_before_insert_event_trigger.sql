@@ -1,6 +1,6 @@
 -- Trigger: trig_test_$%{}[]()&*^!@"'`\/#
 
--- DROP TRIGGER "trig_test_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
+-- DROP TRIGGER IF EXISTS "trig_test_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
 
 CREATE TRIGGER "trig_test_$%{}[]()&*^!@""'`\/#"
     BEFORE INSERT

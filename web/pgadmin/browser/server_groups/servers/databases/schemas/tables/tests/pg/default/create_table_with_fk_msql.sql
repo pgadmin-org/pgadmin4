@@ -14,7 +14,7 @@ WITH (
     OIDS = FALSE
 );
 
-ALTER TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"

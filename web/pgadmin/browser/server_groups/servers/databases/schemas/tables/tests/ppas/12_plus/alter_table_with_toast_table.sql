@@ -1,6 +1,6 @@
 -- Table: public.table_with_custom_autovaccum_$%{}[]()&*^!@"'`\/#
 
--- DROP TABLE public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#";
+-- DROP TABLE IF EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#";
 
 CREATE TABLE IF NOT EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
 (
@@ -26,7 +26,7 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"

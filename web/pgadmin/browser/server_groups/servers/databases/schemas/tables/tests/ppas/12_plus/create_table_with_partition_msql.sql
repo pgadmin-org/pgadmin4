@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     arr numeric
 ) PARTITION BY LIST (status);
 
-ALTER TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"

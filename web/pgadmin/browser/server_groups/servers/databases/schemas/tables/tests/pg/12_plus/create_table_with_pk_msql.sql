@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
     PRIMARY KEY ("col1_$%{}[]()&*^!@\""'`\\/#")
 );
 
-ALTER TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"

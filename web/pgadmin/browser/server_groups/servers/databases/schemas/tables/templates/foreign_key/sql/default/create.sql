@@ -1,4 +1,4 @@
-ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.table) }}
     ADD{% if data.name %} CONSTRAINT {{ conn|qtIdent(data.name) }}{% endif%} FOREIGN KEY ({% for columnobj in data.columns %}{% if loop.index != 1 %}
 , {% endif %}{{ conn|qtIdent(columnobj.local_column)}}{% endfor %})
     REFERENCES {{ conn|qtIdent(data.remote_schema, data.remote_table) }} ({% for columnobj in data.columns %}{% if loop.index != 1 %}

@@ -10,7 +10,7 @@ WITH (
  SELECT test_view_table.col1
    FROM test_view_table;
 
-ALTER TABLE public."testview_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."testview_$%{}[]()&*^!@""'`\/#"
     OWNER TO enterprisedb;
 COMMENT ON VIEW public."testview_$%{}[]()&*^!@""'`\/#"
     IS 'Testcomment-updated';

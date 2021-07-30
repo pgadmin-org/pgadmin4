@@ -7,26 +7,26 @@
 {% set def = data.definition.rstrip(';') if data.definition %}
 {# ===== Rename mat view ===== #}
 {% if data.name and data.name != o_data.name %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(o_data.schema, o_data.name) }}
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(o_data.schema, o_data.name) }}
   RENAME TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}
 {# ===== Alter schema view ===== #}
 {% if data.schema and data.schema != o_data.schema %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(o_data.schema, view_name ) }}
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(o_data.schema, view_name ) }}
   SET SCHEMA {{ conn|qtIdent(data.schema) }};
 
 {% endif %}
 {# ===== Alter Table owner ===== #}
 {% if data.owner and data.owner != o_data.owner %}
-ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
   OWNER TO {{ conn|qtIdent(data.owner) }};
 
 {% endif %}
 {# ===== First Drop and then create mat view ===== #}
 {% if def and def != o_data.definition.rstrip(';') %}
-DROP MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }};
-CREATE MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+DROP MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }};
+CREATE MATERIALIZED VIEW IF NOT EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 {% if data.fillfactor or o_data.fillfactor %}
 WITH(
 {% if data.fillfactor %}
@@ -57,19 +57,19 @@ COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% else %}
 {# ======= Alter Tablespace ========= #}
 {%- if data.spcoid and o_data.spcoid != data.spcoid  -%}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
   SET TABLESPACE {{ data.spcoid }};
 
 {% endif %}
 {# ======= SET/RESET Fillfactor ========= #}
 {% if data.fillfactor and o_data.fillfactor != data.fillfactor %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 SET(
   FILLFACTOR = {{ data.fillfactor }}
 );
 
 {% elif data.fillfactor == '' and o_data.fillfactor|default('', 'true') != data.fillfactor %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 RESET(
   FILLFACTOR
 );
@@ -82,7 +82,7 @@ REFRESH MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} WITH{{ ' NO
 {% endif %}
 {# ===== Check for Autovacuum options ===== #}
 {% if data.autovacuum_custom is defined and data.autovacuum_custom == False %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }} RESET(
   autovacuum_enabled,
   autovacuum_vacuum_threshold,
   autovacuum_analyze_threshold,
@@ -98,7 +98,7 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
 {% endif %}
 
 {% if data.toast_autovacuum is defined and data.toast_autovacuum == False %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }} RESET(
   toast.autovacuum_enabled,
   toast.autovacuum_vacuum_threshold,
   toast.autovacuum_analyze_threshold,
@@ -113,7 +113,7 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
 
 {% endif %}{#-- toast_endif ends --#}
 {% if data['vacuum_data']['changed']|length > 0 or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum_enabled in ('t', 'f') %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(data.schema, data.name) }} SET(
 {% if data.autovacuum_enabled in ('t', 'f') %}
     autovacuum_enabled = {% if data.autovacuum_enabled == 't' %}true{% else %}false{% endif %}{% if data['vacuum_data']['changed']|length > 0 or data.toast_autovacuum_enabled in ('t', 'f') %},
 {% endif %}
@@ -131,7 +131,7 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }} SET(
 );
 {% endif %}
 {% if data['vacuum_data']['reset']|length > 0 or data.autovacuum_enabled == 'x' or data.toast_autovacuum_enabled == 'x' %}
-ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET(
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }} RESET(
 {% if data.autovacuum_enabled == 'x' %}
     autovacuum_enabled{% if data['vacuum_data']['reset']|length > 0 or data.toast_autovacuum_enabled == 'x' %},
 {% endif %}

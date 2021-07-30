@@ -10,5 +10,5 @@ WHERE
 {% endif %}
 {# DROP CAST Statement #}
 {% if castsource and casttarget %}
-DROP CAST ({{castsource}} AS {{casttarget}}) {% if cascade %}CASCADE{%endif%};
+DROP CAST IF EXISTS ({{castsource}} AS {{casttarget}}) {% if cascade %}CASCADE{%endif%};
 {% endif %}

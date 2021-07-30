@@ -1,6 +1,6 @@
 -- Trigger: trig_after_delete_events_$%{}[]()&*^!@"'`\/#
 
--- DROP TRIGGER "trig_after_delete_events_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
+-- DROP TRIGGER IF EXISTS "trig_after_delete_events_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
 
 CREATE CONSTRAINT TRIGGER "trig_after_delete_events_$%{}[]()&*^!@""'`\/#"
     AFTER DELETE

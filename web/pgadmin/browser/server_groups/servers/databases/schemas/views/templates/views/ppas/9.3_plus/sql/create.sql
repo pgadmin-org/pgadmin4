@@ -13,7 +13,7 @@ WITH (
 {{ data.definition.rstrip(';') }};
 {% if data.owner %}
 
-ALTER TABLE {{ conn|qtIdent(data.schema, data.name) }}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.owner) }};
 {% endif %}
 {% if data.comment %}

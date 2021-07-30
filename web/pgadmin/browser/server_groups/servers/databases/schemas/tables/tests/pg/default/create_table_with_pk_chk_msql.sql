@@ -11,7 +11,7 @@ WITH (
     OIDS = FALSE
 );
 
-ALTER TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"

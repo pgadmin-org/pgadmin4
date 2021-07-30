@@ -19,5 +19,5 @@ WHERE
 
 {# DROP FTS DICTIOANRY Statement #}
 {% if schema and name %}
-DROP TEXT SEARCH DICTIONARY {{conn|qtIdent(schema)}}.{{conn|qtIdent(name)}} {% if cascade %}CASCADE{%endif%};
+DROP TEXT SEARCH DICTIONARY IF EXISTS {{conn|qtIdent(schema)}}.{{conn|qtIdent(name)}} {% if cascade %}CASCADE{%endif%};
 {% endif %}

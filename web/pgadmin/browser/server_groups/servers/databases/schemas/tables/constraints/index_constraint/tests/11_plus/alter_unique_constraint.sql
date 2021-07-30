@@ -1,8 +1,8 @@
 -- Constraint: UC_$%{}[]()&*^!@"'`\/#a
 
--- ALTER TABLE testschema.tablefor_unique_cons DROP CONSTRAINT "UC_$%{}[]()&*^!@""'`\/#a";
+-- ALTER TABLE IF EXISTS testschema.tablefor_unique_cons DROP CONSTRAINT IF EXISTS "UC_$%{}[]()&*^!@""'`\/#a";
 
-ALTER TABLE testschema.tablefor_unique_cons
+ALTER TABLE IF EXISTS testschema.tablefor_unique_cons
     ADD CONSTRAINT "UC_$%{}[]()&*^!@""'`\/#a" UNIQUE (col1)
     INCLUDE (col2)
     WITH (FILLFACTOR=90)

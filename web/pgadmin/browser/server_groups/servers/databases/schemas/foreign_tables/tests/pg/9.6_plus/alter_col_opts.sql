@@ -2,7 +2,7 @@
 
 -- DROP FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#";
 
-CREATE FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"(
+CREATE FOREIGN TABLE IF NOT EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"(
     col1 integer NULL
 )
     SERVER test_fs_for_foreign_table

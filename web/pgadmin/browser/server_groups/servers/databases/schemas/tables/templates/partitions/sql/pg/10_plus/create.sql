@@ -57,7 +57,7 @@ TABLESPACE {{ conn|qtIdent(data.spcname) }};
 {### Alter SQL for Owner ###}
 {% if data.relowner %}
 
-ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
     OWNER to {{conn|qtIdent(data.relowner)}};
 {% endif %}
 {### SQL for COMMENT ###}

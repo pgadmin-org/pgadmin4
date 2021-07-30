@@ -1,8 +1,8 @@
 -- Constraint: Pk_$%{}[]()&*^!@"'`\/#a
 
--- ALTER TABLE testschema.tablefor_primary_key_cons DROP CONSTRAINT "Pk_$%{}[]()&*^!@""'`\/#a";
+-- ALTER TABLE IF EXISTS testschema.tablefor_primary_key_cons DROP CONSTRAINT IF EXISTS "Pk_$%{}[]()&*^!@""'`\/#a";
 
-ALTER TABLE testschema.tablefor_primary_key_cons
+ALTER TABLE IF EXISTS testschema.tablefor_primary_key_cons
     ADD CONSTRAINT "Pk_$%{}[]()&*^!@""'`\/#a" PRIMARY KEY (col1)
     WITH (FILLFACTOR=90);
 

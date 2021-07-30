@@ -1,2 +1,2 @@
-ALTER TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#" DROP CONSTRAINT "unique";
-ALTER TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#" DROP CONSTRAINT chk_const;
+ALTER TABLE IF EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#" DROP CONSTRAINT IF EXISTS "unique";
+ALTER TABLE IF EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#" DROP CONSTRAINT IF EXISTS chk_const;

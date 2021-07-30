@@ -17,6 +17,6 @@ WHERE
 {% endif %}
 
 {% if name %}
-DROP FUNCTION {{ conn|qtIdent(nspname, name) }}{{func_args}}{% if cascade %} CASCADE{% endif %};
+DROP FUNCTION IF EXISTS {{ conn|qtIdent(nspname, name) }}{{func_args}}{% if cascade %} CASCADE{% endif %};
 {% endif %}
 

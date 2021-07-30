@@ -1,4 +1,4 @@
-ALTER MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#" RESET(
+ALTER MATERIALIZED VIEW IF EXISTS public."testmview_$%{}[]()&*^!/@`#" RESET(
     autovacuum_enabled,
     autovacuum_analyze_scale_factor
 );

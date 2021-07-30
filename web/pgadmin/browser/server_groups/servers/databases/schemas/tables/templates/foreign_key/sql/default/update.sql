@@ -2,13 +2,13 @@
 {% if data %}
 {# ==== To update foreign key name ==== #}
 {% if data.name != o_data.name %}
-ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.table) }}
     RENAME CONSTRAINT {{ conn|qtIdent(o_data.name) }} TO {{ conn|qtIdent(data.name) }};
 
 {% endif %}
 {# ==== To update foreign key validate ==== #}
 {% if 'convalidated' in data and o_data.convalidated != data.convalidated and data.convalidated %}
-ALTER TABLE {{ conn|qtIdent(data.schema, data.table) }}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.table) }}
     VALIDATE CONSTRAINT {{ conn|qtIdent(data.name) }};
 
 {% endif %}

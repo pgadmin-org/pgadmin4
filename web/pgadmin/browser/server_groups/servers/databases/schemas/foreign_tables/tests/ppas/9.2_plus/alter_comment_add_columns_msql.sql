@@ -1,7 +1,7 @@
-ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
+ALTER FOREIGN TABLE IF EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"
     ADD COLUMN col3 bigint NULL;
 
-ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
+ALTER FOREIGN TABLE IF EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"
     ADD COLUMN col4 text NULL;
 
 COMMENT ON FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"

@@ -1,6 +1,6 @@
 -- Table: public.table_with_hash_patition_$%{}[]()&*^!@\"'`\\/#
 
--- DROP TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#";
+-- DROP TABLE IF EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#";
 
 CREATE TABLE IF NOT EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
 (
@@ -13,7 +13,7 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
+ALTER TABLE IF EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
@@ -24,5 +24,5 @@ COMMENT ON TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
 CREATE TABLE IF NOT EXISTS public.cust_part11 PARTITION OF public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
     FOR VALUES WITH (modulus 2, remainder 1);
 
-ALTER TABLE public.cust_part11
+ALTER TABLE IF EXISTS public.cust_part11
     OWNER to postgres;

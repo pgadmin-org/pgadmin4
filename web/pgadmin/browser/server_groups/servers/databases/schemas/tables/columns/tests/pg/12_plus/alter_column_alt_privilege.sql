@@ -1,8 +1,8 @@
 -- Column: testschema."table_3_$%{}[]()&*^!@""'`\/#"."new_col_1_$%{}[]()&*^!@""'`\/#"
 
--- ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#" DROP COLUMN "new_col_1_$%{}[]()&*^!@""'`\/#";
+-- ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#" DROP COLUMN IF EXISTS "new_col_1_$%{}[]()&*^!@""'`\/#";
 
-ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
     ADD COLUMN "new_col_1_$%{}[]()&*^!@""'`\/#" real NOT NULL DEFAULT 1;
 
 COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#"."new_col_1_$%{}[]()&*^!@""'`\/#"

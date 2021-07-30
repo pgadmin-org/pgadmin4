@@ -1,6 +1,6 @@
 -- Table: public.table_like_tbl$%{}[]()&*^!@"'`\/#
 
--- DROP TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#";
+-- DROP TABLE IF EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#";
 
 CREATE TABLE IF NOT EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"
 (
@@ -14,7 +14,7 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"

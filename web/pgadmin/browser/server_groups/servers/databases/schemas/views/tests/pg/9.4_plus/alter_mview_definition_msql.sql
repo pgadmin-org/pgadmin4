@@ -1,5 +1,5 @@
-DROP MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#";
-CREATE MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
+DROP MATERIALIZED VIEW IF EXISTS public."testmview_$%{}[]()&*^!/@`#";
+CREATE MATERIALIZED VIEW IF NOT EXISTS public."testmview_$%{}[]()&*^!/@`#"
  AS
 SELECT 12
  WITH NO DATA;

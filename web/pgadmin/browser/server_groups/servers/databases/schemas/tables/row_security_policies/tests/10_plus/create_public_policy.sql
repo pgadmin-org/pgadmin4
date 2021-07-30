@@ -1,6 +1,6 @@
 -- POLICY: test
 
--- DROP POLICY test ON public.test_rls_policy;
+-- DROP POLICY IF EXISTS test ON public.test_rls_policy;
 
 CREATE POLICY test
     ON public.test_rls_policy

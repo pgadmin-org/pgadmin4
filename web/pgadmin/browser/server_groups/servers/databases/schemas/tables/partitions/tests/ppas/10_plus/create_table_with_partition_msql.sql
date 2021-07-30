@@ -6,7 +6,7 @@ WITH (
     OIDS = FALSE
 );
 
-ALTER TABLE public."test_table_$%{}[]()&*^!@""""'`\/#"
+ALTER TABLE IF EXISTS public."test_table_$%{}[]()&*^!@""""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."test_table_$%{}[]()&*^!@""""'`\/#"

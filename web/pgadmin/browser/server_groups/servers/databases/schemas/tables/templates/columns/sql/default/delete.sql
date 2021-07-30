@@ -1,1 +1,1 @@
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}} DROP COLUMN {{conn|qtIdent(data.name)}};
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}} DROP COLUMN IF EXISTS {{conn|qtIdent(data.name)}};

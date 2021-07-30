@@ -1,9 +1,9 @@
 -- Column: testschema."table_2_$%{}[]()&*^!@""'`\/#"."new_col_1_$%{}[]()&*^!@""'`\/#"
 
--- ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#" DROP COLUMN "new_col_1_$%{}[]()&*^!@""'`\/#";
+-- ALTER TABLE IF EXISTS testschema."table_2_$%{}[]()&*^!@""'`\/#" DROP COLUMN IF EXISTS "new_col_1_$%{}[]()&*^!@""'`\/#";
 
-ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
-    ADD COLUMN "new_col_1_$%{}[]()&*^!@""'`\/#" real NOT NULL DEFAULT 1;
+ALTER TABLE IF EXISTS testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    ADD COLUMN IF NOT EXISTS "new_col_1_$%{}[]()&*^!@""'`\/#" real NOT NULL DEFAULT 1;
 
 COMMENT ON COLUMN testschema."table_2_$%{}[]()&*^!@""'`\/#"."new_col_1_$%{}[]()&*^!@""'`\/#"
     IS 'Comment for alter';

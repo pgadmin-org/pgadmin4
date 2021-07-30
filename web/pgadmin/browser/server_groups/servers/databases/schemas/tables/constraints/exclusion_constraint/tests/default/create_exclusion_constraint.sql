@@ -1,8 +1,8 @@
 -- Constraint: Exclusion_$%{}[]()&*^!@"'`\/#
 
--- ALTER TABLE testschema.tableforexclusion DROP CONSTRAINT "Exclusion_$%{}[]()&*^!@""'`\/#";
+-- ALTER TABLE IF EXISTS testschema.tableforexclusion DROP CONSTRAINT IF EXISTS "Exclusion_$%{}[]()&*^!@""'`\/#";
 
-ALTER TABLE testschema.tableforexclusion
+ALTER TABLE IF EXISTS testschema.tableforexclusion
     ADD CONSTRAINT "Exclusion_$%{}[]()&*^!@""'`\/#" EXCLUDE USING gist (
     col2 WITH <>)
     WITH (FILLFACTOR=12)

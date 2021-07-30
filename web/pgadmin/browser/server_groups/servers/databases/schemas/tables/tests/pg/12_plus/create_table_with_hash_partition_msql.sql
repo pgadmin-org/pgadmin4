@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\
     arr numeric
 ) PARTITION BY HASH (id);
 
-ALTER TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
+ALTER TABLE IF EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"

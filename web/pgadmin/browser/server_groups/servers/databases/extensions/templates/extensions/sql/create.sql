@@ -7,7 +7,7 @@
 
 {% endif %}
 {% if data.name %}
-CREATE EXTENSION {{ conn|qtIdent(data.name) }}{% if data.schema == '' and data.version == '' %};{% endif %}
+CREATE EXTENSION IF NOT EXISTS {{ conn|qtIdent(data.name) }}{% if data.schema == '' and data.version == '' %};{% endif %}
 {% if data.schema %}
 
     SCHEMA {{ conn|qtIdent(data.schema) }}{% if data.version == '' %};{% endif %}

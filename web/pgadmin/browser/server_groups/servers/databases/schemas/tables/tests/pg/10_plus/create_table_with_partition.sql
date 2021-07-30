@@ -1,6 +1,6 @@
 -- Table: public.table_with_patition_$%{}[]()&*^!@"'`\/#
 
--- DROP TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#";
+-- DROP TABLE IF EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#";
 
 CREATE TABLE IF NOT EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
 (
@@ -13,7 +13,7 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
 COMMENT ON TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
@@ -24,5 +24,5 @@ COMMENT ON TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
 CREATE TABLE IF NOT EXISTS public.cust_active PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     FOR VALUES IN ('ACTIVE');
 
-ALTER TABLE public.cust_active
+ALTER TABLE IF EXISTS public.cust_active
     OWNER to postgres;

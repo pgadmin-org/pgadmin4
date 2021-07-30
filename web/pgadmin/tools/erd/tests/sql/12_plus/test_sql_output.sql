@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.newtable3
 )
 ;
 
-ALTER TABLE public.newtable2
+ALTER TABLE IF EXISTS public.newtable2
     ADD FOREIGN KEY (table1_id)
     REFERENCES public.newtable1 (id)
     NOT VALID;

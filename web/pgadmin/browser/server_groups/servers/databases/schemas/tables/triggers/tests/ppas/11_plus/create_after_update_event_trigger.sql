@@ -1,6 +1,6 @@
 -- Trigger: trig_after_update_$%{}[]()&*^!@"'`\/#
 
--- DROP TRIGGER "trig_after_update_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
+-- DROP TRIGGER IF EXISTS "trig_after_update_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
 
 CREATE CONSTRAINT TRIGGER "trig_after_update_$%{}[]()&*^!@""'`\/#"
     AFTER UPDATE OF col2

@@ -1,7 +1,7 @@
 {## Alter index to use cluster type ##}
 {% if data.indisclustered %}
 
-ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
+ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     CLUSTER ON {{conn|qtIdent(data.name)}};
 {% endif %}
 {## Changes description ##}

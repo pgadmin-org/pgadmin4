@@ -1,6 +1,6 @@
 -- Table: public.table_with_fk_constraints$%{}[]()&*^!@"'`\/#
 
--- DROP TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#";
+-- DROP TABLE IF EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#";
 
 CREATE TABLE IF NOT EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
 (
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#
 
 TABLESPACE pg_default;
 
-ALTER TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
+ALTER TABLE IF EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
     OWNER to enterprisedb;
 
 COMMENT ON TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"

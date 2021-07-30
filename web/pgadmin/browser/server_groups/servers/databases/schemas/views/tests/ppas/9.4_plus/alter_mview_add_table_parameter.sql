@@ -2,7 +2,7 @@
 
 -- DROP MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#";
 
-CREATE MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
+CREATE MATERIALIZED VIEW IF NOT EXISTS public."testmview_$%{}[]()&*^!/@`#"
 WITH (
     FILLFACTOR = 18,
     autovacuum_enabled = TRUE,
@@ -13,7 +13,7 @@ AS
  SELECT 12
 WITH DATA;
 
-ALTER TABLE public."testmview_$%{}[]()&*^!/@`#"
+ALTER TABLE IF EXISTS public."testmview_$%{}[]()&*^!/@`#"
     OWNER TO enterprisedb;
 
 COMMENT ON MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"

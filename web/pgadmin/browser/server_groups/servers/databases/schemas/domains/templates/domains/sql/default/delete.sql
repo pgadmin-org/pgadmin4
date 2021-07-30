@@ -12,5 +12,5 @@ AND
 {% endif %}
 
 {% if name %}
-DROP DOMAIN {{ conn|qtIdent(basensp, name) }}{% if cascade %} CASCADE{% endif %};
+DROP DOMAIN IF EXISTS {{ conn|qtIdent(basensp, name) }}{% if cascade %} CASCADE{% endif %};
 {% endif %}

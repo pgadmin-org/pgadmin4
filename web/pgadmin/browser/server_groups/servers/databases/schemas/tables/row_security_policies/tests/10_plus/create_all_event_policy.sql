@@ -1,6 +1,6 @@
 -- POLICY: all_event_policy
 
--- DROP POLICY all_event_policy ON public.test_rls_policy;
+-- DROP POLICY IF EXISTS all_event_policy ON public.test_rls_policy;
 
 CREATE POLICY all_event_policy
     ON public.test_rls_policy

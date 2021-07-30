@@ -1,4 +1,4 @@
-ALTER TABLE testschema.tableforexclusion
+ALTER TABLE IF EXISTS testschema.tableforexclusion
     ADD CONSTRAINT "Exclusion_$%{}[]()&*^!@""'`\/#_1" EXCLUDE USING gist (
     col2 WITH <>)
     WITH (FILLFACTOR=12);

@@ -4,5 +4,5 @@
 {% endif %}
 {# ============= Drop the language ============= #}
 {% if subname %}
-DROP SUBSCRIPTION {{ conn|qtIdent(subname) }}{% if cascade %} CASCADE{% endif%};
+DROP SUBSCRIPTION IF EXISTS {{ conn|qtIdent(subname) }}{% if cascade %} CASCADE{% endif%};
 {% endif %}

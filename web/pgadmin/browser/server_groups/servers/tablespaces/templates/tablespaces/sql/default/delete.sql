@@ -1,2 +1,2 @@
 {### SQL to delete tablespace object ###}
-DROP TABLESPACE {{ conn|qtIdent(tsname) }};
+DROP TABLESPACE IF EXISTS {{ conn|qtIdent(tsname) }};
