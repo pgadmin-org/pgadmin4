@@ -19,6 +19,11 @@ export default class DepListener {
     });
   }
 
+
+  removeDepListener(dest) {
+    this._depListeners = _.filter(this._depListeners, (l)=>!_.join(l.dest, '|').startsWith(_.join(dest, '|')));
+  }
+
   _getListenerData(state, listener, actionObj) {
     /* Get data at same level */
     let data = state;

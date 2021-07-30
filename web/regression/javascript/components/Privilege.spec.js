@@ -12,13 +12,15 @@ import React from 'react';
 import '../helper/enzyme.helper';
 import Privilege from 'sources/components/Privilege';
 import { mount } from 'enzyme';
+import { withTheme } from '../fake_theme';
 
 describe('Privilege', ()=>{
   let ctrl, onChange = jasmine.createSpy('onChange');
   beforeEach(()=>{
     jasmineEnzyme();
+    let ThemedPrivilege = withTheme(Privilege);
     ctrl = mount(
-      <Privilege
+      <ThemedPrivilege
         value={[{
           privilege_type: 'C',
           privilege: true,

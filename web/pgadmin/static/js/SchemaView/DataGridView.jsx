@@ -206,6 +206,7 @@ export default function DataGridView({
   fixedRows, ...props}) {
   const classes = useStyles();
   const stateUtils = useContext(StateUtilsContext);
+  const depListener = useContext(DepListenerContext);
 
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
@@ -266,6 +267,8 @@ export default function DataGridView({
                       path: accessPath,
                       value: row.index,
                     });
+
+                    depListener.removeDepListener(accessPath.concat(row.index));
                   }, ()=>{}, props.customDeleteTitle, props.customDeleteMsg);
                 }} className={classes.gridRowButton} disabled={!canDeleteRow} />
             );
