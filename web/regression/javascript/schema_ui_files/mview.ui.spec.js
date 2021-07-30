@@ -15,7 +15,7 @@ import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import ViewSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui';
+import MViewSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui';
 
 
 class MockSchema extends BaseUISchema {
@@ -24,14 +24,15 @@ class MockSchema extends BaseUISchema {
   }
 }
 
-describe('ViewSchema', ()=>{
+describe('MaterializedViewSchema', ()=>{
   let mount;
-  let schemaObj = new ViewSchema(
+  let schemaObj = new MViewSchema(
     ()=>new MockSchema(),
-    {server: {server_type: 'pg'}},
+    ()=>new MockSchema(),
     {
       role: ()=>[],
       schema: ()=>[],
+      spcname: ()=>[],
     },
     {
       owner: 'postgres',
@@ -114,7 +115,7 @@ describe('ViewSchema', ()=>{
 
     state.definition = null;
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('definition', 'Please enter view code.');
+    expect(setError).toHaveBeenCalledWith('definition', 'Please enter view definition.');
 
     state.definition = 'SELECT 1;';
     schemaObj.validate(state, setError);

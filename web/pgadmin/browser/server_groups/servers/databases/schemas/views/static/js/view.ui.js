@@ -36,7 +36,7 @@ export default class ViewSchema extends BaseUISchema {
   }
 
   notInSchema() {
-    if(this.node_info && 'catalog' in this.node_info) {
+    if(this.nodeInfo && 'catalog' in this.nodeInfo) {
       return true;
     }
     return false;
@@ -96,7 +96,7 @@ export default class ViewSchema extends BaseUISchema {
       id: 'definition', label: gettext('Code'), cell: 'text',
       type: 'sql', mode: ['create', 'edit'], group: gettext('Code'),
       isFullTab: true,
-      disabled: obj.notInSchema,
+      controlProps: { readOnly: obj.nodeInfo && 'catalog' in obj.nodeInfo ? true: false },
     },
 
     {
@@ -142,7 +142,7 @@ export default class ViewSchema extends BaseUISchema {
           state.definition !== obj.origData.definition
         )) {
           obj.warningText = null;
-          return true;
+          return false;
         }
 
         let old_def = obj.origData.definition &&
@@ -169,7 +169,7 @@ export default class ViewSchema extends BaseUISchema {
         } else {
           obj.warningText = null;
         }
-        return true;
+        return false;
       }
 
     } else {
