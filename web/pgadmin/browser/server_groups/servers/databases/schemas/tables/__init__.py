@@ -823,9 +823,9 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
-            # Parse & format columns
-            data = column_utils.parse_format_columns(data)
-            data = TableView.check_and_convert_name_to_string(data)
+        # Parse & format columns
+        data = column_utils.parse_format_columns(data)
+        data = TableView.check_and_convert_name_to_string(data)
 
         # 'coll_inherits' is Array but it comes as string from browser
         # We will convert it again to list

@@ -1473,7 +1473,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         else:
             error, errmsg = BaseTableView._check_for_create_sql(data)
             if error:
-                return gettext('-- definition incomplete')
+                return gettext('-- definition incomplete'), data['name']
 
             # validate constraint data.
             self._validate_constraint_data(data)
