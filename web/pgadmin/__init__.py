@@ -397,8 +397,7 @@ def create_app(app_name=None):
 
         # If version not available, user must have aborted. Tables are not
         # created and so its an empty db
-        version = get_version()
-        if not os.path.exists(SQLITE_PATH) or version == -1:
+        if not os.path.exists(SQLITE_PATH) or get_version() == -1:
             # If running in cli mode then don't try to upgrade, just raise
             # the exception
             if not cli_mode:
