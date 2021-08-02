@@ -26,6 +26,8 @@ import Pickr from '@simonwep/pickr';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import HTMLReactParse from 'html-react-parser';
+import { KeyboardDateTimePicker, KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 
 import CodeMirror from './CodeMirror';
 import gettext from 'sources/gettext';
@@ -182,9 +184,85 @@ FormInputSQL.propTypes = {
   testcid: PropTypes.string,
   value: PropTypes.string,
   controlProps: PropTypes.object,
+  noLabel: PropTypes.bool,
   change: PropTypes.func,
 };
 
+export function InputDateTimePicker({value, onChange, readonly, controlProps, ...props}) {
+  const classes = useStyles();
+
+  const onDateTimeChange = (momentVal)=> {
+    onChange(momentVal ? momentVal.format(controlProps.format || 'YYYY-MM-DD HH:mm:ss Z') : null);
+  };
+
+  const onDateChange = (momentVal)=> {
+    onChange(momentVal ? momentVal.format(controlProps.format || 'YYYY-MM-DD') : null);
+  };
+
+  const onTimeChange = (momentVal)=> {
+    onChange(momentVal ? momentVal.format(controlProps.format || 'HH:mm') : null);
+  };
+
+  if (controlProps && controlProps.pickerType === 'Date') {
+    return (
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <KeyboardDatePicker value={value} onChange={onDateChange} readOnly={Boolean(readonly)}
+          format={controlProps.format || 'YYYY-MM-DD'}
+          placeholder={controlProps.placeholder || 'YYYY-MM-DD'}
+        {...props}/>
+      </MuiPickersUtilsProvider>
+    );
+  } else if (controlProps && controlProps.pickerType === 'Time') {
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <KeyboardTimePicker value={value} onChange={onTimeChange} readOnly={Boolean(readonly)}
+          format={controlProps.format || 'HH:mm'}
+          placeholder={controlProps.placeholder || 'HH:mm'}
+        {...props}/>
+      </MuiPickersUtilsProvider>
+  }
+
+  return (
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+      <KeyboardDateTimePicker
+        variant="inline"
+        ampm={controlProps.ampm || false}
+        format={controlProps.format || 'YYYY-MM-DD HH:mm:ss Z'}
+        placeholder={controlProps.placeholder || 'YYYY-MM-DD HH:mm:ss Z'}
+        autoOk={controlProps.autoOk || true}
+        disablePast={controlProps.disablePast || false}
+        value={value}
+        invalidDateMessage=""
+        onChange={onDateTimeChange}
+        readOnly={Boolean(readonly)}
+        {...props}
+      />
+    </MuiPickersUtilsProvider>
+  );
+}
+InputDateTimePicker.propTypes = {
+  value: PropTypes.string,
+  options: PropTypes.object,
+  onChange: PropTypes.func
+};
+
+export function FormInputDateTimePicker({hasError, required, label, className, helpMessage, testcid, ...props}) {
+  return (
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+      <InputDateTimePicker {...props}/>
+    </FormInput>
+  );
+}
+FormInputDateTimePicker.propTypes = {
+  hasError: PropTypes.bool,
+  required: PropTypes.bool,
+  label: PropTypes.string,
+  className: CustomPropTypes.className,
+  helpMessage: PropTypes.string,
+  testcid: PropTypes.string,
+  value: PropTypes.string,
+  controlProps: PropTypes.object,
+  change: PropTypes.func,
+};
 
 /* Use forwardRef to pass ref prop to OutlinedInput */
 export const InputText = forwardRef(({
@@ -346,15 +424,11 @@ export function InputCheckbox({cid, helpid, value, onChange, controlProps, reado
           checked={Boolean(value)}
           onChange={readonly ? ()=>{} : onChange}
           color="primary"
-          inputProps={{
-            'aria-describedby': helpid,
-          }}
-          {...props}
-        />
+          inputProps={{'aria-describedby': helpid}}
+          {...props}/>
       }
       label={controlProps.label}
     />
-
   );
 }
 InputCheckbox.propTypes = {
