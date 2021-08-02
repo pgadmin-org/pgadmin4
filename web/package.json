@@ -71,6 +71,7 @@
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-react": "^7.12.13",
+    "@date-io/moment": "1.x",
     "@emotion/sheet": "^1.0.1",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@material-ui/core": "^4.11.4",
@@ -114,7 +115,7 @@
     "leaflet": "^1.5.1",
     "lodash": "4.*",
     "ml-matrix": "^6.5.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "mousetrap": "^1.6.3",
     "pathfinding": "^0.4.18",
