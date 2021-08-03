@@ -300,8 +300,22 @@ li.CodeMirror-hint-active {
   & .pg-text-invalid {
     background: $color-danger-lighter;
   }
+
+  & #pg-json-editor {
+    min-width:525px;
+    min-height:280px;
+    height:295px;
+    width:550px;
+    border: $panel-border;
+    outline:0;
+    resize: both;
+    overflow:auto
+  }
 }
 
+.pg_buttons {
+  padding-top: 3px;
+}
 .sql-editor-message {
   white-space:pre-wrap;
   font-family: $font-family-editor;

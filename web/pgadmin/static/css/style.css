@@ -23,3 +23,5 @@
 @import '../vendor/backgrid/backgrid-select-all.css';
 
 @import 'node_modules/xterm/css/xterm.css';
+
+@import 'node_modules/jsoneditor/dist/jsoneditor.min.css';

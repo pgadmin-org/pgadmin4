@@ -44,6 +44,11 @@ import gettext from 'sources/gettext';
     return $('<textarea class=\'pg-textarea text-12\' hidefocus rows=5\'>');
   }
 
+  // return json editor element
+  function getJsonEditor() {
+    return $('<div id=\'pg-json-editor\' hidefocus\'>');
+  }
+
   // Generate and return editor buttons
   function getButtons(editable) {
     var $buttons = $('<div class=\'pg_buttons\' />'),
@@ -293,15 +298,16 @@ import gettext from 'sources/gettext';
 
   // JSON data type editor
   function JsonTextEditor(args) {
-    var $input, $wrapper, $buttons;
-    var defaultValue;
+    var $input, $wrapper, $buttons, $editor;
+    var defaultValue, tmpdata;
     var scope = this;
+    var editorInitialized = false;
 
     this.init = function() {
       var $container = $('body');
 
       $wrapper = getWrapper().appendTo($container);
-      $input = getTextArea().appendTo($wrapper);
+      $input = getJsonEditor().appendTo($wrapper);
       $buttons = getButtons(true).appendTo($wrapper);
 
       $buttons.find('button:first').on('click', this.cancel);
@@ -309,7 +315,6 @@ import gettext from 'sources/gettext';
       $input.on('keydown', this.handleKeyDown);
 
       scope.position(args.position);
-      $input.trigger('focus').trigger('select');
     };
 
     this.handleKeyDown = function(e) {
@@ -318,12 +323,6 @@ import gettext from 'sources/gettext';
       } else if (e.which == $.ui.keyCode.ESCAPE) {
         e.preventDefault();
         scope.cancel();
-      } else if (e.which == $.ui.keyCode.TAB && e.shiftKey) {
-        e.preventDefault();
-        args.grid.navigatePrev();
-      } else if (e.which == $.ui.keyCode.TAB) {
-        e.preventDefault();
-        args.grid.navigateNext();
       }
     };
 
@@ -332,7 +331,6 @@ import gettext from 'sources/gettext';
     };
 
     this.cancel = function() {
-      $input.val(defaultValue);
       args.cancelChanges();
     };
 
@@ -352,15 +350,24 @@ import gettext from 'sources/gettext';
     };
 
     this.destroy = function() {
+      $editor.destroy();
       $wrapper.remove();
     };
 
     this.focus = function() {
-      $input.trigger('focus');
+      $editor.focus();
     };
 
     this.loadValue = function(item) {
       var data = defaultValue = item[args.column.field];
+      /* Can be useful until JSON editor loads */
+      tmpdata = data;
+
+      if ( _.isUndefined(data) || _.isNull(data)){
+        defaultValue = '{}';
+        data = '{}';
+      }
+
       /* If jsonb or array */
       if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data) && data != null) {
         data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 4);
@@ -375,20 +382,60 @@ import gettext from 'sources/gettext';
         });
         data = '[' + temp.join() + ']';
       }
-      /* if json take as is */
-      $input.val(data);
-      $input.trigger('select');
+      /* if data is string then convert to json*/
+      if ( data != '' && typeof data === 'string'){
+        data = JSON.parse(data);
+      }
+
+      /* Create editor if required & set data*/
+      if ($editor){
+        $editor.set(data);
+        $editor.focus();
+      }else{
+        editorInitialized = true;
+        require.ensure(['jsoneditor'], function(require) {
+          var JSONEditor = require('jsoneditor');
+          var jsonContainer = document.getElementById('pg-json-editor');
+          var options = { modes: ['code', 'form', 'tree','preview']};
+          $editor = new JSONEditor(jsonContainer, options);
+          $editor.set(data);
+          $editor.focus();
+        }, function(error){
+          throw(error);
+        }, 'jsoneditorchunk');
+      }
     };
 
     this.serializeValue = function() {
-      if ($input.val() === '') {
-        return null;
+      /* Create editor if data is null/new data entry */
+      if( !editorInitialized) {
+        require.ensure(['jsoneditor'], function(require) {
+          var JSONEditor = require('jsoneditor');
+          var jsonContainer = document.getElementById('pg-json-editor');
+          var options = {modes: ['code', 'form', 'tree','preview']};
+          if(jsonContainer) {
+            $editor = new JSONEditor(jsonContainer, options);
+            $editor.focus();
+            return null;
+          }
+        }, function(error){
+          throw(error);
+        }, 'jsoneditorchunk');}
+
+      if($editor){
+        let data = $editor.getText();
+        if (data === '') {
+          return null;
+        }
+        return data;
+      }else{
+        // The loader is not loaded yet ?
+        return tmpdata;
       }
-      return $input.val();
     };
 
     this.applyValue = function(item, state){
-      if(args.column.column_type_internal === 'jsonb') {
+      if(args.column.column_type_internal === 'jsonb' || args.column.column_type_internal === 'json') {
         setValue(args, item, state, 'jsonb');
       } else {
         setValue(args, item, state, 'text');
@@ -396,19 +443,24 @@ import gettext from 'sources/gettext';
     };
 
     this.isValueChanged = function() {
-      if ($input.val() == '' && _.isUndefined(defaultValue)) {
+      let data = $editor.getText();
+      if (data == '' && (_.isUndefined(defaultValue) || _.isNull(defaultValue) )) {
         return false;
       } else {
-        return (!($input.val() == '' && _.isNull(defaultValue))) && ($input.val() != defaultValue);
+        if(! _.isUndefined(defaultValue) && defaultValue != '{}'){
+          defaultValue = JSON.stringify(JSON.parse(defaultValue), null,2);
+        }
+        return (!( data == '' && _.isNull(defaultValue)) && (data != defaultValue));
       }
     };
 
     this.validate = function() {
       if(args.column.column_type_internal === 'jsonb' ||
           args.column.column_type_internal === 'json') {
+        let data = $editor.getText();
         try {
-          if($input.val() != ''){
-            JSON.parse($input.val());
+          if(data != '{}'){
+            JSON.parse(data);
           }
         } catch(e) {
           $input.addClass('pg-text-invalid');
@@ -418,7 +470,6 @@ import gettext from 'sources/gettext';
           };
         }
       }
-      $input.removeClass('pg-text-invalid');
       return {
         valid: true,
         msg: null,
@@ -529,22 +580,22 @@ import gettext from 'sources/gettext';
 
   // JSON data type editor
   function ReadOnlyJsonTextEditor(args) {
-    var $input, $wrapper, $buttons;
+    var $input, $wrapper, $buttons, $editor;
     var defaultValue;
     var scope = this;
+    var tmpdata;
 
     this.init = function() {
       var $container = $('body');
 
       $wrapper = getWrapper().appendTo($container);
-      $input = getTextArea().appendTo($wrapper);
+      $input = getJsonEditor().appendTo($wrapper);
       $buttons = getButtons(false).appendTo($wrapper);
 
       $buttons.find('button:first').on('click', this.cancel);
       $input.on('keydown', this.handleKeyDown);
 
       scope.position(args.position);
-      $input.trigger('focus').trigger('select');
     };
 
     this.handleKeyDown = function(e) {
@@ -553,14 +604,6 @@ import gettext from 'sources/gettext';
       } else if (e.which == $.ui.keyCode.ESCAPE) {
         e.preventDefault();
         scope.cancel();
-      } else if (e.which == $.ui.keyCode.TAB && e.shiftKey) {
-        scope.cancel();
-        e.preventDefault();
-        args.grid.navigatePrev();
-      } else if (e.which == $.ui.keyCode.TAB) {
-        scope.cancel();
-        e.preventDefault();
-        args.grid.navigateNext();
       }
     };
 
@@ -585,15 +628,17 @@ import gettext from 'sources/gettext';
     };
 
     this.destroy = function() {
+      $editor.destroy();
       $wrapper.remove();
     };
 
     this.focus = function() {
-      $input.trigger('focus');
+      $editor.focus();
     };
 
     this.loadValue = function(item) {
       var data = defaultValue = item[args.column.field];
+      tmpdata = data;
       if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data)) {
         data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 4);
       } else if (Array.isArray(data)) {
@@ -607,12 +652,39 @@ import gettext from 'sources/gettext';
         });
         data = '[' + temp.join() + ']';
       }
-      $input.val(data);
-      $input.trigger('select');
+      /* if data is string then convert to json*/
+      if (typeof data === 'string')
+        data = JSON.parse(data);
+
+      require.ensure(['jsoneditor'], function(require) {
+        var JSONEditor = require('jsoneditor');
+        var jsonContainer = document.getElementById('pg-json-editor');
+        let options = {
+          modes: ['code', 'form',  'tree', 'preview'],
+          onEditable: function() {
+            return false;
+          }
+        };
+        if(jsonContainer) {
+          $editor = new JSONEditor(jsonContainer, options);
+          $editor.set(data);
+        }
+      }, function(error){
+        throw(error);
+      }, 'jsoneditorchunk');
     };
 
     this.serializeValue = function() {
-      return $input.val();
+      if($editor) {
+        let data = $editor.getText();
+        if (data === '') {
+          return null;
+        }
+        return data;
+      } else {
+        // The loader is not loaded yet ?
+        return tmpdata;
+      }
     };
 
     this.applyValue = function(item, state) {
@@ -620,12 +692,13 @@ import gettext from 'sources/gettext';
     };
 
     this.isValueChanged = function() {
-      return (!($input.val() == '' && defaultValue == null)) && ($input.val() != defaultValue);
+      let data = $editor.getText();
+      return (!(data == '' && defaultValue == null)) && (data != defaultValue);
     };
 
     this.validate = function() {
       if (args.column.validator) {
-        var validationResults = args.column.validator($input.val());
+        var validationResults = args.column.validator($editor.getText());
         if (!validationResults.valid) {
           return validationResults;
         }

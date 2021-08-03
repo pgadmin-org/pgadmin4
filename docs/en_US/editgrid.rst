@@ -107,6 +107,86 @@ properties of the geometries directly in map, just click the specific geometry:
     - *Internet access:* An internet connection is required for the Geometry Viewer
       to function correctly.
 
+
+**JSON Data Editor**
+
+A built in json editor is provided for *JSON/JSONB Data*.Double clicking on json/jsonb
+data type cell in data grid will open JSON Editor.Editor provides different mode to
+view and edit json data.
+
+
+.. image:: images/json_editor_modes.png
+    :alt: Json Editor
+    :align: center
+
+*Code Mode*:
+Provides way to format & compact json data.Also provides ability to repair json data
+by fixing quotes and escape characters, removing comments and JSONP notation and
+turn JavaScript objects into JSON.
+
+*Tree Mode*:
+Enabled to change, add, move, remove, and duplicate fields and values.Provides ability
+to searh & hilight data.
+
+*Form Mode*:
+Allows only to edit values in json data there by providing ability to keep data structure
+unchanged while editing.
+
+*Preview Mode*:
+Provides ability to check data before saving and also shows size of current json data.
+Format and compact json data as well.
+
+
+*Editor Toolbar*
+
+Different options are provided to manipulate json data.
+
+Code/Preview mode:
+
+.. image:: images/json_editor_code_preview_tool_bar.png
+    :alt: Json Editor Code/Preview mode Tool Bar
+    :align: center
+
+
+Tree/Form mode:
+
+.. image:: images/json_editor_tree_form_mode_tool_bar.png
+    :alt: Json Editor Tree/Form mode Tool Bar
+    :align: center
+
+
+.. table::
+   :class: longtable
+   :widths: 1 3 2
+
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | Icon                 | Behavior                                                                               | Available in mode         |
+   +======================+========================================================================================+===========================+
+   | *Format Json*        | Click to *Format Json* format json data with proper indentation.                       | Code, Preview             |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Compact Json*       | Click to *Compact Json* get compacted json data.                                       | Code, Preview             |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Sort*               | Click to *Sort* icon to set sorting criteria for the data using file values.           | Code, Preview, Tree       |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Transform*          | Click to *Transform*  to filter data  using JSME query language.                       | Code, Preview, Tree       |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Undo*               | Click to *Undo* to undo last action performed on data .                                | Code, Preview, Tree, From |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Redo*               | Click to *Redo* to repat last action performed on data .                               | Code, Preview, Tree, From |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Mode*               | Click to *Mode* dropdown to change dipaly mode of editor.Different modes avaialble     | Code, Tree, From, Preview |
+   |                      | are Code, Preview, Tree, From.                                                         |                           |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Expand All*         | Click to *Expand All* to expand json data.                                             | Tree, From                |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Collapse All*       | Click to *Redo* to collapse json data.                                                 | Tree, From                |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+   | *Search Box*         | Enter partial/complete string to search in data.                                       | Tree, From                |
+   +----------------------+----------------------------------------------------------------------------------------+---------------------------+
+
+
+
+
 Sort/Filter options dialog
 **************************
 

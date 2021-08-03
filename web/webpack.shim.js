@@ -143,6 +143,7 @@ var webpackShimConfig = {
     'dropzone': path.join(__dirname, './node_modules/dropzone/dist/dropzone'),
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
     'json-bignumber': path.join(__dirname, './node_modules/json-bignumber/dist/JSONBigNumber.min'),
+    'jsoneditor': path.join(__dirname, './node_modules/jsoneditor/dist/jsoneditor.min'),
     'snap.svg': path.join(__dirname, './node_modules/snapsvg-cjs/dist/snap.svg-cjs'),
     'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.es5.min'),
     'mousetrap': path.join(__dirname, './node_modules/mousetrap'),
