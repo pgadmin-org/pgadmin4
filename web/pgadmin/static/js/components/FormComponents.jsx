@@ -189,7 +189,6 @@ FormInputSQL.propTypes = {
 };
 
 export function InputDateTimePicker({value, onChange, readonly, controlProps, ...props}) {
-  const classes = useStyles();
 
   const onDateTimeChange = (momentVal)=> {
     onChange(momentVal ? momentVal.format(controlProps.format || 'YYYY-MM-DD HH:mm:ss Z') : null);
@@ -209,16 +208,18 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
         <KeyboardDatePicker value={value} onChange={onDateChange} readOnly={Boolean(readonly)}
           format={controlProps.format || 'YYYY-MM-DD'}
           placeholder={controlProps.placeholder || 'YYYY-MM-DD'}
-        {...props}/>
+          {...props}/>
       </MuiPickersUtilsProvider>
     );
   } else if (controlProps && controlProps.pickerType === 'Time') {
+    return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <KeyboardTimePicker value={value} onChange={onTimeChange} readOnly={Boolean(readonly)}
           format={controlProps.format || 'HH:mm'}
           placeholder={controlProps.placeholder || 'HH:mm'}
-        {...props}/>
+          {...props}/>
       </MuiPickersUtilsProvider>
+    );
   }
 
   return (
@@ -242,7 +243,9 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
 InputDateTimePicker.propTypes = {
   value: PropTypes.string,
   options: PropTypes.object,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  readonly: PropTypes.bool,
+  controlProps: PropTypes.object,
 };
 
 export function FormInputDateTimePicker({hasError, required, label, className, helpMessage, testcid, ...props}) {
