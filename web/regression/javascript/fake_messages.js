@@ -15,6 +15,7 @@ define('pgadmin.browser.messages',['sources/pgadmin'], function(pgAdmin) {
 
   pgBrowser.messages = {
     'CANNOT_BE_EMPTY': '\'%s\' cannot be empty.',
+    'MUST_BE_INT': '\'%s\' must be an integer.'
   };
   return pgBrowser;
 });

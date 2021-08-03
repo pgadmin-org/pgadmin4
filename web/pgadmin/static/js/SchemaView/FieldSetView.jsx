@@ -20,7 +20,7 @@ import { getFieldMetaData } from './FormView';
 import FieldSet from '../components/FieldSet';
 
 export default function FieldSetView({
-  value, formErr, schema={}, viewHelperProps, accessPath, dataDispatch, controlClassName, isDataGridForm=false, label}) {
+  value, formErr, schema={}, viewHelperProps, accessPath, dataDispatch, controlClassName, isDataGridForm=false, label, visible}) {
   const depListener = useContext(DepListenerContext);
 
   useEffect(()=>{
@@ -91,6 +91,10 @@ export default function FieldSetView({
     }
   });
 
+  if(!visible) {
+    return <></>;
+  }
+
   return (
     <FieldSet title={label} className={controlClassName}>
       {viewFields}
@@ -108,4 +112,7 @@ FieldSetView.propTypes = {
   dataDispatch: PropTypes.func,
   controlClassName: CustomPropTypes.className,
   label: PropTypes.string,
+  visible: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.func,
+  ]),
 };

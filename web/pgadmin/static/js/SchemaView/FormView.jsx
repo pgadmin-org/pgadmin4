@@ -122,7 +122,7 @@ export function getFieldMetaData(field, schema, value, viewHelperProps) {
 /* The first component of schema view form */
 export default function FormView({
   value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab,
-  getSQLValue, onTabChange, firstEleRef, className, isDataGridForm=false}) {
+  getSQLValue, onTabChange, firstEleRef, className, isDataGridForm=false, visible}) {
   let defaultTab = 'General';
   let tabs = {};
   let tabsClassname = {};
@@ -190,7 +190,8 @@ export default function FormView({
         }
         tabs[group].push(
           <FormView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps} formErr={formErr}
-            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm} {...field}/>
+            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm} 
+            {...field} visible={visible}/>
         );
       } else if(field.type === 'nested-fieldset') {
         /* Pass on the top schema */
@@ -203,7 +204,7 @@ export default function FormView({
           <FieldSetView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps} formErr={formErr}
             schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm}
             controlClassName={classes.controlRow}
-            {...field} />
+            {...field} visible={visible}/>
         );
       } else if(field.type === 'collection') {
         /* If its a collection, let data grid view handle it */
@@ -305,6 +306,11 @@ export default function FormView({
     onTabChange && onTabChange(tabValue, Object.keys(tabs)[tabValue], sqlTabActive);
   }, [tabValue]);
 
+  /* check whether form is kept hidden by visible prop */
+  if(!_.isUndefined(visible) && !visible) {
+    return <></>;
+  }
+
   return (
     <>
       <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
@@ -343,6 +349,9 @@ FormView.propTypes = {
   viewHelperProps: PropTypes.object,
   isNested: PropTypes.bool,
   isDataGridForm: PropTypes.bool,
+  visible: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.func,
+  ]),
   accessPath: PropTypes.array.isRequired,
   dataDispatch: PropTypes.func,
   hasSQLTab: PropTypes.bool,
