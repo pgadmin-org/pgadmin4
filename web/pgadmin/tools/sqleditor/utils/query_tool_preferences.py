@@ -285,10 +285,10 @@ def register_query_tool_preferences(self):
 
     self.column_data_max_width = self.preference.register(
         'Results_grid', 'column_data_max_width',
-        gettext("Maximum column width (in Pixel)"), 'integer', 0,
+        gettext("Maximum column width"), 'integer', 0,
         category_label=PREF_LABEL_RESULTS_GRID,
         help_str=gettext(
-            'Specify the maximum width of the column when '
+            'Specify the maximum width of the column in pixels when '
             '\'Columns sized by \' is set to \'Column data\'.'
         ),
     )

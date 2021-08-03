@@ -381,7 +381,7 @@ preferences for copied data.
   auto-size to the maximum width of the data in the column as loaded in the
   first batch. If set to *Column name*, the column will be sized to the widest
   of the data type or column name.
-* Specify the maximum width of the column in pixel when 'Columns sized by' is
+* Specify the maximum width of the column in pixels when 'Columns sized by' is
   set to *Column data*. If 'Columns sized by' is set to *Column name* then this
   setting won't have any effect.
 * Use the *Result copy field separator* drop-down listbox to select the field

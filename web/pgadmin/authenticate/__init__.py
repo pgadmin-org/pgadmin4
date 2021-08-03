@@ -72,12 +72,22 @@ def login():
     # Validate the user
     if not auth_obj.validate():
         for field in form.errors:
+            flash_login_attempt_error = None
             if user:
                 if config.MAX_LOGIN_ATTEMPTS > 0:
                     user.login_attempts += 1
+                    left_attempts = \
+                        config.MAX_LOGIN_ATTEMPTS - user.login_attempts
+                    flash_login_attempt_error = \
+                        gettext('You are left with {0} more attempts.'.
+                                format(left_attempts))
                 db.session.commit()
             for error in form.errors[field]:
                 flash(error, 'warning')
+
+            if flash_login_attempt_error:
+                flash(flash_login_attempt_error, 'warning')
+
         return redirect(get_post_logout_redirect())
 
     # Authenticate the user
