@@ -10,6 +10,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 import SecLabelSchema from '../../../../static/js/sec_label.ui';
+import _ from 'lodash';
 
 export default class LanguageSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, fieldOptions={}, node_info, initValues) {
@@ -46,7 +47,7 @@ export default class LanguageSchema extends BaseUISchema {
 
   }
   isDisabled(state){
-    if (this.templateList.some(code => code.tmplname === state.name)){
+    if (this.templateList.some(template => template.tmplname === state.name)){
       this.isTemplate = false;
       return true;
     }else{

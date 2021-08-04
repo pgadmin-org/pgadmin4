@@ -17,6 +17,7 @@ import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
+import { SelectRefresh} from '../components/SelectRefresh';
 
 /* Control mapping for form view */
 function MappedFormControlBase({type, value, id, onChange, className, visible, inputRef, noLabel, ...props}) {
@@ -74,6 +75,8 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
     return <FormInputText name={name} value={value} onChange={onTextChange} className={className} type='password' inputRef={inputRef} {...props}/>;
   case 'select':
     return <FormInputSelect name={name} value={value} onChange={onTextChange} className={className} {...props} />;
+  case 'select-refresh':
+    return <SelectRefresh name={name} value={value} onChange={onTextChange} className={className} {...props} />;
   case 'switch':
     return <FormInputSwitch name={name} value={value}
       onChange={(e)=>onTextChange(e.target.checked, e.target.name)} className={className}

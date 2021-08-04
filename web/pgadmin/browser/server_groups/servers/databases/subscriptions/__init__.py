@@ -356,7 +356,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
 
     def _fetch_properties(self, did, subid):
         """
-        This function fetch the properties of the extension.
+        This function fetch the properties of the subscription.
         :param did:
         :param subid:
         :return:
@@ -372,11 +372,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if len(res['rows']) == 0:
             return False, gone(self._NOT_FOUND_PUB_INFORMATION)
-        if 'cur_pub' in res['rows'][0]:
-            res['rows'][0]['cur_pub'] = ", ".join(str(elem) for elem in
-                                                  res['rows'][0]['cur_pub'])
-            res['rows'][0]['pub'] = ", ".join(str(elem) for elem in
-                                              res['rows'][0]['pub'])
 
         return True, res['rows'][0]
 
@@ -469,9 +464,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
 
         try:
-            data['pub'] = json.loads(
-                data['pub'], encoding='utf-8'
-            )
 
             sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]),
@@ -676,36 +668,38 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         passfile = connection_details['passfile'] if \
             'passfile' in connection_details and \
             connection_details['passfile'] != '' else None
+        try:
+            conn = psycopg2.connect(
+                host=connection_details['host'],
+                database=connection_details['db'],
+                user=connection_details['username'],
+                password=connection_details[
+                    'password'] if 'password' in connection_details else None,
+                port=connection_details['port'] if
+                connection_details['port'] else None,
+                passfile=get_complete_file_path(passfile),
+                connect_timeout=connection_details['connect_timeout'] if
+                'connect_timeout' in connection_details and
+                connection_details['connect_timeout'] else 0,
+                sslmode=connection_details['sslmode'],
+                sslcert=get_complete_file_path(connection_details['sslcert']),
+                sslkey=get_complete_file_path(connection_details['sslkey']),
+                sslrootcert=get_complete_file_path(
+                    connection_details['sslrootcert']),
+                sslcompression=True if connection_details[
+                    'sslcompression'] else False,
+            )
+            # create a cursor
+            cur = conn.cursor()
+            cur.execute('SELECT pubname from pg_catalog.pg_publication')
 
-        conn = psycopg2.connect(
-            host=connection_details['host'],
-            database=connection_details['db'],
-            user=connection_details['username'],
-            password=connection_details[
-                'password'] if 'password' in connection_details else None,
-            port=connection_details['port'] if
-            connection_details['port'] else None,
-            passfile=get_complete_file_path(passfile),
-            connect_timeout=connection_details['connect_timeout'] if
-            'connect_timeout' in connection_details and
-            connection_details['connect_timeout'] else 0,
-            sslmode=connection_details['sslmode'],
-            sslcert=get_complete_file_path(connection_details['sslcert']),
-            sslkey=get_complete_file_path(connection_details['sslkey']),
-            sslrootcert=get_complete_file_path(
-                connection_details['sslrootcert']),
-            sslcompression=True if connection_details[
-                'sslcompression'] else False,
-        )
-        # create a cursor
-        cur = conn.cursor()
-        cur.execute('SELECT pubname from pg_catalog.pg_publication')
+            publications = cur.fetchall()
+            # Close the connection
+            conn.close()
 
-        publications = cur.fetchall()
-        # Close the connection
-        conn.close()
-
-        return publications
+            return publications, True
+        except Exception as error:
+            return error, False
 
     @check_precondition
     def get_publications(self, gid, sid, did, *args, **kwargs):
@@ -733,19 +727,27 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                 if arg not in url_params and arg in params:
                     url_params[arg] = params[arg]
 
-        res = self.get_connection(url_params)
+        res, status = self.get_connection(url_params)
 
-        result = []
-        for pub in res:
-            result.append({
-                "value": pub[0],
-                "label": pub[0]
-            })
+        if status:
+            result = []
+            for pub in res:
+                result.append({
+                    "value": pub[0],
+                    "label": pub[0]
+                })
+            return make_json_response(
+                data=result,
+                status=200
+            )
+        else:
+            result = res.args[0]
+            return make_json_response(
+                errormsg=result,
+                status=200
+            )
 
-        return make_json_response(
-            data=result,
-            status=200
-        )
+
 
     @check_precondition
     def sql(self, gid, sid, did, subid, json_resp=True):

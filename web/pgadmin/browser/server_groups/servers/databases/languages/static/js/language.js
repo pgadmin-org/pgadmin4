@@ -10,12 +10,13 @@
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/js/node_ajax';
 import LanguageSchema from './language.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.language', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
+], function(gettext, url_for, $, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for languages collection
   if (!pgBrowser.Nodes['coll-language']) {

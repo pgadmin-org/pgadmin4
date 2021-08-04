@@ -95,6 +95,16 @@ describe('CastSchema', ()=>{
     />);
   });
 
+  it('srctyp depChange', ()=>{
+    let depChange = _.find(schemaObj.fields, (f)=>f.id=='srctyp').depChange;
+    depChange({srctyp: 'abc', trgtyp: 'abc'});
+  });
+
+  it('trgtyp depChange', ()=>{
+    let depChange = _.find(schemaObj.fields, (f)=>f.id=='trgtyp').depChange;
+    depChange({srctyp: 'abc', trgtyp: 'abc'});
+  });
+
   it('validate', ()=>{
     let state = {};
     let setError = jasmine.createSpy('setError');
