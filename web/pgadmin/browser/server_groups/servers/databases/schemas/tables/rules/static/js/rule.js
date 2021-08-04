@@ -6,6 +6,8 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import RuleSchema from './rule.ui';
+
 
 define('pgadmin.node.rule', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -112,7 +114,14 @@ define('pgadmin.node.rule', [
         },
         ]);
       },
-
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new RuleSchema(
+          {
+            nodeInfo: treeNodeInfo,
+            nodeData: itemNodeData
+          }
+        );
+      },
       /**
         Define model for the rule node and specify the node
         properties of the model in schema.
@@ -135,59 +144,6 @@ define('pgadmin.node.rule', [
         {
           id: 'oid', label: gettext('OID'),
           type: 'text', mode: ['properties'],
-        },
-        {
-          id: 'schema', label:'',
-          type: 'text', visible: false, disabled: function(m) {
-            // It is used while generating sql
-            m.set('schema', m.node_info.schema.label);
-          },
-        },
-        {
-          id: 'view', label:'',
-          type: 'text', visible: false, disabled: function(m){
-
-            // It is used while generating sql
-            m.set('view', this.node_data.label);
-          },
-        },
-        {
-          id: 'event', label: gettext('Event'), control: 'select2',
-          group: gettext('Definition'), type: 'text',
-          select2: {
-            width: '100%',
-            allowClear: false,
-          },
-          options:[
-            {label: 'SELECT', value: 'SELECT'},
-            {label: 'INSERT', value: 'INSERT'},
-            {label: 'UPDATE', value: 'UPDATE'},
-            {label: 'DELETE', value: 'DELETE'},
-          ],
-        },
-        {
-          id: 'do_instead', label: gettext('Do instead?'), group: gettext('Definition'),
-          type: 'switch',
-        },
-        {
-          id: 'condition', label: gettext('Condition'),
-          type: 'text', group: gettext('Condition'),
-          tabPanelCodeClass: 'sql-code-control',
-          control: Backform.SqlCodeControl,
-        },
-        {
-          id: 'statements', label: gettext('Commands'),
-          type: 'text', group: gettext('Commands'),
-          tabPanelCodeClass: 'sql-code-control',
-          control: Backform.SqlCodeControl,
-        },
-        {
-          id: 'system_rule', label: gettext('System rule?'),
-          type: 'switch', mode: ['properties'],
-        },
-        {
-          id: 'enabled', label: gettext('Enabled?'),
-          type: 'switch', mode: ['properties'],
         },
         {
           id: 'comment', label: gettext('Comment'), cell: 'string', type: 'multiline',
