@@ -60,6 +60,7 @@ describe('CastSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 
@@ -79,6 +80,7 @@ describe('CastSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 

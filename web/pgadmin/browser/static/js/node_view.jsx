@@ -195,6 +195,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
       hasSQL={nodeObj.hasSQL && (actionType === 'create' || actionType === 'edit')}
       getSQLValue={getSQLValue}
       disableSqlHelp={nodeObj.sqlAlterHelp == '' && nodeObj.sqlCreateHelp == ''}
+      disableDialogHelp={nodeObj.dialogHelp == undefined || nodeObj.dialogHelp == ''}
     />, container);
 }
 

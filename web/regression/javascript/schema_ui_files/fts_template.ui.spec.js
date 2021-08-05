@@ -64,6 +64,7 @@ describe('FTSTemplateSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 
@@ -83,6 +84,7 @@ describe('FTSTemplateSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 

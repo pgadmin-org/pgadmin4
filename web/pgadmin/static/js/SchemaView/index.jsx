@@ -634,7 +634,8 @@ function SchemaDialogView({
             {useMemo(()=><Box>
               <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
                 disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
-              <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."/>
+              <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."
+                disabled={props.disableDialogHelp}/>
             </Box>, [])}
             <Box marginLeft="auto">
               <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className={classes.buttonMargin}>
@@ -673,6 +674,7 @@ SchemaDialogView.propTypes = {
   hasSQL: PropTypes.bool,
   getSQLValue: PropTypes.func,
   disableSqlHelp: PropTypes.bool,
+  disableDialogHelp: PropTypes.bool,
 };
 
 const usePropsStyles = makeStyles((theme)=>({

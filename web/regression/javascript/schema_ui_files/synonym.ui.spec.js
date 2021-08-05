@@ -67,6 +67,7 @@ describe('SynonymSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 
@@ -86,6 +87,7 @@ describe('SynonymSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 

@@ -14,11 +14,19 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import ResourceGroupSchema from '../../../pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.ui';
+import {getNodePrivilegeRoleSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/privilege.ui';
+import PGSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui';
 
-describe('ResourceGroupSchema', ()=>{
+
+describe('PGSchema', ()=>{
   let mount;
-  let schemaObj = new ResourceGroupSchema();
+  let schemaObj = new PGSchema(
+    ()=>getNodePrivilegeRoleSchema({}, {server: {user: {name: 'postgres'}}}, {}),
+    {
+      roles:() => [],
+      namespaceowner: '',
+    }
+  );
   let getInitData = ()=>Promise.resolve({});
 
   /* Use createMount so that material ui components gets the required context */
@@ -58,13 +66,25 @@ describe('ResourceGroupSchema', ()=>{
     />);
   });
 
+  it('schema validate', () => {
+    let state = { name: 'abc' };
+    let setError = jasmine.createSpy('setError');
+
+    schemaObj.validate(state, setError);
+    expect(setError).toHaveBeenCalledWith('namespaceowner', 'Owner cannot be empty.');
+
+    state.namespaceowner = 'postgres';
+    let validate = schemaObj.validate(state, setError);
+    expect(validate).toBe(null);
+  });
+
   it('edit', ()=>{
     mount(<SchemaView
       formType='dialog'
       schema={schemaObj}
       getInitData={getInitData}
       viewHelperProps={{
-        mode: 'edit',
+        mode: 'create',
       }}
       onSave={()=>{}}
       onClose={()=>{}}
@@ -89,25 +109,6 @@ describe('ResourceGroupSchema', ()=>{
       onHelp={()=>{}}
       onEdit={()=>{}}
     />);
-  });
-
-  it('validate', ()=>{
-    let state = {};
-    let setError = jasmine.createSpy('setError');
-
-    state.cpu_rate_limit = null;
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('cpu_rate_limit', '\'CPU rate limit\' cannot be empty.');
-
-    state.cpu_rate_limit = 1;
-    state.dirty_rate_limit = null;
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('dirty_rate_limit', '\'Dirty rate limit\' cannot be empty.');
-
-    state.cpu_rate_limit = 1;
-    state.dirty_rate_limit = 1;
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('dirty_rate_limit', null);
   });
 });
 

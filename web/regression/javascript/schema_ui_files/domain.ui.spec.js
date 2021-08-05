@@ -69,6 +69,7 @@ describe('DomainSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 
@@ -88,6 +89,7 @@ describe('DomainSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 
@@ -162,6 +164,7 @@ describe('DomainConstSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
 
     /* Make sure you hit every corner */
@@ -184,6 +187,7 @@ describe('DomainConstSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 

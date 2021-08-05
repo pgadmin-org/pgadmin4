@@ -73,6 +73,7 @@ describe('ViewSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 
@@ -92,6 +93,7 @@ describe('ViewSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 

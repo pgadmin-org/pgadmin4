@@ -73,6 +73,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
 
       mount(<SchemaView
@@ -90,6 +91,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
     });
 
@@ -180,6 +182,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
 
       mount(<SchemaView
@@ -197,6 +200,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
     });
   });
@@ -225,6 +229,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
 
       mount(<SchemaView
@@ -242,6 +247,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
     });
 
@@ -285,6 +291,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
 
       mount(<SchemaView
@@ -302,6 +309,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
     });
 
@@ -337,6 +345,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
 
       mount(<SchemaView
@@ -354,6 +363,7 @@ describe('TypeSchema', ()=>{
         confirmOnCloseReset={false}
         hasSQL={false}
         disableSqlHelp={false}
+        disableDialogHelp={false}
       />);
     });
 
@@ -420,6 +430,7 @@ describe('TypeSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 
@@ -439,6 +450,7 @@ describe('TypeSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 

@@ -14,11 +14,16 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import ResourceGroupSchema from '../../../pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.ui';
+import CatalogSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.ui';
 
-describe('ResourceGroupSchema', ()=>{
+
+describe('CatalogSchema', ()=>{
   let mount;
-  let schemaObj = new ResourceGroupSchema();
+  let catalogObj = new CatalogSchema(
+    {
+      namespaceowner: '',
+    }
+  );
   let getInitData = ()=>Promise.resolve({});
 
   /* Use createMount so that material ui components gets the required context */
@@ -42,7 +47,7 @@ describe('ResourceGroupSchema', ()=>{
   it('create', ()=>{
     mount(<SchemaView
       formType='dialog'
-      schema={schemaObj}
+      schema={catalogObj}
       viewHelperProps={{
         mode: 'create',
       }}
@@ -54,17 +59,17 @@ describe('ResourceGroupSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
-      disableDialogHelp={false}
+      disableDialogHelp={true}
     />);
   });
 
   it('edit', ()=>{
     mount(<SchemaView
       formType='dialog'
-      schema={schemaObj}
+      schema={catalogObj}
       getInitData={getInitData}
       viewHelperProps={{
-        mode: 'edit',
+        mode: 'create',
       }}
       onSave={()=>{}}
       onClose={()=>{}}
@@ -74,14 +79,14 @@ describe('ResourceGroupSchema', ()=>{
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
-      disableDialogHelp={false}
+      disableDialogHelp={true}
     />);
   });
 
   it('properties', ()=>{
     mount(<SchemaView
       formType='tab'
-      schema={schemaObj}
+      schema={catalogObj}
       getInitData={getInitData}
       viewHelperProps={{
         mode: 'properties',
@@ -89,25 +94,6 @@ describe('ResourceGroupSchema', ()=>{
       onHelp={()=>{}}
       onEdit={()=>{}}
     />);
-  });
-
-  it('validate', ()=>{
-    let state = {};
-    let setError = jasmine.createSpy('setError');
-
-    state.cpu_rate_limit = null;
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('cpu_rate_limit', '\'CPU rate limit\' cannot be empty.');
-
-    state.cpu_rate_limit = 1;
-    state.dirty_rate_limit = null;
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('dirty_rate_limit', '\'Dirty rate limit\' cannot be empty.');
-
-    state.cpu_rate_limit = 1;
-    state.dirty_rate_limit = 1;
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('dirty_rate_limit', null);
   });
 });
 

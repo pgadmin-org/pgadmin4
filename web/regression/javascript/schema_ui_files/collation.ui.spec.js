@@ -66,6 +66,7 @@ describe('CollationsSchema', () => {
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 
@@ -85,6 +86,7 @@ describe('CollationsSchema', () => {
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
+      disableDialogHelp={false}
     />);
   });
 

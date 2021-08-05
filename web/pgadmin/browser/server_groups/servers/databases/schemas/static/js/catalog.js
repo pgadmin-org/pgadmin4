@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import CatalogSchema from './catalog.ui';
+
 define('pgadmin.node.catalog', [
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
@@ -41,14 +43,6 @@ define('pgadmin.node.catalog', [
 
       },
       model: pgBrowser.Node.Model.extend({
-        defaults: {
-          name: undefined,
-          namespaceowner: undefined,
-          nspacl: undefined,
-          is_sys_obj: undefined,
-          description: undefined,
-          securitylabel: [],
-        },
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
 
@@ -65,30 +59,15 @@ define('pgadmin.node.catalog', [
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
           type: 'text',
-        },{
-          id: 'namespaceowner', label: gettext('Owner'), cell: 'string',
-          type: 'text', readonly: true,
-        },{
-          id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'is_sys_obj', label: gettext('System catalog?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline',
-        },{
-          id: 'seclabels', label: gettext('Security labels'),
-          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          group: gettext('Security'), mode: ['edit', 'create'],
-          min_version: 90200, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection',
-        },
-        ],
-        validate: function() {
-          return null;
-        },
+        }]
       }),
+      getSchema: function(treeNodeInfo) {
+        return new CatalogSchema(
+          {
+            namespaceowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name
+          }
+        );
+      }
     });
 
   }

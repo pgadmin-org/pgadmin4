@@ -7,6 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
+import PGSchema from './schema.ui';
+import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
+import { getNodeListByName } from '../../../../../../static/js/node_ajax';
+
 define('pgadmin.node.schema', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
@@ -149,6 +153,8 @@ define('pgadmin.node.schema', [
     },
   });
 
+  /* As Backform.VacuumSettingsSchema is commonly used in table & partition, so keeping it as it is for now.
+    this and other supporting model can be removed after their migration to react. */
   // Extend the browser's collection class for VacuumSettingsModel
   Backform.VacuumSettingsSchema = [{
     id: 'spacer_ctrl', group: gettext('Table'), mode: ['edit', 'create'], type: 'spacer',
@@ -357,12 +363,6 @@ define('pgadmin.node.schema', [
       },
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          namespaceowner: undefined,
-          description: undefined,
-          is_system_obj: undefined,
-        },
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
 
@@ -388,94 +388,24 @@ define('pgadmin.node.schema', [
           cell: 'switch', type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline',
-        },{
-          id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'tblacl', label: gettext('Default TABLE privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'seqacl', label: gettext('Default SEQUENCE privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'funcacl', label: gettext('Default FUNCTION privileges'),
-          group: gettext('Security'), type: 'text', mode: ['properties'],
-        },{
-          id: 'typeacl', label: gettext('Default TYPE privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], min_version: 90200,
-          visible: function() {
-            return this.version_compatible;
-          },
-        },{
-          id: 'nspacl', label: gettext('Privileges'),
-          model: pgBrowser.Node.PrivilegeRoleModel.extend(
-            {privileges: ['C', 'U']}), uniqueCol : ['grantee', 'grantor'],
-          editable: false, type: 'collection', group: gettext('Security'),
-          mode: ['edit', 'create'],
-          canAdd: true, canDelete: true, control: 'unique-col-collection',
-        },{
-          id: 'seclabels', label: gettext('Security labels'),
-          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          group: gettext('Security'), mode: ['edit', 'create'],
-          min_version: 90200, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection',
-        },{
-          type: 'nested', control: 'tab', group: gettext('Default privileges'),
-          mode: ['create','edit'],
-          schema:[{
-            id: 'deftblacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}),
-            label: '',
-            editable: false, type: 'collection', group: gettext('Tables'),
-            mode: ['edit', 'create'], control: 'unique-col-collection',
-            canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
-          },{
-            id: 'defseqacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['r', 'w', 'U']}),
-            label: '',
-            editable: false, type: 'collection', group: gettext('Sequences'),
-            mode: ['edit', 'create'], control: 'unique-col-collection',
-            canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
-          },{
-            id: 'deffuncacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['X']}),
-            label: '',
-            editable: false, type: 'collection', group: gettext('Functions'),
-            mode: ['edit', 'create'], control: 'unique-col-collection',
-            canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
-          },{
-            id: 'deftypeacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-              {privileges: ['U']}),
-            label: '',
-            editable: false, type: 'collection', group: gettext('Types'),
-            mode: ['edit', 'create'], control: 'unique-col-collection',
-            canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
-            min_version: 90200,
-          }],
-        },
-        ],
-        validate: function() {
-          var errmsg = null;
-
-          // Validation of mandatory fields
-          this.errorModel.clear();
-          if (_.isUndefined(this.get('name')) ||
-            _.isNull(this.get('name')) ||
-            String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', errmsg);
-            return errmsg;
-          } else if (_.isUndefined(this.get('namespaceowner')) ||
-            _.isNull(this.get('namespaceowner')) ||
-            String(this.get('namespaceowner')).replace(/^\s+|\s+$/g, '') == '') {
-            errmsg = gettext('Owner cannot be empty.');
-            this.errorModel.set('namespaceowner', errmsg);
-            return errmsg;
-          }
-          return null;
-        },
+          type: 'multiline'
+        }]
       }),
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        var schemaObj = pgBrowser.Nodes['schema'];
+        return new PGSchema(
+          (privileges)=>getNodePrivilegeRoleSchema(schemaObj, treeNodeInfo, itemNodeData, privileges),
+          {
+            roles:() => getNodeListByName('role', treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database'
+            }),
+            server_info: pgBrowser.serverInfo[treeNodeInfo.server._id]
+          },
+          {
+            namespaceowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name
+          }
+        );
+      }
     });
 
     pgBrowser.tableChildTreeNodeHierarchy = function(i) {
@@ -483,6 +413,8 @@ define('pgadmin.node.schema', [
     };
   }
 
+  /* As TableChildSwitchCell is commonly used in index, column & TableDialog, so keeping it as it is for now.
+    this and other supporting model can be removed after their migration to react. */
   // Switch Cell with Deps (specifically for table children)
   Backgrid.Extension.TableChildSwitchCell = Backgrid.Extension.SwitchCell.extend({
     initialize: function() {
