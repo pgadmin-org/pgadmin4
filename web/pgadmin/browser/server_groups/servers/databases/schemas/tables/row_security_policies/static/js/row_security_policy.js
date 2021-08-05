@@ -6,6 +6,9 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import RowSecurityPolicySchema from './row_security_policy.ui';
+import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
+
 
 define('pgadmin.node.row_security_policy', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -74,17 +77,21 @@ define('pgadmin.node.row_security_policy', [
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new RowSecurityPolicySchema(
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData, {}, ()=>true, (res)=>{
+              res.unshift({label: 'PUBLIC', value: 'public'});
+              return res;
+            }),
+            nodeInfo: treeNodeInfo
+          }
+        );
+      },
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
         defaults: {
           name: undefined,
-          policyowner: 'public',
-          event: 'ALL',
-          using: undefined,
-          using_orig: undefined,
-          withcheck: undefined,
-          withcheck_orig: undefined,
-          type:'PERMISSIVE',
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
@@ -92,86 +99,7 @@ define('pgadmin.node.row_security_policy', [
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
           editable: false, type: 'text', mode: ['properties'],
-        },
-        {
-          id: 'event', label: gettext('Event'), control: 'select2', deps:['event'],
-          group: gettext('Commands'), type: 'text',readonly: function(m) {
-            return !m.isNew();},
-          select2: {
-            width: '100%',
-            allowClear: false,
-          },
-          options:[
-            {label: 'ALL', value: 'ALL'},
-            {label: 'SELECT', value: 'SELECT'},
-            {label: 'INSERT', value: 'INSERT'},
-            {label: 'UPDATE', value: 'UPDATE'},
-            {label: 'DELETE', value: 'DELETE'},
-          ],
-        },
-        {
-          id: 'using', label: gettext('Using'), deps: ['using', 'event'],
-          type: 'text', disabled: 'disableUsing',
-          mode: ['create', 'edit', 'properties'],
-          control: 'sql-field', visible: true, group: gettext('Commands'),
-        },
-        {
-          id: 'withcheck', label: gettext('With check'), deps: ['withcheck', 'event'],
-          type: 'text', mode: ['create', 'edit', 'properties'],
-          control: 'sql-field', visible: true, group: gettext('Commands'),
-          disabled: 'disableWithCheck',
-        },
-        {
-          id: 'rls_expression_key_note', label: gettext('RLS policy expression'),
-          type: 'note', group: gettext('Commands'), mode: ['create', 'edit'],
-          text: [
-            '<ul><li>',
-            '<strong>', gettext('Using: '), '</strong>',
-            gettext('This expression will be added to queries that refer to the table if row level security is enabled. Rows for which the expression returns true will be visible. Any rows for which the expression returns false or null will not be visible to the user (in a SELECT), and will not be available for modification (in an UPDATE or DELETE). Such rows are silently suppressed; no error is reported.'),
-            '</li><li>',
-            '<strong>', gettext('With check: '), '</strong>',
-            gettext('This expression will be used in INSERT and UPDATE queries against the table if row level security is enabled. Only rows for which the expression evaluates to true will be allowed. An error will be thrown if the expression evaluates to false or null for any of the records inserted or any of the records that result from the update.'),
-            '</li></ul>',
-          ].join(''),
-        },
-        {
-          id: 'policyowner', label: gettext('Role'), cell: 'string',
-          control: 'node-list-by-name',
-          node: 'role', select2: { allowClear: false },
-          mode: ['properties', 'edit','create'],
-          transform: function() {
-            var res =
-            Backform.NodeListByNameControl.prototype.defaults.transform.apply(
-              this, arguments
-            );
-            res.unshift({
-              label: 'public', value: 'public',
-            });
-            return res;
-          },
-        },
-        {
-          id: 'type', label: gettext('Type'), control: 'select2', deps:['type'],
-          type: 'text',readonly: function(m) {
-            return !m.isNew();},
-          select2: {
-            width: '100%',
-            allowClear: false,
-          },
-          options:[
-            {label: 'PERMISSIVE', value: 'PERMISSIVE'},
-            {label: 'RESTRICTIVE', value: 'RESTRICTIVE'},
-          ],
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
-        },
-        ],
+        }],
         validate: function(keys) {
           var msg;
           this.errorModel.clear();
