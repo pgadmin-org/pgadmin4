@@ -2711,7 +2711,10 @@ define('tools.querytool', [
 
           var server_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,2));
           var database_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4));
-          let conn_title = panelTitleFunc.getPanelTitle(pgWindow.default.pgAdmin.Browser, null, null, null, true);
+          var dbData = tree_data.slice(0,3);
+          dbData.push('database/' + url_params.did);
+          var dbName = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(dbData).data.label;
+          let conn_title = panelTitleFunc.getPanelTitle(pgWindow.default.pgAdmin.Browser, null, null, null, true, dbName);
           self.gridView.set_editor_title(_.unescape(conn_title));
           let connection_data = {
             'server_group': self.gridView.handler.url_params.sgid,

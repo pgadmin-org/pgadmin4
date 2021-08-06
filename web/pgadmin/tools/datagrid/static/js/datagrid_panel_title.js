@@ -23,7 +23,7 @@ function isServerInformationAvailable(parentData) {
   return parentData.server === undefined;
 }
 
-export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, parentData=null, conn_title=false) {
+export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, parentData=null, conn_title=false, db_label=null) {
   var preferences = pgBrowser.get_preferences_for_module('browser');
   if(selected_item == null && parentData == null) {
     selected_item = pgBrowser.treeMenu.selected();
@@ -36,7 +36,10 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, 
     }
   }
 
-  const db_label = getDatabaseLabel(parentData);
+  if(!db_label) {
+    db_label = getDatabaseLabel(parentData);
+  }
+
   var qt_title_placeholder = '';
   if (!conn_title) {
     if (custom_title) {

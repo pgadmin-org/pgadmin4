@@ -25,6 +25,7 @@ Bug fixes
 | `Issue #6574 <https://redmine.postgresql.org/issues/6574>`_ -  Fixed an issue where paste is not working through Right-Click option on PSQL.
 | `Issue #6580 <https://redmine.postgresql.org/issues/6580>`_ -  Fixed TypeError 'NoneType' object is not sub scriptable.
 | `Issue #6586 <https://redmine.postgresql.org/issues/6586>`_ -  Fixed incorrect tablespace options in the drop-down for move objects dialog.
+| `Issue #6618 <https://redmine.postgresql.org/issues/6618>`_ -  Fixed an issue where the titles in query tabs are different.
 | `Issue #6619 <https://redmine.postgresql.org/issues/6619>`_ -  Fixed incorrect binary path issue when the user deletes the binary path from the preferences.
 | `Issue #6643 <https://redmine.postgresql.org/issues/6643>`_ -  Ensure that all the required options should be loaded when the Range data type is selected while creating a custom data type.
 | `Issue #6650 <https://redmine.postgresql.org/issues/6650>`_ -  Fixed dashboard server activity issue when active_since parameter is None.
