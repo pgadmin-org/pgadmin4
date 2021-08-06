@@ -119,22 +119,31 @@
 
 /* Drop-down hovered*/
 .jsoneditor-contextmenu .jsoneditor-menu li button:hover {
-    background-color: $select2-container-hover-bg !important;
+    background-color: $btn-primary-hover-bg !important;
+    border-color: $btn-primary-border-hover-bg !important;
+    color: $btn-primary-color !important;
 }
 
 /* Drop-down selected*/
 .jsoneditor-contextmenu .jsoneditor-menu li button.jsoneditor-selected,
 .jsoneditor-contextmenu .jsoneditor-menu li button.jsoneditor-selected:focus,
 .jsoneditor-contextmenu .jsoneditor-menu li button.jsoneditor-selected:hover {
-    background-color: $color-primary !important;
-    color: $color-fg;
+    background-color: $btn-primary-hover-bg !important;
+    border-color: $btn-primary-border-hover-bg !important;
+    color: $btn-primary-color !important;
 }
 
 /* Search Box*/
 .jsoneditor-frame,
 .jsoneditor-search input{
-    color: $color-fg;
-    background-color: $color-bg;
+    color: $input-color;
+    background-color: $input-bg;
+}
+
+/* Set expand icon to none*/
+div.jsoneditor-tree button.jsoneditor-button:focus {
+    background-color: $color-bg !important  ;
+    outline: none;
 }
 
 /* Search Box results */
@@ -152,10 +161,6 @@
 .ace-jsoneditor .ace_scroller {
     background-color: $color-bg;
 }
-
-// .ace-jsoneditor .ace_scroller:read-only{
-//  background-color: $color-gray-lighter;
-// }
 
 
 /* Ace editor hide indent guide */
@@ -192,7 +197,8 @@ div.jsoneditor-value,
 div.jsoneditor textarea,
 div.jsoneditor td,
 div.jsoneditor-readonly,
-.jsoneditor-popover{
+.jsoneditor-popover,
+div.jsoneditor-tree{
     font-family: $font-family-primary !important;
     font-size: $font-size-base !important;
     line-height: $line-height-base !important;
@@ -200,6 +206,9 @@ div.jsoneditor-readonly,
     background-color:$color-bg;
 }
 
+div.jsoneditor td.jsoneditor-tree {
+    vertical-align: middle;
+}
 
 pre.jsoneditor-preview{
  background-color: $color-gray-lighter !important;
@@ -214,15 +223,15 @@ div.jsoneditor-value.jsoneditor-highlight,
 div.jsoneditor-value[contenteditable=true]:focus,
 div.jsoneditor-value[contenteditable=true]:hover
 {
-  background-color: $color-primary-light;
-  border: 1px solid $color-primary-light;
+  background-color: $sql-editor-selection-bg;
+  border: 1px solid $sql-editor-selection-bg;
   border-radius: $border-radius;
 }
 
 /* Hi-light line in code */
 .ace-jsoneditor .ace_marker-layer .ace_active-line {
-    background-color: $color-primary-light;
-    border: 1px solid $color-primary-light;
+    background-color: $sql-editor-selection-bg;
+    border: 0;
     border-radius: $border-radius;
 }
 
@@ -303,15 +312,14 @@ div.jsoneditor-value[contenteditable=true]:hover
 }
 
 
-
 /* Transform & sort */
 /* Header */
 .jsoneditor-modal .pico-modal-header {
   font-family: $font-family-primary !important;
   font-size: $font-size-base !important;
   font-weight: bold;
-  background: $color-primary;
-  color: $white;
+  background-color: $alert-header-bg !important;
+  color: $alert-header-fg;
 }
 
 /* Body */
@@ -322,13 +330,8 @@ div.jsoneditor-value[contenteditable=true]:hover
 /* Disable links */
 .jsoneditor-modal a {
     color: $color-fg !important;
-    pointer-events: none;
 }
 
-/* Hide links */
-.jsoneditor-modal br{
-
-}
 
 /* Fields */
 .jsoneditor-modal,
@@ -346,15 +349,27 @@ div.jsoneditor-value[contenteditable=true]:hover
     font-size: $font-size-base !important;
     font-family: $font-family-primary !important;
     padding: 4px;
-    border-color:$input-border-color;
+}
+
+a:focus, input[type=checkbox]:focus, select:focus{
+   outline:none !important;
+}
+
+.jsoneditor-modal option{
+  background-color: $color-primary-light !important;
+  border: 1px solid $color-primary-light !important;
+  border-radius: $border-radius !important;
+  color:$color-fg !important;
 }
 
 /* Ascending descending buttons */
 .jsoneditor-modal .jsoneditor-button-group.jsoneditor-button-group-value-asc input.jsoneditor-button-asc,
 .jsoneditor-modal .jsoneditor-button-group.jsoneditor-button-group-value-desc input.jsoneditor-button-desc {
-    color: $color-fg !important;
+    //color: $color-bg !important;
     background-color: $color-primary !important;
-    border-color: $color-primary !important;
+    //border-color: $color-primary !important;
+    border-color: $color-primary;
+    color: $btn-primary-color !important;
 }
 
 
@@ -368,6 +383,7 @@ div.jsoneditor-value[contenteditable=true]:hover
   color: $btn-primary-color !important;
   border-color: $color-primary !important;
   background-color: $color-primary !important;
+  text-transform: uppercase;
 }
 
 .jsoneditor-modal .jsoneditor-jmespath-label {
@@ -380,14 +396,11 @@ div.jsoneditor-value[contenteditable=true]:hover
   background-color: $color-bg;
 }
 
-.selectr-option.selected {
+.selectr-option.active,
+.selectr-option.selected{
+    color: $btn-primary-color !important;
     background-color: $color-primary !important;
-    color: $color-fg !important;
-}
-
-.selectr-option.active {
-    color: $color-fg !important;
-    background-color: $color-gray-light !important;
+    border-color: $color-primary;
 }
 
 .jsoneditor-modal .selectr-selected{
@@ -396,11 +409,29 @@ div.jsoneditor-value[contenteditable=true]:hover
 }
 
 .jsoneditor-modal .selectr-selected .selectr-tag {
-    color: $color-fg !important;
-    background-color: $color-primary !important;
     border: 1px solid $color-primary;
+    color: $btn-primary-color !important;
+    background-color: $color-primary !important;
+    border-color: $color-primary;
 }
 
 .jsoneditor-modal .selectr-selected .selectr-tag-remove::before{
     color: $color-primary !important;
 }
+
+/* Update String. Key colors code mode */
+.ace_variable {color: $color-editor-variable !important;}
+
+.ace_string {color: $color-editor-string !important;}
+
+.ace_constant.ace_numeric {color:$color-editor-number !important;}
+
+/* Update String. Key colors tree/form mode*/
+div.jsoneditor-value.jsoneditor-string {
+  color: $color-editor-string !important;
+}
+
+div.jsoneditor-value.jsoneditor-number {
+  color:$color-editor-number !important;
+}
+
