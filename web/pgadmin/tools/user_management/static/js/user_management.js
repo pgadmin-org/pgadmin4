@@ -444,9 +444,6 @@ define([
             disabled: false,
             sortable: false,
             editable: function (m){
-              if (!m.get('locked')) {
-                return false;
-              }
               return (m.get('id') != userInfo['id']);
             },
           }],

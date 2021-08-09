@@ -74,7 +74,7 @@ def login():
     if not auth_obj.validate():
         for field in form.errors:
             flash_login_attempt_error = None
-            if user:
+            if user and field in config.LOGIN_ATTEMPT_FIELDS:
                 if config.MAX_LOGIN_ATTEMPTS > 0:
                     user.login_attempts += 1
                     left_attempts = \

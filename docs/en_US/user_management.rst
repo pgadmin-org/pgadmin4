@@ -58,6 +58,8 @@ Provide information about the new pgAdmin role in the row:
   as authentication source since LDAP password is not stored in the pgAdmin database.
 * Re-enter the password in the *Confirm password* field. This field is disabled
   if you select *ldap* as authentication source.
+* Move the *Locked* switch to the *True* position if you want to lock the account;
+  the default is *False*. This functionality is useful when a user is locked by trying unsuccessful login attempts.
 
 To discard a user, and revoke access to pgAdmin, click the trash icon to the
 left of the row and confirm deletion in the *Delete user?* dialog.

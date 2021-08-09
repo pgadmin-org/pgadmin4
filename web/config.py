@@ -583,6 +583,10 @@ AUTHENTICATION_SOURCES = ['internal']
 MAX_LOGIN_ATTEMPTS = 3
 
 ##########################################################################
+# Only consider password to check the failed login attempts, email is
+# excluded from this check
+LOGIN_ATTEMPT_FIELDS = ['password']
+##########################################################################
 # LDAP Configuration
 ##########################################################################
 

@@ -35,6 +35,7 @@ Mode is pre-configured for security.
    login
    user_management
    change_user_password
+   restore_locked_user
    ldap
    kerberos
    oauth2
