@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-08-06 19:34+0530\n"
-"PO-Revision-Date: 2021-07-11 05:14+0900\n"
+"PO-Revision-Date: 2021-08-07 22:02+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: pgadmin/__init__.py:347 pgadmin/authenticate/internal.py:28
 msgid "Incorrect username or password."
@@ -130,11 +130,11 @@ msgstr "サーバ設定"
 
 #: pgadmin/authenticate/__init__.py:66
 msgid "Your account is locked. Please contact the Administrator."
-msgstr ""
+msgstr "あなたのアカウントはロックされました。管理者に連絡してください"
 
 #: pgadmin/authenticate/__init__.py:83
 msgid "You are left with {0} more attempts."
-msgstr ""
+msgstr "あと {0} 回試行できます"
 
 #: pgadmin/authenticate/internal.py:29
 msgid "Login failed"
@@ -14118,15 +14118,15 @@ msgstr "結果コピーのフィールドの区切り文字"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:273
 msgid "Columns sized by"
-msgstr ""
+msgstr "列幅の基準とする項目"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:274
 msgid "Column data"
-msgstr ""
+msgstr "列のデータ"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:275
 msgid "Column name"
-msgstr ""
+msgstr "列の名前"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:277
 msgid ""
@@ -14135,6 +14135,8 @@ msgid ""
 "name', the column will be sized to the widest of the data type or column "
 "name."
 msgstr ""
+"'列のデータ' にすると、列に含まれているデータの最大幅に合わせて、表示領域の広さを調整します。'列の名前' "
+"にすると、データ型の名前や、列名の幅に合わせます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:288
 msgid "Maximum column width"
@@ -14144,7 +14146,7 @@ msgstr "列の最大幅"
 msgid ""
 "Specify the maximum width of the column in pixels when 'Columns sized by "
 "' is set to 'Column data'."
-msgstr ""
+msgstr "'列幅の基準とする項目' が '列のデータ' の場合、ここで列の最大幅（ピクセル単位）を指定できます"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:298
 msgid "Font size"
@@ -14432,7 +14434,7 @@ msgstr "パスワードの確認"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:472
 msgid "Locked"
-msgstr ""
+msgstr "ロック"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:492
 msgid "Email address cannot be empty."
@@ -14805,33 +14807,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー： {0}"
-
-#~ msgid "Resize by data?"
-#~ msgstr "データに合わせてリサイズ"
-
-#~ msgid ""
-#~ "If set to True then data columns"
-#~ " will auto-size to the maximum "
-#~ "width of the data in the column"
-#~ " as loaded in the first batch. "
-#~ "If False, the column will be sized"
-#~ " to the widest of the data type"
-#~ " or column name."
-#~ msgstr ""
-#~ "True の場合、列に含まれているデータの最大幅に合わせて、表示領域の広さを調整します。False "
-#~ "にすると、データ型の名前や、列名の幅に合わせます"
-
-#~ msgid ""
-#~ "Specify the maximum width of the "
-#~ "column when 'Resize by data?' is "
-#~ "set to True. If it is set to"
-#~ " 0 then columns will auto-size "
-#~ "to the maximum width of the data"
-#~ " in the column. If 'Resize by "
-#~ "data?' is set to False then this"
-#~ " setting won't take any effect."
-#~ msgstr ""
-#~ "'データに合わせてリサイズ' が True の場合、ここで列の最大幅を指定できます。0 "
-#~ "にすると、列のデータ全体が表示領域に収まるまで、最大限リサイズします。'データに合わせてリサイズ' が False"
-#~ " の場合、ここの設定は単に無視されます"
 
