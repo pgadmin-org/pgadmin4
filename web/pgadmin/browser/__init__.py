@@ -31,7 +31,8 @@ from flask_security.recoverable import reset_password_token_status, \
     generate_reset_password_token, update_password
 from flask_security.signals import reset_password_instructions_sent
 from flask_security.utils import config_value, do_flash, get_url, \
-    get_message, slash_url_suffix, login_user, send_mail, logout_user
+    get_message, slash_url_suffix, login_user, send_mail, logout_user, \
+    get_post_logout_redirect
 from flask_security.views import _security, view_commit, _ctx
 from werkzeug.datastructures import MultiDict
 
@@ -1329,6 +1330,12 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
                 auth_obj = AuthSourceManager(form, [INTERNAL])
                 session['_auth_source_manager_obj'] = auth_obj.as_dict()
 
+                if user.login_attempts >= config.MAX_LOGIN_ATTEMPTS > 0:
+                    flash(gettext('You successfully reset your password but'
+                                  ' your account is locked. Please contact '
+                                  'the Administrator.'),
+                          'warning')
+                    return redirect(get_post_logout_redirect())
                 do_flash(*get_message('PASSWORD_RESET'))
                 login_user(user)
                 auth_obj = AuthSourceManager(form, [INTERNAL])

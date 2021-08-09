@@ -53,7 +53,8 @@ def login():
     session['auth_source_manager'] = None
 
     username = form.data['email']
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(username=username,
+                                auth_source=INTERNAL).first()
 
     if user:
         if user.login_attempts >= config.MAX_LOGIN_ATTEMPTS > 0:
@@ -108,7 +109,8 @@ def login():
 
         session['auth_source_manager'] = current_auth_obj
 
-        user.login_attempts = 0
+        if user:
+            user.login_attempts = 0
         db.session.commit()
 
         if 'auth_obj' in session:

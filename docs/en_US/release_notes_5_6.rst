@@ -29,3 +29,4 @@ Bug fixes
 | `Issue #6619 <https://redmine.postgresql.org/issues/6619>`_ -  Fixed incorrect binary path issue when the user deletes the binary path from the preferences.
 | `Issue #6643 <https://redmine.postgresql.org/issues/6643>`_ -  Ensure that all the required options should be loaded when the Range data type is selected while creating a custom data type.
 | `Issue #6650 <https://redmine.postgresql.org/issues/6650>`_ -  Fixed dashboard server activity issue when active_since parameter is None.
+| `Issue #6664 <https://redmine.postgresql.org/issues/6664>`_ -  Fixed an issue where even if the user is locked, he can reset the password and can login into pgAdmin.
