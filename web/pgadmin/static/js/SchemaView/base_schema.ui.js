@@ -126,4 +126,9 @@ export default class BaseUISchema {
     });
     return newRow;
   }
+
+  /* Used in header schema */
+  addDisabled() {
+    return false;
+  }
 }

@@ -78,6 +78,8 @@ const useStyles = makeStyles((theme)=>({
     ...theme.mixins.panelBorder.bottom,
     ...theme.mixins.panelBorder.right,
     position: 'relative',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   tableCellHeader: {
     fontWeight: theme.typography.fontWeightBold,
@@ -160,6 +162,20 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
     /* Calculate the fields which depends on the current field
     deps has info on fields which the current field depends on. */
     schema.fields.forEach((field)=>{
+      (evalFunc(null, field.deps) || []).forEach((dep)=>{
+        let source = accessPath.concat(dep);
+        if(_.isArray(dep)) {
+          source = dep;
+          /* If its an array, then dep is from the top schema and external */
+          retVal.push(source);
+        }
+      });
+    });
+    return retVal;
+  }, []);
+
+  useEffect(()=>{
+    schema.fields.forEach((field)=>{
       /* Self change is also dep change */
       if(field.depChange) {
         depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange);
@@ -168,13 +184,14 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
         let source = accessPath.concat(dep);
         if(_.isArray(dep)) {
           source = dep;
-          /* If its an array, then dep is from the top schema */
-          retVal.push(source);
         }
         depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
       });
     });
-    return retVal;
+    return ()=>{
+      /* Cleanup the listeners when unmounting */
+      depListener.removeDepListener(accessPath);
+    };
   }, []);
 
   /* External deps values are from top schema sess data */
@@ -201,12 +218,28 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
     </div>, depsMap);
 }
 
+export function DataGridHeader({label, canAdd, onAddClick}) {
+  const classes = useStyles();
+  return (
+    <Box className={classes.gridHeader}>
+      <Box className={classes.gridHeaderText}>{label}</Box>
+      <Box className={classes.gridControls}>
+        {canAdd && <PgIconButton data-test="add-row" title={gettext('Add row')} onClick={onAddClick} icon={<AddIcon />} className={classes.gridControlsButton} />}
+      </Box>
+    </Box>
+  );
+}
+DataGridHeader.propTypes = {
+  label: PropTypes.string,
+  canAdd: PropTypes.bool,
+  onAddClick: PropTypes.func,
+};
+
 export default function DataGridView({
   value, viewHelperProps, formErr, schema, accessPath, dataDispatch, containerClassName,
   fixedRows, ...props}) {
   const classes = useStyles();
   const stateUtils = useContext(StateUtilsContext);
-  const depListener = useContext(DepListenerContext);
 
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
@@ -268,7 +301,6 @@ export default function DataGridView({
                       value: row.index,
                     });
 
-                    depListener.removeDepListener(accessPath.concat(row.index));
                   }, ()=>{}, props.customDeleteTitle, props.customDeleteMsg);
                 }} className={classes.gridRowButton} disabled={!canDeleteRow} />
             );
@@ -349,22 +381,30 @@ export default function DataGridView({
         })
       );
       return cols;
-    },[]
+    },[props.canEdit, props.canDelete]
   );
 
   const onAddClick = useCallback(()=>{
+    if(props.canAddRow) {
+      let state = schemaRef.current.top ? schemaRef.current.top.sessData : schemaRef.current.sessData;
+      let canAddRow = evalFunc(schemaRef.current, props.canAddRow, state || {});
+      if(!canAddRow) {
+        return;
+      }
+    }
+
     let newRow = schemaRef.current.getNewData();
     dataDispatch({
       type: SCHEMA_STATE_ACTIONS.ADD_ROW,
       path: accessPath,
       value: newRow,
     });
-  });
+  }, []);
 
   const defaultColumn = useMemo(()=>({
     minWidth: 175,
     width: 0,
-  }));
+  }), []);
 
   let tablePlugins = [
     useBlockLayout,
@@ -393,6 +433,8 @@ export default function DataGridView({
 
   useEffect(()=>{
     let rowsPromise = fixedRows, umounted=false;
+
+    /* If fixedRows is defined, fetch the details */
     if(typeof rowsPromise === 'function') {
       rowsPromise = rowsPromise();
     }
@@ -417,12 +459,7 @@ export default function DataGridView({
   return (
     <Box className={containerClassName}>
       <Box className={classes.grid}>
-        {(props.label || props.canAdd) && <Box className={classes.gridHeader}>
-          <Box className={classes.gridHeaderText}>{props.label}</Box>
-          <Box className={classes.gridControls}>
-            {props.canAdd && <PgIconButton data-test="add-row" title={gettext('Add row')} onClick={onAddClick} icon={<AddIcon />} className={classes.gridControlsButton} />}
-          </Box>
-        </Box>}
+        {(props.label || props.canAdd) && <DataGridHeader label={props.label} canAdd={props.canAdd} onAddClick={onAddClick} />}
         <div {...getTableProps()} className={classes.table}>
           <DataTableHeader headerGroups={headerGroups} />
           <div {...getTableBodyProps()}>
@@ -460,6 +497,9 @@ DataGridView.propTypes = {
   canAdd: PropTypes.bool,
   canDelete: PropTypes.bool,
   visible: PropTypes.bool,
+  canAddRow: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.func,
+  ]),
   canEditRow: PropTypes.oneOfType([
     PropTypes.bool, PropTypes.func,
   ]),

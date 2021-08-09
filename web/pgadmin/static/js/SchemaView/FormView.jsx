@@ -122,7 +122,7 @@ export function getFieldMetaData(field, schema, value, viewHelperProps) {
 /* The first component of schema view form */
 export default function FormView({
   value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab,
-  getSQLValue, onTabChange, firstEleRef, className, isDataGridForm=false, visible}) {
+  getSQLValue, onTabChange, firstEleRef, className, isDataGridForm=false, isTabView=true, visible}) {
   let defaultTab = 'General';
   let tabs = {};
   let tabsClassname = {};
@@ -164,6 +164,10 @@ export default function FormView({
           }
         });
       });
+      return ()=>{
+        /* Cleanup the listeners when unmounting */
+        depListener.removeDepListener(accessPath);
+      };
     }
   }, []);
 
@@ -175,7 +179,7 @@ export default function FormView({
       getFieldMetaData(field, schema, value, viewHelperProps);
 
     if(modeSupported) {
-      let {group} = field;
+      let {group, CustomControl} = field;
       group = groupLabels[group] || group || defaultTab;
 
       if(!tabs[group]) tabs[group] = [];
@@ -190,7 +194,7 @@ export default function FormView({
         }
         tabs[group].push(
           <FormView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps} formErr={formErr}
-            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm} 
+            schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm}
             {...field} visible={visible}/>
         );
       } else if(field.type === 'nested-fieldset') {
@@ -223,11 +227,18 @@ export default function FormView({
           canDelete = false;
         }
 
-        tabs[group].push(
-          <DataGridView key={field.id} value={value[field.id]} viewHelperProps={viewHelperProps} formErr={formErr}
-            schema={field.schema} accessPath={accessPath.concat(field.id)} dataDispatch={dataDispatch} containerClassName={classes.controlRow}
-            {...field} canAdd={canAdd} canEdit={canEdit} canDelete={canDelete} visible={visible}/>
-        );
+        const props = {
+          key: field.id, value: value[field.id], viewHelperProps: viewHelperProps, formErr: formErr,
+          schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
+          containerClassName: classes.controlRow, ...field, canAdd: canAdd, canEdit: canEdit, canDelete: canDelete,
+          visible: visible,
+        };
+
+        if(CustomControl) {
+          tabs[group].push(<CustomControl {...props}/>);
+        } else {
+          tabs[group].push(<DataGridView {...props}/>);
+        }
       } else if(field.type === 'group') {
         groupLabels[field.id] = field.label;
         if(!visible) {
@@ -311,35 +322,48 @@ export default function FormView({
     return <></>;
   }
 
-  return (
-    <>
-      <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
-        <Box>
-          <Tabs
-            value={tabValue}
-            onChange={(event, selTabValue) => {
-              setTabValue(selTabValue);
-            }}
-            // indicatorColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            action={(ref)=>ref && ref.updateIndicator()}
-          >
-            {Object.keys(tabs).map((tabName)=>{
-              return <Tab key={tabName} label={tabName} />;
-            })}
-          </Tabs>
+  if(isTabView) {
+    return (
+      <>
+        <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
+          <Box>
+            <Tabs
+              value={tabValue}
+              onChange={(event, selTabValue) => {
+                setTabValue(selTabValue);
+              }}
+              // indicatorColor="primary"
+              variant="scrollable"
+              scrollButtons="auto"
+              action={(ref)=>ref && ref.updateIndicator()}
+            >
+              {Object.keys(tabs).map((tabName)=>{
+                return <Tab key={tabName} label={tabName} />;
+              })}
+            </Tabs>
+          </Box>
+          {Object.keys(tabs).map((tabName, i)=>{
+            return (
+              <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
+                className={fullTabs.indexOf(tabName) == -1 ? classes.nestedControl : null}>
+                {tabs[tabName]}
+              </TabPanel>
+            );
+          })}
         </Box>
-        {Object.keys(tabs).map((tabName, i)=>{
-          return (
-            <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-              className={fullTabs.indexOf(tabName) == -1 ? classes.nestedControl : null}>
-              {tabs[tabName]}
-            </TabPanel>
-          );
-        })}
-      </Box>
-    </>);
+      </>);
+  } else {
+    return (
+      <>
+        <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
+          {Object.keys(tabs).map((tabName)=>{
+            return (
+              <>{tabs[tabName]}</>
+            );
+          })}
+        </Box>
+      </>);
+  }
 }
 
 FormView.propTypes = {

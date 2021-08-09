@@ -25,7 +25,7 @@ export default function FieldSetView({
 
   useEffect(()=>{
     /* Calculate the fields which depends on the current field */
-    if(!isDataGridForm) {
+    if(!isDataGridForm && depListener) {
       schema.fields.forEach((field)=>{
         /* Self change is also dep change */
         if(field.depChange || field.deferredDepChange) {

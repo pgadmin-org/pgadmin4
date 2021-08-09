@@ -28,7 +28,7 @@ import { minMaxValidator, numberValidator, integerValidator, emptyValidator, che
 import { MappedFormControl } from './MappedControl';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import FormView from './FormView';
+import FormView, { getFieldMetaData } from './FormView';
 import { pgAlertify } from '../helpers/legacyConnector';
 import { evalFunc } from 'sources/utils';
 import PropTypes from 'prop-types';
@@ -113,9 +113,9 @@ const diffArrayOptions = {
   compareFunction: objectComparator,
 };
 
-function getChangedData(topSchema, mode, sessData, stringify=false) {
+function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
   let changedData = {};
-  let isEdit = mode === 'edit';
+  let isEdit = viewHelperProps.mode === 'edit';
 
   /* The comparator and setter */
   const attrChanged = (currPath, change, force=false)=>{
@@ -136,6 +136,10 @@ function getChangedData(topSchema, mode, sessData, stringify=false) {
   /* Will be called recursively as data can be nested */
   const parseChanges = (schema, accessPath, changedData)=>{
     schema.fields.forEach((field)=>{
+      let {modeSupported} = getFieldMetaData(field, schema, {}, viewHelperProps);
+      if(!modeSupported) {
+        return;
+      }
       if(typeof(field.type) == 'string' && field.type.startsWith('nested-')) {
         /* its nested */
         parseChanges(field.schema, accessPath, changedData);
@@ -324,7 +328,6 @@ const sessDataReducer = (state, action)=>{
     /* If there is any dep listeners get the changes */
     data = getDepChange(action.path, data, state, action);
     deferredList = getDeferredDepChange(action.path, data, state, action);
-    // let deferredInfo = getDeferredDepChange(action.path, data, state, action);
     data.__deferred__ = deferredList || [];
     break;
   case SCHEMA_STATE_ACTIONS.ADD_ROW:
@@ -387,7 +390,7 @@ function prepareData(val) {
 
 /* If its the dialog */
 function SchemaDialogView({
-  getInitData, viewHelperProps, schema={}, ...props}) {
+  getInitData, viewHelperProps, schema={}, showFooter=true, isTabView=true, ...props}) {
   const classes = useDialogStyles();
   /* Some useful states */
   const [dirty, setDirty] = useState(false);
@@ -421,11 +424,12 @@ function SchemaDialogView({
     if(!isNotValid) setFormErr({});
 
     /* check if anything changed */
-    let dataChanged = Object.keys(getChangedData(schema, viewHelperProps.mode, sessData)).length > 0;
-    setDirty(dataChanged);
+    let changedData = getChangedData(schema, viewHelperProps, sessData);
+    let isDataChanged = Object.keys(changedData).length > 0;
+    setDirty(isDataChanged);
 
     /* tell the callbacks the data has changed */
-    props.onDataChange && props.onDataChange(dataChanged);
+    props.onDataChange && props.onDataChange(isDataChanged, changedData);
   }, [sessData]);
 
   useEffect(()=>{
@@ -518,7 +522,7 @@ function SchemaDialogView({
     setSaving(true);
     setLoaderText('Saving...');
     /* Get the changed data */
-    let changeData = getChangedData(schema, viewHelperProps.mode, sessData);
+    let changeData = getChangedData(schema, viewHelperProps, sessData);
 
     /* Add the id when in edit mode */
     if(viewHelperProps.mode !== 'edit') {
@@ -577,7 +581,7 @@ function SchemaDialogView({
     /* Called when SQL tab is active */
     if(dirty) {
       if(!formErr.name) {
-        let changeData = getChangedData(schema, viewHelperProps.mode, sessData);
+        let changeData = getChangedData(schema, viewHelperProps, sessData);
         if(viewHelperProps.mode !== 'edit') {
           /* If new then merge the changed data with origData */
           changeData = _.assign({}, schema.origData, changeData);
@@ -626,11 +630,11 @@ function SchemaDialogView({
             <Loader message={loaderText}/>
             <FormView value={sessData} viewHelperProps={viewHelperProps} formErr={formErr}
               schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
-              hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} />
+              hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} isTabView={isTabView} />
             <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
               onClose={onErrClose} />
           </Box>
-          <Box className={classes.footer}>
+          {showFooter && <Box className={classes.footer}>
             {useMemo(()=><Box>
               <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
                 disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
@@ -648,7 +652,7 @@ function SchemaDialogView({
                 {gettext('Save')}
               </PrimaryButton>
             </Box>
-          </Box>
+          </Box>}
         </Box>
       </DepListenerContext.Provider>
     </StateUtilsContext.Provider>
@@ -671,10 +675,12 @@ SchemaDialogView.propTypes = {
   onHelp: PropTypes.func,
   onDataChange: PropTypes.func,
   confirmOnCloseReset: PropTypes.bool,
+  isTabView: PropTypes.bool,
   hasSQL: PropTypes.bool,
   getSQLValue: PropTypes.func,
   disableSqlHelp: PropTypes.bool,
   disableDialogHelp: PropTypes.bool,
+  showFooter: PropTypes.bool,
 };
 
 const usePropsStyles = makeStyles((theme)=>({
