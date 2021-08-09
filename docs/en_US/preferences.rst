@@ -353,6 +353,10 @@ Use the fields on the *Options* panel to manage editor preferences.
 * When the *Auto-Rollback?* switch is set to *True*, failed queries are rolled
   back.
 
+* When the *Copy SQL from main window to query tool?* switch is set to *True*,
+  the CREATE sql of the selected object will be copied to query tool when query tool
+  will open.
+
 * When the *Prompt to save unsaved data changes?* switch is set to *True*, the
   editor will prompt the user to saved unsaved data when exiting the data
   editor.

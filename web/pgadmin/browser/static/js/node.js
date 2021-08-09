@@ -902,6 +902,7 @@ define('pgadmin.browser.node', [
 
       // Callback to render query editor
       show_query_tool: function(args, item) {
+        var preference = pgBrowser.get_preference('sqleditor', 'copy_sql_to_query_tool');
         var t = pgBrowser.tree,
           i = item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined;
@@ -910,7 +911,17 @@ define('pgadmin.browser.node', [
           return;
 
         // Here call data grid method to render query tool
-        pgAdmin.DataGrid.show_query_tool('', i);
+        //Open query tool with create script if copy_sql_to_query_tool is true else open blank query tool
+        if(preference.value && !d._type.includes('coll-')){
+          var stype = d._type.toLowerCase();
+          var data = {
+            'script': stype,
+            data_disabled: gettext('The selected tree node does not support this option.'),
+          };
+          pgBrowser.Node.callbacks.show_script(data);
+        }else{
+          pgAdmin.DataGrid.show_query_tool('', i);
+        }
       },
 
       // Callback to render psql tool.

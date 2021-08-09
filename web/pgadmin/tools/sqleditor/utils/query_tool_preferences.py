@@ -128,6 +128,17 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.show_prompt_commit_transaction = self.preference.register(
+        'Options', 'copy_sql_to_query_tool',
+        gettext("Copy SQL from main window to query tool?"), 'boolean',
+        False,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            'Specifies whether or not to copy SQL to query tool from '
+            'main window.'
+        )
+    )
+
     self.sql_font_size = self.preference.register(
         'Editor', 'plain_editor_mode',
         gettext("Plain text mode?"), 'boolean', False,

@@ -114,6 +114,7 @@ define('pgadmin.datagrid', [
           label: gettext('Query Tool'),
           icon: 'pg-font-icon icon-query_tool',
           data:{
+            applies: 'tools',
             data_disabled: gettext('Please select a database from the browser tree to access Query Tool.'),
           },
         }];
@@ -210,7 +211,25 @@ define('pgadmin.datagrid', [
       // This is a callback function to show query tool when user click on menu item.
       show_query_tool: function(url, aciTreeIdentifier) {
         const transId = commonUtils.getRandomInt(1, 9999999);
-        showQueryTool.showQueryTool(this, pgBrowser, alertify, url, aciTreeIdentifier, transId);
+        var t = pgBrowser.tree,
+          i = aciTreeIdentifier || t.selected(),
+          d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+        //Open query tool with create script if copy_sql_to_query_tool is true else open blank query tool
+        var preference = pgBrowser.get_preference('sqleditor', 'copy_sql_to_query_tool');
+        if(preference.value && !d._type.includes('coll-') && (url === '' || url['applies'] === 'tools')){
+          var stype = d._type.toLowerCase();
+          var data = {
+            'script': stype,
+            data_disabled: gettext('The selected tree node does not support this option.'),
+          };
+          pgBrowser.Node.callbacks.show_script(data);
+        }else{
+          if(d._type.includes('coll-')){
+            url = '';
+          }
+          showQueryTool.showQueryTool(this, pgBrowser, alertify, url, aciTreeIdentifier, transId);
+        }
       },
 
       launch_grid: function(trans_id, panel_url, is_query_tool, panel_title, sURL=null, sql_filter=null) {

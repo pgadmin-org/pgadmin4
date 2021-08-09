@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4904 <https://redmine.postgresql.org/issues/4904>`_ -  Added support to copy SQL from main window to query tool.
 | `Issue #5198 <https://redmine.postgresql.org/issues/5198>`_ -  Added support for formatted JSON viewer/editor when interacting with data in a JSON column.
 
 Housekeeping

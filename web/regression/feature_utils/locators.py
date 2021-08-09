@@ -68,6 +68,11 @@ class NavMenuLocators:
         "//div[span[normalize-space(text())='Insert bracket pairs?']]" \
         "//div[contains(@class,'toggle btn')]"
 
+    copy_sql_to_query_tool_switch_btn = \
+        "//div[span[normalize-space(text())=" \
+        "'Copy SQL from main window to query tool?']]" \
+        "//div[contains(@class,'toggle btn')]"
+
     backup_filename_txt_box_name = "file"
 
     restore_file_name_txt_box_name = "file"
