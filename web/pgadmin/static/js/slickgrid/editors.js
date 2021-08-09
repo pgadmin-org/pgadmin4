@@ -363,9 +363,9 @@ import gettext from 'sources/gettext';
       /* Can be useful until JSON editor loads */
       tmpdata = data;
 
-      if ( _.isUndefined(data) || _.isNull(data)){
-        defaultValue = '{}';
-        data = '{}';
+      if (_.isNull(data)){
+        defaultValue = undefined;
+        data = undefined;
       }
 
       /* If jsonb or array */
@@ -447,7 +447,7 @@ import gettext from 'sources/gettext';
       if (data == '' && (_.isUndefined(defaultValue) || _.isNull(defaultValue) )) {
         return false;
       } else {
-        if(! _.isUndefined(defaultValue) && defaultValue != '{}'){
+        if(! _.isUndefined(defaultValue) && defaultValue != ''){
           defaultValue = JSON.stringify(JSON.parse(defaultValue), null,2);
         }
         return (!( data == '' && _.isNull(defaultValue)) && (data != defaultValue));
@@ -459,7 +459,7 @@ import gettext from 'sources/gettext';
           args.column.column_type_internal === 'json') {
         let data = $editor.getText();
         try {
-          if(data != '{}'){
+          if(data != ''){
             JSON.parse(data);
           }
         } catch(e) {
