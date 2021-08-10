@@ -900,6 +900,18 @@ FormInputColor.propTypes = {
   testcid: PropTypes.string,
 };
 
+export function PlainString({controlProps, value}) {
+  let finalValue = value;
+  if(controlProps?.formatter) {
+    finalValue = controlProps.formatter.fromRaw(finalValue);
+  }
+  return <span>{finalValue}</span>;
+}
+PlainString.propTypes = {
+  controlProps: PropTypes.object,
+  value: PropTypes.any,
+};
+
 export function FormNote({text, className}) {
   const classes = useStyles();
   return (
