@@ -136,7 +136,9 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
   /* Will be called recursively as data can be nested */
   const parseChanges = (schema, accessPath, changedData)=>{
     schema.fields.forEach((field)=>{
-      let {modeSupported} = getFieldMetaData(field, schema, {}, viewHelperProps);
+      /* At this point the schema assignments like top may not have been done
+      So, only check the mode by passing true to getFieldMetaData */
+      let {modeSupported} = getFieldMetaData(field, schema, {}, viewHelperProps, true);
       if(!modeSupported) {
         return;
       }

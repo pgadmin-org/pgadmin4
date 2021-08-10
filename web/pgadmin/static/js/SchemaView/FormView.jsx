@@ -71,7 +71,7 @@ SQLTab.propTypes = {
   getSQLValue: PropTypes.func.isRequired,
 };
 
-export function getFieldMetaData(field, schema, value, viewHelperProps) {
+export function getFieldMetaData(field, schema, value, viewHelperProps, onlyModeCheck=false) {
   let retData = {
     readonly: false,
     disabled: false,
@@ -86,6 +86,10 @@ export function getFieldMetaData(field, schema, value, viewHelperProps) {
     retData.modeSupported = (field.mode.indexOf(viewHelperProps.mode) > -1);
   }
   if(!retData.modeSupported) {
+    return retData;
+  }
+
+  if(onlyModeCheck) {
     return retData;
   }
 

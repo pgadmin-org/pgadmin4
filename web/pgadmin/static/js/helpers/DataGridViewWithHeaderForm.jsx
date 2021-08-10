@@ -73,7 +73,7 @@ export default function DataGridViewWithHeaderForm(props) {
           </Box>
         </Box>}
       </Box>
-      <DataGridView {...otherProps} canAdd={false}/>
+      <DataGridView {...otherProps} label="" canAdd={false}/>
     </Box>
   );
 }
