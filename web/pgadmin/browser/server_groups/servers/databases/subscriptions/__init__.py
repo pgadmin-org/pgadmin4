@@ -747,8 +747,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                 status=200
             )
 
-
-
     @check_precondition
     def sql(self, gid, sid, did, subid, json_resp=True):
         """

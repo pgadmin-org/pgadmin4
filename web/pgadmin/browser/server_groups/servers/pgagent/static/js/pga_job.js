@@ -7,6 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { getNodeAjaxOptions } from '../../../../../static/js/node_ajax';
+import PgaJobSchema from './pga_job.ui';
+import { getNodePgaJobStepSchema } from '../../steps/static/js/pga_jobstep.ui';
+
 define('pgadmin.node.pga_job', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
@@ -66,33 +70,21 @@ define('pgadmin.node.pga_job', [
           icon: 'fa fa-play-circle',
         }]);
       },
-      model: pgBrowser.Node.Model.extend({
-        defaults: {
-          jobname: '',
-          jobid: undefined,
-          jobenabled: true,
-          jobhostagent: '',
-          jobjclid: 1,
-          jobcreated: undefined,
-          jobchanged: undefined,
-          jobnextrun: undefined,
-          joblastrun: undefined,
-          jlgstatus: undefined,
-          jobrunningat: undefined,
-          jobdesc: '',
-          jsteps: [],
-          jschedules: [],
-        },
-        idAttribute: 'jobid',
-        parse: function() {
-          var d = pgBrowser.Node.Model.prototype.parse.apply(this, arguments);
 
-          if (d) {
-            d.jobrunningat = d.jagagent || gettext('Not running currently.');
-            d.jlgstatus = d.jlgstatus || gettext('Unknown');
-          }
-          return d;
-        },
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new PgaJobSchema(
+          {
+            jobjclid: ()=>getNodeAjaxOptions('classes', this, treeNodeInfo, itemNodeData, {
+              cacheLevel: 'server',
+              cacheNode: 'server'
+            })
+          },
+          () => getNodePgaJobStepSchema(treeNodeInfo, itemNodeData),
+        );
+      },
+
+      model: pgBrowser.Node.Model.extend({
+        idAttribute: 'jobid',
         schema: [{
           id: 'jobname', label: gettext('Name'), type: 'text',
           cellHeaderClasses: 'width_percent_30',
@@ -103,28 +95,6 @@ define('pgadmin.node.pga_job', [
           id: 'jobenabled', label: gettext('Enabled?'), type: 'switch',
           cellHeaderClasses: 'width_percent_5',
         },{
-          id: 'jobclass', label: gettext('Job class'), type: 'text',
-          mode: ['properties'],
-        },{
-          id: 'jobjclid', label: gettext('Job class'), type: 'int',
-          control: 'node-ajax-options', url: 'classes', url_with_id: false,
-          cache_node: 'server', mode: ['create', 'edit'],
-          select2: {allowClear: false},
-          helpMessage: gettext('Please select a class to categorize the job. This option will not affect the way the job runs.'),
-        },{
-          id: 'jobhostagent', label: gettext('Host agent'), type: 'text',
-          mode: ['edit', 'create'],
-          helpMessage: gettext('Enter the hostname of a machine running pgAgent if you wish to ensure only that machine will run this job. Leave blank if any host may run the job.'),
-        },{
-          id: 'jobhostagent', label: gettext('Host agent'), type: 'text',
-          mode: ['properties'],
-        },{
-          id: 'jobcreated', type: 'text', mode: ['properties'],
-          label: gettext('Created'),
-        },{
-          id: 'jobchanged', type: 'text', mode: ['properties'],
-          label: gettext('Changed'),
-        },{
           id: 'jobnextrun', type: 'text', mode: ['properties'],
           label: gettext('Next run'), cellHeaderClasses: 'width_percent_20',
         },{
@@ -134,40 +104,9 @@ define('pgadmin.node.pga_job', [
           id: 'jlgstatus', type: 'text', label: gettext('Last result'),
           cellHeaderClasses: 'width_percent_5', mode: ['properties'],
         },{
-          id: 'jobrunningat', type: 'text', mode: ['properties'],
-          label: gettext('Running at'),
-        },{
           id: 'jobdesc', label: gettext('Comment'), type: 'multiline',
           cellHeaderClasses: 'width_percent_15',
-        },{
-          id: 'jsteps', label: '', group: gettext('Steps'),
-          type: 'collection', mode: ['edit', 'create'],
-          model: pgBrowser.Nodes['pga_jobstep'].model, canEdit: true,
-          control: 'sub-node-collection', canAdd: true, canDelete: true,
-          showError: false,
-          columns: [
-            'jstname', 'jstenabled', 'jstkind', 'jstconntype', 'jstonerror',
-          ],
-        },{
-          id: 'jschedules', label: '', group: gettext('Schedules'),
-          type: 'collection', mode: ['edit', 'create'],
-          control: 'sub-node-collection', canAdd: true, canDelete: true,
-          canEdit: true, model: pgBrowser.Nodes['pga_schedule'].model,
-          showError: false,
-          columns: ['jscname', 'jscenabled', 'jscstart', 'jscend'],
         }],
-        validate: function() {
-          var name = this.get('jobname');
-          if (_.isUndefined(name) || _.isNull(name) ||
-            String(name).replace(/^\s+|\s+$/g, '') == '') {
-            var msg = gettext('Name cannot be empty.');
-            this.errorModel.set('jobname', msg);
-            return msg;
-          } else {
-            this.errorModel.unset('jobname');
-          }
-          return null;
-        },
       }),
       /* Run pgagent job now */
       run_pga_job_now: function(args) {

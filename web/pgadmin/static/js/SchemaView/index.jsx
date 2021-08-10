@@ -225,7 +225,11 @@ function validateSchema(schema, sessData, setError) {
         if(dupInd > 0) {
           let uniqueColNames = _.filter(field.schema.fields, (uf)=>field.uniqueCol.indexOf(uf.id) > -1)
             .map((uf)=>uf.label).join(', ');
-          setError(field.uniqueCol[0], gettext('%s in %s must be unique.', uniqueColNames, field.label));
+          if (_.isUndefined(field.label) || _.isNull(field.label)) {
+            setError(field.uniqueCol[0], gettext('%s must be unique.', uniqueColNames));
+          } else {
+            setError(field.uniqueCol[0], gettext('%s in %s must be unique.', uniqueColNames, field.label));
+          }
           return true;
         }
         /* Loop through data */
@@ -587,6 +591,8 @@ function SchemaDialogView({
         if(viewHelperProps.mode !== 'edit') {
           /* If new then merge the changed data with origData */
           changeData = _.assign({}, schema.origData, changeData);
+        } else {
+          changeData[schema.idAttribute] = schema.origData[schema.idAttribute];
         }
         /* Call the passed incoming getSQLValue func to get the SQL
         return of getSQLValue should be a promise.

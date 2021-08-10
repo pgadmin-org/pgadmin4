@@ -28,6 +28,7 @@ import PropTypes from 'prop-types';
 import HTMLReactParse from 'html-react-parser';
 import { KeyboardDateTimePicker, KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
+import moment from 'moment';
 
 import CodeMirror from './CodeMirror';
 import gettext from 'sources/gettext';
@@ -121,7 +122,7 @@ export function FormInput({children, error, className, label, helpMessage, requi
         <FormControl error={Boolean(error)} fullWidth>
           {React.cloneElement(children, {cid, helpid})}
         </FormControl>
-        <FormHelperText id={helpid} variant="outlined">{helpMessage}</FormHelperText>
+        <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
       </Grid>
     </Grid>
   );
@@ -202,22 +203,30 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
     onChange(momentVal ? momentVal.format(controlProps.format || 'HH:mm') : null);
   };
 
+  if (readonly) {
+    return (<InputText value={value} {...props}/>);
+  }
+
   if (controlProps && controlProps.pickerType === 'Date') {
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <KeyboardDatePicker value={value} onChange={onDateChange} readOnly={Boolean(readonly)}
           format={controlProps.format || 'YYYY-MM-DD'}
           placeholder={controlProps.placeholder || 'YYYY-MM-DD'}
-          {...props}/>
+          autoOk={controlProps.autoOk || false}
+          {...props} label={''}/>
       </MuiPickersUtilsProvider>
     );
   } else if (controlProps && controlProps.pickerType === 'Time') {
+    let newValue = (!_.isNull(value) && !_.isUndefined(value)) ? moment(value, 'HH:mm').toDate() : value;
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
-        <KeyboardTimePicker value={value} onChange={onTimeChange} readOnly={Boolean(readonly)}
+        <KeyboardTimePicker value={newValue} onChange={onTimeChange} readOnly={Boolean(readonly)}
           format={controlProps.format || 'HH:mm'}
           placeholder={controlProps.placeholder || 'HH:mm'}
-          {...props}/>
+          autoOk={controlProps.autoOk || false}
+          ampm={controlProps.ampm || false}
+          {...props} label={''}/>
       </MuiPickersUtilsProvider>
     );
   }
@@ -229,13 +238,15 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
         ampm={controlProps.ampm || false}
         format={controlProps.format || 'YYYY-MM-DD HH:mm:ss Z'}
         placeholder={controlProps.placeholder || 'YYYY-MM-DD HH:mm:ss Z'}
-        autoOk={controlProps.autoOk || true}
+        autoOk={controlProps.autoOk || false}
         disablePast={controlProps.disablePast || false}
         value={value}
         invalidDateMessage=""
+        maxDateMessage=""
+        minDateMessage=""
         onChange={onDateTimeChange}
         readOnly={Boolean(readonly)}
-        {...props}
+        {...props} label={''}
       />
     </MuiPickersUtilsProvider>
   );
@@ -636,12 +647,13 @@ function getRealValue(options, value, creatable, formatter) {
     realValue = [...value];
     /* If multi select options need to be in some format by UI, use formatter */
     if(formatter) {
-      realValue = formatter.fromRaw(realValue);
-    }
-    if(creatable) {
-      realValue = realValue.map((val)=>({label:val, value: val}));
+      realValue = formatter.fromRaw(realValue, options);
     } else {
-      realValue = realValue.map((val)=>(_.find(options, (option)=>option.value==val)));
+      if(creatable) {
+        realValue = realValue.map((val)=>({label:val, value: val}));
+      } else {
+        realValue = realValue.map((val)=>(_.find(options, (option)=>_.isEqual(option.value, val))));
+      }
     }
   } else {
     realValue = _.find(options, (option)=>option.value==value) ||
@@ -676,18 +688,6 @@ export function InputSelect({
     return ()=>umounted=true;
   }, [optionsReloadBasis]);
 
-  const onChangeOption = useCallback((selectVal, action)=>{
-    if(_.isArray(selectVal)) {
-      /* If multi select options need to be in some format by UI, use formatter */
-      selectVal = selectVal.map((option)=>option.value);
-      if(controlProps.formatter) {
-        selectVal = controlProps.formatter.toRaw(selectVal);
-      }
-      onChange && onChange(selectVal, action.name);
-    } else {
-      onChange && onChange(selectVal ? selectVal.value : null, action.name);
-    }
-  }, [onChange]);
 
   /* Apply filter if any */
   const filteredOptions = (controlProps.filter && controlProps.filter(finalOptions)) || finalOptions;
@@ -700,6 +700,24 @@ export function InputSelect({
 
   const styles = customReactSelectStyles(theme, readonly || disabled);
 
+  const onChangeOption = useCallback((selectVal, action)=>{
+    if(_.isArray(selectVal)) {
+      // Check if select all option is selected
+      if (!_.isUndefined(selectVal.find(x => x.label === 'Select All'))) {
+        selectVal = filteredOptions;
+      }
+      /* If multi select options need to be in some format by UI, use formatter */
+      if(controlProps.formatter) {
+        selectVal = controlProps.formatter.toRaw(selectVal, filteredOptions);
+      } else {
+        selectVal = selectVal.map((option)=>option.value);
+      }
+      onChange && onChange(selectVal, action.name);
+    } else {
+      onChange && onChange(selectVal ? selectVal.value : null, action.name);
+    }
+  }, [onChange, filteredOptions]);
+
   const commonProps = {
     components: {
       Option: CustomSelectOption,
@@ -709,7 +727,7 @@ export function InputSelect({
     openMenuOnClick: !readonly,
     onChange: onChangeOption,
     isLoading: isLoading,
-    options: filteredOptions,
+    options: controlProps.allowSelectAll ? [{ label: 'Select All', value: '*' }, ...filteredOptions] : filteredOptions,
     value: realValue,
     menuPortalTarget: document.body,
     styles: styles,

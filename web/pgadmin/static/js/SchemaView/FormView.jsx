@@ -259,6 +259,9 @@ export default function FormView({
           tabsClassname[group] = classes.fullSpace;
           fullTabs.push(group);
         }
+
+        const id = field.id || `control${tabs[group].length}`;
+
         tabs[group].push(
           useMemo(()=><MappedFormControl
             inputRef={(ele)=>{
@@ -267,11 +270,12 @@ export default function FormView({
               }
             }}
             state={value}
-            key={field.id}
+            key={id}
             viewHelperProps={viewHelperProps}
-            name={field.id}
-            value={value[field.id]}
+            name={id}
+            value={value[id]}
             {...field}
+            id={id}
             readonly={readonly}
             disabled={disabled}
             visible={visible}
@@ -279,7 +283,7 @@ export default function FormView({
               /* Get the changes on dependent fields as well */
               dataDispatch({
                 type: SCHEMA_STATE_ACTIONS.SET_VALUE,
-                path: accessPath.concat(field.id),
+                path: accessPath.concat(id),
                 value: value,
               });
             }}
@@ -287,7 +291,7 @@ export default function FormView({
             className={classes.controlRow}
             noLabel={field.isFullTab}
           />, [
-            value[field.id],
+            value[id],
             readonly,
             disabled,
             visible,

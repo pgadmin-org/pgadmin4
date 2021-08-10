@@ -157,6 +157,10 @@ basicSettings = createMuiTheme(basicSettings, {
     MuiFormHelperText: {
       root: {
         fontSize: '1em',
+      },
+      contained: {
+        marginLeft: 0,
+        marginRight: 0,
       }
     },
     MuiTypography: {

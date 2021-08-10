@@ -310,6 +310,22 @@ class JobScheduleView(PGChildNodeView):
                 errormsg=gettext("Could not find the specified job step.")
             )
 
+        # Create jscexceptions in the correct format that React control
+        # required.
+        if 'jexid' in res['rows'][0] and res['rows'][0]['jexid'] is not None\
+                and len(res['rows'][0]['jexid']) > 0:
+            res['rows'][0]['jscexceptions'] = []
+            index = 0
+            for exid in res['rows'][0]['jexid']:
+                res['rows'][0]['jscexceptions'].append(
+                    {'jexid': exid,
+                     'jexdate': res['rows'][0]['jexdate'][index],
+                     'jextime': res['rows'][0]['jextime'][index]
+                     }
+                )
+
+                index += 1
+
         return ajax_response(
             response=res['rows'][0],
             status=200
