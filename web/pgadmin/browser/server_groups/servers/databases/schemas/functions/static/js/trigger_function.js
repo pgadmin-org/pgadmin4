@@ -6,6 +6,10 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import TriggerFunctionSchema from './trigger_function.ui';
+import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
+import { getNodeVariableSchema } from '../../../../../static/js/variable.ui';
+import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.trigger_function', [
@@ -81,6 +85,26 @@ define('pgadmin.node.trigger_function', [
         },
         ]);
       },
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new TriggerFunctionSchema(
+          (privileges)=>getNodePrivilegeRoleSchema('', treeNodeInfo, itemNodeData, privileges),
+          ()=>getNodeVariableSchema(this, treeNodeInfo, itemNodeData, false, false),
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {cacheLevel: 'database'}),
+            language: ()=>getNodeAjaxOptions('get_languages', this, treeNodeInfo, itemNodeData, {noCache: true}, (res) => {
+              return _.reject(res, function(o) {
+                return o.label == 'sql' || o.label == 'edbspl';
+              });
+            }),
+            nodeInfo: treeNodeInfo
+          },
+          {
+            funcowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+            pronamespace: treeNodeInfo.schema ? treeNodeInfo.schema.label : ''
+          }
+        );
+      },
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
         initialize: function(attrs, args) {
@@ -99,34 +123,8 @@ define('pgadmin.node.trigger_function', [
         defaults: {
           name: undefined,
           oid: undefined,
-          xmin: undefined,
           funcowner: undefined,
-          pronamespace: undefined,
           description: undefined,
-          pronargs: undefined, /* Argument Count */
-          proargs: undefined, /* Arguments */
-          proargtypenames: undefined, /* Argument Signature */
-          prorettypename: 'trigger', /* Return Type */
-          lanname: 'plpgsql', /* Language Name in which function is being written */
-          provolatile: undefined, /* Volatility */
-          proretset: undefined, /* Return Set */
-          proisstrict: undefined,
-          prosecdef: undefined, /* Security of definer */
-          proiswindow: undefined, /* Window Function ? */
-          procost: undefined, /* Estimated execution Cost */
-          prorows: undefined, /* Estimated number of rows */
-          proleakproof: undefined,
-          args: [],
-          prosrc: undefined,
-          prosrc_c: undefined,
-          probin: '$libdir/',
-          options: [],
-          variables: [],
-          proacl: undefined,
-          seclabels: [],
-          acl: [],
-          sysfunc: undefined,
-          sysproc: undefined,
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
