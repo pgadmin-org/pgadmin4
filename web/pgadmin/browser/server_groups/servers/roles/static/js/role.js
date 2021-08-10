@@ -6,6 +6,10 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import RoleSchema from './role.ui';
+import { getNodeVariableSchema } from '../../../static/js/variable.ui';
+import { getNodeListByName } from '../../../../../static/js/node_ajax';
+import { getMembershipSchema } from '../../../static/js/membership.ui';
 
 define('pgadmin.node.role', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -833,13 +837,22 @@ define('pgadmin.node.role', [
           gettext('Reassign/Drop Owned - \'%s\'', _d.label)
         ).resizeTo(pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.lg);
       },
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new RoleSchema(
+          ()=>getNodeVariableSchema(this, treeNodeInfo, itemNodeData, true, false),
+          ()=>getMembershipSchema(this, treeNodeInfo, itemNodeData),
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            nodeInfo: treeNodeInfo
+          },
+        );
+      },
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
         defaults: {
           oid: null,
           rolname: undefined,
           rolcanlogin: false,
-          rolpassword: null,
           rolconnlimit: -1,
           rolsuper: false,
           rolcreaterole: false,
@@ -847,11 +860,7 @@ define('pgadmin.node.role', [
           rolinherit: true,
           rolcatupdate: false,
           rolreplication: false,
-          rolmembership: [],
-          rolmembers: [],
           rolvaliduntil: null,
-          seclabels: [],
-          variables: [],
         },
         schema: [{
           id: 'rolname', label: gettext('Name'), type: 'text',
@@ -859,19 +868,6 @@ define('pgadmin.node.role', [
         },{
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
           editable: false, type: 'text', visible: true,
-        },{
-          id: 'rolpassword', label: gettext('Password'), type: 'password',
-          group: gettext('Definition'), mode: ['edit', 'create'],
-          control: 'input', deps: ['rolcanlogin'], retype: true,
-          cell: 'string', disabled: function(m) {
-            if (!m.isNew()) {
-              var user = this.node_info.server.user;
-
-              return (!(user.is_superuser || user.can_create_role) &&
-                user.id != m.get('oid'));
-            }
-            return false;
-          },
         },{
           id: 'rolvaliduntil', readonly: 'readonly', type: 'text',
           group: gettext('Definition'), label: gettext('Account expires'),
@@ -955,73 +951,6 @@ define('pgadmin.node.role', [
           controlsClassName: 'pgadmin-controls pg-el-sm-8 pg-el-12',
           min_version: 90100,
           readonly: 'readonly',
-        },
-        {
-          id: 'rolmembership', label: gettext('Member of'),
-          group: gettext('Membership'), type: 'collection',
-          cell: 'string', mode: ['properties', 'edit', 'create'],
-          readonly: 'readonly',
-          control: RoleMembersControl, model: pgBrowser.Node.Model.extend({
-            keys: ['role'],
-            idAttribute: 'role',
-            defaults: {
-              role: undefined,
-              admin: false,
-            },
-            validate: function() {
-              return null;
-            },
-          }),
-          filter: function(d) {
-            return this.model.isNew() || (this.model.get('rolname') != d.label);
-          },
-          helpMessage: function(m) {
-            if (m.has('read_only') && m.get('read_only') == false) {
-              return gettext('Select the checkbox for roles to include WITH ADMIN OPTION.');
-            } else {
-              return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
-            }
-          },
-        },
-        {
-          id: 'rolmembers', label: gettext('Members'), type: 'collection', group: gettext('Membership'),
-          mode: ['properties', 'edit', 'create'], cell: 'string',
-          readonly: 'readonly',
-          control: RoleMembersControl, model: pgBrowser.Node.Model.extend({
-            keys: ['role'],
-            idAttribute: 'role',
-            defaults: {
-              role: undefined,
-              admin: false,
-            },
-            validate: function() {
-              return null;
-            },
-          }),
-          filter: function(d) {
-            return this.model.isNew() || (this.model.get('rolname') != d.label);
-          },
-          helpMessage: function(m) {
-            if (m.has('read_only') && m.get('read_only') == false) {
-              return gettext('Select the checkbox for roles to include WITH ADMIN OPTION.');
-            } else {
-              return gettext('Roles shown with a check mark have the WITH ADMIN OPTION set.');
-            }
-          },
-        },
-        {
-          id: 'variables', label: '', type: 'collection',
-          group: gettext('Parameters'), hasDatabase: true, url: 'variables',
-          model: pgBrowser.Node.VariableModel.extend({keys:['name', 'database']}),
-          control: 'variable-collection',
-          mode: [ 'edit', 'create'], canAdd: true, canDelete: true,
-          readonly: 'readonly',
-        },{
-          id: 'seclabels', label: gettext('Security labels'),
-          model: SecurityModel, editable: false, type: 'collection',
-          group: gettext('Security'), mode: ['edit', 'create'],
-          min_version: 90200, readonly: 'readonly', canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection',
         }],
         readonly: function(m) {
           if (!m.has('read_only')) {

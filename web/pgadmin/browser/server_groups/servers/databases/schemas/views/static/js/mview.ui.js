@@ -108,21 +108,6 @@ export default class MViewSchema extends BaseUISchema {
         type: 'nested-tab', group: gettext('Parameter'), mode: ['create', 'edit'],
         schema: this.getVacuumSettingsSchema(),
       },
-      /*{
-        type: 'nested', control: 'tab', id: 'materialization',
-        label: gettext('Parameter'), mode: ['edit', 'create'],
-        group: gettext('Parameter'),
-        schema: Backform.VacuumSettingsSchema,
-      },
-      {
-        // Add Privilege Control
-        id: 'datacl', label: gettext('Privileges'), type: 'collection',
-        model: pgBrowser.Node.PrivilegeRoleModel.extend({
-          privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't'],
-        }), uniqueCol : ['grantee'], editable: false,
-        group: 'security', canAdd: true, canDelete: true,
-        mode: ['edit', 'create'], control: 'unique-col-collection',
-      },*/
       {
         id: 'datacl', label: gettext('Privileges'), type: 'collection',
         schema: this.getPrivilegeRoleSchema(['U']),
