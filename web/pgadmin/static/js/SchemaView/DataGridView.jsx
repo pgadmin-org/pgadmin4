@@ -80,6 +80,7 @@ const useStyles = makeStyles((theme)=>({
     position: 'relative',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
   tableCellHeader: {
     fontWeight: theme.typography.fontWeightBold,

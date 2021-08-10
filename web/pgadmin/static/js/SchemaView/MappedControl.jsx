@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import _ from 'lodash';
 
 import { FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor,
-  FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, FormNote, FormInputDateTimePicker } from '../components/FormComponents';
+  FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, FormNote, FormInputDateTimePicker, PlainString } from '../components/FormComponents';
 import { InputSelect, InputText, InputCheckbox, InputDateTimePicker } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
@@ -100,7 +100,7 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
   case 'datetimepicker':
     return <FormInputDateTimePicker name={name} value={value} onChange={onTextChange} className={className} {...props} />;
   default:
-    return <span>{value}</span>;
+    return <PlainString value={value} {...props} />;
   }
 }
 
@@ -189,7 +189,7 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
   case 'datetimepicker':
     return <InputDateTimePicker name={name} value={value} onChange={onTextChange} {...props}/>;
   default:
-    return <span>{value}</span>;
+    return <PlainString value={value} {...props} />;
   }
 }
 
