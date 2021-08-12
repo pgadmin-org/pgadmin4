@@ -6,6 +6,7 @@ import { DefaultButton } from '../components/Buttons';
 import { evalFunc } from '../utils';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
+import _ from 'lodash';
 
 const useStyles = makeStyles((theme)=>({
   formBorder: {
@@ -26,14 +27,10 @@ export default function DataGridViewWithHeaderForm(props) {
   const headerFormData = useRef({});
   const schemaRef = useRef(otherProps.schema);
   const [isAddDisabled, setAddDisabled] = useState(true);
-
+  const [headerFormResetKey, setHeaderFormResetKey] = useState(0);
   const onAddClick = useCallback(()=>{
-    if(otherProps.canAddRow) {
-      let state = schemaRef.current.top ? schemaRef.current.top.sessData : schemaRef.current.sessData;
-      let canAddRow = evalFunc(schemaRef.current, otherProps.canAddRow, state || {});
-      if(!canAddRow) {
-        return;
-      }
+    if(!otherProps.canAddRow) {
+      return;
     }
 
     let newRow = headerSchema.getNewData(headerFormData.current);
@@ -42,13 +39,16 @@ export default function DataGridViewWithHeaderForm(props) {
       path: otherProps.accessPath,
       value: newRow,
     });
+    setHeaderFormResetKey((preVal)=>preVal+1);
   }, []);
 
   useEffect(()=>{
     headerSchema.top = schemaRef.current.top;
   }, []);
 
-  let state = schemaRef.current.top ? schemaRef.current.top.origData : schemaRef.current.origData;
+  let state = schemaRef.current.top ? _.get(schemaRef.current.top.sessData, _.slice(otherProps.accessPath, 0, -1))
+    : _.get(schemaRef.current.sessData);
+
   headerVisible = headerVisible && evalFunc(null, headerVisible, state);
   return (
     <Box className={containerClassName}>
@@ -67,6 +67,7 @@ export default function DataGridViewWithHeaderForm(props) {
             }}
             hasSQL={false}
             isTabView={false}
+            resetKey={headerFormResetKey}
           />
           <Box display="flex">
             <DefaultButton className={classes.addBtn} onClick={onAddClick} disabled={isAddDisabled}>Add</DefaultButton>

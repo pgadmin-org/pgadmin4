@@ -30,12 +30,12 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import FormView, { getFieldMetaData } from './FormView';
 import { pgAlertify } from '../helpers/legacyConnector';
-import { evalFunc } from 'sources/utils';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import { parseApiError } from '../api_instance';
 import DepListener, {DepListenerContext} from './DepListener';
 import FieldSetView from './FieldSetView';
+import DataGridView from './DataGridView';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -475,6 +475,7 @@ function SchemaDialogView({
         data = data || {};
         /* Set the origData to incoming data, useful for comparing and reset */
         schema.origData = prepareData(data || {});
+        schema.initialise(data);
         sessDispatch({
           type: SCHEMA_STATE_ACTIONS.INIT,
           payload: schema.origData,
@@ -497,6 +498,15 @@ function SchemaDialogView({
     /* Clear the focus timeout it unmounted */
     return ()=>clearTimeout(focusTimeout);
   }, []);
+
+  useEffect(()=>{
+    /* If reset key changes, reset the form */
+    sessDispatch({
+      type: SCHEMA_STATE_ACTIONS.INIT,
+      payload: schema.origData,
+    });
+    return true;
+  }, [props.resetKey]);
 
   const onResetClick = ()=>{
     const resetIt = ()=>{
@@ -689,6 +699,7 @@ SchemaDialogView.propTypes = {
   disableSqlHelp: PropTypes.bool,
   disableDialogHelp: PropTypes.bool,
   showFooter: PropTypes.bool,
+  resetKey: PropTypes.any,
 };
 
 const usePropsStyles = makeStyles((theme)=>({
@@ -735,29 +746,13 @@ function SchemaPropertiesView({
   }, [getInitData]);
 
   /* A simple loop to get all the controls for the fields */
-  schema.fields.forEach((f)=>{
-    let {visible, disabled, group, readonly, ...field} = f;
+  schema.fields.forEach((field)=>{
+    let {group} = field;
+    let {visible, disabled, readonly, modeSupported} = getFieldMetaData(field, schema, origData, viewHelperProps);
     group = group || defaultTab;
 
-    let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
-      ((_.isUndefined(field.server_type) ? true :
-        (viewHelperProps.serverInfo.type in field.server_type)) &&
-        (_.isUndefined(field.min_version) ? true :
-          (viewHelperProps.serverInfo.version >= field.min_version)) &&
-        (_.isUndefined(field.max_version) ? true :
-          (viewHelperProps.serverInfo.version <= field.max_version))));
-
-    let _visible = true;
-    if(field.mode) {
-      _visible = (field.mode.indexOf(viewHelperProps.mode) > -1);
-    }
-    if(_visible && visible) {
-      _visible = evalFunc(schema, visible, origData);
-    }
-
-    disabled = evalFunc(schema, disabled, origData);
     readonly = true;
-    if(_visible && verInLimit) {
+    if(visible && modeSupported) {
       if(!tabs[group]) tabs[group] = [];
       if(field && field.type === 'nested-fieldset') {
         tabs[group].push(
@@ -769,9 +764,27 @@ function SchemaPropertiesView({
             accessPath={[]}
             formErr={{}}
             controlClassName={classes.controlRow}
+            visible={visible}
             {...field} />
         );
-      }else{
+      } else if(field.type === 'collection') {
+        tabs[group].push(
+          <DataGridView
+            key={field.id}
+            viewHelperProps={viewHelperProps}
+            name={field.id}
+            value={origData[field.id]}
+            schema={field.schema}
+            accessPath={[field.id]}
+            formErr={{}}
+            controlClassName={classes.controlRow}
+            canAdd={false}
+            canEdit={false}
+            canDelete={false}
+            visible={visible}
+          />
+        );
+      } else {
         tabs[group].push(
           <MappedFormControl
             key={field.id}
@@ -781,7 +794,7 @@ function SchemaPropertiesView({
             value={origData[field.id]}
             readonly={readonly}
             disabled={disabled}
-            visible={_visible}
+            visible={visible}
             {...field}
             className={classes.controlRow}
           />

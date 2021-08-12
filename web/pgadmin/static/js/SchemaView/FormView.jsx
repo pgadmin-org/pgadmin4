@@ -80,6 +80,7 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
     canEdit: false,
     canDelete: true,
     modeSupported: true,
+    canAddRow: true,
   };
 
   if(field.mode) {
@@ -115,11 +116,11 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
 
   retData.disabled = Boolean(evalFunc(schema, disabled, value));
 
-  let {canAdd, canEdit, canDelete } = field;
+  let {canAdd, canEdit, canDelete, canAddRow } = field;
   retData.canAdd = _.isUndefined(canAdd) ? retData.canAdd : evalFunc(schema, canAdd, value);
   retData.canEdit = _.isUndefined(canEdit) ? retData.canEdit : evalFunc(schema, canEdit, value);
   retData.canDelete = _.isUndefined(canDelete) ? retData.canDelete : evalFunc(schema, canDelete, value);
-
+  retData.canAddRow = _.isUndefined(canAddRow) ? retData.canAddRow : evalFunc(schema, canAddRow, value);
   return retData;
 }
 
@@ -137,6 +138,7 @@ export default function FormView({
   const onScreenTracker = useRef(false);
   const depListener = useContext(DepListenerContext);
   let groupLabels = {};
+  const schemaRef = useRef(schema);
 
   let isOnScreen = useOnScreen(formRef);
   if(isOnScreen) {
@@ -153,7 +155,7 @@ export default function FormView({
   useEffect(()=>{
     /* Calculate the fields which depends on the current field */
     if(!isDataGridForm) {
-      schema.fields.forEach((field)=>{
+      schemaRef.current.fields.forEach((field)=>{
         /* Self change is also dep change */
         if(field.depChange || field.deferredDepChange) {
           depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
@@ -178,8 +180,8 @@ export default function FormView({
   let fullTabs = [];
 
   /* Prepare the array of components based on the types */
-  schema.fields.forEach((field)=>{
-    let {visible, disabled, readonly, canAdd, canEdit, canDelete, modeSupported} =
+  schemaRef.current.fields.forEach((field)=>{
+    let {visible, disabled, readonly, canAdd, canEdit, canDelete, canAddRow, modeSupported} =
       getFieldMetaData(field, schema, value, viewHelperProps);
 
     if(modeSupported) {
@@ -192,7 +194,7 @@ export default function FormView({
       if(field.type === 'nested-tab') {
         /* Pass on the top schema */
         if(isNested) {
-          field.schema.top = schema.top;
+          field.schema.top = schemaRef.current.top;
         } else {
           field.schema.top = schema;
         }
@@ -204,7 +206,7 @@ export default function FormView({
       } else if(field.type === 'nested-fieldset') {
         /* Pass on the top schema */
         if(isNested) {
-          field.schema.top = schema.top;
+          field.schema.top = schemaRef.current.top;
         } else {
           field.schema.top = schema;
         }
@@ -219,9 +221,9 @@ export default function FormView({
         let depsMap = [value[field.id]];
         /* Pass on the top schema */
         if(isNested) {
-          field.schema.top = schema.top;
+          field.schema.top = schemaRef.current.top;
         } else {
-          field.schema.top = schema;
+          field.schema.top = schemaRef.current;
         }
 
         depsMap.push(canAdd, canEdit, canDelete, visible);
@@ -235,7 +237,7 @@ export default function FormView({
           key: field.id, value: value[field.id], viewHelperProps: viewHelperProps, formErr: formErr,
           schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
           containerClassName: classes.controlRow, ...field, canAdd: canAdd, canEdit: canEdit, canDelete: canDelete,
-          visible: visible,
+          visible: visible, canAddRow: canAddRow,
         };
 
         if(CustomControl) {
@@ -246,7 +248,7 @@ export default function FormView({
       } else if(field.type === 'group') {
         groupLabels[field.id] = field.label;
         if(!visible) {
-          schema.filterGroups.push(field.label);
+          schemaRef.current.filterGroups.push(field.label);
         }
       } else {
         /* Its a form control */
@@ -330,6 +332,7 @@ export default function FormView({
     return <></>;
   }
 
+  let finalTabs = _.pickBy(tabs, (v, tabName)=>schemaRef.current.filterGroups.indexOf(tabName) <= -1);
   if(isTabView) {
     return (
       <>
@@ -345,16 +348,16 @@ export default function FormView({
               scrollButtons="auto"
               action={(ref)=>ref && ref.updateIndicator()}
             >
-              {Object.keys(tabs).map((tabName)=>{
+              {Object.keys(finalTabs).map((tabName)=>{
                 return <Tab key={tabName} label={tabName} />;
               })}
             </Tabs>
           </Box>
-          {Object.keys(tabs).map((tabName, i)=>{
+          {Object.keys(finalTabs).map((tabName, i)=>{
             return (
               <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
                 className={fullTabs.indexOf(tabName) == -1 ? classes.nestedControl : null}>
-                {tabs[tabName]}
+                {finalTabs[tabName]}
               </TabPanel>
             );
           })}
@@ -364,9 +367,9 @@ export default function FormView({
     return (
       <>
         <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
-          {Object.keys(tabs).map((tabName)=>{
+          {Object.keys(finalTabs).map((tabName)=>{
             return (
-              <>{tabs[tabName]}</>
+              <>{finalTabs[tabName]}</>
             );
           })}
         </Box>

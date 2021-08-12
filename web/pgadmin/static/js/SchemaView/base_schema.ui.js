@@ -86,6 +86,11 @@ export default class BaseUISchema {
       });
   }
 
+  initialise() {
+    /* Called when initial data loaded */
+    return;
+  }
+
   /* Check if current data is new or existing */
   isNew(state) {
     if(_.isUndefined(state)) {

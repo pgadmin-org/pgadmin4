@@ -179,19 +179,19 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
     schema.fields.forEach((field)=>{
       /* Self change is also dep change */
       if(field.depChange) {
-        depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange);
+        depListener?.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange);
       }
       (evalFunc(null, field.deps) || []).forEach((dep)=>{
         let source = accessPath.concat(dep);
         if(_.isArray(dep)) {
           source = dep;
         }
-        depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
+        depListener?.addDepListener(source, accessPath.concat(field.id), field.depChange);
       });
     });
     return ()=>{
       /* Cleanup the listeners when unmounting */
-      depListener.removeDepListener(accessPath);
+      depListener?.removeDepListener(accessPath);
     };
   }, []);
 
@@ -324,7 +324,7 @@ export default function DataGridView({
           return 0;
         }).map((field)=>{
           let colInfo = {
-            Header: field.label,
+            Header: field.label||<>&nbsp;</>,
             accessor: field.id,
             field: field,
             resizable: true,
@@ -386,12 +386,8 @@ export default function DataGridView({
   );
 
   const onAddClick = useCallback(()=>{
-    if(props.canAddRow) {
-      let state = schemaRef.current.top ? schemaRef.current.top.sessData : schemaRef.current.sessData;
-      let canAddRow = evalFunc(schemaRef.current, props.canAddRow, state || {});
-      if(!canAddRow) {
-        return;
-      }
+    if(!props.canAddRow) {
+      return;
     }
 
     let newRow = schemaRef.current.getNewData();
@@ -490,7 +486,7 @@ DataGridView.propTypes = {
   formErr: PropTypes.object,
   schema: CustomPropTypes.schemaUI,
   accessPath: PropTypes.array.isRequired,
-  dataDispatch: PropTypes.func.isRequired,
+  dataDispatch: PropTypes.func,
   containerClassName: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   fixedRows: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Promise), PropTypes.func]),
   columns: PropTypes.array,
