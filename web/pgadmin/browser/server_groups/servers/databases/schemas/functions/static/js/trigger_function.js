@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import TriggerFunctionSchema from './trigger_function.ui';
-import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
+import { getNodeListByName, getNodeListById, getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
 import { getNodeVariableSchema } from '../../../../../static/js/variable.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 
@@ -91,7 +91,9 @@ define('pgadmin.node.trigger_function', [
           ()=>getNodeVariableSchema(this, treeNodeInfo, itemNodeData, false, false),
           {
             role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
-            schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {cacheLevel: 'database'}),
+            schema: ()=>getNodeListById(pgBrowser.Nodes['schema'], treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database'
+            }),
             language: ()=>getNodeAjaxOptions('get_languages', this, treeNodeInfo, itemNodeData, {noCache: true}, (res) => {
               return _.reject(res, function(o) {
                 return o.label == 'sql' || o.label == 'edbspl';
@@ -101,7 +103,7 @@ define('pgadmin.node.trigger_function', [
           },
           {
             funcowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
-            pronamespace: treeNodeInfo.schema ? treeNodeInfo.schema.label : ''
+            pronamespace: treeNodeInfo.schema ? treeNodeInfo.schema._id : null
           }
         );
       },

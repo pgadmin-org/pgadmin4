@@ -137,11 +137,19 @@ FormInput.propTypes = {
   testcid: PropTypes.any,
 };
 
-export function InputSQL({value, options, onChange, ...props}) {
+export function InputSQL({value, options, onChange, readonly, ...props}) {
   const classes = useStyles();
+  const cmObj = useRef();
+
+  useEffect(()=>{
+    if(cmObj.current) {
+      cmObj.current.setOption('readOnly', readonly);
+    }
+  }, [readonly]);
 
   return (
     <CodeMirror
+      currObj={(obj)=>cmObj.current=obj}
       value={value||''}
       options={{
         lineNumbers: true,
@@ -161,8 +169,8 @@ export function InputSQL({value, options, onChange, ...props}) {
 InputSQL.propTypes = {
   value: PropTypes.string,
   options: PropTypes.object,
-  onChange: PropTypes.func
-
+  onChange: PropTypes.func,
+  readonly: PropTypes.bool
 };
 
 export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, controlProps, noLabel, ...props}) {

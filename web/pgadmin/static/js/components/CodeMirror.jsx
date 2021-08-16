@@ -13,7 +13,7 @@ import {useOnScreen} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 
 /* React wrapper for CodeMirror */
-export default function CodeMirror({name, value, options, events, ...props}) {
+export default function CodeMirror({currObj, name, value, options, events, ...props}) {
   const taRef = useRef();
   const cmObj = useRef();
   const cmWrapper = useRef();
@@ -23,6 +23,8 @@ export default function CodeMirror({name, value, options, events, ...props}) {
     /* Create the object only once on mount */
     cmObj.current = new OrigCodeMirror.fromTextArea(
       taRef.current, options);
+
+    currObj && currObj(cmObj.current);
 
     if(cmObj.current) {
       try {
@@ -65,6 +67,7 @@ export default function CodeMirror({name, value, options, events, ...props}) {
 }
 
 CodeMirror.propTypes = {
+  currObj: PropTypes.func,
   name: PropTypes.string,
   value: PropTypes.string,
   options: PropTypes.object,

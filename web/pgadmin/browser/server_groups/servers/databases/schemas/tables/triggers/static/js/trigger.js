@@ -6,6 +6,8 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../../static/js/node_ajax';
+import TriggerSchema from './trigger.ui';
 
 define('pgadmin.node.trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -173,6 +175,19 @@ define('pgadmin.node.trigger', [
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new TriggerSchema(
+          {
+            triggerFunction: ()=>getNodeAjaxOptions('get_triggerfunctions', this, treeNodeInfo, itemNodeData, {cacheLevel: 'trigger_function'}, (data) => {
+              return _.reject(data, function(option) {
+                return option.label == '';
+              });
+            }),
+            columns: ()=> getNodeListByName('column', treeNodeInfo, itemNodeData, { cacheLevel: 'column'}),
+            nodeInfo: treeNodeInfo
+          },
+        );
+      },
       model: pgAdmin.Browser.Node.Model.extend({
         idAttribute: 'oid',
         defaults: {

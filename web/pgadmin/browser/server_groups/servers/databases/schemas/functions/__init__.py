@@ -1480,8 +1480,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         parallel_dict = {'u': 'UNSAFE', 's': 'SAFE', 'r': 'RESTRICTED'}
 
         # Get Schema Name from its OID.
-        if self.node_type != 'trigger_function':
-            self._get_schema_name_from_oid(data)
+        self._get_schema_name_from_oid(data)
 
         if fnid is not None:
             # Edit Mode

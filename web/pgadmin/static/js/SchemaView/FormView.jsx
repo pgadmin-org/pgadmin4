@@ -63,6 +63,7 @@ function SQLTab({active, getSQLValue}) {
       readOnly: true,
     }}
     isAsync={true}
+    readonly={true}
   />;
 }
 

@@ -405,6 +405,7 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
       }
     ];
   }
+
   validate(state, setError) {
     if (isEmptyString(state.jscstart)) {
       setError('jscstart', gettext('Please enter the start time.'));
