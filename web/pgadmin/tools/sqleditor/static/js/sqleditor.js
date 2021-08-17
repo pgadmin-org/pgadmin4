@@ -1418,6 +1418,18 @@ define('tools.querytool', [
         }
       });
 
+      self.data_output_panel.on(wcDocker.EVENT.RESIZED, function() {
+        // Resize grid only when 'Data Output' panel is visible.
+        if (self.data_output_panel.isVisible()) {
+          if (self.preferences.column_data_auto_resize === 'by_data') {
+            grid.resizeAllColumns && grid.resizeAllColumns(
+              self.preferences.column_data_max_width, self.max_width_changed);
+          }else{
+            self.grid.resizeAllColumns && self.grid.resizeAllColumns();
+          }
+        }
+      });
+
       // Resize SlickGrid when output Panel gets focus
       self.data_output_panel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function() {
         // Resize grid only if output panel is visible

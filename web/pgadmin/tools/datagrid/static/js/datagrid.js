@@ -289,6 +289,10 @@ define('pgadmin.datagrid', [
             });
           });
 
+          queryToolPanel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function() {
+            queryToolPanel.trigger(wcDocker.EVENT.RESIZED);
+          });
+
           commonUtils.registerDetachEvent(queryToolPanel);
 
           // Listen on the panelRename event.
