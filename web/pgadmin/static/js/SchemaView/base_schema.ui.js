@@ -136,4 +136,12 @@ export default class BaseUISchema {
   addDisabled() {
     return false;
   }
+
+  /* Check */
+  inCatalog() {
+    if(this.nodeInfo && 'catalog' in this.nodeInfo) {
+      return true;
+    }
+    return false;
+  }
 }

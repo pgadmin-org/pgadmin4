@@ -180,7 +180,7 @@ class RangeSchema extends BaseUISchema {
       collationsList: [],
       ...fieldOptions
     };
-    this.node_info = {
+    this.nodeInfo = {
       ...node_info.node_info
     };
   }
@@ -224,14 +224,14 @@ class RangeSchema extends BaseUISchema {
       controlProps: { allowClear: true, placeholder: '', width: '100%' },
       mode: ['properties', 'create', 'edit'],
       group: gettext('Range Type'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
     }, {
       id: 'opcname', label: gettext('Subtype operator class'), cell: 'string',
       mode: ['properties', 'create', 'edit'], group: gettext('Range Type'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function(state) {
         return !obj.isNew(state);
       },
@@ -293,7 +293,7 @@ class RangeSchema extends BaseUISchema {
       deps: ['typname'],
       controlProps: { allowClear: true, placeholder: '', width: '100%' },
       disabled: (state) => {
-        let disableCollNameControl = inSchema(obj.node_info);
+        let disableCollNameControl = obj.inCatalog();
         if (disableCollNameControl)
           return disableCollNameControl;
 
@@ -349,7 +349,7 @@ class RangeSchema extends BaseUISchema {
       },
       mode: ['properties', 'create', 'edit'],
       group: gettext('Range Type'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function(state) {
         return !obj.isNew(state);
       },
@@ -358,7 +358,7 @@ class RangeSchema extends BaseUISchema {
       id: 'rngsubdiff', label: gettext('Subtype diff function'), cell: 'string',
       mode: ['properties', 'create', 'edit'],
       group: gettext('Range Type'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function(state) {
         return !obj.isNew(state);
       },
@@ -449,7 +449,7 @@ class ExternalSchema extends BaseUISchema {
       {label: 'MAIN', value: 'm'},
       {label: 'EXTENDED', value: 'x'},
     ];
-    this.node_info = {
+    this.nodeInfo = {
       ...node_info.node_info
     };
   }
@@ -481,7 +481,7 @@ class ExternalSchema extends BaseUISchema {
     },{
       id: 'typinput', label: gettext('Input function'),
       mode: ['properties', 'create', 'edit'], group: gettext('Required'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -534,7 +534,7 @@ class ExternalSchema extends BaseUISchema {
       readonly: function (state) {
         return !obj.isNew(state);
       },
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       controlProps: { allowClear: true, placeholder: '', width: '100%' },
     },{
       id: 'spacer_ctrl_optional_1', group: gettext('Optional-1'), mode: ['edit', 'create'], type: 'spacer',
@@ -563,7 +563,7 @@ class ExternalSchema extends BaseUISchema {
       },
       group: gettext('Optional-1'),
       mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -593,7 +593,7 @@ class ExternalSchema extends BaseUISchema {
         };
       },
       mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -630,7 +630,7 @@ class ExternalSchema extends BaseUISchema {
         };
       },
       mode: ['properties', 'create', 'edit'], group: gettext('Optional-1'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -668,7 +668,7 @@ class ExternalSchema extends BaseUISchema {
         };
       },
       mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -676,7 +676,7 @@ class ExternalSchema extends BaseUISchema {
       id: 'typlen', label: gettext('Internal length'),
       cell: 'integer', group: gettext('Optional-1'),
       type: 'int', mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -684,7 +684,7 @@ class ExternalSchema extends BaseUISchema {
       id: 'variable', label: gettext('Variable?'), cell: 'switch',
       group: gettext('Optional-1'), type: 'switch',
       mode: ['create','edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -692,7 +692,7 @@ class ExternalSchema extends BaseUISchema {
       id: 'typdefault', label: gettext('Default?'),
       cell: 'string', group: gettext('Optional-1'),
       type: 'text', mode: ['properties', 'create','edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -721,7 +721,7 @@ class ExternalSchema extends BaseUISchema {
         };
       },
       mode: ['properties', 'create','edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -743,7 +743,7 @@ class ExternalSchema extends BaseUISchema {
         };
       },
       mode: ['properties', 'create','edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -751,7 +751,7 @@ class ExternalSchema extends BaseUISchema {
     },{
       id: 'typispreferred', label: gettext('Preferred?'),
       type: 'switch', mode: ['properties', 'create','edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -788,7 +788,7 @@ class ExternalSchema extends BaseUISchema {
         };
       },
       mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -798,7 +798,7 @@ class ExternalSchema extends BaseUISchema {
       type: 'text',
       mode: ['properties', 'create', 'edit'],
       group: gettext('Optional-2'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -808,7 +808,7 @@ class ExternalSchema extends BaseUISchema {
       type: 'select',
       options: obj.fieldOptions.typeAlignOptions,
       mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -817,7 +817,7 @@ class ExternalSchema extends BaseUISchema {
       id: 'typstorage', label: gettext('Storage type'),
       type: 'select', mode: ['properties', 'create', 'edit'],
       group: gettext('Optional-2'), cell: 'string',
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -827,7 +827,7 @@ class ExternalSchema extends BaseUISchema {
       id: 'typbyval', label: gettext('Passed by value?'),
       cell: 'switch',
       type: 'switch', mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -836,7 +836,7 @@ class ExternalSchema extends BaseUISchema {
       id: 'is_collatable', label: gettext('Collatable?'),
       cell: 'switch',  min_version: 90100, group: gettext('Optional-2'),
       type: 'switch', mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -1287,14 +1287,6 @@ class DataTypeSchema extends BaseUISchema {
   }
 }
 
-function inSchema(node_info) {
-  if(node_info &&  'catalog' in node_info)
-  {
-    return true;
-  }
-  return false;
-}
-
 export default class TypeSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, getCompositeSchema, getRangeSchema, getExternalSchema, getDataTypeSchema, fieldOptions = {}, initValues) {
     super({
@@ -1318,6 +1310,7 @@ export default class TypeSchema extends BaseUISchema {
     this.getRangeSchema = getRangeSchema;
     this.getExternalSchema = getExternalSchema;
     this.getDataTypeSchema = getDataTypeSchema;
+    this.nodeInfo = this.fieldOptions.node_info;
   }
 
   schemaCheck(state) {
@@ -1353,7 +1346,7 @@ export default class TypeSchema extends BaseUISchema {
       mode: ['properties', 'create', 'edit'], noEmpty: true,
       type: 'select', options: this.fieldOptions.roles,
       controlProps: { allowClear: false },
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
     },{
       id: 'schema', label: gettext('Schema'), cell: 'string',
       mode: ['create', 'edit'], noEmpty: true,
@@ -1388,7 +1381,7 @@ export default class TypeSchema extends BaseUISchema {
       id: 'typtype', label: gettext('Type'),
       mode: ['create','edit'], group: gettext('Definition'),
       type: 'select',
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
@@ -1417,7 +1410,7 @@ export default class TypeSchema extends BaseUISchema {
       group: gettext('Definition'), mode: ['edit', 'create'],
       uniqueCol : ['member_name'],
       canAdd: true,  canEdit: false, canDelete: true,
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       schema: obj.getCompositeSchema(),
       deps: ['typtype'],
       visible: (state) => {
@@ -1435,7 +1428,7 @@ export default class TypeSchema extends BaseUISchema {
         // We will disable it if it's in 'edit' mode
         return !obj.isNew(state);
       },
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       deps: ['typtype'],
       uniqueCol : ['label'],
       visible: function(state) {
@@ -1475,12 +1468,12 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'alias', label: gettext('Alias'), cell: 'string',
       type: 'text', mode: ['properties'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
     },
     {
       id: 'member_list', label: gettext('Members'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'c') {
           return true;
@@ -1490,7 +1483,7 @@ export default class TypeSchema extends BaseUISchema {
     },{
       id: 'enum_list', label: gettext('Labels'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'e') {
           return true;
@@ -1501,7 +1494,7 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'typname', label: gettext('SubType'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'r') {
           return true;
@@ -1512,7 +1505,7 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'opcname', label: gettext('Subtype operator class'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'r') {
           return true;
@@ -1523,7 +1516,7 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'collname', label: gettext('Collation'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'r') {
           return true;
@@ -1534,7 +1527,7 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'rngcanonical', label: gettext('Canonical function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'r') {
           return true;
@@ -1545,7 +1538,7 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'rngsubdiff', label: gettext('Subtype diff function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'r') {
           return true;
@@ -1556,7 +1549,7 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'typinput', label: gettext('Input function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'b') {
           return true;
@@ -1567,7 +1560,7 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'typoutput', label: gettext('Output function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
       visible: function(state) {
         if(state.typtype === 'b') {
           return true;
@@ -1578,17 +1571,17 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'type_acl', label: gettext('Privileges'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Security'),
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
     },
     {
       id: 'is_sys_type', label: gettext('System type?'), cell: 'switch',
       type: 'switch', mode: ['properties'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
     },
     {
       id: 'description', label: gettext('Comment'), cell: 'string',
       type: 'multiline', mode: ['properties', 'create', 'edit'],
-      disabled: () => inSchema(obj.node_info),
+      disabled: () => obj.inCatalog(),
     },
     {
       id: 'typacl', label: gettext('Privileges'), type: 'collection',

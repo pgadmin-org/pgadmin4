@@ -14,22 +14,19 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import PgaJobSchema from '../../../pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui';
+import CompoundTriggerSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui';
 
-class MockSchema extends BaseUISchema {
-  get baseFields() {
-    return [];
-  }
-}
-
-describe('PgaJobSchema', ()=>{
+describe('CompoundTriggerSchema', ()=>{
   let mount;
-  let schemaObj = new PgaJobSchema(
+  let schemaObj = new CompoundTriggerSchema(
     {
-      jobjclid:()=>[], 
+      columns: [],
     },
-    ()=>new MockSchema(),
+    {
+      schema: {},
+      server: {user: {name:'enterprisedb', id:0}, server_type: 'ppas', version: 120000},
+      table: {}
+    }
   );
   let getInitData = ()=>Promise.resolve({});
 
@@ -100,5 +97,20 @@ describe('PgaJobSchema', ()=>{
       onEdit={()=>{}}
     />);
   });
-});
 
+  it('validate', ()=>{
+    let state = {};
+    let setError = jasmine.createSpy('setError');
+
+    state.evnt_truncate = false;
+    state.evnt_delete = false;
+    state.evnt_update = false;
+    state.evnt_insert = false;
+    schemaObj.validate(state, setError);
+    expect(setError).toHaveBeenCalledWith('evnt_insert', 'Specify at least one event.');
+
+    state.evnt_insert = true;
+    schemaObj.validate(state, setError);
+    expect(setError).toHaveBeenCalledWith('evnt_insert', null);
+  });
+});

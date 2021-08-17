@@ -137,6 +137,7 @@ define('pgadmin.node.mview', [
             spcname: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=> {
               return (m.label != 'pg_global');
             }),
+            nodeInfo: treeNodeInfo,
           },
           {
             owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,

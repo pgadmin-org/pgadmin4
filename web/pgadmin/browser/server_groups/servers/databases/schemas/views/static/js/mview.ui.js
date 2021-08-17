@@ -39,21 +39,12 @@ export default class MViewSchema extends BaseUISchema {
     return 'oid';
   }
 
-  inSchema() {
-    if(this.nodeInfo && 'catalog' in this.nodeInfo)
-    {
-      return true;
-    }
-    return false;
-  }
-
-
   get baseFields() {
     let obj = this;
     return [
       {
         id: 'name', label: gettext('Name'), cell: 'text',
-        type: 'text', disabled: obj.inSchema, noEmpty: true,
+        type: 'text', disabled: obj.inCatalog(), noEmpty: true,
       },{
         id: 'oid', label: gettext('OID'), cell: 'text',
         type: 'text', mode: ['properties'],
@@ -61,11 +52,11 @@ export default class MViewSchema extends BaseUISchema {
         id: 'owner', label: gettext('Owner'),
         type: 'select', cell: 'text',
         options: obj.fieldOptions.role, controlProps: { allowClear: false },
-        disabled: obj.inSchema,
+        disabled: obj.inCatalog(),
       },{
         id: 'schema', label: gettext('Schema'), cell: 'text',
         type: 'select', options: obj.fieldOptions.schema, mode: ['create', 'edit'],
-        cache_node: 'database', disabled: obj.inSchema,
+        cache_node: 'database', disabled: obj.inCatalog(),
         controlProps: {
           allowClear: false,
           first_empty: false

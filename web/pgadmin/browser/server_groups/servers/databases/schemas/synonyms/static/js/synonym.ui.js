@@ -49,7 +49,7 @@ export default class SynonymSchema extends BaseUISchema {
         readonly: function(state) { return !obj.isNew(state); },
       }, {
         id: 'targettype', label: gettext('Target type'),
-        readonly: this.inSchema, group: gettext('Definition'),
+        readonly: obj.inCatalog(), group: gettext('Definition'),
         controlProps: { allowClear: false },
         type: 'select',
         options: [
@@ -69,7 +69,7 @@ export default class SynonymSchema extends BaseUISchema {
         options: this.fieldOptions.synobjschema,
         readonly: function(state) {
           // If tagetType is synonym then disable it
-          if(!obj.inSchema()) {
+          if(!obj.inCatalog()) {
             if(state.targettype == 's') {
               return true;
             } else {
@@ -79,7 +79,7 @@ export default class SynonymSchema extends BaseUISchema {
           return true;
         },
         depChange: function(state) {
-          if(!obj.inSchema() && state.targettype == 's') {
+          if(!obj.inCatalog() && state.targettype == 's') {
             return { synobjschema: 'public'};
           }
         }
@@ -96,7 +96,7 @@ export default class SynonymSchema extends BaseUISchema {
           };
         },
         readonly: function() {
-          if(!obj.inSchema()) {
+          if(!obj.inCatalog()) {
             return false;
           }
           return true;
@@ -134,13 +134,5 @@ export default class SynonymSchema extends BaseUISchema {
     } else {
       setError('synobjname', errmsg);
     }
-  }
-
-  inSchema() {
-    if(this.nodeInfo &&  'catalog' in this.nodeInfo)
-    {
-      return true;
-    }
-    return false;
   }
 }

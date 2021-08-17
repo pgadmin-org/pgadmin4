@@ -106,17 +106,10 @@ export class EventSchema extends BaseUISchema {
       /* events validation*/
       if (state.tfunction && !state.evnt_truncate && !state.evnt_delete && !state.evnt_update && !state.evnt_insert) {
         errmsg = gettext('Specify at least one event.');
-        //setError('evnt_truncate', errmsg);
-        //setError('evnt_delete', errmsg);
-        //setError('evnt_update', errmsg);
         setError('evnt_insert', errmsg);
-        //setError('evnt_update', errmsg);
         return true;
       } else {
         errmsg = null;
-        //setError('evnt_truncate', errmsg);
-        //setError('evnt_delete', errmsg);
-        //setError('evnt_update', errmsg);
         setError('evnt_insert', errmsg);
       }
     }
@@ -145,14 +138,6 @@ export default class TriggerSchema extends BaseUISchema {
 
   get idAttribute() {
     return 'oid';
-  }
-
-  inSchema() {
-    // Check if under schema node & in 'create' mode
-    if('catalog' in this.nodeInfo) {
-      return true;
-    }
-    return false;
   }
 
   inSchemaWithModelCheck(state) {
@@ -208,7 +193,7 @@ export default class TriggerSchema extends BaseUISchema {
     let obj = this;
     return [{
       id: 'name', label: gettext('Name'), cell: 'text',
-      type: 'text', disabled: obj.inSchema, noEmpty: true
+      type: 'text', disabled: obj.inCatalog(), noEmpty: true
     },{
       id: 'oid', label: gettext('OID'), cell: 'text',
       type: 'int', mode: ['properties'],
@@ -469,7 +454,7 @@ export default class TriggerSchema extends BaseUISchema {
     },{
       id: 'description', label: gettext('Comment'), cell: 'string',
       type: 'multiline', mode: ['properties', 'create', 'edit'],
-      disabled: obj.inSchema,
+      disabled: obj.inCatalog(),
     }];
   }
 
