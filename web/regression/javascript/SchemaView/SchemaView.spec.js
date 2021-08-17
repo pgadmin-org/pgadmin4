@@ -264,7 +264,7 @@ describe('SchemaView', ()=>{
           ctrl.update();
           expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
           expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-          expect(onDataChange).toHaveBeenCalledWith(false);
+          expect(onDataChange).toHaveBeenCalledWith(false, {});
           done();
         }, 0);
       });
@@ -298,7 +298,7 @@ describe('SchemaView', ()=>{
           expect(confirmSpy).not.toHaveBeenCalled();
           expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
           expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-          expect(onDataChange).toHaveBeenCalledWith(false);
+          expect(onDataChange).toHaveBeenCalledWith(false, {});
           done();
         }, 0);
       });
@@ -411,7 +411,7 @@ describe('SchemaView', ()=>{
             ctrl.update();
             expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
             expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-            expect(onDataChange).toHaveBeenCalledWith(false);
+            expect(onDataChange).toHaveBeenCalledWith(false, {});
             done();
           }, 0);
         }, 0);

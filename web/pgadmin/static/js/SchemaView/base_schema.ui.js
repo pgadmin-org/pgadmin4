@@ -123,12 +123,12 @@ export default class BaseUISchema {
   getNewData(data={}) {
     let newRow = {};
     this.fields.forEach((field)=>{
-      if(!_.isUndefined(data[field.id])){
-        newRow[field.id] = data[field.id];
-      } else {
-        newRow[field.id] = this.defaults[field.id];
-      }
+      newRow[field.id] = this.defaults[field.id];
     });
+    newRow = {
+      ...newRow,
+      ...data,
+    };
     return newRow;
   }
 

@@ -140,6 +140,7 @@ export function getNodeListById(nodeObj, treeNodeInfo, itemNodeData, params={}, 
 /* Get the nodes list based on node name passed */
 export function getNodeListByName(node, treeNodeInfo, itemNodeData, params={}, filter=()=>true, postTransform=(res)=>res) {
   let nodeObj = pgAdmin.Browser.Nodes[node];
+  let {includeItemKeys} = params;
   /* Transform the result to add image details */
   const transform = (rows) => {
     var res = [];
@@ -157,6 +158,7 @@ export function getNodeListByName(node, treeNodeInfo, itemNodeData, params={}, f
           'value': r.label,
           'image': image,
           'label': l,
+          ..._.pick(r, includeItemKeys),
         });
       }
     });

@@ -65,7 +65,7 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
     },
     {
       id: 'grantor', label: gettext('Grantor'), type: 'text', readonly: true,
-      cell: ()=>({cell: 'select', options: obj.grantorOptions}),
+      cell: ()=>({cell: 'select', options: obj.grantorOptions}), minWidth: 150,
     }];
   }
 

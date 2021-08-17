@@ -764,8 +764,9 @@ function SchemaPropertiesView({
             accessPath={[]}
             formErr={{}}
             controlClassName={classes.controlRow}
+            {...field}
             visible={visible}
-            {...field} />
+          />
         );
       } else if(field.type === 'collection') {
         tabs[group].push(
@@ -792,10 +793,10 @@ function SchemaPropertiesView({
             state={origData}
             name={field.id}
             value={origData[field.id]}
+            {...field}
             readonly={readonly}
             disabled={disabled}
             visible={visible}
-            {...field}
             className={classes.controlRow}
           />
         );

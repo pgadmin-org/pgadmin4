@@ -322,7 +322,7 @@ export default function DataGridView({
             return props.columns.indexOf(firstF.id) < props.columns.indexOf(secondF.id) ? -1 : 1;
           }
           return 0;
-        }).map((field)=>{
+        }).map((field, fieldIdx)=>{
           let colInfo = {
             Header: field.label||<>&nbsp;</>,
             accessor: field.id,
@@ -332,6 +332,9 @@ export default function DataGridView({
             ...(field.minWidth ?  {minWidth: field.minWidth} : {}),
             ...(field.width ?  {width: field.width} : {}),
             Cell: ({value, row, ...other}) => {
+              /* Make sure to take the latest field info from schema */
+              field = schemaRef.current.fields[fieldIdx];
+
               let {visible, editable, readonly, ..._field} = field;
 
               let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
