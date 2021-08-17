@@ -18,4 +18,4 @@ Housekeeping
 Bug fixes
 *********
 
-| `Issue #6572 <https://redmine.postgresql.org/issues/6572>`_ -  Fixed
+| `Issue #6572 <https://redmine.postgresql.org/issues/6572>`_ -  Partially fixes the data output panel display issue.
