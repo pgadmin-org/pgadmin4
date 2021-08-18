@@ -19,11 +19,13 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 
 class SchemaDiffTableCompare(SchemaDiffObjectCompare):
-    table_keys_to_ignore = ['oid', 'schema', 'edit_types', 'attnum',
+    table_keys_to_ignore = ['oid', 'schema', 'edit_types',
                             'col_type', 'references', 'reltuples', 'oid-2',
-                            'rows_cnt', 'seqrelid', 'atttypid', 'elemoid',
-                            'hastoasttable', 'relhassubclass', 'relacl_str',
-                            'setting']
+                            'rows_cnt', 'hastoasttable', 'relhassubclass',
+                            'relacl_str', 'setting']
+
+    column_keys_to_ignore = ['attnum', 'atttypid', 'edit_types', 'elemoid',
+                             'seqrelid']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
@@ -34,8 +36,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                               'tgqual', 'tgconstraint']
     index_keys_to_ignore = ['indrelid', 'indclass']
 
-    keys_to_ignore = table_keys_to_ignore + constraint_keys_to_ignore \
-        + trigger_keys_to_ignore + index_keys_to_ignore
+    keys_to_ignore = table_keys_to_ignore + column_keys_to_ignore + \
+        constraint_keys_to_ignore + trigger_keys_to_ignore + \
+        index_keys_to_ignore
 
     def compare(self, **kwargs):
         """
@@ -156,8 +159,16 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         """
         tmp = None
         for item in target_cols:
+            # ignore keys from the columns list
+            for ig_key in SchemaDiffTableCompare.column_keys_to_ignore:
+                if ig_key in source:
+                    del source[ig_key]
+                if ig_key in item:
+                    del item[ig_key]
+
             if item['name'] == source['name']:
                 tmp = copy.deepcopy(item)
+
         if tmp and source != tmp:
             tmp_updated = copy.deepcopy(source)
             # Preserve the column number

@@ -79,15 +79,20 @@ def login():
                     user.login_attempts += 1
                     left_attempts = \
                         config.MAX_LOGIN_ATTEMPTS - user.login_attempts
-                    flash_login_attempt_error = \
-                        gettext('You are left with {0} more attempts.'.
-                                format(left_attempts))
+                    if left_attempts > 1:
+                        flash_login_attempt_error = \
+                            gettext('{0} more attempts remaining.'.
+                                    format(left_attempts))
+                    else:
+                        flash_login_attempt_error = \
+                            gettext('{0} more attempt remaining.'.
+                                    format(left_attempts))
                 db.session.commit()
             for error in form.errors[field]:
+                if flash_login_attempt_error:
+                    error = error + flash_login_attempt_error
+                    flash_login_attempt_error = None
                 flash(error, 'warning')
-
-            if flash_login_attempt_error:
-                flash(flash_login_attempt_error, 'warning')
 
         return redirect(get_post_logout_redirect())
 
