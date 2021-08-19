@@ -7,6 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
+import PackageSchema from './package.ui';
+import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
+import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
+
 define('pgadmin.node.package', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
@@ -90,18 +94,6 @@ define('pgadmin.node.package', [
       // Define the model for package node.
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          owner: undefined,
-          is_sys_object: undefined,
-          description: undefined,
-          pkgheadsrc: undefined,
-          pkgbodysrc: undefined,
-          acl: undefined,
-          pkgacl: [],
-          warn_text: undefined,
-        },
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
             var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
@@ -130,103 +122,24 @@ define('pgadmin.node.package', [
             return !m.isNew();
           },
         },{
-          id: 'schema', label: gettext('Schema'), type: 'text', node: 'schema',
-          control: 'node-list-by-name',
-          readonly: function(m) { return !m.isNew(); }, filter: function(d) {
-            // If schema name start with pg_* then we need to exclude them
-            if(d && d.label.match(/^pg_/))
-            {
-              return false;
-            }
-            return true;
-          }, cache_node: 'database', cache_level: 'database',
-        },{
-          id: 'is_sys_object', label: gettext('System package?'),
-          cell:'boolean', type: 'switch',mode: ['properties'],
-        },{
           id: 'description', label: gettext('Comment'), type: 'multiline',
           mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'pkgheadsrc', label: gettext('Header'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Header'),
-          tabPanelCodeClass: 'sql-code-control',
-          control: Backform.SqlCodeControl.extend({
-            onChange: function() {
-              Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
-              if(this.model && this.model.changed) {
-                if(this.model.origSessAttrs && (this.model.changed.pkgheadsrc != this.model.origSessAttrs.pkgheadsrc)) {
-                  this.model.warn_text = gettext(
-                    'Updating the package header definition may remove its existing body.'
-                  ) + '<br><br><b>' + gettext('Do you want to continue?') +
-                    '</b>';
-                }
-                else {
-                  this.model.warn_text = undefined;
-                }
-              }
-              else {
-                this.model.warn_text = undefined;
-              }
-            },
-          }),
-        },{
-          id: 'pkgbodysrc', label: gettext('Body'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Body'),
-          tabPanelCodeClass: 'sql-code-control',
-          control:  Backform.SqlCodeControl.extend({
-            onChange: function() {
-              Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
-              if(this.model && this.model.changed) {
-                if (this.model.origSessAttrs && (this.model.changed.pkgbodysrc != this.model.origSessAttrs.pkgbodysrc)) {
-                  this.model.warn_text = undefined;
-                } else if(this.model.origSessAttrs && !_.isUndefined(this.model.origSessAttrs.pkgheadsrc) &&
-                  this.model.sessAttrs && !_.isUndefined(this.model.sessAttrs.pkgheadsrc) &&
-                  (this.model.origSessAttrs.pkgheadsrc != this.model.sessAttrs.pkgheadsrc)){
-                  this.model.warn_text = gettext(
-                    'Updating the package header definition may remove its existing body.'
-                  ) + '<br><br><b>' + gettext('Do you want to continue?') +
-                    '</b>';
-                }
-              }
-            },
-          }),
-        },{
-          id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'pkgacl', label: gettext('Privileges'), type: 'collection',
-          model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['X'],
-          }), uniqueCol : ['grantee', 'grantor'], editable: false,
-          group: gettext('Security'), mode: ['edit', 'create'],
-          canAdd: true, canDelete: true, control: 'unique-col-collection',
-        }],
-        /* validate function is used to validate the input given by
-         * the user. In case of error, message will be displayed on
-         * the GUI for the respective control.
-         */
-        validate: function() {
-          var msg = undefined;
-          // Clear any existing error msg.
-          this.errorModel.clear();
-
-          if (_.isUndefined(this.get('name'))
-              || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', msg);
-            return msg;
-          }
-
-          if (_.isUndefined(this.get('pkgheadsrc'))
-              || String(this.get('pkgheadsrc')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Header cannot be empty.');
-            this.errorModel.set('pkgheadsrc', msg);
-            return msg;
-          }
-
-          return null;
-        },
+        }]
       }),
+      getSchema: (treeNodeInfo, itemNodeData) => {
+        var nodeObj = pgBrowser.Nodes['package'];
+        return new PackageSchema(
+          (privileges)=>getNodePrivilegeRoleSchema(nodeObj, treeNodeInfo, itemNodeData, privileges),
+          {
+            schemas:() => getNodeListByName('schema', treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database'
+            }),
+            node_info: treeNodeInfo
+          }, {
+            schema: treeNodeInfo.schema.label
+          }
+        );
+      }
     });
   }
 

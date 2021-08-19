@@ -733,6 +733,7 @@ function SchemaPropertiesView({
   const classes = usePropsStyles();
   let defaultTab = 'General';
   let tabs = {};
+  let tabsClassname = {};
   const [origData, setOrigData] = useState({});
   const [loaderText, setLoaderText] = useState('');
 
@@ -745,11 +746,18 @@ function SchemaPropertiesView({
     });
   }, [getInitData]);
 
+  let fullTabs = [];
+
   /* A simple loop to get all the controls for the fields */
   schema.fields.forEach((field)=>{
     let {group} = field;
     let {visible, disabled, readonly, modeSupported} = getFieldMetaData(field, schema, origData, viewHelperProps);
     group = group || defaultTab;
+
+    if(field.isFullTab) {
+      tabsClassname[group] = classes.fullSpace;
+      fullTabs.push(group);
+    }
 
     readonly = true;
     if(visible && modeSupported) {
@@ -798,6 +806,7 @@ function SchemaPropertiesView({
             disabled={disabled}
             visible={visible}
             className={classes.controlRow}
+            noLabel={field.isFullTab}
           />
         );
       }

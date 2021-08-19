@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import EDBFuncSchema from './edbfunc.ui';
+
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.edbproc', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -70,6 +72,13 @@ define('pgadmin.node.edbproc', [
         },
       }
       ),
+      getSchema: () => {
+        return new EDBFuncSchema(
+          {}, {
+            name: 'sysproc'
+          }
+        );
+      }
     });
 
   }

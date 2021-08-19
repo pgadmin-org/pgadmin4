@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import EDBVarSchema from './edbvar.ui';
+
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.edbvar', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -48,30 +50,17 @@ define('pgadmin.node.edbvar', [
       canDropCascade: false,
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          datatype: undefined,
-          visibility: 'Unknown',
-        },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', mode: ['properties'],
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
-        },{
-          id: 'datatype', label: gettext('Data type'), cell: 'string',
-          type: 'text', readonly: true,
-        },{
-          id: 'visibility', label: gettext('Visibility'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        }],
-        validate: function()
-        {
-          return null;
-        },
+        }]
       }),
+      getSchema: () => {
+        return new EDBVarSchema();
+      }
     });
 
   }
