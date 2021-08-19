@@ -305,6 +305,7 @@ def create_app(app_name=None):
         language = 'en'
         if config.SERVER_MODE is False:
             # Get the user language preference from the miscellaneous module
+            user_id = None
             if current_user.is_authenticated:
                 user_id = current_user.id
             else:
