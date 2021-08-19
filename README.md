@@ -35,27 +35,15 @@ paths it would expect to find in the standard package for your platform.
 
 You can then execute the runtime by running something like:
 
-    node_modules/nw/nwjs/nw .
+```bash
+node_modules/nw/nwjs/nw .
+```
 
 or on macOS:
 
-    node_modules/nw/nwjs/nwjs.app/Contents/MacOS/nwjs .
-
-# Create Database Migrations
-
-In order to make changes to the SQLite DB, navigate to the 'web' directory:
-
-    (pgadmin4) $ cd $PGADMIN4_SRC/web
-
-Create a migration file with the following command:
-
-    (pgadmin4) $ FLASK_APP=pgAdmin4.py flask db revision
-
-This will create a file in: $PGADMIN4_SRC/web/migrations/versions/ .
-Add any changes to the 'upgrade' function.
-Increment the SCHEMA_VERSION in $PGADMIN4_SRC/web/pgadmin/model/__init__.py file.
-
-There is no need to increment the SETTINGS_SCHEMA_VERSION.
+```bash
+node_modules/nw/nwjs/nwjs.app/Contents/MacOS/nwjs .
+```
 
 # Configuring the Python Environment
 
@@ -65,40 +53,47 @@ Python Virtual Environment is setup for this purpose, rather than using the
 system Python environment. On Linux and Mac systems, the process is fairly
 simple - adapt as required for your distribution:
 
-1. Install the virtualenv packages into the system Python environment
+1. Create a virtual environment in an appropriate directory. The last argument is
+   the name of the environment; that can be changed as desired:
 
-       $ sudo pip install virtualenv virtualenvwrapper
+   ```bash
+   $ python3 -m venv venv
+   ```
+   
+2. Now activate the virtual environment:
 
-2. Source the virtualenv wrapper tools script. You may want to add this command
-   to your ~/.bash_profile file for future convenience:
-
-       $ source /usr/local/bin/virtualenvwrapper.sh
-
-3. Create a virtual environment:
-
-       $ mkvirtualenv pgadmin4
-
-   To make use of the virtual environment in the future, use the following
-   command to re-activate it:
-
-       $ workon pgadmin4
-
+   ```bash
+   $ source venv/bin/activate
+   ```
+   
+3. Some of the components used by pgAdmin require a very recent version of *pip*,
+   so update that to the latest:
+   
+   ```bash
+   $ pip install --upgrade pip
+   ```
+   
 4. Ensure that a PostgreSQL installation's bin/ directory is in the path (so
    pg_config can be found for building psycopg2), and install the required
    packages:
 
-       (pgadmin4) $ PATH=$PATH:/usr/local/pgsql/bin pip install -r $PGADMIN4_SRC/requirements.txt
-
+   ```bash
+   (venv) $ PATH=$PATH:/usr/local/pgsql/bin pip install -r $PGADMIN4_SRC/requirements.txt
+   ```
+   
    If you are planning to run the regression tests, you also need to install
    additional requirements from web/regression/requirements.txt:
 
-       (pgadmin4) $ pip install -r $PGADMIN4_SRC/web/regression/requirements.txt
-
+   ```bash
+   (venv) $ pip install -r $PGADMIN4_SRC/web/regression/requirements.txt
+   ```
+   
 5. Create a local configuration file for pgAdmin. Edit
    $PGADMIN4_SRC/web/config_local.py and add any desired configuration options
    (use the config.py file as a reference - any settings duplicated in
    config_local.py will override those in config.py). A typical development
    configuration may look like:
+   
     ```python
     from config import *
 
@@ -131,6 +126,7 @@ simple - adapt as required for your distribution:
             'pgadmin4-server.db'
         )
    ```
+   
    This configuration allows easy switching between server and desktop modes
    for testing.
 
@@ -138,12 +134,16 @@ simple - adapt as required for your distribution:
    mode, and non-interactive in desktop mode. You can run it either by
    running:
 
-       (pgadmin4) $ python $PGADMIN4_SRC/web/setup.py
-
+   ```bash
+   (venv) $ python3 $PGADMIN4_SRC/web/setup.py
+   ```
+   
    or by starting pgAdmin 4:
 
-       (pgadmin4) $ python $PGADMIN4_SRC/web/pgAdmin4.py
-
+   ```bash
+   (venv) $ python3 $PGADMIN4_SRC/web/pgAdmin4.py
+   ```
+   
    Whilst it is possible to automatically run setup in desktop mode by running
    the runtime, that will not work in server mode as the runtime doesn't allow
    command line interaction with the setup program.
@@ -155,10 +155,7 @@ the terminal once pgAdmin has started up.
 Setup of an environment on Windows is somewhat more complicated unfortunately,
 please see *pkg/win32/README.txt* for complete details.
 
-Once a virtual environment has been created and enabled, setup can continue
-from step 4 above.
-
-## Building the Web Assets
+# Building the Web Assets
 
 pgAdmin is dependent on a number of third party Javascript libraries. These,
 along with it's own Javascript code, SCSS/CSS code and images must be
@@ -170,18 +167,22 @@ To create the bundle, you will need the 'yarn' package management tool to be
 installed. Then, you can run the following commands on a *nix system to
 download the required packages and build the bundle:
 
-    (pgadmin4) $ cd $PGADMIN4_SRC
-    (pgadmin4) $ make install-node
-    (pgadmin4) $ make bundle
+```bash
+(venv) $ cd $PGADMIN4_SRC
+(venv) $ make install-node
+(venv) $ make bundle
+```
 
 On Windows systems (where "make" is not available), the following commands
 can be used:
 
-    C:\> cd $PGADMIN4_SRC\web
-    C:\$PGADMIN4_SRC\web> yarn install
-    C:\$PGADMIN4_SRC\web> yarn run bundle
+```
+C:\> cd $PGADMIN4_SRC\web
+C:\$PGADMIN4_SRC\web> yarn install
+C:\$PGADMIN4_SRC\web> yarn run bundle
+```
 
-## Creating pgAdmin themes
+# Creating pgAdmin themes
 
 To create a pgAdmin theme, you need to create a directory under
 *web/pgadmin/static/scss/resources*.
@@ -202,12 +203,16 @@ hyphens (-) will be replaced with spaces and the result will be camel cased.
 In order to build the docs, an additional Python package is required in the
 virtual environment. This can be installed with the pip package manager:
 
-    $ workon pgadmin4
-    (pgadmin4) $ pip install Sphinx
-    
+```bash
+$ source venv/bin/activate
+(venv) $ pip install Sphinx
+```
+
 The docs can then be built using the Makefile in *$PGADMIN4_SRC*, e.g.
 
-    (pgadmin4) $ make docs
+```bash
+(venv) $ make docs
+```
 
 The output can be found in *$PGADMIN4_SRC/docs/en_US/_build/html/index.html*
 
@@ -218,22 +223,45 @@ the setup and configuration above has been completed.
 
 To build a source tarball:
 
-    (pgadmin4) $ make src
+```bash
+(venv) $ make src
+```
 
 To build a PIP Wheel, activate either a Python 3 virtual environment, configured 
 with all the required packages, and then run:
 
-    (pgadmin4) $ make pip
+```bash
+(venv) $ make pip
+```
 
 To build the macOS AppBundle, please see *pkg/mac/README*.
 
 To build the Windows installer, please see *pkg/win32/README.txt*.
+# Create Database Migrations
 
-## Support
+In order to make changes to the SQLite DB, navigate to the 'web' directory:
+
+```bash
+(venv) $ cd $PGADMIN4_SRC/web
+```
+
+Create a migration file with the following command:
+
+```bash
+(venv) $ FLASK_APP=pgAdmin4.py flask db revision
+```
+
+This will create a file in: $PGADMIN4_SRC/web/migrations/versions/ .
+Add any changes to the 'upgrade' function.
+Increment the SCHEMA_VERSION in $PGADMIN4_SRC/web/pgadmin/model/__init__.py file.
+
+There is no need to increment the SETTINGS_SCHEMA_VERSION.
+
+# Support
 
 See https://www.pgadmin.org/support/ for support options.
 
-## Project info
+# Project info
 
 The source code repository can be found here:
 
