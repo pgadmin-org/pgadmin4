@@ -80,7 +80,7 @@ def register_query_tool_preferences(self):
 
     self.auto_rollback = self.preference.register(
         'Options', 'auto_rollback',
-        gettext("Auto rollback?"), 'boolean', False,
+        gettext("Auto rollback on error?"), 'boolean', False,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext('Set auto rollback on or off by default in new Query '
                          'Tool tabs.')

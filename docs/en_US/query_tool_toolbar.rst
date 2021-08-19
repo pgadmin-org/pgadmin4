@@ -141,10 +141,10 @@ Query Execution
    | *Execute/Refresh*    | Click the *Execute/Refresh* icon to either execute or refresh the query highlighted in the SQL    | F5             |
    |                      | editor panel. Click the down arrow to access other execution options:                             |                |
    |                      |                                                                                                   |                |
-   |                      |  * Add a check next to *Auto-Rollback* to instruct the server to automatically roll back a        |                |
-   |                      |    transaction if an error occurs during the transaction.                                         |                |
+   |                      |  * Add a check next to *Auto rollback on error?* to instruct the server to automatically roll back|                |
+   |                      |    a transaction if an error occurs during the transaction.                                       |                |
    |                      |                                                                                                   |                |
-   |                      |  * Add a check next to *Auto-Commit* to instruct the server to automatically commit each          |                |
+   |                      |  * Add a check next to *Auto commit?* to instruct the server to automatically commit each         |                |
    |                      |    transaction.  Any changes made by the transaction will be visible to others, and               |                |
    |                      |    durable in the event of a crash.                                                               |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+

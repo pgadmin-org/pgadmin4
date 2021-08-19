@@ -347,10 +347,10 @@ a graphical EXPLAIN.
 
 Use the fields on the *Options* panel to manage editor preferences.
 
-* When the *Auto-Commit?* switch is set to *True*, each successful query is
+* When the *Auto commit?* switch is set to *True*, each successful query is
   committed after execution.
 
-* When the *Auto-Rollback?* switch is set to *True*, failed queries are rolled
+* When the *Auto rollback on error?* switch is set to *True*, failed queries are rolled
   back.
 
 * When the *Copy SQL from main window to query tool?* switch is set to *True*,
