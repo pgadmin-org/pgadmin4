@@ -15,6 +15,7 @@
 
 import JSONBigNumberLib from 'json-bignumber';
 import gettext from 'sources/gettext';
+import Alertify from 'pgadmin.alertifyjs';
 
 (function($, JSONBigNumber) {
   // register namespace
@@ -344,6 +345,7 @@ import gettext from 'sources/gettext';
 
     this.position = function(position) {
       calculateEditorPosition(position, $wrapper);
+      position.top = Math.max(position.top, 0);
       $wrapper
         .css('top', position.top)
         .css('left', position.left);
@@ -363,42 +365,41 @@ import gettext from 'sources/gettext';
       /* Can be useful until JSON editor loads */
       tmpdata = data;
 
-      if (_.isNull(data)){
-        defaultValue = undefined;
-        data = undefined;
-      }
-
       /* If jsonb or array */
       if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data) && data != null) {
-        data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 4);
+        data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 2);
       } else if (Array.isArray(data)) {
         var temp = [];
         $.each(data, function(i, val) {
           if (typeof val === 'object') {
-            temp.push(JSONBigNumber.stringify(val, null, 4));
+            temp.push(JSONBigNumber.stringify(val, null, 2));
           } else {
             temp.push(val);
           }
         });
         data = '[' + temp.join() + ']';
       }
-      /* if data is string then convert to json*/
-      if ( data != '' && typeof data === 'string'){
-        data = JSON.parse(data);
+      /* set editor content to empty if value is null*/
+      if (_.isNull(data)){
+        defaultValue = '';
+        data = '';
       }
 
       /* Create editor if required & set data*/
       if ($editor){
-        $editor.set(data);
+        $editor.setText(data);
         $editor.focus();
       }else{
         editorInitialized = true;
         require.ensure(['jsoneditor'], function(require) {
           var JSONEditor = require('jsoneditor');
           var jsonContainer = document.getElementById('pg-json-editor');
-          var options = { modes: ['code', 'form', 'tree','preview']};
+          var options = {
+            modes: ['code', 'form', 'tree','preview'],
+            onError: function (){ Alertify.alert(gettext('Please fix errors in json contents before switching mode.'));}
+          };
           $editor = new JSONEditor(jsonContainer, options);
-          $editor.set(data);
+          $editor.setText(data);
           $editor.focus();
         }, function(error){
           throw(error);
@@ -412,9 +413,14 @@ import gettext from 'sources/gettext';
         require.ensure(['jsoneditor'], function(require) {
           var JSONEditor = require('jsoneditor');
           var jsonContainer = document.getElementById('pg-json-editor');
-          var options = {modes: ['code', 'form', 'tree','preview']};
+          var options = {
+            modes: ['code', 'form', 'tree','preview'],
+            onError: function (){Alertify.alert(gettext('Please fix errors in json contents before switching mode.'));}
+          };
           if(jsonContainer) {
             $editor = new JSONEditor(jsonContainer, options);
+            var data = '';
+            $editor.setText(data);
             $editor.focus();
             return null;
           }
@@ -435,7 +441,7 @@ import gettext from 'sources/gettext';
     };
 
     this.applyValue = function(item, state){
-      if(args.column.column_type_internal === 'jsonb' || args.column.column_type_internal === 'json') {
+      if(args.column.column_type_internal === 'jsonb') {
         setValue(args, item, state, 'jsonb');
       } else {
         setValue(args, item, state, 'text');
@@ -447,7 +453,7 @@ import gettext from 'sources/gettext';
       if (data == '' && (_.isUndefined(defaultValue) || _.isNull(defaultValue) )) {
         return false;
       } else {
-        if(! _.isUndefined(defaultValue) && defaultValue != ''){
+        if( args.column.column_type_internal === 'jsonb' && (! _.isUndefined(defaultValue) && defaultValue != '')){
           defaultValue = JSON.stringify(JSON.parse(defaultValue), null,2);
         }
         return (!( data == '' && _.isNull(defaultValue)) && (data != defaultValue));

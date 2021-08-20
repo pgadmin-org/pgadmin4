@@ -188,7 +188,8 @@ class QueryToolLocators:
 
     row_editor_text_area_css = ".pg-text-editor > textarea"
 
-    json_editor_text_area_css = "div.ace_layer.ace_text-layer"
+    json_editor_text_area_css = \
+        "div.ace_layer.ace_text-layer .ace_line_group .ace_line"
 
     text_editor_ok_btn_css = ".btn.btn-primary.long_text_editor"
 
