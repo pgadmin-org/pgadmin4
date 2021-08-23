@@ -322,7 +322,7 @@ export default function DataGridView({
             return props.columns.indexOf(firstF.id) < props.columns.indexOf(secondF.id) ? -1 : 1;
           }
           return 0;
-        }).map((field, fieldIdx)=>{
+        }).map((field)=>{
           let colInfo = {
             Header: field.label||<>&nbsp;</>,
             accessor: field.id,
@@ -333,7 +333,7 @@ export default function DataGridView({
             ...(field.width ?  {width: field.width} : {}),
             Cell: ({value, row, ...other}) => {
               /* Make sure to take the latest field info from schema */
-              field = schemaRef.current.fields[fieldIdx];
+              field = _.find(schemaRef.current.fields, (f)=>f.id==field.id) || field;
 
               let {visible, editable, readonly, ..._field} = field;
 
@@ -358,6 +358,10 @@ export default function DataGridView({
 
               editable = _.isUndefined(editable) ? true : editable;
               editable = evalFunc(schemaRef.current, editable, row.original || {});
+
+              if(_.isUndefined(_field.cell)) {
+                console.error('cell is required ', _field);
+              }
 
               return <MappedCellControl rowIndex={row.index} value={value}
                 row={row.original} {..._field}
@@ -399,7 +403,7 @@ export default function DataGridView({
       path: accessPath,
       value: newRow,
     });
-  }, []);
+  }, [props.canAddRow]);
 
   const defaultColumn = useMemo(()=>({
     minWidth: 175,

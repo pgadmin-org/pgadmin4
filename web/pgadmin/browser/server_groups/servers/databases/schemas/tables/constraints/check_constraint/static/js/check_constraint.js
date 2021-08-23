@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import CheckConstraintSchema from './check_constraint.ui';
+
 // Check Constraint Module: Node
 define('pgadmin.node.check_constraint', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -90,108 +92,9 @@ define('pgadmin.node.check_constraint', [
         },
       },
       canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          description: undefined,
-          consrc: undefined,
-          connoinherit: undefined,
-          convalidated: true,
-        },
-        // Check Constraint Schema
-        schema: [{
-          id: 'name', label: gettext('Name'), type:'text', cell:'string',
-          mode: ['properties', 'create', 'edit'], editable:true,
-          cellHeaderClasses:'width_percent_40',
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties'],
-        },{
-          id: 'is_sys_obj', label: gettext('System check constraint?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
-          id: 'comment', label: gettext('Comment'), type: 'multiline', cell:
-          'string', mode: ['properties', 'create', 'edit'],
-          deps:['name'], disabled:function(m) {
-            var name = m.get('name');
-            if (!(name && name != '')) {
-              setTimeout(function(){
-                if(m.get('comment') && m.get('comment') !== '')
-                  m.set('comment', null);
-              },10);
-              return true;
-            } else {
-              return false;
-            }
-          },
-        },{
-          id: 'consrc', label: gettext('Check'), type: 'multiline', cell:
-          'string', group: gettext('Definition'), mode: ['properties', 'create', 'edit'],
-          readonly: 'isReadonly', editable: false,
-        },{
-          id: 'connoinherit', label: gettext('No inherit?'), type:
-          'switch', cell: 'boolean', group: gettext('Definition'), mode:
-          ['properties', 'create', 'edit'], min_version: 90200,
-          disabled: function(m) {
-            // Disabled if table is a partitioned table.
-            if ((_.has(m , 'top') && !_.isUndefined(m.top) && m.top.get('is_partitioned')) ||
-                (_.has(m, 'node_info') && _.has(m.node_info, 'table') &&
-                _.has(m.node_info.table, 'is_partitioned') && m.node_info.table.is_partitioned)
-            ){
-              setTimeout(function(){
-                m.set('connoinherit', false);
-              },10);
-
-              return true;
-            }
-
-            return false;
-          },
-          readonly: 'isReadonly',
-        },{
-          id: 'convalidated', label: gettext('Don\'t validate?'), type: 'switch', cell:
-          'boolean', group: gettext('Definition'), min_version: 90200,
-          disabled: function(m) {
-            if ((_.isFunction(m.isNew) && !m.isNew()) ||
-                  (_.has(m, 'handler') &&
-                  !_.isUndefined(m.handler) &&
-                  !_.isUndefined(m.get('oid')))) {
-
-              return !m.get('convalidated');
-            } else {
-              return false;
-            }
-          },
-          mode: ['properties', 'create', 'edit'],
-        }],
-        // Client Side Validation
-        validate: function() {
-          var err = {},
-            errmsg;
-
-          if (_.isUndefined(this.get('consrc')) || String(this.get('consrc')).replace(/^\s+|\s+$/g, '') == '') {
-            err['consrc'] = gettext('Check cannot be empty.');
-            errmsg = err['consrc'];
-          }
-
-          this.errorModel.clear().set(err);
-
-          if (_.size(err)) {
-            this.trigger('on-status', {msg: errmsg});
-            return errmsg;
-          }
-
-          return null;
-
-        },
-        isReadonly: function(m) {
-          return ((_.has(m, 'handler') &&
-            !_.isUndefined(m.handler) &&
-            !_.isUndefined(m.get('oid'))) || (_.isFunction(m.isNew) && !m.isNew()));
-        },
-      }),
+      getSchema: function(){
+        return new CheckConstraintSchema();
+      },
       // Below function will enable right click menu for creating check constraint.
       canCreate: function(itemData, item, data) {
         // If check is false then , we will allow create menu

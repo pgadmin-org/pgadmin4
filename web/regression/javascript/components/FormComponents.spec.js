@@ -537,7 +537,7 @@ describe('FormComponents', ()=>{
       setTimeout(()=>{
         expect(onChange).toHaveBeenCalled();
         done();
-      }, 0);
+      }, 100);
     });
 
     it('accessibility', ()=>{
@@ -558,16 +558,6 @@ describe('FormComponents', ()=>{
           onClose={onClose}
         />);
     });
-
-    // if(close) {
-    //   TheIcon = CloseIcon;
-    // } else if(type === MESSAGE_TYPE.SUCCESS) {
-    //   TheIcon = CheckIcon;
-    // } else if(type === MESSAGE_TYPE.ERROR) {
-    //   TheIcon = ReportProblemIcon;
-    // } else if(type === MESSAGE_TYPE.INFO) {
-    //   TheIcon = InfoIcon;
-    // }
 
     it('init', ()=>{
       expect(ctrl.find(CheckIcon).exists()).toBeTrue();

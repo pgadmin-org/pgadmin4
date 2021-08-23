@@ -137,11 +137,19 @@ export default class BaseUISchema {
     return false;
   }
 
-  /* Check */
+  /* Check if node in catalog */
   inCatalog() {
     if(this.nodeInfo && 'catalog' in this.nodeInfo) {
       return true;
     }
     return false;
+  }
+
+  /* Get the server version */
+  getServerVersion() {
+    if(!_.isUndefined(this.nodeInfo) && !_.isUndefined(this.nodeInfo.server)
+      && !_.isUndefined(this.nodeInfo.server.version)) {
+      return this.nodeInfo.server.version;
+    }
   }
 }

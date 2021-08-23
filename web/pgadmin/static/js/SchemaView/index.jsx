@@ -475,7 +475,7 @@ function SchemaDialogView({
         data = data || {};
         /* Set the origData to incoming data, useful for comparing and reset */
         schema.origData = prepareData(data || {});
-        schema.initialise(data);
+        schema.initialise(schema.origData);
         sessDispatch({
           type: SCHEMA_STATE_ACTIONS.INIT,
           payload: schema.origData,
@@ -487,6 +487,7 @@ function SchemaDialogView({
     } else {
       /* Use the defaults as the initital data */
       schema.origData = prepareData(schema.defaults);
+      schema.initialise(schema.origData);
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.INIT,
         payload: schema.origData,
@@ -734,6 +735,7 @@ function SchemaPropertiesView({
   let defaultTab = 'General';
   let tabs = {};
   let tabsClassname = {};
+  let groupLabels = {};
   const [origData, setOrigData] = useState({});
   const [loaderText, setLoaderText] = useState('');
 
@@ -760,7 +762,9 @@ function SchemaPropertiesView({
     }
 
     readonly = true;
-    if(visible && modeSupported) {
+    if(modeSupported) {
+      group = groupLabels[group] || group || defaultTab;
+
       if(!tabs[group]) tabs[group] = [];
       if(field && field.type === 'nested-fieldset') {
         tabs[group].push(
@@ -793,6 +797,11 @@ function SchemaPropertiesView({
             visible={visible}
           />
         );
+      } else if(field.type === 'group') {
+        groupLabels[field.id] = field.label;
+        if(!visible) {
+          schema.filterGroups.push(field.label);
+        }
       } else {
         tabs[group].push(
           <MappedFormControl
@@ -813,6 +822,7 @@ function SchemaPropertiesView({
     }
   });
 
+  let finalTabs = _.pickBy(tabs, (v, tabName)=>schema.filterGroups.indexOf(tabName) <= -1);
   return (
     <Box className={classes.root}>
       <Loader message={loaderText}/>
@@ -825,7 +835,7 @@ function SchemaPropertiesView({
       </Box>
       <Box className={classes.form}>
         <Box>
-          {Object.keys(tabs).map((tabName)=>{
+          {Object.keys(finalTabs).map((tabName)=>{
             let id = tabName.replace(' ', '');
             return (
               <Accordion key={id}>
@@ -838,7 +848,7 @@ function SchemaPropertiesView({
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box style={{width: '100%'}}>
-                    {tabs[tabName]}
+                    {finalTabs[tabName]}
                   </Box>
                 </AccordionDetails>
               </Accordion>

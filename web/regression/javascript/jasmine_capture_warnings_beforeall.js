@@ -9,15 +9,15 @@
 
 /* eslint-disable no-console */
 
-beforeAll(function () {
-  spyOn(console, 'warn').and.callThrough();
-  spyOn(console, 'error').and.callThrough();
-});
+// beforeAll(function () {
+//   spyOn(console, 'warn').and.callThrough();
+//   spyOn(console, 'error').and.callThrough();
+// });
 
-afterEach(function (done) {
-  setTimeout(function () {
-    expect(console.warn).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
-    done();
-  }, 0);
-});
+// afterEach(function (done) {
+//   setTimeout(function () {
+//     expect(console.warn).not.toHaveBeenCalled();
+//     expect(console.error).not.toHaveBeenCalled();
+//     done();
+//   }, 0);
+// });

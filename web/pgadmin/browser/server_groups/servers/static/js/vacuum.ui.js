@@ -18,7 +18,7 @@ export class VacuumTableSchema extends BaseUISchema {
 
     return [
       {
-        id: 'label', name: 'label', label: gettext('Label'),
+        id: 'label', name: 'label', label: gettext('Label'), cell: '',
       },
       {
         id: 'value', name: 'value', label: gettext('Value'),
@@ -40,7 +40,7 @@ export class VacuumTableSchema extends BaseUISchema {
         }
       },
       {
-        id: 'setting', name: 'setting', label: gettext('Default'),
+        id: 'setting', name: 'setting', label: gettext('Default'), cell: '',
       },
     ];
   }

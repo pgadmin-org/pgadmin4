@@ -370,7 +370,7 @@ export default function FormView({
         <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
           {Object.keys(finalTabs).map((tabName)=>{
             return (
-              <>{finalTabs[tabName]}</>
+              <React.Fragment key={tabName}>{finalTabs[tabName]}</React.Fragment>
             );
           })}
         </Box>

@@ -1,0 +1,273 @@
+import gettext from 'sources/gettext';
+import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import _ from 'lodash';
+import { isEmptyString } from 'sources/validators';
+import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
+
+export default class UniqueConstraintSchema extends BaseUISchema {
+  constructor(fieldOptions={}, nodeInfo) {
+    super({
+      name: undefined,
+      oid: undefined,
+      is_sys_obj: undefined,
+      comment: undefined,
+      spcname: undefined,
+      index: undefined,
+      fillfactor: undefined,
+      condeferrable: undefined,
+      condeferred: undefined,
+      columns: [],
+      include: [],
+    });
+
+    this.fieldOptions = fieldOptions;
+    this.nodeInfo = nodeInfo;
+  }
+
+  get idAttribute() {
+    return 'oid';
+  }
+
+  get inTable() {
+    if(_.isUndefined(this.nodeInfo)) {
+      return true;
+    }
+    return _.isUndefined(this.nodeInfo['table']);
+  }
+
+  changeColumnOptions(columns) {
+    this.fieldOptions.columns = columns;
+  }
+
+  get baseFields() {
+    let obj = this;
+
+    return [{
+      id: 'name', label: gettext('Name'), type: 'text',
+      mode: ['properties', 'create', 'edit'], editable:true,
+      cell: 'text',
+    },{
+      id: 'oid', label: gettext('OID'), cell: 'text',
+      type: 'text' , mode: ['properties'], editable: false,
+    },{
+      id: 'is_sys_obj', label: gettext('System primary key?'),
+      cell:'switch', type: 'switch', mode: ['properties'],
+    },{
+      id: 'comment', label: gettext('Comment'), cell: 'multiline',
+      type: 'multiline', mode: ['properties', 'create', 'edit'],
+      deps:['name'], disabled: (state)=>{
+        if(isEmptyString(state.name)){
+          return true;
+        }
+        return false;
+      }, depChange: (state)=>{
+        if(isEmptyString(state.name)){
+          return {comment: ''};
+        }
+      }
+    },{
+      id: 'columns', label: gettext('Columns'),
+      deps: ()=>{
+        let ret = ['index'];
+        if(obj.inTable) {
+          ret.push(['columns']);
+        }
+        return ret;
+      },
+      depChange: (state, source, topState, actionObj)=>{
+        /* If in table, sync up value with columns in table */
+        let currColumns = state.columns || [];
+        if(obj.inTable && source[0] == 'columns') {
+          if(actionObj.type == SCHEMA_STATE_ACTIONS.DELETE_ROW) {
+            let oldColumn = _.get(actionObj.oldState, actionObj.path.concat(actionObj.value));
+            currColumns = _.filter(currColumns, (cc)=>cc.column != oldColumn.name);
+          } else if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE) {
+            let tabColPath = _.slice(actionObj.path, 0, -1);
+            let oldColName = _.get(actionObj.oldState, tabColPath).name;
+            let idx = _.findIndex(currColumns, (cc)=>cc.column == oldColName);
+            if(idx > -1) {
+              currColumns[idx].column = _.get(topState, tabColPath).name;
+            }
+          }
+        }
+        return {columns: currColumns};
+      },
+      cell: ()=>({
+        cell: '',
+        controlProps: {
+          formatter: {
+            fromRaw: (backendVal)=>{
+              /* remove the column key and pass as array */
+              return _.join((backendVal||[]).map((singleVal)=>singleVal.column));
+            },
+          },
+        }
+      }),
+      type: ()=>({
+        type: 'select',
+        optionsReloadBasis: obj.fieldOptions.columns?.map ? _.join(obj.fieldOptions.columns.map((c)=>c.label), ',') : null,
+        options: obj.fieldOptions.columns,
+        controlProps: {
+          allowClear:false,
+          multiple: true,
+          formatter: {
+            fromRaw: (backendVal)=>{
+              /* remove the column key and pass as array */
+              return (backendVal||[]).map((singleVal)=>singleVal.column);
+            },
+            toRaw: (value)=>{
+              /* take the array and convert to column key collection */
+              return (value||[]).map((singleVal)=>({column: singleVal}));
+            },
+          },
+        },
+      }), group: gettext('Definition'),
+      editable: false,
+      readonly: function(state) {
+        if(!obj.isNew(state)) {
+          return true;
+        }
+      },
+      disabled: function(state) {
+        // Disable if index is selected.
+        return !(_.isUndefined(state.index) || state.index == '');
+      },
+    },{
+      id: 'include', label: gettext('Include columns'),
+      type: ()=>({
+        type: 'select',
+        options: this.fieldOptions.columns,
+        controlProps: {
+          multiple: true,
+        },
+      }), group: gettext('Definition'),
+      editable: false,
+      canDelete: true, canAdd: true,
+      mode: ['properties', 'create', 'edit'],
+      visible: function() {
+        /* In table properties, nodeInfo is not available */
+        if(!_.isUndefined(this.nodeInfo) && !_.isUndefined(this.nodeInfo.server)
+          && !_.isUndefined(this.nodeInfo.server.version) &&
+            this.nodeInfo.server.version >= 110000)
+          return true;
+
+        return false;
+      },
+      deps: ['index'],
+      readonly: function() {
+        if(!obj.isNew()) {
+          return true;
+        }
+      },
+      disabled: function(state) {
+        // Disable if index is selected.
+        return !(_.isUndefined(state.index) || state.index == '');
+      },
+      depChange: (state)=>{
+        if(_.isUndefined(state.index) || state.index == '') {
+          return {};
+        } else {
+          return {include: []};
+        }
+      }
+    },{
+      id: 'spcname', label: gettext('Tablespace'),
+      type: 'select', group: gettext('Definition'),
+      options: this.fieldOptions.spcname,
+      deps: ['index'],
+      controlProps:{allowClear:false},
+      disabled: function(state) {
+        // Disable if index is selected.
+        return !(_.isUndefined(state.index) || state.index == '');
+      },
+      depChange: (state)=>{
+        if(_.isUndefined(state.index) || state.index == '') {
+          return {};
+        } else {
+          return {spcname: ''};
+        }
+      }
+    },{
+      id: 'index', label: gettext('Index'),
+      mode: ['create'],
+      type: 'select', group: gettext('Definition'),
+      controlProps:{
+        allowClear:true,
+        options: this.fieldOptions.index,
+      },
+      readonly: function() {
+        if(!obj.isNew()) {
+          return true;
+        }
+      },
+      // We will not show this field in Create Table mode
+      visible: function() {
+        return !obj.inTable;
+      },
+    },{
+      id: 'fillfactor', label: gettext('Fill factor'), deps: ['index'],
+      type: 'int', group: gettext('Definition'),
+      disabled: function(state) {
+        // Disable if index is selected.
+        return !(_.isUndefined(state.index) || state.index == '');
+      },
+      depChange: (state)=>{
+        if(_.isUndefined(state.index) || state.index == '') {
+          return {};
+        } else {
+          return {fillfactor: null};
+        }
+      }
+    },{
+      id: 'condeferrable', label: gettext('Deferrable?'),
+      type: 'switch', group: gettext('Definition'), deps: ['index'],
+      readonly: function() {
+        if(!obj.isNew()) {
+          return true;
+        }
+        return false;
+      },
+      disabled: function(state) {
+        // Disable if index is selected.
+        return !(_.isUndefined(state.index) || state.index == '');
+      },
+      depChange: (state)=>{
+        if(_.isUndefined(state.index) || state.index == '') {
+          return {};
+        } else {
+          return {condeferrable: false};
+        }
+      }
+    },{
+      id: 'condeferred', label: gettext('Deferred?'),
+      type: 'switch', group: gettext('Definition'),
+      deps: ['condeferrable'],
+      readonly: function() {
+        if(!obj.isNew()) {
+          return true;
+        }
+        return false;
+      },
+      disabled: function(state) {
+        // Disable if index is selected.
+        return !(_.isUndefined(state.index) || state.index == '');
+      },
+      depChange: (state)=>{
+        if(_.isUndefined(state.index) || state.index == '') {
+          return {};
+        } else {
+          return {condeferred: false};
+        }
+      }
+    }];
+  }
+
+  validate(state, setError) {
+    if(isEmptyString(state.index)
+      && (_.isUndefined(state.columns) || _.isNull(state.columns) || state.columns.length < 1)) {
+      setError('columns', gettext('Please specify columns for %s.', gettext('Unique constraint')));
+      return true;
+    }
+    return false;
+  }
+}

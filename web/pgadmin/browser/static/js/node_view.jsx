@@ -23,7 +23,7 @@ import 'wcdocker';
 export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, formType, container, containerPanel, onCancel, onEdit, onSave) {
   let nodeObj = pgAdmin.Browser.Nodes[nodeType];
   let serverInfo = treeNodeInfo && ('server' in treeNodeInfo) &&
-      pgAdmin.Browser.serverInfo && pgAdmin.Browser[treeNodeInfo.server._id];
+      pgAdmin.Browser.serverInfo && pgAdmin.Browser.serverInfo[treeNodeInfo.server._id];
   let inCatalog = treeNodeInfo && ('catalog' in treeNodeInfo);
   let urlBase = generateNodeUrl.call(nodeObj, treeNodeInfo, actionType, itemNodeData, false, null);
   const api = getApiInstance();

@@ -14,7 +14,6 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import { messages } from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-//                                web/pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js
 import CollationSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui';
 
 

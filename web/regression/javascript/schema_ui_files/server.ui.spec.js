@@ -69,7 +69,7 @@ describe('ServerSchema', ()=>{
       schema={schemaObj}
       getInitData={getInitData}
       viewHelperProps={{
-        mode: 'create',
+        mode: 'edit',
       }}
       onSave={()=>{}}
       onClose={()=>{}}

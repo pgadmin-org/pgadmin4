@@ -665,7 +665,7 @@ function getRealValue(options, value, creatable, formatter) {
     }
   } else {
     realValue = _.find(options, (option)=>option.value==value) ||
-        (creatable && !_.isUndefined(value) ? {label:value, value: value} : null);
+        (creatable && !_.isUndefined(value) && !_.isNull(value) ? {label:value, value: value} : null);
   }
   return realValue;
 }
@@ -699,7 +699,8 @@ export function InputSelect({
 
   /* Apply filter if any */
   const filteredOptions = (controlProps.filter && controlProps.filter(finalOptions)) || finalOptions;
-  const realValue = getRealValue(filteredOptions, value, controlProps.creatable, controlProps.formatter);
+  let realValue = getRealValue(filteredOptions, value, controlProps.creatable, controlProps.formatter);
+  realValue = _.isNull(realValue) ? '' : realValue;
   const otherProps = {
     isSearchable: !readonly,
     isClearable: !readonly && (!_.isUndefined(controlProps.allowClear) ? controlProps.allowClear : true),
@@ -755,7 +756,7 @@ export function InputSelect({
 }
 InputSelect.propTypes = {
   cid: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array]),
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array, PropTypes.bool]),
   options: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Promise), PropTypes.func]),
   controlProps: PropTypes.object,
   optionsLoaded: PropTypes.func,
