@@ -109,6 +109,13 @@ def panel(trans_id):
     # Set TERM env for xterm.
     os.environ['TERM'] = 'xterm'
 
+    # If psql is enabled in server mode, set psqlrc and hist paths
+    # to individual user storage.
+    if config.ENABLE_PSQL and config.SERVER_MODE:
+        os.environ['PSQLRC'] = get_complete_file_path('.psqlrc', False)
+        os.environ['PSQL_HISTORY'] = \
+            get_complete_file_path('.psql_history', False)
+
     o_db_name = _get_database(params['sid'], params['did'])
 
     return render_template('editor_template.html',

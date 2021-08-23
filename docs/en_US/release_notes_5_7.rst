@@ -10,6 +10,7 @@ New features
 ************
 
 | `Issue #4264 <https://redmine.postgresql.org/issues/4264>`_ -  Make code folding case insensitive in the code mirror.
+| `Issue #6691 <https://redmine.postgresql.org/issues/6691>`_ -  Set PSQLRC and PSQL_HISTORY env vars to apt. user storage path in the server mode.
 
 Housekeeping
 ************

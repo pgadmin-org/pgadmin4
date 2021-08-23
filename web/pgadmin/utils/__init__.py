@@ -241,7 +241,7 @@ else:
         return os.path.realpath(os.path.expanduser('~/'))
 
 
-def get_complete_file_path(file):
+def get_complete_file_path(file, validate=True):
     """
     Args:
         file: File returned by file manager
@@ -266,7 +266,10 @@ def get_complete_file_path(file):
             file = file.replace('\\', '/')
             file = fs_short_path(file)
 
-    return file if os.path.isfile(file) else None
+    if validate:
+        return file if os.path.isfile(file) else None
+    else:
+        return file
 
 
 def does_utility_exist(file):
