@@ -351,28 +351,4 @@ describe('TriggerEventsSchema', ()=>{
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('evnt_insert', null);
   });
-
-  //spyOn(schemaObj, 'isNew’).and.returnValue(true);
-
-  /*it('evnt_insert disabled', ()=>{
-    let disabled = _.find(schemaObj.fields, (f)=>f.id=='evnt_insert').disabled;
-    disabled({evnt_insert : true});
-  });
-
-  it('evnt_update disabled', ()=>{
-    let disabled = _.find(schemaObj.fields, (f)=>f.id=='evnt_update').disabled;
-    disabled({evnt_update : true});
-  });
-
-  it('evnt_delete disabled', ()=>{
-    let disabled = _.find(schemaObj.fields, (f)=>f.id=='evnt_delete').disabled;
-    disabled({evnt_delete : true});
-  });
-
-  it('evnt_truncate disabled', ()=>{
-    getInitData = ()=>Promise.resolve({is_constraint_trigger: true});
-    let disabled = _.find(schemaObj.fields, (f)=>f.id=='evnt_truncate').disabled;
-    disabled({evnt_truncate : true});
-  });*/
-
 });

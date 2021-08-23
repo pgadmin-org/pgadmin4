@@ -51,7 +51,7 @@ export class EventSchema extends BaseUISchema {
       id: 'evnt_insert', label: gettext('INSERT'),
       type: 'switch', mode: ['create','edit', 'properties'],
       group: gettext('Events'),
-      disabled: (state) => {
+      readonly: (state) => {
         var evn_insert = state.evnt_insert;
         if (!_.isUndefined(evn_insert) && obj.nodeInfo && obj.nodeInfo.server.server_type == 'ppas' && obj.isNew(state))
           return false;
@@ -61,7 +61,7 @@ export class EventSchema extends BaseUISchema {
       id: 'evnt_update', label: gettext('UPDATE'),
       type: 'switch', mode: ['create','edit', 'properties'],
       group: gettext('Events'),
-      disabled: (state) => {
+      readonly: (state) => {
         var evn_update = state.evnt_update;
         if (!_.isUndefined(evn_update) && obj.nodeInfo && obj.nodeInfo.server.server_type == 'ppas' && obj.isNew(state))
           return false;
@@ -71,7 +71,7 @@ export class EventSchema extends BaseUISchema {
       id: 'evnt_delete', label: gettext('DELETE'),
       type: 'switch', mode: ['create','edit', 'properties'],
       group: gettext('Events'),
-      disabled: (state) => {
+      readonly: (state) => {
         var evn_delete = state.evnt_delete;
         if (!_.isUndefined(evn_delete) && obj.nodeInfo && obj.nodeInfo.server.server_type == 'ppas' && obj.isNew(state))
           return false;
@@ -80,7 +80,7 @@ export class EventSchema extends BaseUISchema {
     },{
       id: 'evnt_truncate', label: gettext('TRUNCATE'),
       type: 'switch', group: gettext('Events'), deps: ['is_row_trigger', 'is_constraint_trigger'],
-      disabled: (state) => {
+      readonly: (state) => {
         var is_constraint_trigger = state.is_constraint_trigger,
           is_row_trigger = state.is_row_trigger,
           server_type = obj.nodeInfo ? obj.nodeInfo.server.server_type: null;
@@ -219,7 +219,7 @@ export default class TriggerSchema extends BaseUISchema {
       type: 'switch', group: gettext('Definition'),
       mode: ['create','edit', 'properties'],
       deps: ['is_constraint_trigger'],
-      disabled: (state) => {
+      readonly: (state) => {
         // Disabled if table is a partitioned table.
         if (!obj.isNew())
           return true;
@@ -475,3 +475,4 @@ export default class TriggerSchema extends BaseUISchema {
     }
   }
 }
+

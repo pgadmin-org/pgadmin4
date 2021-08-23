@@ -6,6 +6,10 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
+import { getNodeVariableSchema } from '../../../../../static/js/variable.ui';
+import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
+import ForeignTableSchema from './foreign_table.ui';
 
 /* Create and Register Foreign Table Collection and Node. */
 define('pgadmin.node.foreign_table', [
@@ -90,7 +94,8 @@ define('pgadmin.node.foreign_table', [
         self.model.type_options = d;
         return d;
       },
-    },{
+    },
+    {
       id: 'typlen', label: gettext('Length'),
       cell: 'string', group: gettext('Definition'),
       type: 'int', deps: ['datatype'],
@@ -147,7 +152,8 @@ define('pgadmin.node.foreign_table', [
         return true;
       },
       cellHeaderClasses: 'width_percent_10',
-    },{
+    },
+    {
       id: 'precision', label: gettext('Precision'),
       type: 'int', deps: ['datatype'],
       cell: 'string', group: gettext('Definition'),
@@ -200,7 +206,8 @@ define('pgadmin.node.foreign_table', [
         }
         return true;
       }, cellHeaderClasses: 'width_percent_10',
-    },{
+    },
+    {
       id: 'typdefault', label: gettext('Default'), type: 'text',
       cell: 'string', min_version: 90300, group: gettext('Definition'),
       placeholder: gettext('Enter an expression or a value.'),
@@ -215,11 +222,13 @@ define('pgadmin.node.foreign_table', [
         }
         return true;
       },
-    },{
+    },
+    {
       id: 'attnotnull', label: gettext('Not NULL?'),
       cell: 'boolean',type: 'switch', editable: 'is_editable_column',
       cellHeaderClasses: 'width_percent_10', group: gettext('Definition'),
-    },{
+    },
+    {
       id: 'attstattarget', label: gettext('Statistics'), min_version: 90200,
       cell: 'integer', type: 'int', group: gettext('Definition'),
       editable: function(m) {
@@ -230,7 +239,8 @@ define('pgadmin.node.foreign_table', [
         return (_.isUndefined(m.get('inheritedid')) || _.isNull(m.get('inheritedid'))
           || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false;
       }, cellHeaderClasses: 'width_percent_10',
-    },{
+    },
+    {
       id: 'collname', label: gettext('Collation'), cell: 'node-ajax-options',
       control: 'node-ajax-options', type: 'text', url: 'get_collations',
       min_version: 90300, editable: function(m) {
@@ -239,13 +249,16 @@ define('pgadmin.node.foreign_table', [
            || _.isUndefined(m.get('inheritedfrom')) || _.isNull(m.get('inheritedfrom'))) ? true : false;
       },
       cellHeaderClasses: 'width_percent_20', group: gettext('Definition'),
-    },{
+    },
+    {
       id: 'attnum', cell: 'string',type: 'text', visible: false,
-    },{
+    },
+    {
       id: 'inheritedfrom', label: gettext('Inherited From'), cell: 'string',
       type: 'text', visible: false, mode: ['properties', 'edit'],
       cellHeaderClasses: 'width_percent_10',
-    },{
+    },
+    {
       id: 'coloptions', label: gettext('Options'), cell: 'string',
       type: 'collection', group: gettext('Options'), mode: ['edit', 'create'],
       model: ColumnOptionsModel, canAdd: true, canDelete: true, canEdit: false,
@@ -490,6 +503,7 @@ define('pgadmin.node.foreign_table', [
       collection_type: 'coll-foreign_table',
       hasSQL: true,
       hasDepends: true,
+      width: pgBrowser.stdW.md + 'px',
       hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
       parent_type: ['schema'],
       Init: function() {
@@ -520,6 +534,32 @@ define('pgadmin.node.foreign_table', [
         },
         ]);
 
+      },
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new ForeignTableSchema(
+          (privileges)=>getNodePrivilegeRoleSchema('', treeNodeInfo, itemNodeData, privileges),
+          ()=>getNodeVariableSchema(this, treeNodeInfo, itemNodeData, false, false),
+          (params)=>{
+            return getNodeAjaxOptions('get_columns', pgBrowser.Nodes['foreign_table'], treeNodeInfo, itemNodeData, {urlParams: params, useCache:false});
+          },
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {cacheLevel: 'database'}),
+            foreignServers: ()=>getNodeAjaxOptions('get_foreign_servers', this, treeNodeInfo, itemNodeData, {cacheLevel: 'database'}, (res) => {
+              return _.reject(res, function(o) {
+                return o.label == '' || o.label == null;
+              });
+            }),
+            tables: ()=>getNodeAjaxOptions('get_tables', this, treeNodeInfo, itemNodeData, {cacheLevel: 'database'}),
+            nodeInfo: treeNodeInfo,
+            nodeData: itemNodeData,
+            pgBrowser: pgBrowser
+          },
+          {
+            owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+            basensp: treeNodeInfo.schema ? treeNodeInfo.schema.label : ''
+          }
+        );
       },
       model: pgBrowser.Node.Model.extend({
         idAttribute: 'oid',

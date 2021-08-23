@@ -17,7 +17,7 @@ import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import MembershipSchema, {getMembershipSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/membership.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 
-describe('PrivilegeSchema', ()=>{
+describe('MembershipSchema', ()=>{
   let mount;
   let schemaObj = new MembershipSchema(
     ()=>[]);

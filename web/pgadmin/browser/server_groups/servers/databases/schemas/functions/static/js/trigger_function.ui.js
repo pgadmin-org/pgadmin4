@@ -119,10 +119,6 @@ export default class TriggerFunctionSchema extends BaseUISchema {
         cell:'boolean', type: 'switch',
         mode: ['properties'], visible: obj.isVisible
       },{
-        id: 'sysproc', label: gettext('System procedure?'),
-        cell:'boolean', type: 'switch',
-        mode: ['properties'], visible: obj.isVisible
-      },{
         id: 'description', label: gettext('Comment'), cell: 'string',
         type: 'multiline', disabled: obj.isDisabled, readonly: obj.isReadonly,
       },{
