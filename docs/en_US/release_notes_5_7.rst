@@ -19,6 +19,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #6544 <https://redmine.postgresql.org/issues/6544>`_ -  Fixed width limitation issue in PSQL tool window.
 | `Issue #6564 <https://redmine.postgresql.org/issues/6564>`_ -  Fixed an issue where columns with sequences get altered unnecessarily with a schema diff tool.
 | `Issue #6572 <https://redmine.postgresql.org/issues/6572>`_ -  Partially fixes the data output panel display issue.
 | `Issue #6663 <https://redmine.postgresql.org/issues/6663>`_ -  Fixed no attribute '_asdict' error when connecting the database server.

@@ -35,6 +35,10 @@ require(
         self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db | replace("'", "\'")| replace('"', '\"') | replace('\\', '\\\\')}}', '{{server_type}}', fitAddon, term);
         self.pgAdmin.Browser.psql.psql_terminal_io(term, socket, '{{platform}}');
         self.pgAdmin.Browser.psql.check_db_name_change('{{db}}', '{{o_db_name}}');
+        <!-- Set terminal size -->
+        setTimeout(function(){
+          socket.emit("resize", {"cols": term.cols, "rows": term.rows})
+        }, 1000);
 
         <!-- Resize the terminal -->
         function fitToscreen(){
