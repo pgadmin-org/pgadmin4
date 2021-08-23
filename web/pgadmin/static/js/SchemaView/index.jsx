@@ -24,7 +24,7 @@ import {FormFooterMessage, MESSAGE_TYPE } from 'sources/components/FormComponent
 import Theme from 'sources/Theme';
 import { PrimaryButton, DefaultButton, PgIconButton } from 'sources/components/Buttons';
 import Loader from 'sources/components/Loader';
-import { minMaxValidator, numberValidator, integerValidator, emptyValidator, checkUniqueCol } from '../validators';
+import { minMaxValidator, numberValidator, integerValidator, emptyValidator, checkUniqueCol, isEmptyString} from '../validators';
 import { MappedFormControl } from './MappedControl';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
@@ -225,7 +225,7 @@ function validateSchema(schema, sessData, setError) {
         if(dupInd > 0) {
           let uniqueColNames = _.filter(field.schema.fields, (uf)=>field.uniqueCol.indexOf(uf.id) > -1)
             .map((uf)=>uf.label).join(', ');
-          if (_.isUndefined(field.label) || _.isNull(field.label)) {
+          if (isEmptyString(field.label)) {
             setError(field.uniqueCol[0], gettext('%s must be unique.', uniqueColNames));
           } else {
             setError(field.uniqueCol[0], gettext('%s in %s must be unique.', uniqueColNames, field.label));

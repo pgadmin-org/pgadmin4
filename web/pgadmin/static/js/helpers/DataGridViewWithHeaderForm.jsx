@@ -53,7 +53,7 @@ export default function DataGridViewWithHeaderForm(props) {
   return (
     <Box className={containerClassName}>
       <Box className={classes.formBorder}>
-        <DataGridHeader label={props.label} />
+        {props.label && <DataGridHeader label={props.label} />}
         {headerVisible && <Box className={classes.form}>
           <SchemaView
             formType={'dialog'}
