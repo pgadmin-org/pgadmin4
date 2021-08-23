@@ -27,7 +27,7 @@
     let startTkn = tokenSet[tokenSetNo].start,
       endTkn = tokenSet[tokenSetNo].end;
     while (at > 0) {
-      var found = lineText.lastIndexOf(startTkn, at);
+      var found = lineText.toUpperCase().lastIndexOf(startTkn, at);
       var startToken = startTkn;
       var endToken = endTkn;
 
@@ -50,12 +50,12 @@
       }
       at = found - 1;
     }
-    if (startChar == null || lineText.lastIndexOf(startToken) > startChar) return;
+    if (startChar == null || lineText.toUpperCase().lastIndexOf(startToken) > startChar) return;
     var count = 1,
       lastLine = cm.lineCount(),
       end, endCh;
     outer: for (var i = line + 1; i < lastLine; ++i) {
-      var text = cm.getLine(i),
+      var text = cm.getLine(i).toUpperCase(),
         pos = 0;
       var whileloopvar = 0;
       while (whileloopvar < 1) {

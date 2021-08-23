@@ -9,7 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
-
+| `Issue #4264 <https://redmine.postgresql.org/issues/4264>`_ -  Make code folding case insensitive in the code mirror.
 
 Housekeeping
 ************
