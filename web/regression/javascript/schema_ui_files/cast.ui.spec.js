@@ -70,7 +70,7 @@ describe('CastSchema', ()=>{
       schema={schemaObj}
       getInitData={getInitData}
       viewHelperProps={{
-        mode: 'create',
+        mode: 'edit',
       }}
       onSave={()=>{}}
       onClose={()=>{}}
@@ -99,12 +99,14 @@ describe('CastSchema', ()=>{
 
   it('srctyp depChange', ()=>{
     let depChange = _.find(schemaObj.fields, (f)=>f.id=='srctyp').depChange;
-    depChange({srctyp: 'abc', trgtyp: 'abc'});
+    let status = depChange({srctyp: 'abc', trgtyp: 'abc'});
+    expect(status).toEqual('abc->abc');
   });
 
   it('trgtyp depChange', ()=>{
     let depChange = _.find(schemaObj.fields, (f)=>f.id=='trgtyp').depChange;
-    depChange({srctyp: 'abc', trgtyp: 'abc'});
+    let status = depChange({srctyp: 'abc', trgtyp: 'abc'});
+    expect(status).toEqual('abc->abc');
   });
 
   it('validate', ()=>{

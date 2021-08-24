@@ -109,12 +109,14 @@ describe('PublicationSchema', ()=>{
 
   it('pubtable disabled', ()=>{
     let disabled = _.find(schemaObj.fields, (f)=>f.id=='pubtable').disabled;
-    disabled({all_table: true});
+    let status = disabled({all_table: true});
+    expect(status).toBe(true);
   });
 
   it('only_table readonly', ()=>{
     let readonly = _.find(schemaObj.fields, (f)=>f.id=='only_table').readonly;
-    readonly({all_table: true});
+    let status = readonly({all_table: true});
+    expect(status).toBe(true);
   });
 
 });

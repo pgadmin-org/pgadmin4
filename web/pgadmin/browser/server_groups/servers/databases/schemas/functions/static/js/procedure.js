@@ -7,14 +7,20 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { getNodeAjaxOptions, getNodeListByName, getNodeListById} from '../../../../../../../static/js/node_ajax';
+import FunctionSchema from './function.ui';
+import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
+import { getNodeVariableSchema } from '../../../../../static/js/variable.ui';
+import _ from 'lodash';
+
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.procedure', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.node.function', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify, Function,
+], function(gettext, url_for, $, pgAdmin, pgBrowser, alertify, Function,
   schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {
@@ -89,6 +95,37 @@ define('pgadmin.node.procedure', [
           )
         );
       },
+      getSchema: function(treeNodeInfo, itemNodeData) {
+        return new FunctionSchema(
+          (privileges)=>getNodePrivilegeRoleSchema(this, treeNodeInfo, itemNodeData, privileges),
+          ()=>getNodeVariableSchema(this, treeNodeInfo, itemNodeData, false, false),
+          {
+            role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            schema: ()=>getNodeListById(pgBrowser.Nodes['schema'], treeNodeInfo, itemNodeData, {
+              cacheLevel: 'database'
+            }
+            ),
+            getTypes: ()=>getNodeAjaxOptions('get_types', this, treeNodeInfo, itemNodeData),
+            getLanguage: ()=>getNodeAjaxOptions('get_languages', this, treeNodeInfo, itemNodeData),
+            getSupportFunctions: ()=>getNodeAjaxOptions('get_support_functions', this, treeNodeInfo, itemNodeData, {
+              cacheNode: 'function'
+            }),
+
+          },
+          {
+            node_info: treeNodeInfo,
+          },
+          {
+            type: pgBrowser.Nodes['procedure'].type,
+          },
+          {
+            funcowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
+            pronamespace: treeNodeInfo.schema ? treeNodeInfo.schema._id : null,
+            lanname: 'edbspl',
+          }
+        );
+      },
+
       model: Function.model.extend({
         defaults: _.extend({},
           Function.model.prototype.defaults,

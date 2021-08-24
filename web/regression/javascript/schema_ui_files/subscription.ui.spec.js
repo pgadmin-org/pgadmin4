@@ -81,7 +81,7 @@ describe('SubscriptionSchema', ()=>{
       schema={schemaObj}
       getInitData={getInitData}
       viewHelperProps={{
-        mode: 'create',
+        mode: 'edit',
       }}
       onSave={()=>{}}
       onClose={()=>{}}
@@ -110,12 +110,14 @@ describe('SubscriptionSchema', ()=>{
 
   it('copy_data_after_refresh readonly', ()=>{
     let isReadonly = _.find(schemaObj.fields, (f)=>f.id=='copy_data_after_refresh').readonly;
-    isReadonly({host: '127.0.0.1', port : 5432});
+    let status = isReadonly({host: '127.0.0.1', port : 5432});
+    expect(status).toBe(true);
   });
 
   it('copy_data_after_refresh readonly', ()=>{
     let isReadonly = _.find(schemaObj.fields, (f)=>f.id=='copy_data_after_refresh').readonly;
-    isReadonly({refresh_pub : true});
+    let status = isReadonly({refresh_pub : true});
+    expect(status).toBe(false);
   });
 
   it('validate', ()=>{
@@ -159,9 +161,5 @@ describe('SubscriptionSchema', ()=>{
     state.tunnel_identity_file = '/file/path/xyz.pem';
     expect(schemaObj.validate(state, setError)).toBeFalse();
   });
-
-
-
-
 });
 
