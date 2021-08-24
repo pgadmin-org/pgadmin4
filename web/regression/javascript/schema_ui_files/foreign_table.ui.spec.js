@@ -155,12 +155,78 @@ describe('ForeignTableSchema', ()=>{
     expect(status).toBe(true);
   });
 
-  /*it('inherits deferredDepChange', ()=>{
-    let state = {columns: []};
-    let deferredDepChange = _.find(schemaObj.fields, (f)=>f.id=='inherits').deferredDepChange;
-    let status = deferredDepChange(state, {}, {}, {});
-    expect(status).toEqual(Promise.reject());
-  });*/
+  it('getTableOid', ()=>{
+    schemaObj.inheritedTableList = [
+      {label: 'tab1', value: 12345},
+      {label: 'tab2', value: 123456}
+    ];
+    expect(schemaObj.getTableOid(123456)).toBe(123456);
+  });
+
+
+  describe('inherits change', ()=>{
+    let deferredDepChange;
+    let inheritCol = {name: 'id'};
+
+    beforeEach(()=>{
+      spyOn(schemaObj, 'getTableOid').and.returnValue(123456);
+      spyOn(schemaObj, 'getColumns').and.returnValue(Promise.resolve([inheritCol]));
+      deferredDepChange = _.find(schemaObj.fields, (f)=>f.id=='inherits')?.deferredDepChange;
+    });
+
+    it('add first selection', (done)=>{
+      let state = {columns: [], inherits: ['table1']};
+      let deferredPromise = deferredDepChange(state, null, null, {
+        oldState: {
+          inherits: [],
+        },
+      });
+      deferredPromise.then((depChange)=>{
+        let finalCols = [{name: 'id'}];
+        expect(depChange(state)).toEqual({
+          adding_inherit_cols: false,
+          columns: finalCols,
+        });
+        done();
+      });
+    });
+    it('remove one table', (done)=>{
+      inheritCol.inheritedid = 123456;
+      let newCol = schemaObj.getNewData(inheritCol);
+      let state = {columns: [{name: 'desc'}, newCol], inherits: ['table1']};
+      let deferredPromise = deferredDepChange(state, null, null, {
+        oldState: {
+          inherits: ['table1', 'table2'],
+        },
+      });
+      deferredPromise.then((depChange)=>{
+        let finalCols = [{name: 'desc'}];
+        expect(depChange(state)).toEqual({
+          adding_inherit_cols: false,
+          columns: finalCols,
+        });
+        done();
+      });
+    });
+
+    it('remove all', (done)=>{
+      inheritCol.inheritedid = 140391;
+      let state = {columns: [{name: 'desc'}], inherits: []};
+      let deferredPromise = deferredDepChange(state, null, null, {
+        oldState: {
+          inherits: ['table1'],
+        },
+      });
+      deferredPromise.then((depChange)=>{
+        let finalCols = [{name: 'desc'}];
+        expect(depChange(state)).toEqual({
+          adding_inherit_cols: false,
+          columns: finalCols,
+        });
+        done();
+      });
+    });
+  });
 
 });
 
@@ -459,4 +525,3 @@ describe('ForeignTableCheckConstraint', ()=>{
     expect(status).toBe(true);
   });
 });
-
