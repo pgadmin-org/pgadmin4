@@ -2,7 +2,7 @@
 
 -- DROP FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"();
 
-CREATE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
+CREATE OR REPLACE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
