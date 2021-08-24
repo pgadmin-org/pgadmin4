@@ -63,9 +63,6 @@ export default class OneToManyDialog {
         editable: true, options: (view)=>{
           let retOpts = [];
           _.forEach(tableNodesDict, (node, uid)=>{
-            if(uid === view.model.get('local_table_uid')) {
-              return;
-            }
             let [schema, name] = node.getSchemaTableName();
             retOpts.push({value: uid, label: `(${schema}) ${name}`});
           });
