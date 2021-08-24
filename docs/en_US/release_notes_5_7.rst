@@ -22,6 +22,7 @@ Bug fixes
 | `Issue #6544 <https://redmine.postgresql.org/issues/6544>`_ -  Fixed width limitation issue in PSQL tool window.
 | `Issue #6564 <https://redmine.postgresql.org/issues/6564>`_ -  Fixed an issue where columns with sequences get altered unnecessarily with a schema diff tool.
 | `Issue #6572 <https://redmine.postgresql.org/issues/6572>`_ -  Partially fixes the data output panel display issue.
+| `Issue #6641 <https://redmine.postgresql.org/issues/6641>`_ -  Enables pgAdmin to retrieve user permissions in case of nested roles which helps to terminate the session for AWS RDS.
 | `Issue #6663 <https://redmine.postgresql.org/issues/6663>`_ -  Fixed no attribute '_asdict' error when connecting the database server.
 | `Issue #6671 <https://redmine.postgresql.org/issues/6671>`_ -  Fixed UnboundLocalError where local variable 'user_id' referenced before assignment.
 | `Issue #6682 <https://redmine.postgresql.org/issues/6682>`_ -  Renamed 'Auto rollback?' to 'Auto rollback on error?'.

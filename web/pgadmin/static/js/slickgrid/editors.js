@@ -47,7 +47,7 @@ import Alertify from 'pgadmin.alertifyjs';
 
   // return json editor element
   function getJsonEditor() {
-    return $('<div id=\'pg-json-editor\' hidefocus\'>');
+    return $('<div id=\'pg-json-editor\' hidefocus>');
   }
 
   // Generate and return editor buttons
@@ -396,7 +396,7 @@ import Alertify from 'pgadmin.alertifyjs';
           var jsonContainer = document.getElementById('pg-json-editor');
           var options = {
             modes: ['code', 'form', 'tree','preview'],
-            onError: function (){ Alertify.alert(gettext('Please fix errors in json contents before switching mode.'));}
+            onError: function (){ Alertify.error(gettext('Please fix errors in json contents before switching mode.'));}
           };
           $editor = new JSONEditor(jsonContainer, options);
           $editor.setText(data);
@@ -415,7 +415,7 @@ import Alertify from 'pgadmin.alertifyjs';
           var jsonContainer = document.getElementById('pg-json-editor');
           var options = {
             modes: ['code', 'form', 'tree','preview'],
-            onError: function (){Alertify.alert(gettext('Please fix errors in json contents before switching mode.'));}
+            onError: function (){Alertify.error(gettext('Please fix errors in json contents before switching mode.'));}
           };
           if(jsonContainer) {
             $editor = new JSONEditor(jsonContainer, options);
@@ -628,6 +628,7 @@ import Alertify from 'pgadmin.alertifyjs';
 
     this.position = function(position) {
       calculateEditorPosition(position, $wrapper);
+      position.top = Math.max(position.top, 0);
       $wrapper
         .css('top', position.top)
         .css('left', position.left);
@@ -645,26 +646,30 @@ import Alertify from 'pgadmin.alertifyjs';
     this.loadValue = function(item) {
       var data = defaultValue = item[args.column.field];
       tmpdata = data;
-      if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data)) {
-        data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 4);
+      if(args.column.column_type_internal === 'jsonb' && !Array.isArray(data) && data != null) {
+        data = JSONBigNumber.stringify(JSONBigNumber.parse(data), null, 2);
       } else if (Array.isArray(data)) {
         var temp = [];
         $.each(data, function(i, val) {
           if (typeof val === 'object') {
-            temp.push(JSONBigNumber.stringify(val, null, 4));
+            temp.push(JSONBigNumber.stringify(val, null,2));
           } else {
             temp.push(val);
           }
         });
         data = '[' + temp.join() + ']';
       }
-      /* if data is string then convert to json*/
-      if (typeof data === 'string')
-        data = JSON.parse(data);
 
+      /* set editor content to empty if value is null*/
+      if (_.isNull(data)){
+        defaultValue = '';
+        data = '';
+      }
+      /* Create editor if required & set data*/
       require.ensure(['jsoneditor'], function(require) {
         var JSONEditor = require('jsoneditor');
         var jsonContainer = document.getElementById('pg-json-editor');
+        jsonContainer.setAttribute('readonly', true);
         let options = {
           modes: ['code', 'form',  'tree', 'preview'],
           onEditable: function() {
@@ -673,7 +678,7 @@ import Alertify from 'pgadmin.alertifyjs';
         };
         if(jsonContainer) {
           $editor = new JSONEditor(jsonContainer, options);
-          $editor.set(data);
+          $editor.setText(data);
         }
       }, function(error){
         throw(error);

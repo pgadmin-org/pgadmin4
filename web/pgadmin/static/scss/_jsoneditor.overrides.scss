@@ -162,6 +162,11 @@ div.jsoneditor-tree button.jsoneditor-button:focus {
     background-color: $color-bg;
 }
 
+/* Ace editor code background readonly*/
+#pg-json-editor[readonly] .ace-jsoneditor .ace_scroller{
+    background-color: $color-gray-light;
+    opacity: $btn-disabled-opacity;
+}
 
 /* Ace editor hide indent guide */
 .ace-jsoneditor .ace_indent-guide {
@@ -188,7 +193,6 @@ div.jsoneditor-tree button.jsoneditor-button:focus {
     background-color:$color-bg !important;
 }
 
-
 /* /* font setting all other mode */
 /* form, tree, code, preview, schema-error  */
 div.jsoneditor-default,
@@ -204,6 +208,19 @@ div.jsoneditor-tree{
     line-height: $line-height-base !important;
     color: $color-fg;
     background-color:$color-bg;
+}
+
+/* read only mode */
+#pg-json-editor[readonly] {
+  & div.jsoneditor-tree,
+  & div.jsoneditor td,
+  & div.jsoneditor-readonly,
+  & div.jsoneditor-value,
+  & div.jsoneditor-field,
+  & div.jsoneditor-tree button.jsoneditor-button:focus {
+    background-color: $color-gray-light !important;
+    opacity: 0.85;
+  }
 }
 
 div.jsoneditor td.jsoneditor-tree {
@@ -332,6 +349,19 @@ div.jsoneditor-value[contenteditable=true]:hover
     color: $color-fg !important;
 }
 
+/* Replace help text */
+.pico-modal-contents p{
+  visibility: hidden;
+  display: flex;
+  margin-bottom: -1rem;
+}
+
+.pico-modal-contents p::after{
+  visibility: visible;
+  position: absolute;
+  content: "Enter a JMESPath query to filter, sort, or transform the JSON data.";
+  display: block;
+}
 
 /* Fields */
 .jsoneditor-modal,
