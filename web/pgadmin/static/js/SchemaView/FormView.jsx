@@ -38,11 +38,15 @@ const useStyles = makeStyles((theme)=>({
   },
   nestedControl: {
     height: 'unset',
+  },
+  sqlTabInput: {
+    border: 0,
   }
 }));
 
 /* Optional SQL tab */
 function SQLTab({active, getSQLValue}) {
+  const classes = useStyles();
   const [sql, setSql] = useState('Loading...');
   useEffect(()=>{
     let unmounted = false;
@@ -63,6 +67,7 @@ function SQLTab({active, getSQLValue}) {
       readOnly: true,
     }}
     readonly={true}
+    className={classes.sqlTabInput}
   />;
 }
 

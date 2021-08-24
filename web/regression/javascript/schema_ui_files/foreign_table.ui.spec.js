@@ -241,7 +241,7 @@ describe('ForeignTableColumnSchema', ()=>{
       server: {user: {name:'postgres', id:0}, server_type: 'pg', version: 90400},
       table: {}
     },
-    [{is_collatable: false, label: '"char"', length: true, max_val: 0, min_val: 0, precision: true, typval: ' '}],
+    [{is_collatable: false, label: '"char"', value: '"char"', length: true, max_val: 0, min_val: 0, precision: true, typval: ' '}],
     ()=>[],
   );
   let getInitData = ()=>Promise.resolve({});

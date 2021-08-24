@@ -743,12 +743,17 @@ function SchemaPropertiesView({
   const [loaderText, setLoaderText] = useState('');
 
   useEffect(()=>{
+    let unmounted = false;
     setLoaderText('Loading...');
     getInitData().then((data)=>{
       data = data || {};
-      setOrigData(data || {});
-      setLoaderText('');
+      if(!unmounted) {
+        setOrigData(data || {});
+        setLoaderText('');
+      }
     });
+
+    return ()=>unmounted=true;
   }, [getInitData]);
 
   let fullTabs = [];

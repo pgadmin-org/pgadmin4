@@ -568,7 +568,7 @@ export default class TableSchema extends BaseUISchema {
       canEditRow: this.canEditDeleteRowColumns,
       canDeleteRow: this.canEditDeleteRowColumns,
       uniqueCol : ['name'],
-      columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull', 'is_primary_key'],
+      columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull', 'is_primary_key', 'defval'],
       allowMultipleEmptyRow: false,
     },{
       // Here we will create tab control for constraints

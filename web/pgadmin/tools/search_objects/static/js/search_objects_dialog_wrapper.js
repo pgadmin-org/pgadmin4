@@ -137,11 +137,13 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
   }
 
   setTypes(data, enabled=true) {
-    this.jquery(this.typesSelect).empty().select2({
-      data: data,
-    });
+    if(this.typesSelect) {
+      this.jquery(this.typesSelect).empty().select2({
+        data: data,
+      });
 
-    this.typesSelect.disabled = !enabled;
+      this.typesSelect.disabled = !enabled;
+    }
   }
 
   setResultCount(count) {

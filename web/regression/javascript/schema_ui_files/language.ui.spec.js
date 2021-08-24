@@ -117,7 +117,7 @@ describe('LanguageSchema', ()=>{
     let setError = jasmine.createSpy('setError');
 
     state.lanproc = '';
-    state.isTemplate = true;
+    schemaObj.isTemplate = true;
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('lanproc', 'Handler function cannot be empty.');
 

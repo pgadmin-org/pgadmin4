@@ -161,7 +161,7 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'is_primary_key', label: gettext('Primary key?'),
       cell: 'switch', type: 'switch',  minWidth: 100, deps:['name'],
       visible: ()=>{
-        return _.isUndefined(
+        return !_.isUndefined(
           this.nodeInfo['table'] || this.nodeInfo['view'] ||
             this.nodeInfo['mview']
         );

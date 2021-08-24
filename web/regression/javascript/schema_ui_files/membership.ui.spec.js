@@ -14,8 +14,25 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import MembershipSchema, {getMembershipSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/membership.ui';
+import MembershipSchema from '../../../pgadmin/browser/server_groups/servers/static/js/membership.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
+import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
+
+class SchemaInColl extends BaseUISchema {
+  constructor(schemaObj) {
+    super();
+    this.schemaObj = schemaObj;
+  }
+
+  get baseFields() {
+    return [{
+      id: 'collection', label: '', type: 'collection',
+      schema: this.schemaObj,
+      editable: false,
+      canAdd: true, canEdit: false, canDelete: true, hasRole: true,
+    }];
+  }
+}
 
 describe('MembershipSchema', ()=>{
   let mount;
@@ -96,10 +113,9 @@ describe('MembershipSchema', ()=>{
 
   it('MembershipMemberSchema', ()=>{
     spyOn(nodeAjax, 'getNodeListByName').and.returnValue([]);
-    let memberObj = new getMembershipSchema({}, {server: {user: {name: 'postgres'}}}, {});
     let ctrl = mount(<SchemaView
       formType='dialog'
-      schema={memberObj}
+      schema={new SchemaInColl(schemaObj)}
       viewHelperProps={{
         mode: 'create',
       }}

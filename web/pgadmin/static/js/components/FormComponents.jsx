@@ -61,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
   sql: {
     border: '1px solid ' + theme.otherVars.inputBorderColor,
     borderRadius: theme.shape.borderRadius,
+    height: '100%',
   },
   optionIcon: {
     ...theme.mixins.nodeIcon,
@@ -138,7 +139,7 @@ FormInput.propTypes = {
   testcid: PropTypes.any,
 };
 
-export function InputSQL({value, options, onChange, readonly, ...props}) {
+export function InputSQL({value, options, onChange, readonly, className, ...props}) {
   const classes = useStyles();
   const editor = useRef();
 
@@ -157,7 +158,7 @@ export function InputSQL({value, options, onChange, readonly, ...props}) {
         mode: 'text/x-pgsql',
         ...options,
       }}
-      className={classes.sql}
+      className={clsx(classes.sql, className)}
       events={{
         change: (cm)=>{
           onChange && onChange(cm.getValue());
@@ -706,7 +707,9 @@ export function InputSelect({
   /* Apply filter if any */
   const filteredOptions = (controlProps.filter && controlProps.filter(finalOptions)) || finalOptions;
   let realValue = getRealValue(filteredOptions, value, controlProps.creatable, controlProps.formatter);
-  realValue = _.isNull(realValue) ? '' : realValue;
+  if(realValue && _.isPlainObject(realValue) && _.isUndefined(realValue.value)) {
+    console.error('Undefined option value not allowed', realValue, filteredOptions);
+  }
   const otherProps = {
     isSearchable: !readonly,
     isClearable: !readonly && (!_.isUndefined(controlProps.allowClear) ? controlProps.allowClear : true),
