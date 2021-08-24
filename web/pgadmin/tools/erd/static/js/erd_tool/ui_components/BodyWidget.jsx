@@ -593,7 +593,7 @@ export default class BodyWidget extends React.Component {
         let wrap = document.createElement('div');
         wrap.setAttribute('style', svgEle.getAttribute('style'));
         svgEle.setAttribute('style', null);
-        svgEle.parentNode.appendChild(wrap);
+        svgEle.parentNode.insertBefore(wrap, svgEle);
         wrap.appendChild(svgEle);
         recurseElementChildren(svgEle);
       }
