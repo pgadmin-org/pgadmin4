@@ -7,71 +7,64 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {default as OrigCodeMirror} from 'bundled_codemirror';
 import {useOnScreen} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
+import CustomPropTypes from '../custom_prop_types';
 
 /* React wrapper for CodeMirror */
-export default function CodeMirror({currObj, name, value, options, events, ...props}) {
+export default function CodeMirror({currEditor, name, value, options, events, className}) {
   const taRef = useRef();
-  const cmObj = useRef();
+  const editor = useRef();
   const cmWrapper = useRef();
   const isVisibleTrack = useRef();
 
   useEffect(()=>{
     /* Create the object only once on mount */
-    cmObj.current = new OrigCodeMirror.fromTextArea(
+    editor.current = new OrigCodeMirror.fromTextArea(
       taRef.current, options);
 
-    currObj && currObj(cmObj.current);
-
-    if(cmObj.current) {
+    editor.current.setValue(value);
+    currEditor && currEditor(editor.current);
+    if(editor.current) {
       try {
-        cmWrapper.current = cmObj.current.getWrapperElement();
+        cmWrapper.current = editor.current.getWrapperElement();
       } catch(e) {
         cmWrapper.current = null;
       }
     }
 
     Object.keys(events||{}).forEach((eventName)=>{
-      cmObj.current.on(eventName, events[eventName]);
+      editor.current.on(eventName, events[eventName]);
     });
   }, []);
 
-  useEffect(()=>{
-    /* Refresh when value changes async */
-    if(props.isAsync) {
-      if(cmObj.current) {
-        cmObj.current.setValue(value);
-        cmObj.current.refresh();
-      }
+  useMemo(() => {
+    if(editor.current) {
+      editor.current.setValue(value);
     }
   }, [value]);
 
   const onScreenVisible = useOnScreen(cmWrapper);
   if(!isVisibleTrack.current && onScreenVisible) {
     isVisibleTrack.current = true;
-
-    /* Refresh when value changes */
-    if(cmObj.current) {
-      cmObj.current.setValue(value);
-      cmObj.current.refresh();
-    }
-    cmObj.current.refresh();
+    editor.current?.refresh();
   } else if(!onScreenVisible) {
     isVisibleTrack.current = false;
   }
 
-  return <textarea ref={taRef} name={name} />;
+  return (
+    <div className={className}><textarea ref={taRef} name={name} /></div>
+  );
 }
 
 CodeMirror.propTypes = {
-  currObj: PropTypes.func,
+  currEditor: PropTypes.func,
   name: PropTypes.string,
   value: PropTypes.string,
   options: PropTypes.object,
   change: PropTypes.func,
   events: PropTypes.object,
-  isAsync: PropTypes.bool
+  className: CustomPropTypes.className,
 };

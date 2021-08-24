@@ -711,7 +711,7 @@ const usePropsStyles = makeStyles((theme)=>({
     flexDirection: 'column'
   },
   controlRow: {
-    paddingBottom: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   form: {
     padding: theme.spacing(1),
@@ -726,6 +726,9 @@ const usePropsStyles = makeStyles((theme)=>({
   buttonMargin: {
     marginRight: '0.5rem',
   },
+  noPadding: {
+    padding: 0,
+  }
 }));
 
 /* If its the properties tab */
@@ -757,7 +760,7 @@ function SchemaPropertiesView({
     group = group || defaultTab;
 
     if(field.isFullTab) {
-      tabsClassname[group] = classes.fullSpace;
+      tabsClassname[group] = classes.noPadding;
       fullTabs.push(group);
     }
 
@@ -814,7 +817,7 @@ function SchemaPropertiesView({
             readonly={readonly}
             disabled={disabled}
             visible={visible}
-            className={classes.controlRow}
+            className={field.isFullTab ? null : classes.controlRow}
             noLabel={field.isFullTab}
           />
         );
@@ -846,7 +849,7 @@ function SchemaPropertiesView({
                 >
                   {tabName}
                 </AccordionSummary>
-                <AccordionDetails>
+                <AccordionDetails className={tabsClassname[tabName]}>
                   <Box style={{width: '100%'}}>
                     {finalTabs[tabName]}
                   </Box>

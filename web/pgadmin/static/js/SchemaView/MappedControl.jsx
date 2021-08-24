@@ -30,8 +30,8 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
     onChange && onChange(value);
   }, []);
 
-  const onSqlChange = useCallback((e, cm) => {
-    onChange && onChange(cm.getValue());
+  const onSqlChange = useCallback((value) => {
+    onChange && onChange(value);
   }, []);
 
   const onIntChange = useCallback((e) => {

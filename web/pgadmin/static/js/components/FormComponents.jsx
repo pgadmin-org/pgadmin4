@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 /* Common form components used in pgAdmin */
 
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, FormControl, OutlinedInput, FormHelperText,
   Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper } from '@material-ui/core';
@@ -59,7 +59,8 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.error.main,
   },
   sql: {
-    height: '100%',
+    border: '1px solid ' + theme.otherVars.inputBorderColor,
+    borderRadius: theme.shape.borderRadius,
   },
   optionIcon: {
     ...theme.mixins.nodeIcon,
@@ -139,17 +140,17 @@ FormInput.propTypes = {
 
 export function InputSQL({value, options, onChange, readonly, ...props}) {
   const classes = useStyles();
-  const cmObj = useRef();
+  const editor = useRef();
 
   useEffect(()=>{
-    if(cmObj.current) {
-      cmObj.current.setOption('readOnly', readonly);
+    if(editor.current) {
+      editor.current.setOption('readOnly', readonly);
     }
   }, [readonly]);
 
-  return (
+  return useMemo(()=>(
     <CodeMirror
-      currObj={(obj)=>cmObj.current=obj}
+      currEditor={(obj)=>editor.current=obj}
       value={value||''}
       options={{
         lineNumbers: true,
@@ -159,12 +160,12 @@ export function InputSQL({value, options, onChange, readonly, ...props}) {
       className={classes.sql}
       events={{
         change: (cm)=>{
-          onChange && onChange(cm.getValue(), cm);
+          onChange && onChange(cm.getValue());
         },
       }}
       {...props}
     />
-  );
+  ), [value]);
 }
 InputSQL.propTypes = {
   value: PropTypes.string,
@@ -581,18 +582,23 @@ const customReactSelectStyles = (theme, readonly)=>({
     color: theme.palette.text.primary,
     boxShadow: 'none',
     border: '1px solid ' + theme.otherVars.inputBorderColor,
+    marginTop: '2px',
   }),
   menuPortal: (provided)=>({
     ...provided, zIndex: 9999,
     backgroundColor: 'inherit',
     color: 'inherit',
   }),
-  option: (provided, state)=>({
-    ...provided,
-    padding: '0.5rem',
-    backgroundColor: state.isFocused ? theme.palette.grey[200] :
-      (state.isSelected ? theme.palette.primary.main : 'inherit'),
-  }),
+  option: (provided, state)=>{
+    return {
+      ...provided,
+      padding: '0.5rem',
+      color: 'inherit',
+      backgroundColor: state.isFocused ?
+        theme.palette.grey[400] : (state.isSelected ?
+          theme.palette.primary.light : 'inherit'),
+    };
+  },
   multiValue: (provided)=>({
     ...provided,
     backgroundColor: theme.palette.grey[400],
@@ -736,11 +742,12 @@ export function InputSelect({
     openMenuOnClick: !readonly,
     onChange: onChangeOption,
     isLoading: isLoading,
-    options: controlProps.allowSelectAll ? [{ label: 'Select All', value: '*' }, ...filteredOptions] : filteredOptions,
+    options: controlProps.allowSelectAll ? [{ label: gettext('Select All'), value: '*' }, ...filteredOptions] : filteredOptions,
     value: realValue,
     menuPortalTarget: document.body,
     styles: styles,
     inputId: cid,
+    placeholder: controlProps.placeholder || gettext('Select...'),
     ...otherProps,
     ...props
   };

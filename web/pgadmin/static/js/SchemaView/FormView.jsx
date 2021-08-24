@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme)=>({
     height: '100%'
   },
   controlRow: {
-    paddingBottom: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   nestedTabPanel: {
     backgroundColor: theme.otherVars.headerBg,
@@ -62,7 +62,6 @@ function SQLTab({active, getSQLValue}) {
     options={{
       readOnly: true,
     }}
-    isAsync={true}
     readonly={true}
   />;
 }
@@ -314,7 +313,7 @@ export default function FormView({
     sqlTabActive = (Object.keys(tabs).length === tabValue);
     /* Re-render and fetch the SQL tab when it is active */
     tabs[sqlTabName] = [
-      useMemo(()=><SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />, [sqlTabActive]),
+      useMemo(()=><SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />, [sqlTabActive, value]),
     ];
     tabsClassname[sqlTabName] = classes.fullSpace;
     fullTabs.push(sqlTabName);

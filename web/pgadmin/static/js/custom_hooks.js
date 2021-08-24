@@ -47,7 +47,7 @@ export function useOnScreen(ref) {
     }
   );
   useEffect(() => {
-    if (ref.current) {
+    if(ref?.current) {
       observer.observe(ref.current);
     }
     // Remove the observer as soon as the component is unmounted

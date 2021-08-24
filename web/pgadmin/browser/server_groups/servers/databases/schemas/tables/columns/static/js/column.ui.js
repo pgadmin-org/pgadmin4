@@ -349,7 +349,7 @@ export default class ColumnSchema extends BaseUISchema {
     },{
       id: 'attstorage', label: gettext('Storage'), group: gettext('Definition'),
       type: 'select', mode: ['properties', 'edit'],
-      cell: 'select', disabled: obj.inSchemaWithColumnCheck, first_empty: true,
+      cell: 'select', disabled: obj.inSchemaWithColumnCheck,
       controlProps: { placeholder: gettext('Select storage'),
         allowClear: false,
       },

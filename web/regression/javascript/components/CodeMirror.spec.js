@@ -19,14 +19,13 @@ describe('CodeMirror', ()=>{
   let cmInstance, options={
       lineNumbers: true,
       mode: 'text/x-pgsql',
-    }, cmObj = jasmine.createSpyObj('cmObj', {'setValue': ()=>{}, 'refresh': ()=>{}});
+    }, cmObj = jasmine.createSpyObj('cmObj', {'getValue':()=>'', 'setValue': ()=>{}, 'refresh': ()=>{}});
   beforeEach(()=>{
     jasmineEnzyme();
     spyOn(OrigCodeMirror, 'fromTextArea').and.returnValue(cmObj);
     cmInstance = mount(
       <CodeMirror
         value={'Init text'}
-        isAsync={true}
         options={options}
         className="testClass"
       />);
@@ -34,14 +33,12 @@ describe('CodeMirror', ()=>{
 
   it('init', ()=>{
     /* textarea ref passed to fromTextArea */
-    expect(OrigCodeMirror.fromTextArea).toHaveBeenCalledWith(cmInstance.getDOMNode(), options);
+    expect(OrigCodeMirror.fromTextArea).toHaveBeenCalledWith(cmInstance.find('textarea').getDOMNode(), options);
     expect(cmObj.setValue).toHaveBeenCalledWith('Init text');
-    expect(cmObj.refresh).toHaveBeenCalled();
   });
 
   it('change value', ()=>{
     cmInstance.setProps({value: 'the new text'});
     expect(cmObj.setValue).toHaveBeenCalledWith('the new text');
-    expect(cmObj.refresh).toHaveBeenCalled();
   });
 });
