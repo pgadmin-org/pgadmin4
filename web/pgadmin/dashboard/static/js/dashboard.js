@@ -480,9 +480,17 @@ define('pgadmin.dashboard', [
       $(container).data('grid', grid);
       $(container).data('filter', filter);
     },
-
+    __loadMoreRows: function(e) {
+      let elem = e.currentTarget;
+      if ((elem.scrollHeight - 10) < elem.scrollTop + elem.offsetHeight) {
+        if (this.data.length > 0) {
+          this.local_grid.collection.add(this.data.splice(0, 50));
+        }
+      }
+    },
     // Render the data in a grid
     render_grid_data: function(container) {
+      var that = this;
       var data = $(container).data('data'),
         grid = $(container).data('grid'),
         filter = $(container).data('filter');
@@ -493,12 +501,24 @@ define('pgadmin.dashboard', [
 
       data.fetch({
         reset: true,
-        success: function() {
+        success: function(res) {
+          that.data = res.models;
+          that.local_grid = grid;
+          grid.collection.reset(that.data.splice(0,50));
+
           // If we're showing an error, remove it, and replace the grid & filter
           if ($(container).hasClass('grid-error')) {
             $(container).removeClass('grid-error');
             $(container).html(grid.render().el);
             $(filter.el).show();
+          }
+
+          if(that.data.length > 50) {
+            // Listen scroll event to load more rows
+            $('.pg-panel-content').on('scroll', that.__loadMoreRows.bind(that));
+          } else {
+            // Listen scroll event to load more rows
+            $('.pg-panel-content').off('scroll', that.__loadMoreRows);
           }
 
           // Re-apply search criteria
