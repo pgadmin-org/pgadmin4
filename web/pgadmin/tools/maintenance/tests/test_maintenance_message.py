@@ -9,10 +9,13 @@
 
 from pgadmin.tools.maintenance import Message
 from pgadmin.utils.route import BaseTestGenerator
+from unittest.mock import patch
 
 
 class MaintenanceMessageTest(BaseTestGenerator):
     """Test the Maintenance Message class"""
+
+    SERVER_NAME = "server (host:port)"
     scenarios = [
         ('When maintained the server',
          dict(
@@ -28,7 +31,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="VACUUM VERBOSE;\n"
              ),
-             expected_msg="Maintenance (Vacuum)",
+             expected_msg="VACUUM (VERBOSE) on database "
+                          "'postgres' of server " + SERVER_NAME,
              expected_details_cmd='VACUUM VERBOSE;'
 
          )),
@@ -46,7 +50,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="VACUUM FULL VERBOSE;\n"
              ),
-             expected_msg="Maintenance (Vacuum)",
+             expected_msg="VACUUM (FULL, VERBOSE) on database "
+                          "'postgres' of server " + SERVER_NAME,
              expected_details_cmd='VACUUM FULL VERBOSE;'
 
          )),
@@ -64,7 +69,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="ANALYZE VERBOSE;\n"
              ),
-             expected_msg="Maintenance (Analyze)",
+             expected_msg="ANALYZE(VERBOSE) on database "
+                          "'postgres' of server " + SERVER_NAME,
              expected_details_cmd='ANALYZE VERBOSE;'
 
          )),
@@ -82,7 +88,8 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="REINDEX;\n"
              ),
-             expected_msg="Maintenance (Reindex)",
+             expected_msg="REINDEX on database "
+                          "'postgres' of server " + SERVER_NAME,
              expected_details_cmd='REINDEX;'
 
          )),
@@ -100,13 +107,16 @@ class MaintenanceMessageTest(BaseTestGenerator):
                  },
                  cmd="CLUSTER VERBOSE;\n"
              ),
-             expected_msg="Maintenance (Cluster)",
+             expected_msg="CLUSTER on database "
+                          "'postgres' of server " + SERVER_NAME,
              expected_details_cmd='CLUSTER VERBOSE;'
 
          )),
     ]
 
-    def runTest(self):
+    @patch('pgadmin.tools.maintenance.Message.get_server_name')
+    def runTest(self, get_server_name_mock):
+        get_server_name_mock.return_value = self.SERVER_NAME
         maintenance_obj = Message(
             self.class_params['sid'],
             self.class_params['data'],

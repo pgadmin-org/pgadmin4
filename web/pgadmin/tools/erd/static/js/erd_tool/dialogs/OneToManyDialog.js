@@ -60,7 +60,7 @@ export default class OneToManyDialog {
       },{
         id: 'referenced_table_uid', label: gettext('Referenced Table'),
         type: 'select2', disabled: false,
-        editable: true, options: (view)=>{
+        editable: true, options: ()=>{
           let retOpts = [];
           _.forEach(tableNodesDict, (node, uid)=>{
             let [schema, name] = node.getSchemaTableName();

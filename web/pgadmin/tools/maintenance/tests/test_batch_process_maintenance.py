@@ -17,6 +17,7 @@ from unittest.mock import patch, MagicMock
 
 class BatchProcessTest(BaseTestGenerator):
     """Test the BatchProcess class"""
+    SERVER_NAME = "server (host:port)"
     scenarios = [
         ('When maintained server',
          dict(
@@ -46,17 +47,20 @@ class BatchProcessTest(BaseTestGenerator):
                  },
                  cmd="VACUUM VERBOSE;\n"
              ),
-             expected_msg="Maintenance (Vacuum)",
+             expected_msg="VACUUM (VERBOSE) on database "
+                          "'postgres' of server " + SERVER_NAME,
              expected_details_cmd='VACUUM VERBOSE;'
          ))
     ]
 
+    @patch('pgadmin.tools.maintenance.Message.get_server_name')
     @patch('pgadmin.misc.bgprocess.processes.Popen')
     @patch('pgadmin.misc.bgprocess.processes.db')
     @patch('pgadmin.tools.maintenance.Server')
     @patch('pgadmin.misc.bgprocess.processes.current_user')
     def runTest(self, current_user_mock, server_mock, db_mock,
-                popen_mock):
+                popen_mock, get_server_name_mock):
+        get_server_name_mock.return_value = self.SERVER_NAME
         with self.app.app_context():
             current_user_mock.id = 1
             current_app.PGADMIN_RUNTIME = False
