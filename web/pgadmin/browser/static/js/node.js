@@ -569,6 +569,10 @@ define('pgadmin.browser.node', [
     dropPriority is set to 2 by default, override it when change is required
     */
     dropPriority: 2,
+    /******************************************************************************
+    select collection node on deletion.
+    */
+    selectParentNodeOnDelete: false,
     // List of common callbacks - that can be used for different
     // operations!
     callbacks: {
@@ -835,7 +839,16 @@ define('pgadmin.browser.node', [
                 if (res.success == 0) {
                   pgBrowser.report_error(res.errormsg, res.info);
                 } else {
-                  pgBrowser.removeTreeNode(i, true);
+                  // Remove the node from tree and set collection node as selected.
+                  var selectNextNode = true;
+                  if(obj.selectParentNodeOnDelete) {
+                    var prv_i = t.parent(i);
+                    setTimeout(function() {
+                      t.select(prv_i);
+                    }, 10);
+                    selectNextNode = false;
+                  }
+                  pgBrowser.removeTreeNode(i, selectNextNode);
                 }
                 return true;
               })

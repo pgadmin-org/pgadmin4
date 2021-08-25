@@ -24,7 +24,8 @@ define('pgadmin.node.database', [
         columns: ['name', 'datowner', 'comments'],
         hasStatistics: true,
         canDrop: true,
-        canDropCascade: false,
+        selectParentNodeOnDelete: true,
+        canDropCascade: true,
         statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       });
   }
@@ -43,6 +44,7 @@ define('pgadmin.node.database', [
       canDrop: function(node) {
         return node.canDrop;
       },
+      selectParentNodeOnDelete: true,
       label: gettext('Database'),
       node_image: function() {
         return 'pg-icon-database';

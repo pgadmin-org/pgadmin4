@@ -86,6 +86,7 @@ define([
       hasCollectiveStatistics: true,
       canDrop: true,
       canDropCascade: true,
+      selectParentNodeOnDelete: false,
       showProperties: function(item, data, panel) {
         var that = this,
           j = panel.$container.find('.obj_properties').first(),

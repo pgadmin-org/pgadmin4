@@ -32,3 +32,4 @@ Bug fixes
 | `Issue #6671 <https://redmine.postgresql.org/issues/6671>`_ -  Fixed UnboundLocalError where local variable 'user_id' referenced before assignment.
 | `Issue #6682 <https://redmine.postgresql.org/issues/6682>`_ -  Renamed 'Auto rollback?' to 'Auto rollback on error?'.
 | `Issue #6684 <https://redmine.postgresql.org/issues/6684>`_ -  Fixed the JSON editor issue of hiding the first record.
+| `Issue #6685 <https://redmine.postgresql.org/issues/6685>`_ -  Ensure that deleting a database should not automatically connect to the next database.
