@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
+import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import SequenceSchema from './sequence.ui';
 
@@ -89,6 +89,16 @@ define('pgadmin.node.sequence', [
               }
               return true;
             }),
+            allTables: ()=>getNodeListByName('table', treeNodeInfo, itemNodeData, {includeItemKeys: ['_id']}),
+            getColumns: (params)=>{
+              return getNodeAjaxOptions('get_columns', pgBrowser.Nodes['table'], treeNodeInfo, itemNodeData, {urlParams: params, useCache:false}, (rows)=>{
+                return rows.map((r)=>({
+                  'value': r.name,
+                  'image': 'icon-column',
+                  'label': r.name,
+                }));
+              });
+            }
           },
           {
             seqowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,

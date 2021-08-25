@@ -12,6 +12,61 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import { emptyValidator, isEmptyString } from '../../../../../../../../static/js/validators';
 
+export class OwnedBySchema extends BaseUISchema {
+  constructor(allTables, getColumns) {
+    super({
+      owned_table: undefined,
+      owned_column: undefined,
+    });
+
+    this.allTables = allTables;
+    this.allTablesOptions = [];
+    this.getColumns = getColumns;
+  }
+
+  getTableOid(tabName) {
+    // Here we will fetch the table oid from table name
+    // iterate over list to find table oid
+    for(const t of this.allTablesOptions) {
+      if(t.label === tabName) {
+        return t._id;
+      }
+    }
+    return;
+  }
+
+  get baseFields() {
+    let obj = this;
+    return [
+      {
+        id: 'owned_table', label: gettext('Table'), type: 'select', editable: false,
+        options: obj.allTables,
+        optionsLoaded: (res)=>obj.allTablesOptions=res,
+      },{
+        id: 'owned_column', label: gettext('Column'), editable: false, deps: ['owned_table'],
+        type: (state)=>{
+          let tid = obj.getTableOid(state.owned_table);
+          return {
+            type: 'select',
+            options: state.owned_table ? ()=>obj.getColumns({tid: tid}) : [],
+            optionsReloadBasis: state.owned_table,
+          };
+        },
+      }
+    ];
+  }
+
+  validate(state, setError) {
+    if (!isEmptyString(state.owned_table) && isEmptyString(state.owned_column)) {
+      setError('owned_column', gettext('Column cannot be empty.'));
+      return true;
+    } else {
+      setError('owned_column', null);
+    }
+  }
+}
+
+
 export default class SequenceSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues) {
     super({
@@ -36,8 +91,10 @@ export default class SequenceSchema extends BaseUISchema {
     this.fieldOptions = {
       role: [],
       schema: [],
+      allTables: [],
       ...fieldOptions,
     };
+    this.ownedSchemaObj = new OwnedBySchema(this.fieldOptions.allTables, this.fieldOptions.getColumns);
   }
 
   get idAttribute() {
@@ -91,6 +148,13 @@ export default class SequenceSchema extends BaseUISchema {
       }, {
         id: 'cycled', label: gettext('Cycled'), type: 'switch',
         mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
+      }, {
+        type: 'nested-fieldset', label: gettext('Owned By'), group: gettext('Definition'),
+        schema: this.ownedSchemaObj,
+      }, {
+        id: 'owned_by_note', type: 'note', group: gettext('Definition'),
+        mode: ['create', 'edit'],
+        text: gettext('The OWNED BY option causes the sequence to be associated with a specific table column, such that if that column (or its whole table) is dropped, the sequence will be automatically dropped as well. The specified table must have the same owner and be in the same schema as the sequence.'),
       }, {
         id: 'acl', label: gettext('Privileges'), type: 'text',
         group: gettext('Security'), mode: ['properties'],
