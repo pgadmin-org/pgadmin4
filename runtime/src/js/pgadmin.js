@@ -201,18 +201,14 @@ function startDesktopMode() {
 function launchPgAdminWindow() {
   // Create and launch new window and open pgAdmin url
   misc.writeServerLog('Application Server URL: ' + startPageUrl);
-  let winWidth = misc.ConfigureStore.get('windowWidth');
-  let winHeight = misc.ConfigureStore.get('windowHeight');
-
   nw.Window.open(startPageUrl, {
+    'id': 'pgadmin-main',
     'icon': '../../assets/pgAdmin4.png',
     'frame': true,
-    'width': winWidth,
-    'height': winHeight,
     'position': 'center',
     'resizable': true,
-    'min_width': 400,
-    'min_height': 200,
+    'min_width': 640,
+    'min_height': 480,
     'focus': true,
     'show': false,
   }, (pgadminWindow)=> {
@@ -232,19 +228,21 @@ function launchPgAdminWindow() {
     // set up handler for new-win-policy event.
     // Set the width and height for the new window.
     pgadminWindow.on('new-win-policy', function(frame, url, policy) {
-      policy.setNewWindowManifest({
-        'icon': '../../assets/pgAdmin4.png',
-        'frame': true,
-        'width': winWidth,
-        'height': winHeight,
-        'position': 'center',
-      });
+        if(!frame) {
+            policy.setNewWindowManifest({
+                'id': 'pgadmin-tools',
+                'icon': '../../assets/pgAdmin4.png',
+                'frame': true,
+                'position': 'center',
+                'min_width': 640,
+                'min_height': 480,
+                'width': pgadminWindow.width,
+                'height': pgadminWindow.height,
+            });
+        }
     });
 
     pgadminWindow.on('loaded', function() {
-      // Hide the splash screen
-      splashWindow.hide();
-
       /* Make the new window opener to null as it is
        * nothing but a splash screen. We will have to make it null,
        * so that open in new browser tab will work.
@@ -254,26 +252,9 @@ function launchPgAdminWindow() {
       // Show new window
       pgadminWindow.show();
       pgadminWindow.focus();
-    });
 
-    pgadminWindow.on('resize', function(width, height) {
-      // Set the width and height for the new window on resize.
-      pgadminWindow.on('new-win-policy', function(frame, url, policy) {
-        policy.setNewWindowManifest({
-          'icon': '../../assets/pgAdmin4.png',
-          'frame': true,
-          'width': width,
-          'height': height,
-          'position': 'center',
-        });
-      });
-
-      // No need to write setting in case of full screen
-      if (!pgadminWindow.isFullscreen) {
-        misc.ConfigureStore.set('windowWidth', width);
-        misc.ConfigureStore.set('windowHeight', height);
-        misc.ConfigureStore.saveConfig();
-      }
+      // Hide the splash screen
+      splashWindow.hide();
     });
 
     pgadminWindow.on('blur',  function() {

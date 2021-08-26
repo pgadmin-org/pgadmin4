@@ -365,34 +365,9 @@ let ConfigureStore = {
   jsonData: {},
 
   init: function() {
-    // Initialize the Screen.
-    let screen_obj = nw.Screen.Init();
-    // Minimum resolution support
-    let screen_height = 480;
-    let screen_width = 640;
-
-    // if screen_obj is not null and have at least one element then get the
-    // height and width of the work area.
-    if (screen_obj !== null && screen_obj !== undefined &&
-        screen_obj.screens.length > 0) {
-      screen_height = screen_obj.screens[0]['work_area']['height'] - 100;
-      screen_width = screen_obj.screens[0]['work_area']['width'] - 100;
-    }
-
     if (!this.readConfig()){
       this.jsonData = DEFAULT_CONFIG_DATA;
-      this.jsonData['windowHeight'] = screen_height;
-      this.jsonData['windowWidth'] = screen_width;
       this.saveConfig();
-    } else {
-      // Check if stored window height and width is greater then the
-      // actual screen height and width, set the screen height and width.
-      if (ConfigureStore.get('windowHeight') > screen_height ||
-          ConfigureStore.get('windowWidth') > screen_width) {
-        this.set('windowHeight', screen_height);
-        this.set('windowWidth', screen_width);
-        this.saveConfig();
-      }
     }
   },
 

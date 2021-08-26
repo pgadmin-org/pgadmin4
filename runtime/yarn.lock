@@ -1008,10 +1008,10 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
-nw@^0.50.2:
-  version "0.50.2"
-  resolved "https://registry.yarnpkg.com/nw/-/nw-0.50.2.tgz#9947e7aa0d8f7fa6e4bca2c262ea7605db1ab507"
-  integrity sha512-5Y3VDaRooA7C/aSm6Bm4lOM4cg+rceS7OTlrfiQFNiop2/b6ip7OIpRVKPmeOzQ2/M+pKJqzEZLnVdeLl/wWFg==
+nw@^0.55.0:
+  version "0.55.0"
+  resolved "https://registry.yarnpkg.com/nw/-/nw-0.55.0.tgz#fd5785c40fde1391ea558a73c2efff0c9e8cde3c"
+  integrity sha512-/EYsT55LJraJCZeSCpJoXnftsLtR+8lbhEXABlhye/n+0//F+v9kYsGLbnC+SS3JN7NQksnv/WcnoLVjL1WXcg==
   dependencies:
     chalk "~1.1.3"
     decompress "^4.2.0"

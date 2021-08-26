@@ -22,6 +22,7 @@ Bug fixes
 *********
 
 | `Issue #5849 <https://redmine.postgresql.org/issues/5849>`_ -  Ensure that trigger function SQL should have 'create or replace function' instead of 'create function' only.
+| `Issue #6419 <https://redmine.postgresql.org/issues/6419>`_ -  Fixed blank screen issue on windows and also made changes to use NWjs manifest for remembering window size.
 | `Issue #6531 <https://redmine.postgresql.org/issues/6531>`_ -  Fixed the export image issue where relation lines are over the nodes.
 | `Issue #6544 <https://redmine.postgresql.org/issues/6544>`_ -  Fixed width limitation issue in PSQL tool window.
 | `Issue #6564 <https://redmine.postgresql.org/issues/6564>`_ -  Fixed an issue where columns with sequences get altered unnecessarily with a schema diff tool.
