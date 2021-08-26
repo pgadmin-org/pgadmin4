@@ -42,7 +42,9 @@ export default function CodeMirror({currEditor, name, value, options, events, cl
 
   useMemo(() => {
     if(editor.current) {
-      editor.current.setValue(value);
+      if(value != editor.current.getValue()) {
+        editor.current.setValue(value);
+      }
     }
   }, [value]);
 

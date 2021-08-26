@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 /* Common form components used in pgAdmin */
 
-import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, FormControl, OutlinedInput, FormHelperText,
   Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper } from '@material-ui/core';
@@ -149,7 +149,7 @@ export function InputSQL({value, options, onChange, readonly, className, ...prop
     }
   }, [readonly]);
 
-  return useMemo(()=>(
+  return (
     <CodeMirror
       currEditor={(obj)=>editor.current=obj}
       value={value||''}
@@ -166,13 +166,14 @@ export function InputSQL({value, options, onChange, readonly, className, ...prop
       }}
       {...props}
     />
-  ), [value]);
+  );
 }
 InputSQL.propTypes = {
   value: PropTypes.string,
   options: PropTypes.object,
   onChange: PropTypes.func,
-  readonly: PropTypes.bool
+  readonly: PropTypes.bool,
+  className: CustomPropTypes.className,
 };
 
 export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, controlProps, noLabel, ...props}) {

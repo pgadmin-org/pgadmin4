@@ -176,13 +176,14 @@ describe('ForeignTableSchema', ()=>{
 
     it('add first selection', (done)=>{
       let state = {columns: [], inherits: ['table1']};
+      let newCol = schemaObj.columnsObj.getNewData(inheritCol);
       let deferredPromise = deferredDepChange(state, null, null, {
         oldState: {
           inherits: [],
         },
       });
       deferredPromise.then((depChange)=>{
-        let finalCols = [{name: 'id'}];
+        let finalCols = [newCol];
         expect(depChange(state)).toEqual({
           adding_inherit_cols: false,
           columns: finalCols,

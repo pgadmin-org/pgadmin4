@@ -51,6 +51,7 @@ export default class ForeignTableSchema extends BaseUISchema {
       ...fieldOptions,
     };
 
+    this.columnsObj = getNodeColumnSchema(this.fieldOptions.nodeInfo, this.fieldOptions.nodeData, this.fieldOptions.pgBrowser);
   }
 
   get idAttribute() {
@@ -133,7 +134,7 @@ export default class ForeignTableSchema extends BaseUISchema {
             if(tabColsResponse) {
               tabColsResponse.then((res)=>{
                 resolve((state)=>{
-                  let finalCols = res.map((col)=> col);
+                  let finalCols = res.map((col)=>obj.columnsObj.getNewData(col));
                   finalCols = [...state.columns, ...finalCols];
                   return {
                     adding_inherit_cols: false,
@@ -170,7 +171,7 @@ export default class ForeignTableSchema extends BaseUISchema {
       {
         id: 'columns', label: gettext('Columns'), cell: 'text',
         type: 'collection', group: gettext('Columns'), mode: ['edit', 'create'],
-        schema: new getNodeColumnSchema(obj.fieldOptions.nodeInfo, obj.fieldOptions.nodeData, obj.fieldOptions.pgBrowser),
+        schema: this.columnsObj,
         canAdd: true, canDelete: true, canEdit: true, columns: ['attname', 'datatype', 'inheritedfrom'],
         // For each row edit/delete button enable/disable
         canEditRow: this.canEditDeleteRowColumns,
