@@ -143,9 +143,13 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             NavMenuLocators.
             process_watcher_detailed_command_canvas_css).text
 
+        vacuum_details = \
+            "VACUUM (VERBOSE) on database '{0}' of server " \
+            "{1} ({2}:{3})".format(self.database_name, self.server['name'],
+                                   self.server['host'], self.server['port'])
         if self.test_level == 'database':
-            self.assertEqual(command, "VACUUM (VERBOSE)\nRunning Query:"
-                                      "\nVACUUM VERBOSE;")
+            self.assertEqual(
+                command, vacuum_details + "\nRunning Query:\nVACUUM VERBOSE;")
         elif self.is_xss_check and self.test_level == 'table':
             # Check for XSS in the dialog
             source_code = self.page.find_by_css_selector(
@@ -158,10 +162,9 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
                 'Maintenance detailed window'
             )
         else:
-            self.assertEqual(command, "VACUUM "
-                                      "(VERBOSE)\nRunning Query:"
-                                      "\nVACUUM VERBOSE"
-                                      " public." + self.table_name + ";")
+            self.assertEqual(
+                command, vacuum_details + "\nRunning Query:\nVACUUM VERBOSE;"
+                                          " public." + self.table_name + ";")
 
         test_gui_helper.close_process_watcher(self)
 

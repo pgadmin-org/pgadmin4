@@ -170,10 +170,11 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
         mock_result = server_mock.query.filter_by.return_value
         mock_result.first.return_value = mock_obj
 
-        batch_process_mock.set_env_variables = MagicMock(
+        batch_process_mock.return_value.id = 140391
+        batch_process_mock.return_value.set_env_variables = MagicMock(
             return_value=True
         )
-        batch_process_mock.start = MagicMock(
+        batch_process_mock.return_value.start = MagicMock(
             return_value=True
         )
         export_password_env_mock.return_value = True

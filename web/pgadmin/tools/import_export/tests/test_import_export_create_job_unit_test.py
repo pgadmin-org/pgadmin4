@@ -307,10 +307,11 @@ class IECreateJobTest(BaseTestGenerator):
 
         filename_mock.return_value = self.params['filename']
 
-        batch_process_mock.set_env_variables = MagicMock(
+        batch_process_mock.return_value.id = 140391
+        batch_process_mock.return_value.set_env_variables = MagicMock(
             return_value=True
         )
-        batch_process_mock.start = MagicMock(
+        batch_process_mock.return_value.start = MagicMock(
             return_value=True
         )
 
