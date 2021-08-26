@@ -463,7 +463,8 @@ describe('FunctionSchema', ()=>{
     />);
   });
 
-  it('pronamespace disabled', ()=>{
+
+  it('proparallel disabled', ()=>{
 
     
     let editSchemaObj = new FunctionSchema(
@@ -486,7 +487,8 @@ describe('FunctionSchema', ()=>{
           server: {
             host: '127.0.0.1',
             port: 5432,
-            server_type: 'postgres',
+
+            server_type: 'ppas',
             user: {
               id: 10,
               name: 'postgres',
@@ -498,11 +500,12 @@ describe('FunctionSchema', ()=>{
         },
       },
       {
-        type: 'procedure',
+
+        type: 'function',
       },
       {
         funcowner: 'postgres',
-        pronamespace: 'public',
+        lanname: 'edbspl',
       }
     );
 

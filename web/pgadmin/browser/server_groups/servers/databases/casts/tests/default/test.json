@@ -7,7 +7,7 @@
       "sql_endpoint": "NODE-cast.sql_id",
       "msql_endpoint": "NODE-cast.msql",
       "data": {
-        "castcontext": "IMPLICIT",
+        "castcontext": true,
         "encoding": "UTF8",
         "name": "money->bigint",
         "srctyp": "money",
@@ -43,7 +43,7 @@
       "sql_endpoint": "NODE-cast.sql_id",
       "msql_endpoint": "NODE-cast.msql",
       "data": {
-        "castcontext": "EXPLICIT",
+        "castcontext": false,
         "encoding": "UTF8",
         "name": "money->bigint",
         "srctyp": "money",

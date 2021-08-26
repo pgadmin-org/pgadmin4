@@ -27,7 +27,7 @@ def get_tables(self):
             self.server_id) + '/' +
         str(self.db_id) + '/',
         content_type='html/json')
-    return json.dumps([tables.json['data'][1]['value']])
+    return [tables.json['data'][1]['value']]
 
 
 def create_subscription_api(self):

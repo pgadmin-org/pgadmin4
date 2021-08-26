@@ -19,7 +19,7 @@
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "[\"sample__1\"]"
+          "pub": ["sample__1"]
       },
       "mocking_required": false,
       "mock_data": {},
@@ -47,7 +47,7 @@
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "[\"sample__1\"]"
+          "pub": ["sample__1"]
       },
       "mocking_required": false,
       "mock_data": {},
@@ -75,7 +75,7 @@
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "[\"sample__1\"]"
+          "pub": ["sample__1"]
       },
       "mocking_required": false,
       "mock_data": {},
@@ -103,7 +103,7 @@
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "[\"sample__1\"]"
+          "pub": ["sample__1"]
       },
       "mocking_required": true,
       "mock_data": {
@@ -133,7 +133,7 @@
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": "[\"sample__1\"]"
+          "pub": ["sample__1"]
       },
       "mocking_required": true,
       "mock_data": {

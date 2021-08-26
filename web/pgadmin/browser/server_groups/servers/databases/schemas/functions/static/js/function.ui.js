@@ -161,11 +161,7 @@ export default class FunctionSchema extends BaseUISchema {
       return false;
     }
   }
-  isDisabled() {
-    if (this.node_info && 'catalog' in this.node_info) {
-      return true;
-    }
-  }
+
   isGreaterThan95(state){
     if (
       this.node_info['node_info'].server.version < 90500 ||
@@ -195,27 +191,9 @@ export default class FunctionSchema extends BaseUISchema {
     }
   }
 
-  isProcedure(state) {
-
-    if (this.node_info && 'catalog' in this.node_info) {
-      return true;
-    }
-        
-    if (state.prorows) {
-      var server = this.node_info['node_info']['server'];
-      return !(server.version >= 90500 && state.proretset == true);
-    }
-  }
 
   isReadonly() {
     return !this.isNew();
-  }
-
-  canVarAdd(){
-    if(this.node_info &&  'catalog' in this.node_info) {
-      return false;
-    }
-    return true;
   }
 
   get baseFields() {
@@ -223,7 +201,7 @@ export default class FunctionSchema extends BaseUISchema {
     return [{
       id: 'name', label: gettext('Name'), cell: 'string',
       type: 'text', mode: ['properties', 'create', 'edit'],
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      disabled: obj.inCatalog(),
       noEmpty: true,
     },{
       id: 'oid', label: gettext('OID'), cell: 'string',
@@ -231,11 +209,11 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'funcowner', label: gettext('Owner'), cell: 'string',
       options: this.fieldOptions.role, type: 'select',
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled : obj.isGreaterThan95,
+      disabled: (!(this.type === 'procedure')) ? obj.inCatalog() : obj.isGreaterThan95,
       noEmpty: true,
     },{
       id: 'pronamespace', label: gettext('Schema'), cell: 'string',
-      type: 'select', disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      type: 'select', disabled: obj.inCatalog(),
       mode: ['create', 'edit'],
       controlProps: {
         allowClear: false,
@@ -252,7 +230,7 @@ export default class FunctionSchema extends BaseUISchema {
       mode: ['properties'], visible: obj.isVisible,
     },{
       id: 'description', label: gettext('Comment'), cell: 'string',
-      type: 'multiline', disabled: obj.isDisabled,
+      type: 'multiline', disabled: obj.inCatalog(),
     },{
       id: 'pronargs', label: gettext('Argument count'), cell: 'string',
       type: 'text', group: gettext('Definition'), mode: ['properties'],
@@ -289,14 +267,14 @@ export default class FunctionSchema extends BaseUISchema {
       function(state) {
         if (state.lanname == 'c') { return true; }
         return false;
-      }, disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      }, disabled: obj.inCatalog(),
     },{
       id: 'prosrc_c', label: gettext('Link symbol'), cell: 'string',
       type: 'text', group: gettext('Definition'),  deps: ['lanname'], visible:
       function(state) {
         if (state.lanname == 'c') { return true; }
         return false;
-      }, disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      }, disabled: obj.inCatalog(),
     },
     {
       id: 'arguments', label: gettext('Arguments'), cell: 'string',
@@ -306,7 +284,7 @@ export default class FunctionSchema extends BaseUISchema {
       canDelete: true, mode: ['create', 'edit'],
       columns: ['argtype', 'argmode', 'argname', 'argdefval'],
       schema : new DefaultArgumentSchema(this.node_info, this.fieldOptions.getTypes),
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      disabled: obj.inCatalog(),
       canDeleteRow: function() {
         return obj.isNew();
       },
@@ -320,7 +298,7 @@ export default class FunctionSchema extends BaseUISchema {
           return false;
         }
         return true;
-      }, disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      }, disabled: obj.inCatalog(),
     },{
       id: 'provolatile', label: gettext('Volatility'), cell: 'text',
       type: 'select', group: gettext('Options'),
@@ -329,7 +307,7 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'VOLATILE', 'value': 'v'},
         {'label': 'STABLE', 'value': 's'},
         {'label': 'IMMUTABLE', 'value': 'i'},
-      ], disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      ], disabled: obj.inCatalog(),
       controlProps: {allowClear: false},
     },{
       id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
@@ -337,12 +315,12 @@ export default class FunctionSchema extends BaseUISchema {
       visible: obj.isVisible, readonly: obj.isReadonly,
     },{
       id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
-      group: gettext('Options'), disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isGreaterThan95,
+      group: gettext('Options'), disabled: obj.inCatalog(),
       deps: ['lanname'],
     },{
       id: 'prosecdef', label: gettext('Security of definer?'),
       group: gettext('Options'), type: 'switch',
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: ()=>{
+      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): ()=>{
         return obj.node_info['node_info'].server.version < 90500;
       },
     },{
@@ -358,13 +336,13 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'RESTRICTED', 'value': 'r'},
         {'label': 'SAFE', 'value': 's'},
       ],
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isGreaterThan96,
+      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): obj.isGreaterThan96,
       min_version: 90600,
       controlProps: {allowClear: false},
     },{
       id: 'procost', label: gettext('Estimated cost'), group: gettext('Options'),
       cell:'string', type: 'text', deps: ['lanname'],
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isGreaterThan95,
+      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): obj.isGreaterThan95,
     },{
       id: 'prorows', label: gettext('Estimated rows'), type: 'text',
       deps: ['proretset'], visible: obj.isVisible,
@@ -379,7 +357,7 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'proleakproof', label: gettext('Leak proof?'),
       group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isGreaterThan95,
+      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): obj.isGreaterThan95,
       deps: ['lanname'],
     },{
       id: 'prosupportfunc', label: gettext('Support function'),
@@ -403,7 +381,7 @@ export default class FunctionSchema extends BaseUISchema {
       id: 'variables', label: '', type: 'collection',
       group: gettext('Parameters'),
       schema: this.getNodeVariableSchema(),
-      mode: ['edit', 'create'], canAdd: obj.canVarAdd, canEdit: false,
+      mode: ['edit', 'create'], canAdd: obj.inCatalog(), canEdit: false,
       canDelete: true,
     },
     {
@@ -412,13 +390,13 @@ export default class FunctionSchema extends BaseUISchema {
       uniqueCol : ['grantee', 'grantor'], type: 'collection',
       group: 'Security', mode: ['edit', 'create'], canAdd: true,
       canDelete: true,
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      disabled: obj.inCatalog(),
     },{
       id: 'seclabels', label: gettext('Security labels'), canAdd: true,
       schema: new SecLabelSchema(), type: 'collection',
       min_version: 90100, group: 'Security', mode: ['edit', 'create'],
       canEdit: false, canDelete: true, uniqueCol : ['provider'],
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isProcedure,
+      disabled: obj.inCatalog(),
       visible: function() {
         return this.node_info && !(this.type === 'procedure');
       },
