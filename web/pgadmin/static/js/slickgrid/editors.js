@@ -396,7 +396,10 @@ import Alertify from 'pgadmin.alertifyjs';
           var jsonContainer = document.getElementById('pg-json-editor');
           var options = {
             modes: ['code', 'form', 'tree','preview'],
-            onError: function (){ Alertify.error(gettext('Please fix errors in json contents before switching mode.'));}
+            onError: function (error){
+              var msg = 'Invalid Json: ' + error.message.split(':')[0];
+              Alertify.error(gettext(msg));
+            }
           };
           $editor = new JSONEditor(jsonContainer, options);
           $editor.setText(data);
@@ -415,7 +418,10 @@ import Alertify from 'pgadmin.alertifyjs';
           var jsonContainer = document.getElementById('pg-json-editor');
           var options = {
             modes: ['code', 'form', 'tree','preview'],
-            onError: function (){Alertify.error(gettext('Please fix errors in json contents before switching mode.'));}
+            onError: function (error){
+              var msg = 'Invalid Json: ' + error.message.split(':')[0];
+              Alertify.error(gettext(msg));
+            }
           };
           if(jsonContainer) {
             $editor = new JSONEditor(jsonContainer, options);

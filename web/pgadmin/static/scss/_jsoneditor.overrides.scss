@@ -93,6 +93,8 @@
 }
 
 /* Mode drop-down */
+.jsoneditor-menu>.jsoneditor-modes>button:active,
+.jsoneditor-menu>.jsoneditor-modes>button:focus,
 .jsoneditor-menu>.jsoneditor-modes>button,{
     font-family: $font-family-primary !important;
     font-size: $font-size-base !important;

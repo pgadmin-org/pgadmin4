@@ -100,7 +100,7 @@
     "jquery-contextmenu": "^2.9.2",
     "jquery-ui": "^1.12.1",
     "json-bignumber": "^1.0.1",
-    "jsoneditor": "^9.5.1",
+    "jsoneditor": "^9.5.4",
     "karma-coverage": "^2.0.3",
     "leaflet": "^1.5.1",
     "lodash": "4.*",
