@@ -625,7 +625,31 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         elif not estimated_row_count:
             res['rows'][0]['rows_cnt'] = estimated_row_count
 
+        # Fetch privileges
+        sql = render_template("/".join([self.table_template_path,
+                                        self._ACL_SQL]),
+                              tid=tid, scid=scid)
+        status, tblaclres = self.conn.execute_dict(sql)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        # Get Formatted Privileges
+        res['rows'][0].update(self._format_tbacl_from_db(tblaclres['rows']))
+
         return True, res
+
+    def _format_tbacl_from_db(self, tbacl):
+        """
+        Returns privileges.
+        Args:
+            tbacl: Privileges Dict
+        """
+        privileges = []
+        for row in tbacl:
+            priv = parse_priv_from_db(row)
+            privileges.append(priv)
+
+        return {"acl": privileges}
 
     def _format_column_list(self, data):
         # Now we have all lis of columns which we need
@@ -670,6 +694,12 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # Parse privilege data
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
+
+        if 'acl' in data:
+            for acl in data['acl']:
+                data.update({'revoke_all': []})
+                if len(acl['privileges']) > 1:
+                    data['revoke_all'].append(acl['grantee'])
 
         # if table is partitions then
         if 'relispartition' in data and data['relispartition']:

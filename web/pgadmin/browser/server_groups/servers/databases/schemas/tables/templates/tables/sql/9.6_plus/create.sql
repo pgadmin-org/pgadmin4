@@ -118,6 +118,11 @@ ALTER TABLE {{conn|qtIdent(data.schema, data.name)}}
 {% endfor %}
 {% endif %}
 {###  ACL on Table ###}
+{% if data.revoke_all %}
+{% for priv in data.revoke_all %}
+{{ PRIVILEGE.UNSETALL(conn, "TABLE", priv, data.name, data.schema)}}
+{% endfor %}
+{% endif %}
 {% if data.relacl %}
 
 {% for priv in data.relacl %}
