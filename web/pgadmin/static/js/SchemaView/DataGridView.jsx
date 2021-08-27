@@ -237,7 +237,7 @@ DataGridHeader.propTypes = {
 };
 
 export default function DataGridView({
-  value, viewHelperProps, formErr, schema, accessPath, dataDispatch, containerClassName,
+  value, viewHelperProps, schema, accessPath, dataDispatch, containerClassName,
   fixedRows, ...props}) {
   const classes = useStyles();
   const stateUtils = useContext(StateUtilsContext);
@@ -473,7 +473,7 @@ export default function DataGridView({
                 <DataTableRow row={row} totalRows={rows.length} isResizing={isResizing}
                   schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])} />
                 {props.canEdit && row.isExpanded &&
-                  <FormView value={row.original} viewHelperProps={viewHelperProps} formErr={formErr} dataDispatch={dataDispatch}
+                  <FormView value={row.original} viewHelperProps={viewHelperProps} dataDispatch={dataDispatch}
                     schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
                     isDataGridForm={true}/>
                 }
@@ -490,7 +490,6 @@ DataGridView.propTypes = {
   label: PropTypes.string,
   value: PropTypes.array,
   viewHelperProps: PropTypes.object,
-  formErr: PropTypes.object,
   schema: CustomPropTypes.schemaUI,
   accessPath: PropTypes.array.isRequired,
   dataDispatch: PropTypes.func,

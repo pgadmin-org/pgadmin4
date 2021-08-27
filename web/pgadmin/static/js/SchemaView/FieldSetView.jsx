@@ -12,7 +12,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 import { MappedFormControl } from './MappedControl';
-import { SCHEMA_STATE_ACTIONS } from '.';
+import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
 import { evalFunc } from 'sources/utils';
 import CustomPropTypes from '../custom_prop_types';
 import { DepListenerContext } from './DepListener';
@@ -20,8 +20,9 @@ import { getFieldMetaData } from './FormView';
 import FieldSet from '../components/FieldSet';
 
 export default function FieldSetView({
-  value, formErr, schema={}, viewHelperProps, accessPath, dataDispatch, controlClassName, isDataGridForm=false, label, visible}) {
+  value, schema={}, viewHelperProps, accessPath, dataDispatch, controlClassName, isDataGridForm=false, label, visible}) {
   const depListener = useContext(DepListenerContext);
+  const stateUtils = useContext(StateUtilsContext);
 
   useEffect(()=>{
     /* Calculate the fields which depends on the current field */
@@ -52,7 +53,7 @@ export default function FieldSetView({
 
     if(modeSupported) {
       /* Its a form control */
-      const hasError = field.id == formErr.name;
+      const hasError = field.id == stateUtils?.formErr.name;
       /* When there is a change, the dependent values can change
         * lets pass the new changes to dependent and get the new values
         * from there as well.
@@ -104,7 +105,6 @@ export default function FieldSetView({
 
 FieldSetView.propTypes = {
   value: PropTypes.any,
-  formErr: PropTypes.object,
   schema: CustomPropTypes.schemaUI.isRequired,
   viewHelperProps: PropTypes.object,
   isDataGridForm: PropTypes.bool,

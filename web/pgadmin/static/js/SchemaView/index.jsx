@@ -408,6 +408,7 @@ function SchemaDialogView({
   const [loaderText, setLoaderText] = useState('');
   const [saving, setSaving] = useState(false);
   const [formReady, setFormReady] = useState(false);
+  const [formResetKey, setFormResetKey] = useState(0);
   const firstEleRef = useRef();
   const isNew = schema.isNew(schema.origData);
 
@@ -512,6 +513,8 @@ function SchemaDialogView({
 
   const onResetClick = ()=>{
     const resetIt = ()=>{
+      firstEleRef.current && firstEleRef.current.focus();
+      setFormResetKey((prev)=>prev+1);
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.INIT,
         payload: schema.origData,
@@ -638,8 +641,10 @@ function SchemaDialogView({
           value: data,
         });
       }
-    }
-  }), []);
+    },
+    formResetKey: formResetKey,
+    formErr: formErr,
+  }), [formResetKey, formErr]);
 
   /* I am Groot */
   return (
@@ -648,7 +653,7 @@ function SchemaDialogView({
         <Box className={classes.root}>
           <Box className={classes.form}>
             <Loader message={loaderText}/>
-            <FormView value={sessData} viewHelperProps={viewHelperProps} formErr={formErr}
+            <FormView value={sessData} viewHelperProps={viewHelperProps}
               schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
               hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} isTabView={isTabView} />
             <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
@@ -783,7 +788,6 @@ function SchemaPropertiesView({
             viewHelperProps={viewHelperProps}
             schema={field.schema}
             accessPath={[]}
-            formErr={{}}
             controlClassName={classes.controlRow}
             {...field}
             visible={visible}

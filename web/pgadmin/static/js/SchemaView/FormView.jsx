@@ -16,7 +16,7 @@ import clsx from 'clsx';
 import { MappedFormControl } from './MappedControl';
 import TabPanel from '../components/TabPanel';
 import DataGridView from './DataGridView';
-import { SCHEMA_STATE_ACTIONS } from '.';
+import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
 import { InputSQL } from '../components/FormComponents';
 import gettext from 'sources/gettext';
 import { evalFunc } from 'sources/utils';
@@ -131,7 +131,7 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
 
 /* The first component of schema view form */
 export default function FormView({
-  value, formErr, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab,
+  value, schema={}, viewHelperProps, isNested=false, accessPath, dataDispatch, hasSQLTab,
   getSQLValue, onTabChange, firstEleRef, className, isDataGridForm=false, isTabView=true, visible}) {
   let defaultTab = 'General';
   let tabs = {};
@@ -144,6 +144,7 @@ export default function FormView({
   const depListener = useContext(DepListenerContext);
   let groupLabels = {};
   const schemaRef = useRef(schema);
+  const stateUtils = useContext(StateUtilsContext);
 
   let isOnScreen = useOnScreen(formRef);
   if(isOnScreen) {
@@ -182,6 +183,11 @@ export default function FormView({
     }
   }, []);
 
+  /* Upon reset, set the tab to first */
+  useEffect(()=>{
+    setTabValue(0);
+  }, [stateUtils.formResetKey]);
+
   let fullTabs = [];
 
   /* Prepare the array of components based on the types */
@@ -204,7 +210,7 @@ export default function FormView({
           field.schema.top = schema;
         }
         tabs[group].push(
-          <FormView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps} formErr={formErr}
+          <FormView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps}
             schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm}
             {...field} visible={visible}/>
         );
@@ -216,7 +222,7 @@ export default function FormView({
           field.schema.top = schema;
         }
         tabs[group].push(
-          <FieldSetView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps} formErr={formErr}
+          <FieldSetView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps}
             schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm}
             controlClassName={classes.controlRow}
             {...field} visible={visible}/>
@@ -239,7 +245,7 @@ export default function FormView({
         }
 
         const props = {
-          key: field.id, value: value[field.id], viewHelperProps: viewHelperProps, formErr: formErr,
+          key: field.id, value: value[field.id], viewHelperProps: viewHelperProps,
           schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
           containerClassName: classes.controlRow, ...field, canAdd: canAdd, canEdit: canEdit, canDelete: canDelete,
           visible: visible, canAddRow: canAddRow,
@@ -257,7 +263,7 @@ export default function FormView({
         }
       } else {
         /* Its a form control */
-        const hasError = _.isEqual(accessPath.concat(field.id), formErr.name);
+        const hasError = _.isEqual(accessPath.concat(field.id), stateUtils.formErr.name);
         /* When there is a change, the dependent values can change
          * lets pass the new changes to dependent and get the new values
          * from there as well.
@@ -311,13 +317,15 @@ export default function FormView({
     }
   });
 
+  let finalTabs = _.pickBy(tabs, (v, tabName)=>schemaRef.current.filterGroups.indexOf(tabName) <= -1);
+
   /* Add the SQL tab if required */
   let sqlTabActive = false;
   let sqlTabName = gettext('SQL');
   if(hasSQLTab) {
-    sqlTabActive = (Object.keys(tabs).length === tabValue);
+    sqlTabActive = (Object.keys(finalTabs).length === tabValue);
     /* Re-render and fetch the SQL tab when it is active */
-    tabs[sqlTabName] = [
+    finalTabs[sqlTabName] = [
       useMemo(()=><SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />, [sqlTabActive, value]),
     ];
     tabsClassname[sqlTabName] = classes.fullSpace;
@@ -337,7 +345,6 @@ export default function FormView({
     return <></>;
   }
 
-  let finalTabs = _.pickBy(tabs, (v, tabName)=>schemaRef.current.filterGroups.indexOf(tabName) <= -1);
   if(isTabView) {
     return (
       <>
@@ -384,7 +391,6 @@ export default function FormView({
 
 FormView.propTypes = {
   value: PropTypes.any,
-  formErr: PropTypes.object,
   schema: CustomPropTypes.schemaUI.isRequired,
   viewHelperProps: PropTypes.object,
   isNested: PropTypes.bool,
