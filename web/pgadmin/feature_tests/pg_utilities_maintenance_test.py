@@ -163,7 +163,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             )
         else:
             self.assertEqual(
-                command, vacuum_details + "\nRunning Query:\nVACUUM VERBOSE;"
+                command, vacuum_details + "\nRunning Query:\nVACUUM VERBOSE"
                                           " public." + self.table_name + ";")
 
         test_gui_helper.close_process_watcher(self)

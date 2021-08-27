@@ -74,8 +74,9 @@ following options (in alphabetical order):
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Trigger(s)*                | Click to *Disable* or *Enable* trigger(s) for the currently selected table. Options are displayed on the flyout menu.    |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Truncate*                  | Click to remove all rows from a table (*Truncate*) or to remove all rows from a table and its child tables               |
-|                             | (*Truncate Cascade*). Options are displayed on the flyout menu.                                                          |
+| *Truncate*                  | Click to remove all rows from a table (*Truncate*), to remove all rows from a table and its child tables                 |
+|                             | (*Truncate Cascade*) or to remove all rows from a table and automatically restart sequences owned by columns             |
+|                             | (*Truncate Restart Identity*). Options are displayed on the flyout menu.                                                 |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *View Data*                 | Click to access a context menu that provides several options for viewing data (see below).                               |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+

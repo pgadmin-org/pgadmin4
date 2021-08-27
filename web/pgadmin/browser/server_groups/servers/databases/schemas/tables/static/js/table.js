@@ -90,6 +90,11 @@ define('pgadmin.node.table', [
           category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
           icon: 'fa fa-eraser', enable : 'canCreate',
         },{
+          name: 'truncate_table_identity', node: 'table', module: this,
+          applies: ['object', 'context'], callback: 'truncate_table_identity',
+          category: gettext('Truncate'), priority: 3, label: gettext('Truncate Restart Identity'),
+          icon: 'fa fa-eraser', enable : 'canCreate',
+        },{
           // To enable/disable all triggers for the table
           name: 'enable_all_triggers', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'enable_triggers_on_table',
@@ -157,6 +162,10 @@ define('pgadmin.node.table', [
         /* Truncate table with cascade */
         truncate_table_cascade: function(args) {
           var params = {'cascade': true };
+          this.callbacks.truncate.apply(this, [args, params]);
+        },
+        truncate_table_identity: function(args) {
+          var params = {'identity': true };
           this.callbacks.truncate.apply(this, [args, params]);
         },
         truncate: function(args, params) {

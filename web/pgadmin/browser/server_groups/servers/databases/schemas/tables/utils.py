@@ -1897,13 +1897,15 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             request.data, encoding='utf-8'
         )
         # Convert str 'true' to boolean type
-        is_cascade = json.loads(data['cascade'])
+        is_cascade = json.loads(data.get('cascade') or 'false')
+        is_identity = json.loads(data.get('identity') or 'false')
 
         data = res['rows'][0]
 
         sql = render_template("/".join([self.table_template_path,
                                         'truncate.sql']),
-                              data=data, cascade=is_cascade)
+                              data=data, cascade=is_cascade,
+                              identity=is_identity)
         status, res = self.conn.execute_scalar(sql)
         if not status:
             return internal_server_error(errormsg=res)
