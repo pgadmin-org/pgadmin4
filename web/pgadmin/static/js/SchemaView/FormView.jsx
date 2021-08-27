@@ -257,7 +257,7 @@ export default function FormView({
         }
       } else {
         /* Its a form control */
-        const hasError = field.id == formErr.name;
+        const hasError = _.isEqual(accessPath.concat(field.id), formErr.name);
         /* When there is a change, the dependent values can change
          * lets pass the new changes to dependent and get the new values
          * from there as well.

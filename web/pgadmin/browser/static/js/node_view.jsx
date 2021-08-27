@@ -20,7 +20,7 @@ import gettext from 'sources/gettext';
 import 'wcdocker';
 
 /* The entry point for rendering React based view in properties, called in node.js */
-export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, formType, container, containerPanel, onCancel, onEdit, onSave) {
+export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, formType, container, containerPanel, onEdit, onSave) {
   let nodeObj = pgAdmin.Browser.Nodes[nodeType];
   let serverInfo = treeNodeInfo && ('server' in treeNodeInfo) &&
       pgAdmin.Browser.serverInfo && pgAdmin.Browser.serverInfo[treeNodeInfo.server._id];
@@ -62,7 +62,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
       /* Don't warn the user before closing dialog */
       warnOnCloseFlag = false;
       resolve(res.data);
-      onSave(res.data);
+      onSave && onSave(res.data);
     }).catch((err)=>{
       reject(err);
     });

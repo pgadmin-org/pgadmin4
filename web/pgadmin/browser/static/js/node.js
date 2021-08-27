@@ -1248,12 +1248,7 @@ define('pgadmin.browser.node', [
           if(that.getSchema) {
             let treeNodeInfo = that.getTreeNodeHierarchy.apply(this, [item]);
             getNodeView(
-              that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onCancelFunc, onEdit,
-              (nodeData)=>{
-                if(nodeData.node) {
-                  onSaveFunc(nodeData.node, treeNodeInfo);
-                }
-              }
+              that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onEdit
             );
             return;
           }
@@ -1514,10 +1509,28 @@ define('pgadmin.browser.node', [
           if(that.getSchema) {
             let treeNodeInfo = that.getTreeNodeHierarchy.apply(this, [item]);
             getNodeView(
-              that.type, treeNodeInfo, action, data, 'dialog', j[0], this, onCancelFunc, onEdit,
+              that.type, treeNodeInfo, action, data, 'dialog', j[0], this, onEdit,
               (nodeData)=>{
                 if(nodeData.node) {
                   onSaveFunc(nodeData.node, treeNodeInfo);
+                  // Removing the node-prop property of panel
+                  // so that we show updated data on panel
+                  var pnlProperties = pgBrowser.docker.findPanels('properties')[0],
+                    pnlSql = pgBrowser.docker.findPanels('sql')[0],
+                    pnlStats = pgBrowser.docker.findPanels('statistics')[0],
+                    pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
+                    pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
+
+                  if (pnlProperties)
+                    $(pnlProperties).removeData('node-prop');
+                  if (pnlSql)
+                    $(pnlSql).removeData('node-prop');
+                  if (pnlStats)
+                    $(pnlStats).removeData('node-prop');
+                  if (pnlDependencies)
+                    $(pnlDependencies).removeData('node-prop');
+                  if (pnlDependents)
+                    $(pnlDependents).removeData('node-prop');
                 }
               }
             );

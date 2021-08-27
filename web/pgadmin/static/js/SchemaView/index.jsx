@@ -207,7 +207,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
   return changedData;
 }
 
-function validateSchema(schema, sessData, setError) {
+function validateSchema(schema, sessData, setError, accessPath=[]) {
   sessData = sessData || {};
   for(let field of schema.fields) {
     /* Skip id validation */
@@ -219,6 +219,7 @@ function validateSchema(schema, sessData, setError) {
       /* A collection is an array */
       if(field.type === 'collection') {
         let rows = sessData[field.id] || [];
+        let currPath = accessPath.concat(field.id);
 
         /* Validate duplicate rows */
         let dupInd = checkUniqueCol(rows, field.uniqueCol);
@@ -226,21 +227,21 @@ function validateSchema(schema, sessData, setError) {
           let uniqueColNames = _.filter(field.schema.fields, (uf)=>field.uniqueCol.indexOf(uf.id) > -1)
             .map((uf)=>uf.label).join(', ');
           if (isEmptyString(field.label)) {
-            setError(field.uniqueCol[0], gettext('%s must be unique.', uniqueColNames));
+            setError(currPath, gettext('%s must be unique.', uniqueColNames));
           } else {
-            setError(field.uniqueCol[0], gettext('%s in %s must be unique.', uniqueColNames, field.label));
+            setError(currPath, gettext('%s in %s must be unique.', uniqueColNames, field.label));
           }
           return true;
         }
         /* Loop through data */
-        for(const row of rows) {
-          if(validateSchema(field.schema, row, setError)) {
+        for(const [rownum, row] of rows.entries()) {
+          if(validateSchema(field.schema, row, setError, currPath.concat(rownum))) {
             return true;
           }
         }
       } else {
         /* A nested schema ? Recurse */
-        if(validateSchema(field.schema, sessData, setError)) {
+        if(validateSchema(field.schema, sessData, setError, accessPath)) {
           return true;
         }
       }
@@ -260,12 +261,12 @@ function validateSchema(schema, sessData, setError) {
         message = numberValidator(field.label, value);
       }
       if(message) {
-        setError(field.id, message);
+        setError(accessPath.concat(field.id), message);
         return true;
       }
     }
   }
-  return schema.validate(sessData, setError);
+  return schema.validate(sessData, (id, message)=>setError(accessPath.concat(id), message));
 }
 
 export const SCHEMA_STATE_ACTIONS = {
@@ -419,10 +420,10 @@ function SchemaDialogView({
     if(!formReady) return;
     /* Set the _sessData, can be usefull to some deep controls */
     schema._sessData = sessData;
-    let isNotValid = validateSchema(schema, sessData, (name, message)=>{
+    let isNotValid = validateSchema(schema, sessData, (path, message)=>{
       if(message) {
         setFormErr({
-          name: name,
+          name: path,
           message: message,
         });
       }
