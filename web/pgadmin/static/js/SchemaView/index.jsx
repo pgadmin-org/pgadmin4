@@ -117,24 +117,23 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
   let changedData = {};
   let isEdit = viewHelperProps.mode === 'edit';
 
-  /* The comparator and setter */
-  const attrChanged = (currPath, change, force=false)=>{
-    let origVal = _.get(topSchema.origData, currPath);
-    let sessVal = _.get(sessData, currPath);
-
-    if(isValueEqual(origVal, sessVal) && !force) {
-      return;
-    } else {
-      change = change || _.get(sessData, currPath);
-      if(stringify && (_.isArray(change) || _.isObject(change))) {
-        change = JSON.stringify(change);
-      }
-      _.set(changedData, currPath, change);
-    }
-  };
-
   /* Will be called recursively as data can be nested */
-  const parseChanges = (schema, accessPath, changedData)=>{
+  const parseChanges = (schema, origVal, sessVal)=>{
+    let levelChanges = {};
+
+    /* The comparator and setter */
+    const attrChanged = (id, change, force=false)=>{
+      if(isValueEqual(_.get(origVal, id), _.get(sessVal, id)) && !force) {
+        return;
+      } else {
+        change = change || _.get(sessVal, id);
+        if(stringify && (_.isArray(change) || _.isObject(change))) {
+          change = JSON.stringify(change);
+        }
+        return levelChanges[id] = change;
+      }
+    };
+
     schema.fields.forEach((field)=>{
       /* At this point the schema assignments like top may not have been done
       So, only check the mode by passing true to getFieldMetaData */
@@ -143,19 +142,22 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
         return;
       }
       if(typeof(field.type) == 'string' && field.type.startsWith('nested-')) {
-        /* its nested */
-        parseChanges(field.schema, accessPath, changedData);
+        /* Even if its nested, state is on same hierarchical level.
+        Find the changes and merge */
+        levelChanges = {
+          ...levelChanges,
+          ...parseChanges(field.schema, origVal, sessVal),
+        };
       } else {
-        let currPath = accessPath.concat(field.id);
-        /* Check for changes only if its in edit mode, otherwise everything is changed */
-        if(isEdit && !_.isEqual(_.get(topSchema.origData, currPath), _.get(sessData, currPath))) {
+        /* Check for changes only if its in edit mode, otherwise everything can go through comparator */
+        if(isEdit && !_.isEqual(_.get(origVal, field.id), _.get(sessVal, field.id))) {
           let change = null;
           if(field.type === 'collection') {
-            /* Use diffArray package to get the array diff and extract the info
+            /* Use diffArray package to get the array diff and extract the info.
             cid is used to identify the rows uniquely */
             const changeDiff = diffArray(
-              _.get(topSchema.origData, currPath) || [],
-              _.get(sessData, currPath) || [],
+              _.get(origVal, field.id) || [],
+              _.get(sessVal, field.id) || [],
               'cid'
             );
             change = {};
@@ -165,45 +167,69 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
             if(changeDiff.removed.length > 0) {
               change['deleted'] = cleanCid(changeDiff.removed.map((row)=>{
                 /* Deleted records should be original, not the changed */
-                return _.find(_.get(topSchema.origData, currPath), ['cid', row.cid]);
+                return _.find(_.get(origVal, field.id), ['cid', row.cid]);
               }));
             }
             if(changeDiff.updated.length > 0) {
-              change['changed'] = cleanCid(changeDiff.updated);
+              /* There is change in collection. Parse further to go deep */
+              change['changed'] = [];
+              for(const changedRow of changeDiff.updated) {
+                let finalChangedRow = {};
+                let rowIndx = _.findIndex(_.get(sessVal, field.id), (r)=>r.cid==changedRow.cid);
+                finalChangedRow = parseChanges(field.schema, _.get(origVal, [field.id, rowIndx]), _.get(sessVal, [field.id, rowIndx]));
+
+                /* If the id attr value is present, then only changed keys can be passed.
+                Otherwise, passing all the keys is useful */
+                let idAttrValue = _.get(origVal, [field.id, rowIndx, field.schema.idAttribute]);
+                if(_.isUndefined(idAttrValue)) {
+                  change['changed'].push({
+                    ...changedRow,
+                    ...finalChangedRow,
+                  });
+                } else {
+                  change['changed'].push({
+                    [field.schema.idAttribute]: idAttrValue,
+                    ...finalChangedRow,
+                  });
+                }
+              }
+              change['changed'] = cleanCid(change['changed']);
             }
             if(Object.keys(change).length > 0) {
-              attrChanged(currPath, change, true);
+              attrChanged(field.id, change, true);
             }
           } else {
-            attrChanged(currPath);
+            attrChanged(field.id);
           }
         } else if(!isEdit) {
           if(field.type === 'collection') {
             /* For fixed rows, check the updated changes */
             if(!_.isUndefined(field.fixedRows)) {
               const changeDiff = diffArray(
-                _.get(topSchema.origData, currPath) || [],
-                _.get(sessData, currPath) || [],
+                _.get(origVal, field.id) || [],
+                _.get(sessVal, field.id) || [],
                 'cid',
                 diffArrayOptions
               );
               if(changeDiff.updated.length > 0) {
-                let change = cleanCid(_.get(sessData, currPath));
-                attrChanged(currPath, change, true);
+                let change = cleanCid(_.get(sessVal, field.id));
+                attrChanged(field.id, change, true);
               }
             } else {
-              let change = cleanCid(_.get(sessData, currPath));
-              attrChanged(currPath, change);
+              let change = cleanCid(_.get(sessVal, field.id));
+              attrChanged(field.id, change);
             }
           } else {
-            attrChanged(currPath);
+            attrChanged(field.id);
           }
         }
       }
     });
+
+    return levelChanges;
   };
 
-  parseChanges(topSchema, [], changedData);
+  changedData = parseChanges(topSchema, topSchema.origData, sessData);
   return changedData;
 }
 
