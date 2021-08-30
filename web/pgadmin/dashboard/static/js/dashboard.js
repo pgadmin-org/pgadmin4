@@ -515,10 +515,10 @@ define('pgadmin.dashboard', [
 
           if(that.data.length > 50) {
             // Listen scroll event to load more rows
-            $('.pg-panel-content').on('scroll', that.__loadMoreRows.bind(that));
+            $('.wcScrollableY').on('scroll', that.__loadMoreRows.bind(that));
           } else {
             // Listen scroll event to load more rows
-            $('.pg-panel-content').off('scroll', that.__loadMoreRows);
+            $('.wcScrollableY').off('scroll', that.__loadMoreRows);
           }
 
           // Re-apply search criteria

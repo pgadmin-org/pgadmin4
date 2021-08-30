@@ -49,7 +49,7 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
       textArea.style.background = 'transparent';
 
       document.body.appendChild(textArea);
-
+      textArea.textContent = text;
       textArea.select();
 
       var copyTextToClipboardHandler = function(e) {

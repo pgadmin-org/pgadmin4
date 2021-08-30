@@ -23,6 +23,7 @@ Bug fixes
 *********
 
 | `Issue #4567 <https://redmine.postgresql.org/issues/4567>`_ -  Fixed an issue where privileges were revoked using SQL query on objects like tables that do not correctly show in SQL tab.
+| `Issue #4815 <https://redmine.postgresql.org/issues/4815>`_ -  Fixed an issue where the user can not paste the updated table header in safari 12 and 13 browsers.
 | `Issue #5849 <https://redmine.postgresql.org/issues/5849>`_ -  Ensure that trigger function SQL should have 'create or replace function' instead of 'create function' only.
 | `Issue #6419 <https://redmine.postgresql.org/issues/6419>`_ -  Fixed blank screen issue on windows and also made changes to use NWjs manifest for remembering window size.
 | `Issue #6531 <https://redmine.postgresql.org/issues/6531>`_ -  Fixed the export image issue where relation lines are over the nodes.
