@@ -43,6 +43,16 @@ function getSchemaAllTypes() {
 
 describe('SchemaView', ()=>{
   let mount;
+  let numberChangeEvent = (value)=>{
+    return {
+      target: {
+        value: value,
+        validity: {
+          valid: true,
+        }
+      }
+    };
+  };
 
   /* Use createMount so that material ui components gets the required context */
   /* https://material-ui.com/guides/testing/#api */
@@ -91,7 +101,7 @@ describe('SchemaView', ()=>{
       },
       simulateValidData = ()=>{
         ctrl.find('MappedFormControl[id="field1"]').find('input').simulate('change', {target: {value: 'val1'}});
-        ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', {target: {value: '2'}});
+        ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', numberChangeEvent('2'));
         ctrl.find('MappedFormControl[id="field5"]').find('textarea').simulate('change', {target: {value: 'val5'}});
         /* Add a row */
         ctrl.find('DataGridView').find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
@@ -117,7 +127,7 @@ describe('SchemaView', ()=>{
     });
 
     it('change text', (done)=>{
-      ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', {target: {value: '2'}});
+      ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', numberChangeEvent('2'));
       setTimeout(()=>{
         ctrl.update();
         /* Error should come for field1 as it is empty and noEmpty true */
@@ -210,7 +220,7 @@ describe('SchemaView', ()=>{
       });
 
       it('data invalid', (done)=>{
-        ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', {target: {value: '2'}});
+        ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', numberChangeEvent('2'));
         ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
@@ -240,7 +250,7 @@ describe('SchemaView', ()=>{
         expect(onSave.calls.argsFor(0)[1]).toEqual({
           id: undefined,
           field1: 'val1',
-          field2: 2,
+          field2: '2',
           field5: 'val5',
           fieldcoll: [
             {field3: null, field4: null, field5:  'rval51'},

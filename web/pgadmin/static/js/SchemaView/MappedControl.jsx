@@ -34,28 +34,6 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
     onChange && onChange(value);
   }, []);
 
-  const onIntChange = useCallback((e) => {
-    let value = e;
-    if(e && e.target) {
-      value = e.target.value;
-    }
-    if(!isNaN(parseInt(value))) {
-      value = parseInt(value);
-    }
-    onChange && onChange(value);
-  }, []);
-
-  const onNumChange = useCallback((e) => {
-    let value = e;
-    if(e && e.target) {
-      value = e.target.value;
-    }
-    if(!isNaN(parseFloat(value))) {
-      value = parseFloat(value);
-    }
-    onChange && onChange(value);
-  }, []);
-
   if(!visible) {
     return <></>;
   }
@@ -63,9 +41,9 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
   /* The mapping uses Form* components as it comes with labels */
   switch (type) {
   case 'int':
-    return <FormInputText name={name} value={value} onChange={onIntChange} className={className} inputRef={inputRef} {...props}/>;
+    return <FormInputText name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props} type='int'/>;
   case 'numeric':
-    return <FormInputText name={name} value={value} onChange={onNumChange} className={className} inputRef={inputRef} {...props}/>;
+    return <FormInputText name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props} type='numeric'/>;
   case 'text':
     return <FormInputText name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props}/>;
   case 'multiline':
@@ -131,28 +109,6 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     onCellChange && onCellChange(value);
   }, []);
 
-  const onIntChange = useCallback((e) => {
-    let value = e;
-    if(e && e.target) {
-      value = e.target.value;
-    }
-    if(!isNaN(parseInt(value))) {
-      value = parseInt(value);
-    }
-    onCellChange && onCellChange(value);
-  }, []);
-
-  const onNumChange = useCallback((e) => {
-    let value = e;
-    if(e && e.target) {
-      value = e.target.value;
-    }
-    if(!isNaN(parseFloat(value))) {
-      value = parseFloat(value);
-    }
-    onCellChange && onCellChange(value);
-  }, []);
-
   /* Some grid cells are based on options selected in other cells.
    * lets trigger a re-render for the row if optionsLoaded
    */
@@ -169,9 +125,9 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
   /* The mapping does not need Form* components as labels are not needed for grid cells */
   switch(cell) {
   case 'int':
-    return <InputText name={name} value={value} onChange={onIntChange} {...props}/>;
+    return <InputText name={name} value={value} onChange={onTextChange} {...props} type='int'/>;
   case 'numeric':
-    return <InputText name={name} value={value} onChange={onNumChange} {...props}/>;
+    return <InputText name={name} value={value} onChange={onTextChange} {...props} type='numeric'/>;
   case 'text':
     return <InputText name={name} value={value} onChange={onTextChange} {...props}/>;
   case 'password':

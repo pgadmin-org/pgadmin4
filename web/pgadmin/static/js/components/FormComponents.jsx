@@ -291,11 +291,22 @@ FormInputDateTimePicker.propTypes = {
 
 /* Use forwardRef to pass ref prop to OutlinedInput */
 export const InputText = forwardRef(({
-  cid, helpid, readonly, disabled, maxlength=255, value, onChange, controlProps, ...props}, ref)=>{
+  cid, helpid, readonly, disabled, maxlength=255, value, onChange, controlProps, type, ...props}, ref)=>{
 
   const classes = useStyles();
+  const patterns = {
+    'numeric': '^-?[0-9]\\d*\\.?\\d*$',
+    'int': '^-?[0-9]\\d*$',
+  };
+  let onChangeFinal = (e)=>{
+    let changeVal = e.target.value;
 
-  let onChangeFinal = (changeVal)=>{
+    /* For type number, we set type as tel with number regex to get validity.*/
+    if(['numeric', 'int'].indexOf(type) > -1) {
+      if(!e.target.validity.valid && changeVal !== '' && changeVal !== '-') {
+        return;
+      }
+    }
     if(controlProps?.formatter) {
       changeVal = controlProps.formatter.toRaw(changeVal);
     }
@@ -317,6 +328,7 @@ export const InputText = forwardRef(({
         id: cid,
         maxLength: maxlength,
         'aria-describedby': helpid,
+        ...(type ? {pattern: patterns[type]} : {})
       }}
       readOnly={Boolean(readonly)}
       disabled={Boolean(disabled)}
@@ -326,6 +338,7 @@ export const InputText = forwardRef(({
       onChange={onChangeFinal}
       {...controlProps}
       {...props}
+      {...(['numeric', 'int'].indexOf(type) > -1 ? {type: 'tel'} : {})}
     />
   );
 });
@@ -340,6 +353,7 @@ InputText.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func,
   controlProps: PropTypes.object,
+  type: PropTypes.string,
 };
 
 export function FormInputText({hasError, required, label, className, helpMessage, testcid, ...props}) {
