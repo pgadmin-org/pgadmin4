@@ -282,12 +282,14 @@ define('pgadmin.datagrid', [
           queryToolPanel.focus();
 
           // Listen on the panel closed event.
-          queryToolPanel.on(wcDocker.EVENT.CLOSED, function() {
-            $.ajax({
-              url: url_for('datagrid.close', {'trans_id': trans_id}),
-              method: 'DELETE',
+          if (queryToolPanel.isVisible()) {
+            queryToolPanel.on(wcDocker.EVENT.CLOSED, function() {
+              $.ajax({
+                url: url_for('datagrid.close', {'trans_id': trans_id}),
+                method: 'DELETE',
+              });
             });
-          });
+          }
 
           queryToolPanel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function() {
             queryToolPanel.trigger(wcDocker.EVENT.RESIZED);

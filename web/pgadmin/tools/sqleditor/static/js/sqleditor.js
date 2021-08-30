@@ -519,7 +519,7 @@ define('tools.querytool', [
         _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
           if (p.isVisible()) {
             p.on(wcDocker.EVENT.CLOSING, function() {
-              return self.handler.check_needed_confirmations_before_closing_panel(true);
+              return self.handler.check_needed_confirmations_before_closing_panel(true, p);
             });
 
             // Set focus on query tool of active panel
@@ -4908,7 +4908,7 @@ define('tools.querytool', [
 
       /* Checks if there is any unsaved data changes, unsaved changes in the query
       or uncommitted transactions before closing a panel */
-      check_needed_confirmations_before_closing_panel: function(is_close_event_call = false) {
+      check_needed_confirmations_before_closing_panel: function(is_close_event_call = false, panel= null) {
         var self = this, msg;
 
         /*
@@ -4950,7 +4950,7 @@ define('tools.querytool', [
           // No other function should call close() except through this function
           // in order to perform necessary checks
           self.ignore_on_close = undefined;
-          self.close();
+          self.close(panel);
         }
         // Return false so that the panel does not close unless close()
         // is called explicitly (when all needed prompts are issued).
@@ -5123,21 +5123,30 @@ define('tools.querytool', [
         alertify.confirmSave(gettext('Save changes?'), msg, is_unsaved_data);
       },
 
-      close: function() {
+      close: function(closePanel=null) {
         var self = this;
 
         pgBrowser.Events.off('pgadmin:user:logged-in', this.initTransaction);
-        _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(panel) {
-          if (panel.isVisible()) {
-            window.onbeforeunload = null;
-            panel.off(wcDocker.EVENT.CLOSING);
-            // remove col_size object on panel close
-            if (!_.isUndefined(self.col_size)) {
-              delete self.col_size;
-            }
-            pgWindow.default.pgAdmin.Browser.docker.removePanel(panel);
+        // close specific panel
+        if (closePanel) {
+          self._close(closePanel);
+        } else {
+          // Iterate the all query tool instance and close the visible query tool instance.
+          _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(panel) {
+            self._close(panel);
+          });
+        }
+      },
+      _close: function(closePanel) {
+        if (closePanel.isVisible()) {
+          window.onbeforeunload = null;
+          closePanel.off(wcDocker.EVENT.CLOSING);
+          // remove col_size object on panel close
+          if (!_.isUndefined(self.col_size)) {
+            delete self.col_size;
           }
-        });
+          pgWindow.default.pgAdmin.Browser.docker.removePanel(closePanel);
+        }
       },
       /* This function is used to raise notify messages and update
        * the notification grid.
