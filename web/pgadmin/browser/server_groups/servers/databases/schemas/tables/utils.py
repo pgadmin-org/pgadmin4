@@ -698,7 +698,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if 'acl' in data:
             for acl in data['acl']:
                 data.update({'revoke_all': []})
-                if len(acl['privileges']) > 1:
+                if len(acl['privileges']) > 0 and len(acl['privileges']) < 7:
                     data['revoke_all'].append(acl['grantee'])
 
         # if table is partitions then
