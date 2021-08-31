@@ -16,6 +16,8 @@ TABLESPACE pg_default;
 ALTER TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
+REVOKE ALL ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" FROM PUBLIC;
+
 GRANT ALL ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" TO postgres;
 
 GRANT SELECT ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
