@@ -710,6 +710,9 @@ OAUTH2_CONFIG = [
         'OAUTH2_API_BASE_URL': None,
         # Name of the Endpoint, ex: user
         'OAUTH2_USERINFO_ENDPOINT': None,
+        # Oauth scope, ex: 'openid email profile'
+        # Note that an 'email' claim is required in the resulting profile
+        'OAUTH2_SCOPE': None,
         # Font-awesome icon, ex: fa-github
         'OAUTH2_ICON': None,
         # UI button colour, ex: #0000ff

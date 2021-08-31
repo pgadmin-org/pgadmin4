@@ -30,6 +30,7 @@ and modify the values for the following parameters:
     "OAUTH2_AUTHORIZATION_URL", "Endpoint for user authorization"
     "OAUTH2_API_BASE_URL", "Oauth2 base URL endpoint to make requests simple, ex: *https://api.github.com/*"
     "OAUTH2_USERINFO_ENDPOINT", "User Endpoint, ex: *user* (for github) and *useinfo* (for google)"
+    "OAUTH2_SCOPE", "Oauth scope, ex: 'openid email profile'. Note that an 'email' claim is required in the resulting profile."
     "OAUTH2_ICON", "The Font-awesome icon to be placed on the oauth2 button,  ex: fa-github"
     "OAUTH2_BUTTON_COLOR", "Oauth2 button color"
     "OAUTH2_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically

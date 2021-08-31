@@ -58,6 +58,7 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                     'https://github.com/login/oauth/authorize',
                 'OAUTH2_API_BASE_URL': 'https://api.github.com/',
                 'OAUTH2_USERINFO_ENDPOINT': 'user',
+                'OAUTH2_SCOPE': 'email profile',
                 'OAUTH2_ICON': 'fa-github',
                 'OAUTH2_BUTTON_COLOR': '#3253a8',
             }
