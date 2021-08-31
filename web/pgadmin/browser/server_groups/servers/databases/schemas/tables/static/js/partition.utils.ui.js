@@ -118,17 +118,17 @@ export class PartitionsSchema extends BaseUISchema {
       mode: ['properties'],
     },{
       id: 'is_attach', label:gettext('Operation'), cell: 'select', type: 'select',
-      minWidth: 75, options: [
+      minWidth: 120, options: [
         {label: gettext('Attach'), value: true},
         {label: gettext('Create'), value: false},
-      ],
+      ], controlProps: {allowClear: false},
       editable: function(state) {
         if(obj.isNew(state) && !obj.top.isNew()) {
           return true;
         }
         return false;
       },
-      disabled: function(state) {
+      readonly: function(state) {
         if(obj.isNew(state) && !obj.top.isNew()) {
           return false;
         }
@@ -142,7 +142,7 @@ export class PartitionsSchema extends BaseUISchema {
         }
         return false;
       },
-      disabled: function(state) {
+      readonly: function(state) {
         if(obj.isNew(state)) {
           return false;
         }
@@ -159,7 +159,7 @@ export class PartitionsSchema extends BaseUISchema {
         }
         return false;
       },
-      disabled: function(state) {
+      readonly: function(state) {
         if(obj.top && (obj.top.sessData.partition_type == 'range' ||
             obj.top.sessData.partition_type == 'list') && obj.isNew(state)
             && obj.getServerVersion() >= 110000) {

@@ -60,14 +60,6 @@ export default class VacuumSettingsSchema extends BaseUISchema {
     this.vacuumToastTableObj = new VacuumTableSchema('toast_autovacuum');
   }
 
-  inSchemaCheck() {
-    if(this.nodeInfo && 'catalog' in this.nodeInfo)
-    {
-      return true;
-    }
-    return false;
-  }
-
   get baseFields() {
     var obj = this;
     return [{
@@ -79,13 +71,10 @@ export default class VacuumSettingsSchema extends BaseUISchema {
         }
         // If table is partitioned table then disabled it.
         if(state.top && state.is_partitioned) {
-          // We also need to unset rest of all
-          state.autovacuum_custom = false;
-
           return true;
         }
 
-        if(obj.inSchemaCheck)
+        if(obj.inCatalog)
         {
           return false;
         }
@@ -107,13 +96,13 @@ export default class VacuumSettingsSchema extends BaseUISchema {
       ],
       deps: ['autovacuum_custom'],
       disabled: function(state) {
-        if(obj.inSchemaCheck && state.autovacuum_custom) {
+        if(obj.inCatalog && state.autovacuum_custom) {
           return false;
         }
         return true;
       },
       depChange: function(state) {
-        if(obj.inSchemaCheck && state.autovacuum_custom) {
+        if(obj.inCatalog && state.autovacuum_custom) {
           return;
         }
         return {autovacuum_enabled: 'x'};
@@ -133,7 +122,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
       disabled: function(state) {
         // We need to check additional condition to toggle enable/disable
         // for table auto-vacuum
-        if(obj.inSchemaCheck && (obj.isNew() || (state.toast_autovacuum_enabled || state.hastoasttable))) {
+        if(obj.inCatalog && state.hastoasttable) {
           return false;
         }
         return true;
@@ -150,13 +139,13 @@ export default class VacuumSettingsSchema extends BaseUISchema {
       ],
       deps:['toast_autovacuum'],
       disabled: function(state) {
-        if(obj.inSchemaCheck && state.toast_autovacuum) {
+        if(obj.inCatalog && state.toast_autovacuum) {
           return false;
         }
         return true;
       },
       depChange: function(state) {
-        if(obj.inSchemaCheck && state.toast_autovacuum) {
+        if(obj.inCatalog && state.toast_autovacuum) {
           return;
         }
         if(obj.isNew() || state.hastoasttable) {

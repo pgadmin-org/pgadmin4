@@ -535,7 +535,7 @@ export default class TableSchema extends BaseUISchema {
     },
     {
       id: 'replica_identity', label: gettext('Replica Identity'),
-      group: gettext('advanced'), type: 'text',mode: ['edit', 'properties'],
+      group: 'advanced', type: 'text',mode: ['edit', 'properties'],
     }, {
       id: 'coll_inherits', label: gettext('Inherited from table(s)'),
       type: 'text', group: 'advanced', mode: ['properties'],
