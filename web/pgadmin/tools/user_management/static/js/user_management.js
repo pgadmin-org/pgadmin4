@@ -1262,7 +1262,7 @@ define([
           };
         });
       }
-      alertify.UserManagement(true).resizeTo(pgBrowser.stdW.md, pgBrowser.stdH.md);
+      alertify.UserManagement(true).resizeTo(pgBrowser.stdW.lg, pgBrowser.stdH.md);
     },
 
   };
