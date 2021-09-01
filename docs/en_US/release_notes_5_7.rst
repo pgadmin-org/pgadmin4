@@ -39,4 +39,5 @@ Bug fixes
 | `Issue #6682 <https://redmine.postgresql.org/issues/6682>`_ -  Renamed 'Auto rollback?' to 'Auto rollback on error?'.
 | `Issue #6684 <https://redmine.postgresql.org/issues/6684>`_ -  Fixed the JSON editor issue of hiding the first record.
 | `Issue #6685 <https://redmine.postgresql.org/issues/6685>`_ -  Ensure that deleting a database should not automatically connect to the next database.
+| `Issue #6704 <https://redmine.postgresql.org/issues/6704>`_ -  Ensure that pgAdmin should not fail at login due to a special character in the hostname.
 | `Issue #6710 <https://redmine.postgresql.org/issues/6710>`_ -  Fixed an issue where multiple query tool tabs getting closed for the single close event.
