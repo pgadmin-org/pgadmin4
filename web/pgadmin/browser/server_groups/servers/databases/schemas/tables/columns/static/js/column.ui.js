@@ -161,12 +161,12 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'is_primary_key', label: gettext('Primary key?'),
       cell: 'switch', type: 'switch',  minWidth: 100, deps:['name'],
       visible: ()=>{
-        return !_.isUndefined(
-          this.nodeInfo['table'] || this.nodeInfo['view'] ||
-            this.nodeInfo['mview']
+        return obj.top?.nodeInfo && _.isUndefined(
+          obj.top.nodeInfo['table'] || obj.top.nodeInfo['view'] ||
+          obj.top?.nodeInfo['mview']
         );
       },
-      disabled: (state)=>{
+      readonly: (state)=>{
         // Disable it, when one of this:
         // - Primary key already exist
         // - Table is a partitioned table
@@ -208,9 +208,10 @@ export default class ColumnSchema extends BaseUISchema {
 
         // If table is partitioned table then disable
         if(
-          'is_partitioned' in obj.top.origData
+          obj.top && (
+            'is_partitioned' in obj.top.origData
           && obj.top.origData['is_partitioned']
-          && obj.getServerVersion() < 11000
+          && obj.getServerVersion() < 11000)
         ) {
           return false;
         }
@@ -384,7 +385,7 @@ export default class ColumnSchema extends BaseUISchema {
       type: 'switch', minWidth: 80,
       group: gettext('Constraints'), editable: this.editableCheckForTable,
       deps: ['colconstype'],
-      disabled: (state) => {
+      readonly: (state) => {
         return obj.inSchemaWithColumnCheck(state);
       }, depChange:(state)=>{
         if (state.colconstype == 'i') {

@@ -314,6 +314,7 @@ export const InputText = forwardRef(({
   };
 
   let finalValue = (_.isNull(value) || _.isUndefined(value)) ? '' : value;
+
   if(controlProps?.formatter) {
     finalValue = controlProps.formatter.fromRaw(finalValue);
   }
@@ -350,7 +351,7 @@ InputText.propTypes = {
   readonly: PropTypes.bool,
   disabled: PropTypes.bool,
   maxlength: PropTypes.number,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  value: PropTypes.any,
   onChange: PropTypes.func,
   controlProps: PropTypes.object,
   type: PropTypes.string,

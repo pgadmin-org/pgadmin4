@@ -158,7 +158,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
       type: 'collection',
       fixedRows: this.toastTableVars,
       editable: function(state) {
-        return state.isNew();
+        return obj.isNew(state);
       },
       canEdit: false, canAdd: false, canDelete: false, group: gettext('TOAST table'),
       schema: this.vacuumToastTableObj,

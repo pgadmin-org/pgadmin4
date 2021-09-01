@@ -81,6 +81,7 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
     readonly: false,
     disabled: false,
     visible: true,
+    editable: true,
     canAdd: true,
     canEdit: false,
     canDelete: true,
@@ -99,7 +100,7 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
     return retData;
   }
 
-  let {visible, disabled, readonly} = field;
+  let {visible, disabled, readonly, editable} = field;
 
   let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
     ((_.isUndefined(field.server_type) ? true :
@@ -120,6 +121,7 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
   retData.visible = Boolean(_visible);
 
   retData.disabled = Boolean(evalFunc(schema, disabled, value));
+  retData.editable = evalFunc(schema, _.isUndefined(editable) ? true : editable, value);
 
   let {canAdd, canEdit, canDelete, canAddRow } = field;
   retData.canAdd = _.isUndefined(canAdd) ? retData.canAdd : evalFunc(schema, canAdd, value);

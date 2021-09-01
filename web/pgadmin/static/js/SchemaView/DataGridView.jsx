@@ -24,7 +24,7 @@ import _ from 'lodash';
 
 import gettext from 'sources/gettext';
 import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
-import FormView from './FormView';
+import FormView, { getFieldMetaData } from './FormView';
 import { confirmDeleteRow } from '../helpers/legacyConnector';
 import CustomPropTypes from 'sources/custom_prop_types';
 import { evalFunc } from 'sources/utils';
@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme)=>({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+    textAlign: 'center',
   },
   tableCellHeader: {
     fontWeight: theme.typography.fontWeightBold,
@@ -335,43 +336,21 @@ export default function DataGridView({
               /* Make sure to take the latest field info from schema */
               field = _.find(schemaRef.current.fields, (f)=>f.id==field.id) || field;
 
-              let {visible, editable, readonly, ..._field} = field;
+              let {editable} = getFieldMetaData(field, schemaRef.current, row.original || {}, viewHelperProps);
 
-              let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
-                ((_.isUndefined(field.server_type) ? true :
-                  (viewHelperProps.serverInfo.type in field.server_type)) &&
-                (_.isUndefined(field.min_version) ? true :
-                  (viewHelperProps.serverInfo.version >= field.min_version)) &&
-                (_.isUndefined(field.max_version) ? true :
-                  (viewHelperProps.serverInfo.version <= field.max_version))));
-              let _readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
-              if(!_readonly) {
-                _readonly = evalFunc(schemaRef.current, readonly, row.original || {});
-              }
-
-              visible = _.isUndefined(visible) ? true : visible;
-              let _visible = true;
-              if(visible) {
-                _visible = evalFunc(schemaRef.current, visible, row.original || {});
-              }
-              _visible = _visible && verInLimit;
-
-              editable = _.isUndefined(editable) ? true : editable;
-              editable = evalFunc(schemaRef.current, editable, row.original || {});
-
-              if(_.isUndefined(_field.cell)) {
-                console.error('cell is required ', _field);
+              if(_.isUndefined(field.cell)) {
+                console.error('cell is required ', field);
               }
 
               return <MappedCellControl rowIndex={row.index} value={value}
-                row={row.original} {..._field}
-                readonly={_readonly}
-                disabled={!editable}
-                visible={_visible}
+                row={row.original} {...field}
+                readonly={!editable}
+                disabled={false}
+                visible={true}
                 onCellChange={(value)=>{
                   dataDispatch({
                     type: SCHEMA_STATE_ACTIONS.SET_VALUE,
-                    path: accessPath.concat([row.index, _field.id]),
+                    path: accessPath.concat([row.index, field.id]),
                     value: value,
                   });
                 }}
