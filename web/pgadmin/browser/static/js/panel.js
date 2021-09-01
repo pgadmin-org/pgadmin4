@@ -100,9 +100,12 @@ define(
               }
 
               // Prevent browser from opening the drag file.
-              $container.bind('dragover drop', function (event) {
-                event.stopPropagation();
-                event.preventDefault();
+              // Using addEventListener to avoid conflict with jquery.drag
+              ['dragover', 'drop'].forEach((eventName)=>{
+                $container[0].addEventListener(eventName, function(event) {
+                  event.stopPropagation();
+                  event.preventDefault();
+                });
               });
 
               if (that.elContainer) {
