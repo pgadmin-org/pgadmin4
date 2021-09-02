@@ -1891,10 +1891,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 self.node_type == 'procedure' and\
                 self.manager.sversion <= 110000
 
-            data['prosrc'] = re.sub(r"^\s+", '',
-                                    re.sub(r"\s+$", '',
-                                           data['prosrc']))
-
             if not is_prc_version_lesser_than_11:
                 if data['prosrc'].startswith('\n') is False:
                     data['prosrc'] = ''.join(

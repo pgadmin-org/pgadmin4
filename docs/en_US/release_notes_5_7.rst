@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #6564 <https://redmine.postgresql.org/issues/6564>`_ -  Fixed an issue where columns with sequences get altered unnecessarily with a schema diff tool.
 | `Issue #6570 <https://redmine.postgresql.org/issues/6570>`_ -  Ensure that the lock panel should not be blocked for larger records.
 | `Issue #6572 <https://redmine.postgresql.org/issues/6572>`_ -  Partially fixes the data output panel display issue.
+| `Issue #6620 <https://redmine.postgresql.org/issues/6620>`_ -  Fixed an issue where whitespace in function bodies was not applied while generating the script using Schema Diff.
 | `Issue #6627 <https://redmine.postgresql.org/issues/6627>`_ -  Introduced OAUTH2_SCOPE variable for the Oauth2 scope configuration.
 | `Issue #6641 <https://redmine.postgresql.org/issues/6641>`_ -  Enables pgAdmin to retrieve user permissions in case of nested roles which helps to terminate the session for AWS RDS.
 | `Issue #6663 <https://redmine.postgresql.org/issues/6663>`_ -  Fixed no attribute '_asdict' error when connecting the database server.
