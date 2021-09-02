@@ -13,6 +13,7 @@ New features
 | `Issue #4264 <https://redmine.postgresql.org/issues/4264>`_ -  Make code folding case insensitive in the code mirror.
 | `Issue #4629 <https://redmine.postgresql.org/issues/4629>`_ -  Added database and server information on the Maintenance process watcher dialog.
 | `Issue #6495 <https://redmine.postgresql.org/issues/6495>`_ -  Allow the referenced table to be the same as the local table in one to many relationship for ERD Tool.
+| `Issue #6625 <https://redmine.postgresql.org/issues/6625>`_ -  Make closing tabs to be smarter by focusing on the appropriate tab when the user closed a tab.
 | `Issue #6691 <https://redmine.postgresql.org/issues/6691>`_ -  Set PSQLRC and PSQL_HISTORY env vars to apt. user storage path in the server mode.
 
 Housekeeping

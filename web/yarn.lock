@@ -5608,10 +5608,10 @@ json5@^2.1.2:
   dependencies:
     minimist "^1.2.5"
 
-jsoneditor@^9.5.1:
-  version "9.5.3"
-  resolved "https://registry.yarnpkg.com/jsoneditor/-/jsoneditor-9.5.3.tgz#a44cce2556a21e13db360865ed4d4224908df3da"
-  integrity sha512-KW893jRnh/s41n7Is4aNFg5Gh2h4HhE9W8L2rP1Okue3aW5Aov9SRqXs/5rmAABmlBGx1yzyPMlj4Oqw5nXQcQ==
+jsoneditor@^9.5.4:
+  version "9.5.5"
+  resolved "https://registry.yarnpkg.com/jsoneditor/-/jsoneditor-9.5.5.tgz#3275b4b327d51c5d6d30e386d326bed4da012a0b"
+  integrity sha512-q0bnZF8eyM+pXHfQGkI0ATZWI974eeWVLun3nRl4QP1uvaMlc2w9R5UkPerWcHmuX+p0EQLOw/IOWmRT1qHqHQ==
   dependencies:
     ace-builds "^1.4.12"
     ajv "^6.12.6"
@@ -9078,9 +9078,9 @@ watchpack@^2.0.0:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
 
-"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#06daee1a8111b4ed08d58670674a2967e4f68313":
+"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#5a5a1c96b89e965cb4900520ca7d5740e6a53afa":
   version "2.2.5"
-  resolved "git+https://github.com/EnterpriseDB/wcDocker/#06daee1a8111b4ed08d58670674a2967e4f68313"
+  resolved "git+https://github.com/EnterpriseDB/wcDocker/#5a5a1c96b89e965cb4900520ca7d5740e6a53afa"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.14.0"
     FileSaver "^0.10.0"
