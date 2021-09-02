@@ -23,7 +23,6 @@ from unittest.mock import patch
 
 class DomainGetCollationsTestCase(BaseTestGenerator):
     """ This class will add new domain under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('domain_get_collations',
                                          domain_utils.test_cases)
 

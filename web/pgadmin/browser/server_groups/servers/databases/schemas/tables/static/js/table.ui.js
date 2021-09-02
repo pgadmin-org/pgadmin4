@@ -504,7 +504,6 @@ export default class TableSchema extends BaseUISchema {
       },
     },{
       id: 'advanced', label: gettext('Advanced'), type: 'group',
-      // visible: ShowAdvancedTab.show_advanced_tab,
       visible: true,
     },
     {

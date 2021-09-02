@@ -25,7 +25,6 @@ from unittest.mock import patch
 
 class ForeignServerGetSQLTestCase(BaseTestGenerator):
     """This class will add foreign server under FDW node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('foreign_server_get_sql',
                                          fsrv_utils.test_cases)
 

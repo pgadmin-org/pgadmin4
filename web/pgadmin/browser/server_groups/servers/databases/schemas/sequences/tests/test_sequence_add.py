@@ -21,7 +21,6 @@ from regression.python_test_utils import test_utils as utils
 
 class SequenceAddTestCase(BaseTestGenerator):
     """ This class will add new sequence(s) under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for sequence node.
         (

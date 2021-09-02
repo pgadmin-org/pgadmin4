@@ -21,7 +21,6 @@ from unittest.mock import patch
 
 class FDWDAddTestCase(BaseTestGenerator):
     """ This class will add foreign data wrappers under database node. """
-    skip_on_database = ['gpdb']
 
     scenarios = utils.generate_scenarios('fdw_create',
                                          fdw_utils.test_cases)

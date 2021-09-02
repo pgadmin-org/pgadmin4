@@ -28,7 +28,6 @@ import sys
 
 class CompoundTriggersGetTestCase(BaseTestGenerator):
     """This class will get the compound trigger under table node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('get_compound_trigger',
                                          compound_triggers_utils.test_cases)
 

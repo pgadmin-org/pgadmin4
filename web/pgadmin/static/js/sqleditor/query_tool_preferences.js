@@ -220,7 +220,7 @@ function updateUIPreferences(sqlEditor) {
     /* Although not required, setting explicitly as codemirror will remove code folding only on next edit */
     sqlEditor.query_tool_obj.setOption('foldGutter', false);
   } else {
-    sqlEditor.query_tool_obj.setOption('mode', sqlEditor.handler.server_type === 'gpdb' ? 'text/x-gpsql' : 'text/x-pgsql');
+    sqlEditor.query_tool_obj.setOption('mode', 'text/x-pgsql');
     sqlEditor.query_tool_obj.setOption('foldGutter', preferences.code_folding);
   }
   sqlEditor.query_tool_obj.setOption('foldGutter', preferences.code_folding);

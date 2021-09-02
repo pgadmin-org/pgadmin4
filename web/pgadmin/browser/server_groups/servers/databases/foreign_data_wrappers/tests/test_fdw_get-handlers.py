@@ -21,7 +21,6 @@ from unittest.mock import patch
 
 class FDWHandlersTestCase(BaseTestGenerator):
     """This class will test fdw handler under test database."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('fdw_get_handlers',
                                          fdw_utils.test_cases)
 

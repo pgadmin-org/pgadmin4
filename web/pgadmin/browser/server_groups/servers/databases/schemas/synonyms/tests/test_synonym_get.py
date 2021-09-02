@@ -24,7 +24,6 @@ from . import utils as synonym_utils
 
 class SynonymGetTestCase(BaseTestGenerator):
     """This class will fetch new synonym under schema node."""
-    skip_on_database = ['gpdb']
 
     scenarios = [
         # Fetching default URL for synonym node.

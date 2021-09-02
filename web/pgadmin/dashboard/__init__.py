@@ -238,10 +238,9 @@ def check_precondition(f):
         g.server_type = g.manager.server_type
         g.version = g.manager.version
 
-        # Include server_type in template_path when server_type is gpdb
+        # Include server_type in template_path
         g.template_path = 'dashboard/sql/' + (
-            '#{0}#{1}#'.format(g.server_type, g.version)
-            if g.server_type == 'gpdb' else '#{0}#'.format(g.version)
+            '#{0}#'.format(g.version)
         )
 
         return f(*args, **kwargs)

@@ -27,8 +27,6 @@ class ForeignTableSqlTestCase(BaseTestGenerator):
     """
     This class will fetch foreign table under database node.
     """
-    skip_on_database = ['gpdb']
-
     # Generates scenarios
     scenarios = utils.generate_scenarios("foreign_table_sql",
                                          ft_utils.test_cases)

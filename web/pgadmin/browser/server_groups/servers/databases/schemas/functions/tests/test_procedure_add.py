@@ -19,7 +19,6 @@ from . import utils as funcs_utils
 
 class ProcedureAddTestCase(BaseTestGenerator):
     """ This class will add new procedure under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for procedure node.
         ('Fetch Procedure Node URL', dict(

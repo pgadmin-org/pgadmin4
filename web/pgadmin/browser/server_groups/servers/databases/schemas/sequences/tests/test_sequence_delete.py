@@ -21,7 +21,6 @@ from . import utils as sequence_utils
 
 class SequenceDeleteTestCase(BaseTestGenerator):
     """This class will delete added sequence under schema node."""
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for sequence node.
         ('Fetch sequence Node URL', dict(url='/browser/sequence/obj/'))

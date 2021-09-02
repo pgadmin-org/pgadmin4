@@ -20,7 +20,6 @@ from . import utils as funcs_utils
 
 class ProcedureExecSQLTestCase(BaseTestGenerator):
     """ This class will check the EXEC SQL for Procedure. """
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching procedure SQL to EXEC.
         ('Fetch Procedure SQL to execute', dict(

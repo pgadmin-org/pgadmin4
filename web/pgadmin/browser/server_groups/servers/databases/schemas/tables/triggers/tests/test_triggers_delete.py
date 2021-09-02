@@ -27,7 +27,6 @@ import sys
 
 class TriggersDeleteTestCase(BaseTestGenerator):
     """This class will delete trigger under table node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('delete_trigger',
                                          triggers_utils.test_cases)
 

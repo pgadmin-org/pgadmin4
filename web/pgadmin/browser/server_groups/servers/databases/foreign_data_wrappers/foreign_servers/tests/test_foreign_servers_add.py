@@ -28,7 +28,6 @@ class ForeignServerAddTestCase(BaseTestGenerator):
     """
     This class will add foreign server under database node.
     """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('foreign_server_create',
                                          fsrv_utils.test_cases)
 

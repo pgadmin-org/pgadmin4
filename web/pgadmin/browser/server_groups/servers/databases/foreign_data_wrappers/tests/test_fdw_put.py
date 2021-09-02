@@ -22,7 +22,6 @@ from unittest.mock import patch
 
 class FDWDPutTestCase(BaseTestGenerator):
     """This class will update foreign data wrappers under test database."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('fdw_update',
                                          fdw_utils.test_cases)
 

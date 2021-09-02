@@ -22,7 +22,6 @@ from . import utils as collation_utils
 
 class CollationDependentsTestCase(BaseTestGenerator):
     """ This class will add new collation under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('dependency_dependent_collation',
                                          collation_utils.test_cases)
 

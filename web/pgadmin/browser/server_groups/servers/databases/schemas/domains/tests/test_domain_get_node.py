@@ -22,7 +22,6 @@ from unittest.mock import patch
 
 class DomainGetNodeTestCase(BaseTestGenerator):
     """ This class will add new domain under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('domain_get_nodes',
                                          domain_utils.test_cases)
 

@@ -21,7 +21,6 @@ from . import utils as sequence_utils
 
 class SequenceGetTestCase(BaseTestGenerator):
     """This class will fetch added sequence under schema node."""
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for sequence node.
         ('Fetch sequence Node URL', dict(url='/browser/sequence/obj/'))

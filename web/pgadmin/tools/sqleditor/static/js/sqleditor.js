@@ -449,7 +449,7 @@ define('tools.querytool', [
         tabindex: '0',
         lineNumbers: true,
         styleSelectedText: true,
-        mode: self.handler.server_type === 'gpdb' ? 'text/x-gpsql' : 'text/x-pgsql',
+        mode: 'text/x-pgsql',
         foldOptions: {
           widget: '\u2026',
         },

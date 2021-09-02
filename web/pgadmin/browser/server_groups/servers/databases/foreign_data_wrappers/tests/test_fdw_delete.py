@@ -21,7 +21,6 @@ from unittest.mock import patch
 
 class FDWDeleteTestCase(BaseTestGenerator):
     """This class will delete foreign data wrappers under test database."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('fdw_delete',
                                          fdw_utils.test_cases)
 

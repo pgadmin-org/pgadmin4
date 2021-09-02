@@ -23,7 +23,6 @@ from unittest.mock import patch
 
 class CollationPutTestCase(BaseTestGenerator):
     """ This class will update added collation under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('update_collation',
                                          collation_utils.test_cases)
 

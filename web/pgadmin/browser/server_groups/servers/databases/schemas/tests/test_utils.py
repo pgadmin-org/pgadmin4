@@ -60,20 +60,6 @@ class DataTypeReaderTest(BaseTestGenerator):
              add_serials=False,
              expected_sql_template_path='datatype/sql/#456#',
              expected_function_output=_default_expected_function_output
-         )),
-        ('When no data_type_template_path is present in class for GreenPlum, '
-         'should create template path with gpdb and the version number',
-         dict(
-             manager=dict(
-                 server_type='gpdb',
-                 version='456'
-             ),
-             execute_return_values=_default_database_response,
-             sql_condition='new condition',
-             schema_oid='123',
-             add_serials=False,
-             expected_sql_template_path='datatype/sql/#gpdb#456#',
-             expected_function_output=_default_expected_function_output
          ))
     ]
 

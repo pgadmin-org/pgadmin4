@@ -25,8 +25,6 @@ from . import utils as index_constraint_utils
 class IndexConstraintDeleteTestCase(BaseTestGenerator):
     """This class will delete index constraint(primary key or unique key) of
     table column"""
-    skip_on_database = ['gpdb']
-
     # Generates scenarios
     scenarios = utils.generate_scenarios("index_constraint_delete",
                                          index_constraint_utils.test_cases)

@@ -18,7 +18,6 @@ from . import utils as funcs_utils
 
 class TriggerFuncDeleteTestCase(BaseTestGenerator):
     """ This class will delete the trigger function under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for trigger function node.
         ('Fetch Trigger Function Node URL',

@@ -21,15 +21,6 @@ class TestCompileTemplateName(BaseTestGenerator):
                 expected_return_value='some/prefix/#100000#/some_file.sql'
             )
         ),
-        (
-            'When server is GreenPlum and version is 5, it returns the path '
-            'to the GreenPlum template',
-            dict(
-                server_type='gpdb',
-                version=80323,
-                expected_return_value='some/prefix/#gpdb#80323#/some_file.sql'
-            )
-        ),
     ]
 
     def runTest(self):

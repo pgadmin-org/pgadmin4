@@ -14,14 +14,13 @@ define('pgadmin.node.table', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.tables.js/show_advanced_tab',
   'pgadmin.node.schema.dir/child','pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.node.column',
   'pgadmin.node.constraints', 'pgadmin.browser.table.partition.utils',
 ], function(
   tableFunctions,
   gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
-  ShowAdvancedTab, SchemaChild, SchemaChildTreeNode
+  SchemaChild, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-table']) {

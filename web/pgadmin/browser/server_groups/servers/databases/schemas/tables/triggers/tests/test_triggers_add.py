@@ -28,7 +28,6 @@ import sys
 
 class TriggersAddTestCase(BaseTestGenerator):
     """This class will add new trigger under table node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('add_trigger',
                                          triggers_utils.test_cases)
 

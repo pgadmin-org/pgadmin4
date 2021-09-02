@@ -22,7 +22,6 @@ from regression.python_test_utils import test_utils as utils
 
 class PackageAddTestCase(BaseTestGenerator):
     """ This class will add new package under test schema. """
-    skip_on_database = ['gpdb']
 
     scenarios = [
         # Fetching default URL for package node.

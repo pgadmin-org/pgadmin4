@@ -21,7 +21,6 @@ from . import utils as domain_utils
 
 class DomainGetDependentsAndDependencyTestCase(BaseTestGenerator):
     """ This class will add new domain under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('domain_get_dependencies_dependants',
                                          domain_utils.test_cases)
 

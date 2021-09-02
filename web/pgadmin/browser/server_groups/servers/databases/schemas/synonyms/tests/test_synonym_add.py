@@ -24,7 +24,6 @@ from regression.python_test_utils import test_utils as utils
 
 class SynonymAddTestCase(BaseTestGenerator):
     """This class will add new synonym under test schema."""
-    skip_on_database = ['gpdb']
 
     scenarios = [
         # Fetching default URL for synonym node.

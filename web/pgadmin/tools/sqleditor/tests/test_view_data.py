@@ -22,7 +22,6 @@ class TestViewData(BaseTestGenerator):
     """
     This class checks the view data result for a table with JSON datatype
     """
-    skip_on_database = ['gpdb']
     scenarios = [
         (
             'Table with JSON datatype',

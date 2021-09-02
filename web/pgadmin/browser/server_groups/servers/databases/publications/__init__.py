@@ -227,8 +227,6 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # Set the template path for the SQL scripts
             self.template_path = (
-                "publications/sql/#gpdb#{0}#".format(self.manager.version) if
-                self.manager.server_type == 'gpdb' else
                 "publications/sql/#{0}#".format(self.manager.version)
             )
 

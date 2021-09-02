@@ -21,7 +21,6 @@ from .. import FunctionView
 
 class FunctionPutTestCase(BaseTestGenerator):
     """ This class will update new function under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for function node.
         ('Fetch Function Node URL', dict(

@@ -67,7 +67,6 @@ class TriggerModule(CollectionNodeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        self.min_gpdbver = 1000000000
         super(TriggerModule, self).__init__(*args, **kwargs)
 
     def backend_supported(self, manager, **kwargs):
@@ -75,8 +74,6 @@ class TriggerModule(CollectionNodeModule):
         Load this module if vid is view, we will not load it under
         material view
         """
-        if manager.server_type == 'gpdb':
-            return False
         if super(TriggerModule, self).backend_supported(manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 

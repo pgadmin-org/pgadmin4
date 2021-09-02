@@ -25,7 +25,6 @@ from . import utils as synonym_utils
 
 class SynonymDeleteMultipleTestCase(BaseTestGenerator):
     """This class will delete added synonym under schema node."""
-    skip_on_database = ['gpdb']
 
     scenarios = [
         # Fetching default URL for synonym node.

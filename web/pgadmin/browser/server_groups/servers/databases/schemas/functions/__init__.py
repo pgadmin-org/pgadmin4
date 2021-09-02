@@ -76,7 +76,6 @@ class FunctionModule(SchemaChildModule):
         self.min_ver = None
         self.max_ver = None
         self.server_type = None
-        self.min_gpdbver = None
 
     def get_nodes(self, gid, sid, did, scid):
         """
@@ -1982,7 +1981,6 @@ class ProcedureModule(SchemaChildModule):
         self.min_ver = 110000
         self.max_ver = None
         self.min_ppasver = 90100
-        self.min_gpdbver = 1000000000
         self.server_type = ['pg', 'ppas']
 
     def get_nodes(self, gid, sid, did, scid):
@@ -2082,7 +2080,6 @@ class TriggerFunctionModule(SchemaChildModule):
 
         self.min_ver = 90100
         self.max_ver = None
-        self.min_gpdbver = 1000000000
 
     def get_nodes(self, gid, sid, did, scid):
         """

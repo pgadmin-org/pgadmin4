@@ -20,7 +20,6 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
     This class validates character support in pgAdmin4 for
     SQL_ASCII encodings
     """
-    skip_on_database = ['gpdb']
     scenarios = [
         (
             'Test SQL_ASCII data with multiple backslashes',

@@ -22,7 +22,6 @@ from . import utils as package_utils
 
 class PackageDeleteTestCase(BaseTestGenerator):
     """ This class will delete new package under test schema. """
-    skip_on_database = ['gpdb']
 
     scenarios = [
         # Fetching default URL for package node.

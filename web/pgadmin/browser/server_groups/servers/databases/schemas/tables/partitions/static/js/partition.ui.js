@@ -184,7 +184,6 @@ export default class PartitionTableSchema extends BaseUISchema {
       mode: ['properties', 'create', 'edit'], disabled: this.inCatalog,
     },{
       id: 'advanced', label: gettext('Advanced'), type: 'group',
-      // visible: ShowAdvancedTab.show_advanced_tab,
       visible: true,
     },{
       id: 'coll_inherits', label: gettext('Inherited from table(s)'),

@@ -22,7 +22,6 @@ from unittest.mock import patch
 
 class CollationNodesTestCase(BaseTestGenerator):
     """ This class will test node api for existing index"""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('get_collation_nodes_and_node',
                                          collation_utils.test_cases)
 

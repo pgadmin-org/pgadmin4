@@ -22,7 +22,6 @@ from unittest.mock import patch
 
 class CollationDeleteTestCase(BaseTestGenerator):
     """ This class will delete added collation under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('delete_collation',
                                          collation_utils.test_cases)
 

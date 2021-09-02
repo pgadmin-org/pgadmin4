@@ -26,8 +26,6 @@ from . import utils as index_constraint_utils
 class IndexConstraintAddTestCase(BaseTestGenerator):
     """This class will add index constraint(primary key or unique key) to
     table column"""
-    skip_on_database = ['gpdb']
-
     # Generates scenarios
     scenarios = utils.generate_scenarios("index_constraint_create",
                                          index_constraint_utils.test_cases)

@@ -25,7 +25,6 @@ from . import utils as index_constraint_utils
 class IndexConstraintGetNodesTestCase(BaseTestGenerator):
     """This class will fetch the index constraint(primary key or unique key)
     nodes of table column"""
-    skip_on_database = ['gpdb']
 
     # Generates scenarios
     scenarios = utils.generate_scenarios("index_constraint_get_nodes",

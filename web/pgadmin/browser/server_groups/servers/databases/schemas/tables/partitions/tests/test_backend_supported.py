@@ -47,25 +47,6 @@ class TestBackendSupport(BaseTestGenerator):
              expect_error_response=False,
              expected_number_calls_on_render_template=0
          )),
-        ('when table is partitioned, '
-         'should return the table identifier',
-         dict(
-             manager=dict(
-                 server_type="gpdb",
-                 version="5"
-             ),
-             input_arguments=dict(did=432, tid=123),
-
-             collection_node_active=True,
-             connection_execution_return_value=[True, 123],
-
-             expected_return_value=123,
-             expect_error_response=False,
-             expected_number_calls_on_render_template=1,
-             expect_render_template_to_be_called_with=call(
-                 'partitions/sql/gpdb/#gpdb#5#/backend_support.sql', tid=123
-             )
-         )),
         ('when error happens while querying the database, '
          'should return an internal server error',
          dict(

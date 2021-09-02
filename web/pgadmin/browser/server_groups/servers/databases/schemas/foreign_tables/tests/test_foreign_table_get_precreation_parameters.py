@@ -28,8 +28,6 @@ class ForeignTableGetTestCase(BaseTestGenerator):
     This class will fetch foreign table pre creation parameters under
     database node.
     """
-    skip_on_database = ['gpdb']
-
     # url
     url = '/browser/foreign_table/obj/'
 

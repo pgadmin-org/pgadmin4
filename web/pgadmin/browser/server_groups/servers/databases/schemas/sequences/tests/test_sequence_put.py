@@ -22,7 +22,6 @@ from . import utils as sequence_utils
 
 class SequencePutTestCase(BaseTestGenerator):
     """This class will update added sequence under schema node."""
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for sequence node.
         ('Alter positive sequence comment, increment, max and min value',

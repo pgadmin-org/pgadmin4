@@ -23,7 +23,6 @@ from . import utils as fsrv_utils
 class ForeignServerDependentsAndDependencyTestCase(BaseTestGenerator):
     """ This class will fetch added foreign server dependency and dependent
         under test database. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('foreign_server_dependent_dependency',
                                          fsrv_utils.test_cases)
 

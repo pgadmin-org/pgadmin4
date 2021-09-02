@@ -22,14 +22,6 @@ class BackendSupportedTestCase(BaseTestGenerator):
                  server_type='pg'
              ),
              expected_result=True
-         )),
-        ('When server is GreenPlum 5.0, it returns false',
-         dict(
-             manager=dict(
-                 sversion=80323,
-                 server_type='gpdb'
-             ),
-             expected_result=False
          ))
     ]
 

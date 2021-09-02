@@ -40,18 +40,6 @@ class TestVersionedTemplateLoader(BaseTestGenerator):
             "Raise error when version is smaller than available templates",
             dict(scenario=5)
         ),
-        (
-            "Render a version GPDB 5.0 template when it is present",
-            dict(scenario=6)
-        ),
-        (
-            "Render a version GPDB 5.0 template when it is in default",
-            dict(scenario=7)
-        ),
-        (
-            "Raise error when version is gpdb but template does not exist",
-            dict(scenario=8)
-        )
     ]
 
     def setUp(self):
@@ -75,18 +63,6 @@ class TestVersionedTemplateLoader(BaseTestGenerator):
             # test_raise_not_found_exception_when_postgres_version_less_than_
             # all_available_sql_templates
             self.test_raise_not_found_exception()
-        if self.scenario == 6:
-            # test_get_source_when_the_version_is_gpdb_5_0_returns_gpdb_5_0_
-            # template
-            self.test_get_source_when_the_version_is_gpdb_5_0()
-        if self.scenario == 7:
-            # test_get_source_when_the_version_is_gpdb_5_0_returns_default_
-            # template
-            self.test_get_source_when_the_version_is_gpdb_5_0_returns_default()
-        if self.scenario == 8:
-            # test_raise_not_found_exception_when_the_version_is_gpdb_template
-            # _not_exist
-            self.test_raise_not_found_exception_when_the_version_is_gpdb()
 
     def test_get_source_returns_a_template(self):
         expected_content = "Some SQL" \
@@ -158,52 +134,6 @@ class TestVersionedTemplateLoader(BaseTestGenerator):
         try:
             self.loader.get_source(
                 None, "some_feature/sql/#10100#/some_action.sql"
-            )
-            self.fail("No exception raised")
-        except TemplateNotFound:
-            return
-
-    def test_get_source_when_the_version_is_gpdb_5_0(self):
-        """Render a version GPDB 5.0 template when it is present"""
-        expected_content = "Some default SQL for GPDB\n"
-        # For cross platform we join the SQL path
-        # (This solves the slashes issue)
-        sql_path = os.path.join(
-            "some_feature", "sql", "gpdb_5.0_plus",
-            "some_action_with_gpdb_5_0.sql"
-        )
-        content, filename, up_to_dateness = self.loader.get_source(
-            None,
-            "some_feature/sql/#gpdb#80323#/some_action_with_gpdb_5_0.sql"
-        )
-
-        self.assertEqual(
-            expected_content, str(content).replace("\r", "")
-        )
-        self.assertIn(sql_path, filename)
-
-    def test_get_source_when_the_version_is_gpdb_5_0_returns_default(self):
-        """Render a version GPDB 5.0 template when it is in default"""
-        expected_content = "Some default SQL"
-        # For cross platform we join the SQL path
-        # (This solves the slashes issue)
-        sql_path = os.path.join(
-            "some_feature", "sql", "default", "some_action_with_default.sql"
-        )
-        content, filename, up_to_dateness = self.loader.get_source(
-            None, "some_feature/sql/#gpdb#80323#/some_action_with_default.sql"
-        )
-
-        self.assertEqual(
-            expected_content, str(content).replace("\r", "")
-        )
-        self.assertIn(sql_path, filename)
-
-    def test_raise_not_found_exception_when_the_version_is_gpdb(self):
-        """"Raise error when version is gpdb but template does not exist"""
-        try:
-            self.loader.get_source(
-                None, "some_feature/sql/#gpdb#50100#/some_action.sql"
             )
             self.fail("No exception raised")
         except TemplateNotFound:

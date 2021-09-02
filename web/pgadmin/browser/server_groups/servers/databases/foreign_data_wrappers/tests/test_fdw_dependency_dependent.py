@@ -20,8 +20,6 @@ from . import utils as fdw_utils
 
 class FDWDependencyAndDependentTestCase(BaseTestGenerator):
     """This class will test fdw dependents under test database."""
-    skip_on_database = ['gpdb']
-
     scenarios = utils.generate_scenarios('fdw_dependency_dependent',
                                          fdw_utils.test_cases)
 

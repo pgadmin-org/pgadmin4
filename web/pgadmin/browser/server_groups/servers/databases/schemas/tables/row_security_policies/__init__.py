@@ -57,7 +57,6 @@ class RowSecurityModule(CollectionNodeModule):
 
     def __init__(self, *args, **kwargs):
         super(RowSecurityModule, self).__init__(*args, **kwargs)
-        self.min_gpdbver = 1000000000
         self.min_ver = 90500
         self.max_ver = None
 

@@ -24,7 +24,6 @@ from . import utils as check_constraint_utils
 
 class CheckConstraintValidateTestCase(BaseTestGenerator):
     """This class will validate check constraint to existing table"""
-    skip_on_database = ['gpdb']
     url = '/browser/check_constraint/validate/'
 
     # Generates scenarios from cast_test_data.json file

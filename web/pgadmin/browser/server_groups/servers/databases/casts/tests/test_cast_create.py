@@ -17,7 +17,6 @@ from unittest.mock import patch
 
 
 class CastsCreateTestCase(BaseTestGenerator):
-    skip_on_database = ['gpdb']
     url = '/browser/cast/obj/'
 
     # Generates scenarios from cast_test_data.json file

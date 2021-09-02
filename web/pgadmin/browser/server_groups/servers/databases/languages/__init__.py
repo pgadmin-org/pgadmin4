@@ -246,8 +246,6 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # Set the template path for the SQL scripts
             self.template_path = (
-                "languages/sql/#gpdb#{0}#".format(self.manager.version) if
-                self.manager.server_type == 'gpdb' else
                 "languages/sql/#{0}#".format(self.manager.version)
             )
 

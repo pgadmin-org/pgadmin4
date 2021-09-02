@@ -117,49 +117,6 @@ class TestExplainPlanTemplates(BaseTestGenerator):
                                       'SELECT * FROM places'
             )
         ),
-        (
-            'When rendering GreenPlum 5.3 template, '
-            'when all parameters are present,'
-            'it returns the explain without parameters',
-            dict(
-                template_path='sqleditor/sql/gpdb_5.0_plus/explain_plan.sql',
-                input_parameters=dict(
-                    sql='SELECT * FROM places',
-                    format='json',
-                    buffers=True
-                ),
-                sql_statement='SELECT * FROM places',
-                expected_return_value='EXPLAIN SELECT * FROM places'
-            )
-        ),
-        (
-            'When rendering GreenPlum 5.3 template, '
-            'when analyze is true,'
-            'it returns the explain analyze',
-            dict(
-                template_path='sqleditor/sql/gpdb_5.0_plus/explain_plan.sql',
-                input_parameters=dict(
-                    sql='SELECT * FROM places',
-                    analyze=True
-                ),
-                sql_statement='SELECT * FROM places',
-                expected_return_value='EXPLAIN ANALYZE SELECT * FROM places'
-            )
-        ),
-        (
-            'When rendering GreenPlum 5.3 template, '
-            'when analyze is false,'
-            'it returns the only explain',
-            dict(
-                template_path='sqleditor/sql/gpdb_5.0_plus/explain_plan.sql',
-                input_parameters=dict(
-                    sql='SELECT * FROM places',
-                    analyze=False
-                ),
-                sql_statement='SELECT * FROM places',
-                expected_return_value='EXPLAIN SELECT * FROM places'
-            )
-        ),
     ]
 
     def setUp(self):

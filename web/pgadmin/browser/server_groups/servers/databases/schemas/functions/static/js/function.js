@@ -48,9 +48,7 @@ define('pgadmin.node.function', [
       hasSQL: true,
       hasDepends: true,
       width: pgBrowser.stdW.md + 'px',
-      hasStatistics: (treeInformation) => {
-        return treeInformation.server.server_type !== 'gpdb';
-      },
+      hasStatistics: true,
       hasScriptTypes: ['create', 'select'],
       Init: function() {
         /* Avoid mulitple registration of menus */

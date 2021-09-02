@@ -21,7 +21,6 @@ from unittest.mock import patch
 
 class FDWDGetMSQLTestCase(BaseTestGenerator):
     """ This class will test fdw msql under test database. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('fdw_get_msql',
                                          fdw_utils.test_cases)
 

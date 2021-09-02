@@ -20,7 +20,6 @@ from unittest.mock import patch
 class CastsPutTestCase(BaseTestGenerator):
     url = '/browser/cast/obj/'
     """ This class will fetch the cast node added under database node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios("cast_put", cast_utils.test_cases)
 
     def setUp(self):

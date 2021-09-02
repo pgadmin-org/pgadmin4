@@ -18,7 +18,6 @@ from unittest.mock import patch
 
 class CastsGetNodeTestCase(BaseTestGenerator):
     """ This class will fetch the cast node added under database node. """
-    skip_on_database = ['gpdb']
     url = '/browser/cast/nodes/'
     scenarios = utils.generate_scenarios("cast_get_node",
                                          cast_utils.test_cases)

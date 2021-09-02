@@ -22,7 +22,6 @@ from unittest.mock import patch
 class FDWDGetTestCase(BaseTestGenerator):
     """ This class will test fdw properties
     and list API under test database. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('fdw_get',
                                          fdw_utils.test_cases)
 

@@ -19,7 +19,6 @@ from . import utils as funcs_utils
 
 class FunctionGetTestCase(BaseTestGenerator):
     """This class will fetch added function under schema node."""
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for function node.
         (

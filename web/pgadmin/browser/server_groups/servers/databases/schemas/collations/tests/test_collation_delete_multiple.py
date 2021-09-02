@@ -22,7 +22,6 @@ from . import utils as collation_utils
 
 class CollationDeleteMultipleTestCase(BaseTestGenerator):
     """ This class will delete added collations under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('delete_multiple_collation',
                                          collation_utils.test_cases)
 

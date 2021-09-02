@@ -30,7 +30,6 @@ class TablespaceModule(CollectionNodeModule):
 
     def __init__(self, import_name, **kwargs):
         super(TablespaceModule, self).__init__(import_name, **kwargs)
-        self.min_gpdbver = 90000
 
     def get_nodes(self, gid, sid):
         """

@@ -29,7 +29,6 @@ class UserMappingDependentsAndDependencyTestCase(BaseTestGenerator):
     """ This class will fetch added user mapping dependency and dependent
         under test database. """
 
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('user_mapping_dependent_dependency',
                                          um_utils.test_cases)
 

@@ -18,7 +18,6 @@ from . import utils as funcs_utils
 
 class procedureDeleteTestCase(BaseTestGenerator):
     """ This class will delete the procedure under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for procedure node.
         ('Fetch Procedure Node URL',

@@ -237,8 +237,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # Set the template path for the SQL scripts
             self.template_path = (
-                "subscriptions/sql/#gpdb#{0}#".format(self.manager.version) if
-                self.manager.server_type == 'gpdb' else
                 "subscriptions/sql/#{0}#".format(self.manager.version)
             )
 

@@ -19,7 +19,6 @@ from . import utils as funcs_utils
 
 class TriggerFuncPutTestCase(BaseTestGenerator):
     """ This class will update new trigger function under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for trigger function node.
         ('Fetch Trigger Function Node URL',

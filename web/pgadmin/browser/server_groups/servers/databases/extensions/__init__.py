@@ -43,7 +43,6 @@ class ExtensionModule(CollectionNodeModule):
         Initialising the base class
         """
         super(ExtensionModule, self).__init__(*args, **kwargs)
-        self.min_gpdbver = 1000000000
 
     def get_nodes(self, gid, sid, did):
         """

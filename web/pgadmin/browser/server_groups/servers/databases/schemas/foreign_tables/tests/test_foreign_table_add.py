@@ -27,8 +27,6 @@ class ForeignTableAddTestCase(BaseTestGenerator):
     """
     This class will add foreign table under database node.
     """
-    skip_on_database = ['gpdb']
-
     # url
     url = '/browser/foreign_table/obj/'
 

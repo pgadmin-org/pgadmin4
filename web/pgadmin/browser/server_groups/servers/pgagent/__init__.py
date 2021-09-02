@@ -53,9 +53,6 @@ class JobModule(CollectionNodeModule):
 
         conn = manager.connection()
 
-        if manager.server_type == 'gpdb':
-            return False
-
         status, res = conn.execute_scalar("""
 SELECT
     has_table_privilege(

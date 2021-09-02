@@ -28,7 +28,6 @@ from unittest.mock import patch
 
 class UserMappingPutTestCase(BaseTestGenerator):
     """This class will update user mapping under foreign server node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('user_mapping_update',
                                          um_utils.test_cases)
 

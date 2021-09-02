@@ -20,7 +20,6 @@ from unittest.mock import patch
 class CastsDeleteTestCase(BaseTestGenerator):
     url = '/browser/cast/obj/'
     """ This class will delete the cast node added under database node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios("cast_delete",
                                          cast_utils.test_cases)
 

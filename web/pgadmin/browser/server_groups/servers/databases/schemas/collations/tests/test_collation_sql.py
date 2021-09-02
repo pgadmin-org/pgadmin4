@@ -22,7 +22,6 @@ from unittest.mock import patch
 
 class CollationSqlTestCase(BaseTestGenerator):
     """ This class will fetch new collation under schema node. """
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('get_collation_sql',
                                          collation_utils.test_cases)
 

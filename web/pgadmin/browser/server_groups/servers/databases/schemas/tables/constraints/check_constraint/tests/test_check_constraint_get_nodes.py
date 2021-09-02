@@ -24,7 +24,6 @@ from . import utils as check_constraint_utils
 
 class CheckConstraintGetNodesTestCase(BaseTestGenerator):
     """This class will fetch nodes check constraint of table."""
-    skip_on_database = ['gpdb']
     url = '/browser/check_constraint/nodes/'
 
     # Generates scenarios from cast_test_data.json file

@@ -26,7 +26,6 @@ from . import utils as um_utils
 
 class UserMappingGetMSQLTestCase(BaseTestGenerator):
     """This class will add user mapping under foreign server node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('user_mapping_get_msql',
                                          um_utils.test_cases)
 

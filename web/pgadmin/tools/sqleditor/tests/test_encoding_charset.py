@@ -22,7 +22,6 @@ class TestEncodingCharset(BaseTestGenerator):
     This class validates character support in pgAdmin4 for
     different PostgresDB encodings
     """
-    skip_on_database = ['gpdb']
     scenarios = [
         (
             'With Encoding UTF8',

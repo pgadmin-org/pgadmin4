@@ -109,8 +109,6 @@ class PGChildModule(object):
         self.min_ppasver = 0
         self.max_ppasver = 1100000000
         self.server_type = None
-        self.min_gpdbver = 80323
-        self.max_gpdbver = 1000000000
 
         super(PGChildModule, self).__init__()
 
@@ -131,9 +129,6 @@ class PGChildModule(object):
             if manager.server_type == 'ppas':
                 min_server_version = self.min_ppasver
                 max_server_version = self.max_ppasver
-            if manager.server_type == 'gpdb':
-                min_server_version = self.min_gpdbver
-                max_server_version = self.max_gpdbver
             return is_version_in_range(sversion, min_server_version,
                                        max_server_version)
 

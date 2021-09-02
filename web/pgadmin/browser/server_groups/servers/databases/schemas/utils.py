@@ -114,10 +114,6 @@ class DataTypeReader:
             else self.manager
         if not hasattr(self, 'data_type_template_path'):
             self.data_type_template_path = 'datatype/sql/' + (
-                '#{0}#{1}#'.format(
-                    manager.server_type,
-                    manager.version
-                ) if manager.server_type == 'gpdb' else
                 '#{0}#'.format(manager.version)
             )
         sql = render_template(

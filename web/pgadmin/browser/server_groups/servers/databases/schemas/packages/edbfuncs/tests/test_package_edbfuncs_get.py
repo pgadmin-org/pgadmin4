@@ -22,7 +22,7 @@ from regression.python_test_utils import test_utils as utils
 class PackageEDBFuncsGetTestCase(BaseTestGenerator):
     """ This class will fetch functions/procedures of package
      under test schema. """
-    skip_on_database = ['gpdb', 'pg']
+    skip_on_database = ['pg']
 
     scenarios = [
         # Fetching default URL for package node.

@@ -21,7 +21,6 @@ from unittest.mock import patch
 
 class SchemaPutTestCase(BaseTestGenerator):
     """ This class will update the schema under database node. """
-    skip_on_database = ['gpdb']
 
     scenarios = utils.generate_scenarios('schema_update',
                                          schema_utils.test_cases)

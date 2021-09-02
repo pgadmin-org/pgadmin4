@@ -76,36 +76,6 @@ class StartRunningQueryTest(BaseTestGenerator):
              expected_return_value='EXPLAIN (FORMAT JSON, ANALYZE FALSE, '
                                    'VERBOSE TRUE, COSTS FALSE, BUFFERS FALSE, '
                                    'TIMING TRUE) some sql'
-         )),
-        ('When explain_plan is present for a GreenPlum server version 5, '
-         'it should return SQL with explain plan',
-         dict(
-             function_input_parameters={
-                 'manager': MagicMock(version=80323, server_type='gpdb'),
-                 'sql': {
-                     'sql': 'some sql',
-                     'explain_plan': {
-                         'format': 'json',
-                         'analyze': False,
-                         'verbose': True,
-                         'buffers': False,
-                         'timing': True
-                     }
-                 }
-             },
-
-             expect_render_template_mock_parameters=dict(
-                 template_name_or_list='sqleditor/sql/#gpdb#80323#/'
-                                       'explain_plan.sql',
-                 named_parameters=dict(
-                     format='json',
-                     analyze=False,
-                     verbose=True,
-                     buffers=False,
-                     timing=True
-                 )),
-
-             expected_return_value='EXPLAIN some sql'
          ))
     ]
 

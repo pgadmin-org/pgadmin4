@@ -24,7 +24,6 @@ from . import utils as check_constraint_utils
 
 class CheckConstraintDeleteTestCase(BaseTestGenerator):
     """This class will delete check constraint to existing table"""
-    skip_on_database = ['gpdb']
     url = '/browser/check_constraint/obj/'
 
     # Generates scenarios from cast_test_data.json file

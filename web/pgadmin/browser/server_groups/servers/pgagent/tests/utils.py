@@ -76,10 +76,6 @@ def is_valid_server_to_run_pgagent(self):
     server_con = server_utils.connect_server(self, self.server_id)
     if not server_con["info"] == "Server connected.":
         raise Exception("Could not connect to server to add pgAgent job.")
-    if "type" in server_con["data"]:
-        if server_con["data"]["type"] == "gpdb":
-            message = "pgAgent is not supported by Greenplum."
-            return False, message
     return True, None
 
 

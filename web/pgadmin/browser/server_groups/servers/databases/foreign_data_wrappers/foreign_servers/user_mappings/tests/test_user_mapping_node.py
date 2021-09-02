@@ -27,7 +27,6 @@ from unittest.mock import patch
 
 class UserMappingNodesTestCase(BaseTestGenerator):
     """This class will delete user mapping under foreign server node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('user_mapping_get_nodes',
                                          um_utils.test_cases)
 

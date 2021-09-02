@@ -27,7 +27,6 @@ import sys
 
 class CompoundTriggersDeleteMultipleTestCase(BaseTestGenerator):
     """This class will delete multiple compound triggers under table node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('delete_multiple_compound_trigger',
                                          compound_triggers_utils.test_cases)
 

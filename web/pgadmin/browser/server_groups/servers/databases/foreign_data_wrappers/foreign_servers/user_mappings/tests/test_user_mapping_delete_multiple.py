@@ -27,7 +27,6 @@ from . import utils as um_utils
 
 class UserMappingDeleteMultipleTestCase(BaseTestGenerator):
     """This class will delete user mappings under foreign server node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('user_mapping_multiple_delete',
                                          um_utils.test_cases)
 

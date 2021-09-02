@@ -77,13 +77,6 @@ def get_version_mapping_directories(server_type):
     :param server_type:
     :return:
     """
-    if server_type == 'gpdb':
-        return (
-            {'name': "gpdb_5.0_plus", 'number': 80323},
-            {'name': "5_plus", 'number': 80323},
-            {'name': "default", 'number': 0}
-        )
-
     return ({'name': "13_plus", 'number': 130000},
             {'name': "12_plus", 'number': 120000},
             {'name': "11_plus", 'number': 110000},

@@ -1101,7 +1101,7 @@ def create_schema(server, db_name, schema_name):
 
 def get_server_type(server):
     """
-    This function will return the type of the server (PPAS, PG or GPDB)
+    This function will return the type of the server (PPAS or PG)
     :param server:
     :return:
     """
@@ -1123,9 +1123,7 @@ def get_server_type(server):
         if isinstance(version_string, tuple):
             version_string = version_string[0]
 
-        if "Greenplum Database" in version_string:
-            return 'gpdb'
-        elif "EnterpriseDB" in version_string:
+        if "EnterpriseDB" in version_string:
             return 'ppas'
 
         return 'pg'

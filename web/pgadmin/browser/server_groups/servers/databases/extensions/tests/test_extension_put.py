@@ -19,7 +19,6 @@ from . import utils as extension_utils
 
 
 class ExtensionsPutTestCase(BaseTestGenerator):
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for extension node.
         ('Check Extension Node', dict(url='/browser/extension/obj/'))

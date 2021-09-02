@@ -27,7 +27,6 @@ import sys
 
 class TriggersGetTestCase(BaseTestGenerator):
     """This class will fetch trigger under table node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('get_trigger',
                                          triggers_utils.test_cases)
 

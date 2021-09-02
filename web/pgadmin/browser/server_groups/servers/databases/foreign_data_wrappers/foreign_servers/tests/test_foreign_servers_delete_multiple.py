@@ -23,7 +23,6 @@ from . import utils as fsrv_utils
 
 class ForeignServerDeleteMultipleTestCase(BaseTestGenerator):
     """This class will delete foreign server under FDW node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('foreign_server_multiple_delete',
                                          fsrv_utils.test_cases)
 

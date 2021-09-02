@@ -23,7 +23,6 @@ from . import utils as package_utils
 
 class PackagePutTestCase(BaseTestGenerator):
     """ This class will update new package under test schema. """
-    skip_on_database = ['gpdb']
     scenarios = [
         # Fetching default URL for package node.
         ('Fetch Package Node URL', dict(

@@ -24,7 +24,6 @@ from . import utils as fsrv_utils
 
 class ForeignServerGetSQLTestCase(BaseTestGenerator):
     """This class will fetch foreign server msql under FDW node."""
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('foreign_server_get_msql',
                                          fsrv_utils.test_cases)
 

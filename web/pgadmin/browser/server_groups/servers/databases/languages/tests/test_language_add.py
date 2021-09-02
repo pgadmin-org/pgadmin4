@@ -21,7 +21,6 @@ from unittest.mock import patch
 
 
 class LanguagesAddTestCase(BaseTestGenerator):
-    skip_on_database = ['gpdb']
     scenarios = utils.generate_scenarios('create_language',
                                          language_utils.test_cases)
 

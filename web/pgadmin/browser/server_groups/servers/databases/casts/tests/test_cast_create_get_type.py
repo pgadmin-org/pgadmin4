@@ -17,7 +17,6 @@ from unittest.mock import patch
 
 
 class CastsCreateGettypeTestCase(BaseTestGenerator):
-    skip_on_database = ['gpdb']
     url = '/browser/cast/'
     scenarios = utils.generate_scenarios("cast_create_get_type",
                                          cast_utils.test_cases)
