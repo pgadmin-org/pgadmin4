@@ -207,8 +207,10 @@ function launchPgAdminWindow() {
     'frame': true,
     'position': 'center',
     'resizable': true,
-    'min_width': 1024,
-    'min_height': 768,
+    'min_width': 640,
+    'min_height': 480,
+    'width': 1024,
+    'height': 768,
     'focus': true,
     'show': false,
   }, (pgadminWindow)=> {
