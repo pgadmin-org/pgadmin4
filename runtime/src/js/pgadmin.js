@@ -207,8 +207,8 @@ function launchPgAdminWindow() {
     'frame': true,
     'position': 'center',
     'resizable': true,
-    'min_width': 640,
-    'min_height': 480,
+    'min_width': 1024,
+    'min_height': 768,
     'focus': true,
     'show': false,
   }, (pgadminWindow)=> {
@@ -230,7 +230,6 @@ function launchPgAdminWindow() {
     pgadminWindow.on('new-win-policy', function(frame, url, policy) {
         if(!frame) {
             policy.setNewWindowManifest({
-                'id': 'pgadmin-tools',
                 'icon': '../../assets/pgAdmin4.png',
                 'frame': true,
                 'position': 'center',
