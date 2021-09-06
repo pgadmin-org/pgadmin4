@@ -274,7 +274,7 @@ define('pgadmin.datagrid', [
            */
           var propertiesPanel = pgBrowser.docker.findPanels('properties');
           var queryToolPanel = pgBrowser.docker.addPanel('frm_datagrid', wcDocker.DOCK.STACKED, propertiesPanel[0]);
-
+          queryToolPanel.trans_id = trans_id;
           showQueryTool._set_dynamic_tab(pgBrowser, browser_preferences['dynamic_tabs']);
 
           // Set panel title and icon
