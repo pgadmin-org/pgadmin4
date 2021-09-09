@@ -786,6 +786,7 @@ InputSelect.propTypes = {
   options: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Promise), PropTypes.func]),
   controlProps: PropTypes.object,
   optionsLoaded: PropTypes.func,
+  optionsReloadBasis: PropTypes.any,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   readonly: PropTypes.bool,

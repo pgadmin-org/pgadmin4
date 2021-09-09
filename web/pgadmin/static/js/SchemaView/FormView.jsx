@@ -397,6 +397,7 @@ FormView.propTypes = {
   viewHelperProps: PropTypes.object,
   isNested: PropTypes.bool,
   isDataGridForm: PropTypes.bool,
+  isTabView: PropTypes.bool,
   visible: PropTypes.oneOfType([
     PropTypes.bool, PropTypes.func,
   ]),
