@@ -33,6 +33,7 @@ def themes(app):
         def get_theme_css():
             all_themes = get_all_themes()
             theme_css = all_themes['standard']['cssfile'] + '.css'
+            theme = 'standard'
             try:
                 misc_preference = Preferences.module('misc')
                 theme = misc_preference.preference('theme').get()
