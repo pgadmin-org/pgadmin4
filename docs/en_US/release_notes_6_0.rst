@@ -21,3 +21,4 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #6712 <https://redmine.postgresql.org/issues/6712>`_ -  Fixed an issue where collapse and expand arrows mismatch in case of nested IF.

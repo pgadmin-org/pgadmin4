@@ -28,6 +28,7 @@
       endTkn = tokenSet[tokenSetNo].end;
     while (at > 0) {
       var found = lineText.toUpperCase().lastIndexOf(startTkn, at);
+      found = checkStartTokenFoundOnEndToken(found, lineText.toUpperCase(), endTkn, startTkn);
       var startToken = startTkn;
       var endToken = endTkn;
 
@@ -59,8 +60,10 @@
         pos = 0;
       var whileloopvar = 0;
       while (whileloopvar < 1) {
-        var nextOpen = text.indexOf(startToken, pos),
-          nextClose = text.indexOf(endToken, pos);
+        var nextOpen = text.indexOf(startToken, pos);
+        nextOpen = checkStartTokenFoundOnEndToken(nextOpen, text, endToken, startToken);
+
+        var nextClose = text.indexOf(endToken, pos);
         if (nextOpen < 0) nextOpen = text.length;
         if (nextClose < 0) nextClose = text.length;
         pos = Math.min(nextOpen, nextClose);
@@ -82,6 +85,42 @@
       to: CodeMirror.Pos(end, endCh),
     };
   };
+
+  /**
+   * This function is responsible for finding whether the startToken is present
+   * in the endToken as well, to avoid mismatch of start and end points.
+   * e.g. In case of IF and END IF, IF is detected in both tokens, which creates
+   * confusion. The said function will resolve such issues.
+   * @function checkStartTokenFoundOnEndToken
+   * @returns {Number} - returns found
+   */
+  function checkStartTokenFoundOnEndToken(found, text, endToken, startToken) {
+    if(found > 0) {
+      if(text.includes(endToken)
+        || !checkTokenMixedWithOtherAlphabets(text, startToken)) {
+        found = -1;
+      }
+    }
+    return found;
+  }
+
+  /**
+   * This function is responsible for finding whether the startToken is mixed
+   * with other alphabets of the text. To avoid word like NOTIFY to be mistakenly treat as keyword.
+   * e.g. to avoid the IF detected as keyword in the word NOTIFY.
+   * Function also works with other tokens like LOOP, CASE, etc.
+   * @function checkTokenMixedWithOtherAlphabets
+   * @returns {Boolean} - returns true/false
+   */
+  function checkTokenMixedWithOtherAlphabets(text, startToken) {
+    //this reg will check the token should be in format as - IF condition or IF(condition)
+    let reg = `\\b\\${startToken}\\s*\\(\\w*\\)(?!\\w)|\\b\\${startToken}\\(\\w*\\)(?!\\w)|\\b\\${startToken}\\s*(?!\\w)`;
+    let regex = RegExp(reg, 'g');
+    if(regex.exec(text) !== null) {
+      return true;
+    }
+    return false;
+  }
 
   CodeMirror.registerHelper('fold', 'sql', function(cm, start) {
     var fromToPos = pgadminKeywordRangeFinder(cm, start, [
