@@ -83,7 +83,7 @@
     "@tippyjs/react": "^4.2.0",
     "acitree": "git+https://github.com/imsurinder90/jquery-aciTree.git#rc.7",
     "alertifyjs": "git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "babelify": "~10.0.0",
     "backbone": "1.4.0",
     "backform": "^0.2.0",
