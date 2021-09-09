@@ -1117,7 +1117,15 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         for row in data[part_keys]:
             if row['key_type'] == 'column':
                 partition_scheme += self.qtIdent(
-                    self.conn, row['pt_column']) + ', '
+                    self.conn, row['pt_column'])
+                if 'collationame' in row:
+                    partition_scheme += ' COLLATE %s' % row['collationame']
+
+                if 'op_class' in row:
+                    partition_scheme += ' %s' % row['op_class']
+
+                partition_scheme += ', '
+
             elif row['key_type'] == 'expression':
                 partition_scheme += row['expression'] + ', '
 

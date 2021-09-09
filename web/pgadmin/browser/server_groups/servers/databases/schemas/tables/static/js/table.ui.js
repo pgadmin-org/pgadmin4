@@ -57,6 +57,8 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
     (params)=>{
       return getNodeAjaxOptions('get_columns', tableNode, treeNodeInfo, itemNodeData, {urlParams: params, useCache:false});
     },
+    ()=>getNodeAjaxOptions('get_collations', pgBrowser.Nodes['collation'], treeNodeInfo, itemNodeData),
+    ()=>getNodeAjaxOptions('get_op_class', pgBrowser.Nodes['table'], treeNodeInfo, itemNodeData),
     {
       relowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
       schema: treeNodeInfo.schema._label,
@@ -255,7 +257,7 @@ export class LikeSchema extends BaseUISchema {
 }
 
 export default class TableSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, schemas, getPrivilegeRoleSchema, getColumns, initValues) {
+  constructor(fieldOptions={}, nodeInfo, schemas, getPrivilegeRoleSchema, getColumns, getCollations, getOperatorClass, initValues) {
     super({
       name: undefined,
       oid: undefined,
@@ -298,6 +300,8 @@ export default class TableSchema extends BaseUISchema {
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
     this.nodeInfo = nodeInfo;
     this.getColumns = getColumns;
+    this.getCollations = getCollations;
+    this.getOperatorClass = getOperatorClass;
 
     this.partitionKeysObj = new PartitionKeysSchema();
     this.partitionsObj = new PartitionsSchema(this.nodeInfo);

@@ -4,16 +4,28 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { emptyValidator, isEmptyString } from '../../../../../../../../static/js/validators';
 
 export class PartitionKeysSchema extends BaseUISchema {
-  constructor(columns=[]) {
+  constructor(columns=[], getOperatorClass, getCollations) {
     super({
       key_type: 'column',
     });
     this.columns = columns;
     this.columnsReloadBasis = false;
+    this.getOperatorClass =  getOperatorClass;
+    this.getCollations = getCollations;
+    this.op_class_types = [];
   }
 
   changeColumnOptions(columns) {
     this.columns = columns;
+  }
+
+  setOpClassTypes(options) {
+
+    if(!options || (_.isArray(options) && options.length == 0))
+      return this.op_class_types;
+
+    if(this.op_class_types.length == 0)
+      this.op_class_types = options;
   }
 
   get baseFields() {
@@ -66,6 +78,30 @@ export class PartitionKeysSchema extends BaseUISchema {
         }
         return false;
       },
+    },{
+      id: 'collationame', label: gettext('Collation'), cell: 'select',
+      type: 'select', group: gettext('partition'), deps:['key_type'],
+      options: obj._top.getCollations(), mode: ['create', 'properties', 'edit'],
+      editable: function(state) {
+        if(state.key_type == 'expression') {
+          return false;
+        }
+        return true;
+      },
+      disabled: ()=>{return !(obj.isNew()); },
+    },
+    {
+      id: 'op_class', label: gettext('Operator class'), cell: 'select',
+      type: 'select', group: gettext('partition'),  deps:['key_type'],
+      editable: function(state) {
+        if(state.key_type == 'expression') {
+          return false;
+        }
+        return true;
+      },
+      disabled: ()=>{return !(obj.isNew()); },
+      options: obj._top.getOperatorClass(), mode: ['create', 'properties', 'edit'],
+      optionsLoaded: (options)=>{obj.setOpClassTypes(options);},
     }];
   }
 

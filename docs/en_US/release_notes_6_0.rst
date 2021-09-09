@@ -21,4 +21,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #2546 <https://redmine.postgresql.org/issues/2546>`_ -  Added support to create the Partitioned table should be created using COLLATE and opclass.
 | `Issue #6712 <https://redmine.postgresql.org/issues/6712>`_ -  Fixed an issue where collapse and expand arrows mismatch in case of nested IF.
