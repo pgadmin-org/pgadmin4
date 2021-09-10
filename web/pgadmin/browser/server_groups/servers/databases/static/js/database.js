@@ -30,7 +30,7 @@ define('pgadmin.node.database', [
         hasStatistics: true,
         canDrop: true,
         selectParentNodeOnDelete: true,
-        canDropCascade: true,
+        canDropCascade: false,
         statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       });
   }
