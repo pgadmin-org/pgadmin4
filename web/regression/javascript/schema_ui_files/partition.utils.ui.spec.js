@@ -29,6 +29,8 @@ class SchemaInColl extends BaseUISchema {
     this.collSchema = schemaObj;
     this.columns = columns;
   }
+  getCollations() {}
+  getOperatorClass() {}
 
   get baseFields() {
     return [{
@@ -52,7 +54,12 @@ describe('PartitionKeysSchema', ()=>{
     mount = createMount();
     spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue(Promise.resolve([]));
     spyOn(nodeAjax, 'getNodeListByName').and.returnValue(Promise.resolve([]));
-    schemaObj = new SchemaInColl(new PartitionKeysSchema());
+    let partitionObj =  new PartitionKeysSchema();
+    partitionObj.top = {
+      getCollations : ()=>{},
+      getOperatorClass : ()=>{},
+    };
+    schemaObj = new SchemaInColl(partitionObj);
   });
 
   afterAll(() => {
@@ -164,6 +171,8 @@ describe('PartitionsSchema', ()=>{
     spyOn(nodeAjax, 'getNodeListByName').and.returnValue(Promise.resolve([]));
     schemaObj = new PartitionsSchema();
     schemaObj.top = schemaObj;
+    schemaObj.top.getCollations = ()=>Promise.resolve({});
+    schemaObj.top.getOperatorClass = ()=>Promise.resolve({});
   });
 
   afterAll(() => {
