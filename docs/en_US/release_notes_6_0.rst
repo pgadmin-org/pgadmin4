@@ -25,4 +25,5 @@ Bug fixes
 | `Issue #3827 <https://redmine.postgresql.org/issues/3827>`_ -  Ensure that in the Query History tab, query details should be scrollable.
 | `Issue #6712 <https://redmine.postgresql.org/issues/6712>`_ -  Fixed an issue where collapse and expand arrows mismatch in case of nested IF.
 | `Issue #6713 <https://redmine.postgresql.org/issues/6713>`_ -  Fixed an issue where the last message is not visible in the Debugger.
+| `Issue #6723 <https://redmine.postgresql.org/issues/6723>`_ -  Updated query error row selection color as per dark theme style guide.
 | `Issue #6724 <https://redmine.postgresql.org/issues/6724>`_ -  Fixed an issue where the drop cascade button enables for Databases.
