@@ -96,6 +96,7 @@
 .query-detail {
   height: 100%;
   width: 100%;
+  min-height: 19em;
   display: flex;
   flex-direction: column;
   background-color: $color-bg;
@@ -156,7 +157,7 @@
     flex: 5;
     margin-left: 10px;
     margin-right: 10px;
-    height: 0;
+    min-height: 1em;
     position: relative;
 
     .copy-all, .was-copied, .copy-to-editor {
@@ -196,6 +197,7 @@
     flex: 2;
     display: flex;
     padding: 0 20px;
+    min-height: 6em;
 
     .message {
       flex: 2 2 0%;
