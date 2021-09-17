@@ -23,4 +23,5 @@ Bug fixes
 
 | `Issue #2546 <https://redmine.postgresql.org/issues/2546>`_ -  Added support to create the Partitioned table using COLLATE and opclass.
 | `Issue #6712 <https://redmine.postgresql.org/issues/6712>`_ -  Fixed an issue where collapse and expand arrows mismatch in case of nested IF.
+| `Issue #6713 <https://redmine.postgresql.org/issues/6713>`_ -  Fixed an issue where the last message is not visible in the Debugger.
 | `Issue #6724 <https://redmine.postgresql.org/issues/6724>`_ -  Fixed an issue where the drop cascade button enables for Databases.

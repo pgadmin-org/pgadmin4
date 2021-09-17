@@ -1684,6 +1684,24 @@ define([
       docker.addPanel('stack_pane', wcDocker.DOCK.STACKED, parameters_panel);
     },
 
+    /**
+     * This function is responsible for adjusting the message height
+     * so that the message does not cut down.
+     * @function setMessagePanelHeight
+     */
+    setMessagePanelHeight: function() {
+      var self = this,
+        dockerPane = self.docker.$container[0];
+      if(dockerPane.children.length > 2) {
+        var bottomPane = dockerPane.children[2],
+          message_height = $(bottomPane).height() - 75;
+        $($(dockerPane).find('#messages')[0]).css({
+          'height': message_height + 'px',
+          'padding-bottom': 5 + 'px'
+        });
+      }
+    },
+
     // Create the debugger layout with splitter and display the appropriate data received from server.
     intializePanels: function() {
       var self = this;
@@ -1757,8 +1775,10 @@ define([
 
       // restore the layout if present else fallback to buildDefaultLayout
       pgBrowser.restore_layout(self.docker, self.layout, this.buildDefaultLayout.bind(this));
+      self.setMessagePanelHeight();
 
       self.docker.on(wcDocker.EVENT.LAYOUT_CHANGED, function() {
+        self.setMessagePanelHeight();
         pgBrowser.save_current_layout('Debugger/Layout', self.docker);
       });
 
