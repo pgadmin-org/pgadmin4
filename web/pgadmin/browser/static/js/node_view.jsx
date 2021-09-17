@@ -173,7 +173,8 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
 
   let schema = nodeObj.getSchema.call(nodeObj, treeNodeInfo, itemNodeData);
   // Show/Hide security group for nodes under the catalog
-  if('catalog' in treeNodeInfo) {
+  if('catalog' in treeNodeInfo
+    && formType !== 'tab') {
     schema.filterGroups = [gettext('Security')];
   }
 

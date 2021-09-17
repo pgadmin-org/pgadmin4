@@ -9,7 +9,6 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import SecLabelSchema from '../../../../static/js/sec_label.ui';
 
 export default class CatalogSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues) {
@@ -51,14 +50,7 @@ export default class CatalogSchema extends BaseUISchema {
       },{
         id: 'description', label: gettext('Comment'), cell: 'string',
         type: 'multiline',
-      },{
-        id: 'seclabels', label: gettext('Security labels'),
-        schema: new SecLabelSchema(),
-        editable: false, type: 'collection',
-        group: gettext('Security'), mode: ['edit', 'create'],
-        min_version: 90200,
-        canAdd: false, canEdit: false, canDelete: false,
-      },
+      }
     ];
   }
 }
