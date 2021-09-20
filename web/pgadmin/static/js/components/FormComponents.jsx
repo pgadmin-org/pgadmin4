@@ -339,7 +339,7 @@ export const InputText = forwardRef(({
       onChange={onChangeFinal}
       {...controlProps}
       {...props}
-      {...(['numeric', 'int'].indexOf(type) > -1 ? {type: 'tel'} : {})}
+      {...(['numeric', 'int'].indexOf(type) > -1 ? {type: 'tel'} : {type: type})}
     />
   );
 });
