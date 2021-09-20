@@ -36,6 +36,9 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
     this.supportedPrivs = supportedPrivs || [];
   }
 
+  updateSupportedPrivs = (updatedPrivs) => {
+    this.supportedPrivs = updatedPrivs;
+  }
   get baseFields() {
     let obj = this;
 
@@ -65,7 +68,8 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
     },
     {
       id: 'grantor', label: gettext('Grantor'), type: 'text', readonly: true,
-      cell: ()=>({cell: 'select', options: obj.grantorOptions}), minWidth: 150,
+      editable: false, cell: ()=>({cell: 'select', options: obj.grantorOptions}),
+      minWidth: 150,
     }];
   }
 

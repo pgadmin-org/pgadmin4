@@ -126,6 +126,8 @@
     "react-dom": "^17.0.1",
     "react-select": "^4.2.1",
     "react-table": "^7.6.3",
+    "react-virtualized-auto-sizer": "^1.0.6",
+    "react-window": "^1.8.5",
     "select2": "^4.0.13",
     "shim-loader": "^1.0.1",
     "slickgrid": "git+https://github.com/6pac/SlickGrid.git#2.3.16",

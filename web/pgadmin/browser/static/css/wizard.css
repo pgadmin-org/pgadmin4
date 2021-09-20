@@ -83,3 +83,18 @@
   margin-top: 20px !important;
   margin-bottom: 10px !important;
 }
+
+.wizard {
+    width: 100%;
+    /*height: 550px;*/
+}
+
+.step {
+    height: inherit;
+    width: initial;
+}
+
+.wizard-footer {
+    border-top: 1px solid #dde0e6 !important;
+    padding: 0.5rem;
+}
