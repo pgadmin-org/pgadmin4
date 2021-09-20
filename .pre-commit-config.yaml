@@ -1,0 +1,40 @@
+files: '(^test_cli/|.github/)'
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+    -   id: trailing-whitespace
+        exclude: ^src/test/resources/.*\.(htm|txt)$
+    -   id: check-yaml
+    -   id: check-merge-conflict
+    -   id: check-added-large-files
+        args: ['--maxkb=500']
+    -   id: mixed-line-ending
+        args: ['--fix=lf']
+
+-   repo: https://github.com/humitos/mirrors-autoflake.git
+    rev: v1.1
+    hooks:
+    -   id: autoflake
+        args: ['--in-place', '--remove-all-unused-imports']
+
+-   repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.9.3
+    hooks:
+    -   id: isort
+        args: ['--multi-line=3', '--trailing-comma', '--force-grid-wrap=0', '--use-parentheses', '--line-width=88']
+
+-   repo: https://github.com/ambv/black
+    rev: 21.8b0
+    hooks:
+    -   id: black
+        language_version: python3.8
+        args: ['--line-length=88']
+
+-   repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.10
+    hooks:
+    -   id: remove-tabs
+        name: Tabs-to-Spaces
+        args: [--whitespaces-count, '4']
+        types: [sql]

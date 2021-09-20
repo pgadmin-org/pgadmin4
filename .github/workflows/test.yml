@@ -1,0 +1,67 @@
+name: tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      db_source:
+        image: postgres:13
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5408:5432
+        options: --health-cmd pg_isready --health-interval 3s --health-timeout 3s --health-retries 15
+
+      db_target:
+        image: postgres:13
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5409:5432
+        options: --health-cmd pg_isready --health-interval 3s --health-timeout 3s --health-retries 15
+
+    steps:
+
+    - name: set up python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: dependency cache
+      id: venv-cache
+      uses: actions/cache@v2
+      with:
+        path: venv
+        key: venv-${{ runner.os }}-${{ hashFiles('setup.py') }}
+
+    - name: install dependencies
+      if: steps.venv-cache.outputs.cache-hit != 'true'
+      run: |
+        sudo apt-get install libkrb5-dev
+        python -m venv venv
+        source venv/bin/activate
+        python -m pip install -U pip setuptools wheel
+        pip install pytest
+        pip install -r requirements.txt
+
+    - name: run tests
+      run: |
+        sudo mkdir /var/lib/pgadmin
+        sudo chown -R $USER:$USER /var/lib/pgadmin
+        sudo mkdir /var/log/pgadmin
+        sudo chown -R $USER:$USER /var/log/pgadmin
+        source venv/bin/activate
+        pytest test_cli

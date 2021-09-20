@@ -277,3 +277,50 @@ If you wish to discuss pgAdmin 4, or contribute to the project, please use the
 pgAdmin Hackers mailing list:
 
 pgadmin-hackers@postgresql.org
+
+
+# CLI Test Suite
+
+There is a test suite for the CLI diffing tool under the `test_cli/` directory.
+
+Requirements:
+- python 3.8+
+- docker-compose
+
+Setup
+
+If this is the first time you're working on the project, create and own the subdirectories used by pgadmin4 that require sudo.
+
+```sh
+sudo mkdir /var/lib/pgadmin
+sudo chown -R $USER:$USER /var/lib/pgadmin
+sudo mkdir /var/log/pgadmin
+sudo chown -R $USER:$USER /var/log/pgadmin
+```
+
+Create a virtual environment and and install dependencies
+```sh
+python -m venv venv
+source venv/bin/activate
+pip install -U pip wheel setuptools
+pip install -r requirements.txt
+```
+
+Run the tests
+```sh
+pytest test_cli
+```
+
+Example output:
+```text
+============================= test session starts ==============================
+platform darwin -- Python 3.8.6, pytest-6.2.5, py-1.10.0, pluggy-1.0.0
+rootdir: /Users/wova/Documents/pgadmin4
+collected 4 items
+
+test_cli/test_add_table.py .                                             [ 25%]
+test_cli/test_empty_db_diff.py .                                         [ 50%]
+test_cli/test_engines.py ..                                              [100%]
+
+============================== 4 passed in 27.37s ==============================
+```

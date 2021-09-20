@@ -1,0 +1,34 @@
+version: '3'
+services:
+  db_source:
+    image: postgres
+    ports:
+      - "5408:5432"
+    command:
+      - postgres
+      - -c
+      - fsync=off
+    healthcheck:
+      test: ["CMD-SHELL", "PGUSER=postgres", "pg_isready"]
+      interval: 1s
+      timeout: 10s
+      retries: 5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  db_target:
+    image: postgres
+    ports:
+      - "5409:5432"
+    command:
+      - postgres
+      - -c
+      - fsync=off
+    healthcheck:
+      test: ["CMD-SHELL", "PGUSER=postgres", "pg_isready"]
+      interval: 1s
+      timeout: 10s
+      retries: 5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
