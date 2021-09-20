@@ -54,6 +54,8 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
             }).catch((err)=>{
               reject(err);
             });
+          } else {
+            resolve(data);
           }
         });
       },
@@ -80,6 +82,8 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
             }).catch((err)=>{
               reject(err);
             });
+          } else {
+            resolve(data);
           }
         });
       },
@@ -107,6 +111,8 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
             }).catch((err)=>{
               reject(err);
             });
+          } else {
+            resolve(data);
           }
         });
       },
@@ -157,11 +163,10 @@ class EnumerationSchema extends BaseUISchema {
     return [
       {
         id: 'label', label: gettext('Label'),
-        type: 'text',  cell: 'text',
-        cellHeaderClasses: 'width_percent_99',
-        readonly: function (state) {
-          return !obj.isNew(state);
-        },
+        type: 'text', cell: 'text', minWidth: 640,
+        editable: (state) => {
+          return _.isUndefined(obj.isNew) ? true : obj.isNew(state);
+        }
       }
     ];
   }
@@ -1313,6 +1318,24 @@ export default class TypeSchema extends BaseUISchema {
     this.nodeInfo = this.fieldOptions.node_info;
   }
 
+  isInvalidColumnAdded(state) {
+
+    let tempCol = _.map(state.enum, 'label');
+    let dontAddColumn = false;
+
+    if(tempCol.length == 1 && tempCol[0] == undefined) {
+      dontAddColumn = true;
+    } else {
+      tempCol.forEach(function(enumVal) {
+        if(enumVal == undefined) {
+          dontAddColumn = true;
+          return;
+        }
+      });
+    }
+    return dontAddColumn;
+  }
+
   schemaCheck(state) {
     if(this.fieldOptions.node_info && 'schema' in this.fieldOptions.node_info)
     {
@@ -1420,14 +1443,17 @@ export default class TypeSchema extends BaseUISchema {
     {
       id: 'enum', label: gettext('Enumeration type'),
       schema: new EnumerationSchema(),
-      editable: true,
       type: 'collection',
       group: gettext('Definition'), mode: ['edit', 'create'],
-      canAdd: true,  canEdit: false,
-      canDelete: function(state) {
-        // We will disable it if it's in 'edit' mode
-        return !obj.isNew(state);
+      canAddRow: function(state) {
+        return !obj.isInvalidColumnAdded(state);
       },
+      canEdit: false,
+      canDeleteRow: function(state) {
+        // We will disable it if it's in 'edit' mode
+        return obj.isNew(state);
+      },
+      canEditRow: false,
       disabled: () => obj.inCatalog(),
       deps: ['typtype'],
       uniqueCol : ['label'],
