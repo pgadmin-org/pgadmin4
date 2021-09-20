@@ -1949,7 +1949,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "partition_table_with_collate_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "partition table",
         "coll_inherits": "[]",

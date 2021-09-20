@@ -1,9 +1,12 @@
 CREATE TABLE IF NOT EXISTS public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
 (
     id integer,
-    status text COLLATE pg_catalog."default",
+    status text,
     arr numeric
-) PARTITION BY RANGE (status COLLATE "C" text_pattern_ops);
+) PARTITION BY RANGE (status COLLATE "C" text_pattern_ops)
+WITH (
+    OIDS = FALSE
+);
 
 ALTER TABLE IF EXISTS public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
