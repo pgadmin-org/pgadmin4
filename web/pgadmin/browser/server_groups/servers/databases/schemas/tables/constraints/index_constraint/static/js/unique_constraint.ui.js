@@ -76,6 +76,10 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       },
       depChange: (state, source, topState, actionObj)=>{
         /* If in table, sync up value with columns in table */
+        if(obj.inTable && !state) {
+          /* the FK is removed by some other dep, this can be a no-op */
+          return;
+        }
         let currColumns = state.columns || [];
         if(obj.inTable && source[0] == 'columns') {
           if(actionObj.type == SCHEMA_STATE_ACTIONS.DELETE_ROW) {

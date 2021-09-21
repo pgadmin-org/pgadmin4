@@ -108,9 +108,18 @@ export class ConstraintsSchema extends BaseUISchema {
       canAddRow: function(state) {
         return ((state.primary_key||[]).length < 1 && obj.anyColumnAdded(state));
       },
-      depChange: (state)=>{
+      depChange: (state, source, topState, actionObj)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {primary_key: []};
+        }
+        /* If columns changed */
+        if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[actionObj.path.length-1] == 'columns') {
+          /* Sync up the pk flag */
+          let columns = state.primary_key[0].columns.map((c)=>c.column);
+          state.columns = state.columns.map((c)=>({
+            ...c, is_primary_key: columns.indexOf(c.name) > -1,
+          }));
+          return {columns: state.columns};
         }
       }
     },{
@@ -142,7 +151,7 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'consrc'],
     },{
       id: 'unique_constraint', label: '',
-      schema: this.primaryKeyObj,
+      schema: this.uniqueConsObj,
       editable: false, type: 'collection',
       group: gettext('Unique'), mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned', 'typname'],
@@ -560,9 +569,40 @@ export default class TableSchema extends BaseUISchema {
         return false;
       },
       deps: ['typname', 'is_partitioned'],
-      depChange: (state, source)=>{
+      depChange: (state, source, topState, actionObj)=>{
         if(source[0] === 'columns') {
           obj.changeColumnOptions(state.columns);
+          /* If primary key switch changes, primary key collection need to change */
+          if(actionObj.path.indexOf('is_primary_key') > -1) {
+            let tabColPath = _.slice(actionObj.path, 0, -1);
+            let columnData = _.get(state, tabColPath);
+            if(state.primary_key?.length > 0) {
+              /* Add/Remove columns if PK exists */
+              let currPk = state.primary_key[0];
+              /* If col is not PK, remove it */
+              if(!columnData.is_primary_key) {
+                currPk.columns = _.filter(currPk.columns, (c)=>c.column !== columnData.name);
+              } else {
+                currPk.columns = _.filter(currPk.columns, (c)=>c.column !== columnData.name);
+                currPk.columns.push({
+                  column: columnData.name,
+                });
+              }
+              /* Remove the PK if all columns not PK */
+              if(currPk.columns.length <= 0) {
+                return {primary_key: []};
+              } else {
+                return {primary_key: [currPk]};
+              }
+            } else {
+              /* Create PK if none */
+              return {primary_key: [
+                obj.constraintsObj.primaryKeyObj.getNewData({
+                  columns: [{column: columnData.name}],
+                })
+              ]};
+            }
+          }
         }
       },
       canAdd: this.canAddRowColumns,
