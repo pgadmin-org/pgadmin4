@@ -46,9 +46,6 @@ describe('PartitionTableSchema', ()=>{
         }
       }
     });
-    schemaObj.top = schemaObj;
-    schemaObj.top.getCollations = ()=>Promise.resolve({});
-    schemaObj.top.getOperatorClass = ()=>Promise.resolve({});
   });
 
   afterAll(() => {

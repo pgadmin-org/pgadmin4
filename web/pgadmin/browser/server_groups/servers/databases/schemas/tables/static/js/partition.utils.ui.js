@@ -4,12 +4,14 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { emptyValidator, isEmptyString } from '../../../../../../../../static/js/validators';
 
 export class PartitionKeysSchema extends BaseUISchema {
-  constructor(columns=[]) {
+  constructor(columns=[], getCollations, getOperatorClass) {
     super({
       key_type: 'column',
     });
     this.columns = columns;
     this.columnsReloadBasis = false;
+    this.getCollations = getCollations;
+    this.getOperatorClass = getOperatorClass;
   }
 
   changeColumnOptions(columns) {
@@ -69,7 +71,7 @@ export class PartitionKeysSchema extends BaseUISchema {
     },{
       id: 'collationame', label: gettext('Collation'), cell: 'select',
       type: 'select', group: gettext('partition'), deps:['key_type'],
-      options: obj.top.getCollations(), mode: ['create', 'properties', 'edit'],
+      options: obj.getCollations, mode: ['create', 'properties', 'edit'],
       editable: function(state) {
         if(state.key_type == 'expression') {
           return false;
@@ -88,7 +90,7 @@ export class PartitionKeysSchema extends BaseUISchema {
         return true;
       },
       disabled: ()=>{return !(obj.isNew()); },
-      options: obj.top.getOperatorClass(), mode: ['create', 'properties', 'edit'],
+      options: obj.getOperatorClass, mode: ['create', 'properties', 'edit'],
     }];
   }
 
@@ -111,7 +113,7 @@ export class PartitionKeysSchema extends BaseUISchema {
   }
 }
 export class PartitionsSchema extends BaseUISchema {
-  constructor(nodeInfo) {
+  constructor(nodeInfo, getCollations, getOperatorClass) {
     super({
       oid: undefined,
       is_attach: false,
@@ -126,7 +128,7 @@ export class PartitionsSchema extends BaseUISchema {
       sub_partition_type: 'range',
     });
 
-    this.subPartitionsObj = new PartitionKeysSchema();
+    this.subPartitionsObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
     this.nodeInfo = nodeInfo;
   }
 

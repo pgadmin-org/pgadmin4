@@ -55,10 +55,6 @@ describe('PartitionKeysSchema', ()=>{
     spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue(Promise.resolve([]));
     spyOn(nodeAjax, 'getNodeListByName').and.returnValue(Promise.resolve([]));
     let partitionObj =  new PartitionKeysSchema();
-    partitionObj.top = {
-      getCollations : ()=>{},
-      getOperatorClass : ()=>{},
-    };
     schemaObj = new SchemaInColl(partitionObj);
   });
 
@@ -171,8 +167,6 @@ describe('PartitionsSchema', ()=>{
     spyOn(nodeAjax, 'getNodeListByName').and.returnValue(Promise.resolve([]));
     schemaObj = new PartitionsSchema();
     schemaObj.top = schemaObj;
-    schemaObj.top.getCollations = ()=>Promise.resolve({});
-    schemaObj.top.getOperatorClass = ()=>Promise.resolve({});
   });
 
   afterAll(() => {

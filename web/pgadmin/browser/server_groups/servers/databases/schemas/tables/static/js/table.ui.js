@@ -309,14 +309,12 @@ export default class TableSchema extends BaseUISchema {
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
     this.nodeInfo = nodeInfo;
     this.getColumns = getColumns;
-    this.getCollations = getCollations;
-    this.getOperatorClass = getOperatorClass;
 
-    this.partitionKeysObj = new PartitionKeysSchema();
-    this.partitionsObj = new PartitionsSchema(this.nodeInfo);
+    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass);
     this.constraintsObj = this.schemas.constraints();
     this.columnsSchema = this.schemas.columns();
     this.vacuumSettingsSchema = this.schemas.vacuum_settings();
+    this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
   }
 
   get idAttribute() {
