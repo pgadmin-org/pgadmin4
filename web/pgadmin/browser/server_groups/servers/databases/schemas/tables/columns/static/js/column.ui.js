@@ -379,7 +379,13 @@ export default class ColumnSchema extends BaseUISchema {
         if (isDisabled && obj.isNew(state)) {
           return {defval: undefined};
         }
-      }
+      }, editable: function(state) {
+        // inheritedfrom has value then we should disable it
+        if (!isEmptyString(state.inheritedfrom)) {
+          return false;
+        }
+        return true;
+      },
     },{
       id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
       type: 'switch', minWidth: 80,
@@ -509,7 +515,10 @@ export default class ColumnSchema extends BaseUISchema {
     },{
       id: 'attoptions', label: gettext('Variables'), type: 'collection',
       group: gettext('Variables'),
-      schema: new VariableSchema([], null, null, ['name', 'value']),
+      schema: new VariableSchema([
+        {label: 'n_distinct', value: 'n_distinct', vartype: 'string'},
+        {label: 'n_distinct_inherited', value: 'n_distinct_inherited', vartype: 'string'}
+      ], null, null, ['name', 'value']),
       uniqueCol : ['name'], mode: ['edit', 'create'],
       canAdd: true, canEdit: false, canDelete: true,
     }, {

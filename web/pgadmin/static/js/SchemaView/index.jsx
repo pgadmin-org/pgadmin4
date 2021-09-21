@@ -233,7 +233,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
   return changedData;
 }
 
-function validateSchema(schema, sessData, setError, accessPath=[]) {
+function validateSchema(schema, sessData, setError, accessPath=[], collLabel=null) {
   sessData = sessData || {};
   for(let field of schema.fields) {
     /* Skip id validation */
@@ -261,7 +261,7 @@ function validateSchema(schema, sessData, setError, accessPath=[]) {
         }
         /* Loop through data */
         for(const [rownum, row] of rows.entries()) {
-          if(validateSchema(field.schema, row, setError, currPath.concat(rownum))) {
+          if(validateSchema(field.schema, row, setError, currPath.concat(rownum), field.label)) {
             return true;
           }
         }
@@ -276,7 +276,14 @@ function validateSchema(schema, sessData, setError, accessPath=[]) {
       let value = sessData[field.id];
       let message = null;
       if(field.noEmpty) {
-        message = emptyValidator(field.label, value);
+        let label = field.label;
+        if(collLabel) {
+          label = gettext('%s in %s', field.label, collLabel);
+        }
+        if(field.noEmptyLabel) {
+          label = field.noEmptyLabel;
+        }
+        message = emptyValidator(label, value);
       }
       if(!message && (field.type == 'int' || field.type == 'numeric')) {
         message = minMaxValidator(field.label, value, field.min, field.max);
