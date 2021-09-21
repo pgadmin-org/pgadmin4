@@ -264,7 +264,7 @@ define('pgadmin.node.mview', [
           return;
         }
 
-        if (!commonUtils.hasBinariesConfiguration(pgBrowser, server_data, this.alertify)) {
+        if (!commonUtils.hasBinariesConfiguration(pgBrowser, server_data, Alertify)) {
           return;
         }
 
