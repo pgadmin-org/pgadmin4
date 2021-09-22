@@ -101,7 +101,7 @@ export default class MViewSchema extends BaseUISchema {
       },
       {
         id: 'datacl', label: gettext('Privileges'), type: 'collection',
-        schema: this.getPrivilegeRoleSchema(['U']),
+        schema: this.getPrivilegeRoleSchema(['a', 'r', 'w', 'd', 'D', 'x', 't']),
         uniqueCol : ['grantee'],
         editable: false,
         group: gettext('Security'), mode: ['edit', 'create'],
