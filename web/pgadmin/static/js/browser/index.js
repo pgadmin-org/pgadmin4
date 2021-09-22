@@ -6,5 +6,3 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-
-import 'server_groups';
