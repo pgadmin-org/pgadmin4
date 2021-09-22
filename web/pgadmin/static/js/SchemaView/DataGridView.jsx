@@ -17,7 +17,7 @@ import AddIcon from '@material-ui/icons/AddOutlined';
 import { MappedCellControl } from './MappedControl';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
-import { useTable, useBlockLayout, useResizeColumns, useSortBy, useExpanded } from 'react-table';
+import { useTable, useFlexLayout, useResizeColumns, useSortBy, useExpanded } from 'react-table';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -88,6 +88,9 @@ const useStyles = makeStyles((theme)=>({
     padding: theme.spacing(1, 0.5),
     textAlign: 'left',
   },
+  tableContentWidth: {
+    width: 'calc(100% - 3px)',
+  },
   btnCell: {
     padding: theme.spacing(0.5, 0),
     textAlign: 'center',
@@ -117,7 +120,7 @@ const useStyles = makeStyles((theme)=>({
 function DataTableHeader({headerGroups}) {
   const classes = useStyles();
   return (
-    <div>
+    <div className={classes.tableContentWidth}>
       {headerGroups.map((headerGroup, hi) => (
         <div key={hi} {...headerGroup.getHeaderGroupProps()}>
           {headerGroup.headers.map((column, ci) => (
@@ -253,11 +256,12 @@ export default function DataGridView({
           Header: <>&nbsp;</>,
           id: 'btn-edit',
           accessor: ()=>{},
-          resizable: false,
+          disableResizing: true,
           sortable: false,
           dataType: 'edit',
           width: 26,
-          minWidth: '0',
+          minWidth: 26,
+          maxWidth: 26,
           Cell: ({row})=>{
             let canEditRow = true;
             if(props.canEditRow) {
@@ -281,11 +285,12 @@ export default function DataGridView({
           Header: <>&nbsp;</>,
           id: 'btn-delete',
           accessor: ()=>{},
-          resizable: false,
+          disableResizing: true,
           sortable: false,
           dataType: 'delete',
           width: 26,
-          minWidth: '0',
+          minWidth: 26,
+          maxWidth: 26,
           Cell: ({row}) => {
             let canDeleteRow = true;
             if(props.canDeleteRow) {
@@ -332,6 +337,8 @@ export default function DataGridView({
             sortable: true,
             ...(field.minWidth ?  {minWidth: field.minWidth} : {}),
             ...(field.width ?  {width: field.width} : {}),
+            ...(field.maxWidth ?  {maxWidth: field.maxWidth} : {}),
+            ...(field.disableResizing ?  {disableResizing: field.disableResizing} : {}),
             Cell: ({value, row, ...other}) => {
               /* Make sure to take the latest field info from schema */
               field = _.find(schemaRef.current.fields, (f)=>f.id==field.id) || field;
@@ -385,12 +392,10 @@ export default function DataGridView({
   }, [props.canAddRow]);
 
   const defaultColumn = useMemo(()=>({
-    minWidth: 175,
-    width: 0,
   }), []);
 
   let tablePlugins = [
-    useBlockLayout,
+    useFlexLayout,
     useResizeColumns,
     useSortBy,
     useExpanded,
@@ -445,7 +450,7 @@ export default function DataGridView({
         {(props.label || props.canAdd) && <DataGridHeader label={props.label} canAdd={props.canAdd} onAddClick={onAddClick} />}
         <div {...getTableProps()} className={classes.table}>
           <DataTableHeader headerGroups={headerGroups} />
-          <div {...getTableBodyProps()}>
+          <div {...getTableBodyProps()} className={classes.tableContentWidth}>
             {rows.map((row, i) => {
               prepareRow(row);
               return <React.Fragment key={i}>

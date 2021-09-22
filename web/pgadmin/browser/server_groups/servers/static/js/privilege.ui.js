@@ -58,7 +58,7 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
       type: 'text', group: null,
       cell: ()=>({cell: 'privilege', controlProps: {
         supportedPrivs: this.supportedPrivs,
-      }}), minWidth: 230,
+      }}),
       disabled : function(state) {
         return !(
           obj.nodeInfo &&
@@ -69,7 +69,6 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
     {
       id: 'grantor', label: gettext('Grantor'), type: 'text', readonly: true,
       editable: false, cell: ()=>({cell: 'select', options: obj.grantorOptions}),
-      minWidth: 150,
     }];
   }
 
