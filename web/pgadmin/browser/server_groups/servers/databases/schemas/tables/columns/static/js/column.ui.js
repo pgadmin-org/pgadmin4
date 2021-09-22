@@ -79,14 +79,14 @@ export default class ColumnSchema extends BaseUISchema {
       if(!_.isUndefined(state.inheritedfrom)) {
         return true;
       }
-      // ie: it's position is less than 1
-      if(!_.isUndefined(state.attnum) && state.attnum <= 0) {
-        return true;
+
+      if(this.isNew(state)) {
+        return false;
       }
-      // if we are in edit mode
-      return !this.isNew(state);
+      // ie: it's position is less than 1
+      return !(!_.isUndefined(state.attnum) && state.attnum > 0);
     }
-    return false;
+    return true;
   }
 
   editableCheckForTable(state) {
@@ -152,7 +152,7 @@ export default class ColumnSchema extends BaseUISchema {
 
     return [{
       id: 'name', label: gettext('Name'), cell: 'text',
-      type: 'text', disabled: obj.inSchemaWithColumnCheck,
+      type: 'text', readonly: obj.inSchemaWithColumnCheck,
       editable: this.editableCheckForTable, noEmpty: true,
       minWidth: 115,
     },{
@@ -226,7 +226,7 @@ export default class ColumnSchema extends BaseUISchema {
       type: 'text', disabled: this.inCatalog, mode: ['properties'],
     },{
       id: 'cltype', label: gettext('Data type'),
-      disabled: obj.inSchemaWithColumnCheck, minWidth: 150,
+      readonly: obj.inSchemaWithColumnCheck, minWidth: 150,
       group: gettext('Definition'), noEmpty: true,
       editable: this.editableCheckForTable,
       options: this.cltypeOptions, optionsLoaded: (options)=>{obj.datatypes = options;},
@@ -345,12 +345,12 @@ export default class ColumnSchema extends BaseUISchema {
       }
     },{
       id: 'attstattarget', label: gettext('Statistics'), cell: 'text',
-      type: 'text', disabled: obj.inSchemaWithColumnCheck, mode: ['properties', 'edit'],
+      type: 'text', readonly: obj.inSchemaWithColumnCheck, mode: ['properties', 'edit'],
       group: gettext('Definition'),
     },{
       id: 'attstorage', label: gettext('Storage'), group: gettext('Definition'),
       type: 'select', mode: ['properties', 'edit'],
-      cell: 'select', disabled: obj.inSchemaWithColumnCheck,
+      cell: 'select', readonly: obj.inSchemaWithColumnCheck,
       controlProps: { placeholder: gettext('Select storage'),
         allowClear: false,
       },
