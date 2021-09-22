@@ -171,6 +171,7 @@ describe('ForeignKeySchema', ()=>{
     let state = {columns: [{local_column: 'id'}]};
     let actionObj = {oldState:{name: 'fkname'}};
 
+    schemaObj.nodeInfo = {table: {}};
     state.autoindex = true;
     state.name = 'fkname';
     expect(getFieldDepChange(schemaObj, 'autoindex')(state, null, null, actionObj)).toEqual({
@@ -196,7 +197,8 @@ describe('ForeignKeySchema', ()=>{
     expect(getFieldDepChange(schemaObj, 'autoindex')(state, null, null, actionObj)).toEqual({});
 
     state.oid = null;
-    schemaObj.nodeInfo = {table: {}};
+    schemaObj.nodeInfo = {};
+    schemaObj.top = schemaObj;
     expect(getFieldDepChange(schemaObj, 'autoindex')(state, null, null, actionObj)).toEqual({
       autoindex: false,
       coveringindex: '',

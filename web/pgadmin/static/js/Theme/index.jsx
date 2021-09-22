@@ -325,6 +325,11 @@ function getFinalTheme(baseTheme) {
           }
         }
       },
+      MuiFormHelperText: {
+        root: {
+          color: baseTheme.palette.text.muted,
+        },
+      },
     }
   }, baseTheme);
 }

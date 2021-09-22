@@ -142,7 +142,6 @@ describe('CheckConstraintSchema', ()=>{
     });
 
     /* If partitioned table */
-    schemaObj.nodeInfo = {table: {}};
     schemaObj.top = {
       sessData: {
         is_partitioned: true,

@@ -196,7 +196,6 @@ describe('ExclusionConstraintSchema', ()=>{
   it('depChange', ()=>{
     let state = {columns: [{local_column: 'id'}]};
 
-    schemaObj.nodeInfo = {table: {}};
     expect(getFieldDepChange(schemaObj, 'columns')(state, ['columns', 0], null, {
       type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
       oldState: {

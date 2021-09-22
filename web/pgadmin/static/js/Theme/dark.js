@@ -59,6 +59,7 @@ export default function(basicSettings) {
       },
       text: {
         primary: '#d4d4d4',
+        muted: '#8A8A8A',
       },
       background: {
         paper: '#212121',

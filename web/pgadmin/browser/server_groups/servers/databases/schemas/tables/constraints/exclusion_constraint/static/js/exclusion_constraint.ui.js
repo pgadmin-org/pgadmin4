@@ -214,7 +214,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
     if(_.isUndefined(this.nodeInfo)) {
       return true;
     }
-    return !_.isUndefined(this.nodeInfo['table']);
+    return _.isUndefined(this.nodeInfo['table']);
   }
 
   initialise(data) {

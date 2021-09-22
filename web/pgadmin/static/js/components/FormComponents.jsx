@@ -511,7 +511,7 @@ export function InputToggle({cid, value, onChange, options, disabled, readonly, 
       {
         (options||[]).map((option)=>{
           const isSelected = option.value === value;
-          const isDisabled = disabled || (readonly && isSelected);
+          const isDisabled = disabled || (readonly && !isSelected);
           return (
             <ToggleButton key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
               disabled={isDisabled} aria-label={option.label}>
@@ -766,7 +766,7 @@ export function InputSelect({
     menuPortalTarget: document.body,
     styles: styles,
     inputId: cid,
-    placeholder: controlProps.placeholder || gettext('Select...'),
+    placeholder: (readonly || disabled) ? '' : controlProps.placeholder || gettext('Select...'),
     ...otherProps,
     ...props
   };

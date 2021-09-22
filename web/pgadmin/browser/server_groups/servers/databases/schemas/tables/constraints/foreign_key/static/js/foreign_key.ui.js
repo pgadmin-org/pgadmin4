@@ -124,7 +124,7 @@ export default class ForeignKeySchema extends BaseUISchema {
       columns: undefined,
       confupdtype: 'a',
       confdeltype: 'a',
-      autoindex: true,
+      autoindex: ForeignKeySchema.checkInTable(nodeInfo) ? false : true,
       coveringindex: undefined,
       hasindex:undefined,
     });
@@ -142,10 +142,14 @@ export default class ForeignKeySchema extends BaseUISchema {
   }
 
   get inTable() {
-    if(_.isUndefined(this.nodeInfo)) {
+    return ForeignKeySchema.checkInTable(this.nodeInfo);
+  }
+
+  static checkInTable(nodeInfo) {
+    if(_.isUndefined(nodeInfo)) {
       return true;
     }
-    return !_.isUndefined(this.nodeInfo['table']);
+    return _.isUndefined(nodeInfo['table']);
   }
 
   changeColumnOptions(columns) {
@@ -231,23 +235,14 @@ export default class ForeignKeySchema extends BaseUISchema {
       id: 'autoindex', label: gettext('Auto FK index?'),
       type: 'switch', group: gettext('Definition'),
       deps: ['name', 'hasindex'],
-      disabled: (state)=>{
+      readonly: (state)=>{
         if(!obj.isNew(state)) {
           return true;
         }
         // If we are in table edit mode then
         if(obj.inTable) {
-          // user is trying to add new constraint which should allowed for Unique
-          if(obj.isNew(state)) {
-            return true;
-          }
-        } else {
-          if(!obj.isNew(state) && state.autoindex && !isEmptyString(state.coveringindex)
-            && state.hasindex) {
-            return true;
-          }
-        }
-        if(state.hasindex) {
+          return true;
+        } else if(state.hasindex) {
           return true;
         }
         return false;
@@ -256,10 +251,9 @@ export default class ForeignKeySchema extends BaseUISchema {
         if(!obj.isNew(state)) {
           return {};
         }
-        // If we are in table edit mode then
+        // If we are in table edit mode
         if(obj.inTable) {
-          // user is trying to add new constraint which should allowed for Unique
-          if(obj.isNew(state)) {
+          if(obj.isNew(state) && obj.top.isNew()) {
             return {autoindex: false, coveringindex: ''};
           }
         }
@@ -279,12 +273,7 @@ export default class ForeignKeySchema extends BaseUISchema {
       mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
       deps:['autoindex', 'hasindex'],
       disabled: (state)=>{
-        if(!obj.isNew(state) && state.autoindex && !isEmptyString(state.coveringindex)) {
-          return true;
-        }
-        if(state.hasindex) {
-          return true;
-        } else if(!state.autoindex) {
+        if(!state.autoindex && !state.hasindex) {
           return true;
         } else {
           return false;
@@ -304,7 +293,7 @@ export default class ForeignKeySchema extends BaseUISchema {
     },{
       id: 'columns', label: gettext('Columns'),
       group: gettext('Columns'), type: 'collection',
-      mode: ['create', 'edit'],
+      mode: ['create', 'edit', 'properties'],
       editable: false, schema: this.fkColumnSchema,
       headerSchema: this.fkHeaderSchema, headerVisible: (state)=>obj.isNew(state),
       CustomControl: DataGridViewWithHeaderForm,
