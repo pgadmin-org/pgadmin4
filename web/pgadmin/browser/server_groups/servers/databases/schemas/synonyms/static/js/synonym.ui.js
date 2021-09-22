@@ -87,6 +87,11 @@ export default class SynonymSchema extends BaseUISchema {
         id: 'synobjname', label: gettext('Target object'),
         group: gettext('Definition'),
         deps: ['targettype', 'synobjschema'],
+        depChange: function(state, source) {
+          if(source[0] == 'targettype' || source[0] == 'synobjschema') {
+            return { synobjname: null};
+          }
+        },
         type: (state)=>{
           let fetchOptionsBasis = state.targettype + state.synobjschema;
           return {
