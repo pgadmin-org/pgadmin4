@@ -17,7 +17,7 @@ COMMENT ON TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
 
 -- Partitions SQL
 
-CREATE TABLE IF NOT EXISTS public.cust_active PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public.cust_active PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     FOR VALUES IN ('ACTIVE');
 
 ALTER TABLE IF EXISTS public.cust_active

@@ -1,6 +1,6 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% if data %}
-CREATE SCHEMA {{ conn|qtIdent(data.name) }}
+CREATE SCHEMA{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.name) }}
 {% if data.namespaceowner %}
     AUTHORIZATION {{ conn|qtIdent(data.namespaceowner) }};
 

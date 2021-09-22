@@ -6,7 +6,7 @@
 
 {% endif %}
 {% if data.name and data.schema and data.definition %}
-CREATE MATERIALIZED VIEW IF NOT EXISTS {{ conn|qtIdent(data.schema, data.name) }}
+CREATE MATERIALIZED VIEW{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.schema, data.name) }}
 {% if(data.fillfactor or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum_enabled in ('t', 'f') or data['vacuum_data']|length > 0) %}
 {% set ns = namespace(add_comma=false) %}
 WITH (

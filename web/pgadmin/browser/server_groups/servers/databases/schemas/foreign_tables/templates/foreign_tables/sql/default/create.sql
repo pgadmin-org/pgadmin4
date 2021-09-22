@@ -1,6 +1,6 @@
 {% import 'macros/schemas/security.macros' as SECLABEL %}
 {% if data %}
-CREATE FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}(
+CREATE FOREIGN TABLE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.basensp, data.name) }}(
 {% if data.columns %}
 {% for c in data.columns %}
     {{conn|qtIdent(c.attname)}} {% if is_sql %}{{ c.fulltype }}{% else %}{{ c.datatype }}{% if c.typlen %}({{c.typlen}} {% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}{% endif %}{% if c.attnotnull %}

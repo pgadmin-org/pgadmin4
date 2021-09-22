@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
 (
     col1 character varying(10)[],
     col2 date

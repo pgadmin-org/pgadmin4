@@ -21,7 +21,7 @@ COMMENT ON TABLE public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
 
 -- Partitions SQL
 
-CREATE TABLE IF NOT EXISTS public.cust_arr_small PARTITION OF public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public.cust_arr_small PARTITION OF public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
     FOR VALUES FROM ('20') TO ('25');
 
 ALTER TABLE IF EXISTS public.cust_arr_small

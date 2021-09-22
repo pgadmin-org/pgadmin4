@@ -1,5 +1,5 @@
 -- Role: "Role2_$%{}[]()&*^!@""'`\/#"
--- DROP ROLE "Role2_$%{}[]()&*^!@""'`\/#";
+-- DROP ROLE IF EXISTS "Role2_$%{}[]()&*^!@""'`\/#";
 
 CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
   LOGIN

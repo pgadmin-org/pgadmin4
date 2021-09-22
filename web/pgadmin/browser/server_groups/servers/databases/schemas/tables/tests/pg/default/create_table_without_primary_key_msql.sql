@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."simple_table_$%{}[]()&*^!@""'`\/#"
 (
     col1 integer,
     col2 text,

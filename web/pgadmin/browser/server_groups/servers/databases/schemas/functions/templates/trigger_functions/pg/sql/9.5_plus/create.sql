@@ -4,7 +4,7 @@
 {% set is_columns = [] %}
 {% set exclude_quoting = ['search_path'] %}
 {% if data %}
-CREATE OR REPLACE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.proargnames %}{{data.proargnames}}{% endif %})
+CREATE{% if add_replace_clause %} OR REPLACE{% endif %} FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({% if data.proargnames %}{{data.proargnames}}{% endif %})
     RETURNS{% if data.proretset and data.prorettypename.startswith('SETOF ') %} {{ data.prorettypename }}{% elif data.proretset %} SETOF {{ data.prorettypename }}{% else %} {{ data.prorettypename }}{% endif %}
 
     LANGUAGE {{ data.lanname|qtLiteral }}

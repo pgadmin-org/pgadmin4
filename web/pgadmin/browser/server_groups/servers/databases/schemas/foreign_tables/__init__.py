@@ -901,7 +901,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
-                              data=data, is_sql=True)
+                              data=data, is_sql=True,
+                              add_not_exists_clause=True
+                              )
 
         if not json_resp:
             return SQL.strip('\n')
@@ -1160,7 +1162,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         return cols
 
-    def _fetch_properties(self, gid, sid, did, scid, foid, inherits=False):
+    def _fetch_properties(self, gid, sid, did, scid, foid, inherits=False, ):
         """
         Returns the Foreign Table properties which will be used in
         properties, sql and get_sql functions.

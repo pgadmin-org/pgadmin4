@@ -1198,6 +1198,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         json_resp = kwargs['json_resp'] if 'json_resp' in kwargs else True
         target_schema = kwargs['target_schema'] \
             if 'target_schema' in kwargs else None
+        if_exists_flag = kwargs['add_not_exists_clause'] \
+            if 'add_not_exists_clause' in kwargs else False
 
         if diff_data:
             return self._fetch_sql(did, scid, tid, diff_data, json_resp)
@@ -1227,7 +1229,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
 
             sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
                 self, did=did, scid=scid, tid=tid, main_sql=main_sql,
-                data=data, json_resp=json_resp)
+                data=data, json_resp=json_resp,
+                add_not_exists_clause=if_exists_flag)
 
             return sql
 
@@ -1335,7 +1338,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         data = res['rows'][0]
 
         return BaseTableView.get_reverse_engineered_sql(
-            self, did=did, scid=scid, tid=tid, main_sql=main_sql, data=data)
+            self, did=did, scid=scid, tid=tid, main_sql=main_sql, data=data,
+            add_not_exists_clause=True)
 
     @BaseTableView.check_precondition
     def select_sql(self, gid, sid, did, scid, tid):

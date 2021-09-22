@@ -6,7 +6,7 @@
 
 {% endif %}
 {% if data.name and data.schema and data.definition %}
-CREATE OR REPLACE VIEW {{ conn|qtIdent(data.schema, data.name) }}
+CREATE{% if add_replace_clause %} OR REPLACE{% endif %} VIEW {{ conn|qtIdent(data.schema, data.name) }}
 {% if ((data.check_option and data.check_option.lower() != 'no') or data.security_barrier) %}
 WITH ({% if data.check_option and data.check_option.lower() != 'no' %}
 

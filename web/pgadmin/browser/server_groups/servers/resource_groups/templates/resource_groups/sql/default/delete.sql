@@ -4,5 +4,5 @@ SELECT rgrpname FROM edb_resource_group WHERE oid = {{rgid}}::oid;
 {% endif %}
 {# ============= Below SQL will drop the resource group ============= #}
 {% if rgname %}
-DROP RESOURCE GROUP {{ conn|qtIdent(rgname) }};
+DROP RESOURCE GROUP IF EXISTS {{ conn|qtIdent(rgname) }};
 {% endif %}

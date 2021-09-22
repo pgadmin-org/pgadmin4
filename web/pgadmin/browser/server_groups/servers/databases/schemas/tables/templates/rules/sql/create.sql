@@ -6,7 +6,7 @@
 
 {% endif %}
 {% if data.name and data.schema and data.view %}
-CREATE OR REPLACE RULE {{ conn|qtIdent(data.name) }} AS
+CREATE{% if add_replace_clause %} OR REPLACE{% endif %} RULE {{ conn|qtIdent(data.name) }} AS
     ON {{ data.event|upper if data.event else 'SELECT' }} TO {{ conn|qtIdent(data.schema, data.view) }}
 {% if data.condition %}
     WHERE ({{ data.condition }})

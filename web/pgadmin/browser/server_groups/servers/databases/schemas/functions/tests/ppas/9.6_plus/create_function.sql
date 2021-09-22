@@ -1,6 +1,6 @@
 -- FUNCTION: public.Function1_$%{}[]()&*^!@"'`\/#(character varying)
 
--- DROP FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(character varying);
+-- DROP FUNCTION IF EXISTS public."Function1_$%{}[]()&*^!@""'`\/#"(character varying);
 
 CREATE OR REPLACE FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(
 	param character varying DEFAULT '1'::character varying)

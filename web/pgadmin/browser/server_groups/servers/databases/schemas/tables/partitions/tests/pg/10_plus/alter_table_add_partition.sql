@@ -19,7 +19,7 @@ COMMENT ON TABLE public."test_table_$%{}[]()&*^!@""""'`\/#"
 
 -- Partitions SQL
 
-CREATE TABLE IF NOT EXISTS public."test_part_$%{}[]()&*^!@""""""""'`\/#" PARTITION OF public."test_table_$%{}[]()&*^!@""""'`\/#"
+CREATE TABLE public."test_part_$%{}[]()&*^!@""""""""'`\/#" PARTITION OF public."test_table_$%{}[]()&*^!@""""'`\/#"
     FOR VALUES FROM ('0') TO ('1000');
 
 ALTER TABLE IF EXISTS public."test_part_$%{}[]()&*^!@""""""""'`\/#"

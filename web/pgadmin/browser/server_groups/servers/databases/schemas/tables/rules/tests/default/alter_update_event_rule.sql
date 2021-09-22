@@ -2,7 +2,7 @@
 
 -- DROP Rule "test_update_rule1_$%{}[]()&*^!@""'`\/#" ON public.test_emp_rule;
 
-CREATE OR REPLACE RULE "test_update_rule1_$%{}[]()&*^!@""'`\/#" AS
+CREATE RULE "test_update_rule1_$%{}[]()&*^!@""'`\/#" AS
     ON UPDATE TO public.test_emp_rule
     WHERE (old.name = 'Sam'::text)
     DO INSTEAD

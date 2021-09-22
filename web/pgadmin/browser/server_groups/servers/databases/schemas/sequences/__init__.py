@@ -616,7 +616,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
-    def get_SQL(self, gid, sid, did, data, scid, seid=None):
+    def get_SQL(self, gid, sid, did, data, scid, seid=None,
+                add_not_exists_clause=False):
         """
         This function will generate sql from model data.
 
@@ -666,7 +667,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
-                data=data, conn=self.conn
+                data=data, conn=self.conn,
+                add_not_exists_clause=add_not_exists_clause
             )
             sql += render_template(
                 "/".join([self.template_path, self._GRANT_SQL]),
@@ -739,7 +741,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             result['schema'] = target_schema
 
         result = self._formatter(result, scid, seid)
-        sql, name = self.get_SQL(gid, sid, did, result, scid)
+        sql, name = self.get_SQL(gid, sid, did, result, scid,
+                                 add_not_exists_clause=True)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql

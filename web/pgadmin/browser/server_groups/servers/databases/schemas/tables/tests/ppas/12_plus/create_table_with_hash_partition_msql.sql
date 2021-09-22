@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
+CREATE TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
 (
     id bigint,
     name text,

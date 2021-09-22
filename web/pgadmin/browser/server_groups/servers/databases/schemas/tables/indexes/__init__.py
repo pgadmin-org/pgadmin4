@@ -827,7 +827,9 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         SQL = index_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, did=did,
-            tid=tid, idx=idx, datlastsysoid=self.datlastsysoid)
+            tid=tid, idx=idx, datlastsysoid=self.datlastsysoid,
+            add_not_exists_clause=True
+        )
 
         return ajax_response(response=SQL)
 
@@ -865,7 +867,9 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 self.conn, schema=target_schema,
                 table=self.table, did=did, tid=tid, idx=idx,
                 datlastsysoid=self.datlastsysoid,
-                template_path=None, with_header=False)
+                template_path=None, with_header=False,
+                add_not_exists_clause=True
+            )
 
         drop_sql = ''
         if drop_req:

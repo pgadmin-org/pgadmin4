@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
+CREATE TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
 (
     id bigint,
     name text,
@@ -11,5 +11,5 @@ ALTER TABLE IF EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
 COMMENT ON TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
     IS 'hash partition';
 
-CREATE TABLE IF NOT EXISTS public.cust_part11 PARTITION OF public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
+CREATE TABLE public.cust_part11 PARTITION OF public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
     FOR VALUES WITH (MODULUS 2, REMAINDER 1);

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
 (
     id integer,
     status text,

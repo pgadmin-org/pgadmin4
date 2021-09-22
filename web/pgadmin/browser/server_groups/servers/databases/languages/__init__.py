@@ -773,7 +773,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         old_data['seclabels'] = seclabels
         sql = render_template(
             "/".join([self.template_path, 'sqlpane.sql']),
-            data=old_data, conn=self.conn
+            data=old_data, conn=self.conn, add_replace_clause=True
         )
 
         if not json_resp:

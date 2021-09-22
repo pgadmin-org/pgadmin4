@@ -501,7 +501,8 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         ),
             data=result,
             conn=self.conn,
-            display_comments=True
+            display_comments=True,
+            add_not_exists_clause=True
         )
 
         if not json_resp:

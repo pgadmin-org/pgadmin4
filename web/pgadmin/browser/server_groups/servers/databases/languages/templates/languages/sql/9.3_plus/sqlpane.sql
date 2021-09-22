@@ -2,10 +2,10 @@
 {% import 'macros/security.macros' as SECLABEL %}
 -- Language: {{data.name}}
 
--- DROP LANGUAGE {{ conn|qtIdent(data.name) }}
+-- DROP LANGUAGE IF EXISTS {{ conn|qtIdent(data.name) }}
 
 {# ============= CREATE LANGUAGE Query ============= #}
-CREATE{% if data.trusted %} TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIdent(data.name) }}
+CREATE{% if add_replace_clause %} OR REPLACE{% endif %}{% if data.trusted %} TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIdent(data.name) }}
 {% if data.lanproc %}
     HANDLER {{ conn|qtIdent(data.lanproc) }}
 {% endif %}

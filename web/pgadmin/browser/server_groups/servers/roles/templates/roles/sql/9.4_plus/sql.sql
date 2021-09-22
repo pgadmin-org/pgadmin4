@@ -4,7 +4,7 @@ FROM
 (SELECT
 	    '-- Role: ' ||
 		pg_catalog.quote_ident(rolname) ||
-		E'\n-- DROP ROLE ' ||
+		E'\n-- DROP ROLE IF EXISTS ' ||
 		pg_catalog.quote_ident(rolname) || E';\n\nCREATE ROLE ' ||
 		pg_catalog.quote_ident(rolname) || E' WITH\n  ' ||
 		CASE WHEN rolcanlogin THEN 'LOGIN' ELSE 'NOLOGIN' END || E'\n  ' ||

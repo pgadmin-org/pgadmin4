@@ -1,4 +1,4 @@
-CREATE OR REPLACE RULE "test_insert_rule_$%{}[]()&*^!@""'`\/#" AS
+CREATE RULE "test_insert_rule_$%{}[]()&*^!@""'`\/#" AS
     ON INSERT TO public.test_emp_rule
     WHERE (new.salary > 5000)
     DO

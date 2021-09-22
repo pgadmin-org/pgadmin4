@@ -2,7 +2,7 @@
 {% import 'macros/schemas/privilege.macros' as PRIVILEGE %}
 {% set is_columns = [] %}
 {% if data %}
-CREATE FOREIGN TABLE IF NOT EXISTS {{ conn|qtIdent(data.basensp, data.name) }}(
+CREATE FOREIGN TABLE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.basensp, data.name) }}(
 {% if data.columns %}
 {% for c in data.columns %}
 {% if (not c.inheritedfrom or c.inheritedfrom =='' or  c.inheritedfrom == None or  c.inheritedfrom == 'None' ) %}

@@ -666,7 +666,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     c['cltype'], c['hasSqrBracket'] = \
                         column_utils.type_formatter(c['cltype'])
 
-    def _get_resql_for_table(self, did, scid, tid, data, json_resp, main_sql):
+    def _get_resql_for_table(self, did, scid, tid, data, json_resp, main_sql,
+                             add_not_exists_clause=False):
         """
         #####################################
         # Reverse engineered sql for TABLE
@@ -703,20 +704,24 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         # if table is partitions then
         if 'relispartition' in data and data['relispartition']:
-            table_sql = render_template("/".join([self.partition_template_path,
-                                                  self._CREATE_SQL]),
-                                        data=data, conn=self.conn)
+            table_sql = \
+                render_template("/".join([self.partition_template_path,
+                                          self._CREATE_SQL]), data=data,
+                                conn=self.conn,
+                                add_not_exists_clause=add_not_exists_clause)
         else:
-            table_sql = render_template("/".join([self.table_template_path,
-                                                  self._CREATE_SQL]),
-                                        data=data, conn=self.conn, is_sql=True)
+            table_sql = \
+                render_template("/".join([self.table_template_path,
+                                          self._CREATE_SQL]), data=data,
+                                conn=self.conn, is_sql=True,
+                                add_not_exists_clause=add_not_exists_clause)
 
         # Add into main sql
         table_sql = re.sub(self.pattern, self.double_newline, table_sql)
         main_sql.append(table_sql.strip('\n'))
 
     def _get_resql_for_index(self, did, tid, main_sql, json_resp, schema,
-                             table):
+                             table, add_not_exists_clause=False):
         """
         ######################################
         # Reverse engineered sql for INDEX
@@ -742,7 +747,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             index_sql = index_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=table, did=did, tid=tid,
                 idx=row['oid'], datlastsysoid=self.datlastsysoid,
-                template_path=None, with_header=json_resp)
+                template_path=None, with_header=json_resp,
+                add_not_exists_clause=add_not_exists_clause
+            )
             index_sql = "\n" + index_sql
 
             # Add into main sql
@@ -871,7 +878,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             rules_sql += render_template("/".join(
                 [self.rules_template_path, self._CREATE_SQL]),
-                data=res_data, display_comments=display_comments)
+                data=res_data, display_comments=display_comments,
+                add_replace_clause=True
+            )
 
             # Add into main sql
             rules_sql = re.sub(self.pattern, self.double_newline, rules_sql)
@@ -1021,6 +1030,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         data = kwargs.get('data')
         json_resp = kwargs.get('json_resp', True)
         diff_partition_sql = kwargs.get('diff_partition_sql', False)
+        if_exists_flag = kwargs.get('add_not_exists_clause', False)
 
         # Table & Schema declaration so that we can use them in child nodes
         schema = data['schema']
@@ -1028,10 +1038,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         is_partitioned = 'is_partitioned' in data and data['is_partitioned']
 
         # Get Reverse engineered sql for Table
-        self._get_resql_for_table(did, scid, tid, data, json_resp, main_sql)
+        self._get_resql_for_table(did, scid, tid, data, json_resp, main_sql,
+                                  add_not_exists_clause=if_exists_flag)
         # Get Reverse engineered sql for Table
         self._get_resql_for_index(did, tid, main_sql, json_resp, schema,
-                                  table)
+                                  table, add_not_exists_clause=if_exists_flag)
 
         # Get Reverse engineered sql for ROW SECURITY POLICY
         self._get_resql_for_row_security_policy(scid, tid, json_resp,
@@ -1435,7 +1446,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
-    def get_sql(self, did, scid, tid, data, res):
+    def get_sql(self, did, scid, tid, data, res, add_not_exists_clause=False):
         """
         This function will generate create/update sql from model data
         coming from client
@@ -1534,7 +1545,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             sql = render_template("/".join([self.table_template_path,
                                             self._CREATE_SQL]),
-                                  data=data, conn=self.conn)
+                                  data=data, conn=self.conn,
+                                  add_not_exists_clause=add_not_exists_clause)
 
             # Append SQL for partitions
             sql += '\n' + partitions_sql

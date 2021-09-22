@@ -1,6 +1,6 @@
 -- RESOURCE GROUP: Rg2_$%{}[]()&*^!@"'`\/#
 
--- DROP RESOURCE GROUP "Rg2_$%{}[]()&*^!@""'`\/#"
+-- DROP RESOURCE GROUP IF EXISTS "Rg2_$%{}[]()&*^!@""'`\/#"
 
 CREATE RESOURCE GROUP "Rg2_$%{}[]()&*^!@""'`\/#";
 

@@ -1,6 +1,6 @@
 -- FUNCTION: public.Trig1_$%{}[]()&*^!@"'`\/#()
 
--- DROP FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"();
+-- DROP FUNCTION IF EXISTS public."Trig1_$%{}[]()&*^!@""'`\/#"();
 
 CREATE OR REPLACE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     RETURNS SETOF trigger

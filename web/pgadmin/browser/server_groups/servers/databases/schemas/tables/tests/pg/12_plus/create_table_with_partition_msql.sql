@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
 (
     id integer,
     status text,
@@ -11,5 +11,5 @@ ALTER TABLE IF EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
 COMMENT ON TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     IS 'partition table';
 
-CREATE TABLE IF NOT EXISTS public.cust_active PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public.cust_active PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     FOR VALUES IN ('ACTIVE');

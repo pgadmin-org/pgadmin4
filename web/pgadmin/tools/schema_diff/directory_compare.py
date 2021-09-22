@@ -49,6 +49,7 @@ def _get_source_list(**kwargs):
             temp_src_params = copy.deepcopy(source_params)
             temp_src_params['tid'] = source_object_id
             temp_src_params['json_resp'] = False
+            temp_src_params['add_not_exists_clause'] = True
             source_ddl = \
                 view_object.get_sql_from_table_diff(**temp_src_params)
             temp_src_params.update({'target_schema': target_schema})
@@ -103,6 +104,8 @@ def _delete_keys(temp_tgt_params):
         del temp_tgt_params['gid']
     if 'json_resp' in temp_tgt_params:
         del temp_tgt_params['json_resp']
+    if 'add_not_exists_clause' in temp_tgt_params:
+        del temp_tgt_params['add_not_exists_clause']
 
 
 def _get_target_list(removed, target_dict, node, target_params, view_object,
@@ -129,6 +132,7 @@ def _get_target_list(removed, target_dict, node, target_params, view_object,
             temp_tgt_params = copy.deepcopy(target_params)
             temp_tgt_params['tid'] = target_object_id
             temp_tgt_params['json_resp'] = False
+            temp_tgt_params['add_not_exists_clause'] = True
             target_ddl = view_object.get_sql_from_table_diff(**temp_tgt_params)
             _delete_keys(temp_tgt_params)
             diff_ddl = view_object.get_drop_sql(**temp_tgt_params)

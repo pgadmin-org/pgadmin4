@@ -1,4 +1,4 @@
-CREATE MATERIALIZED VIEW IF NOT EXISTS public."testmview_$%{}[]()&*^!/@`#"
+CREATE MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
 TABLESPACE pg_default
 AS
 SELECT 1

@@ -864,7 +864,7 @@ It may have been removed by another user.
         SQL = render_template(
             "/".join([self.template_path,
                       self._SQL_PREFIX + self._CREATE_SQL]),
-            _=gettext, data=data, conn=self.conn
+            _=gettext, data=data, conn=self.conn, add_not_exists_clause=True
         )
 
         sql_header = "-- SCHEMA: {0}\n\n-- ".format(data['name'])
@@ -1048,7 +1048,8 @@ It may have been removed by another user.
         SQL = render_template(
             "/".join([self.template_path,
                       self._SQL_PREFIX + self._CREATE_SQL]),
-            _=gettext, data=old_data, conn=self.conn
+            _=gettext, data=old_data, conn=self.conn,
+            add_not_exists_clause=True
         )
 
         sql_header = """

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
 (
     col1 integer,
     col2 bigint,

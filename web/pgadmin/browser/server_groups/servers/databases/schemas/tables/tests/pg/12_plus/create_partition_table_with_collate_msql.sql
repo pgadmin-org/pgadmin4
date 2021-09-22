@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
 (
     id integer,
     status text,
@@ -11,6 +11,6 @@ ALTER TABLE IF EXISTS public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
 COMMENT ON TABLE public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
     IS 'partition table';
 
-CREATE TABLE IF NOT EXISTS public.cust_arr_small PARTITION OF public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public.cust_arr_small PARTITION OF public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
     FOR VALUES FROM ('20') TO ('25');
 

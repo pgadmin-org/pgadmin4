@@ -13,5 +13,5 @@ AND
 
 
 {% if name %}
-DROP FOREIGN TABLE {{ conn|qtIdent(basensp, name) }}{% if cascade%} CASCADE{% endif %};
+DROP FOREIGN TABLE IF EXISTS {{ conn|qtIdent(basensp, name) }}{% if cascade%} CASCADE{% endif %};
 {% endif %}

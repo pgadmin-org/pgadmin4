@@ -1099,7 +1099,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                              self._CREATE_SQL]),
                                    data=resp_data, query_type="create",
                                    func_def=name_with_default_args,
-                                   query_for="sql_panel")
+                                   query_for="sql_panel",
+                                   add_replace_clause=True
+                                   )
 
         return func_def
 
@@ -1219,7 +1221,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             object_type.upper(), resp_data['pronamespace'],
             resp_data['proname'],
             resp_data['proargtypenames'].lstrip('(').rstrip(')'))
-        sql_header += """-- DROP {0} {1}({2});\n\n""".format(
+        sql_header += """-- DROP {0} IF EXISTS {1}({2});\n\n""".format(
             object_type.upper(), self.qtIdent(
                 self.conn, resp_data['pronamespace'], resp_data['proname']),
             resp_data['proargtypenames'].lstrip('(').rstrip(')'))

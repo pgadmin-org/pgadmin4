@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."table_with_range_patition_$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."table_with_range_patition_$%{}[]()&*^!@""'`\/#"
 (
     id integer,
     status text,

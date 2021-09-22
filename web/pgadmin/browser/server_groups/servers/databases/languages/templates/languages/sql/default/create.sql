@@ -2,9 +2,9 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/security.macros' as SECLABEL %}
 {% if data.is_template %}
-CREATE LANGUAGE {{ conn|qtIdent(data.name) }};
+CREATE{% if add_replace_clause %} OR REPLACE{% endif %} LANGUAGE {{ conn|qtIdent(data.name) }};
 {% else %}
-CREATE{% if data.trusted %} TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIdent(data.name) }}
+CREATE{% if add_replace_clause %} OR REPLACE{% endif %}{% if data.trusted %} TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIdent(data.name) }}
 {% if data.lanproc %}
     HANDLER {{ conn|qtIdent(data.lanproc) }}
 {% endif %}

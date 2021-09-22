@@ -1,4 +1,4 @@
-CREATE OR REPLACE RULE "test_update_rule_$%{}[]()&*^!@""'`\/#" AS
+CREATE RULE "test_update_rule_$%{}[]()&*^!@""'`\/#" AS
     ON UPDATE TO public.test_emp_rule
     WHERE (old.name = 'Joe')
     DO

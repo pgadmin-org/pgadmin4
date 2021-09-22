@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW public."testview_$%{}[]()&*^!@""'`\/#"
+CREATE VIEW public."testview_$%{}[]()&*^!@""'`\/#"
 WITH (
   check_option=local
 ) AS

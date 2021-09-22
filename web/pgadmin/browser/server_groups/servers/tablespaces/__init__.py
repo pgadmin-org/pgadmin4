@@ -588,7 +588,7 @@ class TablespaceView(PGChildNodeView):
         sql_header = """
 -- Tablespace: {0}
 
--- DROP TABLESPACE {0};
+-- DROP TABLESPACE IF EXISTS {0};
 
 """.format(old_data['name'])
 

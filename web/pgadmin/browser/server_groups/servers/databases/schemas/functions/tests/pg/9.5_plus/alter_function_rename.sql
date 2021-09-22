@@ -1,6 +1,6 @@
 -- FUNCTION: public.Function3_$%{}[]()&*^!@"'`\/#()
 
--- DROP FUNCTION public."Function3_$%{}[]()&*^!@""'`\/#"();
+-- DROP FUNCTION IF EXISTS public."Function3_$%{}[]()&*^!@""'`\/#"();
 
 CREATE OR REPLACE FUNCTION public."Function3_$%{}[]()&*^!@""'`\/#"(
 	)

@@ -17,7 +17,7 @@ COMMENT ON TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
 
 -- Partitions SQL
 
-CREATE TABLE IF NOT EXISTS public.cust_part11 PARTITION OF public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
+CREATE TABLE public.cust_part11 PARTITION OF public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
     FOR VALUES WITH (modulus 2, remainder 1);
 
 ALTER TABLE IF EXISTS public.cust_part11

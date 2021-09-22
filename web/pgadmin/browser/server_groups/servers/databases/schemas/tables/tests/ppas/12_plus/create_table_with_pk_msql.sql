@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
 (
     "col1_$%{}[]()&*^!@\""'`\\/#" integer,
     "col2_$%{}[]()&*^!@\""'`\\/#" json NOT NULL,

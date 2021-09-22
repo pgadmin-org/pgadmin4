@@ -169,7 +169,8 @@ def get_include_details(conn, idx, data, template_path=None):
     return data
 
 
-def _get_create_sql(data, template_path, conn, mode, name):
+def _get_create_sql(data, template_path, conn, mode, name,
+                    if_exists_flag=False):
     """
     This function is used to get the sql where index is None
     :param data:
@@ -197,7 +198,8 @@ def _get_create_sql(data, template_path, conn, mode, name):
     # If the request for new object which do not have did
     sql = render_template(
         "/".join([template_path, 'create.sql']),
-        data=data, conn=conn, mode=mode
+        data=data, conn=conn, mode=mode,
+        add_not_exists_clause=if_exists_flag
     )
     sql += "\n"
 
@@ -225,6 +227,7 @@ def get_sql(conn, **kwargs):
     datlastsysoid = kwargs.get('datlastsysoid')
     mode = kwargs.get('mode', None)
     template_path = kwargs.get('template_path', None)
+    if_exists_flag = kwargs.get('if_exists_flag', False)
 
     name = data['name'] if 'name' in data else None
     if idx is not None:
@@ -261,7 +264,8 @@ def get_sql(conn, **kwargs):
             data=data, o_data=old_data, conn=conn
         )
     else:
-        sql = _get_create_sql(data, template_path, conn, mode, name)
+        sql = _get_create_sql(data, template_path, conn, mode, name,
+                              if_exists_flag=if_exists_flag)
 
     return sql, name
 
@@ -283,6 +287,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
     datlastsysoid = kwargs.get('datlastsysoid')
     template_path = kwargs.get('template_path', None)
     with_header = kwargs.get('with_header', True)
+    if_exists_flag = kwargs.get('add_not_exists_clause', False)
 
     SQL = render_template("/".join([template_path, 'properties.sql']),
                           did=did, tid=tid, idx=idx,
@@ -308,7 +313,8 @@ def get_reverse_engineered_sql(conn, **kwargs):
         data = get_include_details(conn, idx, data)
 
     SQL, name = get_sql(conn, data=data, did=did, tid=tid, idx=None,
-                        datlastsysoid=datlastsysoid)
+                        datlastsysoid=datlastsysoid,
+                        if_exists_flag=if_exists_flag)
 
     if with_header:
         sql_header = "-- Index: {0}\n\n-- ".format(data['name'])

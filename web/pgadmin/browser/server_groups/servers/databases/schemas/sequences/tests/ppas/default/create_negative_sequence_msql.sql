@@ -1,4 +1,4 @@
-CREATE SEQUENCE IF NOT EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#"
+CREATE SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     INCREMENT -5
     START -30
     MINVALUE -40

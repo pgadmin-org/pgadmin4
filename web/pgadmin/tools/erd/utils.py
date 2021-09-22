@@ -21,7 +21,8 @@ class ERDTableView(BaseTableView, DataTypeReader):
 
     @BaseTableView.check_precondition
     def sql(self, conn_id=None, did=None, sid=None, data={}):
-        return BaseTableView.get_sql(self, did, None, None, data, None)
+        return BaseTableView.get_sql(self, did, None, None, data, None,
+                                     add_not_exists_clause=True)
 
     @BaseTableView.check_precondition
     def get_types(self, conn_id=None, did=None, sid=None):

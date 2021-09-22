@@ -1371,7 +1371,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         SQL = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL]),
             vid=vid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self.datlastsysoid,
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -1427,7 +1427,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
             data=result,
             conn=self.conn,
-            display_comments=display_comments
+            display_comments=display_comments,
+            add_replace_clause=True
         )
         SQL += "\n"
         SQL += render_template("/".join(
@@ -1983,7 +1984,8 @@ class MViewNode(ViewNode, VacuumSettings):
             [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
             data=result,
             conn=self.conn,
-            display_comments=display_comments
+            display_comments=display_comments,
+            add_not_exists_clause=True
         )
         SQL += "\n"
         SQL += render_template("/".join(

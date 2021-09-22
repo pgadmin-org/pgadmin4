@@ -1,1 +1,1 @@
-DROP SCHEMA {{ conn|qtIdent(name) }} {% if cascade %}CASCADE{%endif%};
+DROP SCHEMA IF EXISTS {{ conn|qtIdent(name) }} {% if cascade %}CASCADE{%endif%};

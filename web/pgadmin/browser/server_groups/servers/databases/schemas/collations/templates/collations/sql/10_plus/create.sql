@@ -1,5 +1,5 @@
 {% if data %}
-CREATE COLLATION {{ conn|qtIdent(data.schema, data.name) }}
+CREATE COLLATION{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.schema, data.name) }}
 {# if user has provided lc_collate & lc_type #}
 {% if data.lc_collate and data.lc_type %}
     (LC_COLLATE = {{ data.lc_collate|qtLiteral }}, LC_CTYPE = {{ data.lc_type|qtLiteral }});

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
 (
     LIKE public.like_tbl
         INCLUDING DEFAULTS

@@ -16,7 +16,7 @@
 {% if data.coll_inherits|length == 0 and  data.columns|length == 0 and not data.typname and not data.like_relation and data.primary_key|length == 0 and data.unique_constraint|length == 0 and data.foreign_key|length == 0 and data.check_constraint|length == 0 and data.exclude_constraint|length == 0 %}
 {% set empty_bracket = "\n(\n)"%}
 {% endif %}
-CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE IF NOT EXISTS {{conn|qtIdent(data.schema, data.name)}}{{empty_bracket}}
+CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{conn|qtIdent(data.schema, data.name)}}{{empty_bracket}}
 {% if data.typname %}
     OF {{ data.typname }}
 {% endif %}

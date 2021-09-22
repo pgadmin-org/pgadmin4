@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
+CREATE TABLE public."table_with_pk_chk_constraints$%{}[]()&*^!@""'`\/#"
 (
     "col1_$%{}[]()&*^!@\""'`\\/#" time(5) with time zone,
     col2 character(12),

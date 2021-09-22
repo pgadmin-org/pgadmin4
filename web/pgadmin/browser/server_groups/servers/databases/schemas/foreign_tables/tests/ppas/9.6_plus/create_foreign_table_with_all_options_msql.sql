@@ -1,4 +1,4 @@
-CREATE FOREIGN TABLE IF NOT EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"(
+CREATE FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"(
     col1 bigint NULL,
     col2 text NULL
 )
