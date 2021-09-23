@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { useTable, useBlockLayout, useRowSelect, useSortBy, useResizeColumns, useFlexLayout, useGlobalFilter } from 'react-table';
+import { useTable, useRowSelect, useSortBy, useResizeColumns, useFlexLayout, useGlobalFilter } from 'react-table';
 import { FixedSizeList } from 'react-window';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -83,8 +83,6 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
     []
   );
 
-  const scrollBarSize = React.useMemo(() => scrollbarWidth(), []);
-
   const IndeterminateCheckbox = React.forwardRef(
     ({ indeterminate, ...rest }, ref) => {
       const defaultRef = React.useRef();
@@ -117,7 +115,6 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
     getTableBodyProps,
     headerGroups,
     rows,
-    totalColumnsWidth,
     prepareRow,
     selectedFlatRows,
     state: { selectedRowIds },
@@ -261,16 +258,6 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
     </AutoSizer>
   );
 }
-
-const scrollbarWidth = () => {
-  // thanks too https://davidwalsh.name/detect-scrollbar-width
-  const scrollDiv = document.createElement('div');
-  scrollDiv.setAttribute('style', 'width: 100px; height: 100px; overflow: scroll; position:absolute; top:-9999px;');
-  document.body.appendChild(scrollDiv);
-  const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
-  document.body.removeChild(scrollDiv);
-  return scrollbarWidth;
-};
 
 PgTable.propTypes = {
   stepId: PropTypes.number,
