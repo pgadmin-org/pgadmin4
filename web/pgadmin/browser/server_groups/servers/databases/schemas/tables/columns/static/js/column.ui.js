@@ -154,12 +154,12 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'name', label: gettext('Name'), cell: 'text',
       type: 'text', readonly: obj.inSchemaWithColumnCheck,
       editable: this.editableCheckForTable, noEmpty: true,
-      minWidth: 115,
+      width: 115,
     },{
       // Need to show this field only when creating new table
       // [in SubNode control]
       id: 'is_primary_key', label: gettext('Primary key?'),
-      cell: 'switch', type: 'switch',  minWidth: 100, deps:['name'],
+      cell: 'switch', type: 'switch',  width: 100, disableResizing: true, deps:['name'],
       visible: ()=>{
         return obj.top?.nodeInfo && _.isUndefined(
           obj.top.nodeInfo['table'] || obj.top.nodeInfo['view'] ||
@@ -226,7 +226,7 @@ export default class ColumnSchema extends BaseUISchema {
       type: 'text', disabled: this.inCatalog, mode: ['properties'],
     },{
       id: 'cltype', label: gettext('Data type'),
-      readonly: obj.inSchemaWithColumnCheck, minWidth: 150,
+      readonly: obj.inSchemaWithColumnCheck, width: 150,
       group: gettext('Definition'), noEmpty: true,
       editable: this.editableCheckForTable,
       options: this.cltypeOptions, optionsLoaded: (options)=>{obj.datatypes = options;},
@@ -276,7 +276,7 @@ export default class ColumnSchema extends BaseUISchema {
       },
     },{
       id: 'attlen', label: gettext('Length/Precision'), cell: 'int',
-      deps: ['cltype'], type: 'int', group: gettext('Definition'), width: 120, minWidth: 120,
+      deps: ['cltype'], type: 'int', group: gettext('Definition'), width: 120, disableResizing: true,
       depChange: (state)=>{
         let range = this.attlenRange(state);
         if(range) {
@@ -300,7 +300,7 @@ export default class ColumnSchema extends BaseUISchema {
         return Boolean(obj.attlenRange(state));
       },
     },{
-      id: 'attprecision', label: gettext('Scale'), cell: 'int', minWidth: 60,
+      id: 'attprecision', label: gettext('Scale'), cell: 'int', width: 60, disableResizing: true,
       deps: ['cltype'], type: 'int', group: gettext('Definition'),
       depChange: (state)=>{
         let range = this.attprecisionRange(state);
@@ -386,7 +386,7 @@ export default class ColumnSchema extends BaseUISchema {
       },
     },{
       id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
-      type: 'switch', minWidth: 80,
+      type: 'switch', width: 80, disableResizing: true,
       group: gettext('Constraints'), editable: this.editableCheckForTable,
       deps: ['colconstype'],
       readonly: (state) => {

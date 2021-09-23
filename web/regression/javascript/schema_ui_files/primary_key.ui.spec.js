@@ -165,6 +165,7 @@ describe('PrimaryKeySchema', ()=>{
     });
 
     state.index = undefined;
+    state.condeferrable = true;
     expect(getFieldDepChange(schemaObj, 'spcname')(state)).toEqual({});
     expect(getFieldDepChange(schemaObj, 'include')(state)).toEqual({});
     expect(getFieldDepChange(schemaObj, 'fillfactor')(state)).toEqual({});

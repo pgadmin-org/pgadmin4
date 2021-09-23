@@ -64,7 +64,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
     var obj = this;
     return [{
       id: 'autovacuum_custom', label: gettext('Custom auto-vacuum?'),
-      group: gettext('Table'), mode: ['edit', 'create'],
+      group: gettext('Table'), mode: ['edit', 'create'], skipChange: true,
       type: 'switch', disabled: function(state) {
         if(state.is_partitioned) {
           return true;

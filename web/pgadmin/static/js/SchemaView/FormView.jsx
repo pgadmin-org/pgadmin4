@@ -125,11 +125,11 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
 
   let {canAdd, canEdit, canDelete, canAddRow } = field;
   retData.canAdd = _.isUndefined(canAdd) ? retData.canAdd : evalFunc(schema, canAdd, value);
-  retData.canAdd = !disabled && retData.canAdd;
+  retData.canAdd = !retData.disabled && retData.canAdd;
   retData.canEdit = _.isUndefined(canEdit) ? retData.canEdit : evalFunc(schema, canEdit, value);
-  retData.canEdit = !disabled && retData.canEdit;
+  retData.canEdit = !retData.disabled && retData.canEdit;
   retData.canDelete = _.isUndefined(canDelete) ? retData.canDelete : evalFunc(schema, canDelete, value);
-  retData.canDelete = !disabled && retData.canDelete;
+  retData.canDelete = !retData.disabled && retData.canDelete;
   retData.canAddRow = _.isUndefined(canAddRow) ? retData.canAddRow : evalFunc(schema, canAddRow, value);
   return retData;
 }

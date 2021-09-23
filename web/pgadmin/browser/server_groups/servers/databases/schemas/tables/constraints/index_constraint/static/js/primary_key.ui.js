@@ -156,8 +156,8 @@ export default class PrimaryKeySchema extends BaseUISchema {
         return false;
       },
       deps: ['index'],
-      readonly: function() {
-        if(!obj.isNew()) {
+      readonly: function(state) {
+        if(!obj.isNew(state)) {
           return true;
         }
       },
@@ -223,8 +223,8 @@ export default class PrimaryKeySchema extends BaseUISchema {
     },{
       id: 'condeferrable', label: gettext('Deferrable?'),
       type: 'switch', group: gettext('Definition'), deps: ['index'],
-      readonly: function() {
-        if(!obj.isNew()) {
+      readonly: function(state) {
+        if(!obj.isNew(state)) {
           return true;
         }
         return false;
@@ -244,18 +244,20 @@ export default class PrimaryKeySchema extends BaseUISchema {
       id: 'condeferred', label: gettext('Deferred?'),
       type: 'switch', group: gettext('Definition'),
       deps: ['condeferrable'],
-      readonly: function() {
-        if(!obj.isNew()) {
+      readonly: function(state) {
+        if(!obj.isNew(state)) {
           return true;
         }
         return false;
       },
       disabled: function(state) {
         // Disable if index is selected.
-        return !(_.isUndefined(state.index) || state.index == '');
+        return !(_.isUndefined(state.index) || state.index == '') || !state.condeferrable;
       },
       depChange: (state)=>{
-        if(_.isUndefined(state.index) || state.index == '') {
+        if(!state.condeferrable) {
+          return {condeferred: false};
+        } else if(_.isUndefined(state.index) || state.index == '') {
           return {};
         } else {
           return {condeferred: false};

@@ -128,7 +128,8 @@ class ExclusionColumnSchema extends BaseUISchema {
   get baseFields() {
     let obj = this;
     return [{
-      id: 'is_exp', label: '', type:'', editable: false, minWidth: 20,
+      id: 'is_exp', label: '', type:'', editable: false, width: 20,
+      disableResizing: true,
       controlProps: {
         formatter: {
           fromRaw: function (rawValue) {
@@ -138,11 +139,11 @@ class ExclusionColumnSchema extends BaseUISchema {
       }, visible: false,
     },{
       id: 'column', label: gettext('Col/Exp'), type:'', editable: false,
-      cell:'', minWidth: 125,
+      cell:'', width: 125,
     },{
       id: 'oper_class', label: gettext('Operator class'), cell:'select',
       options: this.operClassOptions,
-      minWidth: 185,
+      width: 185,
       editable: obj.isEditable,
       controlProps: {
         allowClear: true, placeholder: gettext('Select the operator class'),
@@ -153,7 +154,7 @@ class ExclusionColumnSchema extends BaseUISchema {
         {label: 'ASC', value: true},
         {label: 'DESC', value: false},
       ],
-      editable: obj.isEditable, minWidth: 110,
+      editable: obj.isEditable, width: 110, disableResizing: true,
       controlProps: {
         allowClear: false,
       },
@@ -163,10 +164,10 @@ class ExclusionColumnSchema extends BaseUISchema {
         {label: 'FIRST', value: true},
         {label: 'LAST', value: false},
       ], controlProps: {allowClear: false},
-      editable: obj.isEditable, minWidth: 110,
+      editable: obj.isEditable, width: 110, disableResizing: true,
     },{
       id: 'operator', label: gettext('Operator'), type: 'select',
-      minWidth: 95,
+      width: 95,
       editable: function() {
         return obj.isNewExCons;
       },
@@ -353,20 +354,11 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
         controlProps: {
           formatter: {
             fromRaw: (rawValue)=>{
-              var cols = [],
-                remoteCols = [];
-              if (rawValue?.length > 0) {
-                rawValue.forEach((col)=>{
-                  cols.push(col.local_column);
-                  remoteCols.push(col.referenced);
-                });
-                return '('+cols.join(', ')+') -> ('+ remoteCols.join(', ')+')';
-              }
-              return '';
+              return _.map(rawValue || [], 'column').join(', ');
             },
           }
         },
-        minWidth: 245,
+        width: 245,
       }),
       deps: ()=>{
         let ret = [];

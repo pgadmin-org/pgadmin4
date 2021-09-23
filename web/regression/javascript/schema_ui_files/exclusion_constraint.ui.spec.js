@@ -239,9 +239,10 @@ describe('ExclusionConstraintSchema', ()=>{
   it('columns formatter', ()=>{
     let formatter = _.find(schemaObj.fields, (f)=>f.id=='columns').cell().controlProps.formatter;
     expect(formatter.fromRaw([{
-      local_column: 'lid',
-      referenced: 'rid',
-    }])).toBe('(lid) -> (rid)');
+      column: 'lid',
+    },{
+      column: 'rid',
+    }])).toBe('lid, rid');
 
     expect(formatter.fromRaw([])).toBe('');
   });

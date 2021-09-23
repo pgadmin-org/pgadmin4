@@ -134,7 +134,7 @@ function DataTableHeader({headerGroups}) {
                     : ''}
                 </span>
               </div>
-              {column.resizable &&
+              {!column.disableResizing &&
                 <div
                   {...column.getResizerProps()}
                   className={classes.resizer}
@@ -328,16 +328,26 @@ export default function DataGridView({
           }
           return 0;
         }).map((field)=>{
+          let widthParms = {};
+          if(field.width) {
+            widthParms.width = field.width;
+            widthParms.minWidth = field.width;
+          }
+          if(field.minWidth) {
+            widthParms.minWidth = field.minWidth;
+          }
+          if(field.maxWidth) {
+            widthParms.maxWidth = field.maxWidth;
+          }
+          widthParms.disableResizing = Boolean(field.disableResizing);
+
           let colInfo = {
             Header: field.label||<>&nbsp;</>,
             accessor: field.id,
             field: field,
-            resizable: true,
+            disableResizing: false,
             sortable: true,
-            ...(field.minWidth ?  {minWidth: field.minWidth} : {}),
-            ...(field.width ?  {width: field.width} : {}),
-            ...(field.maxWidth ?  {maxWidth: field.maxWidth} : {}),
-            ...(field.disableResizing ?  {disableResizing: field.disableResizing} : {}),
+            ...widthParms,
             Cell: ({value, row, ...other}) => {
               /* Make sure to take the latest field info from schema */
               field = _.find(schemaRef.current.fields, (f)=>f.id==field.id) || field;

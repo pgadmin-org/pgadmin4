@@ -282,14 +282,20 @@ export default class ForeignKeySchema extends BaseUISchema {
       readonly: this.isReadonly,
     },{
       id: 'references_table_name', label: gettext('Referenced Table'),
-      type: 'text', group: gettext('Columns'), editable: false, visible:false,
-      cell: '', deps: ['columns'],
-      depChange: (state)=>{
-        if(state.columns?.length > 0) {
-          return {references_table_name: _.join(_.map(state.columns, 'references_table_name'), ',')};
+      type: 'text', group: gettext('Columns'), editable: false, visible:false, deps: ['columns'],
+      cell: (state)=>({
+        cell: '',
+        controlProps: {
+          formatter: {
+            fromRaw: ()=>{
+              if(state.columns?.length > 0) {
+                return _.join(_.map(state.columns, 'references_table_name'), ',');
+              }
+              return '';
+            }
+          }
         }
-        return {references_table_name: undefined};
-      }
+      }),
     },{
       id: 'columns', label: gettext('Columns'),
       group: gettext('Columns'), type: 'collection',
