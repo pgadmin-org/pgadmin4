@@ -217,7 +217,7 @@ define('pgadmin.browser.node', [
           pgAdmin.Browser.add_menus([{
             name: 'show_psql_tool', node: this.type, module: this,
             applies: ['context'], callback: 'show_psql_tool',
-            priority: 998, label: gettext('PSQL Tool (Beta)'),
+            priority: 998, label: gettext('PSQL Tool'),
             icon: 'fas fa-terminal',
           }]);
         }

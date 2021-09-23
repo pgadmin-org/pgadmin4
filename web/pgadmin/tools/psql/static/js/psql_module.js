@@ -49,7 +49,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         applies: ['tools'],
         callback: 'psql_tool',
         priority: 1,
-        label: gettext('PSQL Tool (Beta)'),
+        label: gettext('PSQL Tool'),
         enable: this.psqlToolEnabled,
       }];
 

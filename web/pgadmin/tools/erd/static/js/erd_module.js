@@ -38,7 +38,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
         applies: ['tools'],
         callback: 'showErdTool',
         priority: 1,
-        label: gettext('New ERD Project (Beta)'),
+        label: gettext('New ERD Project'),
         enable: this.erdToolEnabled,
         data: {
           data_disabled: gettext('The selected tree node does not support this option.'),

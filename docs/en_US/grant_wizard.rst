@@ -35,7 +35,7 @@ to scroll through the list of all accessible objects.
     * The schema in which the object resides in the *Schema* field
     * The object name in the *Name* field.
 
-Click the *Next* button to continue, or the *Cancel* button to close the wizard
+Click the *Next* button to continue, or the *X* button to close the wizard
 without modifying privileges.
 
 .. image:: images/grant_wizard_step2.png
@@ -64,7 +64,7 @@ For more information about granting privileges on database objects, see the
 `PostgreSQL core documentation <https://www.postgresql.org/docs/current/sql-grant.html>`_.
 
 Click the *Next* button to continue, the *Back* button to select or deselect
-additional database objects, or the *Cancel* button to close the wizard without
+additional database objects, or the *X* button to close the wizard without
 modifying privileges.
 
 Your entries in the *Grant Wizard* tool generate a SQL command; you can review
@@ -81,11 +81,6 @@ the *Grant Wizard* tool:
     :alt: Grant wizard step three page
     :align: center
 
-The commands displayed assign a role named *Bob* *INSERT* and *UPDATE*
-privileges *WITH GRANT OPTION* on the *sales_meetings* and the
-*sales_territories* tables.
-
 * Click the *Back* button to select or deselect additional database objects,
   roles and privileges.
-* Click the *Cancel* button to exit without saving work.
 * Click the *Finish* button to save selections and exit the wizard.

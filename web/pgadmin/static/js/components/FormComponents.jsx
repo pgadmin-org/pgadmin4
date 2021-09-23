@@ -766,7 +766,7 @@ export function InputSelect({
     menuPortalTarget: document.body,
     styles: styles,
     inputId: cid,
-    placeholder: (readonly || disabled) ? '' : controlProps.placeholder || gettext('Select...'),
+    placeholder: (readonly || disabled) ? '' : controlProps.placeholder || gettext('Select an item...'),
     ...otherProps,
     ...props
   };

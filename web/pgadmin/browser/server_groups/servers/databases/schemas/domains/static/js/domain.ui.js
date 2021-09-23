@@ -197,7 +197,7 @@ export default class DomainSchema extends BaseUISchema {
       }, {
         id: 'typdefault', label: gettext('Default'), cell: 'text',
         type: 'text', group: gettext('Definition'),
-        placeholder: gettext('Enter an expression or a value.'),
+        controlProps: {placeholder: gettext('Enter an expression or a value.')},
       }, {
         id: 'typnotnull', label: gettext('Not NULL?'), cell: 'boolean',
         type: 'switch', group: gettext('Definition'),

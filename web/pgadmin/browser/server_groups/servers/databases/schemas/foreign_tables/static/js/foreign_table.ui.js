@@ -426,7 +426,7 @@ export class ColumnSchema extends BaseUISchema {
       {
         id: 'typdefault', label: gettext('Default'), cell: 'text',
         type: 'text', group: gettext('Definition'),
-        placeholder: gettext('Enter an expression or a value.'),
+        controlProps: {placeholder: gettext('Enter an expression or a value.')},
         editable: (state) => {
           if(!(_.isUndefined(state.inheritedid)
             || _.isNull(state.inheritedid)
