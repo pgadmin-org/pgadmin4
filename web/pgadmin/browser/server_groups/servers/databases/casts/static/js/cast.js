@@ -10,7 +10,6 @@ import { getNodeAjaxOptions } from '../../../../../../static/js/node_ajax';
 import CastSchema from './cast.ui';
 import getApiInstance from '../../../../../../../static/js/api_instance';
 
-
 define('pgadmin.node.cast', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser',
@@ -114,6 +113,9 @@ define('pgadmin.node.cast', [
                   .catch((err)=>{
                     reject(err);
                   });
+              }else{
+                let data = [];
+                resolve(data);
               }
             });
           },

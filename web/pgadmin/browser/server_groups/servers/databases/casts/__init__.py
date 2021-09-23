@@ -347,7 +347,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         :param cid:
         :return:
         """
-        last_system_oid = 0 if self.blueprint.show_system_objects else \
+        last_system_oid = 0 if not self.blueprint.show_system_objects else \
             self.datlastsysoid
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),

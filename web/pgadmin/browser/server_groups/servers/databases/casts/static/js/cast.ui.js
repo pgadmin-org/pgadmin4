@@ -9,9 +9,6 @@
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
-
-
-
 export default class CastSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues) {
     super({
@@ -20,7 +17,7 @@ export default class CastSchema extends BaseUISchema {
       srctyp: undefined,          // Source type
       trgtyp: undefined,          // Target type
       proname: undefined,         // Function
-      castcontext: true,     // Context (IMPLICIT/EXPLICIT/ASSIGNMENT)
+      castcontext: false,     // Context (IMPLICIT/EXPLICIT/ASSIGNMENT)
       syscast: undefined,         // Is this cast is system object? Yes/No
       description: undefined,      // Comment on the cast
       ...initValues,
