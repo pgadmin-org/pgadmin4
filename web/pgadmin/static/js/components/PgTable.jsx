@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 }),
 );
 
-export default function pgTable({ columns, data, isSelectRow, ...props }) {
+export default function PgTable({ columns, data, isSelectRow, ...props }) {
   // Use the state and functions returned from useTable to build your UI
   const classes = useStyles();
   const defaultColumn = React.useMemo(
@@ -274,7 +274,7 @@ const scrollbarWidth = () => {
   return scrollbarWidth;
 };
 
-pgTable.propTypes = {
+PgTable.propTypes = {
   stepId: PropTypes.number,
   height: PropTypes.number,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),

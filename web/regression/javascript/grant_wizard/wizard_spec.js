@@ -13,10 +13,9 @@ import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import { messages } from '../fake_messages';
-// import GrantWizard from '../../../pgadmin/tools/grant_wizard/static/js/grant_wizard_view';
 import Theme from 'sources/Theme';
-import Wizard from '../../../pgadmin/browser/static/js/WizardView';
-import WizardStep from '../../../pgadmin/browser/static/js/WizardStep';
+import Wizard from '../../../pgadmin/static/js/helpers/wizard/Wizard';
+import WizardStep from '../../../pgadmin/static/js/helpers/wizard/WizardStep';
 
 describe('Wizard', () => {
   let mount;

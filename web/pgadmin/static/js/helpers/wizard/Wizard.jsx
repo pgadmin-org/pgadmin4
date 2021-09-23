@@ -6,7 +6,7 @@ import FastRewindIcon from '@material-ui/icons/FastRewind';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import HelpIcon from '@material-ui/icons/HelpRounded';
 import CheckIcon from '@material-ui/icons/Check';
-import { DefaultButton, PrimaryButton, PgIconButton } from '../../../static/js/components/Buttons';
+import { DefaultButton, PrimaryButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import PropTypes from 'prop-types';
 import { Box } from '@material-ui/core';
 import gettext from 'sources/gettext';

@@ -9,7 +9,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Theme from 'sources/Theme';
-import GrantWizard from './grantWizard';
+import GrantWizard from 'sources/components/GrantWizard';
 
 
 // Grant Wizard

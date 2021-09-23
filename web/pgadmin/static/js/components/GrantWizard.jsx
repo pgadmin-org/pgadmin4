@@ -13,18 +13,18 @@ import url_for from 'sources/url_for';
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Wizard from '../../../../browser/static/js/WizardView';
-import WizardStep from '../../../../browser/static/js/WizardStep';
-import PgTable from '../../../../browser/static/js/PgTable';
-import { getNodePrivilegeRoleSchema } from '../../../../browser/server_groups/servers/static/js/privilege.ui.js';
-import { InputSQL, InputText, FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
-import getApiInstance from '../../../../static/js/api_instance';
-import SchemaView from '../../../../static/js/SchemaView';
+import Wizard from '../helpers/wizard/Wizard';
+import WizardStep from '../helpers/wizard/WizardStep';
+import PgTable from 'sources/components/PgTable';
+import { getNodePrivilegeRoleSchema } from '../../../browser/server_groups/servers/static/js/privilege.ui.js';
+import { InputSQL, InputText, FormFooterMessage, MESSAGE_TYPE } from './FormComponents';
+import getApiInstance from '../api_instance';
+import SchemaView from '../SchemaView';
 import clsx from 'clsx';
 import Loader from 'sources/components/Loader';
 import Alertify from 'pgadmin.alertifyjs';
 import PropTypes from 'prop-types';
-import PrivilegeSchema from './privilege_schema.ui';
+import PrivilegeSchema from '../../../tools/grant_wizard/static/js/privilege_schema.ui';
 
 const useStyles = makeStyles(() =>
   ({
@@ -230,9 +230,9 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
         setLoaderText('');
         Alertify.wizardDialog().close();
       })
-      .catch(() => {
+      .catch((error) => {
         setLoaderText('');
-        Alertify.error(gettext('Error while saving grant wizard data.'));
+        Alertify.error(gettext(`Error while saving grant wizard data: ${error.response.data.errormsg}`));
       });
   };
 
