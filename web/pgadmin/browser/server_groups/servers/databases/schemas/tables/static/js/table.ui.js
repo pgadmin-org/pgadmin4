@@ -61,7 +61,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
     ()=>getNodeAjaxOptions('get_op_class', pgBrowser.Nodes['table'], treeNodeInfo, itemNodeData),
     {
       relowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
-      schema: treeNodeInfo.schema._label,
+      schema: treeNodeInfo.schema?._label,
     }
   );
 }
@@ -69,6 +69,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
 export class ConstraintsSchema extends BaseUISchema {
   constructor(nodeInfo, getFkObj, getExConsObj, otherOptions) {
     super();
+    this.nodeInfo = nodeInfo;
     this.primaryKeyObj = new PrimaryKeySchema({
       spcname: otherOptions.spcname,
     }, nodeInfo);
@@ -99,6 +100,7 @@ export class ConstraintsSchema extends BaseUISchema {
       group: gettext('Primary Key'), mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned', 'typname'],
       columns : ['name', 'columns'],
+      disabled: this.inCatalog,
       canAdd: function(state) {
         if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
           return false;
@@ -135,6 +137,7 @@ export class ConstraintsSchema extends BaseUISchema {
         return true;
       },
       columns : ['name', 'columns','references_table_name'],
+      disabled: this.inCatalog,
       canAddRow: obj.anyColumnAdded,
       depChange: (state)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
@@ -149,6 +152,7 @@ export class ConstraintsSchema extends BaseUISchema {
       canEdit: true, canDelete: true, deps:['is_partitioned'],
       canAdd: true,
       columns : ['name', 'consrc'],
+      disabled: this.inCatalog,
     },{
       id: 'unique_constraint', label: '',
       schema: this.uniqueConsObj,
@@ -156,6 +160,7 @@ export class ConstraintsSchema extends BaseUISchema {
       group: gettext('Unique'), mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned', 'typname'],
       columns : ['name', 'columns'],
+      disabled: this.inCatalog,
       canAdd: function(state) {
         if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
           return false;
@@ -175,6 +180,7 @@ export class ConstraintsSchema extends BaseUISchema {
       group: gettext('Exclude'), mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned'],
       columns : ['name', 'columns', 'constraint'],
+      disabled: this.inCatalog,
       canAdd: function(state) {
         if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
           return false;
@@ -350,8 +356,9 @@ export default class TableSchema extends BaseUISchema {
       if (!isEmptyString(state.typname)) {
         return false;
       }
+      return true;
     }
-    return true;
+    return false;
   }
 
   // Check for column grid when to edit/delete (for each row)
@@ -559,13 +566,7 @@ export default class TableSchema extends BaseUISchema {
       group: gettext('Columns'),
       schema: this.columnsSchema,
       mode: ['create', 'edit'],
-      disabled: function() {
-        if(this.nodeInfo &&  'catalog' in this.nodeInfo)
-        {
-          return true;
-        }
-        return false;
-      },
+      disabled: this.inCatalog,
       deps: ['typname', 'is_partitioned'],
       depChange: (state, source, topState, actionObj)=>{
         if(source[0] === 'columns') {

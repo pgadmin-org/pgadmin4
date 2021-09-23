@@ -363,11 +363,9 @@ export default class ColumnSchema extends BaseUISchema {
     },{
       id: 'defval', label: gettext('Default'), cell: 'text',
       type: 'text', group: gettext('Constraints'), deps: ['cltype', 'colconstype'],
+      readonly: obj.inSchemaWithColumnCheck,
       disabled: function(state) {
-        var isDisabled = false;
-        if(!obj.inSchemaWithModelCheck(state)) {
-          isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
-        }
+        var isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
         isDisabled = isDisabled || state.colconstype != 'n';
         return isDisabled;
       }, depChange: (state)=>{
@@ -381,7 +379,7 @@ export default class ColumnSchema extends BaseUISchema {
         }
       }, editable: function(state) {
         // inheritedfrom has value then we should disable it
-        if (!isEmptyString(state.inheritedfrom)) {
+        if (!isEmptyString(state.inheritedfrom) || !this.editableCheckForTable(state)) {
           return false;
         }
         return true;
