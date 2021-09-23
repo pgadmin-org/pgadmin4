@@ -57,9 +57,6 @@ const useStyles = makeStyles(() =>
       marginBottom: '1em',
       display: 'flex',
     },
-    table: {
-
-    },
     searchPadding: {
       flex: 2.5
     },

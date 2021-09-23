@@ -129,7 +129,6 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
       defaultColumn,
       isSelectRow,
     },
-    useBlockLayout,
     useGlobalFilter,
     useSortBy,
     useRowSelect,
@@ -251,7 +250,6 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
               height={height - 75}
               itemCount={rows.length}
               itemSize={35}
-              width={rows.length * 35 > 385 ? totalColumnsWidth + scrollBarSize : totalColumnsWidth}
               sorted={props?.sortOptions}
             >
               {RenderRow}
