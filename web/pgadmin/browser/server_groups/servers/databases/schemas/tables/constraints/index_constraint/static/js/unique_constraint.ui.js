@@ -115,13 +115,14 @@ export default class UniqueConstraintSchema extends BaseUISchema {
           allowClear:false,
           multiple: true,
           formatter: {
-            fromRaw: (backendVal)=>{
+            fromRaw: (backendVal, allOptions)=>{
               /* remove the column key and pass as array */
-              return (backendVal||[]).map((singleVal)=>singleVal.column);
+              let optValues = (backendVal||[]).map((singleVal)=>singleVal.column);
+              return _.filter(allOptions, (opt)=>optValues.indexOf(opt.value)>-1);
             },
             toRaw: (value)=>{
               /* take the array and convert to column key collection */
-              return (value||[]).map((singleVal)=>({column: singleVal}));
+              return (value||[]).map((singleVal)=>({column: singleVal.value}));
             },
           },
         },
