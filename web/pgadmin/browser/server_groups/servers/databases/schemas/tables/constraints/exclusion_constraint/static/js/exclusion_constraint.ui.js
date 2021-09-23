@@ -128,7 +128,7 @@ class ExclusionColumnSchema extends BaseUISchema {
   get baseFields() {
     let obj = this;
     return [{
-      id: 'is_exp', label: '', type:'', editable: false, width: 20,
+      id: 'is_exp', label: '', type:'', cell: '', editable: false, width: 20,
       disableResizing: true,
       controlProps: {
         formatter: {
@@ -221,6 +221,9 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
   initialise(data) {
     this.exColumnSchema.isNewExCons = this.isNew(data);
     this.amname = data.amname;
+    if(data.amname === 'btree') {
+      this.exColumnSchema.setOperClassOptions(this.fieldOptions.getOperClass({indextype: data.amname}));
+    }
   }
 
   changeColumnOptions(columns) {
@@ -246,7 +249,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       id: 'oid', label: gettext('OID'), cell: 'string',
       type: 'text' , mode: ['properties'],
     },{
-      id: 'is_sys_obj', label: gettext('System foreign key?'),
+      id: 'is_sys_obj', label: gettext('System exclusion constraint?'),
       type: 'switch', mode: ['properties'],
     },{
       id: 'comment', label: gettext('Comment'), cell: 'text',
@@ -340,13 +343,13 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
     },{
       id: 'columns', label: gettext('Columns/Expressions'),
       group: gettext('Columns'), type: 'collection',
-      mode: ['create', 'edit'],
+      mode: ['create', 'edit', 'properties'],
       editable: false, schema: this.exColumnSchema,
       headerSchema: this.exHeaderSchema, headerVisible: (state)=>obj.isNew(state),
       CustomControl: DataGridViewWithHeaderForm,
       uniqueCol: ['column'],
       canAdd: false, canDelete: function(state) {
-        // We can't update columns of existing foreign key.
+        // We can't update columns of existing
         return obj.isNew(state);
       },
       readonly: obj.isReadonly, cell: ()=>({
@@ -425,7 +428,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
 
   validate(state, setError) {
     if ((_.isUndefined(state.columns) || _.isNull(state.columns) || state.columns.length < 1)) {
-      setError('columns', gettext('Please specify columns for Foreign key.'));
+      setError('columns', gettext('Please specify columns for exclusion constraint.'));
       return true;
     }
 

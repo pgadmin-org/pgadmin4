@@ -789,6 +789,7 @@ function SchemaPropertiesView({
     setLoaderText('Loading...');
     getInitData().then((data)=>{
       data = data || {};
+      schema.initialise(data);
       if(!unmounted) {
         setOrigData(data || {});
         setLoaderText('');
@@ -839,7 +840,7 @@ function SchemaPropertiesView({
             schema={field.schema}
             accessPath={[field.id]}
             formErr={{}}
-            controlClassName={classes.controlRow}
+            containerClassName={classes.controlRow}
             canAdd={false}
             canEdit={false}
             canDelete={false}

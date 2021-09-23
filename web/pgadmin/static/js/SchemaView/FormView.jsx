@@ -110,18 +110,21 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
       (_.isUndefined(field.max_version) ? true :
         (viewHelperProps.serverInfo.version <= field.max_version))));
 
-  let _readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
-  if(!_readonly) {
-    _readonly = evalFunc(schema, readonly, value);
+  retData.readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
+  if(!retData.readonly) {
+    retData.readonly = evalFunc(schema, readonly, value);
   }
-  retData.readonly = _readonly;
 
   let _visible = verInLimit;
   _visible = _visible && evalFunc(schema, _.isUndefined(visible) ? true : visible, value);
   retData.visible = Boolean(_visible);
 
   retData.disabled = Boolean(evalFunc(schema, disabled, value));
-  retData.editable = evalFunc(schema, _.isUndefined(editable) ? true : editable, value);
+
+  retData.editable = !(viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties'));
+  if(retData.editable) {
+    retData.editable = evalFunc(schema, _.isUndefined(editable) ? true : editable, value);
+  }
 
   let {canAdd, canEdit, canDelete, canAddRow } = field;
   retData.canAdd = _.isUndefined(canAdd) ? retData.canAdd : evalFunc(schema, canAdd, value);
