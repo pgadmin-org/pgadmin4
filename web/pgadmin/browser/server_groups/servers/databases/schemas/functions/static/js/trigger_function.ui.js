@@ -65,18 +65,14 @@ export default class TriggerFunctionSchema extends BaseUISchema {
     return 'oid';
   }
 
-  isReadonly(state) {
-    switch(state.name){
-    case 'proargs':
-    case 'proargtypenames':
-    case 'prorettypename':
-    case 'proretset':
-    case 'proiswindow':
-      return !this.isNew();
-    default:
-      return false;
-    }
+  isReadonly() {
+    return false;
   }
+
+  setReadonlyInEditMode() {
+    return !this.isNew();
+  }
+
 
   isVisible(state) {
     if (state.name == 'sysproc') { return false; }
@@ -127,15 +123,15 @@ export default class TriggerFunctionSchema extends BaseUISchema {
       },{
         id: 'proargs', label: gettext('Arguments'), cell: 'string',
         type: 'text', group: gettext('Definition'), mode: ['properties', 'edit'],
-        ddisabled: obj.isDisabled, readonly: obj.isReadonly,
+        disabled: obj.isDisabled, readonly: obj.setReadonlyInEditMode,
       },{
         id: 'proargtypenames', label: gettext('Signature arguments'), cell:
         'text', type: 'text', group: gettext('Definition'), mode: ['properties'],
-        disabled: obj.isDisabled, readonly: obj.isReadonly,
+        disabled: obj.isDisabled, readonly: obj.setReadonlyInEditMode,
       },{
         id: 'prorettypename', label: gettext('Return type'), cell: 'text',
         type: 'select', group: gettext('Definition'),
-        disabled: obj.isDisabled, readonly: obj.isReadonly,
+        disabled: obj.isDisabled, readonly: obj.setReadonlyInEditMode,
         controlProps: {
           width: '100%',
           allowClear: false,
@@ -148,7 +144,7 @@ export default class TriggerFunctionSchema extends BaseUISchema {
       },{
         id: 'prorettypename', label: gettext('Return type'), cell: 'text',
         type: 'text', group: gettext('Definition'),
-        mode: ['properties', 'edit'], disabled: obj.isDisabled, readonly: obj.isReadonly,
+        mode: ['properties', 'edit'], disabled: obj.isDisabled, readonly: obj.setReadonlyInEditMode,
         visible: obj.isVisible
       },  {
         id: 'lanname', label: gettext('Language'), cell: 'text',
@@ -202,7 +198,7 @@ export default class TriggerFunctionSchema extends BaseUISchema {
         controlProps: { allowClear: false },
       },{
         id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
-        group: gettext('Options'), disabled: obj.isDisabled, readonly: obj.isReadonly,
+        group: gettext('Options'), disabled: obj.isDisabled, readonly: obj.setReadonlyInEditMode,
         visible: obj.isVisible
       },{
         id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
@@ -214,7 +210,7 @@ export default class TriggerFunctionSchema extends BaseUISchema {
       },{
         id: 'proiswindow', label: gettext('Window?'),
         group: gettext('Options'), cell:'boolean', type: 'switch',
-        disabled: obj.isDisabled, readonly: obj.isReadonly, visible: obj.isVisible
+        disabled: obj.isDisabled, readonly: obj.setReadonlyInEditMode, visible: obj.isVisible
       },{
         id: 'procost', label: gettext('Estimated cost'), type: 'text',
         group: gettext('Options'), disabled: obj.isDisabled, readonly: obj.isReadonly,
@@ -259,7 +255,7 @@ export default class TriggerFunctionSchema extends BaseUISchema {
         schema: new SecLabelSchema(),
         editable: false, group: gettext('Security'),
         mode: ['edit', 'create'],
-        canAdd: true, canEdit: false, canDelete: true,
+        canAdd: true, canEdit: true, canDelete: true,
         uniqueCol : ['provider'],
         min_version: 90200,
         disabled: obj.isDisabled, readonly: obj.isReadonly,
