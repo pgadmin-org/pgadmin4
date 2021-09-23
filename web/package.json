@@ -76,7 +76,7 @@
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.58",
+    "@material-ui/lab": "4.0.0-alpha.58",
     "@material-ui/pickers": "^3.2.10",
     "@projectstorm/react-diagrams": "^6.4.2",
     "@simonwep/pickr": "^1.5.1",
