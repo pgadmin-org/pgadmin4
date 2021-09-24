@@ -332,6 +332,9 @@ export default function DataGridView({
           if(field.width) {
             widthParms.width = field.width;
             widthParms.minWidth = field.width;
+          } else {
+            widthParms.width = 75;
+            widthParms.minWidth = 75;
           }
           if(field.minWidth) {
             widthParms.minWidth = field.minWidth;

@@ -14,7 +14,7 @@ define([
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'sources/utils',
-  'pgadmin.browser.collection', 'pgadmin.browser.table.partition.utils',
+  'pgadmin.browser.collection',
 ],
 function(
   gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,

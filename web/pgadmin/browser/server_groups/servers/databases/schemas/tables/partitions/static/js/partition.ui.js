@@ -6,16 +6,16 @@ import { ConstraintsSchema } from '../../../static/js/table.ui';
 import { PartitionKeysSchema, PartitionsSchema } from '../../../static/js/partition.utils.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../../static/js/privilege.ui';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../static/js/node_ajax';
-import { getNodeVacuumSettingsSchema } from '../../../../../../static/js/vacuum.ui';
 import { getNodeForeignKeySchema } from '../../../constraints/foreign_key/static/js/foreign_key.ui';
 import { getNodeExclusionConstraintSchema } from '../../../constraints/exclusion_constraint/static/js/exclusion_constraint.ui';
+import * as pgadminUtils from 'sources/utils';
 
 export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
   const spcname = ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
     return (m.label != 'pg_global');
   });
 
-  let tableNode = pgBrowser.Nodes['table'];
+  let partNode = pgBrowser.Nodes['partition'];
 
   return new PartitionTableSchema(
     {
@@ -32,13 +32,12 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
         return true;
       }),
       spcname: spcname,
-      coll_inherits: ()=>getNodeAjaxOptions('get_inherits', tableNode, treeNodeInfo, itemNodeData),
-      typname: ()=>getNodeAjaxOptions('get_oftype', tableNode, treeNodeInfo, itemNodeData),
-      like_relation: ()=>getNodeAjaxOptions('get_relations', tableNode, treeNodeInfo, itemNodeData),
+      coll_inherits: ()=>getNodeAjaxOptions('get_inherits', partNode, treeNodeInfo, itemNodeData),
+      typname: ()=>getNodeAjaxOptions('get_oftype', partNode, treeNodeInfo, itemNodeData),
+      like_relation: ()=>getNodeAjaxOptions('get_relations', partNode, treeNodeInfo, itemNodeData),
     },
     treeNodeInfo,
     {
-      vacuum_settings: ()=>getNodeVacuumSettingsSchema(tableNode, treeNodeInfo, itemNodeData),
       constraints: ()=>new ConstraintsSchema(
         treeNodeInfo,
         ()=>getNodeForeignKeySchema(treeNodeInfo, itemNodeData, pgBrowser, true),
@@ -46,9 +45,24 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
         {spcname: spcname},
       ),
     },
-    (privileges)=>getNodePrivilegeRoleSchema(tableNode, treeNodeInfo, itemNodeData, privileges),
+    (privileges)=>getNodePrivilegeRoleSchema(partNode, treeNodeInfo, itemNodeData, privileges),
     (params)=>{
-      return getNodeAjaxOptions('get_columns', tableNode, treeNodeInfo, itemNodeData, {urlParams: params, useCache:false});
+      return getNodeAjaxOptions('get_columns', partNode, treeNodeInfo, itemNodeData, {urlParams: params, useCache:false});
+    },
+    ()=>getNodeAjaxOptions('get_collations', pgBrowser.Nodes['collation'], treeNodeInfo, itemNodeData),
+    ()=>getNodeAjaxOptions('get_op_class', pgBrowser.Nodes['table'], treeNodeInfo, itemNodeData),
+    ()=>{
+      return getNodeAjaxOptions('get_attach_tables', partNode, treeNodeInfo, itemNodeData, {
+        useCache:false,
+        customGenerateUrl: (treeNodeInfo, actionType)=>{
+          return pgadminUtils.sprintf('table/%s/%s/%s/%s/%s/%s',
+            encodeURIComponent(actionType), encodeURIComponent(treeNodeInfo['server_group']._id),
+            encodeURIComponent(treeNodeInfo['server']._id),
+            encodeURIComponent(treeNodeInfo['database']._id),
+            encodeURIComponent(treeNodeInfo['partition'].schema_id),
+            encodeURIComponent(treeNodeInfo['partition']._id)
+          );
+        }});
     },
     {
       relowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
@@ -58,7 +72,8 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
 }
 
 export default class PartitionTableSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, schemas, getPrivilegeRoleSchema, getColumns, initValues) {
+  constructor(fieldOptions={}, nodeInfo, schemas, getPrivilegeRoleSchema, getColumns,
+    getCollations, getOperatorClass, getAttachTables, initValues) {
     super({
       name: undefined,
       oid: undefined,
@@ -98,11 +113,11 @@ export default class PartitionTableSchema extends BaseUISchema {
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
     this.nodeInfo = nodeInfo;
     this.getColumns = getColumns;
+    this.getAttachTables = getAttachTables;
 
-    this.partitionKeysObj = new PartitionKeysSchema();
-    this.partitionsObj = new PartitionsSchema(this.nodeInfo);
+    this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
+    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables);
     this.constraintsObj = this.schemas.constraints();
-    this.vacuumSettingsSchema = this.schemas.vacuum_settings();
   }
 
   get idAttribute() {
@@ -394,13 +409,6 @@ export default class PartitionTableSchema extends BaseUISchema {
         '</li></ul>',
       ].join(''),
       min_version: 100000,
-    },
-    {
-      // Here - we will create tab control for storage parameters
-      // (auto vacuum).
-      type: 'nested-tab', group: gettext('Parameters'),
-      mode: ['edit', 'create'], deps: ['is_partitioned'],
-      schema: this.vacuumSettingsSchema,
     },
     {
       id: 'relacl_str', label: gettext('Privileges'), disabled: this.inCatalog,

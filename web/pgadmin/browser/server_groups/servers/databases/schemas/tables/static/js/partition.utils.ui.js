@@ -113,7 +113,7 @@ export class PartitionKeysSchema extends BaseUISchema {
   }
 }
 export class PartitionsSchema extends BaseUISchema {
-  constructor(nodeInfo, getCollations, getOperatorClass) {
+  constructor(nodeInfo, getCollations, getOperatorClass, getAttachTables=()=>[]) {
     super({
       oid: undefined,
       is_attach: false,
@@ -129,6 +129,7 @@ export class PartitionsSchema extends BaseUISchema {
     });
 
     this.subPartitionsObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
+    this.getAttachTables = getAttachTables;
     this.nodeInfo = nodeInfo;
   }
 
@@ -143,7 +144,7 @@ export class PartitionsSchema extends BaseUISchema {
       mode: ['properties'],
     },{
       id: 'is_attach', label:gettext('Operation'), cell: 'select', type: 'select',
-      minWidth: 120, options: [
+      width: 120, disableResizing: true, options: [
         {label: gettext('Attach'), value: true},
         {label: gettext('Create'), value: false},
       ], controlProps: {allowClear: false},
@@ -160,8 +161,34 @@ export class PartitionsSchema extends BaseUISchema {
         return true;
       },
     },{
-      id: 'partition_name', label: gettext('Name'), type: 'text', cell:'text',
-      minWidth: 80, editable: function(state) {
+      id: 'partition_name', label: gettext('Name'),
+      type: (state)=>{
+        if(state.is_attach) {
+          return {
+            type: 'select',
+            options: this.getAttachTables,
+            controlProps: {allowClear: false},
+          };
+        } else {
+          return {
+            type: 'text',
+          };
+        }
+      },
+      cell: (state)=>{
+        if(state.is_attach) {
+          return {
+            cell: 'select',
+            options: this.getAttachTables,
+            controlProps: {allowClear: false},
+          };
+        } else {
+          return {
+            cell: 'text',
+          };
+        }
+      },
+      editable: function(state) {
         if(obj.isNew(state)) {
           return true;
         }
@@ -175,7 +202,7 @@ export class PartitionsSchema extends BaseUISchema {
       }, noEmpty: true,
     },{
       id: 'is_default', label: gettext('Default'), type: 'switch', cell:'switch',
-      minWidth: 55, min_version: 110000,
+      width: 55, disableResizing: true, min_version: 110000,
       editable: function(state) {
         if(obj.top && (obj.top.sessData.partition_type == 'range' ||
             obj.top.sessData.partition_type == 'list') && obj.isNew(state)
@@ -194,7 +221,7 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_from', label: gettext('From'), type:'text', cell: 'text',
-      minWidth: 80, deps: ['is_default'],
+      deps: ['is_default'],
       editable: function(state) {
         if(obj.top && obj.top.sessData.partition_type == 'range' && obj.isNew(state)
             && state.is_default !== true) {
@@ -212,7 +239,7 @@ export class PartitionsSchema extends BaseUISchema {
     },
     {
       id: 'values_to', label: gettext('To'), type:'text', cell: 'text',
-      minWidth: 80, deps: ['is_default'],
+      deps: ['is_default'],
       editable: function(state) {
         if(obj.top && obj.top.sessData.partition_type == 'range' && obj.isNew(state)
             && state.is_default !== true) {
@@ -229,7 +256,7 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_in', label: gettext('In'), type:'text', cell: 'text',
-      minWidth: 80, deps: ['is_default'],
+      deps: ['is_default'],
       editable: function(state) {
         if(obj.top && obj.top.sessData.partition_type == 'list' && obj.isNew(state)
             && state.is_default !== true) {
@@ -246,7 +273,6 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_modulus', label: gettext('Modulus'), type:'int', cell: 'int',
-      minWidth: 80,
       editable: function(state) {
         if(obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state)) {
           return true;
@@ -262,7 +288,6 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_remainder', label: gettext('Remainder'), type:'int', cell: 'int',
-      minWidth: 80,
       editable: function(state) {
         if(obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state)) {
           return true;

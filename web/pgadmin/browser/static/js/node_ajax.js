@@ -65,15 +65,22 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
     urlWithId: false,
     jumpAfterNode: null,
     useCache: true,
+    customGenerateUrl: null,
     ...params
   };
   return new Promise((resolve, reject)=>{
     const api = getApiInstance();
     let fullUrl = '';
     if(url) {
-      fullUrl = generateNodeUrl.call(
-        nodeObj, treeNodeInfo, url, itemNodeData, otherParams.urlWithId, nodeObj.parent_type, otherParams.jumpAfterNode
-      );
+      if(otherParams.customGenerateUrl) {
+        fullUrl = otherParams.customGenerateUrl.call(
+          nodeObj, treeNodeInfo, url, itemNodeData, otherParams.urlWithId, otherParams.jumpAfterNode
+        );
+      } else {
+        fullUrl = generateNodeUrl.call(
+          nodeObj, treeNodeInfo, url, itemNodeData, otherParams.urlWithId, otherParams.jumpAfterNode
+        );
+      }
     }
 
     if (url) {

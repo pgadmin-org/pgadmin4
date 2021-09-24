@@ -98,13 +98,13 @@ class ForeignKeyColumnSchema extends BaseUISchema {
   get baseFields() {
     return [{
       id: 'local_column', label: gettext('Local'), type:'text', editable: false,
-      cell:'', minWidth: 145,
+      cell:'',
     },{
       id: 'referenced', label: gettext('Referenced'), type: 'text', editable: false,
-      cell:'', minWidth: 145,
+      cell:'',
     },{
       id: 'references_table_name', label: gettext('Referenced Table'), type: 'text', editable: false,
-      cell:'', minWidth: 145,
+      cell:'',
     }];
   }
 }
@@ -326,7 +326,6 @@ export default class ForeignKeySchema extends BaseUISchema {
             },
           }
         },
-        minWidth: 245,
       }),
       deps: ()=>{
         let ret = [];

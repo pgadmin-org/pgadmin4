@@ -16,7 +16,7 @@ define('pgadmin.node.table', [
   'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.node.schema.dir/child','pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.node.column',
-  'pgadmin.node.constraints', 'pgadmin.browser.table.partition.utils',
+  'pgadmin.node.constraints',
 ], function(
   tableFunctions,
   gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
@@ -291,41 +291,6 @@ define('pgadmin.node.table', [
               t.unload(i);
             });
         },
-      },
-      fetchColumnsInherits: function(arg) {
-        var self = this,
-          url = 'get_columns',
-          m = self.model.top || self.model,
-          data = undefined,
-          node = this.field.get('schema_node'),
-          node_info = this.field.get('node_info'),
-          full_url = node.generate_url.apply(
-            node, [
-              null, url, this.field.get('node_data'),
-              this.field.get('url_with_id') || false, node_info,
-            ]
-          ),
-          cache_level = this.field.get('cache_level') || node.type,
-          cache_node = this.field.get('cache_node');
-
-        cache_node = (cache_node && pgBrowser.Nodes[cache_node]) || node;
-
-        m.trigger('pgadmin:view:fetching', m, self.field);
-        // Fetching Columns data for the selected table.
-        $.ajax({
-          async: false,
-          url: full_url,
-          data: arg,
-        })
-          .done(function(res) {
-            data = cache_node.cache(url, node_info, cache_level, res.data);
-          })
-          .fail(function() {
-            m.trigger('pgadmin:view:fetch:error', m, self.field);
-          });
-        m.trigger('pgadmin:view:fetched', m, self.field);
-        data = (data && data.data) || [];
-        return data;
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
         return getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser);

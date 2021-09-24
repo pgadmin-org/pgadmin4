@@ -59,6 +59,9 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
     },
     ()=>getNodeAjaxOptions('get_collations', pgBrowser.Nodes['collation'], treeNodeInfo, itemNodeData),
     ()=>getNodeAjaxOptions('get_op_class', pgBrowser.Nodes['table'], treeNodeInfo, itemNodeData),
+    ()=>{
+      return getNodeAjaxOptions('get_attach_tables', tableNode, treeNodeInfo, itemNodeData, {useCache:false, urlWithId: true});
+    },
     {
       relowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
       schema: treeNodeInfo.schema?._label,
@@ -272,7 +275,8 @@ export class LikeSchema extends BaseUISchema {
 }
 
 export default class TableSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, schemas, getPrivilegeRoleSchema, getColumns, getCollations, getOperatorClass, initValues) {
+  constructor(fieldOptions={}, nodeInfo, schemas, getPrivilegeRoleSchema, getColumns,
+    getCollations, getOperatorClass, getAttachTables, initValues) {
     super({
       name: undefined,
       oid: undefined,
@@ -316,7 +320,7 @@ export default class TableSchema extends BaseUISchema {
     this.nodeInfo = nodeInfo;
     this.getColumns = getColumns;
 
-    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass);
+    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables);
     this.constraintsObj = this.schemas.constraints();
     this.columnsSchema = this.schemas.columns();
     this.vacuumSettingsSchema = this.schemas.vacuum_settings();

@@ -213,7 +213,6 @@ var webpackShimConfig = {
     'pgadmin.browser.toolbar': path.join(__dirname, './pgadmin/browser/static/js/toolbar'),
     'pgadmin.browser.server.privilege': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/privilege'),
     'pgadmin.browser.server.variable': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/variable'),
-    'pgadmin.browser.table.partition.utils': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils'),
     'pgadmin.browser.utils': '/browser/js/utils',
     'pgadmin.browser.wizard': path.join(__dirname, './pgadmin/browser/static/js/wizard'),
     'pgadmin.dashboard': path.join(__dirname, './pgadmin/dashboard/static/js/dashboard'),
