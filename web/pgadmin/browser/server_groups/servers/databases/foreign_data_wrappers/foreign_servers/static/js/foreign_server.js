@@ -12,10 +12,10 @@ import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.u
 import ForeignServerSchema from './foreign_server.ui';
 
 define('pgadmin.node.foreign_server', [
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.backform', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege',
-], function(gettext, $, _, pgAdmin, pgBrowser, Backform) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for foreign server collection
   if (!pgBrowser.Nodes['coll-foreign_server']) {
@@ -33,8 +33,9 @@ define('pgadmin.node.foreign_server', [
     pgAdmin.Browser.Nodes['foreign_server'] = pgAdmin.Browser.Node.extend({
       parent_type: 'foreign_data_wrapper',
       type: 'foreign_server',
-      sqlAlterHelp: 'sql-alterforeignserver.html',
-      sqlCreateHelp: 'sql-createforeignserver.html',
+      sqlAlterHelp: 'sql-alterserver.html',
+      sqlCreateHelp: 'sql-createserver.html',
+      dialogHelp: url_for('help.static', {'filename': 'foreign_server_dialog.html'}),
       label: gettext('Foreign Server'),
       hasSQL:  true,
       hasDepends: true,
