@@ -52,12 +52,12 @@ the *FTS Template* dialog:
     :alt: FTS template dialog sql tab
     :align: center
 
-The example shown demonstrates creating a fts template named *ru_template* that
+The example shown demonstrates creating a fts template named *eng.template* that
 uses the ispell dictionary.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
 
 

@@ -49,7 +49,7 @@ Click the *Tokens* tab to continue.
 Use the fields in the *Tokens* tab to add a token:
 
 * Use the *Tokens* field to specify the name of a token.
-* Click the *Add* icon (+) to create a token.
+* Click the *Add* button to create a token.
 * Use the *Dictionaries* field to specify a dictionary.
 
 Repeat these steps to add additional tokens; to discard a token, click the
@@ -73,11 +73,11 @@ the *FTS Configuration* dialog:
     :align: center
 
 The example shown demonstrates creating a FTS configuration named
-*meme_phrases*. It uses the *default* parser.
+*english_phrases*. It uses the *default* parser.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
 
 

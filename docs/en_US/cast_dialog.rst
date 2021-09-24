@@ -38,7 +38,7 @@ Use the fields in the *Definition* tab to define parameters:
 * Use the drop-down listbox next to *Function* to select the function used to
   perform the cast. The function's result data type must match the target type
   of the cast.
-* Move the *Context* switch to the *Implicit* position if the cast is implicit.
+* Select *Context* toggle to *Implicit* if the cast is implicit.
   By default, a cast can be invoked only by an explicit cast request. If the
   cast is marked *Implicit* then it can be invoked implicitly in any context,
   whether by assignment or internally in an expression.
@@ -58,10 +58,7 @@ the *Cast* dialog:
     :alt: Cast dialog sql tab
     :align: center
 
-The cast uses a function named *int4(bigint)* to convert a biginteger data type
-to an integer.
-
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.

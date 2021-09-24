@@ -114,12 +114,12 @@ the *Domain* dialog:
     :alt: Domain dialog sql tab
     :align: center
 
-The example shown demonstrates creating a domain named *minimum-wage* that
-confirms that the value entered is greater than or equal to *7.25*.
+The example shown demonstrates creating a domain named *postal_code* that
+confirms that the value entered is in proper format.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
 
 

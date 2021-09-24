@@ -54,11 +54,11 @@ the *Extension* dialog:
     :alt: Extension dialog sql tab
     :align: center
 
-The command creates the *chkpass* extension in the *public* schema.  It is
-version *1.0* of *chkpass*.
+The command creates the *adminpack* extension in the *public* schema.  It is
+version *1.0* of *adminpack*.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
 
