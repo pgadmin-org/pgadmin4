@@ -50,9 +50,9 @@ the *RLS Policy* dialog:
     :alt: RLS Policy sql tab
     :align: center
 
-The example shown demonstrates creating a RLS Policy named *account_managers* that applies the Row Level Security on the *accounts* table.
+The example shown demonstrates creating a RLS Policy named *jobhist_rls* that applies the Row Level Security on the *jobhist* table.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.

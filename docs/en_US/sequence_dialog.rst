@@ -56,6 +56,10 @@ Use the fields in the *Definition* tab to define the sequence:
   around when the MAXVALUE or the MINVALUE has been reached by an ascending or
   descending sequence respectively. If the limit is reached, the next number
   generated will be the MINVALUE or MAXVALUE, respectively. The default is *No*.
+* The *OWNED BY* option causes the sequence to be associated with a specific
+  table column, such that if that column (or its whole table) is dropped, the
+  sequence will be automatically dropped as well. The specified table must have
+  the same owner and be in the same schema as the sequence.
 
 Click the *Security* tab to continue.
 
@@ -115,5 +119,5 @@ equal of *60*.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.

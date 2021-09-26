@@ -96,11 +96,9 @@ the *Exclusion Constraint* dialog:
     :align: center
 
 The example shown demonstrates creating an exclusion constraint named
-*exclude_department* that restricts additions to the dept table to those
-additions that are not equal to the value of the *deptno* column.  The
-constraint uses a btree index.
+*ex_dept_no*. The constraint uses a btree index.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.

@@ -545,10 +545,10 @@ the *Table* dialog:
     :alt: Table dialog sql tab
     :align: center
 
-The example shown demonstrates creating a table named *product_category*. It has
-three columns and a primary key constraint on the *category_id* column.
+The example shown demonstrates creating a table named *jobhist*. It has
+six columns and a primary key constraint on the *empno and startdate* column.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.

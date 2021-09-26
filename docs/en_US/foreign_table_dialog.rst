@@ -157,7 +157,7 @@ the *Foreign Table* dialog:
     :align: center
 
 The example shown demonstrates creating a foreign table *weblogs* with multiple
-columns and two options.
+columns.
 
 
 * Click the *Info* button (i) to access online help.

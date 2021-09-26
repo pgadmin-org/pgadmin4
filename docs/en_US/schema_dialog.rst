@@ -96,5 +96,5 @@ The example creates a schema named hr; the command grants *USAGE* privileges to
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.

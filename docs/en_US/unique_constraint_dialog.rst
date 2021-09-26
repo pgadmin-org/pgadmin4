@@ -68,11 +68,11 @@ the *Unique constraint* dialog:
     :alt: Unique Constraint dialog sql tab
     :align: center
 
-The example shown demonstrates creating a unique constraint named *name_con* on
-the *name* column of the *distributors* table.
+The example shown demonstrates creating a unique constraint named *jobhist_unique* on
+the *empno* column of the *jobhist* table.
 
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.

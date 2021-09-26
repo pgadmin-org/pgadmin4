@@ -25,6 +25,10 @@ Use the fields in the *General* tab to identify the synonym:
 
 In the definition panel, identify the target:
 
+.. image:: images/synonym_definition.png
+    :alt: Synonym dialog general tab
+    :align: center
+
 * Use the drop-down listbox next to *Target Type* to select the the type of
   object referenced by the synonym.
 * Use the drop-down listbox next to *Target Schema* to select the name of the
@@ -43,7 +47,7 @@ Your selections and entries in the *Synonym* dialog generate a SQL command.
 The example creates a synonym for the *emp* table named *emp_hist*.
 
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
 
 

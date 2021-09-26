@@ -109,9 +109,9 @@ the *Subscription* dialog:
     :alt: Subscription dialog sql tab
     :align: center
 
-The example creates a subscription named *pub1_sub1* that is owned by *postgres*. It will replicate the data from the publication *pub1*.
+The example creates a subscription named *sub1* that is owned by *postgres*. It will replicate the data from the publication *pub1*.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore all the default settings.

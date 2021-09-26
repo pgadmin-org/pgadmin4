@@ -191,7 +191,7 @@ the code that will create or modify your job.
     :alt: pgAgent dialog sql tab
     :align: center
 
-Click the *Save* button to save the job definition, or *Cancel* to exit the job
+Click the *Save* button to save the job definition, or *Close* to exit the job
 without saving.  Use the *Reset* button to remove your unsaved entries from the
 dialog.
 

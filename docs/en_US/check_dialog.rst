@@ -55,12 +55,11 @@ the *Check* dialog:
     :alt: Check dialog sql tab
     :align: center
 
-The example shown demonstrates creating a check constraint named *check_price*
-on the *price* column of the *products* table.  The constraint confirms that
-any values added to the column are greater than 0.
+The example shown demonstrates creating a check constraint named *jobhist_date_chk*
+on the *startdate* column of the *jobhist* table.
 
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.

@@ -56,6 +56,6 @@ to *2*, and *dirty_rate_limit* to *6144*.
 * Click the Info button (*i*) to access online SQL syntax reference material.
 * Click the Help button (*?*) to access online documentation about Resource Groups.
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
 

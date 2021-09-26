@@ -70,5 +70,5 @@ The example shown demonstrates creating a package named *empinfo* that includes
 two function and two procedure.
 
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to delete any changes to the dialog.
