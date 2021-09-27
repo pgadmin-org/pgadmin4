@@ -224,7 +224,8 @@ export default class TriggerSchema extends BaseUISchema {
         if (!obj.isNew())
           return true;
 
-        if (obj.nodeInfo.table.is_partitioned && obj.nodeInfo.server.version < 110000)
+        if (( _.has(obj.nodeInfo, 'table') && _.has(obj.nodeInfo.table, 'is_partitioned') &&
+         obj.nodeInfo.table.is_partitioned) && obj.nodeInfo?.server.version < 110000)
         {
           state.is_row_trigger = false;
           return true;
@@ -258,7 +259,7 @@ export default class TriggerSchema extends BaseUISchema {
       mode: ['create','edit', 'properties'],
       group: gettext('Definition'),
       deps: ['tfunction'],
-      disabled: (state) => {
+      readonly: (state) => {
         // Disabled if table is a partitioned table.
         var tfunction = state.tfunction;
         if (( _.has(obj.nodeInfo, 'table') && _.has(obj.nodeInfo.table, 'is_partitioned') &&
@@ -270,12 +271,18 @@ export default class TriggerSchema extends BaseUISchema {
         }
         return obj.inSchemaWithModelCheck(state);
       },
+      disabled: () => {
+        if('view' in obj.nodeInfo) {
+          return true;
+        }
+        return false;
+      }
     },{
       id: 'tgdeferrable', label: gettext('Deferrable?'),
       type: 'switch', group: gettext('Definition'),
       mode: ['create','edit', 'properties'],
       deps: ['is_constraint_trigger'],
-      disabled: (state) => {
+      readonly: (state) => {
         // If constraint trigger is set to True then only enable it
         var is_constraint_trigger = state.is_constraint_trigger;
         if(!obj.inSchemaWithModelCheck(state)) {
@@ -290,16 +297,22 @@ export default class TriggerSchema extends BaseUISchema {
             return true;
           }
         } else {
-          // Disable it
+          // readonly it
           return true;
         }
       },
+      disabled: (state) => {
+        if(!state.is_constraint_trigger) {
+          return true;
+        }
+        return false;
+      }
     },{
       id: 'tginitdeferred', label: gettext('Deferred?'),
       type: 'switch', group: gettext('Definition'),
       mode: ['create','edit', 'properties'],
       deps: ['tgdeferrable', 'is_constraint_trigger'],
-      disabled: (state) => {
+      readonly: (state) => {
         // If Deferrable is set to True then only enable it
         var tgdeferrable = state.tgdeferrable;
         if(!obj.inSchemaWithModelCheck(state)) {
@@ -314,10 +327,16 @@ export default class TriggerSchema extends BaseUISchema {
             return state.is_constraint_trigger ? false : true;
           }
         } else {
-          // Disable it
+          // readonly it
           return true;
         }
       },
+      disabled: (state) => {
+        if(!state.is_constraint_trigger) {
+          return true;
+        }
+        return false;
+      }
     },{
       id: 'tfunction', label: gettext('Trigger function'),
       type: 'select', disabled: obj.inSchemaWithModelCheck,
@@ -368,11 +387,11 @@ export default class TriggerSchema extends BaseUISchema {
         }
       },
       type: 'select', controlProps: { allowClear: false },
-      disabled: (state) => {
+      readonly: (state) => {
         if (!obj.isNew())
           return true;
         // If contraint trigger is set to True then only enable it
-        var is_constraint_trigger = obj.is_constraint_trigger;
+        var is_constraint_trigger = state.is_constraint_trigger;
         if(!obj.inSchemaWithModelCheck(state)) {
           if(!_.isUndefined(is_constraint_trigger) &&
             is_constraint_trigger === true) {
@@ -406,7 +425,7 @@ export default class TriggerSchema extends BaseUISchema {
       type: 'select', controlProps: { multiple: true },
       deps: ['evnt_update'], group: gettext('Events'),
       options: obj.fieldOptions.columns,
-      disabled: (state) => {
+      readonly: (state) => {
         if(obj.nodeInfo &&  'catalog' in obj.nodeInfo) {
           return true;
         }
