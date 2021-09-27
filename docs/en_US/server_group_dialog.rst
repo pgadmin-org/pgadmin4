@@ -16,7 +16,7 @@ Use the *Name* field on the *Server Group* dialog to specify a name that will
 identify the server group in the *pgAdmin* tree control.
 
 * Click the *Save* button to save work.
-* Click the *Cancel* button to exit without saving work.
+* Click the *Close* button to exit without saving work.
 * Click the *Reset* button to restore configuration parameters.
 
 To create server connections in a server group, right click on the named server

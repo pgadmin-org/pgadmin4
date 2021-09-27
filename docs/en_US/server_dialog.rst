@@ -198,7 +198,7 @@ Use the fields in the *Advanced* tab to configure a connection:
     v10.0 or later to connect to the server.
 
 * Click the *Save* button to save your work.
-* Click the *Cancel* button to exit without saving your work.
+* Click the *Close* button to exit without saving your work.
 * Click the *Reset* button to return the values specified on the Server dialog
   to their original condition.
 
