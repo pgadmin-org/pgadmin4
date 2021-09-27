@@ -1389,7 +1389,7 @@ export default class TypeSchema extends BaseUISchema {
                   if(option && option.label.match(/^pg_/)) {
                     return;
                   }
-                  res.push({ label: option.label, value: option.value });
+                  res.push({ label: option.label, value: option.value, image: 'icon-schema' });
                 });
               } else {
                 res = options;
