@@ -30,3 +30,4 @@ Bug fixes
 | `Issue #6723 <https://redmine.postgresql.org/issues/6723>`_ -  Updated query error row selection color as per dark theme style guide.
 | `Issue #6724 <https://redmine.postgresql.org/issues/6724>`_ -  Fixed an issue where the drop cascade button enables for Databases.
 | `Issue #6736 <https://redmine.postgresql.org/issues/6736>`_ -  Fixed an issue where Refresh view options are not working for materialized view.
+| `Issue #6759 <https://redmine.postgresql.org/issues/6759>`_ -  Ensure that RLS names should not be editable in the collection node of properties tab.

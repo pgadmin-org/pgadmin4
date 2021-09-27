@@ -95,7 +95,8 @@ define('pgadmin.node.row_security_policy', [
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
-          editable: true, type: 'text', readonly: false, cellHeaderClasses: 'width_percent_50',
+          type: 'text', readonly: true, cellHeaderClasses: 'width_percent_50',
+          mode: ['properties']
         },{
           id: 'oid', label: gettext('OID'), cell: 'string',
           editable: false, type: 'text', mode: ['properties'],
