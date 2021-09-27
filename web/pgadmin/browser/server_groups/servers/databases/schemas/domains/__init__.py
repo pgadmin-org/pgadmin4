@@ -506,7 +506,7 @@ It may have been removed by another user or moved to another schema.
                                             'get_collations.sql']))
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
-                return internal_server_error(errormsg=res)
+                return internal_server_error(errormsg=rset)
 
             for row in rset['rows']:
                 res.append({'label': row['copy_collation'],
@@ -597,7 +597,7 @@ AND relkind != 'c'))"""
                               name=data['name'])
         status, doid = self.conn.execute_scalar(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=doid)
 
         # Get updated schema oid
         SQL = render_template("/".join([self.template_path,
@@ -605,7 +605,7 @@ AND relkind != 'c'))"""
                               doid=doid)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=scid)
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -705,7 +705,7 @@ AND relkind != 'c'))"""
                               doid=doid)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=scid)
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -938,7 +938,7 @@ AND relkind != 'c'))"""
                                         self._NODE_SQL]), scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
-            return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
             status, data = self._fetch_properties(did, scid, row['oid'])
