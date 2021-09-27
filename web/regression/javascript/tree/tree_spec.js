@@ -1,13 +1,14 @@
 //////////////////////////////////////////////////////////////////////////
 //
-// pgAdmin 4 - PostgreSQL Tools
+// pgAdmin 4  PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013  2021, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
 
-import {Tree, TreeNode} from '../../../pgadmin/static/js/tree/tree';
+import {Tree} from '../../../pgadmin/static/js/tree/tree';
+import {TreeNode, ManageTreeNodes} from '../../../pgadmin/static/js/tree/tree_nodes';
 import {TreeFake} from './tree_fake';
 
 const context = describe;
@@ -15,28 +16,34 @@ const context = describe;
 const treeTests = (treeClass, setDefaultCallBack) => {
   let tree;
   beforeEach(() => {
-    tree = new treeClass();
+    let manageTree = new ManageTreeNodes();
+    let reactTree = jasmine.createSpyObj(
+      'tree', ['onTreeEvents', 'getActiveFile']);
+    tree = new treeClass(reactTree, manageTree);
   });
 
   describe('#addNewNode', () => {
+    beforeEach(() => {
+      tree.rootNode = new TreeNode(undefined, {});
+    });
     describe('when add a new root element', () => {
-      context('using [] as the parent', () => {
+      context('using undefined as the parent', () => {
         beforeEach(() => {
-          tree.addNewNode('some new node', {data: 'interesting'}, undefined, []);
+          tree.addNewNode('some new node', {data: 'interesting'}, undefined, undefined);
         });
 
         it('can be retrieved', () => {
-          const node = tree.findNode(['some new node']);
+          const node = tree.findNode('/browser/some new node');
           expect(node.data).toEqual({data: 'interesting'});
         });
 
         it('return false for #hasParent()', () => {
-          const node = tree.findNode(['some new node']);
+          const node = tree.findNode('/browser/some new node');
           expect(node.hasParent()).toEqual(false);
         });
 
         it('return null for #parent()', () => {
-          const node = tree.findNode(['some new node']);
+          const node = tree.findNode('/browser/some new node');
           expect(node.parent()).toBeNull();
         });
       });
@@ -47,38 +54,17 @@ const treeTests = (treeClass, setDefaultCallBack) => {
         });
 
         it('can be retrieved', () => {
-          const node = tree.findNode(['some new node']);
+          const node = tree.findNode('/browser/some new node');
           expect(node.data).toEqual({data: 'interesting'});
         });
 
         it('return false for #hasParent()', () => {
-          const node = tree.findNode(['some new node']);
+          const node = tree.findNode('/browser/some new node');
           expect(node.hasParent()).toEqual(false);
         });
 
         it('return null for #parent()', () => {
-          const node = tree.findNode(['some new node']);
-          expect(node.parent()).toBeNull();
-        });
-      });
-
-      context('using undefined as the parent', () => {
-        beforeEach(() => {
-          tree.addNewNode('some new node', {data: 'interesting'});
-        });
-
-        it('can be retrieved', () => {
-          const node = tree.findNode(['some new node']);
-          expect(node.data).toEqual({data: 'interesting'});
-        });
-
-        it('return false for #hasParent()', () => {
-          const node = tree.findNode(['some new node']);
-          expect(node.hasParent()).toEqual(false);
-        });
-
-        it('return null for #parent()', () => {
-          const node = tree.findNode(['some new node']);
+          const node = tree.findNode('/browser/some new node');
           expect(node.parent()).toBeNull();
         });
       });
@@ -87,97 +73,42 @@ const treeTests = (treeClass, setDefaultCallBack) => {
     describe('when add a new element as a child', () => {
       let parentNode;
       beforeEach(() => {
-        parentNode = tree.addNewNode('parent node', {data: 'parent data'}, undefined, []);
-        tree.addNewNode('some new node', {data: 'interesting'}, undefined, ['parent' +
-        ' node']);
+        parentNode = tree.addNewNode('parent node', {data: 'parent data'}, undefined, undefined);
+        tree.addNewNode('some new node', {data: 'interesting'}, undefined, '/browser/parent node');
       });
 
       it('can be retrieved', () => {
-        const node = tree.findNode(['parent node', 'some new node']);
+        const node = tree.findNode('/browser/parent node/some new node');
         expect(node.data).toEqual({data: 'interesting'});
       });
 
       it('return true for #hasParent()', () => {
-        const node = tree.findNode(['parent node', 'some new node']);
+        const node = tree.findNode('/browser/parent node/some new node');
         expect(node.hasParent()).toEqual(true);
       });
 
       it('return "parent node" object for #parent()', () => {
-        const node = tree.findNode(['parent node', 'some new node']);
+        const node = tree.findNode('/browser/parent node/some new node');
         expect(node.parent()).toEqual(parentNode);
       });
     });
 
     describe('when add an element that already exists under a parent', () => {
       beforeEach(() => {
-        tree.addNewNode('parent node', {data: 'parent data'}, undefined, []);
-        tree.addNewNode('some new node', {data: 'interesting'}, undefined, ['parent' +
-        ' node']);
+        tree.addNewNode('parent node', {data: 'parent data'}, undefined, undefined);
+        tree.addNewNode('some new node', {data: 'interesting'}, undefined, '/browser/parent node');
       });
 
       it('does not add a new child', () => {
-        tree.addNewNode('some new node', {data: 'interesting 1'}, undefined, ['parent' +
-        ' node']);
-        const parentNode = tree.findNode(['parent node']);
+        tree.addNewNode('some new node', {data: 'interesting 1'}, undefined, '/browser/parent node');
+        const parentNode = tree.findNode('/browser/parent node');
         expect(parentNode.children.length).toEqual(1);
       });
 
       it('updates the existing node data', () => {
-        tree.addNewNode('some new node', {data: 'interesting 1'}, undefined, ['parent' +
-        ' node']);
-        const node = tree.findNode(['parent node', 'some new node']);
+        tree.addNewNode('some new node', {data: 'interesting 1'}, undefined, '/browser/parent node');
+        const node = tree.findNode('/browser/parent node/some new node');
         expect(node.data).toEqual({data: 'interesting 1'});
-      });
-    });
-  });
-
-  describe('#translateTreeNodeIdFromACITree', () => {
-    let aciTreeApi;
-    beforeEach(() => {
-      aciTreeApi = jasmine.createSpyObj('ACITreeApi', [
-        'hasParent',
-        'parent',
-        'getId',
-      ]);
-
-      aciTreeApi.getId.and.callFake((node) => {
-        return node[0].id;
-      });
-      tree.aciTreeApi = aciTreeApi;
-    });
-
-    describe('When tree as a single level', () => {
-      beforeEach(() => {
-        aciTreeApi.hasParent.and.returnValue(false);
-      });
-
-      it('returns an array with the ID of the first level', () => {
-        let node = [{
-          id: 'some id',
-        }];
-        tree.addNewNode('some id', {}, undefined, []);
-
-        expect(tree.translateTreeNodeIdFromACITree(node)).toEqual(['some id']);
-      });
-    });
-
-    describe('When tree as a 2 levels', () => {
-      describe('When we try to retrieve the node in the second level', () => {
-        it('returns an array with the ID of the first level and second level', () => {
-          aciTreeApi.hasParent.and.returnValues(true, false);
-          aciTreeApi.parent.and.returnValue([{
-            id: 'parent id',
-          }]);
-          let node = [{
-            id: 'some id',
-          }];
-
-          tree.addNewNode('parent id', {}, undefined, []);
-          tree.addNewNode('some id', {}, undefined, ['parent id']);
-
-          expect(tree.translateTreeNodeIdFromACITree(node))
-            .toEqual(['parent id', 'some id']);
-        });
       });
     });
   });
@@ -195,16 +126,17 @@ const treeTests = (treeClass, setDefaultCallBack) => {
   describe('#findNodeByTreeElement', () => {
     context('retrieve data from node not found', () => {
       it('return undefined', () => {
-        let aciTreeApi = jasmine.createSpyObj('ACITreeApi', [
+        let reactTree = jasmine.createSpyObj('tree', [
           'hasParent',
           'parent',
           'getId',
+          'onTreeEvents',
         ]);
 
-        aciTreeApi.getId.and.callFake((node) => {
+        reactTree.getId.and.callFake((node) => {
           return node[0].id;
         });
-        tree.aciTreeApi = aciTreeApi;
+        tree.tree = reactTree;
         expect(tree.findNodeByDomElement(['<li>something</li>'])).toBeUndefined();
       });
     });
@@ -240,14 +172,18 @@ describe('tree tests', () => {
       let level2;
       beforeEach(() => {
         tree = new TreeFake();
-        tree.addNewNode('level1', {data: 'interesting'}, [{id: 'level1'}], []);
+        tree.addNewNode('level1', {data: 'interesting'}, [{id: 'level1'}], undefined);
         level2 = tree.addNewNode('level2', {data: 'data'}, [{id: 'level2'}], ['level1']);
         tree.addNewNode('level3', {data: 'more data'}, [{id: 'level3'}], ['level1', 'level2']);
 
-        tree.aciTreeApi = jasmine.createSpyObj(
-          'ACITreeApi', ['setInode', 'unload', 'deselect', 'select']);
-        tree.aciTreeApi.unload.and.callFake((domNode, config) => {
-          config.success();
+        tree.tree = jasmine.createSpyObj(
+          'tree', ['unload', 'onTreeEvents',
+            'setActiveFile', 'closeDirectory', 'getActiveFile',
+            'deSelectActiveFile']);
+        tree.tree.unload.and.callFake(function() {
+          return new Promise((resolve)=>{
+            resolve('Success!');
+          });
         });
       });
 
@@ -286,11 +222,11 @@ describe('tree tests', () => {
           });
       });
 
-      describe('ACITree specific', () => {
+      describe('ReactTree specific', () => {
         it('sets the current node as a Inode, changing the Icon back to +', (done) => {
           level2.reload(tree)
             .then(()=>{
-              expect(tree.aciTreeApi.setInode).toHaveBeenCalledWith([{id: 'level2'}]);
+              expect(tree.tree.closeDirectory).toHaveBeenCalledWith([{id: 'level2'}]);
               done();
             })
             .catch((error)=>{
@@ -298,12 +234,12 @@ describe('tree tests', () => {
             });
         });
 
-        it('deselect the node and selects it again to trigger ACI tree' +
-          ' events', (done) => {
+        it('deselect the node and selects it again to trigger React tree' +
+              ' events', (done) => {
           level2.reload(tree)
             .then(()=>{
               setTimeout(() => {
-                expect(tree.aciTreeApi.deselect).toHaveBeenCalledWith([{id: 'level2'}]);
+                expect(tree.tree.deSelectActiveFile).toHaveBeenCalledWith([{id: 'level2'}]);
                 done();
               }, 20);
             })
@@ -319,12 +255,14 @@ describe('tree tests', () => {
       let level2;
       beforeEach(() => {
         tree = new TreeFake();
-        tree.addNewNode('level1', {data: 'interesting'}, ['<li>level1</li>'], []);
+        tree.addNewNode('level1', {data: 'interesting'}, ['<li>level1</li>'], undefined);
         level2 = tree.addNewNode('level2', {data: 'data'}, ['<li>level2</li>'], ['level1']);
-        tree.addNewNode('level3', {data: 'more data'}, ['<li>level3</li>'], ['level1', 'level2']);
-        tree.aciTreeApi = jasmine.createSpyObj('ACITreeApi', ['unload']);
-        tree.aciTreeApi.unload.and.callFake((domNode, config) => {
-          config.success();
+        tree.addNewNode('level3', {data: 'more data'}, ['<li>level3</li>'], ['level1','level2']);
+        tree.tree = jasmine.createSpyObj('tree', ['unload']);
+        tree.tree.unload.and.callFake(() => {
+          return new Promise((resolve)=>{
+            resolve('Success!');
+          });
         });
       });
 
@@ -340,10 +278,10 @@ describe('tree tests', () => {
           });
       });
 
-      it('calls unload on the ACI Tree', (done) => {
+      it('calls unload on the React Tree', (done) => {
         level2.unload(tree)
           .then(()=>{
-            expect(tree.aciTreeApi.unload).toHaveBeenCalledWith(['<li>level2</li>'], jasmine.any(Object));
+            expect(tree.tree.unload).toHaveBeenCalledWith(['<li>level2</li>']);
             done();
           })
           .catch((error)=>{
@@ -355,11 +293,11 @@ describe('tree tests', () => {
 
   describe('Tree', () => {
     function realTreeSelectNode(tree, selectedNode) {
-      let aciTreeApi = jasmine.createSpyObj('ACITreeApi', [
-        'selected',
+      let reactTree = jasmine.createSpyObj('tree', [
+        'getActiveFile',
       ]);
-      tree.aciTreeApi = aciTreeApi;
-      aciTreeApi.selected.and.returnValue(selectedNode);
+      tree.tree = reactTree;
+      reactTree.getActiveFile.and.returnValue(selectedNode);
     }
 
     treeTests(Tree, realTreeSelectNode);
@@ -377,8 +315,8 @@ describe('tree tests', () => {
         let tree;
         beforeEach(() => {
           tree = new TreeFake();
-          tree.addNewNode('level1', {data: 'interesting'}, undefined, []);
-          tree.addNewNode('level2', {data: 'interesting'}, undefined, ['level1']);
+          tree.addNewNode('level1', {data: 'interesting'}, undefined, undefined);
+          tree.addNewNode('level2', {data: 'interesting'}, undefined, '/browser/level1');
         });
 
         context('node is at the first level', () => {
@@ -399,7 +337,7 @@ describe('tree tests', () => {
       let tree;
       beforeEach(() => {
         tree = new TreeFake();
-        tree.addNewNode('level1', {data: 'interesting'}, undefined, []);
+        tree.addNewNode('level1', {data: 'interesting'}, undefined, undefined);
         tree.addNewNode('level2', {data: 'interesting'}, undefined, ['level1']);
       });
 
@@ -412,30 +350,6 @@ describe('tree tests', () => {
       context('node is not root', () => {
         it('returns root element', () => {
           expect(tree.parent([{id: 'level2'}])).toEqual([{id: 'level1'}]);
-        });
-      });
-    });
-
-    describe('#itemData', () => {
-      let tree;
-      beforeEach(() => {
-        tree = new TreeFake();
-        tree.addNewNode('level1', {data: 'interesting'}, undefined, []);
-        tree.addNewNode('level2', {data: 'expected data'}, undefined, ['level1']);
-      });
-
-      context('retrieve data from the node', () => {
-        it('return the node data', () => {
-          expect(tree.itemData([{id: 'level2'}])).toEqual({
-            data: 'expected' +
-            ' data',
-          });
-        });
-      });
-
-      context('retrieve data from node not found', () => {
-        it('return undefined', () => {
-          expect(tree.itemData([{id: 'bamm'}])).toBeUndefined();
         });
       });
     });
@@ -459,7 +373,7 @@ describe('tree tests', () => {
       });
 
       it('changes the path of the child', () => {
-        expect(child.path).toEqual('root.node.1');
+        expect(child.path).toEqual('/browser/root/node.1');
       });
     });
   });

@@ -41,7 +41,7 @@ define('pgadmin.node.column', [
       sqlCreateHelp: 'sql-altertable.html',
       dialogHelp: url_for('help.static', {'filename': 'column_dialog.html'}),
       canDrop: function(itemData, item){
-        let node = pgBrowser.treeMenu.findNodeByDomElement(item);
+        let node = pgBrowser.tree.findNodeByDomElement(item);
 
         if (!node)
           return false;

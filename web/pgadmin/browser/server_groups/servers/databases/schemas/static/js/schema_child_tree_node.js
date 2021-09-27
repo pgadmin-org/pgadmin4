@@ -7,7 +7,9 @@
 //
 /////////////////////////////////////////////////////////////
 
-import * as pgBrowser from 'pgbrowser/browser';
+import pgAdmin from 'sources/pgadmin';
+
+let pgBrowser = pgAdmin.Browser;
 
 export function childCreateMenuEnabled(itemData, item, data) {
   // If check is false then , we will allow create menu
@@ -15,7 +17,7 @@ export function childCreateMenuEnabled(itemData, item, data) {
     return true;
   }
 
-  let node = pgBrowser.treeMenu.findNodeByDomElement(item);
+  let node = pgBrowser.tree.findNodeByDomElement(item);
 
   if (node)
     return node.anyFamilyMember(
@@ -26,7 +28,7 @@ export function childCreateMenuEnabled(itemData, item, data) {
 }
 
 export function isTreeItemOfChildOfSchema(itemData, item) {
-  let node = pgBrowser.treeMenu.findNodeByDomElement(item);
+  let node = pgBrowser.tree.findNodeByDomElement(item);
 
   if (node)
     return isTreeNodeOfSchemaChild(node);

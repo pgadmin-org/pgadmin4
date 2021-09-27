@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {getTreeNodeHierarchyFromElement} from '../../../../static/js/tree/pgadmin_tree_node';
 import axios from 'axios/index';
 import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
@@ -105,7 +104,7 @@ export class BackupDialogWrapper extends DialogWrapper {
       this.main(title);
     }
 
-    const treeInfo = getTreeNodeHierarchyFromElement(this.pgBrowser, selectedTreeNode);
+    const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
     const dialog = this.createDialog(node, treeInfo, this.typeOfDialog, $container);
     this.addAlertifyClassToBackupNodeChildNodes();
     dialog.render();
@@ -162,10 +161,7 @@ export class BackupDialogWrapper extends DialogWrapper {
         'sid': serverIdentifier,
       });
 
-      const treeInfo = getTreeNodeHierarchyFromElement(
-        this.pgBrowser,
-        selectedTreeNode
-      );
+      const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
 
       this.setExtraParameters(selectedTreeNode, treeInfo);
       let backupDate = this.view.model.toJSON();
@@ -222,7 +218,7 @@ export class BackupDialogWrapper extends DialogWrapper {
   }
 
   getSelectedNode() {
-    const tree = this.pgBrowser.treeMenu;
+    const tree = this.pgBrowser.tree;
     const selectedNode = tree.selected();
     if (selectedNode) {
       return tree.findNodeByDomElement(selectedNode);
@@ -260,10 +256,7 @@ export class BackupDialogWrapper extends DialogWrapper {
   }
 
   retrieveServerIdentifier(node, selectedTreeNode) {
-    const treeInfo = getTreeNodeHierarchyFromElement(
-      this.pgBrowser,
-      selectedTreeNode
-    );
+    const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
     return treeInfo.server._id;
   }
 

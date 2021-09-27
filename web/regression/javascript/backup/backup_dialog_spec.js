@@ -22,7 +22,6 @@ describe('BackupDialog', () => {
 
   beforeEach(() => {
     pgBrowser = {
-      treeMenu: new TreeFake(),
       Nodes: {
         server: {
           hasId: true,
@@ -53,6 +52,7 @@ describe('BackupDialog', () => {
         default: 550,
       },
     };
+    pgBrowser.tree = new TreeFake(pgBrowser);
     pgBrowser.Nodes.server.hasId = true;
     pgBrowser.Nodes.database.hasId = true;
     jquerySpy = jasmine.createSpy('jquerySpy');
@@ -126,7 +126,7 @@ describe('BackupDialog', () => {
       ],
     };
 
-    pgBrowser.treeMenu = TreeFake.build(hierarchy);
+    pgBrowser.tree = TreeFake.build(hierarchy, pgBrowser);
   });
 
   describe('#draw', () => {
@@ -151,7 +151,7 @@ describe('BackupDialog', () => {
 
     context('there are no ancestors of the type server', () => {
       it('does not create a dialog', () => {
-        pgBrowser.treeMenu.selectNode([{id: 'root'}]);
+        pgBrowser.tree.selectNode([{id: 'root'}]);
         backupDialog.draw(null, null, null);
         expect(alertifySpy['backup_objects']).not.toHaveBeenCalled();
       });

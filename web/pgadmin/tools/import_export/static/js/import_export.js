@@ -410,7 +410,7 @@ define([
         label: gettext('Import/Export...'),
         icon: 'fa fa-shopping-cart',
         enable: supportedNodes.enabled.bind(
-          null, pgBrowser.treeMenu, ['table']
+          null, pgBrowser.tree, ['table']
         ),
         data: {
           data_disabled: gettext('Please select any table from the browser tree to Import/Export data.'),
@@ -433,7 +433,7 @@ define([
         }
 
         if (pgBrowser.tree.hasParent(i)) {
-          i = $(pgBrowser.tree.parent(i));
+          i = pgBrowser.tree.parent(i);
         } else {
           Alertify.alert(gettext('Please select server or child node from tree.'));
           break;
@@ -450,13 +450,13 @@ define([
 
       var t = pgBrowser.tree;
       i = item || t.selected();
-      var d = i && i.length == 1 ? t.itemData(i) : undefined,
+      var d = i  ? t.itemData(i) : undefined,
         node = d && pgBrowser.Nodes[d._type];
 
       if (!d)
         return;
 
-      var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+      var treeInfo = t && t.getTreeNodeHierarchy(i);
 
       if (!Alertify.ImportDialog) {
         Alertify.dialog('ImportDialog', function factory() {
@@ -505,9 +505,8 @@ define([
             callback: function(e) {
               if (e.button['data-btn-name'] === 'ok') {
 
-                var n = this.settings['pg_node'],
-                  itemArr = this.settings['pg_item'],
-                  treeData = n.getTreeNodeHierarchy.apply(n, [itemArr]);
+                var itemArr = this.settings['pg_item'],
+                  treeData = pgBrowser.tree.getTreeNodeHierarchy(itemArr);
 
                 this.view.model.set({
                   'database': treeData.database._label,
@@ -589,9 +588,8 @@ define([
               this.__internal.buttons[1].element.disabled = true;
 
               var $container = $('<div class=\'import_dlg\'></div>'),
-                n = this.settings.pg_node,
                 itemArr = this.settings.pg_item,
-                treeData = n.getTreeNodeHierarchy.apply(n, [itemArr]),
+                treeData = pgBrowser.tree.getTreeNodeHierarchy(itemArr),
                 newModel = new ImportExportModel({}, {
                   node_info: treeData,
                 }),

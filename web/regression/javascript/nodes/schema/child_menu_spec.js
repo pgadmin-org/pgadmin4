@@ -10,13 +10,14 @@
 import {
   isTreeItemOfChildOfSchema, childCreateMenuEnabled,
 } from 'pgadmin.schema.dir/schema_child_tree_node';
-
-import * as pgBrowser from 'pgbrowser/browser';
+import pgAdmin from 'sources/pgadmin';
 import {TreeFake} from '../../tree/tree_fake';
 
+
 describe('#childCreateMenuEnabled', () => {
-  let data;
-  let tree;
+  let data,
+    tree,
+    pgBrowser = pgAdmin.Browser;
 
   describe(' - when data is not null', () => {
     beforeEach(() => {
@@ -47,8 +48,8 @@ describe('#childCreateMenuEnabled', () => {
               }],
             };
 
-            tree = TreeFake.build(hierarchy);
-            pgBrowser.treeMenu = tree;
+            tree = TreeFake.build(hierarchy, pgBrowser);
+            pgBrowser.tree = tree;
           });
           it(' it is true', () => {
             expect(childCreateMenuEnabled(
@@ -72,8 +73,8 @@ describe('#childCreateMenuEnabled', () => {
               }],
             };
 
-            tree = TreeFake.build(hierarchy);
-            pgBrowser.treeMenu = tree;
+            tree = TreeFake.build(hierarchy, pgBrowser);
+            pgBrowser.tree = tree;
           });
 
           it(' it is true', () => {
@@ -101,8 +102,8 @@ describe('#childCreateMenuEnabled', () => {
               }],
             };
 
-            tree = TreeFake.build(hierarchy);
-            pgBrowser.treeMenu = tree;
+            tree = TreeFake.build(hierarchy, pgBrowser);
+            pgBrowser.tree = tree;
           });
 
           it(' it is true', () => {
@@ -122,8 +123,8 @@ describe('#childCreateMenuEnabled', () => {
               }],
             };
 
-            tree = TreeFake.build(hierarchy);
-            pgBrowser.treeMenu = tree;
+            tree = TreeFake.build(hierarchy, pgBrowser);
+            pgBrowser.tree = tree;
           });
           it(' it is false', () => {
             expect(
@@ -146,8 +147,8 @@ describe('#childCreateMenuEnabled', () => {
               }],
             };
 
-            tree = TreeFake.build(hierarchy);
-            pgBrowser.treeMenu = tree;
+            tree = TreeFake.build(hierarchy, pgBrowser);
+            pgBrowser.tree = tree;
           });
 
           it(' it is false', () => {
@@ -175,8 +176,8 @@ describe('#childCreateMenuEnabled', () => {
               }],
             };
 
-            tree = TreeFake.build(hierarchy);
-            pgBrowser.treeMenu = tree;
+            tree = TreeFake.build(hierarchy, pgBrowser);
+            pgBrowser.tree = tree;
           });
 
           it(' it is false', () => {
@@ -191,7 +192,9 @@ describe('#childCreateMenuEnabled', () => {
 });
 
 describe('#childDropMenuEnabled', () => {
-  let tree;
+  let tree,
+    pgBrowser = pgAdmin.Browser;
+
 
   describe(' - the child node under schema node ', () => {
     beforeEach(() => {
@@ -211,8 +214,8 @@ describe('#childDropMenuEnabled', () => {
         }],
       };
 
-      tree = TreeFake.build(hierarchy);
-      pgBrowser.treeMenu = tree;
+      tree = TreeFake.build(hierarchy, pgBrowser);
+      pgBrowser.tree = tree;
     });
 
     it(' it is true', () => {
@@ -240,8 +243,8 @@ describe('#childDropMenuEnabled', () => {
         }],
       };
 
-      tree = TreeFake.build(hierarchy);
-      pgBrowser.treeMenu = tree;
+      tree = TreeFake.build(hierarchy, pgBrowser);
+      pgBrowser.tree = tree;
     });
 
     it(' it is false', () => {

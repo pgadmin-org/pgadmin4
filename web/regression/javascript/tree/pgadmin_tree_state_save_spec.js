@@ -107,7 +107,10 @@ describe('#browserTreeState', () => {
         };},
       },
     };
-    pgBrowser.tree = jasmine.createSpyObj('tree', ['itemData', 'pathId', 'hasParent', 'isOpen', 'isClosed', 'selected']);
+    pgBrowser.tree = jasmine.createSpyObj('tree', ['itemData', 'pathId', 'hasParent', 'isOpen', 'isClosed', 'selected', 'parent']);
+    pgBrowser.tree.getTreeNodeHierarchy = function (item) {
+      return pgBrowser.Nodes[item._type].getTreeNodeHierarchy();
+    };
   });
 
   describe('When node is opened tree state is getting updated', () => {

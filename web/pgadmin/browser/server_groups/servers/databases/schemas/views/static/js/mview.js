@@ -238,7 +238,7 @@ define('pgadmin.node.mview', [
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined,
+          d = i  ? t.itemData(i) : undefined,
           server_data = null;
 
         if (!d)
@@ -253,7 +253,7 @@ define('pgadmin.node.mview', [
           }
 
           if (pgBrowser.tree.hasParent(j)) {
-            j = $(pgBrowser.tree.parent(j));
+            j = pgBrowser.tree.parent(j);
           } else {
             Alertify.alert(gettext('Please select server or child node from tree.'));
             break;
@@ -316,9 +316,7 @@ define('pgadmin.node.mview', [
       is_version_supported: function(data, item) {
         var t = pgAdmin.Browser.tree,
           i = item || t.selected(),
-          d = data || (i && i.length == 1 ? t.itemData(i): undefined),
-          node = this || (d && pgAdmin.Browser.Nodes[d._type]),
-          info = node && node.getTreeNodeHierarchy.apply(node, [i]),
+          info = t && t.getTreeNodeHierarchy(i),
           version = _.isUndefined(info) ? 0 : info.server.version;
 
         // disable refresh concurrently if server version is 9.3

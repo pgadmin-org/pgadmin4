@@ -102,7 +102,7 @@ define('pgadmin.node.trigger', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -140,7 +140,7 @@ define('pgadmin.node.trigger', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -653,7 +653,7 @@ define('pgadmin.node.trigger', [
       canCreate: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       // Check to whether trigger is disable ?
       canCreate_with_trigger_enable: function(itemData, item, data) {
-        var treeData = this.getTreeNodeHierarchy(item);
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }
@@ -663,7 +663,7 @@ define('pgadmin.node.trigger', [
       },
       // Check to whether trigger is enable ?
       canCreate_with_trigger_disable: function(itemData, item, data) {
-        var treeData = this.getTreeNodeHierarchy(item);
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }

@@ -487,7 +487,7 @@ class BrowserPluginModule(PgAdminModule):
         browser tree.
         """
         obj = {
-            "id": "%s/%s" % (node_type, node_id),
+            "id": "%s_%s" % (node_type, node_id),
             "label": label,
             "icon": icon,
             "inode": inode,

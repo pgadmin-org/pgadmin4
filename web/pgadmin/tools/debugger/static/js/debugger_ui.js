@@ -188,13 +188,12 @@ define([
             if (restart_debug == 0) {
               var t = pgBrowser.tree,
                 i = t.selected(),
-                d = i && i.length == 1 ? t.itemData(i) : undefined,
-                node = d && pgBrowser.Nodes[d._type];
+                d = i ? t.itemData(i) : undefined;
 
               if (!d)
                 return;
 
-              var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]),
+              var treeInfo = t.getTreeNodeHierarchy(i),
                 _Url;
 
               if (d._type == 'function') {
@@ -623,13 +622,12 @@ define([
               if (self.setting('restart_debug') == 0) {
                 var t = pgBrowser.tree,
                   i = t.selected(),
-                  d = i && i.length == 1 ? t.itemData(i) : undefined,
-                  node = d && pgBrowser.Nodes[d._type];
+                  d = i ? t.itemData(i) : undefined;
 
                 if (!d)
                   return;
 
-                var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+                var treeInfo = t.getTreeNodeHierarchy(i);
               }
 
               var args_value_list = [];
@@ -939,8 +937,7 @@ define([
                 if (!item_data)
                   return;
 
-                let node_ele = pgBrowser.Nodes[item_data._type];
-                let tree_info = node_ele.getTreeNodeHierarchy.call(node_ele, selected_item);
+                let tree_info = pgBrowser.tree.getTreeNodeHierarchy(selected_item);
 
                 base_url = url_for('debugger.clear_arguments', {
                   'sid': tree_info.server._id,

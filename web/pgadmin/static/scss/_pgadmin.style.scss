@@ -166,6 +166,7 @@
   right:0px;
   bottom:0px;
   height: 100%!important;
+  overflow: scroll;
 }
 
 .pg-prop-footer {
@@ -1089,11 +1090,14 @@ textarea {
     border-radius: $border-radius*2;
     background-clip: content-box;
     background-color: rgba($scrollbar-base-color, 0.7);
+    background: rgba($scrollbar-base-color, 0.7) !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background-color: $scrollbar-base-color;
+    background: $scrollbar-base-color !important;
 }
+
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,

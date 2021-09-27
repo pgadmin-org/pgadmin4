@@ -57,8 +57,8 @@ export class RestoreDialog extends Dialog {
         return;
       }
 
-      let aciTreeItem1 = aciTreeItem || that.pgBrowser.treeMenu.selected();
-      let item = that.pgBrowser.treeMenu.findNodeByDomElement(aciTreeItem1);
+      let aciTreeItem1 = aciTreeItem || that.pgBrowser.tree.selected();
+      let item = that.pgBrowser.tree.findNodeByDomElement(aciTreeItem1);
       const data = item.getData();
       const node = that.pgBrowser.Nodes[data._type];
 

@@ -18,7 +18,6 @@ import {getRandomInt, hasBinariesConfiguration, registerDetachEvent} from 'sourc
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
 
-import {getTreeNodeHierarchyFromIdentifier} from 'sources/tree/pgadmin_tree_node';
 import {generateTitle, refresh_db_node} from 'tools/datagrid/static/js/datagrid_panel_title';
 
 
@@ -120,7 +119,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         return;
       }
 
-      const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
+      const node = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
       if (node === undefined || !node.getData()) {
         Alertify.alert(
           gettext('PSQL Error'),
@@ -129,10 +128,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         return;
       }
 
-      parentData = getTreeNodeHierarchyFromIdentifier.call(
-        pgBrowser,
-        aciTreeIdentifier
-      );
+      parentData = pgBrowser.tree.getTreeNodeHierarchy(aciTreeIdentifier);
 
       if(_.isUndefined(parentData.server)) {
         Alertify.alert(
@@ -366,9 +362,9 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
     check_db_name_change: function(db_name, o_db_name) {
       if (db_name != o_db_name) {
 
-        var selected_item = pgWindow.pgAdmin.Browser.treeMenu.selected(),
-          tree_data = pgWindow.pgAdmin.Browser.treeMenu.translateTreeNodeIdFromACITree(selected_item),
-          database_data = pgWindow.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4)),
+        var selected_item = pgWindow.pgAdmin.Browser.tree.selected(),
+          tree_data = pgWindow.pgAdmin.Browser.tree.translateTreeNodeIdFromReactTree(selected_item),
+          database_data = pgWindow.pgAdmin.Browser.tree.findNode(tree_data[3]),
           dbNode = database_data.domNode;
 
         var message = `Current database has been moved or renamed to ${o_db_name}. Click on the OK button to refresh the database name, and reopen the psql again.`;

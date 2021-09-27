@@ -99,7 +99,7 @@ define([
           $msgContainer = '',
           // This will be the URL, used for object manipulation.
           urlBase = this.generate_url(item, 'properties', data),
-          info = this.getTreeNodeHierarchy.apply(this, [item]),
+          info = pgBrowser.tree.getTreeNodeHierarchy(item),
           gridSchema = Backform.generateGridColumnsFromModel(
             info, node.model, 'properties', that.columns
           ),
@@ -496,7 +496,7 @@ define([
         var collectionPickFunction = function (treeInfoValue, treeInfoKey) {
           return (treeInfoKey != self.type);
         };
-        var treeInfo = this.getTreeNodeHierarchy(item);
+        var treeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
         var actionType = type in opURL ? opURL[type] : type;
         return generateUrl.generate_url(
           pgAdmin.Browser.URL, treeInfo, actionType, self.node,
@@ -517,7 +517,7 @@ define([
         var input = args || {},
           t = pgBrowser.tree,
           i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          d = i ? t.itemData(i) : undefined;
         pgBrowser.psql.psql_tool(d, i, true);
       },
     });

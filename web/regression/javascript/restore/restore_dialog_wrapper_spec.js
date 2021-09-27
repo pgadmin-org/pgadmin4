@@ -11,7 +11,7 @@ import {RestoreDialogWrapper} from '../../../pgadmin/tools/restore/static/js/res
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
 import {FakeModel} from '../fake_model';
-import {TreeNode} from '../../../pgadmin/static/js/tree/tree';
+import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 
 let context = describe;
 
@@ -32,7 +32,6 @@ describe('RestoreDialogWrapper', () => {
 
   beforeEach(() => {
     pgBrowser = {
-      treeMenu: new TreeFake(),
       Nodes: {
         server: {
           hasId: true,
@@ -41,9 +40,10 @@ describe('RestoreDialogWrapper', () => {
       },
       keyboardNavigation: jasmine.createSpyObj('keyboardNavigation', ['getDialogTabNavigator']),
     };
+    pgBrowser.tree = new TreeFake(pgBrowser);
 
-    noDataNode = pgBrowser.treeMenu.addNewNode('level1.1', undefined, [{id: 'level1'}]);
-    serverTreeNode = pgBrowser.treeMenu.addNewNode('level2.1', {
+    noDataNode = pgBrowser.tree.addNewNode('level1.1', undefined, [{id: 'level1'}]);
+    serverTreeNode = pgBrowser.tree.addNewNode('level2.1', {
       _type: 'server',
       _id: 10,
       label: 'some-tree-label',
@@ -123,7 +123,7 @@ describe('RestoreDialogWrapper', () => {
 
     context('selected tree node has no data', () => {
       beforeEach(() => {
-        pgBrowser.treeMenu.selectNode(noDataNode.domNode);
+        pgBrowser.tree.selectNode(noDataNode.domNode);
       });
 
       it('does not create a backform dialog', () => {
@@ -149,7 +149,7 @@ describe('RestoreDialogWrapper', () => {
             label: 'some-tree-label',
           },
         };
-        pgBrowser.treeMenu.selectNode(serverTreeNode.domNode);
+        pgBrowser.tree.selectNode(serverTreeNode.domNode);
         pgBrowser.Nodes['server'].getTreeNodeHierarchy.and
           .returnValue(treeHierarchyInformation);
         dialogSpy = jasmine.createSpyObj('newView', ['render']);
@@ -226,7 +226,7 @@ describe('RestoreDialogWrapper', () => {
       let networkCalled;
       beforeEach(() => {
         networkCalled = false;
-        pgBrowser.treeMenu.selectNode(serverTreeNode.domNode);
+        pgBrowser.tree.selectNode(serverTreeNode.domNode);
         networkMock.onAny(/.+/).reply(() => {
           networkCalled = true;
           return [200, {}];
@@ -267,7 +267,7 @@ describe('RestoreDialogWrapper', () => {
       let networkCalled;
       beforeEach(() => {
         networkCalled = false;
-        pgBrowser.treeMenu.selectNode(serverTreeNode.domNode);
+        pgBrowser.tree.selectNode(serverTreeNode.domNode);
         networkMock.onAny(/.+/).reply(() => {
           networkCalled = true;
           return [200, {}];
@@ -350,7 +350,7 @@ describe('RestoreDialogWrapper', () => {
               },
             },
           };
-          pgBrowser.treeMenu.selectNode(noDataNode.domNode);
+          pgBrowser.tree.selectNode(noDataNode.domNode);
         });
 
         it('does not start the restore', () => {
@@ -364,12 +364,12 @@ describe('RestoreDialogWrapper', () => {
         let databaseTreeNode;
 
         beforeEach(() => {
-          databaseTreeNode = pgBrowser.treeMenu.addNewNode('level3.1', {
+          databaseTreeNode = pgBrowser.tree.addNewNode('level3.1', {
             _type: 'database',
             _id: 10,
             _label: 'some-database-label',
           }, [{id: 'level3.1'}]);
-          pgBrowser.treeMenu.addChild(serverTreeNode, databaseTreeNode);
+          pgBrowser.tree.addChild(serverTreeNode, databaseTreeNode);
           pgBrowser.Nodes.database = {
             hasId: true,
             _label: 'some-database-label',
@@ -379,7 +379,7 @@ describe('RestoreDialogWrapper', () => {
           restoreDialogWrapper.view = {
             model: fakeModel,
           };
-          pgBrowser.treeMenu.selectNode(databaseTreeNode.domNode);
+          pgBrowser.tree.selectNode(databaseTreeNode.domNode);
           pgBrowser.Events = jasmine.createSpyObj('pgBrowserEventsSpy', ['trigger']);
           event = {
             button: {

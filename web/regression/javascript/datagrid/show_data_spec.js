@@ -9,7 +9,7 @@
 
 import {showDataGrid} from '../../../pgadmin/tools/datagrid/static/js/show_data';
 import {TreeFake} from '../tree/tree_fake';
-import {TreeNode} from '../../../pgadmin/static/js/tree/tree';
+import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 import {pgBrowser} from 'pgadmin.browser.preferences';
 
 const context = describe;
@@ -34,7 +34,6 @@ describe('#show_data', () => {
     datagrid = {
       launch_grid: jasmine.createSpy('launch_grid'),
     };
-    pgBrowser.treeMenu = new TreeFake();
     pgBrowser.Nodes = {
       server_group: {
         _type: 'server_group',
@@ -61,12 +60,13 @@ describe('#show_data', () => {
         hasId: true,
       },
     };
-    const parent = pgBrowser.treeMenu.addNewNode('parent', {_type: 'parent'}, []);
+    pgBrowser.tree = new TreeFake(pgBrowser);
+    const parent = pgBrowser.tree.addNewNode('parent', {_type: 'parent'}, []);
     const serverGroup1 = new TreeNode('server_group1', {
       _type: 'server_group',
       _id: 1,
     });
-    pgBrowser.treeMenu.addChild(parent, serverGroup1);
+    pgBrowser.tree.addChild(parent, serverGroup1);
 
     const server1 = new TreeNode('server1', {
       _type: 'server',
@@ -75,35 +75,35 @@ describe('#show_data', () => {
       _id: 2,
       user: {name: 'someuser'},
     }, ['parent', 'server_group1']);
-    pgBrowser.treeMenu.addChild(serverGroup1, server1);
+    pgBrowser.tree.addChild(serverGroup1, server1);
 
     const database1 = new TreeNode('database1', {
       _type: 'database',
       label: 'database1',
       _id: 3,
     }, ['parent', 'server_group1', 'server1']);
-    pgBrowser.treeMenu.addChild(server1, database1);
+    pgBrowser.tree.addChild(server1, database1);
 
     const schema1 = new TreeNode('schema1', {
       _type: 'schema',
       label: 'schema1',
       _id: 4,
     });
-    pgBrowser.treeMenu.addChild(database1, schema1);
+    pgBrowser.tree.addChild(database1, schema1);
 
     const view1 = new TreeNode('view1', {
       _type: 'view',
       label: 'view1',
       _id: 5,
     }, ['parent', 'server_group1', 'server1', 'database1']);
-    pgBrowser.treeMenu.addChild(database1, view1);
+    pgBrowser.tree.addChild(database1, view1);
 
     const catalog1 = new TreeNode('catalog1', {
       _type: 'catalog',
       label: 'catalog1',
       _id: 6,
     }, ['parent', 'server_group1', 'server1', 'database1']);
-    pgBrowser.treeMenu.addChild(database1, catalog1);
+    pgBrowser.tree.addChild(database1, catalog1);
   });
 
   context('cannot find the tree node', () => {

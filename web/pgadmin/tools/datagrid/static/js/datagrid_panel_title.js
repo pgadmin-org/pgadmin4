@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 import gettext from 'sources/gettext';
 import Alertify from 'pgadmin.alertifyjs';
 import pgWindow from 'sources/window';
@@ -26,11 +25,12 @@ function isServerInformationAvailable(parentData) {
 export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, parentData=null, conn_title=false, db_label=null) {
   var preferences = pgBrowser.get_preferences_for_module('browser');
   if(selected_item == null && parentData == null) {
-    selected_item = pgBrowser.treeMenu.selected();
+    selected_item = pgBrowser.tree.selected();
   }
 
   if(parentData == null) {
-    parentData = getTreeNodeHierarchyFromIdentifier.call(pgBrowser, selected_item);
+    parentData = pgBrowser.tree.getTreeNodeHierarchy(selected_item);
+    if(parentData == null) return;
     if (isServerInformationAvailable(parentData)) {
       return;
     }

@@ -13,11 +13,22 @@ define('app', [
   var initializeModules = function(Object) {
     for (var key in Object) {
       var module = Object[key];
-      if (module.init && typeof module.init == 'function') {
-        module.init();
+
+      if (module && module.init && typeof module.init == 'function') {
+        try {
+          module.init();
+        }
+        catch (e) {
+          console.warn(e.stack || e);
+        }
       }
-      else if (module.Init && typeof module.Init == 'function') {
-        module.Init();
+      else if (module && module.Init && typeof module.Init == 'function') {
+        try {
+          module.init();
+        }
+        catch (e) {
+          console.warn(e.stack || e);
+        }
       }
     }
   };

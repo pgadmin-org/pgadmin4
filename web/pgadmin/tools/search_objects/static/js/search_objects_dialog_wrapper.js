@@ -1,4 +1,12 @@
-import {getTreeNodeHierarchyFromElement} from 'sources/tree/pgadmin_tree_node';
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import axios from 'axios/index';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
@@ -261,7 +269,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
 
     this.grid.onDblClick.subscribe((event, args) => {
       let rowData = this.dataview.getItem(args.row);
-      let treeMenu = this.pgBrowser.treeMenu;
+      let tree = this.pgBrowser.tree;
 
       if(!rowData.show_node) {
         this.showMessage(
@@ -278,9 +286,9 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
         return false;
       }
       this.showMessage(gettext('Locating...'));
-      treeMenu.findNodeWithToggle(rowData.id_path)
+      tree.findNodeWithToggle(rowData.id_path)
         .then((treeItem)=>{
-          treeMenu.selectNode(treeItem.domNode, true);
+          tree.select(treeItem, true);
           this.showMessage(null);
         })
         .catch((error)=>{
@@ -349,7 +357,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
   }
 
   getSelectedNode() {
-    const tree = this.pgBrowser.treeMenu;
+    const tree = this.pgBrowser.tree;
     const selectedNode = tree.selected();
     if (selectedNode) {
       return tree.findNodeByDomElement(selectedNode);
@@ -404,7 +412,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
     let id_path = [
       this.treeInfo.server_group.id,
       this.treeInfo.server.id,
-      this.getCollNode('database').type + '/' + this.treeInfo.server._id,
+      this.getCollNode('database').type + '_' + this.treeInfo.server._id,
       this.treeInfo.database.id,
     ];
 
@@ -435,10 +443,10 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
       let coll_node = this.getCollNode(node_type);
       if(coll_node) {
         /* Add coll node to the path */
-        if(prev_node_id != null) id_path.push(`${coll_node.type}/${prev_node_id}`);
+        if(prev_node_id != null) id_path.push(`${coll_node.type}_${prev_node_id}`);
 
         /* Add the node to the path */
-        id_path.push(`${node_type}/${node_oid}`);
+        id_path.push(`${node_type}_${node_oid}`);
 
         /* This will be needed for coll node */
         prev_node_id = node_oid;
@@ -447,7 +455,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
         return  `/${coll_node.label}/`;
       } else if(node_type in this.pgBrowser.Nodes) {
         /* Add the node to the path */
-        id_path.push(`${node_type}/${node_oid}`);
+        id_path.push(`${node_type}_${node_oid}`);
 
         /* This will be need for coll node id path */
         prev_node_id = node_oid;
@@ -652,7 +660,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
       return;
     }
 
-    this.treeInfo = getTreeNodeHierarchyFromElement(this.pgBrowser, selectedTreeNode);
+    this.treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
     this.prepareDialog();
     this.focusOnDialog(this);
   }

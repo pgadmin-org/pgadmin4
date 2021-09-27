@@ -2720,26 +2720,20 @@ define('tools.querytool', [
 
           $('#btn-conn-status i').removeClass('obtaining-conn');
 
-          var tree_data = pgWindow.default.pgAdmin.Browser.treeMenu.translateTreeNodeIdFromACITree(pgWindow.default.pgAdmin.Browser.treeMenu.selected());
-
-          var server_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,2));
-          var database_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4));
-          var dbData = tree_data.slice(0,3);
-          dbData.push('database/' + url_params.did);
-          var dbName = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(dbData).data.label;
-          let conn_title = panelTitleFunc.getPanelTitle(pgWindow.default.pgAdmin.Browser, null, null, null, true, dbName);
+          var tree_data = pgWindow.default.pgAdmin.Browser.tree.getTreeNodeHierarchy(pgWindow.default.pgAdmin.Browser.tree.selected());
+          let conn_title = panelTitleFunc.getPanelTitle(pgWindow.default.pgAdmin.Browser, null, null, null, true, tree_data.database.label);
           self.gridView.set_editor_title(_.unescape(conn_title));
           let connection_data = {
             'server_group': self.gridView.handler.url_params.sgid,
             'server': self.gridView.handler.url_params.sid,
             'database': self.gridView.handler.url_params.did,
-            'user': server_data.data.user.name,
+            'user': tree_data.server.user.name,
             'role': null,
             'title': _.unescape(url_params.title),
             'conn_title': _.unescape(conn_title),
             'is_allow_new_connection': false,
-            'database_name': _.unescape(database_data.data.label),
-            'server_name': _.unescape(server_data.data.label),
+            'database_name': _.unescape(tree_data.database.label),
+            'server_name': _.unescape(tree_data.server.label),
             'is_selected': true,
           };
           delete connection_data.password;
@@ -5171,10 +5165,10 @@ define('tools.querytool', [
 
         var self = this;
 
-        var selected_item = pgWindow.default.pgAdmin.Browser.treeMenu.selected(),
-          tree_data = pgWindow.default.pgAdmin.Browser.treeMenu.translateTreeNodeIdFromACITree(selected_item),
-          server_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,2)),
-          database_data = pgWindow.default.pgAdmin.Browser.treeMenu.findNode(tree_data.slice(0,4)),
+        var selected_item = pgWindow.default.pgAdmin.Browser.tree.selected(),
+          tree_data = pgWindow.default.pgAdmin.Browser.tree.translateTreeNodeIdFromReactTree(selected_item),
+          server_data = pgWindow.default.pgAdmin.Browser.tree.findNode(tree_data[1]),
+          database_data = pgWindow.default.pgAdmin.Browser.tree.findNode(tree_data[3]),
           db_name = database_data.data.label,
           db_did = database_data.data._id;
 

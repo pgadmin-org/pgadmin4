@@ -114,7 +114,7 @@ define('pgadmin.node.pga_job', [
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          d = i  ? t.itemData(i) : undefined;
 
         if (d) {
           $.ajax({

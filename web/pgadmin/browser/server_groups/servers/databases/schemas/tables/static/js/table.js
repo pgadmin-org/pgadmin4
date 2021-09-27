@@ -140,7 +140,7 @@ define('pgadmin.node.table', [
         /* Enable trigger(s) on table */
         enable_triggers_on_table: function(args) {
           tableFunctions.enableTriggers(
-            pgBrowser.treeMenu,
+            pgBrowser.tree,
             Alertify,
             this.generate_url.bind(this),
             args
@@ -149,7 +149,7 @@ define('pgadmin.node.table', [
         /* Disable trigger(s) on table */
         disable_triggers_on_table: function(args) {
           tableFunctions.disableTriggers(
-            pgBrowser.treeMenu,
+            pgBrowser.tree,
             Alertify,
             this.generate_url.bind(this),
             args
@@ -174,7 +174,7 @@ define('pgadmin.node.table', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -219,7 +219,7 @@ define('pgadmin.node.table', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -263,7 +263,7 @@ define('pgadmin.node.table', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
           if (!d)
             return false;
 

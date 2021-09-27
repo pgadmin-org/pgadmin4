@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import {isValidTreeNodeData} from 'sources/tree/tree';
+import pgAdmin from 'sources/pgadmin';
 
 function checkAllowConnIfDatabaseNode(treeNodeData) {
   return (treeNodeData._type === 'database' && treeNodeData.allowConn)
@@ -24,7 +25,8 @@ export function enabled(tree, supportedNodes, treeNodeData, domTreeNode) {
   if (!isValidTreeNodeData(treeNodeData))
     return false;
 
-  let treeNode = tree.findNodeByDomElement(domTreeNode);
+  let _tree = tree ? tree : pgAdmin.Browser.tree;
+  let treeNode = _tree.findNodeByDomElement(domTreeNode);
   if (!treeNode) {
     return false;
   }

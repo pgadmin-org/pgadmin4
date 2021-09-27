@@ -52,7 +52,7 @@ define([
         label: gettext('Grant Wizard...'),
         icon: 'fa fa-unlock',
         enable: supportedNodes.enabled.bind(
-          null, pgBrowser.treeMenu, menuUtils.supportedNodes
+          null, pgBrowser.tree, menuUtils.supportedNodes
         ),
         data: {
           data_disabled: gettext('Please select any database, schema or schema objects from the browser tree to access Grant Wizard Tool.'),
@@ -71,7 +71,7 @@ define([
           label: gettext('Grant Wizard...'),
           icon: 'fa fa-unlock',
           enable: supportedNodes.enabled.bind(
-            null, pgBrowser.treeMenu, menuUtils.supportedNodes
+            null, pgBrowser.tree, menuUtils.supportedNodes
           ),
         });
       }
@@ -112,8 +112,8 @@ define([
               Alertify.pgDialogBuild.apply(this);
               var t = pgBrowser.tree,
                 i = t.selected(),
-                d = this.d = i && i.length == 1 ? t.itemData(i) : undefined,
-                info = this.info = pgBrowser.Node.getTreeNodeHierarchy(i);
+                d = this.d = i ? t.itemData(i) : undefined,
+                info = this.info = pgBrowser.tree.getTreeNodeHierarchy(i);
 
               var sid = info.server._id,
                 did = info.database._id;

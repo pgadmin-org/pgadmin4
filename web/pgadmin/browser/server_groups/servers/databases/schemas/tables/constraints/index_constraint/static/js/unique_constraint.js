@@ -57,7 +57,7 @@ define('pgadmin.node.unique_constraint', [
         var t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
           is_immediate_parent_table_partitioned = false,
-          s_version = this.getTreeNodeHierarchy(i).server.version;
+          s_version = pgBrowser.tree.getTreeNodeHierarchy(i).server.version;
 
         // To iterate over tree to check parent node
         while (i) {

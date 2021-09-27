@@ -150,12 +150,10 @@ _.extend(pgBrowser.browserTreeState, {
       });
   },
   update_cache: function(item) {
-
     let data = item && pgBrowser.tree.itemData(item),
-      node = data && pgBrowser.Nodes[data._type],
-      treeHierarchy = node.getTreeNodeHierarchy(item),
+      treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item),
       topParent = undefined,
-      pathIDs = pgBrowser.tree.pathId(item),
+      pathIDs = pgBrowser.tree.pathId(pgBrowser.tree.parent(item)),
       oldPath = pathIDs.join(),
       path = [],
       tmpIndex = -1;
@@ -208,8 +206,7 @@ _.extend(pgBrowser.browserTreeState, {
     let self= this,
       treeData = self.stored_state || {},
       data = item && pgBrowser.tree.itemData(item),
-      node = data && pgBrowser.Nodes[data._type],
-      treeHierarchy = node && node.getTreeNodeHierarchy(item);
+      treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 
     if (treeHierarchy === null || !pgBrowser.tree.hasParent(item) || !(treeHierarchy.hasOwnProperty(self.parent)))
       return;
@@ -265,8 +262,7 @@ _.extend(pgBrowser.browserTreeState, {
     let self = this,
       treeData = self.stored_state || {},
       data = item && pgBrowser.tree.itemData(item),
-      node = data && pgBrowser.Nodes[data._type],
-      treeHierarchy = node && node.getTreeNodeHierarchy(item);
+      treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 
 
     if (treeHierarchy === null || !pgBrowser.tree.hasParent(item) || !(treeHierarchy.hasOwnProperty(self.parent)))
@@ -305,7 +301,7 @@ _.extend(pgBrowser.browserTreeState, {
 
             let index = tmpItemData.indexOf(data.id);
 
-            pgBrowser.tree.toggle(item);
+            pgBrowser.tree.open(item);
 
             if (index == (tmpItemData.length - 1 )) {
               let tIndex = treeData[treeHierarchy[self.parent]['_id']]['paths'].indexOf(tData);
@@ -322,8 +318,7 @@ _.extend(pgBrowser.browserTreeState, {
   },
   update_database_status: function(item) {
     let data = item && pgBrowser.tree.itemData(item),
-      node = data && pgBrowser.Nodes[data._type],
-      treeHierarchy = node.getTreeNodeHierarchy(item);
+      treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 
     if (treeHierarchy.hasOwnProperty('database')) {
       let databaseItem = treeHierarchy['database']['id'],
@@ -374,8 +369,7 @@ _.extend(pgBrowser.browserTreeState, {
   select_tree_item(item) {
     let treeData = this.stored_state || {},
       data = item && pgBrowser.tree.itemData(item),
-      node = data && pgBrowser.Nodes[data._type],
-      treeHierarchy = node && node.getTreeNodeHierarchy(item),
+      treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item),
       tmpTreeData = treeData[treeHierarchy[this.parent]['_id']];
 
 

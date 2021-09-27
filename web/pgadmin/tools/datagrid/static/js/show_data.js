@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
-import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 import {getDatabaseLabel, generateTitle} from './datagrid_panel_title';
 import CodeMirror from 'bundled_codemirror';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
@@ -25,7 +24,7 @@ export function showDataGrid(
   filter=false,
   preferences=null
 ) {
-  const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
+  const node = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
   if (node === undefined || !node.getData()) {
     alertify.alert(
       gettext('Data Grid Error'),
@@ -34,9 +33,7 @@ export function showDataGrid(
     return;
   }
 
-  const parentData = getTreeNodeHierarchyFromIdentifier.call(
-    pgBrowser,
-    aciTreeIdentifier
+  const parentData = pgBrowser.tree.getTreeNodeHierarchy(  aciTreeIdentifier
   );
 
   if (hasServerOrDatabaseConfiguration(parentData)
@@ -293,14 +290,13 @@ function hasSchemaOrCatalogOrViewInformation(parentData) {
 export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title=null, backend_entity=null) {
   //const baseTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
   var preferences = pgBrowser.get_preferences_for_module('browser');
-  const parentData = getTreeNodeHierarchyFromIdentifier.call(
-    pgBrowser,
+  const parentData = pgBrowser.tree.getTreeNodeHierarchy(
     aciTreeIdentifier
   );
 
   const namespaceName = retrieveNameSpaceName(parentData);
   const db_label = !_.isUndefined(backend_entity) && backend_entity != null && backend_entity.hasOwnProperty('db_name') ? backend_entity['db_name'] : getDatabaseLabel(parentData);
-  const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
+  const node = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
 
   var dtg_title_placeholder = '';
   if(custom_title) {

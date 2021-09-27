@@ -190,7 +190,7 @@ var themeCssRules = function(theme_name) {
       filename: 'img/[name].[ext]',
     },
     exclude: /vendor/,
-  }, {
+  },{
     test: /\.(eot|svg|ttf|woff|woff2)$/,
     type: 'asset/resource',
     generator: {
@@ -203,7 +203,7 @@ var themeCssRules = function(theme_name) {
       path.join(sourceDir, '/fonts/'),
     ],
     exclude: /vendor/,
-  }, {
+  },{
     test: /\.scss$/,
     use: [
       {
@@ -212,7 +212,13 @@ var themeCssRules = function(theme_name) {
           publicPath: '',
         },
       },
-      {loader: 'css-loader'},
+      {
+        loader: 'css-loader',
+        options: {
+          url: false,
+          sourceMap: true,
+        },
+      },
       {
         loader: 'postcss-loader',
         options: {
@@ -403,8 +409,17 @@ module.exports = [{
       use: {
         loader: 'babel-loader',
         options: {
-          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react'],
-          plugins: ['@babel/plugin-proposal-class-properties'],
+          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react', '@babel/preset-typescript'],
+          plugins: ['@babel/plugin-proposal-class-properties', '@babel/proposal-object-rest-spread'],
+        },
+      },
+    }, {
+      test: /\.tsx?$|\.ts?$/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react', '@babel/preset-typescript'],
+          plugins: ['@babel/plugin-proposal-class-properties', '@babel/proposal-object-rest-spread'],
         },
       },
     }, {
@@ -544,7 +559,7 @@ module.exports = [{
   resolve: {
     alias: webpackShimConfig.resolveAlias,
     modules: ['node_modules', '.'],
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     unsafeCache: true,
   },
   // Watch mode Configuration: After initial build, webpack will watch for

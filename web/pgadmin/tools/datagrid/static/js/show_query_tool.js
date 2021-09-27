@@ -9,7 +9,6 @@
 
 import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
-import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 import {getPanelTitle} from './datagrid_panel_title';
 import {getRandomInt} from 'sources/utils';
 import $ from 'jquery';
@@ -52,7 +51,7 @@ export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentif
   const sURL = url || '';
   const queryToolTitle = generateTitle(pgBrowser, aciTreeIdentifier);
 
-  const currentNode = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
+  const currentNode = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
   if (currentNode === undefined) {
     alertify.alert(
       gettext('Query Tool Error'),
@@ -61,8 +60,7 @@ export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentif
     return;
   }
 
-  const parentData = getTreeNodeHierarchyFromIdentifier.call(
-    pgBrowser, aciTreeIdentifier);
+  const parentData = pgBrowser.tree.getTreeNodeHierarchy(currentNode);
 
   if (hasServerInformations(parentData)) {
     return;

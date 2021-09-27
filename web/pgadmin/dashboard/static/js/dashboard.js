@@ -272,16 +272,16 @@ define('pgadmin.dashboard', [
       // The server connected may not be the same one, which was selected, and
       // we do care out the current selected one only.
       if (item.length != 0) {
-        this.object_selected(item, itemData, pgBrowser.Nodes[itemData._type]);
+        this.object_selected(item, itemData);
       }
     },
 
     // Handle treeview clicks
-    object_selected: function(item, itemData, node) {
+    object_selected: function(item, itemData) {
       let self = this;
 
       if (itemData && itemData._type) {
-        var treeHierarchy = node.getTreeNodeHierarchy(item),
+        var treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item),
           url = NodesDashboard.url(itemData, item, treeHierarchy);
 
         if (url === null) {
@@ -1142,11 +1142,10 @@ define('pgadmin.dashboard', [
       } else {
         var t = pgBrowser.tree,
           i = t.selected(),
-          d = i && t.itemData(i),
-          n = i && d && pgBrowser.Nodes[d._type];
+          d = i && t.itemData(i);
 
         this.chartsDomObj && this.chartsDomObj.setPageVisible(dashboardVisible);
-        this.object_selected(i, d, n);
+        this.object_selected(i, d);
       }
     },
     can_take_action: function(m) {

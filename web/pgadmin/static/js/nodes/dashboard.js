@@ -12,7 +12,7 @@ import pgBrowser from 'pgadmin.browser';
 
 
 export function url(itemData, item, treeHierarchy) {
-  let treeNode = pgBrowser.treeMenu.findNodeByDomElement(item);
+  let treeNode = pgBrowser.tree.findNodeByDomElement(item);
   let return_url = null;
 
   if (treeNode) {

@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {getTreeNodeHierarchyFromElement} from '../../../../static/js/tree/pgadmin_tree_node';
 import axios from 'axios/index';
 import _ from 'underscore';
 import gettext from '../../../../static/js/gettext';
@@ -93,8 +92,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
     }
 
     const node = this.pgBrowser.Nodes[selectedTreeNodeData._type];
-
-    const treeInfo = getTreeNodeHierarchyFromElement(this.pgBrowser, selectedTreeNode);
+    const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
     const dialog = this.createDialog(node, treeInfo, $container);
     this.addAlertifyClassToRestoreNodeChildNodes();
     dialog.render();
@@ -149,10 +147,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
         'sid': serverIdentifier,
       });
 
-      const treeInfo = getTreeNodeHierarchyFromElement(
-        this.pgBrowser,
-        selectedTreeNode
-      );
+      const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
 
       this.setExtraParameters(selectedTreeNode, treeInfo);
 
@@ -190,7 +185,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
   }
 
   getSelectedNode() {
-    const tree = this.pgBrowser.treeMenu;
+    const tree = this.pgBrowser.tree;
     const selectedNode = tree.selected();
     if (selectedNode) {
       return tree.findNodeByDomElement(selectedNode);
@@ -225,10 +220,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
   }
 
   retrieveServerIdentifier(node, selectedTreeNode) {
-    const treeInfo = getTreeNodeHierarchyFromElement(
-      this.pgBrowser,
-      selectedTreeNode
-    );
+    const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
     return treeInfo.server._id;
   }
 

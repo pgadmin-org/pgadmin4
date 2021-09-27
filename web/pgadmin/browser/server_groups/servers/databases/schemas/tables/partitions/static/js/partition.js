@@ -116,7 +116,7 @@ function(
         }
 
         info = (_.isUndefined(item) || _.isNull(item)) ?
-          info || {} : this.getTreeNodeHierarchy(item);
+          info || {} : pgBrowser.tree.getTreeNodeHierarchy(item);
 
         return pgadminUtils.sprintf('table/%s/%s/%s/%s/%s/%s',
           encodeURIComponent(type), encodeURIComponent(info['server_group']._id),
@@ -146,7 +146,7 @@ function(
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -188,7 +188,7 @@ function(
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -232,7 +232,7 @@ function(
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -276,7 +276,7 @@ function(
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -294,15 +294,14 @@ function(
                     if (res.success == 1) {
                       Alertify.success(res.info);
                       var n = t.next(i);
-                      if (!n || !n.length) {
+                      if (!n) {
                         n = t.prev(i);
-                        if (!n || !n.length) {
+                        if (!n) {
                           n = t.parent(i);
-                          t.setInode(n, true);
                         }
                       }
                       t.remove(i);
-                      if (n.length) {
+                      if (n) {
                         t.select(n);
                       }
                     }

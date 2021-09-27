@@ -134,7 +134,7 @@ define('pgadmin.node.publication', [
 
         canCreate: function(itemData, item) {
 
-          var treeData = this.getTreeNodeHierarchy(item),
+          var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
             server = treeData['server'];
 
           // If server is less than 10 then do not allow 'create' menu

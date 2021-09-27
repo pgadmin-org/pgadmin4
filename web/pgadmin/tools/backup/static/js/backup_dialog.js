@@ -55,18 +55,15 @@ export class BackupDialog extends Dialog {
         );
         return;
       }
-
       const typeOfDialog = BackupDialog.typeOfDialog(params);
 
       if (!that.canExecuteOnCurrentDatabase(aciTreeItem)) {
         return;
       }
-
       const dialog = that.createOrGetDialog(
         BackupDialog.dialogTitle(typeOfDialog),
         typeOfDialog
       );
-
       dialog(true).resizeTo(width, height);
     }).catch(function() {
       that.alertify.alert(

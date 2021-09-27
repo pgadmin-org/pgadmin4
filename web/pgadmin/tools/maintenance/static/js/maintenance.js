@@ -166,7 +166,7 @@ define([
         label: gettext('Maintenance...'),
         icon: 'fa fa-wrench',
         enable: supportedNodes.enabled.bind(
-          null, pgBrowser.treeMenu, menuUtils.maintenanceSupportedNodes
+          null, pgBrowser.tree, menuUtils.maintenanceSupportedNodes
         ),
         data: {
           data_disabled: gettext('Please select any database from the browser tree to do Maintenance.'),
@@ -185,7 +185,7 @@ define([
           label: gettext('Maintenance...'),
           icon: 'fa fa-wrench',
           enable: supportedNodes.enabled.bind(
-            null, pgBrowser.treeMenu, menuUtils.maintenanceSupportedNodes
+            null, pgBrowser.tree, menuUtils.maintenanceSupportedNodes
           ),
           data: {
             data_disabled: gettext('Please select any database from the browser tree to do Maintenance.'),
@@ -210,7 +210,7 @@ define([
         }
 
         if (pgBrowser.tree.hasParent(i)) {
-          i = $(pgBrowser.tree.parent(i));
+          i = pgBrowser.tree.parent(i);
         } else {
           Alertify.alert(gettext('Please select server or child node from tree.'));
           break;
@@ -230,13 +230,12 @@ define([
 
       i = item || t.selected();
 
-      var d = i && i.length == 1 ? t.itemData(i) : undefined;
+      var d = i  ? t.itemData(i) : undefined;
 
       if (!d)
         return;
 
-      var node = pgBrowser.Nodes[d._type],
-        treeInfo = node.getTreeNodeHierarchy.apply(node, [i]);
+      var treeInfo = t && t.getTreeNodeHierarchy(i);
 
       if (treeInfo.database._label.indexOf('=') >= 0) {
         Alertify.alert(
@@ -304,7 +303,7 @@ define([
             // Callback functions when click on the buttons of the Alertify dialogs
             callback: function(e) {
               var sel_item = pgBrowser.tree.selected(),
-                itemData = sel_item && sel_item.length == 1 ? pgBrowser.tree.itemData(sel_item) : undefined,
+                itemData = sel_item ? pgBrowser.tree.itemData(sel_item) : undefined,
                 sel_node = itemData && pgBrowser.Nodes[itemData._type];
 
               if (e.button.element.name == 'dialog_help' || e.button.element.name == 'object_help') {
@@ -325,7 +324,7 @@ define([
                 if (!itemData)
                   return;
 
-                var node_hierarchy = sel_node.getTreeNodeHierarchy.apply(sel_node, [sel_item]);
+                var node_hierarchy = pgBrowser.tree.getTreeNodeHierarchy(sel_item);
 
                 if (node_hierarchy.schema != undefined) {
                   schema = node_hierarchy.schema._label;
@@ -409,13 +408,13 @@ define([
               var $container = $('<div class=\'maintenance_dlg\'></div>');
               var tree = pgBrowser.tree,
                 sel_item = tree.selected(),
-                itemInfo = sel_item && sel_item.length == 1 ? tree.itemData(sel_item) : undefined,
+                itemInfo = sel_item ? tree.itemData(sel_item) : undefined,
                 nodeData = itemInfo && pgBrowser.Nodes[itemInfo._type];
 
               if (!itemInfo)
                 return;
 
-              var treeData = nodeData.getTreeNodeHierarchy.apply(nodeData, [sel_item]);
+              var treeData = tree.getTreeNodeHierarchy(sel_item);
 
               var newModel = new MaintenanceModel({}, {
                   node_info: treeData,

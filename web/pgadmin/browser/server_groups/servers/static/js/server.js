@@ -227,7 +227,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (d) {
             connect_to_server(obj, d, t, i, false);
@@ -240,7 +240,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = 'item' in input ? input.item : t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i ? t.itemData(i) : undefined;
 
           if (d) {
             notify = notify || _.isUndefined(notify) || _.isNull(notify);
@@ -263,6 +263,7 @@ define('pgadmin.node.server', [
                     }
                     t.addIcon(i, {icon: d.icon});
                     obj.callbacks.refresh.apply(obj, [null, i]);
+                    t.close(i);
                     if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
                       delete pgBrowser.serverInfo[d._id];
                     }
@@ -332,7 +333,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i ? t.itemData(i) : undefined;
 
           if (d) {
             Alertify.confirm(
@@ -368,7 +369,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -409,7 +410,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined,
+            d = i  ? t.itemData(i) : undefined,
             url = obj.generate_url(i, 'change_password', d, true),
             is_pgpass_file_used = false,
             check_pgpass_url = obj.generate_url(i, 'check_pgpass', d, true);
@@ -591,7 +592,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -626,7 +627,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -661,7 +662,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (d) {
             Alertify.confirm(
@@ -698,7 +699,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (d) {
             Alertify.confirm(
@@ -733,7 +734,7 @@ define('pgadmin.node.server', [
           var input = args || {},
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
           pgBrowser.psql.psql_tool(d, i, true);
         }
       },
@@ -848,7 +849,7 @@ define('pgadmin.node.server', [
           // It should be attempt to reconnect.
           // Let's not change the status of the tree node now.
           if (!_wasConnected) {
-            tree.setInode(_item);
+            tree.close(_item);
             if (_data.shared && pgAdmin.server_mode == 'True'){
               tree.addIcon(_item, {icon: 'icon-shared-server-not-connected'});
             }else{
@@ -922,7 +923,6 @@ define('pgadmin.node.server', [
             // We're not reconnecting
             if (!_wasConnected) {
               _tree.setInode(_item);
-              _tree.deselect(_item);
 
               setTimeout(function() {
                 _tree.select(_item);

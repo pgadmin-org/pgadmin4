@@ -71,7 +71,7 @@ define('misc.dependents', [
       if (visible) {
         this.dependentsPanel = pgBrowser.docker.findPanels('dependents')[0];
         var t = pgBrowser.tree,
-          i = t.selected(),
+          i = t && t.selected(),
           d = i && t.itemData(i),
           n = i && d && pgBrowser.Nodes[d._type];
 
@@ -168,7 +168,7 @@ define('misc.dependents', [
         $container = panel.layout().scene().find('.pg-panel-content'),
         $msgContainer = $container.find('.pg-panel-depends-message'),
         $gridContainer = $container.find('.pg-panel-dependents-container'),
-        treeHierarchy = node.getTreeNodeHierarchy(item);
+        treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 
       if (node) {
         /* We fetch the Dependencies and Dependents tab only for

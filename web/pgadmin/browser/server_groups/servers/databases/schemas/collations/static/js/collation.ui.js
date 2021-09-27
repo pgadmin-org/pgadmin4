@@ -48,7 +48,7 @@ export default class CollationSchema extends BaseUISchema {
       {
         id: 'owner', label: gettext('Owner'),
         type: 'select', mode: ['properties', 'create', 'edit'],
-        options: obj.ownerList
+        options: obj.ownerList, controlProps: { allowClear: false },
       },
       {
         id: 'schema', label: gettext('Schema'),
@@ -65,7 +65,7 @@ export default class CollationSchema extends BaseUISchema {
                     res.push(d);
                 });
                 return res;
-              }
+              }, allowClear: false,
             }
           };
         }

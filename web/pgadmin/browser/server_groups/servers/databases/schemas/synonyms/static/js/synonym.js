@@ -152,7 +152,7 @@ define('pgadmin.node.synonym', [
         if (data && data.check == false)
           return true;
 
-        var treeData = this.getTreeNodeHierarchy(item),
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         if (server && server.server_type === 'pg')

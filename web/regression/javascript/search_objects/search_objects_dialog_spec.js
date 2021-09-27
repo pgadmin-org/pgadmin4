@@ -32,7 +32,6 @@ describe('SearchObjectsDialog', () => {
 
   beforeEach(() => {
     pgBrowser.preferences_cache = dummy_cache;
-    pgBrowser.treeMenu  = new TreeFake();
     pgBrowser.Nodes  = {
       server: {
         hasId: true,
@@ -50,7 +49,7 @@ describe('SearchObjectsDialog', () => {
         getTreeNodeHierarchy: jasmine.createSpy('db.getTreeNodeHierarchy'),
       },
     };
-
+    pgBrowser.tree  = new TreeFake(pgBrowser);
     pgBrowser.stdW = {
       sm: 500,
       md: 700,
@@ -108,7 +107,7 @@ describe('SearchObjectsDialog', () => {
       ],
     };
 
-    pgBrowser.treeMenu = TreeFake.build(hierarchy);
+    pgBrowser.tree = TreeFake.build(hierarchy, pgBrowser);
   });
 
   describe('#draw', () => {
@@ -137,7 +136,7 @@ describe('SearchObjectsDialog', () => {
 
     context('there are no ancestors of the type database', () => {
       it('does not create a dialog', () => {
-        pgBrowser.treeMenu.selectNode([{id: 'serverTreeNode'}]);
+        pgBrowser.tree.selectNode([{id: 'serverTreeNode'}]);
         soDialog.draw(null, null, null);
         expect(alertifySpy['search_objects']).not.toHaveBeenCalled();
       });

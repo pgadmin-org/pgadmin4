@@ -26,7 +26,6 @@ describe('GlobalServerBackupDialog', () => {
 
   beforeEach(() => {
     pgBrowser = {
-      treeMenu: new TreeFake(),
       Nodes: {
         server: jasmine.createSpyObj('Node[server]', ['getTreeNodeHierarchy']),
       },
@@ -43,35 +42,36 @@ describe('GlobalServerBackupDialog', () => {
         default: 550,
       },
     };
+    pgBrowser.tree = new TreeFake(pgBrowser);
     pgBrowser.Nodes.server.hasId = true;
     jquerySpy = jasmine.createSpy('jquerySpy');
     backupModelSpy = jasmine.createSpy('backupModelSpy');
 
-    rootNode = pgBrowser.treeMenu.addNewNode('level1', {}, undefined, []);
-    serverTreeNode = pgBrowser.treeMenu.addNewNode('level1.1', {
+    rootNode = pgBrowser.tree.addNewNode('level1', {}, undefined, []);
+    serverTreeNode = pgBrowser.tree.addNewNode('level1.1', {
       _type: 'server',
       _id: 10,
       server_type: 'pg',
       version: 100000,
     }, undefined, ['level1']);
-    serverTreeNodeWrongPath = pgBrowser.treeMenu.addNewNode('level1.2', {
+    serverTreeNodeWrongPath = pgBrowser.tree.addNewNode('level1.2', {
       _type: 'server',
       _id: 11,
       server_type: 'pg',
       version: 90600,
     }, undefined, ['level1']);
-    ppasServerTreeNode = pgBrowser.treeMenu.addNewNode('level1.3', {
+    ppasServerTreeNode = pgBrowser.tree.addNewNode('level1.3', {
       _type: 'server',
       server_type: 'ppas',
       version: 130000,
     }, undefined, ['level1']);
-    ppasServerTreeNodeWrongPath = pgBrowser.treeMenu.addNewNode('level1.4', {
+    ppasServerTreeNodeWrongPath = pgBrowser.tree.addNewNode('level1.4', {
       _type: 'server',
       server_type: 'ppas',
       version: 90600,
     }, undefined, ['level1']);
-    pgBrowser.treeMenu.addNewNode('level3', {}, undefined, ['level1', 'level1.2', 'level1.3', 'level1.4']);
-    pgBrowser.treeMenu.addNewNode('level3.1', undefined, undefined, ['level1', 'level1.2', 'level3']);
+    pgBrowser.tree.addNewNode('level3', {}, undefined, ['level1', 'level1.2', 'level1.3', 'level1.4']);
+    pgBrowser.tree.addNewNode('level3.1', undefined, undefined, ['level1', 'level1.2', 'level3']);
   });
 
   describe('#draw', () => {
@@ -97,7 +97,7 @@ describe('GlobalServerBackupDialog', () => {
 
     context('there are no ancestors of the type server', () => {
       it('does not create a dialog', () => {
-        pgBrowser.treeMenu.selectNode([{id: 'level1'}]);
+        pgBrowser.tree.selectNode([{id: 'level1'}]);
         backupDialog.draw(null, null, null);
         expect(alertifySpy['BackupDialog_globals']).not.toHaveBeenCalled();
         expect(alertifySpy['BackupDialog_server']).not.toHaveBeenCalled();

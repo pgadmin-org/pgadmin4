@@ -123,7 +123,7 @@ export function initializeToolbar(panel, wcDocker) {
       var input = {},
         t = pgAdmin.Browser.tree,
         i = input.item || t.selected(),
-        d = i && i.length == 1 ? t.itemData(i) : undefined;
+        d = i  ? t.itemData(i) : undefined;
       pgAdmin.Browser.psql.psql_tool(d, i, true);
     }
   });

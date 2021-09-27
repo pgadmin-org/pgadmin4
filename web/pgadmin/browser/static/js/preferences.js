@@ -14,7 +14,7 @@ import * as Alertify from 'pgadmin.alertifyjs';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
 import pgWindow from 'sources/window';
 
-var modifyAnimation = require('sources/modify_animation');
+//var modifyAnimation = require('sources/modify_animation');
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -91,10 +91,10 @@ _.extend(pgBrowser, {
           self.preference_version(self.generate_preference_version());
 
           pgBrowser.keyboardNavigation.init();
-          if(pgBrowser.tree) {
-            modifyAnimation.modifyAcitreeAnimation(self);
-            modifyAnimation.modifyAlertifyAnimation(self);
-          }
+          //          if(pgBrowser.tree) {
+          //            modifyAnimation.modifyAcitreeAnimation(self);
+          //            modifyAnimation.modifyAlertifyAnimation(self);
+          //          }
 
           // Initialize Tree saving/reloading
           pgBrowser.browserTreeState.init();

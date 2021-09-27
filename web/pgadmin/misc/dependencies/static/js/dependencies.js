@@ -168,7 +168,7 @@ define('misc.dependencies', [
         $container = panel.layout().scene().find('.pg-panel-content'),
         $msgContainer = $container.find('.pg-panel-depends-message'),
         $gridContainer = $container.find('.pg-panel-dependencies-container'),
-        treeHierarchy = node.getTreeNodeHierarchy(item);
+        treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 
       if (node) {
         /* We fetch the Dependencies and Dependencies tab only for
@@ -294,6 +294,128 @@ define('misc.dependencies', [
         }
       }
     },
+    showReactDependencies: function(item, data, node) {
+      let self = this,
+        msg = gettext('Please select an object in the tree view.'),
+        panel = this.dependenciesPanel,
+        $container = panel.layout().scene().find('.pg-panel-content'),
+        $msgContainer = $container.find('.pg-panel-depends-message'),
+        $gridContainer = $container.find('.pg-panel-dependencies-container'),
+        treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item),
+        n_type = data._type,
+        url = node.generate_url_react(item, 'dependency');
+
+      if (node) {
+        /* We fetch the Dependencies and Dependencies tab only for
+         * those node who set the parameter hasDepends to true.
+         */
+        msg = gettext('No dependency information is available for the selected object.');
+        if (node.hasDepends) {
+          /* Updating the label for the 'field' type of the backbone model.
+           * Label should be "Database" if the node type is tablespace or role
+           * and dependencies tab is selected. For other nodes and dependencies tab
+           * it should be 'Restriction'.
+           */
+
+          this.dependenciesGrid.columns.models[2].set({
+            'label': gettext('Restriction'),
+          });
+
+          // Hide message container and show grid container.
+          $msgContainer.addClass('d-none');
+          $gridContainer.removeClass('d-none');
+
+          var timer = '';
+          $.ajax({
+            url: url,
+            type: 'GET',
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
+              // Generate a timer for the request
+              timer = setTimeout(function() {
+                // notify user if request is taking longer than 1 second
+
+                $msgContainer.text(gettext('Fetching dependency information from the server...'));
+                $msgContainer.removeClass('d-none');
+                msg = '';
+
+              }, 1000);
+            },
+          })
+            .done(function(res) {
+              clearTimeout(timer);
+
+              if (res.length > 0) {
+
+                if (!$msgContainer.hasClass('d-none')) {
+                  $msgContainer.addClass('d-none');
+                }
+                $gridContainer.removeClass('d-none');
+
+                self.dependenciesData = res;
+
+                // Load only 100 rows
+                self.dependenciesCollection.reset(self.dependenciesData.splice(0, 100), {parse: true});
+
+                // Load more rows on scroll down
+                pgBrowser.Events.on(
+                  'pgadmin-browser:panel-dependencies:' +
+                wcDocker.EVENT.SCROLLED,
+                  self.__loadMoreRows
+                );
+
+              } else {
+                // Do not listen the scroll event
+                pgBrowser.Events.off(
+                  'pgadmin-browser:panel-dependencies:' +
+                wcDocker.EVENT.SCROLLED
+                );
+
+                self.dependenciesCollection.reset({silent: true});
+                $msgContainer.text(msg);
+                $msgContainer.removeClass('d-none');
+
+                if (!$gridContainer.hasClass('d-none')) {
+                  $gridContainer.addClass('d-none');
+                }
+              }
+
+
+            })
+            .fail(function(xhr, error, message) {
+              var _label = treeHierarchy[n_type].label;
+              pgBrowser.Events.trigger(
+                'pgadmin:node:retrieval:error', 'depends', xhr, error, message
+              );
+              if (!Alertify.pgHandleItemError(xhr, error, message, {
+                item: item,
+                info: treeHierarchy,
+              })) {
+                Alertify.pgNotifier(
+                  error, xhr,
+                  gettext('Error retrieving data from the server: %s', message || _label),
+                  function(alertMsg) {
+                    if(alertMsg === 'CRYPTKEY_SET') {
+                      self.showDependencies(item, data, node);
+                    } else {
+                      console.warn(arguments);
+                    }
+                  });
+              }
+              // show failed message.
+              $msgContainer.text(gettext('Failed to retrieve data from the server.'));
+            });
+        }
+      }
+      if (msg != '') {
+        $msgContainer.text(msg);
+        $msgContainer.removeClass('d-none');
+        if (!$gridContainer.hasClass('d-none')) {
+          $gridContainer.addClass('d-none');
+        }
+      }
+    },
+
     __loadMoreRows: function() {
       if (this.dependenciesPanel.length < 1) return ;
 

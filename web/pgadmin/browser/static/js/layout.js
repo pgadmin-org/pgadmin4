@@ -89,7 +89,7 @@ _.extend(pgBrowser, {
           browser.reflectLocklayoutChange(docker);
         });
       }
-    }, 500);
+    }, 5000);
   },
 
   reflectLocklayoutChange: function(docker) {

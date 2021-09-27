@@ -11,7 +11,7 @@ import {TreeFake} from '../tree/tree_fake';
 import SearchObjectsDialogWrapper from 'tools/search_objects/static/js/search_objects_dialog_wrapper';
 import axios from 'axios/index';
 import MockAdapter from 'axios-mock-adapter';
-import {TreeNode} from '../../../pgadmin/static/js/tree/tree';
+import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 
 let context = describe;
 
@@ -32,7 +32,6 @@ describe('SearchObjectsDialogWrapper', () => {
 
   beforeEach(() => {
     pgBrowser = {
-      treeMenu: new TreeFake(),
       Nodes: {
         server: {
           hasId: true,
@@ -74,8 +73,9 @@ describe('SearchObjectsDialogWrapper', () => {
       },
       keyboardNavigation: jasmine.createSpyObj('keyboardNavigation', ['getDialogTabNavigator']),
     };
-    noDataNode = pgBrowser.treeMenu.addNewNode('level1.1', undefined, [{id: 'level1'}]);
-    serverTreeNode = pgBrowser.treeMenu.addNewNode('level2.1', {
+    pgBrowser.tree =  new TreeFake(pgBrowser),
+    noDataNode = pgBrowser.tree.addNewNode('level1.1', undefined, [{id: 'level1'}]);
+    serverTreeNode = pgBrowser.tree.addNewNode('level2.1', {
       _type: 'server',
       _id: 10,
       label: 'some-tree-label',
@@ -85,7 +85,7 @@ describe('SearchObjectsDialogWrapper', () => {
       _id: 123,
       _label: 'some-database-label',
     }, [{id: 'database-tree-node'}]);
-    pgBrowser.treeMenu.addChild(serverTreeNode, databaseTreeNode);
+    pgBrowser.tree.addChild(serverTreeNode, databaseTreeNode);
 
     jquerySpy = jasmine.createSpy('jquerySpy');
     soNode = {
@@ -153,7 +153,7 @@ describe('SearchObjectsDialogWrapper', () => {
 
     context('selected tree node has no data', () => {
       beforeEach(() => {
-        pgBrowser.treeMenu.selectNode(noDataNode.domNode);
+        pgBrowser.tree.selectNode(noDataNode.domNode);
       });
 
       it('does not prepare the dialog', () => {
@@ -168,7 +168,7 @@ describe('SearchObjectsDialogWrapper', () => {
       let networkMock;
 
       beforeEach(() => {
-        pgBrowser.treeMenu.selectNode(databaseTreeNode.domNode);
+        pgBrowser.tree.selectNode(databaseTreeNode.domNode);
         soDialogWrapper.grid = jasmine.createSpyObj('grid', ['destroy']);
         spyOn(soDialogWrapper, 'showMessage');
         gridDestroySpy = spyOn(soDialogWrapper.grid, 'destroy');
@@ -503,9 +503,9 @@ describe('SearchObjectsDialogWrapper', () => {
         };
 
         soDialogWrapper.treeInfo = {
-          'server_group': {'id': 'server_group/1', '_id': 1},
-          'server': {'id': 'server/3', '_id': 3},
-          'database': {'id': 'database/18456', '_id': 18456},
+          'server_group': {'id': 'server_group_1', '_id': 1},
+          'server': {'id': 'server_3', '_id': 3},
+          'database': {'id': 'database_18456', '_id': 18456},
         };
       });
       it('regular schema', ()=>{
@@ -515,7 +515,7 @@ describe('SearchObjectsDialogWrapper', () => {
         let retVal = soDialogWrapper.translateSearchObjectsPath(path, catalog_level);
         expect(retVal).toEqual([
           'Schemas/test_db/Tables/sampletab',
-          ['server_group/1','server/3','coll-database/3','database/18456','coll-schema/18456','schema/2200','coll-table/2200','table/2604'],
+          ['server_group_1','server_3','coll-database_3','database_18456','coll-schema_18456','schema_2200','coll-table_2200','table_2604'],
         ]);
       });
 
@@ -527,7 +527,7 @@ describe('SearchObjectsDialogWrapper', () => {
           let retVal = soDialogWrapper.translateSearchObjectsPath(path, catalog_level);
           expect(retVal).toEqual([
             'Catalogs/PostgreSQL Catalog (pg_catalog)/Tables/pg_class',
-            ['server_group/1','server/3','coll-database/3','database/18456','coll-catalog/18456','catalog/11','coll-table/11','table/2604'],
+            ['server_group_1','server_3','coll-database_3','database_18456','coll-catalog_18456','catalog_11','coll-table_11','table_2604'],
           ]);
         });
 
@@ -538,7 +538,7 @@ describe('SearchObjectsDialogWrapper', () => {
           let retVal = soDialogWrapper.translateSearchObjectsPath(path, catalog_level);
           expect(retVal).toEqual([
             'Catalogs/ANSI (information_schema)/Catalog Objects/attributes',
-            ['server_group/1','server/3','coll-database/3','database/18456','coll-catalog/18456','catalog/11','coll-catalog_object/11','catalog_object/2604'],
+            ['server_group_1','server_3','coll-database_3','database_18456','coll-catalog_18456','catalog_11','coll-catalog_object_11','catalog_object_2604'],
           ]);
         });
       });

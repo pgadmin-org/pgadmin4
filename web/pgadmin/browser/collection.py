@@ -90,7 +90,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
             self, node_id, parent_id, label, icon, **kwargs
     ):
         obj = {
-            "id": "%s/%s" % (self.node_type, node_id),
+            "id": "%s_%s" % (self.node_type, node_id),
             "label": label,
             "icon": self.node_icon if not icon else icon,
             "inode": self.node_inode
@@ -107,7 +107,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
 
     def generate_browser_collection_node(self, parent_id, **kwargs):
         obj = {
-            "id": "coll-%s/%d" % (self.node_type, parent_id),
+            "id": "coll-%s_%d" % (self.node_type, parent_id),
             "label": self.collection_label,
             "icon": self.collection_icon,
             "inode": True,

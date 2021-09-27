@@ -11,8 +11,8 @@ import gettext from 'sources/gettext';
 
 export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle, alertify) {
   let serverInformation = null;
-  let aciTreeItem = item || pgBrowser.treeMenu.selected();
-  let treeNode = pgBrowser.treeMenu.findNodeByDomElement(aciTreeItem);
+  let aciTreeItem = item || pgBrowser.tree.selected();
+  let treeNode = pgBrowser.tree.findNodeByDomElement(aciTreeItem);
 
   if (treeNode) {
     let nodeData;
@@ -58,9 +58,8 @@ export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle, a
 
 export function retrieveAncestorOfTypeDatabase(pgBrowser, item, errorAlertTitle, alertify) {
   let databaseInfo = null;
-  let aciTreeItem = item || pgBrowser.treeMenu.selected();
-  let treeNode = pgBrowser.treeMenu.findNodeByDomElement(aciTreeItem);
-
+  let aciTreeItem = item || pgBrowser.tree.selected();
+  let treeNode = pgBrowser.tree.findNodeByDomElement(aciTreeItem);
   if (treeNode) {
     if(treeNode.getData()._type === 'database') {
       databaseInfo = treeNode.getData();

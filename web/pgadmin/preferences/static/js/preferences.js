@@ -495,7 +495,7 @@ define('pgadmin.preferences', [
               view: {duration: 75},
             });
 
-            modifyAnimation.modifyAcitreeAnimation(pgBrowser, jTree.aciTree('api'));
+            if (jTree.aciTree('api')) modifyAnimation.modifyAcitreeAnimation(pgBrowser, jTree.aciTree('api'));
 
             this.show();
           },

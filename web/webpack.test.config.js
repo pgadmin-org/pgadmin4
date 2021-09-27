@@ -44,105 +44,115 @@ module.exports = {
   ],
 
   module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
-        exclude: [/node_modules/, /vendor/],
-        use: {
-          loader: 'babel-loader',
+    rules: [{
+      test: /\.jsx?$/,
+      exclude: [/node_modules/, /vendor/],
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react'],
+          plugins: ['@babel/plugin-proposal-class-properties'],
+          sourceMap: 'inline',
+        },
+      },
+    }, {
+      test: /\.tsx?$|\.ts?$/,
+      exclude: [/node_modules/, /vendor/],
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react', '@babel/preset-typescript'],
+          plugins: ['@babel/plugin-proposal-class-properties', '@babel/proposal-object-rest-spread'],
+          sourceMap: 'inline',
+        },
+      },
+    }, {
+      test: /\.css$/,
+      type: 'asset/source',
+      use: ['style-loader'],
+    }, {
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      type: 'asset',
+      parser: {
+        dataUrlCondition: {
+          maxSize: 4 * 1024, // 4kb
+        },
+      },
+      generator: {
+        filename: 'img/[name].[ext]',
+      },
+      exclude: /vendor/,
+    }, {
+      test: /.*slickgrid[\\\/]+slick\.(?!core)*/,
+      use:[
+        {
+          loader: 'imports-loader',
           options: {
-            presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react'],
-            plugins: ['@babel/plugin-proposal-class-properties'],
-            sourceMap: 'inline',
+            type: 'commonjs',
+            imports: [
+              'pure|jquery.ui',
+              'pure|jquery.event.drag',
+              'pure|slickgrid',
+            ],
           },
         },
-      }, {
-        test: /\.css$/,
-        type: 'asset/source',
-        use: ['style-loader'],
-      }, {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        type: 'asset',
-        parser: {
-          dataUrlCondition: {
-            maxSize: 4 * 1024, // 4kb
+      ],
+    }, {
+      test: /.*slickgrid\.plugins[\\\/]+slick\.cellrangeselector/,
+      use:[
+        {
+          loader: 'imports-loader',
+          options: {
+            type: 'commonjs',
+            imports: [
+              'pure|jquery.ui',
+              'pure|jquery.event.drag',
+              'pure|slickgrid',
+            ],
+          },
+        }, {
+          loader: 'exports-loader',
+          options: {
+            type: 'commonjs',
+            exports: 'single|Slick.CellRangeSelector',
           },
         },
-        generator: {
-          filename: 'img/[name].[ext]',
+      ],
+    }, {
+      test: /.*slickgrid[\\\/]+slick\.core.*/,
+      use:[
+        {
+          loader: 'imports-loader',
+          options: {
+            type: 'commonjs',
+            imports: [
+              'pure|jquery.ui',
+              'pure|jquery.event.drag',
+            ],
+          },
+        }, {
+          loader: 'exports-loader',
+          options: {
+            type: 'commonjs',
+            exports: 'single|Slick',
+          },
         },
-        exclude: /vendor/,
-      }, {
-        test: /.*slickgrid[\\\/]+slick\.(?!core)*/,
-        use:[
-          {
-            loader: 'imports-loader',
-            options: {
-              type: 'commonjs',
-              imports: [
-                'pure|jquery.ui',
-                'pure|jquery.event.drag',
-                'pure|slickgrid',
-              ],
-            },
-          },
-        ],
-      }, {
-        test: /.*slickgrid\.plugins[\\\/]+slick\.cellrangeselector/,
-        use:[
-          {
-            loader: 'imports-loader',
-            options: {
-              type: 'commonjs',
-              imports: [
-                'pure|jquery.ui',
-                'pure|jquery.event.drag',
-                'pure|slickgrid',
-              ],
-            },
-          }, {
-            loader: 'exports-loader',
-            options: {
-              type: 'commonjs',
-              exports: 'single|Slick.CellRangeSelector',
-            },
-          },
-        ],
-      }, {
-        test: /.*slickgrid[\\\/]+slick\.core.*/,
-        use:[
-          {
-            loader: 'imports-loader',
-            options: {
-              type: 'commonjs',
-              imports: [
-                'pure|jquery.ui',
-                'pure|jquery.event.drag',
-              ],
-            },
-          }, {
-            loader: 'exports-loader',
-            options: {
-              type: 'commonjs',
-              exports: 'single|Slick',
-            },
-          },
-        ],
+      ],
+    },
+    {
+      test: /\.js$|\.jsx$/,
+      use: {
+        loader: 'istanbul-instrumenter-loader',
+        options: { esModules: true },
       },
-      {
-        test: /\.js$|\.jsx$/,
-        use: {
-          loader: 'istanbul-instrumenter-loader',
-          options: { esModules: true },
-        },
-        enforce: 'post',
-        exclude: /node_modules|slickgrid|plugins|bundle|generated|regression|[Tt]est.js|[Ss]pecs.js|[Ss]pec.js|\.spec\.js$/,
-      },
+      enforce: 'post',
+      exclude: /node_modules|slickgrid|plugins|bundle|generated|regression|[Tt]est.js|[Ss]pecs.js|[Ss]pec.js|\.spec\.js$/,
+    },
     ],
   },
 
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       'top': path.join(__dirname, './pgadmin'),
       'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
@@ -173,6 +183,7 @@ module.exports = {
       'pgadmin.alertifyjs': sourcesDir + '/js/alertify.pgadmin.defaults',
       'pgadmin.backgrid': sourcesDir + '/js/backgrid.pgadmin',
       'pgadmin.backform': sourcesDir + '/js/backform.pgadmin',
+      'pgadmin4-tree': path.join(__dirname, 'node_modules/pgadmin4-tree'),
       'pgbrowser': path.resolve(__dirname, 'regression/javascript/fake_browser'),
       'pgadmin.schema.dir': path.resolve(__dirname, 'pgadmin/browser/server_groups/servers/databases/schemas/static/js'),
       'pgadmin.browser.layout': path.join(__dirname, './pgadmin/browser/static/js/layout'),

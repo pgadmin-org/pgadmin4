@@ -84,13 +84,13 @@ define('pgadmin.node.tablespace', [
         ]);
       },
       can_create_tablespace: function(node, item) {
-        var treeData = this.getTreeNodeHierarchy(item),
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         return server.connected && server.user.is_superuser;
       },
       can_move_objects: function(node, item) {
-        var treeData = this.getTreeNodeHierarchy(item),
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
         // Only supported PG9.4 and above version
         return server.connected &&
@@ -104,7 +104,7 @@ define('pgadmin.node.tablespace', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined,
+            d = i  ? t.itemData(i) : undefined,
             url = obj.generate_url(i, 'move_objects', d, true),
             msql_url = obj.generate_url(i, 'move_objects_sql', d, true);
 
@@ -243,7 +243,7 @@ define('pgadmin.node.tablespace', [
                   if (!_d)
                     return;
                   // Create treeInfo
-                  var treeInfo = node.getTreeNodeHierarchy.apply(node, [_i]);
+                  var treeInfo = pgAdmin.tree.getTreeNodeHierarchy.apply(node, [_i]);
                   // Instance of backbone model
                   var newModel = new objModel({}, {node_info: treeInfo, selected_ts: _d.label}),
                     fields = Backform.generateViewSchema(

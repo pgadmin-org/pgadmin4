@@ -155,6 +155,7 @@ var webpackShimConfig = {
     'react-dom': path.join(__dirname, 'node_modules/react-dom'),
     'stylis': path.join(__dirname, 'node_modules/stylis'),
     'popper.js': path.join(__dirname, 'node_modules/popper.js'),
+    'pgadmin4-tree': path.join(__dirname, 'node_modules/pgadmin4-tree'),
 
     // AciTree
     'jquery.acitree': path.join(__dirname, './node_modules/acitree/js/jquery.aciTree.min'),

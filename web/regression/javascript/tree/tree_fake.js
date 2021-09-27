@@ -8,10 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 import {Tree} from '../../../pgadmin/static/js/tree/tree';
+import {ManageTreeNodes, TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 
 export class TreeFake extends Tree {
-  static build(structure) {
-    let tree = new TreeFake();
+  static build(structure, pgBrowser) {
+    let tree = new TreeFake(pgBrowser);
     let rootNode = tree.rootNode;
 
     if (structure.children !== undefined) {
@@ -27,7 +28,10 @@ export class TreeFake extends Tree {
     let id = newNode.id;
     let data = newNode.data ? newNode.data : {};
     let domNode = newNode.domNode ? newNode.domNode : [{id: id}];
-    tree.addNewNode(id, data, domNode, tree.translateTreeNodeIdFromACITree([parent]));
+
+    let parentPath = tree.translateTreeNodeIdFromReactTree([parent]);
+
+    tree.addNewNode(id, data, domNode, parentPath);
 
     if (newNode.children !== undefined) {
       newNode.children.forEach((child) => {
@@ -36,48 +40,94 @@ export class TreeFake extends Tree {
     }
   }
 
-  constructor() {
-    super();
-    this.aciTreeToOurTreeTranslator = {};
-    this.aciTreeApi = jasmine.createSpyObj(
-      'ACITreeApi', ['setInode', 'unload', 'deselect', 'select']);
-    this.aciTreeApi.unload.and.callFake(function(domNode, config) {
+  constructor(pgBrowser) {
+    let manageTree = new ManageTreeNodes();
+    let tree = jasmine.createSpyObj(
+      'tree', ['unload', 'onTreeEvents',
+        'getActiveFile', 'setActiveFile',
+        'deSelectActiveFile', 'closeDirectory']);
+    tree.unload.and.callFake(function(domNode, config) {
       config.success();
     });
+
+    super(tree, manageTree, pgBrowser);
+    this.aciTreeToOurTreeTranslator = {};
+
   }
 
   addNewNode(id, data, domNode, path) {
-    this.aciTreeToOurTreeTranslator[id] = [id];
+    this.aciTreeToOurTreeTranslator[id] = id;
     if (path !== null && path !== undefined) {
-      this.aciTreeToOurTreeTranslator[id] = path.concat(id);
+      if (typeof(path) === 'object') path = path.join('/');
+      this.aciTreeToOurTreeTranslator[id] = path != '' ? path + '/' + id : id;
+      if (path.indexOf('/browser/') != 0) path = path != '' ? '/browser/' + path : undefined;
     }
     return super.addNewNode(id, data, domNode, path);
   }
 
   addChild(parent, child) {
     child.setParent(parent);
-    this.aciTreeToOurTreeTranslator[child.id] = this.aciTreeToOurTreeTranslator[parent.id].concat(child.id);
+    this.aciTreeToOurTreeTranslator[child.id] = this.aciTreeToOurTreeTranslator[parent.id] + '/' + child.id;
     parent.children.push(child);
   }
 
   hasParent(aciTreeNode) {
-    return this.translateTreeNodeIdFromACITree(aciTreeNode).length > 1;
+    let parents = this.translateTreeNodeIdFromReactTree(aciTreeNode).split('/');
+    return parents.length > 1;
   }
 
   parent(aciTreeNode) {
     if (this.hasParent(aciTreeNode)) {
-      let path = this.translateTreeNodeIdFromACITree(aciTreeNode);
-      return [{id: this.findNode(path).parent().id}];
+      let path = this.translateTreeNodeIdFromReactTree(aciTreeNode);
+      return [{id: this.findNode('/browser/' + path).parent().id}];
     }
 
     return null;
   }
 
-  translateTreeNodeIdFromACITree(aciTreeNode) {
+  translateTreeNodeIdFromReactTree(aciTreeNode) {
     if (aciTreeNode === undefined || aciTreeNode[0] === undefined) {
       return null;
     }
     return this.aciTreeToOurTreeTranslator[aciTreeNode[0].id];
+  }
+
+  findNodeByDomElement(domElement) {
+    const path = this.translateTreeNodeIdFromReactTree(domElement);
+
+    if(!path || !path[0]) {
+      return undefined;
+    }
+
+    return this.findNode('/browser/' + path);
+
+  }
+
+  getTreeNodeHierarchy(identifier) {
+    let idx = 0;
+    let node_cnt = 0;
+    let result = {};
+    let item = TreeNode.prototype.isPrototypeOf(identifier) ? identifier :
+      (identifier.path ? this.findNode(identifier.path) : this.findNodeByDomElement(identifier));
+
+    if (item == undefined || item == null) return null;
+
+    do {
+      const currentNodeData = item.getData();
+      if (currentNodeData._type in this.Nodes && this.Nodes[currentNodeData._type].hasId) {
+        const nodeType = mapType(currentNodeData._type, node_cnt);
+        if (result[nodeType] === undefined) {
+          result[nodeType] = _.extend({}, currentNodeData, {
+            'priority': idx,
+          });
+          idx -= 1;
+        }
+      }
+      node_cnt += 1;
+      item = item.hasParent() ? item.parent() : null;
+    } while (item);
+
+    return result;
   }
 
   itemData(aciTreeNode) {
@@ -95,4 +145,8 @@ export class TreeFake extends Tree {
   selectNode(selectedNode) {
     this.selectedNode = selectedNode;
   }
+}
+
+function mapType(type, idx) {
+  return (type === 'partition' && idx > 0) ? 'table' : type;
 }

@@ -43,7 +43,7 @@ define('pgadmin.node.trigger_function', [
       label: gettext('Trigger function'),
       collection_type: 'coll-trigger_function',
       canEdit: function(itemData, item) {
-        let node = pgBrowser.treeMenu.findNodeByDomElement(item);
+        let node = pgBrowser.tree.findNodeByDomElement(item);
 
         if (!node || node.parentNode.getData()._type === 'trigger')
           return false;

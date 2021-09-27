@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 import _ from 'underscore';
-import { getTreeNodeHierarchyFromIdentifier } from 'sources/tree/pgadmin_tree_node';
 import $ from 'jquery';
 import gettext from 'sources/gettext';
 import 'wcdocker';
@@ -237,7 +236,7 @@ export function quote_ident(value) {
 }
 
 export function fully_qualify(pgBrowser, data, item) {
-  const parentData = getTreeNodeHierarchyFromIdentifier.call(pgBrowser, item);
+  const parentData = pgBrowser.tree.getTreeNodeHierarchy(item);
   let namespace = '';
 
   if (parentData.schema !== undefined) {

@@ -108,7 +108,7 @@ define('pgadmin.node.compound_trigger', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -146,7 +146,7 @@ define('pgadmin.node.compound_trigger', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (!d)
             return false;
@@ -206,7 +206,7 @@ define('pgadmin.node.compound_trigger', [
         if (data && data.check == false)
           return true;
 
-        var treeData = this.getTreeNodeHierarchy(item),
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         if (server && (server.server_type === 'pg' || server.version < 120000))
@@ -221,7 +221,7 @@ define('pgadmin.node.compound_trigger', [
       },
       // Check to whether trigger is disable ?
       canCreate_with_compound_trigger_enable: function(itemData, item, data) {
-        var treeData = this.getTreeNodeHierarchy(item);
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }
@@ -231,7 +231,7 @@ define('pgadmin.node.compound_trigger', [
       },
       // Check to whether trigger is enable ?
       canCreate_with_compound_trigger_disable: function(itemData, item, data) {
-        var treeData = this.getTreeNodeHierarchy(item);
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }

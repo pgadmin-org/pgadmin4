@@ -271,8 +271,8 @@ define('tools.restore', [
         visible: function() {
           var t = pgBrowser.tree,
             i = t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined,
-            s = _.isUndefined(d) ? undefined : pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+            d = i  ? t.itemData(i) : undefined,
+            s = _.isUndefined(d) ? undefined : pgBrowser.tree.getTreeNodeHierarchy(i)['server'];
 
           return _.isUndefined(s) ? false : s.version >= 110000;
         },
@@ -396,7 +396,7 @@ define('tools.restore', [
         label: gettext('Restore...'),
         icon: 'fa fa-upload',
         enable: supportedNodes.enabled.bind(
-          null, pgBrowser.treeMenu, menuUtils.restoreSupportedNodes
+          null, pgBrowser.tree, menuUtils.restoreSupportedNodes
         ),
         data: {
           data_disabled: gettext('Please select any schema or table from the browser tree to Restore data.'),
@@ -414,7 +414,7 @@ define('tools.restore', [
           label: gettext('Restore...'),
           icon: 'fa fa-upload',
           enable: supportedNodes.enabled.bind(
-            null, pgBrowser.treeMenu, menuUtils.restoreSupportedNodes
+            null, pgBrowser.tree, menuUtils.restoreSupportedNodes
           ),
         });
       }

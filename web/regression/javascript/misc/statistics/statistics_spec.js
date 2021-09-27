@@ -15,7 +15,7 @@ describe('#nodeHasStatistics', () => {
       const node = {
         hasStatistics: true,
       };
-      expect(nodeHasStatistics(node, {})).toEqual(true);
+      expect(nodeHasStatistics({}, node, {})).toEqual(true);
     });
   });
 
@@ -24,12 +24,16 @@ describe('#nodeHasStatistics', () => {
       it('returns true', () => {
         const node = {
           hasStatistics: () => true,
-          getTreeNodeHierarchy: jasmine.createSpy(),
+        };
+        const pgBrowser = {
+          tree: {
+            getTreeNodeHierarchy: jasmine.createSpy(),
+          }
         };
         const item = {};
 
-        expect(nodeHasStatistics(node, item)).toEqual(true);
-        expect(node.getTreeNodeHierarchy).toHaveBeenCalledWith(item);
+        expect(nodeHasStatistics(pgBrowser, node, item)).toEqual(true);
+        expect(pgBrowser.tree.getTreeNodeHierarchy).toHaveBeenCalledWith(item);
       });
     });
   });

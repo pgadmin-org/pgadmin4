@@ -58,6 +58,9 @@ define('misc.sql', [
                 'pgadmin-browser:tree:selected', this.showSQL
               );
               pgBrowser.Events.on(
+                'pgadmin-browser:tree:reactSelected', this.reactShowSQL
+              );
+              pgBrowser.Events.on(
                 'pgadmin-browser:tree:refreshing', this.refreshSQL, this
               );
             }
@@ -66,6 +69,7 @@ define('misc.sql', [
       } else {
         if ((sqlPanels[0].isVisible()) || sqlPanels.length != 1) {
           pgBrowser.Events.on('pgadmin-browser:tree:selected', this.showSQL);
+          pgBrowser.Events.on('pgadmin-browser:tree:reactSelected', this.reactShowSQL);
           pgBrowser.Events.on(
             'pgadmin-browser:tree:refreshing', this.refreshSQL, this
           );
@@ -92,6 +96,7 @@ define('misc.sql', [
        * through. We will wait for some time before fetching the Reversed
        * Engineering SQL.
        **/
+
       this.timeout && clearTimeout(this.timeout);
 
       var that = this;
@@ -102,7 +107,7 @@ define('misc.sql', [
             sql = '-- ' + gettext('No SQL could be generated for the selected object.');
             var n_type = data._type,
               url = node.generate_url(item, 'sql', data, true),
-              treeHierarchy = node.getTreeNodeHierarchy(item),
+              treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item),
               cache_flag = {
                 node_type: n_type,
                 url: url,

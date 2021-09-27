@@ -10,7 +10,6 @@
 import gettext from '../gettext';
 import {DialogFactory} from './dialog_factory';
 import Backform from '../backform.pgadmin';
-import {getTreeNodeHierarchyFromIdentifier} from '../tree/pgadmin_tree_node';
 
 /**
  * This class can be extended to create new dialog boxes.
@@ -35,8 +34,8 @@ export class Dialog {
 
   retrieveAncestorOfTypeServer(item) {
     let serverInformation = null;
-    let aciTreeItem = item || this.pgBrowser.treeMenu.selected();
-    let treeNode = this.pgBrowser.treeMenu.findNodeByDomElement(aciTreeItem);
+    let aciTreeItem = item || this.pgBrowser.tree.selected();
+    let treeNode = this.pgBrowser.tree.findNodeByDomElement(aciTreeItem);
 
     if (treeNode) {
       let nodeData;
@@ -107,7 +106,7 @@ export class Dialog {
   }
 
   canExecuteOnCurrentDatabase(aciTreeItem) {
-    const treeInfo = getTreeNodeHierarchyFromIdentifier.apply(this.pgBrowser, [aciTreeItem]);
+    const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(aciTreeItem);
 
     if (treeInfo.database && treeInfo.database._label.indexOf('=') >= 0) {
       this.alertify.alert(

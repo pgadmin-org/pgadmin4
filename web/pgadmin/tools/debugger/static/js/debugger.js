@@ -227,13 +227,12 @@ define([
       // Find the function is really available in database
       var tree = pgBrowser.tree,
         info = tree.selected(),
-        d_ = info && info.length == 1 ? tree.itemData(info) : undefined,
-        node = d_ && pgBrowser.Nodes[d_._type];
+        d_ = info ? tree.itemData(info) : undefined;
 
       if (!d_)
         return false;
 
-      var treeInfo = node.getTreeNodeHierarchy.apply(node, [info]);
+      var treeInfo = tree.getTreeNodeHierarchy(info);
 
       // For indirect debugging user must be super user
       if (data && data.debug_type && data.debug_type == 'indirect' &&
@@ -302,13 +301,13 @@ define([
     check_func_debuggable: function(args, item) {
       var t = pgBrowser.tree,
         i = item || t.selected(),
-        d = i && i.length == 1 ? t.itemData(i) : undefined,
+        d = i ? t.itemData(i) : undefined,
         node = d && pgBrowser.Nodes[d._type];
 
       if (!d)
         return;
 
-      var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]),
+      var treeInfo = t.getTreeNodeHierarchy(i),
         _url = this.generate_url('init', treeInfo, node);
 
       var self = this;
@@ -338,16 +337,15 @@ define([
       var self = this;
       var t = pgBrowser.tree,
         i = item || t.selected(),
-        d = i && i.length == 1 ? t.itemData(i) : undefined,
-        node = d && pgBrowser.Nodes[d._type],
-        tree_data = pgBrowser.treeMenu.translateTreeNodeIdFromACITree(i),
-        db_data = pgBrowser.treeMenu.findNode(tree_data.slice(0,4)),
+        d = i ? t.itemData(i) : undefined,
+        tree_data = pgBrowser.tree.translateTreeNodeIdFromReactTree(i),
+        db_data = pgBrowser.tree.findNode(tree_data[3]),
         dbNode = db_data.domNode;
 
       if (!d)
         return;
 
-      var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]),
+      var treeInfo = t.getTreeNodeHierarchy(i),
         baseUrl;
 
       if (d._type == 'function' || d._type == 'edbfunc') {
@@ -515,10 +513,10 @@ define([
 
       var t = pgBrowser.tree,
         i = item || t.selected(),
-        d = i && i.length == 1 ? t.itemData(i) : undefined,
+        d = i ? t.itemData(i) : undefined,
         node = d && pgBrowser.Nodes[d._type],
-        tree_data = pgBrowser.treeMenu.translateTreeNodeIdFromACITree(i),
-        db_data = pgBrowser.treeMenu.findNode(tree_data.slice(0,4)),
+        tree_data = pgBrowser.tree.translateTreeNodeIdFromReactTree(i),
+        db_data = pgBrowser.tree.findNode(tree_data[3]),
         dbNode = db_data.domNode;
 
       if (!d)
@@ -526,7 +524,7 @@ define([
 
       var is_edb_proc = d._type == 'edbproc';
 
-      var treeInfo = node.getTreeNodeHierarchy.apply(node, [i]),
+      var treeInfo = t.getTreeNodeHierarchy(i),
         _url = this.generate_url('init', treeInfo, node);
 
       $.ajax({
@@ -546,13 +544,12 @@ define([
           // Directly open the panel
             var _t = pgBrowser.tree,
               _i = _t.selected(),
-              _d = _i && _i.length == 1 ? _t.itemData(_i) : undefined,
-              _node = _d && pgBrowser.Nodes[_d._type];
+              _d = _i ? _t.itemData(_i) : undefined;
 
             if (!_d)
               return;
 
-            var newTreeInfo = _node.getTreeNodeHierarchy.apply(_node, [_i]),
+            var newTreeInfo = _t.getTreeNodeHierarchy(_i),
               baseUrl;
 
             if (_d._type == 'function' || _d._type == 'edbfunc') {

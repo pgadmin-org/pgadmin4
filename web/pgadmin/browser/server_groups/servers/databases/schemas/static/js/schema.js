@@ -409,7 +409,7 @@ define('pgadmin.node.schema', [
     });
 
     pgBrowser.tableChildTreeNodeHierarchy = function(i) {
-      return this.getTreeNodeHierarchy(i);
+      return pgBrowser.tree.getTreeNodeHierarchy(i);
     };
   }
 

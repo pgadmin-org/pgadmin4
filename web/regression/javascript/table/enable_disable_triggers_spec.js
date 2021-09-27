@@ -14,7 +14,7 @@ import {
   disableTriggers,
 } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/enable_disable_triggers';
 import {TreeFake} from '../tree/tree_fake';
-import {TreeNode} from '../../../pgadmin/static/js/tree/tree';
+import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 
 describe('#enableTriggers', () => {
   let networkMock;
@@ -24,6 +24,13 @@ describe('#enableTriggers', () => {
   beforeEach(() => {
     networkMock = new MockAdapter(axios);
     tree = new TreeFake();
+
+    spyOn(tree, 'unload').and.callFake(function() {
+      return new Promise((resolve)=>{
+        resolve('Success!');
+      });
+    });
+
     const server1 = tree.addNewNode('server1', {_id: 1}, ['<li>server1</li>']);
     const database1 = tree.addNewNode('database1', {_type: 'database'}, ['<li>database1</li>']);
     tree.addChild(server1, database1);
@@ -100,7 +107,7 @@ describe('#enableTriggers', () => {
           setTimeout(() => {
             expect(tree.selected()).toEqual(['<li>table1</li>']);
             done();
-          }, 20);
+          }, 30);
         });
 
         it('call backend with the correct parameters', (done) => {
@@ -171,6 +178,12 @@ describe('#disableTriggers', () => {
     alertify = jasmine.createSpyObj('alertify', ['success', 'error']);
     generateUrlSpy = jasmine.createSpy('generateUrl');
     generateUrlSpy.and.returnValue('/some/place');
+    spyOn(tree, 'unload').and.callFake(function() {
+      return new Promise((resolve)=>{
+        resolve('Success!');
+      });
+    });
+
   });
 
   describe('no node is selected', () => {

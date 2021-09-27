@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import Alertify from 'pgadmin.alertifyjs';
-import {getTreeNodeHierarchyFromIdentifier} from 'sources/tree/pgadmin_tree_node';
 import {getPanelTitle} from 'tools/datagrid/static/js/datagrid_panel_title';
 import {getRandomInt, registerDetachEvent} from 'sources/utils';
 
@@ -98,10 +97,9 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
       return isEnabled;
     },
 
-    // Callback to draw schema diff for objects
+    // Callback to draw ERD Tool for objects
     showErdTool: function(data, aciTreeIdentifier, gen=false) {
-      const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
-      if (node === undefined || !node.getData()) {
+      if (aciTreeIdentifier === undefined) {
         Alertify.alert(
           gettext('ERD Error'),
           gettext('No object selected.')
@@ -109,10 +107,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
         return;
       }
 
-      const parentData = getTreeNodeHierarchyFromIdentifier.call(
-        pgBrowser,
-        aciTreeIdentifier
-      );
+      const parentData = pgBrowser.tree.getTreeNodeHierarchy(aciTreeIdentifier);
 
       if(_.isUndefined(parentData.database)) {
         Alertify.alert(

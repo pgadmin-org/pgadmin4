@@ -7,9 +7,9 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-export function nodeHasStatistics(node, item) {
+export function nodeHasStatistics(pgBrowser, node, item) {
   if(typeof(node.hasStatistics) === 'function') {
-    const treeHierarchy = node.getTreeNodeHierarchy(item);
+    const treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
     return node.hasStatistics(treeHierarchy);
   }
   return node.hasStatistics;

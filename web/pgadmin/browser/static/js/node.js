@@ -10,13 +10,13 @@
 import {getNodeView, removeNodeView} from './node_view';
 
 define('pgadmin.browser.node', [
-  'sources/tree/pgadmin_tree_node', 'sources/url_for',
+  'sources/url_for',
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
   'backform', 'sources/browser/generate_url', 'pgadmin.help', 'sources/utils',
   'pgadmin.browser.utils', 'pgadmin.backform',
 ], function(
-  pgadminTreeNode, url_for,
+  url_for,
   gettext, $, _, pgAdmin,
   Menu, Backbone, Alertify, pgBrowser,
   Backform, generateUrl, help,
@@ -269,8 +269,7 @@ define('pgadmin.browser.node', [
       if (itemData._type == 'database' && !itemData.allowConn)
         return false;
 
-      var node = pgBrowser.Nodes[itemData._type],
-        parentData = node.getTreeNodeHierarchy(item);
+      var parentData = pgBrowser.tree.getTreeNodeHierarchy(item);
       if (_.indexOf(['create', 'insert', 'update', 'delete'], data.script) != -1) {
         if (itemData.type == 'role' &&
           parentData.server.user.can_create_role) {
@@ -325,7 +324,7 @@ define('pgadmin.browser.node', [
         }
 
         // We know - which data model to be used for this object.
-        var info = this.getTreeNodeHierarchy.apply(this, [item]),
+        var info = pgBrowser.tree.getTreeNodeHierarchy(item),
           newModel = new(this.model.extend({
             urlRoot: urlBase,
           }))(
@@ -450,7 +449,7 @@ define('pgadmin.browser.node', [
                 },
                 error: function(model, xhr, options) {
                   var _label = that && item ?
-                    that.getTreeNodeHierarchy(
+                    pgBrowser.tree.getTreeNodeHierarchy(
                       item
                     )[that.type].label : '';
                   pgBrowser.Events.trigger(
@@ -594,7 +593,7 @@ define('pgadmin.browser.node', [
       show_obj_properties: function(args, item) {
         var t = pgBrowser.tree,
           i = (args && args.item) || item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined,
+          d = i ? t.itemData(i) : undefined,
           o = this,
           l = o.title.apply(this, [d]);
 
@@ -786,7 +785,7 @@ define('pgadmin.browser.node', [
           obj = this,
           t = pgBrowser.tree,
           i = input.item || item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          d = i ? t.itemData(i) : undefined;
 
         if (!d)
           return;
@@ -882,7 +881,7 @@ define('pgadmin.browser.node', [
           obj,
           t = pgBrowser.tree,
           i = item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          d = i ? t.itemData(i) : undefined;
 
         if (!d)
           return;
@@ -920,7 +919,7 @@ define('pgadmin.browser.node', [
         var preference = pgBrowser.get_preference('sqleditor', 'copy_sql_to_query_tool');
         var t = pgBrowser.tree,
           i = item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          d = i ? t.itemData(i) : undefined;
 
         if (!d)
           return;
@@ -944,7 +943,7 @@ define('pgadmin.browser.node', [
         var input = args || {},
           t = pgBrowser.tree,
           i = input.item || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          d = i  ? t.itemData(i) : undefined;
         pgBrowser.psql.psql_tool(d, i, true);
       },
 
@@ -988,32 +987,7 @@ define('pgadmin.browser.node', [
           }
         }
       },
-      added: function(item, data, browser) {
-        var b = browser || pgBrowser,
-          t = b.tree,
-          pItem = t.parent(item),
-          pData = pItem && t.itemData(pItem),
-          pNode = pData && pgBrowser.Nodes[pData._type];
-
-        // Check node is a collection or not.
-        if (pNode && pNode.is_collection) {
-          /* If 'collection_count' is not present in data
-           * it means tree node expanded first time, so we will
-           * kept collection count and label in data itself.
-           */
-          if (!('collection_count' in pData)) {
-            pData.collection_count = 0;
-          }
-          pData.collection_count++;
-          t.setLabel(
-            pItem, {
-              label: (
-                _.escape(pData._label) + ' <span>(' + pData.collection_count + ')</span>'
-              ),
-            }
-          );
-        }
-
+      added: function(item, data) {
         pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state',
           item);
         pgBrowser.Node.callbacks.change_server_background(item, data);
@@ -1050,42 +1024,10 @@ define('pgadmin.browser.node', [
         return true;
       },
       removed: function(item) {
-        var self = this,
-          t = pgBrowser.tree,
-          pItem = t.parent(item),
-          pData = pItem && t.itemData(pItem),
-          pNode = pData && pgBrowser.Nodes[pData._type];
-
-        // Check node is a collection or not.
-        if (
-          pNode && pNode.is_collection && 'collection_count' in pData
-        ) {
-          pData.collection_count--;
-          t.setLabel(
-            pItem, {
-              label: (
-                _.escape(pData._label) + ' <span>(' + pData.collection_count + ')</span>'
-              ),
-            }
-          );
-        }
-
+        var self = this;
         setTimeout(function() {
           self.clear_cache.apply(self, item);
         }, 0);
-      },
-      unloaded: function(item) {
-        var self = this,
-          t = pgBrowser.tree,
-          data = item && t.itemData(item);
-
-        // In case of unload remove the collection counter
-        if (self.is_collection &&  data === Object(data) &&'collection_count' in data) {
-          delete data.collection_count;
-          t.setLabel(item, {
-            label: _.escape(data._label),
-          });
-        }
       },
       refresh: function(cmd, _item) {
         var self = this,
@@ -1232,8 +1174,7 @@ define('pgadmin.browser.node', [
           // Avoid unnecessary reloads
           var i = tree.selected(),
             d = i && tree.itemData(i),
-            n = i && d && pgBrowser.Nodes[d._type],
-            treeHierarchy = n.getTreeNodeHierarchy(i);
+            treeHierarchy = tree.getTreeNodeHierarchy(i);
 
           if (_.isEqual($(this).data('node-prop'), treeHierarchy)) {
             return;
@@ -1246,7 +1187,7 @@ define('pgadmin.browser.node', [
           removeNodeView(j[0]);
           /* getSchema is a schema for React. Get the react node view */
           if(that.getSchema) {
-            let treeNodeInfo = that.getTreeNodeHierarchy.apply(this, [item]);
+            let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
             getNodeView(
               that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onEdit
             );
@@ -1323,7 +1264,7 @@ define('pgadmin.browser.node', [
         }.bind(panel),
         onSqlHelp = function() {
           // Construct the URL
-          var server = that.getTreeNodeHierarchy(item).server;
+          var server = pgBrowser.tree.getTreeNodeHierarchy(item).server;
 
           var url = pgBrowser.utils.pg_help_path;
           if (server.server_type == 'ppas') {
@@ -1507,7 +1448,7 @@ define('pgadmin.browser.node', [
           removeNodeView(j[0]);
           /* getSchema is a schema for React. Get the react node view */
           if(that.getSchema) {
-            let treeNodeInfo = that.getTreeNodeHierarchy.apply(this, [item]);
+            let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
             getNodeView(
               that.type, treeNodeInfo, action, data, 'dialog', j[0], this, onEdit,
               (nodeData)=>{
@@ -1884,7 +1825,7 @@ define('pgadmin.browser.node', [
         self = this,
         priority = -Infinity;
       var treeInfo = (_.isUndefined(item) || _.isNull(item)) ?
-        info || {} : this.getTreeNodeHierarchy(item);
+        info || {} : pgBrowser.tree.getTreeNodeHierarchy(item);
       var actionType = type in opURL ? opURL[type] : type;
       var itemID = with_id && d._type == self.type ? encodeURIComponent(d._id) : '';
 
@@ -1921,7 +1862,6 @@ define('pgadmin.browser.node', [
     Collection: pgBrowser.DataCollection,
     // Base class for Node Data Model
     Model: pgBrowser.DataModel,
-    getTreeNodeHierarchy: pgadminTreeNode.getTreeNodeHierarchyFromIdentifier.bind(pgBrowser),
     cache: function(url, node_info, level, data) {
       var cached = this.cached = this.cached || {},
         hash = url,
@@ -1938,7 +1878,7 @@ define('pgadmin.browser.node', [
         )), function(o) {
           return o.priority;
         }), function(o) {
-          hash = commonUtils.sprintf('%s/%s', hash, encodeURI(o._id));
+          hash = commonUtils.sprintf('%s_%s', hash, encodeURI(o._id));
         });
       }
 

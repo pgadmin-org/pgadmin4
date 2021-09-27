@@ -58,7 +58,7 @@ define('pgadmin.node.primary_key', [
         var t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
           is_immediate_parent_table_partitioned = false,
-          s_version = this.getTreeNodeHierarchy(i).server.version;
+          s_version = t.getTreeNodeHierarchy(i).server.version;
 
         // To iterate over tree to check parent node
         while (i) {
@@ -81,7 +81,7 @@ define('pgadmin.node.primary_key', [
               primary_key_found = false;
 
             _.each(children, function(child){
-              data = pgBrowser.tree.itemData($(child));
+              data = pgBrowser.tree.itemData(child);
               if (!primary_key_found && data._type == 'primary_key') {
                 primary_key_found = true;
               }

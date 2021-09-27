@@ -199,7 +199,7 @@ define([
         if (!_.isUndefined(m.get('type')) && m.get('type') === 'server') {
           var t = pgBrowser.tree,
             i = t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i ? t.itemData(i) : undefined;
           return _.isUndefined(d) ? false : d.version >= 110000;
         }
         return true;
@@ -391,8 +391,7 @@ define([
         visible: function() {
           var t = pgBrowser.tree,
             i = t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined,
-            s = _.isUndefined(d) ? undefined : pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+            s = _.isUndefined(i) ? undefined : t.getTreeNodeHierarchy(i)['server'];
 
           return _.isUndefined(s) ? false : s.version >= 110000;
         },
@@ -466,8 +465,7 @@ define([
 
           var t = pgBrowser.tree,
             i = t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined,
-            s = _.isUndefined(d) ? undefined : pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+            s = _.isUndefined(i) ? undefined : t.getTreeNodeHierarchy(i)['server'];
 
           return _.isUndefined(s) ? false : s.version >= 110000;
         },
@@ -518,8 +516,7 @@ define([
         disabled: function(m) {
           var t = pgBrowser.tree,
             i = t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined,
-            s = _.isUndefined(d) ? undefined : pgBrowser.Nodes[d._type].getTreeNodeHierarchy(i)['server'];
+            s = _.isUndefined(i) ? undefined : t.getTreeNodeHierarchy(i)['server'];
 
           if (!_.isUndefined(s) && s.version >= 120000)
             return true;
@@ -632,7 +629,7 @@ define([
         label: gettext('Backup...'),
         icon: 'fa fa-save',
         enable: supportedNodes.enabled.bind(
-          null, pgBrowser.treeMenu, menuUtils.backupSupportedNodes
+          null, pgBrowser.tree, menuUtils.backupSupportedNodes
         ),
         data: {
           data_disabled: gettext('Please select any database or schema or table from the browser tree to take Backup.'),
@@ -650,7 +647,7 @@ define([
           label: gettext('Backup...'),
           icon: 'fa fa-save',
           enable: supportedNodes.enabled.bind(
-            null, pgBrowser.treeMenu, menuUtils.backupSupportedNodes
+            null, pgBrowser.tree, menuUtils.backupSupportedNodes
           ),
         });
       }

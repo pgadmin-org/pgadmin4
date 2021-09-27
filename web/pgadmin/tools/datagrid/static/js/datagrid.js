@@ -213,7 +213,7 @@ define('pgadmin.datagrid', [
         const transId = commonUtils.getRandomInt(1, 9999999);
         var t = pgBrowser.tree,
           i = aciTreeIdentifier || t.selected(),
-          d = i && i.length == 1 ? t.itemData(i) : undefined;
+          d = i ? t.itemData(i) : undefined;
 
         //Open query tool with create script if copy_sql_to_query_tool is true else open blank query tool
         var preference = pgBrowser.get_preference('sqleditor', 'copy_sql_to_query_tool');
@@ -312,7 +312,7 @@ define('pgadmin.datagrid', [
                   if(panel_data.$titleText[0].innerHTML.includes('File - ')) {
                     is_file = true;
                   }
-                  var selected_item = pgBrowser.treeMenu.selected();
+                  var selected_item = pgBrowser.tree.selected();
                   var panel_titles = '';
 
                   if(is_query_tool) {

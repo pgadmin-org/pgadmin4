@@ -106,13 +106,13 @@ define('pgadmin.node.database', [
         );
       },
       can_create_database: function(node, item) {
-        var treeData = this.getTreeNodeHierarchy(item),
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         return server.connected && server.user.can_create_db;
       },
       canCreate: function(itemData, item) {
-        var treeData = this.getTreeNodeHierarchy(item),
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         // If server is less than 10 then do not allow 'create' menu
@@ -201,7 +201,7 @@ define('pgadmin.node.database', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (d && d.label != 'template0') {
             connect_to_database(obj, d, t, i, true);
@@ -214,7 +214,7 @@ define('pgadmin.node.database', [
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i  ? t.itemData(i) : undefined;
 
           if (d) {
             Alertify.confirm(
@@ -238,7 +238,6 @@ define('pgadmin.node.database', [
                       data.icon = 'icon-database-not-connected';
                       t.addIcon(i, {icon: data.icon});
                       t.unload(i);
-                      t.setInode(i);
                       setTimeout(function() {
                         t.select(prv_i);
                       }, 10);
@@ -272,7 +271,7 @@ define('pgadmin.node.database', [
           var input = args || {},
             t = pgBrowser.tree,
             i = input.item || t.selected(),
-            d = i && i.length == 1 ? t.itemData(i) : undefined;
+            d = i ? t.itemData(i) : undefined;
           pgBrowser.erd.showErdTool(d, i, true);
         },
 

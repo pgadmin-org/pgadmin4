@@ -244,7 +244,7 @@ _.extend(pgBrowser.keyboardNavigation, {
     const tree = this.getTreeDetails();
 
     $('#tree').trigger('focus');
-    tree.t.focus(tree.i);
+    // tree.t.focus(tree.i);
     tree.t.select(tree.i);
   },
   bindSubMenuQueryTool: function() {
@@ -370,8 +370,8 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   getTreeDetails: function() {
     const aciTree = pgAdmin.Browser.tree;
-    const selectedTreeNode = aciTree.selected().length > 0 ? aciTree.selected() : aciTree.first();
-    const selectedTreeNodeData = selectedTreeNode && selectedTreeNode.length === 1 ? aciTree.itemData(selectedTreeNode) : undefined;
+    const selectedTreeNode = aciTree.selected() ? aciTree.selected() : aciTree.first();
+    const selectedTreeNodeData = selectedTreeNode ? aciTree.itemData(selectedTreeNode) : undefined;
 
     return {
       t: aciTree,

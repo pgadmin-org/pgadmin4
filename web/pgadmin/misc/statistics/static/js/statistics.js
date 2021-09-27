@@ -199,7 +199,7 @@ define('misc.statistics', [
          */
 
         // Avoid unnecessary reloads
-        var treeHierarchy = node.getTreeNodeHierarchy(item);
+        var treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
         var cache_flag = {
           node_type: node_type,
           url: url,
@@ -210,7 +210,7 @@ define('misc.statistics', [
         // Cache the current IDs for next time
         $(panel[0]).data('node-prop', cache_flag);
 
-        if (statisticsHelper.nodeHasStatistics(node, item)) {
+        if (statisticsHelper.nodeHasStatistics(pgBrowser, node, item)) {
           msg = '';
           var timer;
           // Set the url, fetch the data and update the collection

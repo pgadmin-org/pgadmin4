@@ -22,7 +22,7 @@ describe('RestoreDialog', () => {
 
   beforeEach(() => {
     pgBrowser = {
-      treeMenu: new TreeFake(),
+      tree: new TreeFake(),
       Nodes: {
         server: jasmine.createSpyObj('Node[server]', ['getTreeNodeHierarchy']),
         database: jasmine.createSpyObj('Node[database]', ['getTreeNodeHierarchy']),
@@ -113,7 +113,7 @@ describe('RestoreDialog', () => {
       ],
     };
 
-    pgBrowser.treeMenu = TreeFake.build(hierarchy);
+    pgBrowser.tree = TreeFake.build(hierarchy, pgBrowser);
   });
 
   describe('#draw', () => {
@@ -138,7 +138,7 @@ describe('RestoreDialog', () => {
 
     context('there are no ancestors of the type server', () => {
       it('does not create a dialog', () => {
-        pgBrowser.treeMenu.selectNode([{id: 'root'}]);
+        pgBrowser.tree.selectNode([{id: 'root'}]);
         restoreDialog.draw(null, null, null);
         expect(alertifySpy['pg_restore']).not.toHaveBeenCalled();
       });
