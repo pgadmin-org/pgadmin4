@@ -52,7 +52,7 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
   case 'password':
     return <FormInputText name={name} value={value} onChange={onTextChange} className={className} type='password' inputRef={inputRef} {...props}/>;
   case 'select':
-    return <FormInputSelect name={name} value={value} onChange={onTextChange} className={className} {...props} />;
+    return <FormInputSelect name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props} />;
   case 'select-refresh':
     return <SelectRefresh name={name} value={value} onChange={onTextChange} className={className} {...props} />;
   case 'switch':

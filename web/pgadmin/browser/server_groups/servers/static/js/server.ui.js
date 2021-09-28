@@ -19,7 +19,7 @@ import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from 'sources/validators';
 
 export default class ServerSchema extends BaseUISchema {
-  constructor(serverGroupOptions=[], initValues) {
+  constructor(serverGroupOptions=[], userId, initValues) {
     super({
       gid: undefined,
       id: undefined,
@@ -36,7 +36,7 @@ export default class ServerSchema extends BaseUISchema {
       connect_now: true,
       password: undefined,
       save_password: false,
-      db_res: '',
+      db_res: [],
       passfile: undefined,
       sslcompression: false,
       sslcert: undefined,
@@ -57,13 +57,14 @@ export default class ServerSchema extends BaseUISchema {
     });
 
     this.serverGroupOptions = serverGroupOptions;
+    this.userId = userId;
     _.bindAll(this, 'isShared', 'isSSL');
   }
 
   get SSL_MODES() { return ['prefer', 'require', 'verify-ca', 'verify-full']; }
 
   isShared(state) {
-    if(!this.isNew(state) && state.user_id != current_user.id && state.shared) {
+    if(!this.isNew(state) && this.userId != current_user.id && state.shared) {
       return true;
     }
     return false;
@@ -103,7 +104,7 @@ export default class ServerSchema extends BaseUISchema {
       {
         id: 'server_owner', label: gettext('Shared Server Owner'), type: 'text', mode: ['properties'],
         visible: function(state) {
-          var serverOwner = state.user_id;
+          var serverOwner = obj.userId;
           if (state.shared && serverOwner != current_user.id && pgAdmin.server_mode == 'True'){
             return true;
           }
@@ -141,7 +142,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'shared', label: gettext('Shared?'), type: 'switch',
         mode: ['properties', 'create', 'edit'],
         readonly: function(state){
-          var serverOwner = state.user_id;
+          var serverOwner = obj.userId;
           if (obj.isNew(state) && serverOwner != current_user.id) {
             return true;
           }
@@ -413,7 +414,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'db_res', label: gettext('DB restriction'), type: 'select', group: gettext('Advanced'),
         options: [],
         mode: ['properties', 'edit', 'create'], readonly: obj.isConnected, controlProps: {
-          multiple: true, allowClear: false, creatable: true},
+          multiple: true, allowClear: false, creatable: true, noDropdown: true},
       },
       {
         id: 'passfile', label: gettext('Password file'), type: 'file',

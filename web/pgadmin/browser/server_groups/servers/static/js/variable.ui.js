@@ -112,10 +112,16 @@ export default class VariableSchema extends BaseUISchema {
       {
         id: 'value', label: gettext('Value'), type: 'text',
         deps: ['name'],
-        depChange: (state, changeSource)=>{
-          if(changeSource == 'name') {
-            return {...state
-              , value: null
+        depChange: (state, source)=>{
+          if(source[source.length-1] == 'name') {
+            let variable = this.varTypes[state.name];
+            if(variable.vartype === 'bool'){
+              return {
+                value: false,
+              };
+            }
+            return {
+              value: null
             };
           }
         },

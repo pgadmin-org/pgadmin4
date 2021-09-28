@@ -819,6 +819,9 @@ function SchemaPropertiesView({
     readonly = true;
     if(modeSupported) {
       group = groupLabels[group] || group || defaultTab;
+      if(field.helpMessageMode && field.helpMessageMode.indexOf(viewHelperProps.mode) == -1) {
+        field.helpMessage = '';
+      }
 
       if(!tabs[group]) tabs[group] = [];
       if(field && field.type === 'nested-fieldset') {

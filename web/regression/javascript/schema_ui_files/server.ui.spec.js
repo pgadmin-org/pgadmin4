@@ -20,7 +20,7 @@ describe('ServerSchema', ()=>{
   let mount;
   let schemaObj = new ServerSchema([{
     label: 'Servers', value: 1,
-  }], {
+  }], 0, {
     user_id: 'jasmine',
   });
   let getInitData = ()=>Promise.resolve({});

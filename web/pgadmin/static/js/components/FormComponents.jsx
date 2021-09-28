@@ -381,7 +381,7 @@ export function InputFileSelect({controlProps, onChange, disabled, readonly, ...
     inpRef.current.focus();
   };
   return (
-    <InputText ref={inpRef} disabled={disabled} readonly={readonly} {...props} endAdornment={
+    <InputText ref={inpRef} disabled={disabled} readonly={readonly} onChange={onChange} {...props} endAdornment={
       <IconButton onClick={()=>showFileDialog(controlProps, onFileSelect)}
         disabled={disabled||readonly} aria-label={gettext('Select a file')}><FolderOpenRoundedIcon /></IconButton>
     } />

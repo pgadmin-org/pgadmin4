@@ -69,7 +69,7 @@ export default class DatabaseSchema extends BaseUISchema {
       defseqacl: [],
       is_template: false,
       deftypeacl: [],
-      schema_res:'',
+      schema_res: [],
       ...initValues,
     });
     this.getVariableSchema = getVariableSchema;
@@ -195,6 +195,7 @@ export default class DatabaseSchema extends BaseUISchema {
         type: 'select', group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
         helpMessage: gettext('Note: Changes to the schema restriction will require the Schemas node in the browser to be refreshed before they will be shown.'),
+        helpMessageMode: ['edit', 'create'],
         controlProps: {
           multiple: true, allowClear: false, creatable: true,
         }, depChange: (state)=>{
