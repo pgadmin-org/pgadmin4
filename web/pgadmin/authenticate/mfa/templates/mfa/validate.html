@@ -1,0 +1,121 @@
+{% extends "security/panel.html" %}
+{% block panel_image %}
+<div class="pr-4">
+ <img src="{{ url_for('static', filename='img/login.svg') }}" alt="{{ _('Authentication') }}">
+</div>
+{% endblock %}
+{% block panel_title %}{{ _('Authentication') }}{% endblock %}
+{% block panel_body %}
+<script>
+  function onMFAChange(val) {
+    const mfa_methods = {
+      {% for key in views %}"{{views[key].id | e}}": { "label": "{{ views[key].label | e }}", "view":  {{ views[key].view | tojson }}, "script":  {{ views[key].script | tojson }} },
+{% endfor %}
+    };
+
+    var method = mfa_methods[val];
+
+    if (method == undefined)
+      return false;
+
+    window.init_mfa_method = null;
+
+    // Reset form classes - to show the 'Validate' button by default.
+    document.getElementById(
+      "mfa_form"
+    ).classList = ["show_validate_btn"];
+    document.getElementById("mfa_method_prepend").setAttribute(
+      'data-auth-method', val
+    );
+    document.getElementById("mfa_view").innerHTML = method.view;
+    var elem = document.getElementById("mfa_method_script");
+
+    if (elem) {
+      elem.remove();
+    }
+    clear_error();
+
+    if (method.script) {
+      var elem = document.createElement('script');
+      elem.src = method.script;
+      elem.id = "mfa_method_script";
+      document.body.appendChild(elem);
+    }
+  }
+
+  function render_error(err) {
+    let divElem = document.createElement('div');
+
+    divElem.setAttribute(
+      'style',
+      'position: fixed; top: 20px; right: 20px; width: 400px; z-index: 9999'
+    );
+    divElem.setAttribute('id', 'alert-container');
+
+    divElem.innerHTML = [
+      "<div class='alert alert-danger alert-dismissible fade show'",
+      "  role='alert'>",
+      "  <span id='alert_msg'></span>",
+      "  <button onclick='hide()' type='button' class='close'",
+      "    data-dismiss='alert' aria-label='Close'>",
+      "    <span aria-hidden='true'>×</span>",
+      "  </button>",
+      "</div>",
+    ].join('')
+
+    var alertContainer = document.getElementById("alert-container");
+    if (alertContainer) {
+      alertContainer.remove();
+    }
+    document.body.appendChild(divElem);
+    var alertMsg = document.getElementById("alert_msg");
+
+    alertMsg.innerHTML = err;
+  };
+
+  function clear_error() {
+    var alertContainer = document.getElementById("alert-container");
+    if (alertContainer) {
+      alertContainer.remove();
+    }
+  }
+
+  window.onload = () => {
+      {% for key in views %}{% if views[key].selected is true %}onMFAChange("{{ views[key].id | e }}");{% endif %}{% endfor %}
+  };
+</script>
+<style>
+form #validate-btn-group {
+  display: none;
+}
+form.show_validate_btn #validate-btn-group {
+  display: block;
+}
+
+{% for key in views %}{% if views[key].icon|length > 0 %}
+
+form #mfa_method_prepend[data-auth-method={{views[key].id | e}}] {
+  background: url({{ views[key].icon }})  0% 0% no-repeat #eee;
+}{% endif %}{% endfor %}
+
+</style>
+<form action="{{ url_for('mfa.validate') }}" method="POST"
+      name="mfa_form" id="mfa_form" class="show_validate_btn">
+  <div class="form-group">
+    <div class="from-group">
+      <div class="input-group pb-2">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="mfa_method" id="mfa_method_prepend">&nbsp;&nbsp;&nbsp;</label>
+        </div>
+        <select name="mfa_method" id="mfa_method" class="auth-select custom-select" onchange="onMFAChange(this.value);">
+          {% for key in views %}<option value="{{views[key].id | e}}" {% if views[key].selected is true %}selected{% endif %}>{{ views[key].label | e }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="from-group pt-2 pb-2" id="mfa_view"></div>
+    </div>
+    <div class="row align-items-center p-2" id='validate-btn-group'>
+      <button class="col btn btn-primary btn-block btn-validate" type="submit" value="{{ _('Validate') }}">{{ _('Validate') }}</button>
+    </div>
+    <div class="form-group text-right p-2"><a class="text-right" role="link" href="{{ logout_url }}">{{ _('Logout') }}</a></div>
+</form>
+{% endblock %}

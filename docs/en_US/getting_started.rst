@@ -33,6 +33,7 @@ Mode is pre-configured for security.
 
    deployment
    login
+   mfa
    user_management
    change_user_password
    restore_locked_user

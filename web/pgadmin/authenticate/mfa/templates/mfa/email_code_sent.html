@@ -1,0 +1,19 @@
+<div class="form-group">
+  <div class="form-group">{{ message }}</div>
+  <div id="showme" class="hidden">
+    <div class="form-group pb-3">
+      <div class="card ">
+        <div class="card-body">
+          <div class="alert alert-warning d-flex flex-row mb-0">
+            <i class="fas fa-lg fa-exclamation-triangle mr-3 align-self-center"></i>
+            <div class="h-100">
+              <span class="text-primary">{{ _("Haven't received an email?") }} <a class="enable_me_in_20 alert-link" href="#" onClick="javascript:sendCodeToEmail()" disabled>{{ _("Send again") }}</a></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='form-group'>
+    <input class='form-control' placeholder='{{ _("Enter code") }}' name='code' type='password' autofocus='' pattern='\d*' autocomplete="one-time-code">
+  </div>
+</div>

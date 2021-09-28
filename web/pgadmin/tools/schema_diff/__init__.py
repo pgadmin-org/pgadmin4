@@ -135,6 +135,8 @@ def panel(trans_id, editor_title):
         "schema_diff/index.html",
         _=gettext,
         trans_id=trans_id,
+        requirejs=True,
+        basejs=True,
         editor_title=editor_title
     )
 

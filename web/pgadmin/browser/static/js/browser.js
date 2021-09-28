@@ -19,7 +19,7 @@ define('pgadmin.browser', [
   'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
   'pgadmin.browser.runtime', 'pgadmin.browser.error', 'pgadmin.browser.frame',
   'pgadmin.browser.node', 'pgadmin.browser.collection', 'pgadmin.browser.activity',
-  'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
+  'sources/codemirror/addon/fold/pgadmin-sqlfoldcode', 'pgadmin.browser.dialog',
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state','jquery.acisortable',
   'jquery.acifragment',
 ], function(
@@ -160,7 +160,7 @@ define('pgadmin.browser', [
         let ih = window.innerHeight;
         if (ih > passed_height){
           return passed_height;
-        }else{
+        } else {
           if (ih > pgAdmin.Browser.stdH.lg)
             return pgAdmin.Browser.stdH.lg;
           else if (ih > pgAdmin.Browser.stdH.md)

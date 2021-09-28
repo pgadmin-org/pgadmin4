@@ -291,6 +291,8 @@ def panel(trans_id):
         bgcolor=bgcolor,
         fgcolor=fgcolor,
         layout=layout,
+        requirejs=True,
+        basejs=True,
         macros=macros
     )
 
