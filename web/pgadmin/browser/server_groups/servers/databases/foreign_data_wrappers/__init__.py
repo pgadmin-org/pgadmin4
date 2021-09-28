@@ -862,7 +862,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             sid: Server ID
             did: Database ID
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             sql = render_template("/".join([self.template_path,
                                             'validators.sql']),
@@ -892,7 +892,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             sid: Server ID
             did: Database ID
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             sql = render_template("/".join([self.template_path,
                                             'handlers.sql']),
