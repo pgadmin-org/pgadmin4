@@ -177,6 +177,12 @@ export class Tree {
     await this.tree.closeDirectory(item);
   }
 
+  async setId(item, data) {
+    if(item) {
+      item.getMetadata('data').id = data.id;
+    }
+  }
+
   deselect(item) {
     this.tree.deSelectActiveFile(item);
   }
@@ -240,7 +246,7 @@ export class Tree {
     if (this.hasParent(item)) {
       let _siblings = this.parent(item).children.filter((_item) => _item.path !== item.path);
       if (typeof(_siblings) !== 'object') return [_siblings];
-      else _siblings;
+      else return _siblings;
     }
     return [];
   }
