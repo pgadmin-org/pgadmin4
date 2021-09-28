@@ -82,8 +82,8 @@ export class ColumnSchema extends BaseUISchema {
         id: 'colname', label: gettext('Column'),
         type: 'select', cell: 'select', noEmpty: true,
         disabled: () => inSchema(columnSchemaObj.node_info),
-        readonly: function (state) {
-          return columnSchemaObj.inSchemaWithModelCheck(state);
+        editable: function (state) {
+          return !columnSchemaObj.inSchemaWithModelCheck(state);
         },
         options: columnSchemaObj.fieldOptions.columnList,
         node: 'column',
@@ -92,8 +92,8 @@ export class ColumnSchema extends BaseUISchema {
         type: 'select',
         cell: 'select',
         disabled: () => inSchema(columnSchemaObj.node_info),
-        readonly: function (state) {
-          return columnSchemaObj.inSchemaWithModelCheck(state);
+        editable: function (state) {
+          return !columnSchemaObj.inSchemaWithModelCheck(state);
         },
         options: columnSchemaObj.fieldOptions.collationList,
         node: 'index',
@@ -129,16 +129,23 @@ export class ColumnSchema extends BaseUISchema {
             }
           };
         },
-        readonly: function (state) {
-          return columnSchemaObj.inSchemaWithModelCheck(state);
+        editable: function (state) {
+          return !columnSchemaObj.inSchemaWithModelCheck(state);
         },
         node: 'index',
         url_jump_after_node: 'schema',
         deps: ['amname'],
       },{
         id: 'sort_order', label: gettext('Sort order'),
-        type: 'switch',
-        cell: 'switch',
+        type: 'select', cell: 'select',
+        options: [
+          {label: 'ASC', value: false},
+          {label: 'DESC', value: true},
+        ],
+        width: 110, disableResizing: true,
+        controlProps: {
+          allowClear: false,
+        },
         depChange: (state, source, topState, actionObj) => {
           //Access method is empty or btree then do not disable field
           if(isEmptyString(topState.amname) || topState.amname === 'btree') {
@@ -167,13 +174,8 @@ export class ColumnSchema extends BaseUISchema {
           }
         },
         deps: ['amname'],
-        options: {
-          'onText': 'DESC', 'offText': 'ASC',
-        },
       },{
         id: 'nulls', label: gettext('NULLs'),
-        type: 'switch',
-        cell: 'switch',
         editable: function(state) {
           let topObj = columnSchemaObj._top;
           if(columnSchemaObj.inSchemaWithModelCheck(state)) {
@@ -187,9 +189,12 @@ export class ColumnSchema extends BaseUISchema {
           }
         },
         deps: ['amname', 'sort_order'],
-        options: {
-          'onText': 'FIRST', 'offText': 'LAST',
-        },
+        type:'select', cell: 'select',
+        options: [
+          {label: 'FIRST', value: true},
+          {label: 'LAST', value: false},
+        ], controlProps: {allowClear: false},
+        width: 110, disableResizing: true,
       },
     ];
   }
