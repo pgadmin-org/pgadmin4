@@ -755,7 +755,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         sql_header = """-- SEQUENCE: {0}.{1}\n\n""".format(
             result['schema'], result['name'])
 
-        sql_header += """-- DROP SEQUENCE {0};
+        sql_header += """-- DROP SEQUENCE IF EXISTS {0};
 
 """.format(self.qtIdent(self.conn, result['schema'], result['name']))
 

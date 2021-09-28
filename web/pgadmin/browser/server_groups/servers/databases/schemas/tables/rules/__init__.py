@@ -485,7 +485,9 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         res_data = parse_rule_definition(res)
         SQL = render_template("/".join(
             [self.template_path, self._CREATE_SQL]),
-            data=res_data, display_comments=True)
+            data=res_data, display_comments=True,
+            add_replace_clause=True
+        )
 
         return ajax_response(response=SQL)
 

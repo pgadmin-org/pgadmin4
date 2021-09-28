@@ -1055,7 +1055,7 @@ It may have been removed by another user.
         sql_header = """
 -- CATALOG: {0}
 
--- DROP SCHEMA {0};
+-- DROP SCHEMA IF EXISTS {0};
 
 """.format(old_data['name'])
 

@@ -1,6 +1,6 @@
 -- Subscription: test_create_subscription
 
--- DROP SUBSCRIPTION test_create_subscription;
+-- DROP SUBSCRIPTION IF EXISTS test_create_subscription;
 
 CREATE SUBSCRIPTION test_create_subscription
     CONNECTION 'host=localhost port=5432 user=postgres dbname=postgres'

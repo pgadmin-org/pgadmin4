@@ -1,6 +1,6 @@
 -- Foreign Server: FS_$%{}[]()&*^!@"'`\/#
 
--- DROP SERVER FS_$%{}[]()&*^!@"'`\/#
+-- DROP SERVER IF EXISTS FS_$%{}[]()&*^!@"'`\/#
 
 CREATE SERVER "FS_$%{}[]()&*^!@""'`\/#"
     VERSION '1.1'

@@ -785,7 +785,8 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         sql_header = "-- Subscription: {}".format(old_data['name'])
         sql_header += "\n\n"
 
-        sql_header += "-- DROP SUBSCRIPTION {};".format(old_data['name'])
+        sql_header += "-- DROP SUBSCRIPTION IF EXISTS {};".format(
+            old_data['name'])
 
         sql_header += render_template(
             "/".join([self.template_path, self._DELETE_SQL]),

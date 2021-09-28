@@ -839,7 +839,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql_header = """-- User Mapping : {0}
 
--- DROP USER MAPPING FOR {0} SERVER {1}
+-- DROP USER MAPPING IF EXISTS FOR {0} SERVER {1}
 
 """.format(res['rows'][0]['name'], fdw_data['name'])
 

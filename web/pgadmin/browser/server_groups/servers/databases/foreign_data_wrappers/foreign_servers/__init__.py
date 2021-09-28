@@ -848,7 +848,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql_header = """-- Foreign Server: {0}
 
--- DROP SERVER {0}
+-- DROP SERVER IF EXISTS {0}
 
 """.format(res['rows'][0]['name'])
 

@@ -2,7 +2,7 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
 {% if data.name %}
-CREATE SCHEMA{% if add_not_exists_clause %} IF NOT EXISTS {% endif %} {{ conn|qtIdent(data.name) }}{% if data.namespaceowner %}
+CREATE SCHEMA{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.name) }}{% if data.namespaceowner %}
 
     AUTHORIZATION {{ conn|qtIdent(data.namespaceowner) }}{% endif %}{% endif %};
 {#  Alter the comment/description #}

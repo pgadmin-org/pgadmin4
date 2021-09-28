@@ -768,7 +768,7 @@ AND relkind != 'c'))"""
         sql_header = """-- DOMAIN: {0}.{1}\n\n""".format(
             data['basensp'], data['name'])
 
-        sql_header += """-- DROP DOMAIN {0};\n
+        sql_header += """-- DROP DOMAIN IF EXISTS {0};\n
 """.format(self.qtIdent(self.conn, data['basensp'], data['name']))
         SQL = sql_header + SQL
 

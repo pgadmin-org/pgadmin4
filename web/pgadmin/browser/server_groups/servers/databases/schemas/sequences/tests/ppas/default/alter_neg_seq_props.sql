@@ -1,6 +1,6 @@
 -- SEQUENCE: public.Seq1_$%{}[]()&*^!@"'`\/#
 
--- DROP SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#";
+-- DROP SEQUENCE IF EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#";
 
 CREATE SEQUENCE IF NOT EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#"
     INCREMENT -7

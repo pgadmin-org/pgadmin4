@@ -911,7 +911,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         sql_header = """-- FOREIGN TABLE: {0}.{1}\n\n""".format(
             data['basensp'], data['name'])
 
-        sql_header += """-- DROP FOREIGN TABLE {0};
+        sql_header += """-- DROP FOREIGN TABLE IF EXISTS {0};
 
 """.format(self.qtIdent(self.conn, data['basensp'], data['name']))
 

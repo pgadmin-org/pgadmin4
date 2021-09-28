@@ -860,7 +860,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql_header = """-- Text Search Dictionary: {0}.{1}\n\n""".format(
             res['rows'][0]['schema'], res['rows'][0]['name'])
-        sql_header += """-- DROP TEXT SEARCH DICTIONARY {0};\n
+        sql_header += """-- DROP TEXT SEARCH DICTIONARY IF EXISTS {0};\n
 """.format(self.qtIdent(self.conn, res['rows'][0]['schema'],
                         res['rows'][0]['name']))
 

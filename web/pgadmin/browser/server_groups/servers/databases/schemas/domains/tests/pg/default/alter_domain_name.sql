@@ -1,6 +1,6 @@
 -- DOMAIN: public.Dom2_$%{}[]()&*^!@"'`\/#
 
--- DROP DOMAIN public."Dom2_$%{}[]()&*^!@""'`\/#";
+-- DROP DOMAIN IF EXISTS public."Dom2_$%{}[]()&*^!@""'`\/#";
 
 CREATE DOMAIN public."Dom2_$%{}[]()&*^!@""'`\/#"
     AS text

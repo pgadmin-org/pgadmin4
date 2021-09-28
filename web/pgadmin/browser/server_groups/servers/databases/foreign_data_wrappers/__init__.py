@@ -840,7 +840,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
         sql_header = """-- Foreign Data Wrapper: {0}\n\n""".format(
             res['rows'][0]['name'])
 
-        sql_header += """-- DROP FOREIGN DATA WRAPPER {0}
+        sql_header += """-- DROP FOREIGN DATA WRAPPER IF EXISTS {0}
 
 """.format(self.qtIdent(self.conn, res['rows'][0]['name']))
 

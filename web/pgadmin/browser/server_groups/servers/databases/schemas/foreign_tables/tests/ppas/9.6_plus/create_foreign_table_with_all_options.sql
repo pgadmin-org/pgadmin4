@@ -1,6 +1,6 @@
 -- FOREIGN TABLE: public.FT1_$%{}[]()&*^!@"'`\/#
 
--- DROP FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#";
+-- DROP FOREIGN TABLE IF EXISTS public."FT1_$%{}[]()&*^!@""'`\/#";
 
 CREATE FOREIGN TABLE IF NOT EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"(
     col1 bigint NULL,
