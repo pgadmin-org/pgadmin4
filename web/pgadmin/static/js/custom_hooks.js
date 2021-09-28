@@ -1,4 +1,4 @@
-import {useRef, useEffect, useState} from 'react';
+import {useRef, useEffect, useState, useCallback} from 'react';
 
 /* React hook for setInterval */
 export function useInterval(callback, delay) {
@@ -57,3 +57,12 @@ export function useOnScreen(ref) {
   return isIntersecting;
 }
 
+export function useIsMounted() {
+  const ref = useRef(true);
+  useEffect(() => {
+    return () => {
+      ref.current = false;
+    };
+  }, []);
+  return useCallback(() => ref.current, []);
+}

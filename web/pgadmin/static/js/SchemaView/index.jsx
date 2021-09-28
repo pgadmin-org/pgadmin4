@@ -36,6 +36,7 @@ import { parseApiError } from '../api_instance';
 import DepListener, {DepListenerContext} from './DepListener';
 import FieldSetView from './FieldSetView';
 import DataGridView from './DataGridView';
+import { useIsMounted } from '../custom_hooks';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -451,6 +452,7 @@ function SchemaDialogView({
   const [formResetKey, setFormResetKey] = useState(0);
   const firstEleRef = useRef();
   const isNew = schema.isNew(schema.origData);
+  const checkIsMounted = useIsMounted();
 
   const depListenerObj = useRef(new DepListener());
   /* The session data */
@@ -538,7 +540,7 @@ function SchemaDialogView({
       setLoaderText('');
     }
 
-    /* Clear the focus timeout it unmounted */
+    /* Clear the focus timeout if unmounted */
     return ()=>clearTimeout(focusTimeout);
   }, []);
 
@@ -625,8 +627,10 @@ function SchemaDialogView({
           message: parseApiError(err),
         });
       }).finally(()=>{
-        setSaving(false);
-        setLoaderText('');
+        if(checkIsMounted()) {
+          setSaving(false);
+          setLoaderText('');
+        }
       });
   };
 
@@ -787,20 +791,18 @@ function SchemaPropertiesView({
   let groupLabels = {};
   const [origData, setOrigData] = useState({});
   const [loaderText, setLoaderText] = useState('');
+  const checkIsMounted = useIsMounted();
 
   useEffect(()=>{
-    let unmounted = false;
     setLoaderText('Loading...');
     getInitData().then((data)=>{
       data = data || {};
       schema.initialise(data);
-      if(!unmounted) {
+      if(checkIsMounted()) {
         setOrigData(data || {});
         setLoaderText('');
       }
     });
-
-    return ()=>unmounted=true;
   }, [getInitData]);
 
   let fullTabs = [];

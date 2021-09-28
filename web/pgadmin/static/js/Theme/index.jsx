@@ -305,6 +305,9 @@ function getFinalTheme(baseTheme) {
         colorPrimary: {
           '&$disabled': {
             color: 'abc',
+            '& + .MuiSwitch-track': {
+              backgroundColor: 'abc',
+            }
           }
         },
         switchBase: {

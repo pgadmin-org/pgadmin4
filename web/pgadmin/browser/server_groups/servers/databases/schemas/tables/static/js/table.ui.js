@@ -708,7 +708,7 @@ export default class TableSchema extends BaseUISchema {
     },{
       id: 'relpersistence', label: gettext('Unlogged?'), cell: 'switch',
       type: 'switch', mode: ['properties', 'create', 'edit'],
-      disabled: obj.inSchemaWithModelCheck,
+      readonly: obj.inSchemaWithModelCheck,
       group: 'advanced',
     },{
       id: 'conname', label: gettext('Primary key'), cell: 'text',
