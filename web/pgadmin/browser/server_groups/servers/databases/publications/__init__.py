@@ -705,7 +705,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             sid: Server ID
             did: Database ID
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
 
         sql = render_template("/".join([self.template_path,
                                         'get_all_tables.sql']),

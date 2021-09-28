@@ -27,7 +27,7 @@ def get_tables(self):
             self.server_id) + '/' +
         str(self.db_id) + '/',
         content_type='html/json')
-    return [tables.json['data'][1]['value']]
+    return [tables.json['data'][0]['value']]
 
 
 def create_publication_api(self):

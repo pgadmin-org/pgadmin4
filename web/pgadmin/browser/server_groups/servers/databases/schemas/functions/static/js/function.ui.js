@@ -307,7 +307,7 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'VOLATILE', 'value': 'v'},
         {'label': 'STABLE', 'value': 's'},
         {'label': 'IMMUTABLE', 'value': 'i'},
-      ], disabled: obj.inCatalog(),
+      ], disabled: (!(this.type === 'procedure')) ? obj.inCatalog() : obj.isGreaterThan95,
       controlProps: {allowClear: false},
     },{
       id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
@@ -342,7 +342,7 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'procost', label: gettext('Estimated cost'), group: gettext('Options'),
       cell:'string', type: 'text', deps: ['lanname'],
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): obj.isGreaterThan95,
+      disabled: obj.inCatalog(),
     },{
       id: 'prorows', label: gettext('Estimated rows'), type: 'text',
       deps: ['proretset'], visible: obj.isVisible,
@@ -381,7 +381,7 @@ export default class FunctionSchema extends BaseUISchema {
       id: 'variables', label: '', type: 'collection',
       group: gettext('Parameters'),
       schema: this.getNodeVariableSchema(),
-      mode: ['edit', 'create'], canAdd: obj.inCatalog(), canEdit: false,
+      mode: ['edit', 'create'], canAdd: true, canEdit: false,
       canDelete: true,
     },
     {
