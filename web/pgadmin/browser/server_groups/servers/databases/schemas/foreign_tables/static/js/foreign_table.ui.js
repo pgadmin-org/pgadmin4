@@ -195,11 +195,11 @@ export default class ForeignTableSchema extends BaseUISchema {
         type: 'text', group: gettext('Definition'), mode: ['properties'],
       },
       {
-        id: 'fdwoptions', label: gettext('Options'), type: 'collection',
-        schema: new OptionsSchema('fdwoption', 'fdwvalue'),
+        id: 'ftoptions', label: gettext('Options'), type: 'collection',
+        schema: new OptionsSchema('option', 'value'),
         group: gettext('Options'),
         mode: ['edit', 'create'],
-        canAdd: true, canDelete: true, uniqueCol : ['fdwoption'],
+        canAdd: true, canDelete: true, uniqueCol : ['option'],
       },
       {
         id: 'relacl', label: gettext('Privileges'), cell: 'text',
