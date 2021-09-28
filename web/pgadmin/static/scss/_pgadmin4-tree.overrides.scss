@@ -39,7 +39,7 @@
     white-space: nowrap;
     padding: 2px 0;
     padding-left: 2px;
-    cursor: default;
+    cursor: pointer !important;
     &:hover, &.pseudo-active {
       background-color: $tree-bg-hover !important;
     }
@@ -102,8 +102,9 @@
         border:1px solid transparent;
         height:auto;
         white-space:normal;
-        cursor:pointer;
+        cursor:pointer !important;
         margin-right:24px;
+        margin-left: 2px;
     }
     &.prompt.new .file-label, &.file .file-label {
         margin-left: 18px;
@@ -115,6 +116,7 @@
         cursor: default;
         color: #c1c1c1;
         margin-left: 3px;
+        cursor: pointer !important;
     }
 }
 

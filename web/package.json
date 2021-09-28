@@ -150,7 +150,7 @@
     "xterm-addon-fit": "^0.5.0",
     "xterm-addon-search": "^0.8.0",
     "xterm-addon-web-links": "^0.4.0",
-    "pgadmin4-tree": "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#b09740eb89595f99a925aaca9be5afa4be0fa3cc",
+    "pgadmin4-tree": "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#76d7801ae6c179a5efd3c826c1bd91446a2436fb",
     "react-aspen": "^1.1.0",
     "@types/classnames": "^2.2.6",
     "@types/react": "^16.7.18",
