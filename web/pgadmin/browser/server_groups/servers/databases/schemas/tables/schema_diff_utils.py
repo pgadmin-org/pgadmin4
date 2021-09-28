@@ -170,12 +170,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                 tmp = copy.deepcopy(item)
 
         if tmp and source != tmp:
-            tmp_updated = copy.deepcopy(source)
-            # Preserve the column number
-            tmp_updated['attnum'] = tmp['attnum']
-            if item['typname'] not in tmp_updated['edit_types']:
-                tmp_updated['col_type_conversion'] = False
-            updated.append(tmp_updated)
+            updated.append(source)
             target_cols.remove(tmp)
         elif tmp and source == tmp:
             target_cols.remove(tmp)

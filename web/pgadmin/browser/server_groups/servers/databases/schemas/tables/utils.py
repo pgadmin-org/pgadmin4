@@ -1276,7 +1276,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     "/".join([self.column_template_path,
                               self._PROPERTIES_SQL]),
                     tid=tid,
-                    clid=c['attnum'],
+                    clid=c['attnum'] if 'attnum' in c else None,
                     show_sys_objects=self.blueprint.show_system_objects
                 )
 
