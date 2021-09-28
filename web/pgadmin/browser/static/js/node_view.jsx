@@ -165,7 +165,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
   const viewHelperProps = {
     mode: actionType,
     serverInfo: serverInfo ? {
-      type: serverInfo.type,
+      type: serverInfo.server_type,
       version: serverInfo.version,
     }: undefined,
     inCatalog: inCatalog,

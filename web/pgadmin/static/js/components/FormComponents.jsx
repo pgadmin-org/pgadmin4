@@ -76,6 +76,12 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     backgroundColor: theme.otherVars.borderColor,
     padding: theme.spacing(1),
+  },
+  readOnlySwitch: {
+    opacity: 0.75,
+    '& .MuiSwitch-track': {
+      opacity: theme.palette.action.disabledOpacity,
+    }
   }
 }));
 
@@ -139,15 +145,9 @@ FormInput.propTypes = {
   testcid: PropTypes.any,
 };
 
-export function InputSQL({value, options, onChange, readonly, className, ...props}) {
+export function InputSQL({value, options, onChange, className, ...props}) {
   const classes = useStyles();
   const editor = useRef();
-
-  useEffect(()=>{
-    if(editor.current) {
-      editor.current.setOption('readOnly', readonly);
-    }
-  }, [readonly]);
 
   return (
     <CodeMirror
@@ -413,6 +413,7 @@ FormInputFileSelect.propTypes = {
 };
 
 export function InputSwitch({cid, helpid, value, onChange, readonly, controlProps, ...props}) {
+  const classes = useStyles();
   return (
     <Switch color="primary"
       checked={Boolean(value)}
@@ -425,6 +426,7 @@ export function InputSwitch({cid, helpid, value, onChange, readonly, controlProp
       }}
       {...controlProps}
       {...props}
+      className={(readonly || props.disabled) ? classes.readOnlySwitch : null}
     />
   );
 }
@@ -434,6 +436,7 @@ InputSwitch.propTypes = {
   value: PropTypes.any,
   onChange: PropTypes.func,
   readonly: PropTypes.bool,
+  disabled: PropTypes.bool,
   controlProps: PropTypes.object,
 };
 

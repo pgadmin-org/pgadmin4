@@ -457,7 +457,7 @@ export default class TriggerSchema extends BaseUISchema {
       type: 'sql', mode: ['create', 'edit'], deps: ['tfunction'],
       isFullTab: true,
       visible: true,
-      readonly: (state) => {
+      disabled: (state) => {
         // We will enable it only when EDB PPAS and trigger function is
         // set to Inline EDB-SPL
         var tfunction = state.tfunction,

@@ -130,6 +130,10 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
         if(stringify && (_.isArray(change) || _.isObject(change))) {
           change = JSON.stringify(change);
         }
+        /* Null values are not passed in URL params, pass it as an empty string */
+        if(_.isNull(change)) {
+          change = '';
+        }
         return levelChanges[id] = change;
       }
     };

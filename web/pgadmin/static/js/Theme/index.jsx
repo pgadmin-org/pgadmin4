@@ -30,6 +30,11 @@ basicSettings = createMuiTheme(basicSettings, {
   shape: {
     borderRadius: 4,
   },
+  palette: {
+    action: {
+      disabledOpacity: 0.32,
+    }
+  },
   overrides: {
     MuiTabs: {
       root: {
@@ -196,6 +201,9 @@ basicSettings = createMuiTheme(basicSettings, {
     },
     MuiTab: {
       textColor: 'inherit',
+    },
+    MuiCheckbox: {
+      disableTouchRipple: true,
     }
   },
 });
@@ -272,6 +280,9 @@ function getFinalTheme(baseTheme) {
       MuiIconButton: {
         root: {
           color: baseTheme.palette.text.primary,
+          '&$disabled': {
+            color: 'abc',
+          }
         }
       },
       MuiAccordion: {
@@ -291,16 +302,33 @@ function getFinalTheme(baseTheme) {
           height: 28,
           padding: '7px 12px',
         },
+        colorPrimary: {
+          '&$disabled': {
+            color: 'abc',
+          }
+        },
         switchBase: {
           padding: baseTheme.spacing(0.5),
+          '&$disabled': {
+            color: 'abc',
+            '& + .MuiSwitch-track': {
+              opacity: baseTheme.palette.action.disabledOpacity,
+            }
+          },
           '&.Mui-checked': {
             color: baseTheme.palette.success.main,
             transform: 'translateX(24px)',
+            '& .MuiSwitch-thumb': {
+              border: 0
+            }
           },
           '&.Mui-checked + .MuiSwitch-track': {
             backgroundColor: baseTheme.palette.success.light,
           },
         },
+        thumb: {
+          border: '1px solid ' + baseTheme.otherVars.inputBorderColor
+        }
       },
       MuiCheckbox: {
         root: {

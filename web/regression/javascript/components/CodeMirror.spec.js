@@ -19,7 +19,16 @@ describe('CodeMirror', ()=>{
   let cmInstance, options={
       lineNumbers: true,
       mode: 'text/x-pgsql',
-    }, cmObj = jasmine.createSpyObj('cmObj', {'getValue':()=>'', 'setValue': ()=>{}, 'refresh': ()=>{}});
+    },
+    cmObj = jasmine.createSpyObj('cmObj', {
+      'getValue':()=>'',
+      'setValue': ()=>{},
+      'refresh': ()=>{},
+      'setOption': ()=>{},
+      'removeKeyMap': ()=>{},
+      'addKeyMap': ()=>{},
+      'getWrapperElement': document.createElement('div'),
+    });
   beforeEach(()=>{
     jasmineEnzyme();
     spyOn(OrigCodeMirror, 'fromTextArea').and.returnValue(cmObj);

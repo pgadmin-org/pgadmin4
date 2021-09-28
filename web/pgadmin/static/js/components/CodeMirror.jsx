@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
 /* React wrapper for CodeMirror */
-export default function CodeMirror({currEditor, name, value, options, events, className}) {
+export default function CodeMirror({currEditor, name, value, options, events, readonly, disabled, className}) {
   const taRef = useRef();
   const editor = useRef();
   const cmWrapper = useRef();
@@ -39,6 +39,24 @@ export default function CodeMirror({currEditor, name, value, options, events, cl
       editor.current.on(eventName, events[eventName]);
     });
   }, []);
+
+  useEffect(()=>{
+    if(editor.current) {
+      if(disabled) {
+        cmWrapper.current.classList.add('cm_disabled');
+        editor.current.setOption('readOnly', 'nocursor');
+      } else if(readonly) {
+        cmWrapper.current.classList.add('cm_disabled');
+        editor.current.addKeyMap({'Tab': false});
+        editor.current.addKeyMap({'Shift-Tab': false});
+      } else {
+        cmWrapper.current.classList.remove('cm_disabled');
+        editor.current.setOption('readOnly', false);
+        editor.current.removeKeyMap('Tab');
+        editor.current.removeKeyMap('Shift-Tab');
+      }
+    }
+  }, [readonly, disabled]);
 
   useMemo(() => {
     if(editor.current) {
@@ -68,5 +86,7 @@ CodeMirror.propTypes = {
   options: PropTypes.object,
   change: PropTypes.func,
   events: PropTypes.object,
+  readonly: PropTypes.bool,
+  disabled: PropTypes.bool,
   className: CustomPropTypes.className,
 };
