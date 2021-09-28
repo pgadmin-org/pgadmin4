@@ -31,7 +31,7 @@ function manageTreeEvents(event, eventName, item) {
       obj.tree.handleDraggable(event, item);
     }
     if (eventName == 'added' || eventName == 'beforeopen' || eventName == 'loaded') {
-      obj.tree.addNewNode(item.getMetadata('data').id, item.getMetadata('data') ,item), item.parent.path;
+      obj.tree.addNewNode(item.getMetadata('data').id, item.getMetadata('data') ,item, item.parent.path);
     }
     if (_.isObject(node.callbacks) &&
       eventName in node.callbacks &&
