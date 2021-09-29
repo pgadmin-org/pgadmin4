@@ -282,7 +282,8 @@ define('pgadmin.node.database', [
           }
 
           pgBrowser.tree.addIcon(item, {icon: data.icon});
-          if (!data.connected && data.allowConn) {
+          if (!data.connected && data.allowConn && !data.is_connecting) {
+            data.is_connecting = true;
             connect_to_database(this, data, pgBrowser.tree, item, true);
             return false;
           }
@@ -295,7 +296,8 @@ define('pgadmin.node.database', [
           }
 
           pgBrowser.tree.addIcon(item, {icon: data.icon});
-          if (!data.connected && data.allowConn) {
+          if (!data.connected && data.allowConn && !data.is_connecting) {
+            data.is_connecting = true;
             connect_to_database(this, data, pgBrowser.tree, item, false);
             return false;
           }
@@ -416,6 +418,7 @@ define('pgadmin.node.database', [
           onFailure = function(
             xhr, status, error, _model, _data, _tree, _item, _status
           ) {
+            data.is_connecting = false;
             if (xhr.status != 200 && xhr.responseText.search('Ticket expired') !== -1) {
               tree.addIcon(_item, {icon: 'icon-server-connecting'});
               let fetchTicket = Kerberos.fetch_ticket();
@@ -454,10 +457,6 @@ define('pgadmin.node.database', [
             res, model, _data, _tree, _item, _connected
           ) {
             _data.is_connecting = false;
-            if (!_connected) {
-              _tree.deselect(_item);
-              _tree.setInode(_item);
-            }
             if (res && res.data) {
               if(typeof res.data.connected == 'boolean') {
                 _data.connected = res.data.connected;

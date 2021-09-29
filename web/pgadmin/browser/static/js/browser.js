@@ -1075,23 +1075,19 @@ define('pgadmin.browser', [
                 };
 
               if (binarySearch()) {
-                __ctx.t.before(i, {
-                  itemData: _data,
-                  success: function() {
-                    if (
-                      __ctx.o && __ctx.o.success && typeof(__ctx.o.success) == 'function'
-                    ) {
-                      __ctx.o.success.apply(__ctx.t, [i, _data]);
-                    }
-                  },
-                  fail: function() {
-                    console.warn('Failed to add before...', arguments);
-                    if (
-                      __ctx.o && __ctx.o.fail && typeof(__ctx.o.fail) == 'function'
-                    ) {
-                      __ctx.o.fail.apply(__ctx.t, [i, _data]);
-                    }
-                  },
+                __ctx.t.before(i, _data).then(() => {
+                  if (
+                    __ctx.o && __ctx.o.success && typeof(__ctx.o.success) == 'function'
+                  ) {
+                    __ctx.o.success.apply(__ctx.t, [i, _data]);
+                  }
+                }, () => {
+                  console.warn('Failed to add before...', arguments);
+                  if (
+                    __ctx.o && __ctx.o.fail && typeof(__ctx.o.fail) == 'function'
+                  ) {
+                    __ctx.o.fail.apply(__ctx.t, [i, _data]);
+                  }
                 });
               } else {
                 var _append = function() {
@@ -1570,32 +1566,26 @@ define('pgadmin.browser', [
                 };
 
               if (binarySearch()) {
-                __ctx.t.before(i, {
-                  itemData: _new,
-                  success: function() {
-                    var new_item = $(arguments[1].items[0]);
-                    __ctx.t.openPath(new_item);
-                    __ctx.t.select(new_item);
-                    if (
-                      __ctx.o && __ctx.o.success && typeof(__ctx.o.success) == 'function'
-                    ) {
-                      __ctx.o.success.apply(__ctx.t, [i, _old, _new]);
-                    }
-                  },
-                  fail: function() {
-                    console.warn('Failed to add before..', arguments);
-                    if (
-                      __ctx.o && __ctx.o.fail && typeof(__ctx.o.fail) == 'function'
-                    ) {
-                      __ctx.o.fail.apply(__ctx.t, [i, _old, _new]);
-                    }
-                  },
+                __ctx.t.before(i, _new).then((new_item) => {
+                  __ctx.t.openPath(new_item);
+                  __ctx.t.select(new_item);
+                  if (
+                    __ctx.o && __ctx.o.success && typeof(__ctx.o.success) == 'function'
+                  ) {
+                    __ctx.o.success.apply(__ctx.t, [i, _old, _new]);
+                  }
+                }, () => {
+                  console.warn('Failed to add before..', arguments);
+                  if (
+                    __ctx.o && __ctx.o.fail && typeof(__ctx.o.fail) == 'function'
+                  ) {
+                    __ctx.o.fail.apply(__ctx.t, [i, _old, _new]);
+                  }
                 });
               } else {
                 var _appendNode = function() {
                   __ctx.t.append(__ctx.i, _new).then(
-                    () => {
-                      var new_item = $(arguments[1].items[0]);
+                    (new_item) => {
                       __ctx.t.openPath(new_item);
                       __ctx.t.select(new_item);
                       if (

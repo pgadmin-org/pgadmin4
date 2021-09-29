@@ -77,7 +77,7 @@ export class Tree {
   }
 
   async before(item, data) {
-    await this.tree.create(item.parent, data.itemData);
+    return await this.tree.create(item.parent, data);
   }
 
   async update(item, data) {
