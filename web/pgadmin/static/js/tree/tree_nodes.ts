@@ -14,7 +14,7 @@ import _ from 'underscore';
 import { FileType } from 'react-aspen'
 import { findInTree } from './tree';
 
-import { dirname } from 'path-fx';
+import { dirname, unix } from 'path-fx';
 
 export class ManageTreeNodes {
   constructor(fs) {
@@ -157,7 +157,7 @@ export class ManageTreeNodes {
     let _parent_path = [];
     while(_path != '/') {
       let node = this.findNode(_path);
-      let _parent = dirname(_path);
+      let _parent = unix.dirname(_path);
       if(node.parentNode && node.parentNode.path == _parent) {
         if (node.parentNode.metadata.data !== null && !node.parentNode.metadata.data._type.includes('coll-'))
           _parent_path.push(node.parentNode.metadata.data._id);
