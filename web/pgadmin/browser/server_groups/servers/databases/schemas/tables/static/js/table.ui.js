@@ -632,14 +632,6 @@ export default class TableSchema extends BaseUISchema {
       }, options: this.fieldOptions.typname, optionsLoaded: (res)=>{
         obj.ofTypeTables = res;
       },
-      depChange: (state, source)=>{
-        if(source[0] == 'typname' && !isEmptyString(state.typname)) {
-          return {
-            columns: [],
-            primary_key: []
-          };
-        }
-      },
       deferredDepChange: (state, source, topState, actionObj)=>{
         const setColumns = (resolve)=>{
           let finalCols = [];
@@ -651,6 +643,7 @@ export default class TableSchema extends BaseUISchema {
             obj.changeColumnOptions(finalCols);
             return {
               columns: finalCols,
+              primary_key: []
             };
           });
         };

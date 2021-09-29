@@ -616,7 +616,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            op_class_list = [{'label': '', 'value': ''}]
+            op_class_list = []
 
             for r in result['rows']:
                 op_class_list.append({'label': r['opcname'],
@@ -710,7 +710,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             This function will return list of types available for table node
             for node-ajax-control
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             SQL = render_template(
                 "/".join([self.table_template_path, 'get_oftype.sql']),
@@ -821,7 +821,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             This function will return list of tables available for
             like/relation combobox while creating new table
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             SQL = render_template(
                 "/".join([self.table_template_path, 'get_relations.sql']),

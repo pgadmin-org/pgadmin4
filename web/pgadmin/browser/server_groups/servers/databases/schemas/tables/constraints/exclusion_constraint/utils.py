@@ -250,7 +250,7 @@ def get_access_methods(conn, template_path=None):
     :param template_path:
     :return:
     """
-    res = [{'label': '', 'value': ''}]
+    res = []
     sql = render_template("/".join([template_path, 'get_access_methods.sql']))
 
     status, rest = conn.execute_2darray(sql)
