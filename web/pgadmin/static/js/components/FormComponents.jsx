@@ -207,8 +207,8 @@ const DATE_TIME_FORMAT = {
   DATE_TIME_12: 'yyyy-MM-dd hh:mm:ss aa xxx',
   DATE_TIME_24: 'yyyy-MM-dd HH:mm:ss XXX',
   DATE: 'yyyy-MM-dd',
-  TIME_12: 'hh:mm aa',
-  TIME_24: 'HH:mm',
+  TIME_12: 'hh:mm:ss aa',
+  TIME_24: 'HH:mm:ss',
 };
 
 export function InputDateTimePicker({value, onChange, readonly, controlProps, ...props}) {

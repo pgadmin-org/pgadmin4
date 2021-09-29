@@ -62,6 +62,7 @@ export default class PgaJobSchema extends BaseUISchema {
         mode: ['create', 'edit'],
         controlProps: {allowClear: false},
         helpMessage: gettext('Please select a class to categorize the job. This option will not affect the way the job runs.'),
+        helpMessageMode: ['edit', 'create'],
       },{
         id: 'jobhostagent', label: gettext('Host agent'), type: 'text',
         mode: ['properties'],
@@ -69,6 +70,7 @@ export default class PgaJobSchema extends BaseUISchema {
         id: 'jobhostagent', label: gettext('Host agent'), type: 'text',
         mode: ['edit', 'create'],
         helpMessage: gettext('Enter the hostname of a machine running pgAgent if you wish to ensure only that machine will run this job. Leave blank if any host may run the job.'),
+        helpMessageMode: ['edit', 'create'],
       },{
         id: 'jobcreated', type: 'text', mode: ['properties'],
         label: gettext('Created'),

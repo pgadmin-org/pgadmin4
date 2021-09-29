@@ -113,18 +113,27 @@ export default class PgaJobStepSchema extends BaseUISchema {
         deps: ['jstkind'],
         disabled: function(state) { return !state.jstkind; },
         helpMessage: gettext('Select <strong>Local</strong> if the job step will execute on the local database server, or <strong>Remote</strong> to specify a remote database server.'),
+        helpMessageMode: ['edit', 'create'],
       }, {
         id: 'jstdbname', label: gettext('Database'), type: 'select',
         options: this.fieldOptions.databases,
         controlProps: {allowClear: true, placeholder: ''},
-        disabled: function(state) { return !state.jstkind || !state.jstconntype; },
+        disabled: function(state) {
+          let retVal = !state.jstkind || !state.jstconntype
+          if (retVal) {
+            state.jstdbname = null;
+          }
+          return retVal;
+        },
         deps: ['jstkind', 'jstconntype'],
         helpMessage: gettext('Please select the database on which the job step will run.'),
+        helpMessageMode: ['edit', 'create'],
       }, {
         id: 'jstconnstr', label: gettext('Connection string'), type: 'text',
         deps: ['jstkind', 'jstconntype'],
         disabled: function(state) { return !state.jstkind || state.jstconntype; },
         helpMessage: gettext('Please specify the connection string for the remote database server. Each parameter setting is in the form keyword = value. Spaces around the equal sign are optional. To write an empty value, or a value containing spaces, surround it with single quotes, e.g., keyword = \'a value\'. Single quotes and backslashes within the value must be escaped with a backslash, i.e., \' and \\.<br>For more information, please see the documentation on <a href="https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">libpq connection strings</a>.'),
+        helpMessageMode: ['edit', 'create'],
       }, {
         id: 'jstonerror', label: gettext('On error'), type: 'select',
         cell: 'select',

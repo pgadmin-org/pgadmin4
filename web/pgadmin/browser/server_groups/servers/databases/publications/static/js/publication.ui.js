@@ -136,6 +136,7 @@ export default class PublicationSchema extends BaseUISchema {
       id: 'only_table', label: gettext('Only table?'), type: 'switch',
       group: gettext('Definition'), mode: ['edit', 'create'],
       deps: ['name', 'pubtable', 'all_table'], readonly: obj.isTable,
+      helpMessageMode: ['edit', 'create'],
       helpMessage: gettext('If ONLY is specified before the table name, only that table is added to the publication. If ONLY is not specified, the table and all its descendant tables (if any) are added.'),
     },{
       id: 'pubtable', label: gettext('Tables'), type: 'select',

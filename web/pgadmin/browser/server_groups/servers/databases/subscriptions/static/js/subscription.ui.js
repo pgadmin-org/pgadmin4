@@ -184,6 +184,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('Connection'), mode: ['create', 'edit'],
       deps: ['all_table', 'host', 'port', 'username', 'db', 'password'], disabled: obj.isAllConnectionDataEnter,
       helpMessage: gettext('Click the refresh button to get the publications'),
+      helpMessageMode: ['edit', 'create'],
       type: (state)=>{
         return {
           type: 'select-refresh',
@@ -297,6 +298,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('With'),
       readonly: obj.isRefresh, deps :['refresh_pub'],
       helpMessage: gettext('Specifies whether the existing data in the publications that are being subscribed to should be copied once the replication starts.'),
+      helpMessageMode: ['edit', 'create'],
     },
     {
       id: 'copy_data', label: gettext('Copy data?'),
@@ -304,6 +306,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('With'),
       readonly: obj.isConnect, deps :['connect'],
       helpMessage: gettext('Specifies whether the existing data in the publications that are being subscribed to should be copied once the replication starts.'),
+      helpMessageMode: ['edit', 'create'],
     },
     {
       id: 'create_slot', label: gettext('Create slot?'),
@@ -312,7 +315,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       disabled: obj.isSameDB,
       readonly: obj.isConnect, deps :['connect', 'host', 'port'],
       helpMessage: gettext('Specifies whether the command should create the replication slot on the publisher.This field will be disabled and set to false if subscription connects to same database.Otherwise, the CREATE SUBSCRIPTION call will hang.'),
-
+      helpMessageMode: ['edit', 'create'],
     },
     {
       id: 'enabled', label: gettext('Enabled?'),
@@ -320,12 +323,14 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('With'),
       readonly: obj.isConnect, deps :['connect'],
       helpMessage: gettext('Specifies whether the subscription should be actively replicating, or whether it should be just setup but not started yet.'),
+      helpMessageMode: ['edit', 'create'],
     },
     {
       id: 'refresh_pub', label: gettext('Refresh publication?'),
       type: 'switch', mode: ['edit'],
       group: gettext('With'),
       helpMessage: gettext('Fetch missing table information from publisher.'),
+      helpMessageMode: ['edit', 'create'],
       deps:['enabled'], disabled: function(state){
         if (state.enabled)
           return false;
@@ -338,17 +343,20 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('With'),
       disabled: obj.isDisable, deps:['enabled', 'create_slot', 'copy_data'],
       helpMessage: gettext('Specifies whether the CREATE SUBSCRIPTION should connect to the publisher at all. Setting this to false will change default values of enabled, create_slot and copy_data to false.'),
+      helpMessageMode: ['edit', 'create'],
     },
     {
       id: 'slot_name', label: gettext('Slot name'),
       type: 'text', mode: ['create','edit', 'properties'],
       group: gettext('With'),
       helpMessage: gettext('Name of the replication slot to use. The default behavior is to use the name of the subscription for the slot name.'),
+      helpMessageMode: ['edit', 'create'],
     },
     {
       id: 'sync', label: gettext('Synchronous commit'), control: 'select2', deps:['event'],
       group: gettext('With'), type: 'select',
       helpMessage: gettext('The value of this parameter overrides the synchronous_commit setting. The default value is off.'),
+      helpMessageMode: ['edit', 'create'],
       controlProps: {
         width: '100%',
         allowClear: false,

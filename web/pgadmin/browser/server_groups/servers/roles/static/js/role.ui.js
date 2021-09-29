@@ -100,6 +100,7 @@ export default class RoleSchema extends BaseUISchema {
         mode: ['properties', 'edit', 'create'],
         deps: ['rolcanlogin'],
         helpMessage: gettext('Please note that if you leave this field blank, then password will never expire.'),
+        helpMessageMode: ['edit', 'create'],
         controlProps: {
           ampm: false,
           placeholder: gettext('No Expiry'), autoOk: true,
