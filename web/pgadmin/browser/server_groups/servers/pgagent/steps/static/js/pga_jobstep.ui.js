@@ -119,7 +119,7 @@ export default class PgaJobStepSchema extends BaseUISchema {
         options: this.fieldOptions.databases,
         controlProps: {allowClear: true, placeholder: ''},
         disabled: function(state) {
-          let retVal = !state.jstkind || !state.jstconntype
+          let retVal = !state.jstkind || !state.jstconntype;
           if (retVal) {
             state.jstdbname = null;
           }
