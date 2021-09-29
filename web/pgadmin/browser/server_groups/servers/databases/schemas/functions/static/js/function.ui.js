@@ -254,11 +254,13 @@ export default class FunctionSchema extends BaseUISchema {
       id: 'lanname', label: gettext('Language'), cell: 'string',
       options: this.fieldOptions.getLanguage, type: 'select', group: gettext('Definition'),
       disabled: function() {
+        if(this.type === 'procedure'){
+          return this.node_info['node_info'].server.version < 110000;
+        }
         if (this.node_info && 'catalog' in this.node_info) {
           return true;
         }
-
-        return this.node_info['node_info'].server.version < 110000;
+        return false;
       }
     },
     {

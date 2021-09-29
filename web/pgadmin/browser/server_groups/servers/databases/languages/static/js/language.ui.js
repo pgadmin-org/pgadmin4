@@ -72,10 +72,12 @@ export default class LanguageSchema extends BaseUISchema {
               creatable: true,
               filter: (options) => {
                 let res = [];
-                if (state) {
+                if (state && obj.isNew()) {
                   options.forEach((option) => {
                     res.push({label: option.tmplname, value: option.tmplname});
                   });
+                }else{
+                  res.push({label: state.name, value: state.name});
                 }
                 return res;
               }
@@ -91,7 +93,7 @@ export default class LanguageSchema extends BaseUISchema {
       type: 'text',
     },{
       id: 'lanowner', label: gettext('Owner'), type: 'select',
-      options: this.fieldOptions.role,
+      options: this.fieldOptions.role, controlProps: { allowClear: false },
       mode: ['edit', 'properties', 'create'],
     },{
       id: 'acl', label: gettext('Privileges'), type: 'text',
@@ -167,7 +169,7 @@ export default class LanguageSchema extends BaseUISchema {
       readonly: (state)  => {return !obj.isNew(state);},
     },
     {
-      id: 'laninl', label: gettext('Handler function'),
+      id: 'laninl', label: gettext('Inline function'),
       group: gettext('Definition'), mode: ['properties'], type: 'text',
     },{
       id: 'lanval', label: gettext('Validator function'), deps:['name'],
@@ -201,7 +203,7 @@ export default class LanguageSchema extends BaseUISchema {
       readonly: (state)  => {return !obj.isNew(state);},
     },
     {
-      id: 'lanval', label: gettext('Handler function'),
+      id: 'lanval', label: gettext('Validator function'),
       group: gettext('Definition'), mode: ['properties'], type: 'text',
     },
     {
