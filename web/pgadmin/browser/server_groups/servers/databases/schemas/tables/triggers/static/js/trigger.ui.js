@@ -339,7 +339,7 @@ export default class TriggerSchema extends BaseUISchema {
       }
     },{
       id: 'tfunction', label: gettext('Trigger function'),
-      type: 'select', disabled: obj.inSchemaWithModelCheck,
+      type: 'select', readonly: obj.inSchemaWithModelCheck,
       mode: ['create','edit', 'properties'], group: gettext('Definition'),
       control: 'node-ajax-options', url: 'get_triggerfunctions', url_jump_after_node: 'schema',
       options: obj.fieldOptions.triggerFunction,
@@ -348,7 +348,7 @@ export default class TriggerSchema extends BaseUISchema {
       id: 'tgargs', label: gettext('Arguments'), cell: 'text',
       group: gettext('Definition'),
       type: 'text',mode: ['create','edit', 'properties'], deps: ['tfunction'],
-      disabled: (state) => {
+      readonly: (state) => {
         // We will disable it when EDB PPAS and trigger function is
         // set to Inline EDB-SPL
         var tfunction = state.tfunction,

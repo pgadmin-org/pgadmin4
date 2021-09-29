@@ -122,7 +122,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
       disabled: function(state) {
         // We need to check additional condition to toggle enable/disable
         // for table auto-vacuum
-        if(obj.inCatalog && state.hastoasttable) {
+        if(obj.inCatalog && (obj.top.isNew() || state.hastoasttable)) {
           return false;
         }
         return true;
