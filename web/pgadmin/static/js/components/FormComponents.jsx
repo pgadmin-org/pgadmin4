@@ -27,7 +27,9 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import HTMLReactParse from 'html-react-parser';
 import { KeyboardDateTimePicker, KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
+import DateFnsUtils from '@date-io/date-fns';
+import * as DateFns from 'date-fns';
+
 import moment from 'moment';
 
 import CodeMirror from './CodeMirror';
@@ -200,40 +202,60 @@ FormInputSQL.propTypes = {
   change: PropTypes.func,
 };
 
+/* https://date-fns.org/v2.24.0/docs/format */
+const DATE_TIME_FORMAT = {
+  DATE_TIME_12: 'yyyy-MM-dd hh:mm:ss aa xxx',
+  DATE_TIME_24: 'yyyy-MM-dd HH:mm:ss XXX',
+  DATE: 'yyyy-MM-dd',
+  TIME_12: 'hh:mm aa',
+  TIME_24: 'HH:mm',
+};
+
 export function InputDateTimePicker({value, onChange, readonly, controlProps, ...props}) {
-
-  const onDateTimeChange = (momentVal)=> {
-    onChange(momentVal ? momentVal.format(controlProps.format || 'YYYY-MM-DD HH:mm:ss Z') : null);
-  };
-
-  const onDateChange = (momentVal)=> {
-    onChange(momentVal ? momentVal.format(controlProps.format || 'YYYY-MM-DD') : null);
-  };
-
-  const onTimeChange = (momentVal)=> {
-    onChange(momentVal ? momentVal.format(controlProps.format || 'HH:mm') : null);
-  };
-
-  if (readonly) {
-    return (<InputText value={value} {...props}/>);
+  let format = '';
+  if (controlProps?.pickerType === 'Date') {
+    format = controlProps.format || DATE_TIME_FORMAT.DATE;
+  } else if (controlProps?.pickerType === 'Time') {
+    format = controlProps.format || (controlProps.ampm ? DATE_TIME_FORMAT.TIME_12 : DATE_TIME_FORMAT.TIME_24);
+  } else {
+    format = controlProps.format || (controlProps.ampm ? DATE_TIME_FORMAT.DATE_TIME_12 : DATE_TIME_FORMAT.DATE_TIME_24);
   }
 
-  if (controlProps && controlProps.pickerType === 'Date') {
+  const handleChange = (dateVal)=> {
+    onChange(DateFns.format(dateVal, format));
+  };
+
+  /* Value should be a date object instead of string */
+  value = _.isUndefined(value) ? null : value;
+  if(!_.isNull(value)) {
+    let parseValue = DateFns.parse(value, format, new Date());
+    if(!DateFns.isValid(parseValue)) {
+      parseValue = DateFns.parseISO(value);
+    }
+    value = !DateFns.isValid(parseValue) ? null : parseValue;
+  }
+
+  if (readonly) {
+    return (<InputText value={value ? DateFns.format(value, format) : value}
+      readonly={readonly} controlProps={{placeholder: controlProps.placeholder}} {...props}/>);
+  }
+
+  if (controlProps?.pickerType === 'Date') {
     return (
-      <MuiPickersUtilsProvider utils={MomentUtils}>
-        <KeyboardDatePicker value={value} onChange={onDateChange} readOnly={Boolean(readonly)}
-          format={controlProps.format || 'YYYY-MM-DD'}
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDatePicker value={value} onChange={handleChange} readOnly={Boolean(readonly)}
+          format={format}
           placeholder={controlProps.placeholder || 'YYYY-MM-DD'}
           autoOk={controlProps.autoOk || false}
           {...props} label={''}/>
       </MuiPickersUtilsProvider>
     );
-  } else if (controlProps && controlProps.pickerType === 'Time') {
+  } else if (controlProps?.pickerType === 'Time') {
     let newValue = (!_.isNull(value) && !_.isUndefined(value)) ? moment(value, 'HH:mm').toDate() : value;
     return (
-      <MuiPickersUtilsProvider utils={MomentUtils}>
-        <KeyboardTimePicker value={newValue} onChange={onTimeChange} readOnly={Boolean(readonly)}
-          format={controlProps.format || 'HH:mm'}
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardTimePicker value={newValue} onChange={handleChange} readOnly={Boolean(readonly)}
+          format={format}
           placeholder={controlProps.placeholder || 'HH:mm'}
           autoOk={controlProps.autoOk || false}
           ampm={controlProps.ampm || false}
@@ -243,11 +265,11 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
   }
 
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDateTimePicker
         variant="inline"
         ampm={controlProps.ampm || false}
-        format={controlProps.format || 'YYYY-MM-DD HH:mm:ss Z'}
+        format={format}
         placeholder={controlProps.placeholder || 'YYYY-MM-DD HH:mm:ss Z'}
         autoOk={controlProps.autoOk || false}
         disablePast={controlProps.disablePast || false}
@@ -255,7 +277,7 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
         invalidDateMessage=""
         maxDateMessage=""
         minDateMessage=""
-        onChange={onDateTimeChange}
+        onChange={handleChange}
         readOnly={Boolean(readonly)}
         {...props} label={''}
       />

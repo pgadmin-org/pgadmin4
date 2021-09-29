@@ -95,13 +95,13 @@ export class ExceptionsSchema extends BaseUISchema {
       {
         id: 'jexdate', cell: 'datetimepicker', label: gettext('Date'),
         type: 'datetimepicker',
-        controlProps: { format: 'YYYY-MM-DD', placeholder: gettext('<any>'),
+        controlProps: { placeholder: gettext('<any>'),
           autoOk: true, pickerType: 'Date',
         },
       }, {
         id: 'jextime', cell: 'datetimepicker', label: gettext('Time'),
         type: 'datetimepicker',
-        controlProps: { format: 'HH:mm', placeholder: gettext('<any>'),
+        controlProps: { placeholder: gettext('<any>'),
           autoOk: true, pickerType: 'Time', ampm: false,
         },
       }
@@ -289,13 +289,13 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
         id: 'jscenabled', label: gettext('Enabled?'), type: 'switch', cell: 'switch',
       }, {
         id: 'jscstart', label: gettext('Start'), type: 'datetimepicker', cell: 'datetimepicker',
-        controlProps: { format: 'YYYY-MM-DD HH:mm:ss Z', ampm: false,
+        controlProps: { ampm: false,
           placeholder: gettext('YYYY-MM-DD HH:mm:ss Z'), autoOk: true,
           disablePast: true,
         },
       }, {
         id: 'jscend', label: gettext('End'), type: 'datetimepicker', cell: 'datetimepicker',
-        controlProps: { format: 'YYYY-MM-DD HH:mm:ss Z', ampm: false,
+        controlProps: { ampm: false,
           placeholder: gettext('YYYY-MM-DD HH:mm:ss Z'), autoOk: true,
           disablePast: true,
         },
