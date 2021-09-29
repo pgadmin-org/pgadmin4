@@ -19,33 +19,13 @@ from flask_security.views import _security
 from flask_security.utils import get_post_logout_redirect, \
     get_post_login_redirect, logout_user
 
-from pgadmin.model import db, User
+from pgadmin import db, User
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.constants import KERBEROS, INTERNAL, OAUTH2, LDAP
 from pgadmin.authenticate.registry import AuthSourceRegistry
 
 MODULE_NAME = 'authenticate'
 auth_obj = None
-
-_URL_WITH_NEXT_PARAM = "{0}?next={1}"
-
-
-def get_logout_url() -> str:
-    """
-    Returns the logout url based on the current authentication method.
-
-    Returns:
-        str: logout url
-    """
-    BROWSER_INDEX = 'browser.index'
-    if config.SERVER_MODE and\
-            session['auth_source_manager']['current_source'] == \
-            KERBEROS:
-        return _URL_WITH_NEXT_PARAM.format(url_for(
-            'authenticate.kerberos_logout'), url_for(BROWSER_INDEX))
-
-    return _URL_WITH_NEXT_PARAM.format(
-        url_for('security.logout'), url_for(BROWSER_INDEX))
 
 
 class AuthenticateModule(PgAdminModule):

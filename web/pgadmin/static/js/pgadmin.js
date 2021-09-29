@@ -178,7 +178,5 @@ define([], function() {
     };
   }
 
-  pgAdmin.ui = {dialogs: {}};
-
   return pgAdmin;
 });

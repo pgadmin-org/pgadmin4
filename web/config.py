@@ -730,29 +730,6 @@ OAUTH2_CONFIG = [
 OAUTH2_AUTO_CREATE_USER = True
 
 ##########################################################################
-# Two-factor Authentication Configuration
-##########################################################################
-
-# Set it to True, to enable the two-factor authentication
-MFA_ENABLED = True
-
-# Set it to True, to ask the users to register forcefully for the
-# two-authentication methods on logged-in.
-MFA_FORCE_REGISTRATION = False
-
-# pgAdmin supports Two-factor authentication by either sending an one-time code
-# to an email, or using the TOTP based application like Google Authenticator.
-MFA_SUPPORTED_METHODS = ["email", "authenticator"]
-
-# NOTE: Please set the 'Mail server settings' to use 'email' as two-factor
-#       authentication method.
-
-# Subject for the email verification code
-# Default: <APP_NAME> - Verification Code
-# e.g.  pgAdmin 4 - Verification Code
-MFA_EMAIL_SUBJECT = None
-
-##########################################################################
 # PSQL tool settings
 ##########################################################################
 # This will enable PSQL tool in pgAdmin when running in server mode.

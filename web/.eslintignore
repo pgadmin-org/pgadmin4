@@ -4,4 +4,3 @@ vendor
 templates/
 templates\
 ycache
-regression/htmlcov

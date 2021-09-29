@@ -447,8 +447,6 @@ def panel(trans_id):
         "erd/index.html",
         title=underscore_unescape(params['title']),
         close_url=close_url,
-        requirejs=True,
-        basejs=True,
         params=json.dumps(params),
     )
 

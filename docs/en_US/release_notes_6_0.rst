@@ -10,7 +10,6 @@ New features
 ************
 
 | `Issue #4211 <https://redmine.postgresql.org/issues/4211>`_ -  Added support for OWNED BY Clause for sequences.
-| `Issue #6543 <https://redmine.postgresql.org/issues/6543>`_ -  Added support for Two-factor authentication for improving security.
 
 Housekeeping
 ************
