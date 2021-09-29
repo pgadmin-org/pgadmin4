@@ -100,8 +100,8 @@ class DomainReverseEngineeredSQLTestCase(BaseTestGenerator):
 
             # Replace multiple spaces with one space and check the expected sql
             sql = re.sub('\s+', ' ', orig_sql).strip()
-            expected_sql = '-- DOMAIN: {0}.{1} -- DROP DOMAIN {0}.{1}; ' \
-                           'CREATE DOMAIN {0}.{1} {2} ' \
+            expected_sql = '-- DOMAIN: {0}.{1} -- DROP DOMAIN IF EXISTS ' \
+                           '{0}.{1}; CREATE DOMAIN {0}.{1} {2} ' \
                            'ALTER DOMAIN {0}.{1} OWNER' \
                            ' TO {3};'.format(self.schema_name,
                                              self.test_data['domain_name'],
