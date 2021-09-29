@@ -6200,10 +6200,10 @@ json5@^2.1.2:
   dependencies:
     minimist "^1.2.5"
 
-jsoneditor@^9.5.4:
-  version "9.5.5"
-  resolved "https://registry.yarnpkg.com/jsoneditor/-/jsoneditor-9.5.5.tgz#3275b4b327d51c5d6d30e386d326bed4da012a0b"
-  integrity sha512-q0bnZF8eyM+pXHfQGkI0ATZWI974eeWVLun3nRl4QP1uvaMlc2w9R5UkPerWcHmuX+p0EQLOw/IOWmRT1qHqHQ==
+jsoneditor@^9.5.6:
+  version "9.5.6"
+  resolved "https://registry.yarnpkg.com/jsoneditor/-/jsoneditor-9.5.6.tgz#b2abca2aeb34bb5291025d0eeddcb2845e0d90a9"
+  integrity sha512-smu4CKCOeJiizGGGYQ7ZAvCclnuJP7gX/wcoHw/DWiJMUZq+3KjJNDhYnVTRgi+Zk0UlPngA4egmuJre/H2mXg==
   dependencies:
     ace-builds "^1.4.12"
     ajv "^6.12.6"
