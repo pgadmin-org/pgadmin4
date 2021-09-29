@@ -407,9 +407,16 @@ export default class TableSchema extends BaseUISchema {
       readonly: this.inCatalog,
     },{
       id: 'spcname', label: gettext('Tablespace'),
-      type: 'select', options: this.fieldOptions.spcname,
+
       mode: ['properties', 'create', 'edit'], deps: ['is_partitioned'],
-      readonly: this.inCatalog,
+      readonly: this.inCatalog, type: (state)=>{
+        return {
+          type: 'select', options: this.fieldOptions.spcname,
+          controlProps: {
+            allowClear: obj.isNew(state) ? true : false,
+          }
+        };
+      }
     },{
       id: 'partition', type: 'group', label: gettext('Partitions'),
       mode: ['edit', 'create'], min_version: 100000,

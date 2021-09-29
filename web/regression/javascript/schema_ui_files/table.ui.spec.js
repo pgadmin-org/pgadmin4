@@ -171,6 +171,7 @@ describe('TableSchema', ()=>{
       deferredPromise.then((depChange)=>{
         expect(depChange()).toEqual({
           columns: oftypeColumns,
+          primary_key: [],
         });
         expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(oftypeColumns);
         done();
@@ -206,6 +207,7 @@ describe('TableSchema', ()=>{
       deferredPromise.then((depChange)=>{
         expect(depChange()).toEqual({
           columns: oftypeColumns,
+          primary_key: [],
         });
         expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(oftypeColumns);
         done();
