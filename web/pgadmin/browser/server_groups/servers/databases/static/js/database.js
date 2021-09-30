@@ -299,7 +299,6 @@ define('pgadmin.node.database', [
           if (!data.connected && data.allowConn && !data.is_connecting) {
             data.is_connecting = true;
             connect_to_database(this, data, pgBrowser.tree, item, false);
-            return false;
           }
 
           return pgBrowser.Node.callbacks.selected.apply(this, arguments);

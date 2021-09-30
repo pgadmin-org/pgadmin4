@@ -287,6 +287,9 @@ export class Tree {
     return this.tree.getActiveFile();
   }
 
+  resizeTree() {
+    this.tree.resize();
+  }
 
   findNodeWithToggle(path) {
     let tree = this;

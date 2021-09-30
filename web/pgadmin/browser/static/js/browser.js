@@ -510,13 +510,16 @@ define('pgadmin.browser', [
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact, obj);
       obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode, obj);
-
+      obj.Events.on('pgadmin-browser:panel-browser:' + wcDocker.EVENT.RESIZE_ENDED, obj.onResizeEnded, obj);
       obj.bind_beforeunload();
 
       /* User UI activity */
       obj.log_activity(); /* The starting point */
       obj.register_to_activity_listener(document);
       obj.start_inactivity_timeout_daemon();
+    },
+    onResizeEnded: function() {
+      if (this.tree) this.tree.resizeTree();
     },
     check_corrupted_db_file: function() {
       $.ajax({
@@ -1682,8 +1685,10 @@ define('pgadmin.browser', [
       }
     },
 
-    onRefreshTreeNodeReact: function(_i) {
-      this.tree.refresh(_i);
+    onRefreshTreeNodeReact: function(_i, _opts) {
+      this.tree.refresh(_i).then(() =>{
+        if (_opts && _opts.success) _opts.success();
+      });
       return;
     },
 
@@ -2169,5 +2174,6 @@ define('pgadmin.browser', [
   setTimeout(function(){
     $('#mnu_about').closest('li').before('<li class="dropdown-divider"></li>');
   }, 100);
+
   return pgAdmin.Browser;
 });
