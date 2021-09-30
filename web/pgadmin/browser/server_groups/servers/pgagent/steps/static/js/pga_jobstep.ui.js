@@ -119,11 +119,12 @@ export default class PgaJobStepSchema extends BaseUISchema {
         options: this.fieldOptions.databases,
         controlProps: {allowClear: true, placeholder: ''},
         disabled: function(state) {
-          let retVal = !state.jstkind || !state.jstconntype;
-          if (retVal) {
-            state.jstdbname = null;
+          return !state.jstkind || !state.jstconntype;
+        },
+        depChange: (state)=>{
+          if (!state.jstkind || !state.jstconntype) {
+            return {jstdbname: null};
           }
-          return retVal;
         },
         deps: ['jstkind', 'jstconntype'],
         helpMessage: gettext('Please select the database on which the job step will run.'),
