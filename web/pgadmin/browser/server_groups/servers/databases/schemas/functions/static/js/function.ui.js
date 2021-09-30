@@ -227,7 +227,12 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'sysproc', label: gettext('System procedure?'),
       cell:'boolean', type: 'switch',
-      mode: ['properties'], visible: obj.isVisible,
+      mode: ['properties'], visible: () => {
+        if(this.type === 'procedure'){
+          return true;
+        }
+        return false;
+      },
     },{
       id: 'description', label: gettext('Comment'), cell: 'string',
       type: 'multiline', disabled: obj.inCatalog(),
@@ -251,7 +256,7 @@ export default class FunctionSchema extends BaseUISchema {
       type: 'text', group: gettext('Definition'),
       mode: ['properties', 'edit'], readonly: obj.isReadonly, visible: obj.isVisible,
     },{
-      id: 'lanname', label: gettext('Language'), cell: 'string',
+      id: 'lanname', label: gettext('Language'), cell: 'string', noEmpty: true,
       options: this.fieldOptions.getLanguage, type: 'select', group: gettext('Definition'),
       disabled: function() {
         if(this.type === 'procedure'){
@@ -344,7 +349,7 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'procost', label: gettext('Estimated cost'), group: gettext('Options'),
       cell:'string', type: 'text', deps: ['lanname'],
-      disabled: obj.inCatalog(),
+      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isGreaterThan95,
     },{
       id: 'prorows', label: gettext('Estimated rows'), type: 'text',
       deps: ['proretset'], visible: obj.isVisible,
