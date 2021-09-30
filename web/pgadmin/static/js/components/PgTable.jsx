@@ -118,7 +118,8 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
     prepareRow,
     selectedFlatRows,
     state: { selectedRowIds },
-    setGlobalFilter
+    setGlobalFilter,
+    setHiddenColumns
   } = useTable(
     {
       columns,
@@ -169,6 +170,21 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
       });
     }
   );
+
+  React.useEffect(() => {
+    setHiddenColumns(
+      columns
+        .filter((column) => {
+          if (column.isVisible === undefined || columns.isVisible === true) {
+            return false;
+          } else{
+            return true;
+          }
+        }
+        )
+        .map((column) => column.accessor)
+    );
+  }, [setHiddenColumns, columns]);
 
   React.useEffect(() => {
     if (props.setSelectedRows) {

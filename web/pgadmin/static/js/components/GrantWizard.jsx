@@ -100,11 +100,38 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
     },
     {
       Header: 'Name',
-      accessor: 'name',
+      accessor: 'name_with_args',
       sortble: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 280
+    },
+    {
+      Header: 'parameters',
+      accessor: 'proargs',
+      sortble: false,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 280,
+      isVisible: false
+    },
+    {
+      Header: 'Name',
+      accessor: 'name',
+      sortble: false,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 280,
+      isVisible: false
+    },
+    {
+      Header: 'ID',
+      accessor: 'oid',
+      sortble: false,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 280,
+      isVisible: false
     }
   ];
   var steps = ['Object Selection', 'Privilege Selection', 'Review Selection'];
@@ -168,6 +195,11 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
             element['icon'] = {
               'object_type': element.icon
             };
+          if(element.object_type === 'Function') {
+            element.name_with_args = element.name + '(' + (typeof(element.proargs) != 'undefined' ? element.proargs : '') + ')';
+          } else {
+            element.name_with_args = element.name;
+          }
         });
         setTableData(data);
         setLoaderText('');
