@@ -30,8 +30,6 @@ import { KeyboardDateTimePicker, KeyboardDatePicker, KeyboardTimePicker, MuiPick
 import DateFnsUtils from '@date-io/date-fns';
 import * as DateFns from 'date-fns';
 
-import moment from 'moment';
-
 import CodeMirror from './CodeMirror';
 import gettext from 'sources/gettext';
 import { showFileDialog } from '../helpers/legacyConnector';
@@ -205,7 +203,7 @@ FormInputSQL.propTypes = {
 /* https://date-fns.org/v2.24.0/docs/format */
 const DATE_TIME_FORMAT = {
   DATE_TIME_12: 'yyyy-MM-dd hh:mm:ss aa xxx',
-  DATE_TIME_24: 'yyyy-MM-dd HH:mm:ss XXX',
+  DATE_TIME_24: 'yyyy-MM-dd HH:mm:ss xxx',
   DATE: 'yyyy-MM-dd',
   TIME_12: 'hh:mm:ss aa',
   TIME_24: 'HH:mm:ss',
@@ -213,16 +211,20 @@ const DATE_TIME_FORMAT = {
 
 export function InputDateTimePicker({value, onChange, readonly, controlProps, ...props}) {
   let format = '';
+  let placeholder = '';
   if (controlProps?.pickerType === 'Date') {
     format = controlProps.format || DATE_TIME_FORMAT.DATE;
+    placeholder = controlProps.placeholder || 'YYYY-MM-DD';
   } else if (controlProps?.pickerType === 'Time') {
     format = controlProps.format || (controlProps.ampm ? DATE_TIME_FORMAT.TIME_12 : DATE_TIME_FORMAT.TIME_24);
+    placeholder = controlProps.placeholder || 'HH:mm:ss';
   } else {
     format = controlProps.format || (controlProps.ampm ? DATE_TIME_FORMAT.DATE_TIME_12 : DATE_TIME_FORMAT.DATE_TIME_24);
+    placeholder = controlProps.placeholder || 'YYYY-MM-DD HH:mm:ss Z';
   }
 
-  const handleChange = (dateVal)=> {
-    onChange(DateFns.format(dateVal, format));
+  const handleChange = (dateVal, stringVal)=> {
+    onChange(stringVal);
   };
 
   /* Value should be a date object instead of string */
@@ -232,7 +234,7 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
     if(!DateFns.isValid(parseValue)) {
       parseValue = DateFns.parseISO(value);
     }
-    value = !DateFns.isValid(parseValue) ? null : parseValue;
+    value = !DateFns.isValid(parseValue) ? value : parseValue;
   }
 
   if (readonly) {
@@ -240,47 +242,41 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
       readonly={readonly} controlProps={{placeholder: controlProps.placeholder}} {...props}/>);
   }
 
+  let commonProps = {
+    ...props,
+    value: value,
+    format: format,
+    placeholder: placeholder,
+    label: '',
+    variant: 'inline',
+    readOnly: Boolean(readonly),
+    autoOk: controlProps.autoOk || false,
+    ampm: controlProps.ampm || false,
+    disablePast: controlProps.disablePast || false,
+    invalidDateMessage: '',
+    maxDateMessage: '',
+    minDateMessage: '',
+    onChange: handleChange,
+    fullWidth: true,
+  };
+
   if (controlProps?.pickerType === 'Date') {
     return (
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker value={value} onChange={handleChange} readOnly={Boolean(readonly)}
-          format={format}
-          placeholder={controlProps.placeholder || 'YYYY-MM-DD'}
-          autoOk={controlProps.autoOk || false}
-          {...props} label={''}/>
+        <KeyboardDatePicker {...commonProps}/>
       </MuiPickersUtilsProvider>
     );
   } else if (controlProps?.pickerType === 'Time') {
-    let newValue = (!_.isNull(value) && !_.isUndefined(value)) ? moment(value, 'HH:mm').toDate() : value;
     return (
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardTimePicker value={newValue} onChange={handleChange} readOnly={Boolean(readonly)}
-          format={format}
-          placeholder={controlProps.placeholder || 'HH:mm'}
-          autoOk={controlProps.autoOk || false}
-          ampm={controlProps.ampm || false}
-          {...props} label={''}/>
+        <KeyboardTimePicker {...commonProps}/>
       </MuiPickersUtilsProvider>
     );
   }
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDateTimePicker
-        variant="inline"
-        ampm={controlProps.ampm || false}
-        format={format}
-        placeholder={controlProps.placeholder || 'YYYY-MM-DD HH:mm:ss Z'}
-        autoOk={controlProps.autoOk || false}
-        disablePast={controlProps.disablePast || false}
-        value={value}
-        invalidDateMessage=""
-        maxDateMessage=""
-        minDateMessage=""
-        onChange={handleChange}
-        readOnly={Boolean(readonly)}
-        {...props} label={''}
-      />
+      <KeyboardDateTimePicker {...commonProps}/>
     </MuiPickersUtilsProvider>
   );
 }
