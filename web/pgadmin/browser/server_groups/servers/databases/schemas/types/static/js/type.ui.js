@@ -14,7 +14,7 @@ import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import { getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
 import _ from 'underscore';
 import getApiInstance from 'sources/api_instance';
-import { isEmptyString, integerValidator } from 'sources/validators';
+import { isEmptyString } from 'sources/validators';
 
 
 function getCompositeSchema(nodeObj, treeNodeInfo, itemNodeData) {
@@ -69,9 +69,9 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
               null, 'get_canonical', itemNodeData, false,
               treeNodeInfo,
             ]);
-          var data;
+          var data = [];
 
-          if(!_.isUndefined(name) && name != ''){
+          if(!_.isUndefined(name) && name != '' && name != null){
             api.get(_url, {
               params: {
                 'name' : name
@@ -1051,35 +1051,10 @@ class CompositeSchema extends BaseUISchema {
       setError('type', errmsg);
       return true;
     }
-    if(state.is_tlength) {
-
-      if (state.tlength < state.min_val) {
-        errmsg = gettext('Length/Precision should not be less than %s.', state.min_val);
-      }
-      else if (state.tlength > state.max_val) {
-        errmsg = gettext('Length/Precision should not be greater than %s.', state.max_val);
-      }
-      if(_.isUndefined(errmsg) || errmsg == null)
-        errmsg = integerValidator('Length/Precision', state.tlength);
-      // If we have any error set then throw it to user
-      if(!_.isUndefined(errmsg) && errmsg != null) {
-        setError('tlength', errmsg);
-        return true;
-      }
-    }
-    if(state.is_precision) {
-      errmsg = integerValidator('Scale', state.precision);
-      if(!_.isUndefined(errmsg) && errmsg != null) {
-        setError('precision', errmsg);
-        return true;
-      }
-    }
     if(_.isUndefined(errmsg) || errmsg == null) {
       errmsg = null;
       setError('member_name', errmsg);
       setError('type', errmsg);
-      setError('tlength', errmsg);
-      setError('precision', errmsg);
     }
     return false;
   }
@@ -1122,7 +1097,7 @@ class DataTypeSchema extends BaseUISchema {
       id: 'type',
       label: gettext('Data Type'),
       group: gettext('Definition'),
-      mode: ['edit', 'create','properties'],
+      mode: ['edit', 'create'],
       disabled: false,
       readonly: function (state) {
         return !dataTypeObj.isNew(state);
@@ -1158,7 +1133,7 @@ class DataTypeSchema extends BaseUISchema {
       type: 'int',
       deps: ['typtype'],
       cell: 'int',
-      mode: ['create', 'edit','properties'],
+      mode: ['create', 'edit'],
       readonly: function (state) {
         return !dataTypeObj.isNew(state);
       },
@@ -1172,7 +1147,7 @@ class DataTypeSchema extends BaseUISchema {
       id: 'tlength',
       group: gettext('Data Type'),
       label: gettext('Length/Precision'),
-      mode: ['edit', 'create','properties'],
+      mode: ['edit', 'create'],
       deps: ['type'],
       type: 'text',
       cell: 'int',
@@ -1234,7 +1209,7 @@ class DataTypeSchema extends BaseUISchema {
       id: 'precision',
       group: gettext('Data Type'),
       label: gettext('Scale'),
-      mode: ['edit', 'create','properties'],
+      mode: ['edit', 'create'],
       deps: ['type'],
       type: 'text',
       readonly: function (state) {
@@ -1465,7 +1440,7 @@ export default class TypeSchema extends BaseUISchema {
       group: gettext('Definition'),
       label: '',
       deps: ['typtype'],
-      mode: ['edit', 'create', 'properties'],
+      mode: ['edit', 'create'],
       visible: function(state) {
         return state.typtype === 'N' || state.typtype === 'V';
       },
@@ -1593,6 +1568,50 @@ export default class TypeSchema extends BaseUISchema {
         }
         return false;
       },
+    },
+    {
+      id: 'type', label: gettext('Data Type'), cell: 'string',
+      type: 'text', mode: ['properties'], group: gettext('Definition'),
+      disabled: () => obj.inCatalog(),
+      visible: function(state) {
+        if(state.typtype === 'N' || state.typtype === 'V') {
+          return true;
+        }
+        return false;
+      }
+    },
+    {
+      id: 'tlength', label: gettext('Length/Precision'), cell: 'string',
+      type: 'text', mode: ['properties'], group: gettext('Definition'),
+      disabled: () => obj.inCatalog(),
+      visible: function(state) {
+        if(state.typtype === 'N') {
+          return true;
+        }
+        return false;
+      }
+    },
+    {
+      id: 'precision', label: gettext('Scale'), cell: 'string',
+      type: 'text', mode: ['properties'], group: gettext('Definition'),
+      disabled: () => obj.inCatalog(),
+      visible: function(state) {
+        if(state.typtype === 'N') {
+          return true;
+        }
+        return false;
+      }
+    },
+    {
+      id: 'maxsize', label: gettext('Size'), cell: 'string',
+      type: 'text', mode: ['properties'], group: gettext('Definition'),
+      disabled: () => obj.inCatalog(),
+      visible: function(state) {
+        if(state.typtype === 'V') {
+          return true;
+        }
+        return false;
+      }
     },
     {
       id: 'type_acl', label: gettext('Privileges'), cell: 'string',

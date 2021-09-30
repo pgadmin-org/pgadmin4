@@ -15,8 +15,6 @@ import {messages} from '../fake_messages';
 import { createMount } from '@material-ui/core/test-utils';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
-import gettext from 'sources/gettext';
-import { integerValidator } from 'sources/validators';
 import { getNodePrivilegeRoleSchema } from '../../../pgadmin/browser/server_groups/servers/static/js/privilege.ui';
 
 import TypeSchema, { EnumerationSchema, getCompositeSchema, getExternalSchema, getRangeSchema, getDataTypeSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui';
@@ -105,32 +103,6 @@ describe('TypeSchema', ()=>{
       state.member_name = 'demo_member';
       compositeCollObj.validate(state, setError);
       expect(setError).toHaveBeenCalledWith('type', 'Please specify the type.');
-
-      state.type = 'char';
-      state.min_val = 10;
-      state.max_val = 100;
-      state.is_tlength = true;
-      state.tlength = 9;
-      compositeCollObj.validate(state, setError);
-      expect(setError).toHaveBeenCalledWith('tlength', gettext('Length/Precision should not be less than %s.', state.min_val));
-
-      state.tlength = 200;
-      compositeCollObj.validate(state, setError);
-      expect(setError).toHaveBeenCalledWith('tlength', gettext('Length/Precision should not be greater than %s.', state.max_val));
-
-      state.tlength = 'ert';
-      compositeCollObj.validate(state, setError);
-      expect(setError).toHaveBeenCalledWith('tlength', integerValidator('Length/Precision', state.tlength));
-
-      state.tlength = 90;
-      state.is_precision = true;
-      state.precision = 'ert';
-      compositeCollObj.validate(state, setError);
-      expect(setError).toHaveBeenCalledWith('precision', integerValidator('Scale', state.precision));
-
-      state.precision = 9;
-      compositeCollObj.validate(state, setError);
-      expect(setError).toHaveBeenCalled();
     });
 
     it('tlength editable', ()=>{
