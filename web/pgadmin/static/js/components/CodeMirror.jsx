@@ -47,6 +47,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
         editor.current.setOption('readOnly', 'nocursor');
       } else if(readonly) {
         cmWrapper.current.classList.add('cm_disabled');
+        editor.current.setOption('readOnly', true);
         editor.current.addKeyMap({'Tab': false});
         editor.current.addKeyMap({'Shift-Tab': false});
       } else {
