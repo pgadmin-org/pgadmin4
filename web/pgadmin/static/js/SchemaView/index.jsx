@@ -121,6 +121,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
   /* Will be called recursively as data can be nested */
   const parseChanges = (schema, origVal, sessVal)=>{
     let levelChanges = {};
+    parseChanges.depth = _.isUndefined(parseChanges.depth) ? 0 : parseChanges.depth+1;
 
     /* The comparator and setter */
     const attrChanged = (id, change, force=false)=>{
@@ -131,8 +132,9 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
         if(stringify && (_.isArray(change) || _.isObject(change))) {
           change = JSON.stringify(change);
         }
-        /* Null values are not passed in URL params, pass it as an empty string */
-        if(_.isNull(change)) {
+        /* Null values are not passed in URL params, pass it as an empty string
+        Nested values does not need this */
+        if(_.isNull(change) && parseChanges.depth === 0) {
           change = '';
         }
         return levelChanges[id] = change;
@@ -234,6 +236,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
       }
     });
 
+    parseChanges.depth--;
     return levelChanges;
   };
 
@@ -480,7 +483,7 @@ function SchemaDialogView({
 
     /* tell the callbacks the data has changed */
     props.onDataChange && props.onDataChange(isDataChanged, changedData);
-  }, [sessData]);
+  }, [sessData, formReady]);
 
   useEffect(()=>{
     if(sessData.__deferred__?.length > 0) {
@@ -488,7 +491,6 @@ function SchemaDialogView({
         type: SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE,
       });
 
-      // let deferredDepChang = sessData.__deferred__[0];
       let item = sessData.__deferred__[0];
       item.promise.then((resFunc)=>{
         sessDispatch({
@@ -526,7 +528,6 @@ function SchemaDialogView({
         });
         setFormReady(true);
         setLoaderText('');
-
       });
     } else {
       /* Use the defaults as the initital data */

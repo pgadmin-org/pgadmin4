@@ -237,15 +237,12 @@ export default function FormView({
         );
       } else if(field.type === 'collection') {
         /* If its a collection, let data grid view handle it */
-        let depsMap = [value[field.id]];
         /* Pass on the top schema */
         if(isNested) {
           field.schema.top = schemaRef.current.top;
         } else {
           field.schema.top = schemaRef.current;
         }
-
-        depsMap.push(canAdd, canEdit, canDelete, visible);
 
         if(!_.isUndefined(field.fixedRows)) {
           canAdd = false;

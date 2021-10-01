@@ -29,6 +29,7 @@ import { confirmDeleteRow } from '../helpers/legacyConnector';
 import CustomPropTypes from 'sources/custom_prop_types';
 import { evalFunc } from 'sources/utils';
 import { DepListenerContext } from './DepListener';
+import { useIsMounted } from '../custom_hooks';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -179,17 +180,19 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
   }, []);
 
   useEffect(()=>{
-    schema.fields.forEach((field)=>{
+    schemaRef.current.fields.forEach((field)=>{
       /* Self change is also dep change */
-      if(field.depChange) {
-        depListener?.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange);
+      if(field.depChange || field.deferredDepChange) {
+        depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
       }
       (evalFunc(null, field.deps) || []).forEach((dep)=>{
         let source = accessPath.concat(dep);
         if(_.isArray(dep)) {
           source = dep;
         }
-        depListener?.addDepListener(source, accessPath.concat(field.id), field.depChange);
+        if(field.depChange) {
+          depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
+        }
       });
     });
     return ()=>{
@@ -244,6 +247,7 @@ export default function DataGridView({
   fixedRows, ...props}) {
   const classes = useStyles();
   const stateUtils = useContext(StateUtilsContext);
+  const checkIsMounted = useIsMounted();
 
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
@@ -432,7 +436,7 @@ export default function DataGridView({
   );
 
   useEffect(()=>{
-    let rowsPromise = fixedRows, umounted=false;
+    let rowsPromise = fixedRows;
 
     /* If fixedRows is defined, fetch the details */
     if(typeof rowsPromise === 'function') {
@@ -442,12 +446,11 @@ export default function DataGridView({
       Promise.resolve(rowsPromise)
         .then((res)=>{
           /* If component unmounted, dont update state */
-          if(!umounted) {
+          if(checkIsMounted()) {
             stateUtils.initOrigData(accessPath, res);
           }
         });
     }
-    return ()=>umounted=true;
   }, []);
 
   const isResizing = _.flatMap(headerGroups, headerGroup => headerGroup.headers.map(col=>col.isResizing)).includes(true);

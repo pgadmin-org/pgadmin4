@@ -47,12 +47,16 @@ export function showFileDialog(dialogParams, onFileSelect) {
   pgAdmin.FileManager.init();
   pgAdmin.FileManager.show_dialog(params);
 
+  const onFileSelectClose = (value)=>{
+    removeListeners();
+    onFileSelect(value);
+  };
   const onDialogClose = ()=>removeListeners();
-  pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:' + params.dialog_type, onFileSelect);
+  pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:' + params.dialog_type, onFileSelectClose);
   pgAdmin.Browser.Events.on('pgadmin-storage:cancel_btn:' + params.dialog_type, onDialogClose);
 
   const removeListeners = ()=>{
-    pgAdmin.Browser.Events.off('pgadmin-storage:finish_btn:' + params.dialog_type, onFileSelect);
+    pgAdmin.Browser.Events.off('pgadmin-storage:finish_btn:' + params.dialog_type, onFileSelectClose);
     pgAdmin.Browser.Events.off('pgadmin-storage:cancel_btn:' + params.dialog_type, onDialogClose);
   };
 }

@@ -161,7 +161,7 @@ export class PartitionsSchema extends BaseUISchema {
         return true;
       },
     },{
-      id: 'partition_name', label: gettext('Name'),
+      id: 'partition_name', label: gettext('Name'), deps: ['is_attach'],
       type: (state)=>{
         if(state.is_attach) {
           return {

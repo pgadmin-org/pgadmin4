@@ -15,7 +15,7 @@ export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgB
     spcname: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
       return (m.label != 'pg_global');
     }),
-    getOperClass: (urlParams)=>getNodeAjaxOptions('get_oper_class', tableNode, treeNodeInfo, itemNodeData, {urlParams: urlParams}, (data)=>{
+    getOperClass: (urlParams)=>getNodeAjaxOptions('get_oper_class', tableNode, treeNodeInfo, itemNodeData, {urlParams: urlParams, useCache:false}, (data)=>{
       let res = [];
       if (data && _.isArray(data)) {
         _.each(data, function(d) {
@@ -24,7 +24,7 @@ export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgB
       }
       return res;
     }),
-    getOperator: (urlParams)=>getNodeAjaxOptions('get_operator', tableNode, treeNodeInfo, itemNodeData, {urlParams: urlParams}, (data)=>{
+    getOperator: (urlParams)=>getNodeAjaxOptions('get_operator', tableNode, treeNodeInfo, itemNodeData, {urlParams: urlParams, useCache:false}, (data)=>{
       let res = [];
       if (data && _.isArray(data)) {
         _.each(data, function(d) {
@@ -33,7 +33,7 @@ export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgB
       }
       return res;
     }),
-  });
+  }, treeNodeInfo);
 }
 
 class ExclusionColHeaderSchema extends BaseUISchema {
@@ -168,9 +168,7 @@ class ExclusionColumnSchema extends BaseUISchema {
     },{
       id: 'operator', label: gettext('Operator'), type: 'select',
       width: 95,
-      editable: function() {
-        return obj.isNewExCons;
-      },
+      editable: obj.isEditable,
       cell: (state)=>{
         return {
           cell: 'select',
@@ -185,7 +183,7 @@ class ExclusionColumnSchema extends BaseUISchema {
 }
 
 export default class ExclusionConstraintSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, getColumns) {
+  constructor(fieldOptions={}, nodeInfo) {
     super({
       name: undefined,
       oid: undefined,
@@ -202,7 +200,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
 
     this.nodeInfo = nodeInfo;
     this.fieldOptions = fieldOptions;
-    this.exHeaderSchema = new ExclusionColHeaderSchema(fieldOptions.columns, getColumns);
+    this.exHeaderSchema = new ExclusionColHeaderSchema(fieldOptions.columns);
     this.exColumnSchema = new ExclusionColumnSchema(fieldOptions.getOperator);
     this.exHeaderSchema.exColumnSchema = this.exColumnSchema;
   }
