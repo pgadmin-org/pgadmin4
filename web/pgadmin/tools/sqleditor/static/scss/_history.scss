@@ -88,7 +88,7 @@
 
 .sql-editor-history-container {
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   background-color: $negative-bg;
 }
 
@@ -97,6 +97,7 @@
   height: 100%;
   width: 100%;
   min-height: 19em;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   background-color: $color-bg;
@@ -157,7 +158,7 @@
     flex: 5;
     margin-left: 10px;
     margin-right: 10px;
-    min-height: 1em;
+    min-height: 4em;
     position: relative;
 
     .copy-all, .was-copied, .copy-to-editor {

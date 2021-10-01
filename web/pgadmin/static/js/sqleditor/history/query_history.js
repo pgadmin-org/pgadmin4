@@ -73,6 +73,8 @@ export default class QueryHistory {
         cursor: 'ew-resize',
       });
 
+      $histDetails.css('overflow', 'auto');
+
       this.queryHistDetails = new QueryHistoryDetails($histDetails);
       this.queryHistDetails.setEditorPref(this.editorPref);
       this.queryHistDetails.onCopyToEditorClick(this.onCopyToEditorHandler);
