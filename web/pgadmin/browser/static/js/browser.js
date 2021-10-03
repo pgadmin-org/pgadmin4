@@ -469,6 +469,7 @@ define('pgadmin.browser', [
             $div = $('<div></div>'),
             context_menu = {};
 
+          if(item) obj.tree.select(item);
           pgAdmin.Browser.MenuCreator(
             obj.Nodes, $div, menus, obj.menu_categories, d, item, context_menu
           );
@@ -1095,7 +1096,6 @@ define('pgadmin.browser', [
               } else {
                 var _append = function() {
                   var ___ctx = this,
-                    is_parent_loaded_before = ___ctx.t.wasLoad(___ctx.i),
                     _parent_data = ___ctx.t.itemData(___ctx.i);
 
                   ___ctx.t.append(___ctx.i, _data).then(
@@ -1103,7 +1103,7 @@ define('pgadmin.browser', [
                       // Open the item path only if its parent is loaded
                       // or parent type is same as nodes
                       if(
-                        is_parent_loaded_before &&
+                        ___ctx.t.wasLoad(___ctx.i) &&
                           _parent_data &&  _parent_data._type.search(
                           _data._type
                         ) > -1

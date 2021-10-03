@@ -140,12 +140,12 @@ export class Tree {
     await this.tree.toggleDirectory(item);
   }
 
-  async select(item) {
-    await this.tree.setActiveFile(item);
+  async select(item, ensureVisible=false) {
+    await this.tree.setActiveFile(item, ensureVisible);
   }
 
-  async selectNode(item) {
-    this.tree.setActiveFile(item);
+  async selectNode(item, ensureVisible=false) {
+    this.tree.setActiveFile(item, ensureVisible);
   }
 
   async unload(item) {
@@ -194,7 +194,7 @@ export class Tree {
 
   wasLoad(item) {
     if (item && item.type === FileType.Directory) {
-      return item.isExpanded;
+      return item.isExpanded && item.children != null && item.children.length > 0;
     }
     return true;
   }
@@ -270,7 +270,7 @@ export class Tree {
   }
 
   itemData(item) {
-    return (item !== undefined && item.getMetadata('data') !== undefined) ? item._metadata.data : [];
+    return (item !== undefined && item !== null  && item.getMetadata('data') !== undefined) ? item._metadata.data : [];
   }
 
   getData(item) {
