@@ -410,10 +410,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
         try:
-            if 'pub' in data:
-                data['pub'] = json.loads(
-                    data['pub'], encoding='utf-8'
-                )
             sql, name = self.get_sql(data, subid)
             # Most probably this is due to error
             if not isinstance(sql, str):
