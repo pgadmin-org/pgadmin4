@@ -12,114 +12,117 @@
 
 .file-tree > {
 	div {
-	    position: absolute !important;
-      height: 100% !important;
-      top: 0px !important;
-	}
+    position: absolute !important;
+    height: 100% !important;
+    top: 0px !important;
+  }
 }
 
 .file-entry
 {
+  font: inherit;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 2px 0;
+  padding-left: 2px;
+  cursor: pointer !important;
   color: $tree-text-fg !important;
-  span.file-name {
-    color: $tree-text-fg !important;
-    white-space: nowrap;
-  }
   &:hover, &.pseudo-active {
     background-color: $tree-bg-hover !important;
+    color: $tree-fg-hover !important;
   }
-}
-
-.file-entry
-{
-    font: inherit;
-    text-align: left;
+  &.active, &.prompt {
+    background-color: $tree-bg-selected !important;
+    border-color: $color-primary-light;
+    border-right: $active-border !important;
+    color: $tree-text-hover-fg !important;
+    span.file-label {
+      span.file-name {
+        color: $tree-text-hover-fg !important;
+      }
+    }
+  }
+  i {
+    display: inline-block;
+    font: normal normal normal 18px/1 "default-icons";
+    font-size: 18px;
+    text-align: center;
+    height: 21px !important;
+    width: 20px !important;
+    &:before {
+        height: inherit;
+        width: inherit;
+        display: inline-block;
+    }
+    &.directory-toggle {
+      &:before {
+        background-position: 6px center !important;
+        font-family: $font-family-icon;
+        content: "\f054" !important;
+        border-style: none;
+        margin-left: 5px;
+        font-weight: 900;
+        right: 15px;
+        top: 3px;
+        font-size: 0.6rem;
+        line-height: 2;
+      }
+      &.open:before {
+        background-position: -14px center !important;
+        font-family: $font-family-icon;
+        content: "\f078" !important;
+        border-style: none;
+        margin-left: 5px;
+        font-weight: 900;
+        transform: none !important;
+      }
+      &.loading:before {
+        background-position: 6px center !important;
+        font-weight: 900;
+        font-size: 0.6rem;
+        line-height: 2;
+        content: '' !important;
+        font-family: $font-family-icon;
+        margin-left: 5px;
+        border-style: none;
+        background: $loader-icon-small 0 0 no-repeat;
+      }
+    }
+  }
+  span.file-label {
     display: flex;
     align-items: center;
-    white-space: nowrap;
-    padding: 2px 0;
-    padding-left: 2px;
-    cursor: pointer !important;
+    padding:0 2px 0 2px;
+    border:1px solid transparent;
+    height:auto;
+    white-space:normal;
+    cursor:pointer !important;
+    margin-left: 2px;
+    width: 100%;
     &:hover, &.pseudo-active {
-      background-color: $tree-bg-hover !important;
+      color: $tree-fg-hover !important;
     }
-    &.active, &.prompt {
-      background-color: $tree-bg-selected !important;
-      border-color: $color-primary-light;
-      border-right: $active-border !important;
+  }
+  &.prompt.new .file-label, &.file .file-label {
+    margin-left: 18px;
+  }
+  span.file-name {
+    font: inherit;
+    flex-grow: 1;
+    user-select: none;
+    cursor: default;
+    color: $tree-text-fg !important;
+    margin-left: 3px;
+    cursor: pointer !important;
+    white-space: nowrap;
+    &:hover, &.pseudo-active {
+      color: $tree-fg-hover !important;
     }
-    i {
-        display: inline-block;
-        font: normal normal normal 18px/1 "default-icons";
-        font-size: 18px;
-        text-align: center;
-        height: 21px !important;
-        width: 20px !important;
-        &:before {
-            height: inherit;
-            width: inherit;
-            display: inline-block;
-        }
-        &.directory-toggle {
-            &:before {
-                background-position: 6px center !important;
-                font-family: $font-family-icon;
-                content: "\f054" !important;
-                border-style: none;
-                margin-left: 5px;
-                font-weight: 900;
-                right: 15px;
-                top: 3px;
-                font-size: 0.6rem;
-                line-height: 2;
-            }
-            &.open:before {
-              background-position: -14px center !important;
-              font-family: $font-family-icon;
-              content: "\f078" !important;
-              border-style: none;
-              margin-left: 5px;
-              font-weight: 900;
-              transform: none !important;
-            }
-            &.loading:before {
-              background-position: 6px center !important;
-              font-weight: 900;
-              font-size: 0.6rem;
-              line-height: 2;
-              content: '' !important;
-              font-family: $font-family-icon;
-              margin-left: 5px;
-              border-style: none;
-              background: $loader-icon-small 0 0 no-repeat;
-            }
-        }
-    }
-    span.file-label {
-        display: flex;
-        align-items: center;
-        padding:0 2px 0 2px;
-        border:1px solid transparent;
-        height:auto;
-        white-space:normal;
-        cursor:pointer !important;
-        margin-right:24px;
-        margin-left: 2px;
-    }
-    &.prompt.new .file-label, &.file .file-label {
-        margin-left: 18px;
-    }
-    span.file-name {
-        font: inherit;
-        flex-grow: 1;
-        user-select: none;
-        cursor: default;
-        color: #c1c1c1;
-        margin-left: 3px;
-        cursor: pointer !important;
-    }
+  }
 }
 
 .children-count {
-    margin-left: 3px;
+  margin-left: 3px;
 }
