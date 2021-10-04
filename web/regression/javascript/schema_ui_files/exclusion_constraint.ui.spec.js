@@ -19,6 +19,7 @@ import _ from 'lodash';
 import { getNodeExclusionConstraintSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui';
 import * as legacyConnector from 'sources/helpers/legacyConnector';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
+import TableSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 
 class SchemaInColl extends BaseUISchema {
   constructor(schemaObj) {
@@ -196,6 +197,7 @@ describe('ExclusionConstraintSchema', ()=>{
   it('depChange', ()=>{
     let state = {columns: [{local_column: 'id'}]};
 
+    schemaObj.top = new TableSchema({}, null);
     expect(getFieldDepChange(schemaObj, 'columns')(state, ['columns', 0], null, {
       type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
       oldState: {

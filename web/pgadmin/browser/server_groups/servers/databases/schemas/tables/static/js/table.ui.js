@@ -48,7 +48,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
       vacuum_settings: ()=>getNodeVacuumSettingsSchema(tableNode, treeNodeInfo, itemNodeData),
       constraints: ()=>new ConstraintsSchema(
         treeNodeInfo,
-        ()=>getNodeForeignKeySchema(treeNodeInfo, itemNodeData, pgBrowser, true),
+        ()=>getNodeForeignKeySchema(treeNodeInfo, itemNodeData, pgBrowser, true, {autoindex: false}),
         ()=>getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgBrowser, true),
         {spcname: spcname},
       ),
@@ -275,8 +275,8 @@ export class LikeSchema extends BaseUISchema {
 }
 
 export default class TableSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, schemas, getPrivilegeRoleSchema, getColumns,
-    getCollations, getOperatorClass, getAttachTables, initValues) {
+  constructor(fieldOptions={}, nodeInfo, schemas={}, getPrivilegeRoleSchema=()=>{}, getColumns=()=>[],
+    getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -321,9 +321,9 @@ export default class TableSchema extends BaseUISchema {
     this.getColumns = getColumns;
 
     this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables);
-    this.constraintsObj = this.schemas.constraints();
-    this.columnsSchema = this.schemas.columns();
-    this.vacuumSettingsSchema = this.schemas.vacuum_settings();
+    this.constraintsObj = this.schemas.constraints && this.schemas.constraints() || {};
+    this.columnsSchema = this.schemas.columns && this.schemas.columns() || {};
+    this.vacuumSettingsSchema = this.schemas.vacuum_settings && this.schemas.vacuum_settings() || {};
     this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
   }
 

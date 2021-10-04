@@ -18,6 +18,7 @@ import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
 import _ from 'lodash';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import { getNodeForeignKeySchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui';
+import TableSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 
 class SchemaInColl extends BaseUISchema {
   constructor(schemaObj) {
@@ -197,8 +198,7 @@ describe('ForeignKeySchema', ()=>{
     expect(getFieldDepChange(schemaObj, 'autoindex')(state, null, null, actionObj)).toEqual({});
 
     state.oid = null;
-    schemaObj.nodeInfo = {table: {}};
-    schemaObj.top = schemaObj;
+    schemaObj.top = new TableSchema({}, null);
     expect(getFieldDepChange(schemaObj, 'autoindex')(state, null, null, actionObj)).toEqual({
       autoindex: false,
       coveringindex: '',

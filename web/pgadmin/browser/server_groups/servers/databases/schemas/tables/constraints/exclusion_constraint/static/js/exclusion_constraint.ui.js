@@ -6,6 +6,7 @@ import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/Sc
 import DataGridViewWithHeaderForm from '../../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../../static/js/node_ajax';
 import { pgAlertify } from '../../../../../../../../../../static/js/helpers/legacyConnector';
+import TableSchema from '../../../../static/js/table.ui';
 
 export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgBrowser, noColumns=false) {
   let tableNode = pgBrowser.Nodes['table'];
@@ -210,10 +211,10 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
   }
 
   get inTable() {
-    if(_.isUndefined(this.nodeInfo)) {
+    if(this.top && this.top instanceof TableSchema) {
       return true;
     }
-    return _.isUndefined(this.nodeInfo['exclusion_constraint']);
+    return false;
   }
 
   initialise(data) {

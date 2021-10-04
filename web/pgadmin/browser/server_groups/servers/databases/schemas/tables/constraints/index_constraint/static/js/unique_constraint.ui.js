@@ -3,6 +3,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
+import TableSchema from '../../../../static/js/table.ui';
 
 export default class UniqueConstraintSchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo) {
@@ -29,10 +30,10 @@ export default class UniqueConstraintSchema extends BaseUISchema {
   }
 
   get inTable() {
-    if(_.isUndefined(this.nodeInfo)) {
+    if(this.top && this.top instanceof TableSchema) {
       return true;
     }
-    return _.isUndefined(this.nodeInfo['unique_constraint']);
+    return false;
   }
 
   changeColumnOptions(columns) {
@@ -196,9 +197,9 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       id: 'index', label: gettext('Index'),
       mode: ['create'],
       type: 'select', group: gettext('Definition'),
+      options: this.fieldOptions.index,
       controlProps:{
         allowClear:true,
-        options: this.fieldOptions.index,
       },
       readonly: function() {
         if(!obj.isNew()) {

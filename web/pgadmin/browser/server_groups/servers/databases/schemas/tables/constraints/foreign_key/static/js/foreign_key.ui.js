@@ -5,8 +5,9 @@ import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
 import DataGridViewWithHeaderForm from '../../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../../static/js/node_ajax';
+import TableSchema from '../../../../static/js/table.ui';
 
-export function getNodeForeignKeySchema(treeNodeInfo, itemNodeData, pgBrowser, noColumns=false) {
+export function getNodeForeignKeySchema(treeNodeInfo, itemNodeData, pgBrowser, noColumns=false, initData={}) {
   return new ForeignKeySchema({
     local_column: noColumns ? [] : ()=>getNodeListByName('column', treeNodeInfo, itemNodeData),
     references: ()=>getNodeAjaxOptions('all_tables', pgBrowser.Nodes['table'], treeNodeInfo, itemNodeData, {cacheLevel: 'server'}, (rows)=>{
@@ -27,7 +28,7 @@ export function getNodeForeignKeySchema(treeNodeInfo, itemNodeData, pgBrowser, n
         'label': r.name,
       }));
     });
-  });
+  }, initData);
 }
 
 class ForeignKeyHeaderSchema extends BaseUISchema {
@@ -110,7 +111,7 @@ class ForeignKeyColumnSchema extends BaseUISchema {
 }
 
 export default class ForeignKeySchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, getColumns) {
+  constructor(fieldOptions={}, nodeInfo, getColumns, initData={}) {
     super({
       name: undefined,
       reftab: undefined,
@@ -124,9 +125,10 @@ export default class ForeignKeySchema extends BaseUISchema {
       columns: undefined,
       confupdtype: 'a',
       confdeltype: 'a',
-      autoindex: ForeignKeySchema.checkInTable(nodeInfo) ? false : true,
+      autoindex: true,
       coveringindex: undefined,
       hasindex:undefined,
+      ...initData,
     });
 
     this.nodeInfo = nodeInfo;
@@ -142,14 +144,10 @@ export default class ForeignKeySchema extends BaseUISchema {
   }
 
   get inTable() {
-    return ForeignKeySchema.checkInTable(this.nodeInfo);
-  }
-
-  static checkInTable(nodeInfo) {
-    if(_.isUndefined(nodeInfo)) {
+    if(this.top && this.top instanceof TableSchema) {
       return true;
     }
-    return _.isUndefined(nodeInfo['foreign_key']);
+    return false;
   }
 
   changeColumnOptions(columns) {

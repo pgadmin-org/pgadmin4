@@ -17,6 +17,7 @@ import SchemaView, { SCHEMA_STATE_ACTIONS } from '../../../pgadmin/static/js/Sch
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
 import _ from 'lodash';
 import UniqueConstraintSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui';
+import TableSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 
 class SchemaInColl extends BaseUISchema {
   constructor(schemaObj) {
@@ -171,6 +172,7 @@ describe('UniqueConstraintSchema', ()=>{
     expect(getFieldDepChange(schemaObj, 'condeferrable')(state)).toEqual({});
     expect(getFieldDepChange(schemaObj, 'condeferred')(state)).toEqual({});
 
+    schemaObj.top = new TableSchema({}, null);
     expect(getFieldDepChange(schemaObj, 'columns')(state, ['columns', 0], null, {
       type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
       oldState: {
