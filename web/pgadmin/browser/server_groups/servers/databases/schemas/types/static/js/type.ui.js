@@ -1640,7 +1640,7 @@ export default class TypeSchema extends BaseUISchema {
         if (state.typtype === 'p') {
           var acl = state.typacl;
           if(acl && acl.length > 0)
-            acl.reset();
+            acl.splice(0, acl.length);
         }
         return (state.typtype !== 'p');
       },
