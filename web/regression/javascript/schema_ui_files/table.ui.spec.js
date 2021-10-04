@@ -172,6 +172,11 @@ describe('TableSchema', ()=>{
         expect(depChange()).toEqual({
           columns: oftypeColumns,
           primary_key: [],
+          foreign_key: [],
+          exclude_constraint: [],
+          unique_constraint: [],
+          partition_keys: [],
+          partitions: [],
         });
         expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(oftypeColumns);
         done();
@@ -208,6 +213,11 @@ describe('TableSchema', ()=>{
         expect(depChange()).toEqual({
           columns: oftypeColumns,
           primary_key: [],
+          foreign_key: [],
+          exclude_constraint: [],
+          unique_constraint: [],
+          partition_keys: [],
+          partitions: [],
         });
         expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(oftypeColumns);
         done();

@@ -149,7 +149,7 @@ export default class ForeignKeySchema extends BaseUISchema {
     if(_.isUndefined(nodeInfo)) {
       return true;
     }
-    return _.isUndefined(nodeInfo['table']);
+    return _.isUndefined(nodeInfo['foreign_key']);
   }
 
   changeColumnOptions(columns) {
@@ -222,12 +222,14 @@ export default class ForeignKeySchema extends BaseUISchema {
       id: 'convalidated', label: gettext('Validated?'),
       type: 'switch', group: gettext('Definition'),
       readonly: (state)=>{
-        // If we are in table edit mode then
-        if(obj.inTable && obj.top && !obj.top.isNew()) {
-          return !(_.isUndefined(state.oid) || !state.convalidated);
-        }
-        if(!obj.isNew(state) && obj.origData.convalidated) {
-          return true;
+        if(!obj.isNew(state)) {
+          let origData = {};
+          if(obj.inTable && obj.top) {
+            origData = _.find(obj.top.origData['foreign_key'], (r)=>r.cid == state.cid);
+          } else {
+            origData = obj.origData;
+          }
+          return origData.convalidated;
         }
         return false;
       },

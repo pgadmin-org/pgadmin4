@@ -22,7 +22,7 @@ export default class CheckConstraintSchema extends BaseUISchema {
     if(_.isUndefined(this.nodeInfo)) {
       return true;
     }
-    return _.isUndefined(this.nodeInfo['table']);
+    return _.isUndefined(this.nodeInfo['check_constraint']);
   }
 
   isReadonly(state) {

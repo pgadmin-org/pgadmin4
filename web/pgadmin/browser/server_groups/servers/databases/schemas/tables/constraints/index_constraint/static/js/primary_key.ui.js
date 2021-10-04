@@ -31,7 +31,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
     if(_.isUndefined(this.nodeInfo)) {
       return true;
     }
-    return _.isUndefined(this.nodeInfo['table']);
+    return _.isUndefined(this.nodeInfo['primary_key']);
   }
 
   changeColumnOptions(columns) {

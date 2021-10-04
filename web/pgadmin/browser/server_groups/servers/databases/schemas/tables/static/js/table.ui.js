@@ -650,7 +650,12 @@ export default class TableSchema extends BaseUISchema {
             obj.changeColumnOptions(finalCols);
             return {
               columns: finalCols,
-              primary_key: []
+              primary_key: [],
+              foreign_key: [],
+              exclude_constraint: [],
+              unique_constraint: [],
+              partition_keys: [],
+              partitions: [],
             };
           });
         };

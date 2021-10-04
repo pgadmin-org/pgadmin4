@@ -32,7 +32,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
     if(_.isUndefined(this.nodeInfo)) {
       return true;
     }
-    return _.isUndefined(this.nodeInfo['table']);
+    return _.isUndefined(this.nodeInfo['unique_constraint']);
   }
 
   changeColumnOptions(columns) {
