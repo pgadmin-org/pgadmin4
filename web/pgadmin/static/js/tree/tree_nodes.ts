@@ -155,15 +155,23 @@ export class ManageTreeNodes {
   public generate_url = (path: string) => {
     let _path = path;
     let _parent_path = [];
+    let _partitions = [];
     while(_path != '/') {
       let node = this.findNode(_path);
       let _parent = unix.dirname(_path);
       if(node.parentNode && node.parentNode.path == _parent) {
         if (node.parentNode.metadata.data !== null && !node.parentNode.metadata.data._type.includes('coll-'))
-          _parent_path.push(node.parentNode.metadata.data._id);
+          if(node.parentNode.metadata.data._type.includes('partition')) {
+            _partitions.push(node.parentNode.metadata.data._id);
+          } else {
+            _parent_path.push(node.parentNode.metadata.data._id);
+          }
      }
      _path = _parent;
     }
+    // Replace the table with the last partition as in reality partition node is not child of the table
+    if(_partitions.length > 0) _parent_path[0]  = _partitions[_partitions.length-1];
+
     let _rev_arr = _parent_path.reverse();
     return _rev_arr.join("/");
   }
