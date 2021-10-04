@@ -57,7 +57,7 @@ export default function(basicSettings) {
       },
       text: {
         primary: '#fff',
-        muted: '#8b9cad',
+        muted: '#8b9cac',
       },
       background: {
         paper: '#010B15',
@@ -83,6 +83,11 @@ export default function(basicSettings) {
       headerBg: '#010B15',
       activeColor: '#d4d4d4',
       tableBg: '#010B15',
+      activeStepBg: '#84D6FF',
+      activeStepFg: '#010b15',
+      stepBg: '#FFFFFF',
+      stepFg: '#000',
+      toggleBtnBg: '#6B6B6B'
     }
   });
 }

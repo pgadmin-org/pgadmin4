@@ -56,14 +56,15 @@ const useStyles = makeStyles((theme) =>
       fontWeight: 600
     },
     activeIndex: {
-      backgroundColor: '#326690 !important',
-      color: '#fff'
+      backgroundColor: theme.otherVars.activeStepBg + ' !important',
+      color: theme.otherVars.activeStepFg + ' !important'
     },
     stepIndex: {
       padding: '0.5em 1em ',
       height: '2.5em',
       borderRadius: '2em',
-      backgroundColor: '#ddd',
+      backgroundColor: theme.otherVars.stepBg,
+      color: theme.otherVars.stepFg,
       display: 'inline-block',
       flex: 0.5,
 

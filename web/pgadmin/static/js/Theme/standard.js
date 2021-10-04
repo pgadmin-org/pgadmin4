@@ -91,6 +91,11 @@ export default function(basicSettings) {
       headerBg: '#fff',
       activeColor: '#326690',
       tableBg: '#fff',
+      activeStepBg: '#326690',
+      activeStepFg: '#FFFFFF',
+      stepBg: '#ddd',
+      stepFg: '#000',
+      toggleBtnBg: '#000'
     }
   });
 }

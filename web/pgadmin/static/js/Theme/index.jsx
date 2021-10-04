@@ -242,6 +242,13 @@ function getFinalTheme(baseTheme) {
           borderColor: baseTheme.otherVars.inputBorderColor,
         }
       },
+      MuiFormControlLabel: {
+        label: {
+          '&.Mui-disabled': {
+            color: baseTheme.palette.text.muted
+          }
+        }
+      },
       MuiTabs: {
         root: {
           backgroundColor: baseTheme.otherVars.headerBg,
@@ -306,6 +313,13 @@ function getFinalTheme(baseTheme) {
           backgroundColor: baseTheme.otherVars.headerBg,
         }
       },
+      MuiToggleButtonGroup: {
+        groupedHorizontal : {
+          '&:not(:first-child)': {
+            borderLeft: 'abc'
+          }
+        }
+      },
       MuiSwitch: {
         root: {
           width: 54,
@@ -341,13 +355,23 @@ function getFinalTheme(baseTheme) {
         },
         thumb: {
           border: '1px solid ' + baseTheme.otherVars.inputBorderColor
+        },
+        track: {
+          backgroundColor: baseTheme.otherVars.toggleBtnBg
         }
       },
       MuiCheckbox: {
         root: {
           padding: '0px',
           color: baseTheme.otherVars.inputBorderColor,
+        },
+
+        colorPrimary: {
+          '&.Mui-disabled': {
+            color: baseTheme.palette.text.muted
+          }
         }
+
       },
       MuiToggleButton: {
         root: {

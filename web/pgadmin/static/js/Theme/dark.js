@@ -85,6 +85,11 @@ export default function(basicSettings) {
       headerBg: '#424242',
       activeColor: '#d4d4d4',
       tableBg: '#424242',
+      activeStepBg: '#234d6e',
+      activeStepFg: '#FFFFFF',
+      stepBg: '#FFFFFF',
+      stepFg: '#000',
+      toggleBtnBg: '#000'
     }
   });
 }

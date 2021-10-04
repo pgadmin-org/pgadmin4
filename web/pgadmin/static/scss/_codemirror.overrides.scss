@@ -7,7 +7,7 @@
 .CodeMirror {
   font-size: 1em;
   font-family: monospace, monospace;
-  background-color: $color-editor-bg;
+  background-color: $color-editor-bg !important;
   color: $color-editor-fg;
 }
 
