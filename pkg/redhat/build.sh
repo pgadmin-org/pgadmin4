@@ -11,7 +11,7 @@ OS_NAME=$(cat /etc/os-release | grep "^ID=" | awk -F "=" '{ print $2 }' | sed 's
 OS_ARCH=$(arch)
 
 # Make sure we get the right libpq
-export PATH=/usr/pgsql-12/bin:$PATH
+export PATH=/usr/pgsql-14/bin:$PATH
 
 # Common Linux build functions
 source pkg/linux/build-functions.sh
@@ -216,7 +216,7 @@ if [ ${OS_VERSION} == 7 ]; then
 fi
 
 # Get the libpq we need
-yumdownloader -y --downloadonly --destdir=$DISTROOT postgresql13-libs
+yumdownloader -y --downloadonly --destdir=$DISTROOT postgresql14-libs
 
 #
 # Get the results!

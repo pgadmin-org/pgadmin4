@@ -12,7 +12,7 @@
 # and clean up the web/ source code
 #########################################################################
 
-FROM alpine:3.13 AS app-builder
+FROM alpine:3.14 AS app-builder
 
 RUN apk add --no-cache \
     autoconf \
@@ -60,7 +60,7 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
 # Next, create the base environment for Python
 #########################################################################
 
-FROM alpine:3.13 as env-builder
+FROM alpine:3.14 as env-builder
 
 # Install dependencies
 COPY requirements.txt /
@@ -113,8 +113,9 @@ FROM postgres:10-alpine as pg10-builder
 FROM postgres:11-alpine as pg11-builder
 FROM postgres:12-alpine as pg12-builder
 FROM postgres:13-alpine as pg13-builder
+FROM postgres:14-alpine as pg14-builder
 
-FROM alpine:3.13 as tool-builder
+FROM alpine:3.14 as tool-builder
 
 # Copy the PG binaries
 COPY --from=pg96-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-9.6/
@@ -142,11 +143,15 @@ COPY --from=pg13-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-13/
 COPY --from=pg13-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-13/
 COPY --from=pg13-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-13/
 
+COPY --from=pg14-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-14/
+COPY --from=pg14-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-14/
+COPY --from=pg14-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-14/
+COPY --from=pg14-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-14/
 #########################################################################
 # Assemble everything into the final container.
 #########################################################################
 
-FROM alpine:3.13
+FROM alpine:3.14
 
 # Copy in the Python packages
 COPY --from=env-builder /venv /venv
