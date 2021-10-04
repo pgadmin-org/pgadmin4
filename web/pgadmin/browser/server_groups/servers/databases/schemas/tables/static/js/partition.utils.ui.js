@@ -264,7 +264,7 @@ export class PartitionsSchema extends BaseUISchema {
         }
         return false;
       },
-      disabled: function(state) {
+      readonly: function(state) {
         if(obj.top && obj.top.sessData.partition_type == 'list' && obj.isNew(state)
             && state.is_default !== true) {
           return false;

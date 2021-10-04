@@ -26,7 +26,7 @@ export default function(basicSettings) {
       },
       primary: {
         main: '#234d6e',
-        light: '#d6effc',
+        light: '#323E43',
         contrastText: '#fff',
         hoverMain: darken('#234d6e', 0.25),
         hoverBorderColor: darken('#234d6e', 0.25),

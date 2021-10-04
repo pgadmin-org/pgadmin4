@@ -275,8 +275,13 @@ export default class ColumnSchema extends BaseUISchema {
         return _.isUndefined(this.nodeInfo['table'] || this.nodeInfo['view'] || this.nodeInfo['mview']);
       },
     },{
-      id: 'attlen', label: gettext('Length/Precision'), cell: 'int',
+      id: 'attlen', label: gettext('Length/Precision'),
       deps: ['cltype'], type: 'int', group: gettext('Definition'), width: 120, disableResizing: true,
+      cell: (state)=>{
+        return {
+          cell: obj.attlenRange(state) ? 'int' : '',
+        };
+      },
       depChange: (state)=>{
         let range = this.attlenRange(state);
         if(range) {
@@ -300,8 +305,13 @@ export default class ColumnSchema extends BaseUISchema {
         return Boolean(obj.attlenRange(state));
       },
     },{
-      id: 'attprecision', label: gettext('Scale'), cell: 'int', width: 60, disableResizing: true,
+      id: 'attprecision', label: gettext('Scale'), width: 60, disableResizing: true,
       deps: ['cltype'], type: 'int', group: gettext('Definition'),
+      cell: (state)=>{
+        return {
+          cell: obj.attlenRange(state) ? 'int' : '',
+        };
+      },
       depChange: (state)=>{
         let range = this.attprecisionRange(state);
         if(range) {

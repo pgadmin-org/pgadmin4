@@ -233,6 +233,11 @@ function getFinalTheme(baseTheme) {
     mixins: mixins,
     overrides: {
       MuiOutlinedInput:  {
+        root: {
+          '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+            borderColor: baseTheme.otherVars.inputBorderColor,
+          },
+        },
         notchedOutline: {
           borderColor: baseTheme.otherVars.inputBorderColor,
         }
@@ -259,12 +264,16 @@ function getFinalTheme(baseTheme) {
         root: {
           backgroundColor: baseTheme.palette.background.default,
           textOverflow: 'ellipsis',
+          '&.Mui-disabled': {
+            backgroundColor: baseTheme.otherVars.inputDisabledBg,
+          },
         },
         inputMultiline: {
           fontSize: baseTheme.typography.fontSize,
           height: 'unset',
           backgroundColor: baseTheme.palette.background.default,
           '&[readonly], &.Mui-disabled': {
+            color: baseTheme.palette.text.muted,
             backgroundColor: baseTheme.otherVars.inputDisabledBg,
           },
         },
@@ -273,6 +282,7 @@ function getFinalTheme(baseTheme) {
           height: 'unset',
           backgroundColor: baseTheme.palette.background.default,
           '&[readonly], &.Mui-disabled': {
+            color: baseTheme.palette.text.muted,
             backgroundColor: baseTheme.otherVars.inputDisabledBg,
           },
         }

@@ -589,6 +589,7 @@ const customReactSelectStyles = (theme, readonly)=>({
     ...provided,
     minHeight: '0',
     backgroundColor: readonly ? theme.otherVars.inputDisabledBg : theme.palette.background.default,
+    color: readonly ? theme.palette.text.muted : theme.palette.text.primary,
     borderColor: theme.otherVars.inputBorderColor,
     ...(state.isFocused ? {
       borderColor: theme.palette.primary.main,
