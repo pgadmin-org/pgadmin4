@@ -32,6 +32,11 @@
   &:hover, &.pseudo-active {
     background-color: $tree-bg-hover !important;
     color: $tree-fg-hover !important;
+    span.file-label {
+      span.file-name {
+        color: $tree-text-hover-fg !important;
+      }
+    }
   }
   &.active, &.prompt {
     background-color: $tree-bg-selected !important;
