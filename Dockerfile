@@ -160,7 +160,7 @@ COPY --from=env-builder /venv /venv
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
 COPY --from=pg14-builder /usr/local/lib/libpq.so.5.14 /usr/lib/
-RUN ln -s libpq.so.5.14 /usr/lib/libpq.so.5 & \
+RUN ln -s libpq.so.5.14 /usr/lib/libpq.so.5 && \
     ln -s libpq.so.5.14 /usr/lib/libpq.so
 
 WORKDIR /pgadmin4
