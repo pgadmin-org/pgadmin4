@@ -96,6 +96,9 @@ describe('TypeSchema', ()=>{
     it('composite validate', () => {
       let state = { typtype: 'b' }; //validating for ExternalSchema which is distinguish as r
       let setError = jasmine.createSpy('setError');
+      compositeCollObj.top = {
+        'sessData': { 'typtype':'c' }
+      };
 
       compositeCollObj.validate(state, setError);
       expect(setError).toHaveBeenCalledWith('member_name', 'Please specify the value for member name.');

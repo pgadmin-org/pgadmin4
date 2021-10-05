@@ -1040,21 +1040,24 @@ class CompositeSchema extends BaseUISchema {
 
   validate(state, setError) {
 
-    let errmsg = null;
-
-    if (isEmptyString(state.member_name)) {
-      errmsg = gettext('Please specify the value for member name.');
-      setError('member_name', errmsg);
-      return true;
-    } else if(isEmptyString(state.type)) {
-      errmsg = gettext('Please specify the type.');
-      setError('type', errmsg);
-      return true;
-    }
-    if(_.isUndefined(errmsg) || errmsg == null) {
+    let self = this,
       errmsg = null;
-      setError('member_name', errmsg);
-      setError('type', errmsg);
+
+    if(self.top && self.top.sessData && self.top.sessData.typtype === 'c') {
+      if (isEmptyString(state.member_name)) {
+        errmsg = gettext('Please specify the value for member name.');
+        setError('member_name', errmsg);
+        return true;
+      } else if(isEmptyString(state.type)) {
+        errmsg = gettext('Please specify the type.');
+        setError('type', errmsg);
+        return true;
+      }
+      if(_.isUndefined(errmsg) || errmsg == null) {
+        errmsg = null;
+        setError('member_name', errmsg);
+        setError('type', errmsg);
+      }
     }
     return false;
   }
@@ -1286,7 +1289,7 @@ export default class TypeSchema extends BaseUISchema {
       ...fieldOptions
     };
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
-    this.getCompositeSchema = getCompositeSchema;
+    this.compositeSchema = getCompositeSchema(); // create only once the composite schema to avoid initializing the current (i.e. top)
     this.getRangeSchema = getRangeSchema;
     this.getExternalSchema = getExternalSchema;
     this.getDataTypeSchema = getDataTypeSchema;
@@ -1409,8 +1412,13 @@ export default class TypeSchema extends BaseUISchema {
       uniqueCol : ['member_name'],
       canAdd: true,  canEdit: false, canDelete: true,
       disabled: () => obj.inCatalog(),
-      schema: obj.getCompositeSchema(),
+      schema: obj.compositeSchema,
       deps: ['typtype'],
+      depChange: (state)=>{
+        if(_.isArray(state.composite) && state.composite.length > 0 && state.typtype !== 'c') {
+          state.composite.splice(0, state.composite.length);
+        }
+      },
       visible: (state) => {
         return state.typtype === 'c';
       },
@@ -1658,7 +1666,7 @@ export default class TypeSchema extends BaseUISchema {
         if (state.typtype === 'p') {
           var secLabs = state.seclabels;
           if(secLabs && secLabs.length > 0)
-            secLabs.reset();
+            secLabs.splice(0, secLabs.length);
         }
         return (state.typtype !== 'p');
       },
