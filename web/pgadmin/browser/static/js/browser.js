@@ -1890,7 +1890,7 @@ define('pgadmin.browser', [
         _parentNode = null;
 
         for (; idx < size; idx++) {
-          childNode = children.eq(idx);
+          childNode = children[idx];
           childNodeData = tree_local.itemData(childNode);
 
           if (childNodeData._type == _collType) {
@@ -1906,7 +1906,7 @@ define('pgadmin.browser', [
         size = children.length;
 
         for (; idx < size; idx++) {
-          childNode = children.eq(idx);
+          childNode = children[idx];
           childNodeData = tree_local.itemData(childNode);
 
           if (_childIds.indexOf(childNodeData._id) != -1) {
@@ -1953,7 +1953,7 @@ define('pgadmin.browser', [
         idx = 0, nodeData, node;
 
       for(; idx < siblings.length; idx++) {
-        node = siblings.eq(idx);
+        node = siblings[idx];
         nodeData = tree_local.itemData(node);
 
         if (nodeData && nodeData._id == _id)
@@ -1987,7 +1987,7 @@ define('pgadmin.browser', [
         return null;
 
       for(; idx < children.length; idx++) {
-        node = children.eq(idx);
+        node = children[idx];
         nodeData = tree_local.itemData(node);
 
         if (nodeData && nodeData._type == _collType)
@@ -2020,6 +2020,8 @@ define('pgadmin.browser', [
           childNodeUrl = module.generate_url(
             null, 'nodes', childDummyInfo, true, childTreeInfo
           );
+
+          var _node = _node || arguments[1];
 
           $.ajax({
             url: childNodeUrl,

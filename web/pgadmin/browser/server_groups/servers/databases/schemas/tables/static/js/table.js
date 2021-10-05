@@ -362,7 +362,6 @@ define('pgadmin.node.table', [
             'affected_partitions' in _newNodeData
         ) {
           var partitions = _newNodeData.affected_partitions,
-            self = this,
             newPartitionsIDs = [],
             insertChildTreeNodes = [],
             insertChildrenNodes = function() {
@@ -409,7 +408,7 @@ define('pgadmin.node.table', [
                     'parent': tablesCollNode,
                     'type': 'table',
                     'treeHierarchy':
-                      pgAdmin.Browser.Nodes.schema.getTreeNodeHierarchy(
+                      pgAdmin.Browser.tree.getTreeNodeHierarchy(
                         schemaNode
                       ),
                     'childrenIDs': _.clone(childIDs),
@@ -460,7 +459,7 @@ define('pgadmin.node.table', [
               insertChildTreeNodes.push({
                 'parent': partitionsCollNode,
                 'type': 'partition',
-                'treeHierarchy': self.getTreeNodeHierarchy(_node),
+                'treeHierarchy': pgAdmin.Browser.tree.getTreeNodeHierarchy(_node),
                 'childrenIDs': newPartitionsIDs,
               });
             }
