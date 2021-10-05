@@ -147,6 +147,7 @@ COPY --from=pg14-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-14/
 COPY --from=pg14-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-14/
 COPY --from=pg14-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-14/
 COPY --from=pg14-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-14/
+
 #########################################################################
 # Assemble everything into the final container.
 #########################################################################
@@ -158,6 +159,9 @@ COPY --from=env-builder /venv /venv
 
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
+COPY --from=pg14-builder /usr/local/lib/libpq.so.5.14 /usr/lib/
+RUN ln -s libpq.so.5.14 /usr/lib/libpq.so.5 & \
+    ln -s libpq.so.5.14 /usr/lib/libpq.so
 
 WORKDIR /pgadmin4
 ENV PYTHONPATH=/pgadmin4
@@ -178,7 +182,6 @@ RUN apk add \
         python3 \
         py3-pip \
         postfix \
-        postgresql-libs \
         krb5-libs \
         shadow \
         sudo \
