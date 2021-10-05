@@ -59,6 +59,9 @@ export default function(basicSettings) {
         primary: '#fff',
         muted: '#8b9cac',
       },
+      checkbox: {
+        disabled: '#6b6b6b'
+      },
       background: {
         paper: '#010B15',
         default: '#010B15',

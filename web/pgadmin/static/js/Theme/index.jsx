@@ -368,10 +368,9 @@ function getFinalTheme(baseTheme) {
 
         colorPrimary: {
           '&.Mui-disabled': {
-            color: baseTheme.palette.text.muted
+            color: baseTheme.palette.checkbox.disabled
           }
         }
-
       },
       MuiToggleButton: {
         root: {
