@@ -169,7 +169,9 @@ class ExclusionColumnSchema extends BaseUISchema {
     },{
       id: 'operator', label: gettext('Operator'), type: 'select',
       width: 95,
-      editable: obj.isEditable,
+      editable: function() {
+        return obj.isNewExCons;
+      },
       cell: (state)=>{
         return {
           cell: 'select',

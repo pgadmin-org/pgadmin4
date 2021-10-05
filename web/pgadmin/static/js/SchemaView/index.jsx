@@ -114,7 +114,7 @@ const diffArrayOptions = {
   compareFunction: objectComparator,
 };
 
-function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
+function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, includeSkipChange=true) {
   let changedData = {};
   let isEdit = viewHelperProps.mode === 'edit';
 
@@ -147,8 +147,9 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false) {
       let {modeSupported} = getFieldMetaData(field, schema, {}, viewHelperProps, true);
 
       /* If skipChange is true, then field will not be considered for changed data,
+      This is helpful when Save or Reset should not be enabled on this field change alone.
       No change in other behaviour */
-      if(!modeSupported || field.skipChange) {
+      if(!modeSupported || (field.skipChange && !includeSkipChange)) {
         return;
       }
       if(typeof(field.type) == 'string' && field.type.startsWith('nested-')) {
@@ -477,7 +478,7 @@ function SchemaDialogView({
     if(!isNotValid) setFormErr({});
 
     /* check if anything changed */
-    let changedData = getChangedData(schema, viewHelperProps, sessData);
+    let changedData = getChangedData(schema, viewHelperProps, sessData, false, false);
     let isDataChanged = Object.keys(changedData).length > 0;
     setDirty(isDataChanged);
 
