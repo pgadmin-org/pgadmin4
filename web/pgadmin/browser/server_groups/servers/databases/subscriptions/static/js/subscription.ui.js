@@ -163,7 +163,7 @@ export default class SubscriptionSchema extends BaseUISchema{
     {
       id: 'password', label: gettext('Password'), type: 'password', maxlength: null,
       group: gettext('Connection'),
-      mode: ['create', 'edit'],
+      mode: ['create', 'edit'], skipChange: true,
       deps: ['connect_now'],
     },
     {

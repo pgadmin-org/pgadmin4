@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import _ from 'lodash';
 
 
 export class DefaultWithSchema extends BaseUISchema {
@@ -97,9 +98,10 @@ export default class PublicationSchema extends BaseUISchema {
       state.only_table = false;
       return true;
     }
-    if (!_.isUndefined(table) && table.length > 0){
+    if (!_.isUndefined(table) && table.length > 0 && !_.isEqual(this._origData.pubtable, state.pubtable)){
       return false;
     }
+    state.only_table = false;
     return true;
   }
 

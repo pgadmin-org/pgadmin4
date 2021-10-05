@@ -590,7 +590,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         required_args = ['name']
 
         required_connection_args = ['host', 'port', 'username', 'db',
-                                    'connect_timeout', 'passfile']
+                                    'connect_timeout', 'passfile', 'sslmode']
 
         # Set connection time out to zero if initial set
         # value is replaced to ''
