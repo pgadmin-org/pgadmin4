@@ -158,7 +158,7 @@ define('pgadmin.node.index', [
             tablespaceList: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
               return (m.label != 'pg_global');
             }),
-            amnameList : ()=>getNodeAjaxOptions('get_access_methods', nodeObj, treeNodeInfo, itemNodeData),
+            amnameList : ()=>getNodeAjaxOptions('get_access_methods', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
             columnList: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, {}),
           },
           {

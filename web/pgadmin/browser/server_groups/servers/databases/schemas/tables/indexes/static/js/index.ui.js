@@ -263,7 +263,6 @@ export default class IndexSchema extends BaseUISchema {
         readonly: function (state) {
           return !indexSchemaObj.isNew(state);
         },
-        url_jump_after_node: 'schema',
         group: gettext('Definition'),
         type: () => {
           return {

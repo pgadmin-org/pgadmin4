@@ -25,7 +25,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
   let serverInfo = treeNodeInfo && ('server' in treeNodeInfo) &&
       pgAdmin.Browser.serverInfo && pgAdmin.Browser.serverInfo[treeNodeInfo.server._id];
   let inCatalog = treeNodeInfo && ('catalog' in treeNodeInfo);
-  let urlBase = generateNodeUrl.call(nodeObj, treeNodeInfo, actionType, itemNodeData, false, null);
+  let urlBase = generateNodeUrl.call(nodeObj, treeNodeInfo, actionType, itemNodeData, false, nodeObj.url_jump_after_node);
   const api = getApiInstance();
   const url = (isNew)=>{
     return urlBase + (isNew ? '' : itemNodeData._id);
