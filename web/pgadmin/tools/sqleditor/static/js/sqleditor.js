@@ -2895,6 +2895,7 @@ define('tools.querytool', [
             },
             function() {
               // Stop, User wants to save
+              $('#btn-flash').prop('disabled', false);
               return true;
             }
           ).set('labels', {

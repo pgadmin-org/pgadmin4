@@ -33,4 +33,5 @@ Bug fixes
 | `Issue #6736 <https://redmine.postgresql.org/issues/6736>`_ -  Fixed an issue where Refresh view options are not working for materialized view.
 | `Issue #6755 <https://redmine.postgresql.org/issues/6755>`_ -  Fixed keyerror issue in schema diff for 'attnum' and 'edit_types' parameter.
 | `Issue #6759 <https://redmine.postgresql.org/issues/6759>`_ -  Ensure that RLS names should not be editable in the collection node of properties tab.
+| `Issue #6798 <https://redmine.postgresql.org/issues/6798>`_ -
 | `Issue #6834 <https://redmine.postgresql.org/issues/6834>`_ -  Ensure that SQL help should work for EPAS servers.
