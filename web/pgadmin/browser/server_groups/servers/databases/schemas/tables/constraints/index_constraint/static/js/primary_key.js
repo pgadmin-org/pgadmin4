@@ -105,7 +105,7 @@ define('pgadmin.node.primary_key', [
           spcname: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
             return (m.label != 'pg_global');
           }),
-          index: ()=>getNodeListByName('index', treeNodeInfo, itemNodeData),
+          index: ()=>getNodeListByName('index', treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
         }, treeNodeInfo);
       },
       // Define the model for index constraint node

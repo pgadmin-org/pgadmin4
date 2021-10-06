@@ -91,7 +91,7 @@ define('pgadmin.node.unique_constraint', [
           spcname: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
             return (m.label != 'pg_global');
           }),
-          index: ()=>getNodeListByName('index', treeNodeInfo, itemNodeData),
+          index: ()=>getNodeListByName('index', treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
         }, treeNodeInfo);
       },
     });
