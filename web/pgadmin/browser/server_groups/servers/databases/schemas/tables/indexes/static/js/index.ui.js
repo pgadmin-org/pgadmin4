@@ -18,8 +18,8 @@ export function getColumnSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new ColumnSchema(
     {
       columnList: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, {}),
-      collationList: ()=>getNodeAjaxOptions('get_collations', nodeObj, treeNodeInfo, itemNodeData),
-      opClassList: ()=>getNodeAjaxOptions('get_op_class', nodeObj, treeNodeInfo, itemNodeData)
+      collationList: ()=>getNodeAjaxOptions('get_collations', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
+      opClassList: ()=>getNodeAjaxOptions('get_op_class', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'})
     }, {
       node_info: treeNodeInfo
     }

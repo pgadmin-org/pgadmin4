@@ -178,7 +178,7 @@ define('pgadmin.node.trigger', [
       getSchema: function(treeNodeInfo, itemNodeData) {
         return new TriggerSchema(
           {
-            triggerFunction: ()=>getNodeAjaxOptions('get_triggerfunctions', this, treeNodeInfo, itemNodeData, {cacheLevel: 'trigger_function'}, (data) => {
+            triggerFunction: ()=>getNodeAjaxOptions('get_triggerfunctions', this, treeNodeInfo, itemNodeData, {cacheLevel: 'trigger_function', jumpAfterNode: 'schema'}, (data) => {
               return _.reject(data, function(option) {
                 return option.label == '';
               });

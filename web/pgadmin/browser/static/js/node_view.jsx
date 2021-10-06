@@ -70,7 +70,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
 
   /* Called when switched to SQL tab, promise required */
   const getSQLValue = (isNew, changedData)=>{
-    const msqlUrl = generateNodeUrl.call(nodeObj, treeNodeInfo, 'msql', itemNodeData, !isNew, null);
+    const msqlUrl = generateNodeUrl.call(nodeObj, treeNodeInfo, 'msql', itemNodeData, !isNew, nodeObj.url_jump_after_node);
     return new Promise((resolve, reject)=>{
       api({
         url: msqlUrl,
