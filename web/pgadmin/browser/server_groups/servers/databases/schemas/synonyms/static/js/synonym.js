@@ -33,6 +33,7 @@ define('pgadmin.node.synonym', [
   if (!pgBrowser.Nodes['synonym']) {
     pgAdmin.Browser.Nodes['synonym'] = schemaChild.SchemaChildNode.extend({
       type: 'synonym',
+      epasHelp: true,
       dialogHelp: url_for('help.static', {'filename': 'synonym_dialog.html'}),
       label: gettext('Synonym'),
       collection_type: 'coll-synonym',

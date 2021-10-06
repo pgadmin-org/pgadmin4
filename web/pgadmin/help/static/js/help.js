@@ -7,17 +7,13 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-export function getHelpUrl(base_path, file, version, server_type) {
+export function getHelpUrl(base_path, file, version) {
   var major = Math.floor(version / 10000),
     minor = Math.floor(version / 100) - (major * 100),
-    subminor = version - ((major * 10000) + (minor * 100)),
     url = '',
     replace_string = major + '.' + minor;
 
-  // Handle the version number format change in EPAS 9.6 and below
-  if (server_type == 'ppas' && major < 10) {
-    replace_string = major + '.' + minor + '.' + subminor;
-  } else if (server_type == 'pg' && major >= 10) {
+  if (major >= 10) {
     // Handle the version number format change in PG 10+
     replace_string = major;
   }
@@ -29,4 +25,22 @@ export function getHelpUrl(base_path, file, version, server_type) {
   }
 
   return url + file;
+}
+
+export function getEPASHelpUrl(version) {
+  var major = Math.floor(version / 10000),
+    minor = Math.floor(version / 100) - (major * 100),
+    epasHelp11Plus = 'https://www.enterprisedb.com/docs/epas/$VERSION$/epas_compat_sql/',
+    epasHelp = 'https://www.enterprisedb.com/docs/epas/$VERSION$/',
+    url = '';
+
+  url = epasHelp11Plus.replace('$VERSION$', major);
+
+  if (major == 10) {
+    url = epasHelp.replace('$VERSION$', major);
+  } else if (major < 10) {
+    url = epasHelp.replace('$VERSION$', major + '.' + minor);
+  }
+
+  return url;
 }

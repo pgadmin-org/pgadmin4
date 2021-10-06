@@ -63,18 +63,6 @@ class HelpModule(PgAdminModule):
             )
         )
 
-        self.edbas_help_path = self.help_preference.register(
-            'help', 'edbas_help_path',
-            gettext("EDB Advanced Server Help Path"), 'text',
-            'https://www.enterprisedb.com/edb-docs/d/postgresql/reference/'
-            'manual/$VERSION$/',
-            category_label=gettext('Help'),
-            help_str=gettext(
-                'Path to the EDB Advanced Server documentation. $VERSION$ '
-                'will be replaced with the major.minor version number.'
-            )
-        )
-
     def get_exposed_url_endpoints(self):
         """
         Returns the list of URLs exposed to the client.

@@ -42,8 +42,7 @@ define('pgadmin.node.compound_trigger', [
       hasSQL:  true,
       hasDepends: true,
       width: pgBrowser.stdW.sm + 'px',
-      sqlAlterHelp: 'sql-altertcompoundtrigger.html',
-      sqlCreateHelp: 'sql-createcompoundtrigger.html',
+      epasHelp: true,
       dialogHelp: url_for('help.static', {'filename': 'compound_trigger_dialog.html'}),
       url_jump_after_node: 'schema',
       Init: function() {

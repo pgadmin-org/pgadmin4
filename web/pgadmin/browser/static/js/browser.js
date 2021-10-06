@@ -854,11 +854,7 @@ define('pgadmin.browser', [
         // Construct the URL
         var server = pgBrowser.tree.getTreeNodeHierarchy(item).server;
         var baseUrl = pgBrowser.utils.pg_help_path;
-        if (server.server_type == 'ppas') {
-          baseUrl = pgBrowser.utils.edbas_help_path;
-        }
-
-        var fullUrl = help.getHelpUrl(baseUrl, url, server.version, server.server_type);
+        var fullUrl = help.getHelpUrl(baseUrl, url, server.version);
 
         window.open(fullUrl, 'postgres_help');
       } else if(type == 'dialog_help') {

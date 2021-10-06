@@ -70,7 +70,6 @@ define('pgadmin.browser.utils',
   pgBrowser.utils = {
     layout: '{{ layout }}',
     pg_help_path: '{{ pg_help_path }}',
-    edbas_help_path: '{{ edbas_help_path }}',
     tabSize: '{{ editor_tab_size }}',
     wrapCode: '{{ editor_wrap_code }}' == 'True',
     useSpaces: '{{ editor_use_spaces }}',

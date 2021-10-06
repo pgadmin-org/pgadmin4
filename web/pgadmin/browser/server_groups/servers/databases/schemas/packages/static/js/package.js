@@ -36,6 +36,7 @@ define('pgadmin.node.package', [
   if (!pgBrowser.Nodes['package']) {
     pgBrowser.Nodes['package'] = schemaChild.SchemaChildNode.extend({
       type: 'package',
+      epasHelp: true,
       dialogHelp: url_for('help.static', {'filename': 'package_dialog.html'}),
       label: gettext('Package'),
       collection_type: 'coll-package',

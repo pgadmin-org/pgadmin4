@@ -12,7 +12,7 @@ import ReactDOM from 'react-dom';
 
 import pgAdmin from 'sources/pgadmin';
 import getApiInstance from 'sources/api_instance';
-import {getHelpUrl} from 'pgadmin.help';
+import {getHelpUrl, getEPASHelpUrl} from 'pgadmin.help';
 import SchemaView from 'sources/SchemaView';
 import { generateNodeUrl } from './node_ajax';
 import Alertify from 'pgadmin.alertifyjs';
@@ -96,20 +96,21 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
     if(isSqlHelp) {
       let server = treeNodeInfo.server;
       let url = pgAdmin.Browser.utils.pg_help_path;
-      if (server.server_type == 'ppas') {
-        url = pgAdmin.Browser.utils.edbas_help_path;
-      }
-
       let fullUrl = '';
-      if (nodeObj.sqlCreateHelp == '' && nodeObj.sqlAlterHelp != '') {
-        fullUrl = getHelpUrl(url, nodeObj.sqlAlterHelp, server.version, server.server_type);
-      } else if (nodeObj.sqlCreateHelp != '' && nodeObj.sqlAlterHelp == '') {
-        fullUrl = getHelpUrl(url, nodeObj.sqlCreateHelp, server.version, server.server_type);
+
+      if (server.server_type == 'ppas' && nodeObj.epasHelp) {
+        fullUrl = getEPASHelpUrl(server.version);
       } else {
-        if (isNew) {
-          fullUrl = getHelpUrl(url, nodeObj.sqlCreateHelp, server.version, server.server_type);
+        if (nodeObj.sqlCreateHelp == '' && nodeObj.sqlAlterHelp != '') {
+          fullUrl = getHelpUrl(url, nodeObj.sqlAlterHelp, server.version);
+        } else if (nodeObj.sqlCreateHelp != '' && nodeObj.sqlAlterHelp == '') {
+          fullUrl = getHelpUrl(url, nodeObj.sqlCreateHelp, server.version);
         } else {
-          fullUrl = getHelpUrl(url, nodeObj.sqlAlterHelp, server.version, server.server_type);
+          if (isNew) {
+            fullUrl = getHelpUrl(url, nodeObj.sqlCreateHelp, server.version);
+          } else {
+            fullUrl = getHelpUrl(url, nodeObj.sqlAlterHelp, server.version);
+          }
         }
       }
 
@@ -195,7 +196,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
       confirmOnCloseReset={confirmOnCloseReset}
       hasSQL={nodeObj.hasSQL && (actionType === 'create' || actionType === 'edit')}
       getSQLValue={getSQLValue}
-      disableSqlHelp={nodeObj.sqlAlterHelp == '' && nodeObj.sqlCreateHelp == ''}
+      disableSqlHelp={nodeObj.sqlAlterHelp == '' && nodeObj.sqlCreateHelp == '' && !nodeObj.epasHelp}
       disableDialogHelp={nodeObj.dialogHelp == undefined || nodeObj.dialogHelp == ''}
     />, container);
 }

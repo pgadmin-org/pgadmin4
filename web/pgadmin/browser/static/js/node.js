@@ -92,6 +92,7 @@ define('pgadmin.browser.node', [
     sqlAlterHelp: '',
     sqlCreateHelp: '',
     dialogHelp: '',
+    epasHelp: false,
 
     title: function(o, d) {
       return o.label + (d ? (' - ' + d.label) : '');
@@ -1265,7 +1266,7 @@ define('pgadmin.browser.node', [
               tooltip: gettext('SQL help for this object type.'),
               extraClasses: ['btn-primary-icon', 'btn-primary-icon', 'm-1'],
               icon: 'fa fa-info',
-              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
+              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '' && !that.epasHelp) ? true : false,
               register: function(btn) {
                 btn.on('click',() => {
                   onSqlHelp();
@@ -1281,20 +1282,21 @@ define('pgadmin.browser.node', [
           var server = pgBrowser.tree.getTreeNodeHierarchy(item).server;
 
           var url = pgBrowser.utils.pg_help_path;
-          if (server.server_type == 'ppas') {
-            url = pgBrowser.utils.edbas_help_path;
-          }
-
           var fullUrl = '';
-          if (that.sqlCreateHelp == '' && that.sqlAlterHelp != '') {
-            fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version, server.server_type);
-          } else if (that.sqlCreateHelp != '' && that.sqlAlterHelp == '') {
-            fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version, server.server_type);
+
+          if (server.server_type == 'ppas' && that.epasHelp) {
+            fullUrl = help.getEPASHelpUrl(server.version);
           } else {
-            if (view.model.isNew()) {
-              fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version, server.server_type);
+            if (that.sqlCreateHelp == '' && that.sqlAlterHelp != '') {
+              fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version);
+            } else if (that.sqlCreateHelp != '' && that.sqlAlterHelp == '') {
+              fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version);
             } else {
-              fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version, server.server_type);
+              if (view.model.isNew()) {
+                fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version);
+              } else {
+                fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version);
+              }
             }
           }
 
@@ -1558,7 +1560,7 @@ define('pgadmin.browser.node', [
               tooltip: gettext('SQL help for this object type.'),
               extraClasses: ['btn-primary-icon', 'pull-left', 'mx-1'],
               icon: 'fa fa-info',
-              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
+              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '' && !that.epasHelp) ? true : false,
               register: function(btn) {
                 btn.on('click',() => {
                   onSqlHelp();
