@@ -843,7 +843,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         # Get SQL to create Function
         status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                    data=self.request)
+                                    data=self.request,
+                                    allow_code_formatting=False)
         if not status:
             return internal_server_error(errormsg=sql)
 
@@ -951,7 +952,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
 
         status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                    data=self.request, fnid=fnid)
+                                    data=self.request, fnid=fnid,
+                                    allow_code_formatting=False)
         if not status:
             return internal_server_error(errormsg=sql)
 
@@ -1372,7 +1374,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 data['merged_variables'].append(v)
 
     def _get_sql_for_edit_mode(self, data, parallel_dict, all_ids_dict,
-                               vol_dict):
+                               vol_dict, allow_code_formatting=True):
         """
         This function is used to get the sql for edit mode.
         :param data:
@@ -1453,7 +1455,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             FunctionView._merge_variables(data)
 
-        self.reformat_prosrc_code(data)
+        if allow_code_formatting:
+            self.reformat_prosrc_code(data)
 
         sql = render_template(
             "/".join([self.sql_template_path, self._UPDATE_SQL]),
@@ -1476,6 +1479,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         fnid = kwargs.get('fnid', None)
         is_sql = kwargs.get('is_sql', False)
         is_schema_diff = kwargs.get('is_schema_diff', False)
+        allow_code_formatting = kwargs.get('allow_code_formatting', True)
 
         vol_dict = {'v': 'VOLATILE', 's': 'STABLE', 'i': 'IMMUTABLE'}
         parallel_dict = {'u': 'UNSAFE', 's': 'SAFE', 'r': 'RESTRICTED'}
@@ -1500,7 +1504,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 'is_schema_diff': is_schema_diff,
             }
             status, errmsg, sql = self._get_sql_for_edit_mode(
-                data, parallel_dict, all_ids_dict, vol_dict)
+                data, parallel_dict, all_ids_dict, vol_dict,
+                allow_code_formatting=allow_code_formatting)
 
             if not status:
                 return False, errmsg
@@ -1524,7 +1529,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
             data['func_args_without'] = ', '.join(args_without_name)
 
-            self.reformat_prosrc_code(data)
+            if allow_code_formatting:
+                self.reformat_prosrc_code(data)
 
             # Create mode
             sql = render_template("/".join([self.sql_template_path,
