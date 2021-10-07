@@ -288,7 +288,9 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
       this.showMessage(gettext('Locating...'));
       tree.findNodeWithToggle(rowData.id_path)
         .then((treeItem)=>{
-          tree.select(treeItem, true);
+          setTimeout(() => {
+            tree.select(treeItem, true);
+          }, 100);
           this.showMessage(null);
         })
         .catch((error)=>{
