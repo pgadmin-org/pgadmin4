@@ -13,11 +13,16 @@
 import createEngine from '@projectstorm/react-diagrams';
 import {DagreEngine, PathFindingLinkFactory, PortModelAlignment} from '@projectstorm/react-diagrams';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
+import _ from 'lodash';
 
 import {TableNodeFactory, TableNodeModel } from './nodes/TableNode';
 import {OneToManyLinkFactory, OneToManyLinkModel } from './links/OneToManyLink';
 import { OneToManyPortFactory } from './ports/OneToManyPort';
 import ERDModel from './ERDModel';
+import ForeignKeySchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui';
+import diffArray from 'diff-arrays-of-objects';
+import TableSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
+import ColumnSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui';
 
 export default class ERDCore {
   constructor() {
@@ -66,8 +71,8 @@ export default class ERDCore {
           else if(e.function === 'showNote') {
             this.fireEvent({node: e.entity}, 'showNote', true);
           }
-          else if(e.function === 'editNode') {
-            this.fireEvent({node: e.entity}, 'editNode', true);
+          else if(e.function === 'editTable') {
+            this.fireEvent({node: e.entity}, 'editTable', true);
           }
           else if(e.function === 'nodeUpdated') {
             this.fireEvent({}, 'nodesUpdated', true);
@@ -232,6 +237,188 @@ export default class ERDCore {
     return newLink;
   }
 
+  removePortLinks(port) {
+    let links = port.getLinks();
+    Object.values(links).forEach((link)=>{
+      link.getTargetPort().remove();
+      link.getSourcePort().remove();
+      link.setSelected(false);
+      link.remove();
+    });
+  }
+
+  syncTableLinks(tableNode, oldTableData) {
+    let tableData = tableNode.getData();
+    let tableNodesDict = this.getModel().getNodesDict();
+
+    const addLink = (theFk)=>{
+      let newData = {
+        local_table_uid: tableNode.getID(),
+        local_column_attnum: undefined,
+        referenced_table_uid: theFk.references,
+        referenced_column_attnum: undefined,
+      };
+      let sourceNode = tableNodesDict[newData.referenced_table_uid];
+
+      newData.local_column_attnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
+      newData.referenced_column_attnum = _.find(sourceNode.getColumns(), (col)=>col.name==theFk.referenced).attnum;
+
+      this.addLink(newData, 'onetomany');
+    };
+
+    const removeLink = (theFk)=>{
+      let attnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
+      let existPort = tableNode.getPort(tableNode.getPortName(attnum));
+      if(existPort && existPort.getSubtype() == 'many') {
+        existPort.removeAllLinks();
+        tableNode.removePort(existPort);
+      }
+    };
+
+    const changeDiff = diffArray(
+      oldTableData?.foreign_key || [],
+      tableData?.foreign_key || [],
+      'cid'
+    );
+
+    changeDiff.added.forEach((theFk)=>{
+      addLink(theFk.columns[0]);
+    });
+    changeDiff.removed.forEach((theFk)=>{
+      removeLink(theFk.columns[0]);
+    });
+
+    if(changeDiff.updated.length > 0) {
+      for(const changedRow of changeDiff.updated) {
+        let rowIndx = _.findIndex(tableData.foreign_key, (f)=>f.cid==changedRow.cid);
+        const changeDiffCols = diffArray(
+          oldTableData.foreign_key[rowIndx].columns,
+          tableData.foreign_key[rowIndx].columns,
+          'cid'
+        );
+        if(changeDiffCols.removed.length > 0 || changeDiffCols.added.length > 0) {
+          removeLink(changeDiffCols.removed[0]);
+          addLink(changeDiffCols.added[0]);
+        }
+      }
+    }
+  }
+
+  addOneToManyLink(onetomanyData) {
+    let newFk = new ForeignKeySchema({}, {}, ()=>{}, {autoindex: false});
+    let tableNodesDict = this.getModel().getNodesDict();
+    let fkColumn = {};
+    let sourceNode = tableNodesDict[onetomanyData.referenced_table_uid];
+    let targetNode = tableNodesDict[onetomanyData.local_table_uid];
+
+    fkColumn.local_column = _.find(targetNode.getColumns(), (col)=>col.attnum==onetomanyData.local_column_attnum).name;
+    fkColumn.referenced = _.find(sourceNode.getColumns(), (col)=>col.attnum==onetomanyData.referenced_column_attnum).name;
+    fkColumn.references = onetomanyData.referenced_table_uid;
+    fkColumn.references_table_name = sourceNode.getData().name;
+
+    let tableData = targetNode.getData();
+    tableData.foreign_key = tableData.foreign_key || [];
+
+    let col = newFk.fkColumnSchema.getNewData(fkColumn);
+    tableData.foreign_key.push(
+      newFk.getNewData({
+        columns: [col],
+      })
+    );
+    targetNode.setData(tableData);
+    let newLink = this.addLink(onetomanyData, 'onetomany');
+    this.clearSelection();
+    newLink.setSelected(true);
+    this.repaint();
+  }
+
+  removeOneToManyLink(link) {
+    let linkData = link.getData();
+    let tableNode = this.getModel().getNodesDict()[linkData.local_table_uid];
+    let tableData = tableNode.getData();
+
+    let newForeingKeys = [];
+    tableData.foreign_key?.forEach((theFkRow)=>{
+      let theFk = theFkRow.columns[0];
+      let attnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
+      /* Skip all those whose attnum matches to the link */
+      if(linkData.local_column_attnum != attnum) {
+        newForeingKeys.push(theFkRow);
+      }
+    });
+    tableData.foreign_key = newForeingKeys;
+    tableNode.setData(tableData);
+    link.getTargetPort().remove();
+    link.getSourcePort().remove();
+    link.setSelected(false);
+    link.remove();
+  }
+
+  addManyToManyLink(manytomanyData) {
+    let nodes = this.getModel().getNodesDict();
+    let leftNode = nodes[manytomanyData.left_table_uid];
+    let rightNode = nodes[manytomanyData.right_table_uid];
+
+    let tableObj = new TableSchema({}, {}, {
+      constraints:()=>{},
+      columns:()=>new ColumnSchema(()=>{}, {}, {}, {}),
+      vacuum_settings:()=>{},
+    }, ()=>{}, ()=>{}, ()=>{}, ()=>{});
+
+    let tableData = tableObj.getNewData({
+      name: `${leftNode.getData().name}_${rightNode.getData().name}`,
+      schema: leftNode.getData().schema,
+      columns: [tableObj.columnsSchema.getNewData({
+        ...leftNode.getColumnAt(manytomanyData.left_table_column_attnum),
+        'name': `${leftNode.getData().name}_${leftNode.getColumnAt(manytomanyData.left_table_column_attnum).name}`,
+        'attnum': 0,
+        'is_primary_key': false,
+      }),tableObj.columnsSchema.getNewData({
+        ...rightNode.getColumnAt(manytomanyData.right_table_column_attnum),
+        'name': `${rightNode.getData().name}_${rightNode.getColumnAt(manytomanyData.right_table_column_attnum).name}`,
+        'attnum': 1,
+        'is_primary_key': false,
+      })],
+    });
+
+    // let tableData = {
+    //   name: `${leftNode.getData().name}_${rightNode.getData().name}`,
+    //   schema: leftNode.getData().schema,
+    //   columns: [{
+    //     ...leftNode.getColumnAt(manytomanyData.left_table_column_attnum),
+    //     'name': `${leftNode.getData().name}_${leftNode.getColumnAt(manytomanyData.left_table_column_attnum).name}`,
+    //     'is_primary_key': false,
+    //     'attnum': 0,
+    //   },{
+    //     ...rightNode.getColumnAt(manytomanyData.right_table_column_attnum),
+    //     'name': `${rightNode.getData().name}_${rightNode.getColumnAt(manytomanyData.right_table_column_attnum).name}`,
+    //     'is_primary_key': false,
+    //     'attnum': 1,
+    //   }],
+    // };
+    let newNode = this.addNode(tableData);
+    this.clearSelection();
+    newNode.setSelected(true);
+
+    let linkData = {
+      local_table_uid: newNode.getID(),
+      local_column_attnum: newNode.getColumns()[0].attnum,
+      referenced_table_uid: manytomanyData.left_table_uid,
+      referenced_column_attnum : manytomanyData.left_table_column_attnum,
+    };
+    this.addOneToManyLink(linkData);
+
+    linkData = {
+      local_table_uid: newNode.getID(),
+      local_column_attnum: newNode.getColumns()[1].attnum,
+      referenced_table_uid: manytomanyData.right_table_uid,
+      referenced_column_attnum : manytomanyData.right_table_column_attnum,
+    };
+    this.addOneToManyLink(linkData);
+
+    this.repaint();
+  }
+
   serialize(version) {
     return {
       version: version||0,
@@ -246,65 +433,53 @@ export default class ERDCore {
   }
 
   serializeData() {
-    let nodes = {}, links = {};
+    let nodes = {};
     let nodesDict = this.getModel().getNodesDict();
 
     Object.keys(nodesDict).forEach((id)=>{
       nodes[id] = nodesDict[id].serializeData();
     });
 
-    this.getModel().getLinks().map((link)=>{
-      links[link.getID()] = link.serializeData(nodesDict);
-    });
-
-    /* Separate the links from nodes so that we don't have any dependancy issues */
     return {
       'nodes': nodes,
-      'links': links,
     };
   }
 
   deserializeData(data){
     let oidUidMap = {};
-    let uidFks = [];
-    data.forEach((node)=>{
-      let newData = {
-        name: node.name,
-        schema: node.schema,
-        description: node.description,
-        columns: node.columns,
-        primary_key: node.primary_key,
-      };
-      let newNode = this.addNode(newData);
-      oidUidMap[node.oid] = newNode.getID();
-      if(node.foreign_key) {
-        node.foreign_key.forEach((a_fk)=>{
-          uidFks.push({
-            uid: newNode.getID(),
-            data: a_fk.columns[0],
-          });
+
+    /* Add the nodes */
+    data.forEach((nodeData)=>{
+      let newNode = this.addNode(TableSchema.getErdSupportedData(nodeData));
+      oidUidMap[nodeData.oid] = newNode.getID();
+    });
+
+    /* Lets use the oidUidMap for creating the links */
+    let tableNodesDict = this.getModel().getNodesDict();
+    _.forIn(tableNodesDict, (node, uid)=>{
+      let nodeData = node.getData();
+      if(nodeData.foreign_key) {
+        nodeData.foreign_key.forEach((theFk)=>{
+          delete theFk.oid;
+          theFk = theFk.columns[0];
+          theFk.references = oidUidMap[theFk.references];
+          let newData = {
+            local_table_uid: uid,
+            local_column_attnum: undefined,
+            referenced_table_uid: theFk.references,
+            referenced_column_attnum: undefined,
+          };
+          let sourceNode = tableNodesDict[newData.referenced_table_uid];
+          let targetNode = tableNodesDict[newData.local_table_uid];
+
+          newData.local_column_attnum = _.find(targetNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
+          newData.referenced_column_attnum = _.find(sourceNode.getColumns(), (col)=>col.name==theFk.referenced).attnum;
+
+          this.addLink(newData, 'onetomany');
         });
       }
     });
 
-    /* Lets use the oidUidMap for creating the links */
-    uidFks.forEach((fkData)=>{
-      let tableNodesDict = this.getModel().getNodesDict();
-      let newData = {
-        local_table_uid: fkData.uid,
-        local_column_attnum: undefined,
-        referenced_table_uid: oidUidMap[fkData.data.references],
-        referenced_column_attnum: undefined,
-      };
-
-      let sourceNode = tableNodesDict[newData.referenced_table_uid];
-      let targetNode = tableNodesDict[newData.local_table_uid];
-
-      newData.local_column_attnum = _.find(targetNode.getColumns(), (col)=>col.name==fkData.data.local_column).attnum;
-      newData.referenced_column_attnum = _.find(sourceNode.getColumns(), (col)=>col.name==fkData.data.referenced).attnum;
-
-      this.addLink(newData, 'onetomany');
-    });
     setTimeout(this.dagreDistributeNodes.bind(this), 250);
   }
 

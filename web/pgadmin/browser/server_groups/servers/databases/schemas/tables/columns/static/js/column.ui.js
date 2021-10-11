@@ -19,7 +19,7 @@ export function getNodeColumnSchema(treeNodeInfo, itemNodeData, pgBrowser) {
 }
 
 export default class ColumnSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, nodeInfo, cltypeOptions, collspcnameOptions) {
+  constructor(getPrivilegeRoleSchema, nodeInfo, cltypeOptions, collspcnameOptions, inErd=false) {
     super({
       name: undefined,
       attowner: undefined,
@@ -57,6 +57,7 @@ export default class ColumnSchema extends BaseUISchema {
     this.nodeInfo = nodeInfo;
     this.cltypeOptions = cltypeOptions;
     this.collspcnameOptions = collspcnameOptions;
+    this.inErd = inErd;
 
     this.datatypes = [];
   }
@@ -71,8 +72,7 @@ export default class ColumnSchema extends BaseUISchema {
       return true;
     }
 
-    if('schema' in this.nodeInfo)
-    {
+    if(this.nodeInfo &&  ('schema' in this.nodeInfo)) {
       // We will disable control if it's system columns
       // inheritedfrom check is useful when we use this schema in table node
       // inheritedfrom has value then we should disable it
@@ -86,7 +86,7 @@ export default class ColumnSchema extends BaseUISchema {
       // ie: it's position is less than 1
       return !(!_.isUndefined(state.attnum) && state.attnum > 0);
     }
-    return true;
+    return false;
   }
 
   editableCheckForTable(state) {
@@ -179,7 +179,7 @@ export default class ColumnSchema extends BaseUISchema {
           ) || (
             'is_partitioned' in obj.top.origData
             && obj.top.origData['is_partitioned']
-            && obj.nodeInfo.server && obj.nodeInfo.server.version < 11000
+            && obj.getServerVersion() < 11000
           ))
         ) {
           return true;
@@ -239,7 +239,7 @@ export default class ColumnSchema extends BaseUISchema {
             filter: (options)=>{
               let result = options;
               let edit_types = state?.edit_types || [];
-              if(!obj.isNew(state)) {
+              if(!obj.isNew(state) && !this.inErd) {
                 result = _.filter(options, (o)=>edit_types.indexOf(o.value) > -1);
               }
               return result;
@@ -256,7 +256,7 @@ export default class ColumnSchema extends BaseUISchema {
             filter: (options)=>{
               let result = options;
               let edit_types = row?.edit_types || [];
-              if(!obj.isNew(row)) {
+              if(!obj.isNew(row) && !this.inErd) {
                 result = _.filter(options, (o)=>edit_types.indexOf(o.value) > -1);
               }
               return result;
@@ -272,7 +272,10 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'inheritedfrom', label: gettext('Inherited from table'),
       type: 'text', readonly: true, editable: false,
       visible: function() {
-        return _.isUndefined(this.nodeInfo['table'] || this.nodeInfo['view'] || this.nodeInfo['mview']);
+        if(this.nodeInfo) {
+          return _.isUndefined(this.nodeInfo['table'] || this.nodeInfo['view'] || this.nodeInfo['mview']);
+        }
+        return false;
       },
     },{
       id: 'attlen', label: gettext('Length/Precision'),
@@ -417,8 +420,7 @@ export default class ColumnSchema extends BaseUISchema {
           {'label': gettext('IDENTITY'), 'value': 'i'},
         ];
 
-        if (this.nodeInfo && this.nodeInfo.server &&
-            this.nodeInfo.server.version >= 120000) {
+        if (this.getServerVersion() >= 120000) {
           // You can't change the existing column to Generated column.
           if (this.isNew(state)) {
             options.push({
@@ -529,15 +531,18 @@ export default class ColumnSchema extends BaseUISchema {
       ], null, null, ['name', 'value']),
       uniqueCol : ['name'], mode: ['edit', 'create'],
       canAdd: true, canEdit: false, canDelete: true,
-    }, {
+    },{
+      id: 'security', label: gettext('Security'), type: 'group',
+      visible: !this.inErd,
+    },{
       id: 'attacl', label: gettext('Privileges'), type: 'collection',
-      group: gettext('Security'),
+      group: 'security',
       schema: this.getPrivilegeRoleSchema(['a','r','w','x']),
       mode: ['edit'], canAdd: true, canDelete: true,
       uniqueCol : ['grantee'],
     },{
       id: 'seclabels', label: gettext('Security labels'), canAdd: true,
-      schema: new SecLabelSchema(), group: gettext('Security'),
+      schema: new SecLabelSchema(), group: 'security',
       mode: ['edit', 'create'], editable: false, type: 'collection',
       min_version: 90100, canEdit: false, canDelete: true,
       uniqueCol : ['provider'],

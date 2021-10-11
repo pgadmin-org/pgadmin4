@@ -188,7 +188,7 @@ export class TableNodeWidget extends React.Component {
   render() {
     let node_data = this.props.node.getData();
     return (
-      <div className={'table-node ' + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editNode');}}>
+      <div className={'table-node ' + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}}>
         <div className="table-toolbar">
           <DetailsToggleButton className='btn-xs' showDetails={this.state.show_details} onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}} />
           {this.props.node.getNote() &&

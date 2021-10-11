@@ -10,6 +10,7 @@ import * as erdModule from 'pgadmin.tools.erd/erd_module';
 import erdPref from './erd_preferences';
 import BodyWidget from 'pgadmin.tools.erd/erd_tool/ui_components/BodyWidget';
 import * as ERDSqlTool from 'tools/datagrid/static/js/show_query_tool';
+import { FakeLink, FakeNode } from '../fake_item';
 
 let pgAdmin = {
   Browser: {
@@ -60,7 +61,7 @@ let mtmDialog = jasmine.createSpyObj('mtmDialog', ['show']);
 
 let getDialog = (dialogName)=>{
   switch(dialogName) {
-  case 'entity_dialog': return tableDialog;
+  case 'table_dialog': return tableDialog;
   case 'onetomany_dialog': return otmDialog;
   case 'manytomany_dialog': return mtmDialog;
   }
@@ -93,19 +94,16 @@ describe('ERD BodyWidget', ()=>{
     title: 'postgres/postgres@PostgreSQL 12',
     trans_id: 110008,
   };
+  let newNode = new FakeNode({
+    columns: [{attnum: 0}, {attnum: 1}],
+  }, 'newid1');
 
   beforeAll(()=>{
     spyOn(erdModule, 'setPanelTitle');
     spyOn(ERDCore.prototype, 'repaint');
     spyOn(ERDCore.prototype, 'deserializeData');
-    spyOn(ERDCore.prototype, 'addNode').and.returnValue({
-      setSelected: ()=>{},
-      getColumns: ()=>([{attnum: 0}, {attnum: 1}]),
-      getID: ()=>'newid1',
-    });
-    spyOn(ERDCore.prototype, 'addLink').and.returnValue({
-      setSelected: ()=>{},
-    });
+    spyOn(ERDCore.prototype, 'addNode').and.returnValue(newNode);
+    spyOn(ERDCore.prototype, 'addLink').and.returnValue(new FakeLink());
     spyOn(alertify, 'confirm').and.callFake((arg1, arg2, okCallback)=>{
       okCallback();
     });
@@ -128,7 +126,7 @@ describe('ERD BodyWidget', ()=>{
 
   beforeEach(()=>{
     jasmineEnzyme();
-    body = mount(<BodyWidget params={params} pgAdmin={pgAdmin} pgWindow={pgWindow} getDialog={getDialog} transformToSupported={()=>{}} alertify={alertify}/>);
+    body = mount(<BodyWidget params={params} pgAdmin={pgAdmin} pgWindow={pgWindow} getDialog={getDialog} alertify={alertify}/>);
     bodyInstance = body.instance();
   });
 
@@ -225,18 +223,18 @@ describe('ERD BodyWidget', ()=>{
     });
   });
 
-  it('event editNode', (done)=>{
+  it('event editTable', (done)=>{
     let node = {key: 'value', getNote: ()=>'a note'};
-    spyOn(bodyInstance, 'addEditNode');
-    bodyInstance.diagram.fireEvent({node: node}, 'editNode', true);
+    spyOn(bodyInstance, 'addEditTable');
+    bodyInstance.diagram.fireEvent({node: node}, 'editTable', true);
     setTimeout(()=>{
-      expect(bodyInstance.addEditNode).toHaveBeenCalledWith(node);
+      expect(bodyInstance.addEditTable).toHaveBeenCalledWith(node);
       done();
     });
   });
 
   it('getDialog', ()=>{
-    bodyInstance.getDialog('entity_dialog')();
+    bodyInstance.getDialog('table_dialog')();
     expect(tableDialog.show).toHaveBeenCalled();
 
     bodyInstance.getDialog('onetomany_dialog')();
@@ -246,10 +244,20 @@ describe('ERD BodyWidget', ()=>{
     expect(mtmDialog.show).toHaveBeenCalled();
   });
 
-  it('addEditNode', ()=>{
+  it('addEditTable', ()=>{
+    let node1 = new FakeNode({'name': 'table1', schema: 'erd1', columns: [{name: 'col1', type: 'type1', attnum: 1}]}, 'id1');
+    let node2 = new FakeNode({'name': 'table2', schema: 'erd2', columns: [{name: 'col2', type: 'type2', attnum: 2}]}, 'id2');
+    let nodesDict = {
+      'id1': node1,
+      'id2': node2,
+    };
+    spyOn(bodyInstance.diagram, 'getModel').and.returnValue({
+      'getNodesDict': ()=>nodesDict,
+    });
+    spyOn(bodyInstance.diagram, 'addLink');
     /* New */
     tableDialog.show.calls.reset();
-    bodyInstance.addEditNode();
+    bodyInstance.addEditTable();
     expect(tableDialog.show).toHaveBeenCalled();
 
     let saveCallback = tableDialog.show.calls.mostRecent().args[7];
@@ -259,12 +267,9 @@ describe('ERD BodyWidget', ()=>{
 
     /* Existing */
     tableDialog.show.calls.reset();
-    let node = jasmine.createSpyObj('node',{
-      getSchemaTableName: ['erd1', 'table1'],
-      setData: null,
-      getData: null,
-    });
-    bodyInstance.addEditNode(node);
+    let node = new FakeNode({name: 'table1', schema: 'erd1'});
+    spyOn(node, 'setData');
+    bodyInstance.addEditTable(node);
     expect(tableDialog.show).toHaveBeenCalled();
 
     saveCallback = tableDialog.show.calls.mostRecent().args[7];
@@ -273,49 +278,44 @@ describe('ERD BodyWidget', ()=>{
     expect(node.setData).toHaveBeenCalledWith(newData);
   });
 
-  it('onEditNode', ()=>{
+  it('onEditTable', ()=>{
     let node = {key: 'value'};
-    spyOn(bodyInstance, 'addEditNode');
+    spyOn(bodyInstance, 'addEditTable');
     spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
-    bodyInstance.onEditNode();
-    expect(bodyInstance.addEditNode).toHaveBeenCalledWith(node);
+    bodyInstance.onEditTable();
+    expect(bodyInstance.addEditTable).toHaveBeenCalledWith(node);
   });
 
   it('onAddNewNode', ()=>{
-    spyOn(bodyInstance, 'addEditNode');
+    spyOn(bodyInstance, 'addEditTable');
     bodyInstance.onAddNewNode();
-    expect(bodyInstance.addEditNode).toHaveBeenCalled();
+    expect(bodyInstance.addEditTable).toHaveBeenCalled();
   });
 
   it('onCloneNode', ()=>{
-    let node = jasmine.createSpyObj('node',{
-      getSchemaTableName: ['erd1', 'table1'],
-      setData: null,
-      getData: null,
-      cloneData: {key: 'value'},
-      getPosition: {x: 30, y: 30},
-    });
+    let node = new FakeNode({name: 'table1', schema: 'erd1'});
     spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
     spyOn(bodyInstance.diagram, 'getNextTableName').and.returnValue('newtable1');
+    bodyInstance.diagram.addNode.calls.reset();
     bodyInstance.onCloneNode();
-    expect(bodyInstance.diagram.addNode).toHaveBeenCalledWith({key: 'value'}, [50, 50]);
+    let cloneArgs = bodyInstance.diagram.addNode.calls.argsFor(0);
+    expect(cloneArgs[0]).toEqual(jasmine.objectContaining({
+      name: 'newtable1',
+      schema: 'erd1',
+    }));
+    expect(cloneArgs[1]).toEqual([50, 50]);
   });
 
   it('onDeleteNode', (done)=>{
-    let node = jasmine.createSpyObj('node',{
-      getSchemaTableName: ['erd1', 'table1'],
-      setData: null,
-      getData: null,
-      cloneData: {key: 'value'},
-      getPosition: {x: 30, y: 30},
-      remove: null,
-      setSelected: null,
-    });
-    let link = jasmine.createSpyObj('link', {
-      remove: null,
-      setSelected: null,
-      getTargetPort: jasmine.createSpyObj('port', ['remove']),
-      getSourcePort: jasmine.createSpyObj('port', ['remove']),
+    let node = new FakeNode({name: 'table1', schema: 'erd1'});
+    spyOn(node, 'remove');
+    let link = new FakeLink({local_table_uid: 'tid1'});
+    spyOn(link, 'remove');
+    let nodesDict = {
+      'tid1': node
+    };
+    spyOn(bodyInstance.diagram, 'getModel').and.returnValue({
+      'getNodesDict': ()=>nodesDict,
     });
     spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
     spyOn(bodyInstance.diagram, 'getSelectedLinks').and.returnValue([link]);
@@ -413,9 +413,17 @@ describe('ERD BodyWidget', ()=>{
   });
 
   it('onOneToManyClick', ()=>{
-    let node = jasmine.createSpyObj('node',{
-      getID: 'id1',
+    let node = new FakeNode({}, 'id1');
+    let node1 = new FakeNode({'name': 'table1', schema: 'erd1', columns: [{name: 'col1', type: 'type1', attnum: 1}]}, 'id1');
+    let node2 = new FakeNode({'name': 'table2', schema: 'erd2', columns: [{name: 'col2', type: 'type2', attnum: 2}]}, 'id2');
+    let nodesDict = {
+      'id1': node1,
+      'id2': node2,
+    };
+    spyOn(bodyInstance.diagram, 'getModel').and.returnValue({
+      'getNodesDict': ()=>nodesDict,
     });
+    spyOn(bodyInstance.diagram, 'addLink');
     spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
 
     otmDialog.show.calls.reset();
@@ -423,15 +431,18 @@ describe('ERD BodyWidget', ()=>{
     expect(otmDialog.show).toHaveBeenCalled();
 
     let saveCallback = otmDialog.show.calls.mostRecent().args[4];
-    let newData = {key: 'value'};
+    let newData = {
+      local_table_uid: 'id1',
+      local_column_attnum: 1,
+      referenced_table_uid: 'id2',
+      referenced_column_attnum: 2,
+    };
     saveCallback(newData);
     expect(bodyInstance.diagram.addLink).toHaveBeenCalledWith(newData, 'onetomany');
   });
 
   it('onManyToManyClick', ()=>{
-    let node = jasmine.createSpyObj('node',{
-      getID: 'id1',
-    });
+    let node = new FakeNode({}, 'id1');
     spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
 
     mtmDialog.show.calls.reset();
@@ -439,19 +450,12 @@ describe('ERD BodyWidget', ()=>{
     expect(mtmDialog.show).toHaveBeenCalled();
 
     /* onSave */
+    let node1 = new FakeNode({'name': 'table1', schema: 'erd1', columns: [{name: 'col1', type: 'type1', attnum: 1}]}, 'id1');
+    let node2 = new FakeNode({'name': 'table2', schema: 'erd2', columns: [{name: 'col2', type: 'type2', attnum: 2}]}, 'id2');
     let nodesDict = {
-      'id1': {
-        getID: ()=>'id1',
-        getData: ()=>({name: 'table1', schema: 'erd1'}),
-        getColumnAt: ()=>({name: 'col1', type: 'type1', attnum: 0}),
-        addPort: jasmine.createSpy('addPort').and.callFake((obj)=>obj),
-      },
-      'id2': {
-        getID: ()=>'id2',
-        getData: ()=>({name: 'table2', schema: 'erd2'}),
-        getColumnAt: ()=>({name: 'col2', type: 'type2', attnum: 1}),
-        addPort: jasmine.createSpy('addPort').and.callFake((obj)=>obj),
-      },
+      'id1': node1,
+      'id2': node2,
+      'newid1': newNode,
     };
     spyOn(bodyInstance.diagram, 'getModel').and.returnValue({
       'getNodesDict': ()=>nodesDict,
@@ -468,24 +472,21 @@ describe('ERD BodyWidget', ()=>{
     bodyInstance.diagram.addNode.calls.reset();
     bodyInstance.diagram.addLink.calls.reset();
     saveCallback(newData);
-    expect(bodyInstance.diagram.addNode).toHaveBeenCalledWith({
+    let tableData = bodyInstance.diagram.addNode.calls.argsFor(0)[0];
+    expect(tableData).toEqual(jasmine.objectContaining({
       name: 'table1_table2',
       schema: 'erd1',
-      columns: [
-        {
-          type: 'type1',
-          name: 'table1_col1',
-          is_primary_key: false,
-          attnum: 0,
-        },
-        {
-          type: 'type2',
-          name: 'table2_col2',
-          is_primary_key: false,
-          attnum: 1,
-        },
-      ],
-    });
+    }));
+    expect(tableData.columns[0]).toEqual(jasmine.objectContaining({
+      type: 'type1',
+      name: 'table1_col1',
+      attnum: 0,
+    }));
+    expect(tableData.columns[1]).toEqual(jasmine.objectContaining({
+      type: 'type2',
+      name: 'table2_col2',
+      attnum: 1,
+    }));
 
     let linkData = {
       local_table_uid: 'newid1',

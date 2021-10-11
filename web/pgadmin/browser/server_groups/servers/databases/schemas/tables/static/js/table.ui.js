@@ -70,7 +70,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
 }
 
 export class ConstraintsSchema extends BaseUISchema {
-  constructor(nodeInfo, getFkObj, getExConsObj, otherOptions) {
+  constructor(nodeInfo, getFkObj, getExConsObj, otherOptions, inErd=false) {
     super();
     this.nodeInfo = nodeInfo;
     this.primaryKeyObj = new PrimaryKeySchema({
@@ -81,13 +81,16 @@ export class ConstraintsSchema extends BaseUISchema {
       spcname: otherOptions.spcname,
     }, nodeInfo);
     this.exConsObj = getExConsObj();
+    this.inErd = inErd;
   }
 
   changeColumnOptions(colOptions) {
     this.primaryKeyObj.changeColumnOptions(colOptions);
     this.fkObj.changeColumnOptions(colOptions);
-    this.uniqueConsObj.changeColumnOptions(colOptions);
-    this.exConsObj.changeColumnOptions(colOptions);
+    if(!this.inErd) {
+      this.uniqueConsObj.changeColumnOptions(colOptions);
+      this.exConsObj.changeColumnOptions(colOptions);
+    }
   }
 
   anyColumnAdded(state) {
@@ -148,19 +151,23 @@ export class ConstraintsSchema extends BaseUISchema {
         }
       }
     },{
+      id: 'check_group', type: 'group', label: gettext('Check'), visible: !this.inErd,
+    },{
       id: 'check_constraint', label: '',
       schema: new CheckConstraintSchema(),
       editable: false, type: 'collection',
-      group: gettext('Check'), mode: ['edit', 'create'],
+      group: 'check_group', mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned'],
       canAdd: true,
       columns : ['name', 'consrc'],
       disabled: this.inCatalog,
     },{
+      id: 'unique_group', type: 'group', label: gettext('Unique'), visible: !this.inErd,
+    },{
       id: 'unique_constraint', label: '',
       schema: this.uniqueConsObj,
       editable: false, type: 'collection',
-      group: gettext('Unique'), mode: ['edit', 'create'],
+      group: 'unique_group', mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned', 'typname'],
       columns : ['name', 'columns'],
       disabled: this.inCatalog,
@@ -177,10 +184,12 @@ export class ConstraintsSchema extends BaseUISchema {
         }
       }
     },{
+      id: 'exclude_group', type: 'group', label: gettext('Exclude'), visible: !this.inErd,
+    },{
       id: 'exclude_constraint', label: '',
       schema: this.exConsObj,
       editable: false, type: 'collection',
-      group: gettext('Exclude'), mode: ['edit', 'create'],
+      group: 'exclude_group', mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned'],
       columns : ['name', 'columns', 'constraint'],
       disabled: this.inCatalog,
@@ -276,7 +285,7 @@ export class LikeSchema extends BaseUISchema {
 
 export default class TableSchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo, schemas={}, getPrivilegeRoleSchema=()=>{}, getColumns=()=>[],
-    getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}) {
+    getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}, inErd=false) {
     super({
       name: undefined,
       oid: undefined,
@@ -307,6 +316,7 @@ export default class TableSchema extends BaseUISchema {
       autovacuum_enabled: 'x',
       primary_key: [],
       foreign_key: [],
+      partition_keys: [],
       partitions: [],
       partition_type: 'range',
       is_partitioned: false,
@@ -325,6 +335,24 @@ export default class TableSchema extends BaseUISchema {
     this.columnsSchema = this.schemas.columns && this.schemas.columns() || {};
     this.vacuumSettingsSchema = this.schemas.vacuum_settings && this.schemas.vacuum_settings() || {};
     this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
+    this.inErd = inErd;
+  }
+
+  static getErdSupportedData(data) {
+    let newData = {...data};
+    const SUPPORTED_KEYS = [
+      'name', 'schema', 'description', 'rlspolicy', 'forcerlspolicy', 'fillfactor',
+      'toast_tuple_target', 'parallel_workers', 'relhasoids', 'relpersistence',
+      'columns', 'primary_key', 'foreign_key',
+    ];
+    newData = _.pick(newData, SUPPORTED_KEYS);
+
+    /* Remove inherited references */
+    newData.columns = newData.columns.map((c)=>{
+      delete c.inheritedfromtable;
+      return c;
+    });
+    return newData;
   }
 
   get idAttribute() {
@@ -397,9 +425,9 @@ export default class TableSchema extends BaseUISchema {
       id: 'oid', label: gettext('OID'), type: 'text', mode: ['properties'],
     },{
       id: 'relowner', label: gettext('Owner'), type: 'select',
-      options: this.fieldOptions.relowner, noEmpty: true,
+      options: this.fieldOptions.relowner, noEmpty: this.inErd ? false : true,
       mode: ['properties', 'create', 'edit'], controlProps: {allowClear: false},
-      readonly: this.inCatalog,
+      readonly: this.inCatalog, visible: !this.inErd,
     },{
       id: 'schema', label: gettext('Schema'), type: 'select',
       options: this.fieldOptions.schema, noEmpty: true,
@@ -407,7 +435,7 @@ export default class TableSchema extends BaseUISchema {
       readonly: this.inCatalog,
     },{
       id: 'spcname', label: gettext('Tablespace'),
-
+      visible: !this.inErd,
       mode: ['properties', 'create', 'edit'], deps: ['is_partitioned'],
       readonly: this.inCatalog, type: (state)=>{
         return {
@@ -421,6 +449,9 @@ export default class TableSchema extends BaseUISchema {
       id: 'partition', type: 'group', label: gettext('Partitions'),
       mode: ['edit', 'create'], min_version: 100000,
       visible: function(state) {
+        if(this.inErd) {
+          return false;
+        }
         // Always show in case of create mode
         if (obj.isNew(state) || state.is_partitioned)
           return true;
@@ -429,7 +460,7 @@ export default class TableSchema extends BaseUISchema {
     },{
       id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
       type: 'switch', mode: ['properties', 'create', 'edit'],
-      min_version: 100000,
+      min_version: 100000, visible: !this.inErd,
       readonly: function(state) {
         if (!obj.isNew(state))
           return true;
@@ -447,7 +478,7 @@ export default class TableSchema extends BaseUISchema {
       type: 'select', group: gettext('Columns'),
       deps: ['typname', 'is_partitioned'], mode: ['create', 'edit'],
       controlProps: { multiple: true, allowClear: false, placeholder: gettext('Select to inherit from...')},
-      options: this.fieldOptions.coll_inherits,
+      options: this.fieldOptions.coll_inherits, visible: !this.inErd,
       optionsLoaded: (res)=>obj.inheritedTableList=res,
       disabled: (state)=>{
         if(state.adding_inherit_cols || state.is_partitioned){
@@ -581,7 +612,18 @@ export default class TableSchema extends BaseUISchema {
       deps: ['typname', 'is_partitioned'],
       depChange: (state, source, topState, actionObj)=>{
         if(source[0] === 'columns') {
-          obj.changeColumnOptions(state.columns);
+          /* In ERD, attnum is an imp var for setting the links
+          Here, attnum is set to max avail value.
+          */
+          let columns = state.columns;
+          if(actionObj.type === SCHEMA_STATE_ACTIONS.ADD_ROW && this.inErd) {
+            let lastAttnum = _.maxBy(columns, (c)=>c.attnum)?.attnum;
+            if(_.isUndefined(lastAttnum) || _.isNull(lastAttnum)) {
+              lastAttnum = -1;
+            }
+            columns[columns.length-1].attnum = lastAttnum + 1;
+          }
+          obj.changeColumnOptions(columns);
           /* If primary key switch changes, primary key collection need to change */
           if(actionObj.path.indexOf('is_primary_key') > -1) {
             let tabColPath = _.slice(actionObj.path, 0, -1);
@@ -631,6 +673,7 @@ export default class TableSchema extends BaseUISchema {
     },{
       id: 'typname', label: gettext('Of type'), type: 'select',
       mode: ['properties', 'create', 'edit'], group: 'advanced', deps: ['coll_inherits'],
+      visible: !this.inErd,
       disabled: (state)=>{
         if(!obj.inSchemaWithModelCheck(state) && isEmptyString(state.coll_inherits)) {
           return false;
@@ -743,6 +786,7 @@ export default class TableSchema extends BaseUISchema {
       type: 'nested-fieldset', label: gettext('Like'),
       group: 'advanced', mode: ['create'],
       schema: new LikeSchema(this.fieldOptions.like_relation),
+      visible: !this.inErd,
     },{
       id: 'partition_type', label:gettext('Partition Type'),
       editable: false, type: 'select', controlProps: {allowClear: false},
@@ -774,6 +818,7 @@ export default class TableSchema extends BaseUISchema {
       id: 'partition_keys', label:gettext('Partition Keys'),
       schema: obj.partitionKeysObj,
       editable: true, type: 'collection',
+      columns: ['key_type', 'pt_column', 'expression'].concat(!this.inErd ? ['collationame', 'op_class'] : []),
       group: 'partition', mode: ['create'],
       deps: ['is_partitioned', 'partition_type', 'typname'],
       canEdit: false, canDelete: true,
@@ -885,28 +930,32 @@ export default class TableSchema extends BaseUISchema {
         '</li></ul>',
       ].join(''),
       min_version: 100000,
-    },
-    {
+    },{
+      type: 'group', id: 'parameters', label: gettext('Parameters'),
+      visible: !this.inErd,
+    },{
       // Here - we will create tab control for storage parameters
       // (auto vacuum).
-      type: 'nested-tab', group: gettext('Parameters'),
+      type: 'nested-tab', group: 'parameters',
       mode: ['edit', 'create'], deps: ['is_partitioned'],
-      schema: this.vacuumSettingsSchema,
+      schema: this.vacuumSettingsSchema, visible: !this.inErd,
+    },{
+      id: 'security_group', type: 'group', label: gettext('Security'), visible: !this.inErd,
     },
     {
       id: 'relacl_str', label: gettext('Privileges'), disabled: this.inCatalog,
-      type: 'text', mode: ['properties'], group: gettext('Security'),
+      type: 'text', mode: ['properties'], group: 'security_group',
     },
     {
       id: 'relacl', label: gettext('Privileges'), type: 'collection',
-      group: gettext('Security'), schema: this.getPrivilegeRoleSchema(['a','r','w','d','D','x','t']),
+      group: 'security_group', schema: this.getPrivilegeRoleSchema(['a','r','w','d','D','x','t']),
       mode: ['edit', 'create'], canAdd: true, canDelete: true,
       uniqueCol : ['grantee'],
     },{
       id: 'seclabels', label: gettext('Security labels'), canEdit: false,
       schema: new SecLabelSchema(), editable: false, canAdd: true,
       type: 'collection', min_version: 90100, mode: ['edit', 'create'],
-      group: gettext('Security'), canDelete: true, control: 'unique-col-collection',
+      group: 'security_group', canDelete: true, control: 'unique-col-collection',
     },{
       id: 'vacuum_settings_str', label: gettext('Storage settings'),
       type: 'multiline', group: 'advanced', mode: ['properties'],

@@ -532,6 +532,35 @@ def prequisite(trans_id, sgid, sid, did):
     )
 
 
+def translate_foreign_keys(tab_fks, tab_data, all_nodes):
+    """
+    This function will take the from table foreign keys and translate
+    it into non oid based format. It will allow creating FK sql even
+    if table is not already created.
+    :param tab_fks: Table foreign keyss
+    :param tab_data: Table data
+    :param all_nodes: All the nodes info from ERD
+    :return: Translated foreign key data
+    """
+    for tab_fk in tab_fks:
+        if 'columns' not in tab_fk:
+            continue
+        print(tab_data)
+        remote_table = all_nodes[tab_fk['columns'][0]['references']]
+        tab_fk['schema'] = tab_data['schema']
+        tab_fk['table'] = tab_data['name']
+        tab_fk['remote_schema'] = remote_table['schema']
+        tab_fk['remote_table'] = remote_table['name']
+
+        new_column = {
+            'local_column': tab_fk['columns'][0]['local_column'],
+            'referenced': tab_fk['columns'][0]['referenced']
+        }
+        tab_fk['columns'][0] = new_column
+
+    return tab_fks
+
+
 @blueprint.route('/sql/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
                  methods=["POST"],
                  endpoint='sql')
@@ -542,12 +571,16 @@ def sql(trans_id, sgid, sid, did):
     conn = _get_connection(sid, did, trans_id)
 
     sql = ''
-    for tab_key, tab_data in data.get('nodes', {}).items():
+    tab_foreign_keys = []
+    all_nodes = data.get('nodes', {})
+    for tab_key, tab_data in all_nodes.items():
+        tab_fks = tab_data.pop('foreign_key', [])
+        tab_foreign_keys.extend(translate_foreign_keys(tab_fks, tab_data, all_nodes))
         sql += '\n\n' + helper.get_table_sql(tab_data)
 
-    for link_key, link_data in data.get('links', {}).items():
-        link_sql, name = fkey_utils.get_sql(conn, link_data, None)
-        sql += '\n\n' + link_sql
+    for tab_fk in tab_foreign_keys:
+        fk_sql, name = fkey_utils.get_sql(conn, tab_fk, None)
+        sql += '\n\n' + fk_sql
 
     return make_json_response(
         data=sql,

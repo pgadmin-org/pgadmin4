@@ -89,7 +89,8 @@ function isValueEqual(val1, val2) {
   /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
   /* If the orig value is undefined or null and new value is boolean false "no change" */
   if ((_.isEqual(val1, val2)
-    || ((val1 === null || _.isUndefined(val1)) && !val2)
+    || ((val1 === null || _.isUndefined(val1)) && val2 === '')
+    || ((val1 === null || _.isUndefined(val1)) && typeof(val2) === 'boolean' && !val2)
     || (attrDefined ? _.isEqual(val1.toString(), val2.toString()) : false
     ))) {
     return true;
@@ -97,22 +98,6 @@ function isValueEqual(val1, val2) {
     return false;
   }
 }
-
-function objectComparator(obj1, obj2) {
-  for(const key of _.union(Object.keys(obj1), Object.keys(obj2))) {
-    let equal = isValueEqual(obj1[key], obj2[key]);
-    if(equal) {
-      continue;
-    } else {
-      return false;
-    }
-  }
-  return true;
-}
-
-const diffArrayOptions = {
-  compareFunction: objectComparator,
-};
 
 function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, includeSkipChange=true) {
   let changedData = {};
@@ -173,13 +158,13 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
             );
             change = {};
             if(changeDiff.added.length > 0) {
-              change['added'] = cleanCid(changeDiff.added);
+              change['added'] = cleanCid(changeDiff.added, viewHelperProps.keepCid);
             }
             if(changeDiff.removed.length > 0) {
               change['deleted'] = cleanCid(changeDiff.removed.map((row)=>{
                 /* Deleted records should be original, not the changed */
                 return _.find(_.get(origVal, field.id), ['cid', row.cid]);
-              }));
+              }), viewHelperProps.keepCid);
             }
             if(changeDiff.updated.length > 0) {
               /* There is change in collection. Parse further to go deep */
@@ -204,7 +189,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
                   });
                 }
               }
-              change['changed'] = cleanCid(change['changed']);
+              change['changed'] = cleanCid(change['changed'], viewHelperProps.keepCid);
             }
             if(Object.keys(change).length > 0) {
               attrChanged(field.id, change, true);
@@ -214,21 +199,18 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
           }
         } else if(!isEdit) {
           if(field.type === 'collection') {
-            /* For fixed rows, check the updated changes */
-            if(!_.isUndefined(field.fixedRows)) {
-              const changeDiff = diffArray(
-                _.get(origVal, field.id) || [],
-                _.get(sessVal, field.id) || [],
-                'cid',
-                diffArrayOptions
-              );
-              if(changeDiff.updated.length > 0) {
-                let change = cleanCid(_.get(sessVal, field.id));
-                attrChanged(field.id, change, true);
-              }
-            } else {
-              let change = cleanCid(_.get(sessVal, field.id));
-              attrChanged(field.id, change);
+            const changeDiff = diffArray(
+              _.get(origVal, field.id) || [],
+              _.get(sessVal, field.id) || [],
+              'cid',
+            );
+            /* For fixed rows, check only the updated changes */
+            if((!_.isUndefined(field.fixedRows) && changeDiff.updated.length > 0)
+              || (_.isUndefined(field.fixedRows) && (
+                changeDiff.added.length > 0 || changeDiff.removed.length > 0 || changeDiff.updated.length > 0
+              ))) {
+              let change = cleanCid(_.get(sessVal, field.id), viewHelperProps.keepCid);
+              attrChanged(field.id, change, true);
             }
           } else {
             attrChanged(field.id);
@@ -409,18 +391,18 @@ const sessDataReducer = (state, action)=>{
 };
 
 /* Remove cid key added by prepareData */
-function cleanCid(coll) {
-  if(!coll) {
+function cleanCid(coll, keepCid=false) {
+  if(!coll || keepCid) {
     return coll;
   }
   return coll.map((o)=>_.pickBy(o, (v, k)=>k!='cid'));
 }
 
-function prepareData(val) {
+function prepareData(val, createMode=false) {
   if(_.isPlainObject(val)) {
     _.forIn(val, function (el) {
       if (_.isObject(el)) {
-        prepareData(el);
+        prepareData(el, createMode);
       }
     });
   } else if(_.isArray(val)) {
@@ -432,8 +414,8 @@ function prepareData(val) {
         So to decide whether row is new or not set, the cid starts with
         nn (not new) for existing rows. Newly added will start with 'c' (created)
         */
-        el['cid'] = _.uniqueId('nn');
-        prepareData(el);
+        el['cid'] = createMode ? _.uniqueId('c') : _.uniqueId('nn');
+        prepareData(el, createMode);
       }
     });
   }
@@ -532,7 +514,7 @@ function SchemaDialogView({
       });
     } else {
       /* Use the defaults as the initital data */
-      schema.origData = prepareData(schema.defaults);
+      schema.origData = prepareData(schema.defaults, true);
       schema.initialise(schema.origData);
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.INIT,
@@ -624,6 +606,7 @@ function SchemaDialogView({
           );
         }
       }).catch((err)=>{
+        console.error(err);
         setFormErr({
           name: 'apierror',
           message: parseApiError(err),

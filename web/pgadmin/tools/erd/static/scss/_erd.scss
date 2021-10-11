@@ -205,3 +205,14 @@
     }
   }
 }
+
+.alertify {
+  .erd-dialog {
+    .ajs-body .ajs-content {
+      bottom: 0!important;
+    }
+    .ajs-footer {
+      display: none;
+    }
+  }
+}

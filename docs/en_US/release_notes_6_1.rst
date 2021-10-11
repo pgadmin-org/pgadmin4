@@ -9,6 +9,8 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #6081 <https://redmine.postgresql.org/issues/6081>`_ -  Added support for advanced table fields like the foreign key, primary key in the ERD tool.
+| `Issue #6529 <https://redmine.postgresql.org/issues/6529>`_ -  Added index creation when generating SQL in the ERD tool.
 
 Housekeeping
 ************

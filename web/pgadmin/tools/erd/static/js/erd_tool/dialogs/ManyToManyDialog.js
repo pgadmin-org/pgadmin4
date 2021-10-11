@@ -8,12 +8,47 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import Backform from 'sources/backform.pgadmin';
 import Alertify from 'pgadmin.alertifyjs';
-import $ from 'jquery';
+import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 import DialogWrapper from './DialogWrapper';
 import _ from 'lodash';
+
+class ManyToManySchema extends BaseUISchema {
+  constructor(fieldOptions={}, initValues={}) {
+    super({
+      left_table_uid: undefined,
+      left_table_column_attnum: undefined,
+      right_table_uid: undefined,
+      right_table_column_attnum: undefined,
+      ...initValues,
+    });
+    this.fieldOptions = fieldOptions;
+  }
+  get baseFields() {
+    return [{
+      id: 'left_table_uid', label: gettext('Local Table'),
+      type: 'select', readonly: true, controlProps: {allowClear: false},
+      options: this.fieldOptions.left_table_uid,
+    }, {
+      id: 'left_table_column_attnum', label: gettext('Local Column'),
+      type: 'select', options: this.fieldOptions.left_table_column_attnum,
+      controlProps: {allowClear: false}, noEmpty: true,
+    },{
+      id: 'right_table_uid', label: gettext('Referenced Table'),
+      type: 'select', options: this.fieldOptions.right_table_uid,
+      controlProps: {allowClear: false}, noEmpty: true,
+    },{
+      id: 'right_table_column_attnum', label: gettext('Referenced Column'),
+      controlProps: {allowClear: false}, deps: ['right_table_uid'],
+      type: (state)=>({
+        type: 'select',
+        options: state.right_table_uid ? ()=>this.fieldOptions.getRefColumns(state.right_table_uid) : [],
+        optionsReloadBasis: state.right_table_uid,
+      }),
+    }];
+  }
+}
 
 export default class ManyToManyDialog {
   constructor(pgBrowser) {
@@ -24,93 +59,29 @@ export default class ManyToManyDialog {
     return 'manytomany_dialog';
   }
 
-  getDataModel(attributes, tableNodesDict) {
-    const parseColumns = (columns)=>{
-      return columns.map((col)=>{
-        return {
-          value: col.attnum, label: col.name,
-        };
-      });
-    };
-
-    let dialogModel = this.pgBrowser.DataModel.extend({
-      defaults: {
-        left_table_uid: undefined,
-        left_table_column_attnum: undefined,
-        right_table_uid: undefined,
-        right_table_column_attnum: undefined,
-      },
-      schema: [{
-        id: 'left_table_uid', label: gettext('Left Table'),
-        type: 'select2', readonly: true,
-        options: ()=>{
-          let retOpts = [];
-          _.forEach(tableNodesDict, (node, uid)=>{
-            let [schema, name] = node.getSchemaTableName();
-            retOpts.push({value: uid, label: `(${schema}) ${name}`});
-          });
-          return retOpts;
-        },
-      }, {
-        id: 'left_table_column_attnum', label: gettext('Left table Column'),
-        type: 'select2', disabled: false, first_empty: false,
-        editable: true, options: (view)=>{
-          return parseColumns(tableNodesDict[view.model.get('left_table_uid')].getColumns());
-        },
-      },{
-        id: 'right_table_uid', label: gettext('Right Table'),
-        type: 'select2', disabled: false,
-        editable: true, options: (view)=>{
-          let retOpts = [];
-          _.forEach(tableNodesDict, (node, uid)=>{
-            if(uid === view.model.get('left_table_uid')) {
-              return;
-            }
-            let [schema, name] = node.getSchemaTableName();
-            retOpts.push({value: uid, label: `(${schema}) ${name}`});
-          });
-          return retOpts;
-        },
-      },{
-        id: 'right_table_column_attnum', label: gettext('Right table Column'),
-        type: 'select2', disabled: false, deps: ['right_table_uid'],
-        editable: true, options: (view)=>{
-          if(view.model.get('right_table_uid')) {
-            return parseColumns(tableNodesDict[view.model.get('right_table_uid')].getColumns());
-          }
-          return [];
-        },
-      }],
-      validate: function(keys) {
-        var msg = undefined;
-
-        // Nothing to validate
-        if (keys && keys.length == 0) {
-          this.errorModel.clear();
-          return null;
-        } else {
-          this.errorModel.clear();
-        }
-
-        if (_.isUndefined(this.get('left_table_column_attnum')) || this.get('left_table_column_attnum') == '') {
-          msg = gettext('Select the left table column.');
-          this.errorModel.set('left_table_column_attnum', msg);
-          return msg;
-        }
-        if (_.isUndefined(this.get('right_table_uid')) || this.get('right_table_uid') == '') {
-          msg = gettext('Select the right table.');
-          this.errorModel.set('right_table_uid', msg);
-          return msg;
-        }
-        if (_.isUndefined(this.get('right_table_column_attnum')) || this.get('right_table_column_attnum') == '') {
-          msg = gettext('Select the right table column.');
-          this.errorModel.set('right_table_column_attnum', msg);
-          return msg;
-        }
-      },
+  getUISchema(attributes, tableNodesDict) {
+    let tablesData = [];
+    _.forEach(tableNodesDict, (node, uid)=>{
+      let [schema, name] = node.getSchemaTableName();
+      tablesData.push({value: uid, label: `(${schema}) ${name}`, image: 'icon-table'});
     });
 
-    return new dialogModel(attributes);
+    return new ManyToManySchema({
+      left_table_uid: tablesData,
+      left_table_column_attnum: tableNodesDict[attributes.left_table_uid].getColumns().map((col)=>{
+        return {
+          value: col.attnum, label: col.name, 'image': 'icon-column',
+        };
+      }),
+      right_table_uid: tablesData,
+      getRefColumns: (uid)=>{
+        return tableNodesDict[uid].getColumns().map((col)=>{
+          return {
+            value: col.attnum, label: col.name, 'image': 'icon-column',
+          };
+        });
+      },
+    }, attributes);
   }
 
   createOrGetDialog(title) {
@@ -122,19 +93,16 @@ export default class ManyToManyDialog {
           `<div class="${dialogName}"></div>`,
           title,
           null,
-          $,
-          this.pgBrowser,
           Alertify,
-          Backform
         );
       });
     }
     return Alertify[dialogName];
   }
 
-  show(title, attributes, tablesData, sVersion, callback) {
+  show(title, attributes, tablesData, serverInfo, callback) {
     let dialogTitle = title || gettext('Unknown');
-    const dialog = this.createOrGetDialog('manytomany_dialog');
-    dialog(dialogTitle, this.getDataModel(attributes, tablesData), callback).resizeTo(this.pgBrowser.stdW.sm, this.pgBrowser.stdH.md);
+    const dialog = this.createOrGetDialog('manytomany_dialog', serverInfo);
+    dialog(dialogTitle, this.getUISchema(attributes, tablesData), callback).resizeTo(this.pgBrowser.stdW.sm, this.pgBrowser.stdH.md);
   }
 }

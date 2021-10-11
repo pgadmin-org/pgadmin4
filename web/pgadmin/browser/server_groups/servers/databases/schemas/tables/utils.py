@@ -1125,7 +1125,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         elif part_type in data and data[part_type] == 'hash':
             partition_scheme = 'HASH ('
 
-        for row in data[part_keys]:
+        for row in data.get(part_keys, []):
             if row['key_type'] == 'column':
                 partition_scheme += self.qtIdent(
                     self.conn, row['pt_column'])
@@ -1141,7 +1141,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 partition_scheme += row['expression'] + ', '
 
         # Remove extra space and comma
-        if len(data[part_keys]) > 0:
+        if len(data.get(part_keys, [])) > 0:
             partition_scheme = partition_scheme[:-2]
         partition_scheme += ')'
 

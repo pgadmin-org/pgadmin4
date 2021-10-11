@@ -205,6 +205,13 @@ export default function FormView({
 
     if(modeSupported) {
       let {group, CustomControl} = field;
+      if(field.type === 'group') {
+        groupLabels[field.id] = field.label;
+        if(!visible) {
+          schemaRef.current.filterGroups.push(field.label);
+        }
+        return;
+      }
       group = groupLabels[group] || group || defaultTab;
 
       if(!tabs[group]) tabs[group] = [];
@@ -260,11 +267,6 @@ export default function FormView({
           tabs[group].push(<CustomControl {...props}/>);
         } else {
           tabs[group].push(<DataGridView {...props}/>);
-        }
-      } else if(field.type === 'group') {
-        groupLabels[field.id] = field.label;
-        if(!visible) {
-          schemaRef.current.filterGroups.push(field.label);
         }
       } else {
         /* Its a form control */

@@ -86,7 +86,7 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
   }
 }
 
-class ForeignKeyColumnSchema extends BaseUISchema {
+export class ForeignKeyColumnSchema extends BaseUISchema {
   constructor() {
     super({
       local_column: undefined,
@@ -111,7 +111,7 @@ class ForeignKeyColumnSchema extends BaseUISchema {
 }
 
 export default class ForeignKeySchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, getColumns, initData={}) {
+  constructor(fieldOptions={}, nodeInfo, getColumns, initValues={}, inErd=false) {
     super({
       name: undefined,
       reftab: undefined,
@@ -128,7 +128,7 @@ export default class ForeignKeySchema extends BaseUISchema {
       autoindex: true,
       coveringindex: undefined,
       hasindex:undefined,
-      ...initData,
+      ...initValues,
     });
 
     this.nodeInfo = nodeInfo;
@@ -136,7 +136,7 @@ export default class ForeignKeySchema extends BaseUISchema {
     this.fkHeaderSchema = new ForeignKeyHeaderSchema(fieldOptions, getColumns);
     this.fkHeaderSchema.fkObj = this;
     this.fkColumnSchema = new ForeignKeyColumnSchema();
-
+    this.inErd = inErd;
   }
 
   get idAttribute() {
@@ -240,9 +240,7 @@ export default class ForeignKeySchema extends BaseUISchema {
           return true;
         }
         // If we are in table edit mode then
-        if(obj.inTable) {
-          return true;
-        } else if(state.hasindex) {
+        if(state.hasindex) {
           return true;
         }
         return false;
@@ -252,7 +250,7 @@ export default class ForeignKeySchema extends BaseUISchema {
           return {};
         }
         // If we are in table edit mode
-        if(obj.inTable) {
+        if(obj.inTable && !this.inErd) {
           if(obj.isNew(state) && obj.top.isNew()) {
             return {autoindex: false, coveringindex: ''};
           }

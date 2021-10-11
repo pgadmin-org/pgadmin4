@@ -9,6 +9,7 @@
 import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
 import * as createEngineLib from '@projectstorm/react-diagrams';
 import TEST_TABLES_DATA from './test_tables';
+import { FakeLink, FakeNode } from './fake_item';
 
 describe('ERDCore', ()=>{
   let eleFactory = jasmine.createSpyObj('nodeFactories', {
@@ -132,7 +133,8 @@ describe('ERDCore', ()=>{
     });
 
     it('addNode', ()=>{
-      let newNode = jasmine.createSpyObj('newNode', ['setPosition']);
+      let newNode = new FakeNode({});
+      spyOn(newNode, 'setPosition');
       spyOn(erdCoreObj, 'getNewNode').and.returnValue(newNode);
       spyOn(erdCoreObj, 'clearSelection');
 
@@ -151,33 +153,17 @@ describe('ERDCore', ()=>{
 
 
     it('addLink', ()=>{
+      let node1 = new FakeNode({'name': 'table1'}, 'id1');
+      let node2 = new FakeNode({'name': 'table2'}, 'id2');
+      spyOn(node1, 'addPort').and.callThrough();
+      spyOn(node2, 'addPort').and.callThrough();
       let nodesDict = {
-        'id1': {
-          serializeData: function(){ return {
-            'name': 'table1',
-          };},
-          getPortName: function(attnum) {
-            return `port-${attnum}`;
-          },
-          getPort: function() {
-            return null;
-          },
-          addPort: jasmine.createSpy('addPort').and.callFake((obj)=>obj),
-        },
-        'id2': {
-          serializeData: function(){ return {
-            'name': 'table2',
-          };},
-          getPortName: function(attnum) {
-            return `port-${attnum}`;
-          },
-          getPort: function() {
-            return null;
-          },
-          addPort: jasmine.createSpy('addPort').and.callFake((obj)=>obj),
-        },
+        'id1': node1,
+        'id2': node2,
       };
-      let link = jasmine.createSpyObj('link', ['setSourcePort', 'setTargetPort']);
+      let link = new FakeLink();
+      spyOn(link, 'setSourcePort').and.callThrough();
+      spyOn(link, 'setTargetPort').and.callThrough();
       spyOn(erdEngine.getModel(), 'getNodesDict').and.returnValue(nodesDict);
       spyOn(erdCoreObj, 'getNewLink').and.callFake(function() {
         return link;
@@ -199,7 +185,6 @@ describe('ERDCore', ()=>{
       expect(nodesDict['id2'].addPort).toHaveBeenCalledWith({name: 'port-3'});
       expect(link.setSourcePort).toHaveBeenCalledWith({name: 'port-1'});
       expect(link.setTargetPort).toHaveBeenCalledWith({name: 'port-3'});
-
     });
 
     it('serialize', ()=>{
@@ -222,40 +207,25 @@ describe('ERDCore', ()=>{
     });
 
     it('serializeData', ()=>{
-      spyOn(erdEngine.getModel(), 'getNodesDict').and.returnValue({
-        'id1': {
-          serializeData: function(){ return {
-            'name': 'table1',
-          };},
-        },
-        'id2': {
-          serializeData: function(){ return {
-            'name': 'table2',
-          };},
-        },
-      });
+      let node1 = new FakeNode({'name': 'table1'}, 'id1');
+      let node2 = new FakeNode({'name': 'table2'}, 'id2');
+      let nodesDict = {
+        'id1': node1,
+        'id2': node2,
+      };
+      spyOn(erdEngine.getModel(), 'getNodesDict').and.returnValue(nodesDict);
       spyOn(erdEngine.getModel(), 'getLinks').and.returnValue([
-        {
-          serializeData:  function(){ return {
-            'name': 'link1',
-          };},
-          getID:  function(){ return 'lid1'; },
-        },
-        {
-          serializeData:  function(){ return {
-            'name': 'link2',
-          };},
-          getID:  function(){ return 'lid2'; },
-        },
+        new FakeLink({
+          'name': 'link1',
+        }, 'lid1'),
+        new FakeLink({
+          'name': 'link2',
+        }, 'lid2'),
       ]);
       expect(JSON.stringify(erdCoreObj.serializeData())).toEqual(JSON.stringify({
         nodes: {
           'id1': {'name': 'table1'},
           'id2': {'name': 'table2'},
-        },
-        links: {
-          'lid1': {'name': 'link1'},
-          'lid2': {'name': 'link2'},
         },
       }));
     });
@@ -276,6 +246,9 @@ describe('ERDCore', ()=>{
           addPort: function() {
 
           },
+          getData: function() {
+            return table;
+          }
         };
       });
       spyOn(erdEngine.getModel(), 'getNodesDict').and.returnValue(nodesDict);
@@ -288,11 +261,7 @@ describe('ERDCore', ()=>{
       });
       spyOn(erdCoreObj, 'getNewPort').and.returnValue({id: 'id'});
       spyOn(erdCoreObj, 'addNode').and.callFake(function(data) {
-        return {
-          getID: function() {
-            return `id-${data.name}`;
-          },
-        };
+        return new FakeNode({}, `id-${data.name}`);
       });
       spyOn(erdCoreObj, 'addLink');
       spyOn(erdCoreObj, 'dagreDistributeNodes');
@@ -319,8 +288,8 @@ describe('ERDCore', ()=>{
 
     it('getNodesData', ()=>{
       spyOn(erdEngine.getModel(), 'getNodes').and.returnValue([
-        {getData: function () {return {name:'node1'};}},
-        {getData: function () {return {name:'node2'};}},
+        new FakeNode({name:'node1'}),
+        new FakeNode({name:'node2'}),
       ]);
       expect(JSON.stringify(erdCoreObj.getNodesData())).toEqual(JSON.stringify([
         {name:'node1'}, {name:'node2'},

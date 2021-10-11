@@ -106,23 +106,6 @@ basicSettings = createMuiTheme(basicSettings, {
         paddingRight: basicSettings.spacing(1.5),
       }
     },
-    MuiToggleButton: {
-      root: {
-        textTransform: 'none,',
-        padding: basicSettings.spacing(0.5, 2.5, 0.5, 0.5),
-        color: 'abc',
-        '&:hover':{
-          backgroundColor: 'abc',
-        },
-        '&$selected': {
-          color: 'abc',
-          backgroundColor: 'abc',
-          '&:hover':{
-            backgroundColor: 'abc',
-          }
-        }
-      }
-    },
     MuiAccordion: {
       root: {
         boxShadow: 'none',
@@ -171,6 +154,17 @@ basicSettings = createMuiTheme(basicSettings, {
     MuiTypography: {
       body1: {
         fontSize: '1em',
+      }
+    },
+    MuiDialog: {
+      paper: {
+        margin: 0,
+      }
+    },
+    MuiTooltip: {
+      popper: {
+        top: 0,
+        zIndex: 9999,
       }
     }
   },
@@ -374,6 +368,7 @@ function getFinalTheme(baseTheme) {
       },
       MuiToggleButton: {
         root: {
+          padding: 'abc',
           paddingRight: baseTheme.spacing(2.5),
           paddingLeft: baseTheme.spacing(0.5),
           color: 'abc',

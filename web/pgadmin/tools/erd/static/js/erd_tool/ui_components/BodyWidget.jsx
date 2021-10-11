@@ -25,6 +25,7 @@ import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import {showERDSqlTool} from 'tools/datagrid/static/js/show_query_tool';
 import 'wcdocker';
+import Theme from '../../../../../../static/js/Theme';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -76,6 +77,9 @@ export default class BodyWidget extends React.Component {
       show_details: true,
       is_new_tab: false,
       preferences: {},
+      table_dialog_open: true,
+      oto_dialog_open: true,
+      otm_dialog_open: true,
     };
     this.diagram = new ERDCore();
     /* Flag for checking if user has opted for save before close */
@@ -88,7 +92,7 @@ export default class BodyWidget extends React.Component {
     this.keyboardActionObj = null;
 
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSaveAsDiagram', 'onSQLClick',
-      'onImageClick', 'onAddNewNode', 'onEditNode', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
+      'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
       'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
       'onDetailsToggle', 'onHelpClick'
     ]);
@@ -130,8 +134,8 @@ export default class BodyWidget extends React.Component {
       'showNote': (event)=>{
         this.showNote(event.node);
       },
-      'editNode': (event) => {
-        this.addEditNode(event.node);
+      'editTable': (event) => {
+        this.addEditTable(event.node);
       },
     };
     Object.keys(diagramEvents).forEach(eventName => {
@@ -150,7 +154,7 @@ export default class BodyWidget extends React.Component {
       [this.state.preferences.generate_sql, this.onSQLClick],
       [this.state.preferences.download_image, this.onImageClick],
       [this.state.preferences.add_table, this.onAddNewNode],
-      [this.state.preferences.edit_table, this.onEditNode],
+      [this.state.preferences.edit_table, this.onEditTable],
       [this.state.preferences.clone_table, this.onCloneNode],
       [this.state.preferences.drop_table, this.onDeleteNode],
       [this.state.preferences.add_edit_note, this.onNoteClick],
@@ -297,19 +301,20 @@ export default class BodyWidget extends React.Component {
   }
 
   getDialog(dialogName) {
-    if(dialogName === 'entity_dialog') {
-      let allTables = this.diagram.getModel().getNodes().map((node)=>{
-        return node.getSchemaTableName();
-      });
+    let serverInfo = {
+      type: this.props.params.server_type,
+      version: this.state.server_version,
+    };
+    if(dialogName === 'table_dialog') {
       return (title, attributes, isNew, callback)=>{
         this.props.getDialog(dialogName).show(
-          title, attributes, isNew, allTables, this.diagram.getCache('colTypes'), this.diagram.getCache('schemas'), this.state.server_version, callback
+          title, attributes, isNew, this.diagram.getModel().getNodesDict(), this.diagram.getCache('colTypes'), this.diagram.getCache('schemas'), serverInfo, callback
         );
       };
     } else if(dialogName === 'onetomany_dialog' || dialogName === 'manytomany_dialog') {
       return (title, attributes, callback)=>{
         this.props.getDialog(dialogName).show(
-          title, attributes, this.diagram.getModel().getNodesDict(), this.state.server_version, callback
+          title, attributes, this.diagram.getModel().getNodesDict(), serverInfo, callback
         );
       };
     }
@@ -328,17 +333,20 @@ export default class BodyWidget extends React.Component {
     }
   }
 
-  addEditNode(node) {
-    let dialog = this.getDialog('entity_dialog');
+  addEditTable(node) {
+    let dialog = this.getDialog('table_dialog');
     if(node) {
       let [schema, table] = node.getSchemaTableName();
       dialog(gettext('Table: %s (%s)', _.escape(table),_.escape(schema)), node.getData(), false, (newData)=>{
+        let oldData = node.getData();
         node.setData(newData);
+        this.diagram.syncTableLinks(node, oldData);
         this.diagram.repaint();
       });
     } else {
-      dialog(gettext('New table'), {name: this.diagram.getNextTableName()}, true, (newData)=>{
+      dialog(gettext('New table'), {}, true, (newData)=>{
         let newNode = this.diagram.addNode(newData);
+        this.diagram.syncTableLinks(newNode);
         newNode.setSelected(true);
       });
     }
@@ -353,15 +361,15 @@ export default class BodyWidget extends React.Component {
     }
   }
 
-  onEditNode() {
+  onEditTable() {
     const selected = this.diagram.getSelectedNodes();
     if(selected.length == 1) {
-      this.addEditNode(selected[0]);
+      this.addEditTable(selected[0]);
     }
   }
 
   onAddNewNode() {
-    this.addEditNode();
+    this.addEditTable();
   }
 
   onCloneNode() {
@@ -385,10 +393,7 @@ export default class BodyWidget extends React.Component {
           node.remove();
         });
         this.diagram.getSelectedLinks().forEach((link)=>{
-          link.getTargetPort().remove();
-          link.getSourcePort().remove();
-          link.setSelected(false);
-          link.remove();
+          this.diagram.removeOneToManyLink(link);
         });
         this.diagram.repaint();
       },
@@ -656,10 +661,7 @@ export default class BodyWidget extends React.Component {
     let dialog = this.getDialog('onetomany_dialog');
     let initData = {local_table_uid: this.diagram.getSelectedNodes()[0].getID()};
     dialog(gettext('One to many relation'), initData, (newData)=>{
-      let newLink = this.diagram.addLink(newData, 'onetomany');
-      this.diagram.clearSelection();
-      newLink.setSelected(true);
-      this.diagram.repaint();
+      this.diagram.addOneToManyLink(newData);
     });
   }
 
@@ -667,46 +669,7 @@ export default class BodyWidget extends React.Component {
     let dialog = this.getDialog('manytomany_dialog');
     let initData = {left_table_uid: this.diagram.getSelectedNodes()[0].getID()};
     dialog(gettext('Many to many relation'), initData, (newData)=>{
-      let nodes = this.diagram.getModel().getNodesDict();
-      let left_table = nodes[newData.left_table_uid];
-      let right_table = nodes[newData.right_table_uid];
-      let tableData = {
-        name: `${left_table.getData().name}_${right_table.getData().name}`,
-        schema: left_table.getData().schema,
-        columns: [{
-          ...left_table.getColumnAt(newData.left_table_column_attnum),
-          'name': `${left_table.getData().name}_${left_table.getColumnAt(newData.left_table_column_attnum).name}`,
-          'is_primary_key': false,
-          'attnum': 0,
-        },{
-          ...right_table.getColumnAt(newData.right_table_column_attnum),
-          'name': `${right_table.getData().name}_${right_table.getColumnAt(newData.right_table_column_attnum).name}`,
-          'is_primary_key': false,
-          'attnum': 1,
-        }],
-      };
-      let newNode = this.diagram.addNode(tableData);
-      this.diagram.clearSelection();
-      newNode.setSelected(true);
-
-      let linkData = {
-        local_table_uid: newNode.getID(),
-        local_column_attnum: newNode.getColumns()[0].attnum,
-        referenced_table_uid: newData.left_table_uid,
-        referenced_column_attnum : newData.left_table_column_attnum,
-      };
-      this.diagram.addLink(linkData, 'onetomany');
-
-      linkData = {
-        local_table_uid: newNode.getID(),
-        local_column_attnum: newNode.getColumns()[1].attnum,
-        referenced_table_uid: newData.right_table_uid,
-        referenced_column_attnum : newData.right_table_column_attnum,
-      };
-
-      this.diagram.addLink(linkData, 'onetomany');
-
-      this.diagram.repaint();
+      this.diagram.addManyToManyLink(newData);
     });
   }
 
@@ -794,10 +757,7 @@ export default class BodyWidget extends React.Component {
 
     try {
       let response = await axios.get(url);
-      let tables = response.data.data.map((table)=>{
-        return this.props.transformToSupported('table', table);
-      });
-      this.diagram.deserializeData(tables);
+      this.diagram.deserializeData(response.data.data);
       return true;
     } catch (error) {
       this.handleAxiosCatch(error);
@@ -809,7 +769,7 @@ export default class BodyWidget extends React.Component {
 
   render() {
     return (
-      <>
+      <Theme>
         <ToolBar id="btn-toolbar">
           <ButtonGroup>
             <IconButton id="open-file" icon="fa fa-folder-open" onClick={this.onLoadDiagram} title={gettext('Load from file')}
@@ -828,7 +788,7 @@ export default class BodyWidget extends React.Component {
           <ButtonGroup>
             <IconButton id="add-node" icon="fa fa-plus-square" onClick={this.onAddNewNode} title={gettext('Add table')}
               shortcut={this.state.preferences.add_table}/>
-            <IconButton id="edit-node" icon="fa fa-pencil-alt" onClick={this.onEditNode} title={gettext('Edit table')}
+            <IconButton id="edit-node" icon="fa fa-pencil-alt" onClick={this.onEditTable} title={gettext('Edit table')}
               shortcut={this.state.preferences.edit_table} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
             <IconButton id="clone-node" icon="fa fa-clone" onClick={this.onCloneNode} title={gettext('Clone table')}
               shortcut={this.state.preferences.clone_table} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
@@ -869,7 +829,7 @@ export default class BodyWidget extends React.Component {
           <Loader message={this.state.loading_msg} autoEllipsis={true}/>
           <CanvasWidget className="diagram-canvas flex-grow-1" ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
         </div>
-      </>
+      </Theme>
     );
   }
 }
@@ -888,7 +848,6 @@ BodyWidget.propTypes = {
     gen: PropTypes.bool.isRequired,
   }),
   getDialog: PropTypes.func.isRequired,
-  transformToSupported: PropTypes.func.isRequired,
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,
   alertify: PropTypes.object.isRequired,

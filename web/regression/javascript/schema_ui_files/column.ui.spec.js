@@ -202,13 +202,13 @@ describe('ColumnSchema', ()=>{
     expect(schemaObj.inSchemaWithColumnCheck(state)).toBe(true);
 
     schemaObj.nodeInfo = {};
-    expect(schemaObj.inSchemaWithColumnCheck(state)).toBe(true);
+    expect(schemaObj.inSchemaWithColumnCheck(state)).toBe(false);
   });
 
   it('editableCheckForTable', ()=>{
     let state = {};
     schemaObj.nodeInfo = {};
-    expect(schemaObj.editableCheckForTable(state)).toBe(false);
+    expect(schemaObj.editableCheckForTable(state)).toBe(true);
   });
 
   it('depChange', ()=>{
