@@ -575,7 +575,8 @@ def sql(trans_id, sgid, sid, did):
     all_nodes = data.get('nodes', {})
     for tab_key, tab_data in all_nodes.items():
         tab_fks = tab_data.pop('foreign_key', [])
-        tab_foreign_keys.extend(translate_foreign_keys(tab_fks, tab_data, all_nodes))
+        tab_foreign_keys.extend(translate_foreign_keys(tab_fks, tab_data,
+                                                       all_nodes))
         sql += '\n\n' + helper.get_table_sql(tab_data)
 
     for tab_fk in tab_foreign_keys:
