@@ -97,6 +97,11 @@ li.CodeMirror-hint-active {
   color: $color-primary-fg;
 }
 
+.sql-editor .CodeMirror-activeline-background {
+  background: $color-editor-activeline-light !important;
+  border: 1px solid $color-editor-activeline-border-color;
+}
+
 .filter-container {
   position: relative;
   background-color: $color-bg;
