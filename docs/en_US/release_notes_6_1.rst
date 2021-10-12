@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4596 <https://redmine.postgresql.org/issues/4596>`_ -  Added support for indent guides in the browser tree.
 | `Issue #6081 <https://redmine.postgresql.org/issues/6081>`_ -  Added support for advanced table fields like the foreign key, primary key in the ERD tool.
 | `Issue #6529 <https://redmine.postgresql.org/issues/6529>`_ -  Added index creation when generating SQL in the ERD tool.
 | `Issue #6657 <https://redmine.postgresql.org/issues/6657>`_ -  Added support for authentication via the webserver (REMOTE_USER).

@@ -26,9 +26,28 @@
   align-items: center;
   white-space: nowrap;
   padding: 2px 0;
-  padding-left: 2px;
   cursor: pointer !important;
   color: $tree-text-fg !important;
+  &:before {
+    content: '';
+    background: $color-gray-light;
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    box-shadow: -16px 0 0 0 $color-gray-light,
+      -32px 0 0 0 $color-gray-light,
+      -48px 0 0 0 $color-gray-light,
+      -64px 0 0 0 $color-gray-light,
+      -80px 0 0 0 $color-gray-light,
+      -96px 0 0 0 $color-gray-light,
+      -112px 0 0 0 $color-gray-light,
+      -128px 0 0 0 $color-gray-light,
+      -144px 0 0 0 $color-gray-light,
+      -160px 0 0 0 $color-gray-light,
+      -176px 0 0 0 $color-gray-light,
+      -192px 0 0 0 $color-gray-light,
+      -208px 0 0 0 $color-gray-light;
+  }
   &:hover, &.pseudo-active {
     background-color: $tree-bg-hover !important;
     color: $tree-fg-hover !important;
