@@ -81,4 +81,5 @@ class LDAPLoginMockTestCase(BaseTestGenerator):
         """
         cls.tester.logout()
         app_config.AUTHENTICATION_SOURCES = [INTERNAL]
+        app_config.PGADMIN_EXTERNAL_AUTH_SOURCE = INTERNAL
         utils.login_tester_account(cls.tester)

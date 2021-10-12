@@ -11,6 +11,7 @@ New features
 
 | `Issue #6081 <https://redmine.postgresql.org/issues/6081>`_ -  Added support for advanced table fields like the foreign key, primary key in the ERD tool.
 | `Issue #6529 <https://redmine.postgresql.org/issues/6529>`_ -  Added index creation when generating SQL in the ERD tool.
+| `Issue #6657 <https://redmine.postgresql.org/issues/6657>`_ -  Added support for authentication via the webserver (REMOTE_USER).
 
 Housekeeping
 ************
@@ -20,6 +21,7 @@ Bug fixes
 *********
 
 | `Issue #6754 <https://redmine.postgresql.org/issues/6754>`_ -  Ensure that query highlighting color in the query tool should be less intensive.
+| `Issue #6719 <https://redmine.postgresql.org/issues/6719>`_ -  Fixed OAuth2 integration redirect issue.
 | `Issue #6797 <https://redmine.postgresql.org/issues/6797>`_ -  Remove an extra blank line at the start of the SQL for function, procedure, and trigger function.
 | `Issue #6828 <https://redmine.postgresql.org/issues/6828>`_ -  Fixed an issue where the tree is not scrolling to the object selected from the search result.
 | `Issue #6882 <https://redmine.postgresql.org/issues/6882>`_ -  Ensure that columns should be displayed in the order of creation instead of alphabetical order in the browser tree.

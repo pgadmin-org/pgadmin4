@@ -46,7 +46,7 @@ from pgadmin.utils.ajax import internal_server_error, make_json_response
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
 from pgadmin.utils.security_headers import SecurityHeaders
-from pgadmin.utils.constants import KERBEROS, OAUTH2, INTERNAL, LDAP
+from pgadmin.utils.constants import KERBEROS, OAUTH2, INTERNAL, LDAP, WEBSERVER
 
 # Explicitly set the mime-types so that a corrupted windows registry will not
 # affect pgAdmin 4 to be load properly. This will avoid the issues that may
@@ -470,11 +470,17 @@ def create_app(app_name=None):
         'SECURITY_EMAIL_VALIDATOR_ARGS': config.SECURITY_EMAIL_VALIDATOR_ARGS
     }))
 
+    if 'SCRIPT_NAME' in os.environ and os.environ["SCRIPT_NAME"]:
+        app.config.update(dict({
+            'APPLICATION_ROOT': os.environ["SCRIPT_NAME"]
+        }))
+
     app.config.update(dict({
         'INTERNAL': INTERNAL,
         'LDAP': LDAP,
         'KERBEROS': KERBEROS,
-        'OAUTH2': OAUTH2
+        'OAUTH2': OAUTH2,
+        'WEBSERVER': WEBSERVER
     }))
 
     security.init_app(app, user_datastore)
@@ -771,15 +777,14 @@ def create_app(app_name=None):
         elif config.SERVER_MODE and \
                 not current_user.is_authenticated and \
                 request.endpoint in ('redirects.index', 'security.login'):
-            if app.PGADMIN_EXTERNAL_AUTH_SOURCE == KERBEROS:
+            if app.PGADMIN_EXTERNAL_AUTH_SOURCE in [KERBEROS, WEBSERVER]:
                 return authenticate.login()
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
         # to get the key again when login
         if config.SERVER_MODE and current_user.is_authenticated and \
-                app.PGADMIN_EXTERNAL_AUTH_SOURCE != \
-                KERBEROS and app.PGADMIN_EXTERNAL_AUTH_SOURCE != \
-                OAUTH2 and\
+            app.PGADMIN_EXTERNAL_AUTH_SOURCE not in [
+                KERBEROS, OAUTH2, WEBSERVER] and \
                 current_app.keyManager.get() is None and \
                 request.endpoint not in ('security.login', 'security.logout'):
             logout_user()

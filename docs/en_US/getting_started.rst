@@ -39,6 +39,7 @@ Mode is pre-configured for security.
    ldap
    kerberos
    oauth2
+   webserver
 
 
 .. note:: Pre-compiled and configured installation packages are available for

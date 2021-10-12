@@ -570,7 +570,8 @@ ENHANCED_COOKIE_PROTECTION = True
 # Default setting is internal
 # External Supported Sources: ldap, kerberos, oauth2
 # Multiple authentication can be achieved by setting this parameter to
-# ['ldap', 'internal'] or ['oauth2', 'internal'] etc.
+# ['ldap', 'internal'] or ['oauth2', 'internal'] or
+# ['webserver', 'internal'] etc.
 # pgAdmin will authenticate the user with ldap/oauth2 whatever first in the
 # list, in case of failure the second authentication option will be considered.
 
@@ -728,6 +729,12 @@ OAUTH2_CONFIG = [
 # in this case Admin has to add the user manually in the SQLite database.
 
 OAUTH2_AUTO_CREATE_USER = True
+
+##########################################################################
+# Webserver Configuration
+##########################################################################
+
+WEBSERVER_AUTO_CREATE_USER = True
 
 ##########################################################################
 # PSQL tool settings

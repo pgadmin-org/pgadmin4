@@ -100,6 +100,7 @@ class LoginTestCase(BaseTestGenerator):
     # No need to call base class setup function
     def setUp(self):
         app_config.AUTHENTICATION_SOURCES = [INTERNAL]
+        app_config.PGADMIN_EXTERNAL_AUTH_SOURCE = INTERNAL
 
     def runTest(self):
         """This function checks login functionality."""
