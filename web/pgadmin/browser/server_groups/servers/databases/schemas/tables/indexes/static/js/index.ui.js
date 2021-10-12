@@ -113,7 +113,7 @@ export class ColumnSchema extends BaseUISchema {
                   * to access method selected by user if not selected
                   * send btree related op_class options
                   */
-                var amname = columnSchemaObj._top._sessData ? columnSchemaObj._top._sessData.amname : columnSchemaObj._top._origData.amname;
+                var amname = columnSchemaObj._top?._sessData ? columnSchemaObj._top?._sessData.amname : columnSchemaObj._top?._origData.amname;
 
                 if(_.isUndefined(amname))
                   return options;
@@ -315,13 +315,8 @@ export default class IndexSchema extends BaseUISchema {
             return Promise.resolve(()=>{});
           }
         },
-      },{
-        id: 'columns_csv', label: gettext('Columns'), cell: 'string',
-        type: 'text',
-        disabled: () => inSchema(indexSchemaObj.node_info),
-        mode: ['properties'],
-        group: gettext('Definition'),
-      },{
+      },
+      {
         id: 'include', label: gettext('Include columns'),
         group: gettext('Definition'),
         editable: false, canDelete: true, canAdd: true, mode: ['properties'],
@@ -394,7 +389,7 @@ export default class IndexSchema extends BaseUISchema {
         readonly: function (state) {
           return !indexSchemaObj.isNew(state);
         },
-        mode: ['create', 'edit'], group: gettext('Definition'),
+        mode: ['create'], group: gettext('Definition'),
       },{
         id: 'indconstraint', label: gettext('Constraint'), cell: 'string',
         type: 'sql', controlProps: {className:['custom_height_css_class']},
@@ -407,7 +402,7 @@ export default class IndexSchema extends BaseUISchema {
       }, {
         id: 'columns', label: gettext('Columns'), type: 'collection', deps: ['amname'],
         group: gettext('Definition'), schema: indexSchemaObj.getColumnSchema(),
-        mode: ['edit', 'create'],
+        mode: ['edit', 'create', 'properties'],
         canAdd: function(state) {
           // We will disable it if it's in 'edit' mode
           return indexSchemaObj.isNew(state);

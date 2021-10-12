@@ -28,6 +28,34 @@
       }
     },
     {
+      "name": "Create index concurrently: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "isconcurrent": true,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
       "name": "Create index: With valid data mumtiple.",
       "is_positive_test": true,
       "inventory_data": {},
@@ -114,6 +142,7 @@
         "name": "test_index_add",
         "spcname": "pg_default",
         "amname": "btree",
+        "isconcurrent": false,
         "columns": [
           {
             "colname": "id",
@@ -128,7 +157,7 @@
       "mocking_required": true,
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
-        "return_value": "[(True, True),(False, 'Mocked Internal Server Error'),(True,True)]"
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
       },
       "expected_data": {
         "status_code": 500,
@@ -144,6 +173,7 @@
         "name": "test_index_add",
         "spcname": "pg_default",
         "amname": "btree",
+        "isconcurrent": false,
         "columns": [
           {
             "colname": "id",
@@ -158,7 +188,7 @@
       "mocking_required": true,
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
-        "return_value": "[(True, True),(True, True),(False, 'Mocked Internal Server Error'),(False, 'Mocked Internal Server Error')]"
+        "return_value": "[(True, True),(False, 'Mocked Internal Server Error'),(False, 'Mocked Internal Server Error')]"
       },
       "expected_data": {
         "status_code": 500,

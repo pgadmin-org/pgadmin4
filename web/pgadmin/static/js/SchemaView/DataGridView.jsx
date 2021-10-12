@@ -183,7 +183,7 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
     schemaRef.current.fields.forEach((field)=>{
       /* Self change is also dep change */
       if(field.depChange || field.deferredDepChange) {
-        depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+        depListener?.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
       }
       (evalFunc(null, field.deps) || []).forEach((dep)=>{
         let source = accessPath.concat(dep);
@@ -191,7 +191,7 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
           source = dep;
         }
         if(field.depChange) {
-          depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
+          depListener?.addDepListener(source, accessPath.concat(field.id), field.depChange);
         }
       });
     });

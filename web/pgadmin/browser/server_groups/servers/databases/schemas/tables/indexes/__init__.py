@@ -605,8 +605,12 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             return gone(gettext(self.not_found_error_msg('Table')))
 
         try:
-            # Start transaction.
-            self.conn.execute_scalar("BEGIN;")
+            # If user chooses concurrent index then we cannot run it inside
+            # a transaction block.
+            # Don't start transaction if isconcurrent is True
+            if hasattr(data, "isconcurrent") and not data['isconcurrent']:
+                # Start transaction.
+                self.conn.execute_scalar("BEGIN;")
             SQL = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
                 data=data, conn=self.conn, mode='create'
@@ -614,7 +618,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 # End transaction.
-                self.conn.execute_scalar("END;")
+                if hasattr(data, "isconcurrent") and not data['isconcurrent']:
+                    self.conn.execute_scalar("END;")
                 return internal_server_error(errormsg=res)
 
             # If user chooses concurrent index then we cannot run it along
@@ -627,8 +632,10 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             if SQL != '':
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
-                    # End transaction.
-                    self.conn.execute_scalar("END;")
+                    if hasattr(data, "isconcurrent") and not data[
+                            'isconcurrent']:
+                        # End transaction.
+                        self.conn.execute_scalar("END;")
                     return internal_server_error(errormsg=res)
 
             # we need oid to add object in tree at browser
@@ -638,12 +645,14 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             )
             status, idx = self.conn.execute_scalar(SQL)
             if not status:
-                # End transaction.
-                self.conn.execute_scalar("END;")
+                if hasattr(data, "isconcurrent") and not data['isconcurrent']:
+                    # End transaction.
+                    self.conn.execute_scalar("END;")
                 return internal_server_error(errormsg=tid)
 
-            # End transaction.
-            self.conn.execute_scalar("END;")
+            if hasattr(data, "isconcurrent") and not data['isconcurrent']:
+                # End transaction.
+                self.conn.execute_scalar("END;")
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     idx,
@@ -653,8 +662,9 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
             )
         except Exception as e:
-            # End transaction.
-            self.conn.execute_scalar("END;")
+            if hasattr(data, "isconcurrent") and not data['isconcurrent']:
+                # End transaction.
+                self.conn.execute_scalar("END;")
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
