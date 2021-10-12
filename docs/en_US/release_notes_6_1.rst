@@ -2,7 +2,7 @@
 Version 6.1
 ************
 
-Release date: 2021-11-04
+Release date: 2021-10-21
 
 This release contains a number of bug fixes and new features since the release of pgAdmin4 6.0.
 
@@ -20,8 +20,8 @@ Housekeeping
 Bug fixes
 *********
 
-| `Issue #6754 <https://redmine.postgresql.org/issues/6754>`_ -  Ensure that query highlighting color in the query tool should be less intensive.
 | `Issue #6719 <https://redmine.postgresql.org/issues/6719>`_ -  Fixed OAuth2 integration redirect issue.
+| `Issue #6754 <https://redmine.postgresql.org/issues/6754>`_ -  Ensure that query highlighting color in the query tool should be less intensive.
 | `Issue #6797 <https://redmine.postgresql.org/issues/6797>`_ -  Remove an extra blank line at the start of the SQL for function, procedure, and trigger function.
 | `Issue #6828 <https://redmine.postgresql.org/issues/6828>`_ -  Fixed an issue where the tree is not scrolling to the object selected from the search result.
 | `Issue #6881 <https://redmine.postgresql.org/issues/6881>`_ -  Fixed an issue where the browser tree doesn't show all contents on changing resolution.

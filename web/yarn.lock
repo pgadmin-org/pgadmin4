@@ -7582,9 +7582,9 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-"pgadmin4-tree@git+https://github.com/EnterpriseDB/pgadmin4-treeview/#ec58f480f43aa6deb862778d49d6f2fb797a7d13":
+"pgadmin4-tree@git+https://github.com/EnterpriseDB/pgadmin4-treeview/#bc66dff13c17f256355d4f2bf79e3458007868bc":
   version "1.0.0"
-  resolved "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#ec58f480f43aa6deb862778d49d6f2fb797a7d13"
+  resolved "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#bc66dff13c17f256355d4f2bf79e3458007868bc"
   dependencies:
     "@types/classnames" "^2.2.6"
     "@types/react" "^16.7.18"
@@ -7600,6 +7600,7 @@ performance-now@^2.1.0:
     react "^16.6.3"
     react-aspen "^1.1.1"
     react-dom "^16.6.3"
+    react-virtualized-auto-sizer "^1.0.6"
     valid-filename "^2.0.1"
 
 picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.3:
