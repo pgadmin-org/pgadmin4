@@ -14,6 +14,7 @@ import {Tree} from './tree';
 
 import { IBasicFileSystemHost } from 'react-aspen';
 import { ManageTreeNodes } from './tree_nodes'
+import { Directory } from 'react-aspen'
 
 var initBrowserTree = async (pgBrowser) => {
   const MOUNT_POINT = '/browser'
@@ -30,6 +31,19 @@ var initBrowserTree = async (pgBrowser) => {
       let nodes = await mtree.readNode(path);
       return nodes;
     },
+    sortComparator: (a: FileEntry | Directory, b: FileEntry | Directory) => {
+      // No nee to sort columns
+      if (a._metadata && a._metadata.data._type == 'column') return 0;
+      // Sort alphabetically
+      if (a.constructor === b.constructor) {
+        return a.fileName > b.fileName ? 1
+          : a.fileName < b.fileName ? -1
+          : 0
+        }
+        return a.constructor === Directory ? -1
+          : b.constructor === Directory ? 1
+          : 0
+	},
   }
 
   // Create Node

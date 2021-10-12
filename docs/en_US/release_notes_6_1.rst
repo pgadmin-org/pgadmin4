@@ -22,3 +22,4 @@ Bug fixes
 | `Issue #6754 <https://redmine.postgresql.org/issues/6754>`_ -  Ensure that query highlighting color in the query tool should be less intensive.
 | `Issue #6797 <https://redmine.postgresql.org/issues/6797>`_ -  Remove an extra blank line at the start of the SQL for function, procedure, and trigger function.
 | `Issue #6828 <https://redmine.postgresql.org/issues/6828>`_ -  Fixed an issue where the tree is not scrolling to the object selected from the search result.
+| `Issue #6882 <https://redmine.postgresql.org/issues/6882>`_ -  Ensure that columns should be displayed in the order of creation instead of alphabetical order in the browser tree.
