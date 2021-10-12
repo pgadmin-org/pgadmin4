@@ -381,21 +381,6 @@ export default class ERDCore {
       })],
     });
 
-    // let tableData = {
-    //   name: `${leftNode.getData().name}_${rightNode.getData().name}`,
-    //   schema: leftNode.getData().schema,
-    //   columns: [{
-    //     ...leftNode.getColumnAt(manytomanyData.left_table_column_attnum),
-    //     'name': `${leftNode.getData().name}_${leftNode.getColumnAt(manytomanyData.left_table_column_attnum).name}`,
-    //     'is_primary_key': false,
-    //     'attnum': 0,
-    //   },{
-    //     ...rightNode.getColumnAt(manytomanyData.right_table_column_attnum),
-    //     'name': `${rightNode.getData().name}_${rightNode.getColumnAt(manytomanyData.right_table_column_attnum).name}`,
-    //     'is_primary_key': false,
-    //     'attnum': 1,
-    //   }],
-    // };
     let newNode = this.addNode(tableData);
     this.clearSelection();
     newNode.setSelected(true);
