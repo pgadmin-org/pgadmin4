@@ -313,7 +313,7 @@ const getDepChange = (currPath, newState, oldState, action)=>{
       path: action.path,
       value: action.value,
       oldState: _.cloneDeep(oldState),
-      depChangeResolved: action.depChangeResolved,
+      listener: action.listener,
     });
   }
   return newState;
@@ -480,7 +480,10 @@ function SchemaDialogView({
           type: SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
           path: item.action.path,
           depChange: item.action.depChange,
-          depChangeResolved: resFunc,
+          listener: {
+            ...item.listener,
+            callback: resFunc,
+          },
         });
       });
     }

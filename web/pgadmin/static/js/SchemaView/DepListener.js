@@ -47,8 +47,9 @@ export default class DepListener {
 
   /* Called when any field changed and trigger callbacks */
   getDepChange(currPath, state, actionObj) {
-    if(actionObj.depChangeResolved) {
-      state = this._getListenerData(state, {callback: actionObj.depChangeResolved}, actionObj);
+    /* If this comes from deferred change */
+    if(actionObj.listener?.callback) {
+      state = this._getListenerData(state, actionObj.listener, actionObj);
     } else {
       let allListeners = _.filter(this._depListeners, (entry)=>_.join(currPath, '|').startsWith(_.join(entry.source, '|')));
       if(allListeners) {
@@ -71,6 +72,7 @@ export default class DepListener {
             deferredList.push({
               action: actionObj,
               promise: thePromise,
+              listener: listener,
             });
           }
         }
