@@ -779,7 +779,7 @@ export default class TableSchema extends BaseUISchema {
         },
       },
     },{
-      id: 'relhassubclass', label: gettext('Inherits tables?'), cell: 'switch',
+      id: 'relhassubclass', label: gettext('Is inherited?'), cell: 'switch',
       type: 'switch', mode: ['properties'], group: 'advanced',
       disabled: this.inCatalog,
     },{
