@@ -6,6 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import CatalogObjectColumnSchema from './catalog_object_column.ui';
 
 define('pgadmin.node.catalog_object_column', [
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
@@ -41,6 +42,9 @@ define('pgadmin.node.catalog_object_column', [
           this.initialized = true;
 
         },
+        getSchema: function() {
+          return new CatalogObjectColumnSchema();
+        },
         model: pgAdmin.Browser.Node.Model.extend({
           defaults: {
             attname: undefined,
@@ -57,23 +61,11 @@ define('pgadmin.node.catalog_object_column', [
             id: 'attname', label: gettext('Column'), cell: 'string',
             type: 'text', readonly: true,
           },{
-            id: 'attowner', label: gettext('Owner'), cell: 'string',
-            type: 'text', readonly: true,
-          },{
             id: 'attnum', label: gettext('Position'), cell: 'string',
             type: 'text', readonly: true,
           },{
             id: 'cltype', label: gettext('Data type'), cell: 'string',
             group: gettext('Definition'), type: 'text', readonly: true,
-          },{
-            id: 'collspcname', label: gettext('Collation'), cell: 'string',
-            group: gettext('Definition'), type: 'text', readonly: true,
-          },{
-            id: 'attacl', label: gettext('Privileges'), cell: 'string',
-            group: gettext('Security'), type: 'text', readonly: true,
-          },{
-            id: 'is_sys_obj', label: gettext('System column?'),
-            cell:'boolean', type: 'switch', mode: ['properties'],
           },{
             id: 'description', label: gettext('Comment'), cell: 'string',
             type: 'multiline', readonly: true,
