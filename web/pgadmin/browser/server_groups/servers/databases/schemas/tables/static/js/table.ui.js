@@ -352,6 +352,15 @@ export default class TableSchema extends BaseUISchema {
       delete c.inheritedfromtable;
       return c;
     });
+
+    /* Make autoindex as true if there is coveringindex since ERD works in create mode */
+    newData.foreign_key = (newData.foreign_key||[]).map((fk)=>{
+      fk.autoindex = false;
+      if(fk.coveringindex) {
+        fk.autoindex = true;
+      }
+      return fk;
+    });
     return newData;
   }
 

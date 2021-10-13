@@ -65,8 +65,9 @@ export class TableNodeModel extends DefaultNodeModel {
   }
 
   cloneData(name) {
+    const SKIP_CLONE_KEYS = ['foreign_key'];
     let newData = {
-      ...this.getData(),
+      ..._.pickBy(this.getData(), (_v, k)=>(SKIP_CLONE_KEYS.indexOf(k) == -1)),
     };
     if(name) {
       newData['name'] = name;
@@ -148,12 +149,16 @@ export class TableNodeWidget extends React.Component {
     });
   }
 
-  generateColumn(col) {
+  generateColumn(col, tableData) {
     let port = this.props.node.getPort(this.props.node.getPortName(col.attnum));
     let icon = ColumnIcon;
+    let localFkCols = [];
+    (tableData.foreign_key||[]).forEach((fk)=>{
+      localFkCols.push(...fk.columns.map((c)=>c.local_column));
+    });
     if(col.is_primary_key) {
       icon = PrimaryKeyIcon;
-    } else if(port && port.getSubtype() == 'many') {
+    } else if(localFkCols.indexOf(col.name) > -1) {
       icon = ForeignKeyIcon;
     }
     return (
@@ -186,7 +191,7 @@ export class TableNodeWidget extends React.Component {
   }
 
   render() {
-    let node_data = this.props.node.getData();
+    let tableData = this.props.node.getData();
     return (
       <div className={'table-node ' + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}}>
         <div className="table-toolbar">
@@ -198,14 +203,14 @@ export class TableNodeWidget extends React.Component {
         </div>
         <div className="d-flex table-schema-data">
           <RowIcon icon={SchemaIcon}/>
-          <div className="table-schema my-auto">{node_data.schema}</div>
+          <div className="table-schema my-auto">{tableData.schema}</div>
         </div>
         <div className="d-flex table-name-data">
           <RowIcon icon={TableIcon} />
-          <div className="table-name my-auto">{node_data.name}</div>
+          <div className="table-name my-auto">{tableData.name}</div>
         </div>
         <div className="table-cols">
-          {_.map(node_data.columns, (col)=>this.generateColumn(col))}
+          {_.map(tableData.columns, (col)=>this.generateColumn(col, tableData))}
         </div>
       </div>
     );

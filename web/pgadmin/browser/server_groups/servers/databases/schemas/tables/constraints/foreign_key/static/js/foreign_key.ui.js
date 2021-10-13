@@ -256,7 +256,13 @@ export default class ForeignKeySchema extends BaseUISchema {
           }
         }
 
-        let oldindex = 'fki_'+actionObj.oldState.name;
+        let oldindex;
+        if(obj.inTable) {
+          let oldFk = _.get(actionObj.oldState, _.slice(actionObj.path, 0, -1));
+          oldindex = 'fki_'+oldFk.name;
+        } else {
+          oldindex = 'fki_'+actionObj.oldState.name;
+        }
         if(state.hasindex) {
           return {};
         } else if(!state.autoindex) {

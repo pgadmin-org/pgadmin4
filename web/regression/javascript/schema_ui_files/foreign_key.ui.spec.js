@@ -170,9 +170,13 @@ describe('ForeignKeySchema', ()=>{
 
   it('depChange', ()=>{
     let state = {columns: [{local_column: 'id'}]};
-    let actionObj = {oldState:{name: 'fkname'}};
+    let actionObj = {
+      path: ['name'],
+      oldState: {
+        name: 'fkname',
+      }
+    };
 
-    schemaObj.nodeInfo = {foreign_key: {}};
     state.autoindex = true;
     state.name = 'fkname';
     expect(getFieldDepChange(schemaObj, 'autoindex')(state, null, null, actionObj)).toEqual({

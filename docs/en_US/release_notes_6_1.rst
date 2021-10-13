@@ -29,4 +29,5 @@ Bug fixes
 | `Issue #6828 <https://redmine.postgresql.org/issues/6828>`_ -  Fixed an issue where the tree is not scrolling to the object selected from the search result.
 | `Issue #6881 <https://redmine.postgresql.org/issues/6881>`_ -  Fixed an issue where the browser tree doesn't show all contents on changing resolution.
 | `Issue #6882 <https://redmine.postgresql.org/issues/6882>`_ -  Ensure that columns should be displayed in the order of creation instead of alphabetical order in the browser tree.
+| `Issue #6891 <https://redmine.postgresql.org/issues/6891>`_ -  Added support for composite foreign keys in the ERD tool.
 | `Issue #6900 <https://redmine.postgresql.org/issues/6900>`_ -  Fixed an issue where exclusion constraint cannot be created from table dialog if the access method name is changed once.
