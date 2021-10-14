@@ -89,10 +89,9 @@ var initBrowserTree = async (pgBrowser) => {
 
   // Render Browser Tree
   await render(
-    <div>
       <FileTreeX model={treeModelX}
         onReady={itemHandle} create={create} remove={remove} update={update}/>
-     </div>, document.getElementById('tree'));
+     , document.getElementById('tree'));
 }
 
 module.exports = {

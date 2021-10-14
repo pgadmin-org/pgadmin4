@@ -225,6 +225,10 @@ export class Tree {
     return this.tree.getItemFromDOM(domElem[0]);
   }
 
+  DOMFrom(item) {
+    return this.tree.getDOMFromItem(item);
+  }
+
   path(item) {
     if (item) return item.path;
   }

@@ -72,38 +72,41 @@ export class ManageTreeNodes {
   })
 
   public readNode = (_path: string) => new Promise<string[]>((res, rej) => {
-      let temp_tree_path = _path;
-      let node = this.findNode(_path);
+    let temp_tree_path = _path,
+      node = this.findNode(_path),
+      base_url = pgAdmin.Browser.URL;
 
-      if (node && node.children.length > 0) {
-        if (!node.type === FileType.File) {
-          rej("It's a leaf node")
+    if (node && node.children.length > 0) {
+      if (!node.type === FileType.File) {
+        rej("It's a leaf node")
+      }
+      else {
+        if (node.children.length != 0) res(node.children)
+      }
+    }
+
+    var self = this;
+
+    async function loadData() {
+      let url = '';
+      if (_path == '/browser') {
+        url = url_for('browser.nodes');
+      } else {
+        let _parent_url = self.generate_url(_path);
+        if (node.metadata.data._pid == null ) {
+          url = node.metadata.data._type + '/children/' + node.metadata.data._id;
         }
         else {
-          if (node.children.length != 0) res(node.children)
-        }
-      }
-
-      var self = this;
-
-      async function loadData() {
-        let url = '';
-        if (_path == '/browser') {
-          url = url_for('browser.nodes');
-        } else {
-          let _parent_url = self.generate_url(_path);
-          if (node.metadata.data._pid == null ) {
-            url = node.metadata.data._type + '/children/' + node.metadata.data._id;
+          if (node.metadata.data._type.includes("coll-")) {
+            let _type = node.metadata.data._type.replace("coll-", "")
+            url = _type + '/nodes/' + _parent_url;
           }
           else {
-            if (node.metadata.data._type.includes("coll-")) {
-              let _type = node.metadata.data._type.replace("coll-", "")
-              url = _type + '/nodes/' + _parent_url;
-            }
-            else {
-              url = node.metadata.data._type + '/children/' + _parent_url + '/' + node.metadata.data._id;
-            }
+            url = node.metadata.data._type + '/children/' + _parent_url + '/' + node.metadata.data._id;
+          }
         }
+
+        url = base_url + url;
 
         temp_tree_path = node.path;
 
