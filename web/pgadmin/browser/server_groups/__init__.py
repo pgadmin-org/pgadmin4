@@ -177,7 +177,7 @@ class ServerGroupView(NodeView):
         # if server group id is 1 we won't delete it.
         sg = groups.first()
 
-        shared_servers = Server.query.filter_by(servergroup_id=sg.id,
+        shared_servers = Server.query.filter_by(servergroup_id=gid,
                                                 shared=True).all()
         if shared_servers:
             return make_json_response(

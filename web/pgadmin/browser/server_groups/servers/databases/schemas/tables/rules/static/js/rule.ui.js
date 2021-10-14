@@ -67,6 +67,24 @@ export default class RuleSchema extends BaseUISchema {
         },
       },
       {
+        id: 'is_enable_rule', label: gettext('Rule enabled?'),
+        mode: ['edit', 'properties'], group: gettext('Definition'),
+        type: 'select',
+        disabled: () => {
+          if('catalog' in obj.fieldOptions.nodeInfo || 'view' in obj.fieldOptions.nodeInfo) {
+            return true;
+          }
+          return false;
+        },
+        options: [
+          {label: gettext('Enable'), value: 'O'},
+          {label: gettext('Enable Replica'), value: 'R'},
+          {label: gettext('Enable Always'), value: 'A'},
+          {label: gettext('Disable'), value: 'D'},
+        ],
+        controlProps: { allowClear: false },
+      },
+      {
         id: 'event', label: gettext('Event'), control: 'select2',
         group: gettext('Definition'), type: 'select',
         controlProps: { allowClear: false },
@@ -92,10 +110,6 @@ export default class RuleSchema extends BaseUISchema {
       },
       {
         id: 'system_rule', label: gettext('System rule?'),
-        type: 'switch', mode: ['properties'],
-      },
-      {
-        id: 'enabled', label: gettext('Enabled?'),
         type: 'switch', mode: ['properties'],
       },
       {

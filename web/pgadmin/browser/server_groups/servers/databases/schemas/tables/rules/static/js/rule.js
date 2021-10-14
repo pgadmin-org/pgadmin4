@@ -12,8 +12,8 @@ import RuleSchema from './rule.ui';
 define('pgadmin.node.rule', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.node.schema.dir/schema_child_tree_node',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode) {
+  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.alertifyjs',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode, alertify) {
 
   /**
     Create and add a rule collection into nodes
@@ -112,7 +112,92 @@ define('pgadmin.node.rule', [
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
           enable: 'canCreate',
         },
+        {
+          name: 'enable_rule', node: 'rule', module: this,
+          applies: ['object', 'context'], callback: 'enable_rule',
+          category: 'connect', priority: 3, label: gettext('Enable rule'),
+          icon: 'fa fa-check', enable: 'canCreate_with_rule_enable',
+        },{
+          name: 'disable_rule', node: 'rule', module: this,
+          applies: ['object', 'context'], callback: 'disable_rule',
+          category: 'drop', priority: 3, label: gettext('Disable rule'),
+          icon: 'fa fa-times', enable: 'canCreate_with_rule_disable'
+        }
         ]);
+      },
+      callbacks: {
+        /* Enable rule */
+        enable_rule: function(args) {
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i  ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          var data = d;
+          $.ajax({
+            url: obj.generate_url(i, 'obj' , d, true),
+            type:'PUT',
+            data: {'is_enable_rule' : 'O'},
+            dataType: 'json',
+          })
+            .done(function() {
+              alertify.success('Rule updated.');
+              t.removeIcon(i);
+              data.icon = 'icon-rule';
+              t.addIcon(i, {icon: data.icon});
+              t.unload(i);
+              t.setInode(false);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            })
+            .fail(function(xhr, status, error) {
+              alertify.pgRespErrorNotify(xhr, error);
+              t.unload(i);
+            });
+        },
+        /* Disable rule */
+        disable_rule: function(args) {
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i  ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          var data = d;
+          $.ajax({
+            url: obj.generate_url(i, 'obj' , d, true),
+            type:'PUT',
+            data: {'is_enable_rule' : 'D'},
+            dataType: 'json',
+          })
+            .done(function() {
+              alertify.success('Rule updated');
+              t.removeIcon(i);
+              data.icon = 'icon-rule-bad';
+              t.addIcon(i, {icon: data.icon});
+              t.unload(i);
+              t.setInode(false);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            })
+            .fail(function(xhr, status, error) {
+              alertify.pgRespErrorNotify(xhr, error, gettext('Disable rule failed'));
+              t.unload(i);
+            });
+        },
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
         return new RuleSchema(
@@ -214,6 +299,26 @@ define('pgadmin.node.rule', [
         // By default we do not want to allow create menu
         return true;
 
+      },
+
+      canCreate_with_rule_enable: function(itemData, item, data) {
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        if ('view' in treeData) {
+          return false;
+        }
+
+        return itemData.icon === 'icon-rule-bad' &&
+          this.canCreate.apply(this,[itemData, item, data]);
+      },
+      // Check to whether rule is enable ?
+      canCreate_with_rule_disable: function(itemData, item, data) {
+        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        if ('view' in treeData) {
+          return false;
+        }
+
+        return itemData.icon === 'icon-rule' &&
+          this.canCreate.apply(itemData, item, data);
       },
 
     });

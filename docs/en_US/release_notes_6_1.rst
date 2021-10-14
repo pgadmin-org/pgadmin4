@@ -13,6 +13,7 @@ New features
 | `Issue #6081 <https://redmine.postgresql.org/issues/6081>`_ -  Added support for advanced table fields like the foreign key, primary key in the ERD tool.
 | `Issue #6529 <https://redmine.postgresql.org/issues/6529>`_ -  Added index creation when generating SQL in the ERD tool.
 | `Issue #6657 <https://redmine.postgresql.org/issues/6657>`_ -  Added support for authentication via the webserver (REMOTE_USER).
+| `Issue #6794 <https://redmine.postgresql.org/issues/6794>`_ -  Added support to enable/disable rules.
 
 Housekeeping
 ************

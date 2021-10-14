@@ -249,7 +249,8 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             rset['rows'][0]['oid'],
             tid,
             rset['rows'][0]['name'],
-            icon="icon-rule"
+            icon="icon-rule" if
+            rset['rows'][0]['is_enable_rule'] == 'D' else "icon-rule-bad"
         )
 
         return make_json_response(
@@ -276,7 +277,9 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     tid,
                     row['name'],
-                    icon="icon-rule"
+                    icon="icon-rule-bad"
+                    if 'is_enable_rule' in row and
+                       row['is_enable_rule'] == 'D' else "icon-rule"
                 ))
 
         return make_json_response(
@@ -385,7 +388,10 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                     rid,
                     tid,
                     name,
-                    icon="icon-%s" % self.node_type
+                    icon="icon-%s-bad" % self.node_type
+                    if 'is_enable_rule' in data and
+                       data['is_enable_rule'] == 'D'
+                    else "icon-%s" % self.node_type
                 )
             )
         except Exception as e:

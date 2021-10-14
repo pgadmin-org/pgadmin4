@@ -12,6 +12,7 @@ SELECT
     {# ===== Check whether it is system rule or not ===== #}
     CASE WHEN rw.rulename = '_RETURN' THEN True ELSE False END AS system_rule,
     CASE WHEN rw.ev_enabled != 'D' THEN True ELSE False END AS enabled,
+    rw.ev_enabled AS is_enable_rule,
     pg_catalog.pg_get_ruledef(rw.oid) AS definition
 FROM
     pg_catalog.pg_rewrite rw

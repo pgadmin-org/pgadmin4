@@ -37,6 +37,13 @@ Use the fields in the *Definition* tab to write parameters:
   executed instead of the original command; if Do Instead specifies *No*, the
   rule will be invoked in addition to the original command.
 
+.. image:: images/rule_definition_enabled.png
+    :alt: Trigger enabled in dialog tab
+    :align: center
+
+* *Rule enabled* field is available in rule dialog once the rule is created.
+  You can select one of the four options available.
+
 Click the *Condition* tab to continue.
 
 .. image:: images/rule_condition.png
