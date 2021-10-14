@@ -1591,7 +1591,7 @@ define('tools.querytool', [
       /* history fetch fail should not affect query tool */
       });
     },
-    /* This function is responsible to create and render the the history tab. */
+    /* This function is responsible to create and render the history tab. */
     render_history_grid: function() {
       var self = this;
 

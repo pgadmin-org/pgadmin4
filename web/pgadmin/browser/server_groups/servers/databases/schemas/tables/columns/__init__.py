@@ -434,7 +434,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     @check_precondition
     def delete(self, gid, sid, did, scid, tid, clid=None):
         """
-        This function will updates existing the schema object
+        This function will updates the existing schema object
 
          Args:
            gid: Server Group ID
@@ -501,7 +501,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     @check_precondition
     def update(self, gid, sid, did, scid, tid, clid):
         """
-        This function will updates existing the schema object
+        This function will updates the existing schema object
 
          Args:
            gid: Server Group ID

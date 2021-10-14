@@ -1075,7 +1075,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     @check_precondition
     def update(self, gid, sid, did, scid, tid):
         """
-        This function will updates existing the type object
+        This function will updates the existing type object
 
          Args:
            gid: Server Group ID
@@ -1138,7 +1138,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     @check_precondition
     def delete(self, gid, sid, did, scid, tid=None, only_sql=False):
         """
-        This function will updates existing the type object
+        This function will updates the existing type object
 
          Args:
            gid: Server Group ID

@@ -716,7 +716,7 @@ class PgadminPage:
             xpath_for_refresh_btn = "//li[@class='context-menu-item']" \
                                     "/span[text()='Refresh...']"
 
-            # add code to refresh button, sometime the the collapsing button
+            # add code to refresh button, sometime the collapsing button
             #  is not visible even if there is sub node.
             functions_node_ele = self.find_by_xpath(xpath_for_functions_node)
 

@@ -518,7 +518,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def delete(self, gid, sid, did, scid, coid=None, only_sql=False):
         """
-        This function will delete existing the collation object
+        This function will delete the existing collation object
 
          Args:
            gid: Server Group ID
@@ -575,7 +575,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def update(self, gid, sid, did, scid, coid):
         """
-        This function will updates existing the collation object
+        This function will updates the existing collation object
 
          Args:
            gid: Server Group ID

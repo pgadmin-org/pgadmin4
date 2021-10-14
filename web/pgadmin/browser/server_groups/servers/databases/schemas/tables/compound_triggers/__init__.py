@@ -547,7 +547,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def delete(self, gid, sid, did, scid, tid, **kwargs):
         """
-        This function will updates existing the compound trigger object
+        This function will updates the existing compound trigger object
 
          Args:
            gid: Server Group ID
@@ -618,7 +618,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def update(self, gid, sid, did, scid, tid, trid):
         """
-        This function will updates existing the compound trigger object
+        This function will updates the existing compound trigger object
 
          Args:
            gid: Server Group ID

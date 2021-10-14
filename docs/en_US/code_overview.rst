@@ -212,5 +212,5 @@ Backform for generating properties/create dialog for selected node. We have
 divided each module in small chunks as much as possible. Not all javascript
 modules are required to be loaded (i.e. loading a javascript module for
 database will make sense only when a server node is loaded completely.) Please
-look at the the javascript files node.js, browser.js, menu.js, panel.js, etc for
+look at the javascript files node.js, browser.js, menu.js, panel.js, etc for
 better understanding of the code.

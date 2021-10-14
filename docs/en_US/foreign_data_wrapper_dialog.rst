@@ -53,7 +53,7 @@ Click the *Options* tab to continue.
 
 Use the fields in the *Options* tab to specify options:
 
-* Click the the *Add* icon (+) button to add an option/value pair for the
+* Click the *Add* icon (+) button to add an option/value pair for the
   foreign data wrapper. Supported option/value pairs will be specific to the
   selected foreign data wrapper.
 * Specify the option name in the *Option* field and provide a corresponding

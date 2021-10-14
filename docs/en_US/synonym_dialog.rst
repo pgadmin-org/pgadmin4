@@ -29,7 +29,7 @@ In the definition panel, identify the target:
     :alt: Synonym dialog general tab
     :align: center
 
-* Use the drop-down listbox next to *Target Type* to select the the type of
+* Use the drop-down listbox next to *Target Type* to select the type of
   object referenced by the synonym.
 * Use the drop-down listbox next to *Target Schema* to select the name of the
   schema in which the object resides.

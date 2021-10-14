@@ -15,7 +15,7 @@ installation, and is distributed as part of Advanced Server.  You must have
 superuser privileges to use the debugger.
 
 Before using the debugger, you must modify the *postgresql.conf* file, adding
-the server-side debugger components to the the value of the
+the server-side debugger components to the value of the
 *shared_preload_libraries* parameter, for example:
 
   shared_preload_libraries = '$libdir/plugin_debugger'

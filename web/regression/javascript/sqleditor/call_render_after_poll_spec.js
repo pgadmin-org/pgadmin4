@@ -49,7 +49,7 @@ describe('#callRenderAfterPoll', () => {
         };
       });
 
-      it('renders the the editor', () => {
+      it('renders the editor', () => {
         callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
 
         expect(sqlEditorSpy._render).toHaveBeenCalledWith(queryResult);
@@ -142,7 +142,7 @@ describe('#callRenderAfterPoll', () => {
         };
       });
 
-      it('renders the the editor', () => {
+      it('renders the editor', () => {
         callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
 
         expect(sqlEditorSpy._render).toHaveBeenCalledWith(queryResult);

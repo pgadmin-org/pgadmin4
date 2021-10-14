@@ -670,7 +670,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def delete(self, gid, sid, did, scid, tid, **kwargs):
         """
-        This function will updates existing the schema object
+        This function will updates the existing schema object
 
          Args:
            gid: Server Group ID
@@ -739,7 +739,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def update(self, gid, sid, did, scid, tid, idx):
         """
-        This function will updates existing the schema object
+        This function will updates the existing schema object
 
          Args:
            gid: Server Group ID

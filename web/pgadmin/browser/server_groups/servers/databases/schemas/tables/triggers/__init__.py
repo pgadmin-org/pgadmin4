@@ -640,7 +640,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def delete(self, gid, sid, did, scid, tid, **kwargs):
         """
-        This function will updates existing the trigger object
+        This function will updates the existing trigger object
 
          Args:
            gid: Server Group ID
@@ -710,7 +710,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def update(self, gid, sid, did, scid, tid, trid):
         """
-        This function will updates existing the trigger object
+        This function will updates the existing trigger object
 
          Args:
            gid: Server Group ID

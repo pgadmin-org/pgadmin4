@@ -498,7 +498,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def delete(self, gid, sid, did, scid, syid=None, only_sql=False):
         """
-        This function will delete existing the synonym object
+        This function will delete the existing synonym object
 
          Args:
            gid: Server Group ID
@@ -555,7 +555,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
     @check_precondition
     def update(self, gid, sid, did, scid, syid):
         """
-        This function will updates existing the synonym object
+        This function will updates the existing synonym object
 
          Args:
            gid: Server Group ID

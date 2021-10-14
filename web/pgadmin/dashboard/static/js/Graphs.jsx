@@ -63,7 +63,7 @@ export function getStatsUrl(sid=-1, did=-1, chart_names=[]) {
   return base_url;
 }
 
-/* This will process incoming charts data add it the the previous charts
+/* This will process incoming charts data add it the previous charts
  * data to get the new state.
  */
 export function statsReducer(state, action) {
