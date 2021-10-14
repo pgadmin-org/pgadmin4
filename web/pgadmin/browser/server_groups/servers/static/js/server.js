@@ -921,6 +921,8 @@ define('pgadmin.node.server', [
               'pgadmin:database:connected', _data._id, _data.db, _item, _data
             );
 
+            // Load dashboard
+            pgBrowser.Events.trigger('pgadmin-browser:tree:selected', _item, _data, node);
             // We're not reconnecting
             if (!_wasConnected) {
               _tree.setInode(_item);
