@@ -38,3 +38,4 @@ Bug fixes
 | `Issue #6900 <https://redmine.postgresql.org/issues/6900>`_ -  Fixed an issue where exclusion constraint cannot be created from table dialog if the access method name is changed once.
 | `Issue #6905 <https://redmine.postgresql.org/issues/6905>`_ -  Fixed an issue where the users are unable to load the databases behind an HTTP reverse proxy.
 | `Issue #6908 <https://redmine.postgresql.org/issues/6908>`_ -  Fixed an issue where each click to refresh the collection node, the number of objects decreasing by tens or more.
+| `Issue #6912 <https://redmine.postgresql.org/issues/6912>`_ -  Fixed browser tree sort order regression issue.
