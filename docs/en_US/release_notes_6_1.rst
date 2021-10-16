@@ -32,6 +32,7 @@ Bug fixes
 | `Issue #6876 <https://redmine.postgresql.org/issues/6876>`_ -  Ensure that the Dashboard should get updated after connecting to the server.
 | `Issue #6881 <https://redmine.postgresql.org/issues/6881>`_ -  Fixed an issue where the browser tree doesn't show all contents on changing resolution.
 | `Issue #6882 <https://redmine.postgresql.org/issues/6882>`_ -  Ensure that columns should be displayed in the order of creation instead of alphabetical order in the browser tree.
+| `Issue #6890 <https://redmine.postgresql.org/issues/6890>`_ -  Fixed background colour issue in the browser tree.
 | `Issue #6891 <https://redmine.postgresql.org/issues/6891>`_ -  Added support for composite foreign keys in the ERD tool.
 | `Issue #6900 <https://redmine.postgresql.org/issues/6900>`_ -  Fixed an issue where exclusion constraint cannot be created from table dialog if the access method name is changed once.
 | `Issue #6905 <https://redmine.postgresql.org/issues/6905>`_ -  Fixed an issue where the users are unable to load the databases behind an HTTP reverse proxy.

@@ -7582,9 +7582,9 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-"pgadmin4-tree@git+https://github.com/EnterpriseDB/pgadmin4-treeview/#ccf3327caaaeaf06e5e683b07330ba2555d79867":
+"pgadmin4-tree@git+https://github.com/EnterpriseDB/pgadmin4-treeview/#9e1e5efd6152a08ee1cf087816627d943e3c880e":
   version "1.0.0"
-  resolved "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#ccf3327caaaeaf06e5e683b07330ba2555d79867"
+  resolved "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#9e1e5efd6152a08ee1cf087816627d943e3c880e"
   dependencies:
     "@types/classnames" "^2.2.6"
     "@types/react" "^16.7.18"

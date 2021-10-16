@@ -954,27 +954,30 @@ define('pgadmin.browser.node', [
       change_server_background: function(item, data) {
         if (!item || !data)
           return;
+        const treeH = pgBrowser.tree.getTreeNodeHierarchy(item);
+        const serverData = treeH['server'];
+        if (!serverData) {
+          return;
+        }
+        const index = item.path.indexOf(serverData.id);
 
         // Go further only if node type is a Server
-        if (data._type && data._type == 'server') {
-          var element = $(item).find('span.aciTreeItem').first() || null,
-            // First element will be icon and second will be colour code
-            bgcolor = data.icon.split(' ')[1] || null,
-            fgcolor = data.icon.split(' ')[2] || '';
+        if (index !== -1) {
+          // First element will be icon and second will be colour code
+          var bgcolor = serverData.icon.split(' ')[1] || null,
+            fgcolor = serverData.icon.split(' ')[2] || '';
 
           if (bgcolor) {
-            // li tag for the current branch
-            var first_level_element = (element && element.parents()[3]) || null,
-              dynamic_class = 'pga_server_' + data._id + '_bgcolor',
+            var dynamic_class = 'pga_server_' + serverData._id + '_bgcolor',
               style_tag;
 
             // Prepare dynamic style tag
             style_tag = '<style id=' + dynamic_class + ' type=\'text/css\'> \n';
-            style_tag += '.' + dynamic_class + ' .aciTreeItem {';
+            style_tag += '.' + dynamic_class + ' .file-label {';
             style_tag += ' border-radius: 3px; margin-bottom: 2px;';
-            style_tag += ' background: ' + bgcolor + '} \n';
+            style_tag += ' background: ' + bgcolor + ' !important;} \n';
             if (fgcolor) {
-              style_tag += '.' + dynamic_class + ' .aciTreeText {';
+              style_tag += '.' + dynamic_class + ' span.file-name {';
               style_tag += ' color: ' + fgcolor + ' !important;} \n';
             }
             style_tag += '</style>';
@@ -982,9 +985,8 @@ define('pgadmin.browser.node', [
             // Prepare dynamic style tag using template
             $('#' + dynamic_class).remove();
             $(style_tag).appendTo('head');
-
-            if (first_level_element)
-              $(first_level_element).addClass(dynamic_class);
+            // Add dynamic class to the tree node.
+            pgBrowser.tree.addCssClass(item, dynamic_class);
           }
         }
       },

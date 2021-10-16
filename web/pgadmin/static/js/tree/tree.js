@@ -229,6 +229,10 @@ export class Tree {
     return this.tree.getDOMFromItem(item);
   }
 
+  addCssClass(item, cssClass) {
+    this.tree.addCssClass(item, cssClass);
+  }
+
   path(item) {
     if (item) return item.path;
   }
