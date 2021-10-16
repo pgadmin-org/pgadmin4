@@ -175,11 +175,12 @@ export default class ERDCore {
 
   getModel() {return this.getEngine().getModel();}
 
-  getNewNode(initData) {
+  getNewNode(initData, dataUrl=null) {
     return this.getEngine().getNodeFactories().getFactory('table').generateModel({
       initialConfig: {
         otherInfo: {
           data:initData,
+          dataUrl: dataUrl,
         },
       },
     });
@@ -404,6 +405,21 @@ export default class ERDCore {
     this.repaint();
   }
 
+  cloneTableData(tableData, name) {
+    const SKIP_CLONE_KEYS = ['foreign_key'];
+
+    if(!tableData) {
+      return tableData;
+    }
+    let newData = {
+      ..._.pickBy(tableData, (_v, k)=>(SKIP_CLONE_KEYS.indexOf(k) == -1)),
+    };
+    if(name) {
+      newData['name'] = name;
+    }
+    return newData;
+  }
+
   serialize(version) {
     return {
       version: version||0,
@@ -422,7 +438,10 @@ export default class ERDCore {
     let nodesDict = this.getModel().getNodesDict();
 
     Object.keys(nodesDict).forEach((id)=>{
-      nodes[id] = nodesDict[id].serializeData();
+      let nodeData = nodesDict[id].serializeData();
+      if(nodeData) {
+        nodes[id] = nodeData;
+      }
     });
 
     return {

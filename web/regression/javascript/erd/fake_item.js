@@ -24,6 +24,11 @@ export class FakeNode {
     retVal.name = tabName;
     return retVal;
   }
+  getMetadata() {
+    return {
+      is_promise: false,
+    };
+  }
 }
 
 export class FakeLink {

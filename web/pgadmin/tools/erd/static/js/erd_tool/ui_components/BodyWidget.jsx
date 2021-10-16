@@ -26,6 +26,7 @@ import url_for from 'sources/url_for';
 import {showERDSqlTool} from 'tools/datagrid/static/js/show_query_tool';
 import 'wcdocker';
 import Theme from '../../../../../../static/js/Theme';
+import TableSchema from '../../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -94,7 +95,7 @@ export default class BodyWidget extends React.Component {
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSaveAsDiagram', 'onSQLClick',
       'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
       'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
-      'onDetailsToggle', 'onHelpClick'
+      'onDetailsToggle', 'onHelpClick', 'onDropNode',
     ]);
 
     this.diagram.zoomToFit = this.diagram.zoomToFit.bind(this.diagram);
@@ -114,8 +115,15 @@ export default class BodyWidget extends React.Component {
         this.realignGrid({backgroundSize: `${bgSize*3}px ${bgSize*3}px`});
       },
       'nodesSelectionChanged': ()=>{
+        let singleNodeSelected = false;
+        if(this.diagram.getSelectedNodes().length == 1) {
+          let metadata = this.diagram.getSelectedNodes()[0].getMetadata();
+          if(!metadata.is_promise) {
+            singleNodeSelected = true;
+          }
+        }
         this.setState({
-          single_node_selected: this.diagram.getSelectedNodes().length == 1,
+          single_node_selected: singleNodeSelected,
           any_item_selected: this.diagram.getSelectedNodes().length > 0 || this.diagram.getSelectedLinks().length > 0,
         });
       },
@@ -361,6 +369,29 @@ export default class BodyWidget extends React.Component {
     }
   }
 
+  onDropNode(e) {
+    let nodeDropData = JSON.parse(e.dataTransfer.getData('text'));
+    if(nodeDropData.objUrl) {
+      let matchUrl = `/${this.props.params.sgid}/${this.props.params.sid}/${this.props.params.did}/`;
+      if(nodeDropData.objUrl.indexOf(matchUrl) == -1) {
+        this.props.alertify.error(gettext('Cannot drop table from outside of the current database.'));
+      } else {
+        let dataPromise = new Promise((resolve, reject)=>{
+          axios.get(nodeDropData.objUrl)
+            .then((res)=>{
+              resolve(this.diagram.cloneTableData(TableSchema.getErdSupportedData(res.data)));
+            })
+            .catch((err)=>{
+              console.error(err);
+              reject();
+            });
+        });
+        const {x, y} = this.diagram.getEngine().getRelativeMousePoint(e);
+        this.diagram.addNode(dataPromise, [x, y]).setSelected(true);
+      }
+    }
+  }
+
   onEditTable() {
     const selected = this.diagram.getSelectedNodes();
     if(selected.length == 1) {
@@ -375,10 +406,12 @@ export default class BodyWidget extends React.Component {
   onCloneNode() {
     const selected = this.diagram.getSelectedNodes();
     if(selected.length == 1) {
-      let newData = selected[0].cloneData(this.diagram.getNextTableName());
-      let {x, y} = selected[0].getPosition();
-      let newNode = this.diagram.addNode(newData, [x+20, y+20]);
-      newNode.setSelected(true);
+      let newData = this.diagram.cloneTableData(selected[0].getData(), this.diagram.getNextTableName());
+      if(newData) {
+        let {x, y} = selected[0].getPosition();
+        let newNode = this.diagram.addNode(newData, [x+20, y+20]);
+        newNode.setSelected(true);
+      }
     }
   }
 
@@ -825,7 +858,7 @@ export default class BodyWidget extends React.Component {
           fgcolor={this.props.params.fgcolor} title={this.props.params.title}/>
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
           reference={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
-        <div className="diagram-container" ref={this.diagramContainerRef}>
+        <div className="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}}>
           <Loader message={this.state.loading_msg} autoEllipsis={true}/>
           <CanvasWidget className="diagram-canvas flex-grow-1" ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
         </div>

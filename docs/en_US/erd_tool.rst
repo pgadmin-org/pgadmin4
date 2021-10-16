@@ -12,6 +12,7 @@ The Entity-Relationship Diagram (ERD) tool is a database design tool that provid
 * Save the diagram and open it later to continue working on it.
 * Generate ready to run SQL from the database design.
 * Generate the database diagram for an existing database.
+* Drag and drop tables from browser tree to the diagram.
 
 .. image:: images/erd_tool.png
     :alt: ERD tool window

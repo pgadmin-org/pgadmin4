@@ -178,7 +178,7 @@ describe('ERD BodyWidget', ()=>{
   });
 
   it('event nodesSelectionChanged', (done)=>{
-    spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([{key:'value'}]);
+    spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([new FakeNode({key:'value'})]);
     bodyInstance.diagram.fireEvent({}, 'nodesSelectionChanged', true);
     setTimeout(()=>{
       expect(body.state().single_node_selected).toBe(true);

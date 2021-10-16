@@ -63,15 +63,6 @@ describe('ERD TableNodeModel', ()=>{
     expect(modelObj.getData().name).toBe('changedName');
   });
 
-  it('cloneData', ()=>{
-    modelObj.addColumn({name: 'col1', not_null:false, attnum: 0});
-    expect(modelObj.cloneData('clonedNode')).toEqual({
-      name: 'clonedNode',
-      schema: 'erd',
-      columns: [{name: 'col1', not_null:false, attnum: 0}],
-    });
-  });
-
   describe('setData', ()=>{
     let existPort = jasmine.createSpyObj('port', {
       'removeAllLinks': jasmine.createSpy('removeAllLinks'),
@@ -196,6 +187,9 @@ describe('ERD TableNodeModel', ()=>{
           schema: 'erd',
         },
         note: 'some note',
+        metadata: {
+          data_failed: false, is_promise: false
+        }
       },
     });
   });

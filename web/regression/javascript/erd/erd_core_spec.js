@@ -101,6 +101,7 @@ describe('ERDCore', ()=>{
         initialConfig: {
           otherInfo: {
             data:data,
+            dataUrl: null,
           },
         },
       });

@@ -467,7 +467,7 @@ export class Tree {
        * overrides the dragstart event set using element.on('dragstart')
        * This will avoid conflict.
        */
-      let dropDetails = dropDetailsFunc(data, item);
+      let dropDetails = dropDetailsFunc(data, item, this.getTreeNodeHierarchy(item));
 
       if(typeof dropDetails == 'string') {
         dropDetails = {

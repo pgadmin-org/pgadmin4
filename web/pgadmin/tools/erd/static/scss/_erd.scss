@@ -135,6 +135,10 @@
           font-weight: bold;
           word-break: break-all;
         }
+
+        & .fetch-error {
+          color: $color-danger;
+        }
       }
 
       .table-cols {

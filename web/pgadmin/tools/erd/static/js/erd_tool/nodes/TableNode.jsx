@@ -18,6 +18,7 @@ import PrimaryKeyIcon from 'top/browser/server_groups/servers/databases/schemas/
 import ForeignKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/img/foreign_key.svg';
 import ColumnIcon from 'top/browser/server_groups/servers/databases/schemas/tables/columns/static/img/column.svg';
 import PropTypes from 'prop-types';
+import gettext from 'sources/gettext';
 
 const TYPE = 'table';
 
@@ -29,11 +30,35 @@ export class TableNodeModel extends DefaultNodeModel {
     });
 
     this._note = otherInfo.note || '';
-
-    this._data = {
-      columns: [],
-      ...otherInfo.data,
+    this._metadata = {
+      data_failed: false,
+      ...otherInfo.metadata,
+      is_promise: Boolean(otherInfo.data?.then || (otherInfo.metadata?.data_failed && !otherInfo.data)),
     };
+    this._data = null;
+    if(otherInfo.data?.then) {
+      otherInfo.data.then((data)=>{
+        /* Once the data is available, it is no more a promise */
+        this._data = data;
+        this._metadata = {
+          data_failed: false,
+          is_promise: false,
+        };
+        this.fireEvent(this._metadata, 'dataAvaiable');
+        this.fireEvent({}, 'nodeUpdated');
+      }).catch(()=>{
+        this._metadata = {
+          data_failed: true,
+          is_promise: true,
+        };
+        this.fireEvent(this._metadata, 'dataAvaiable');
+      });
+    } else {
+      this._data = {
+        columns: [],
+        ...otherInfo.data,
+      };
+    }
   }
 
   getPortName(attnum) {
@@ -46,6 +71,10 @@ export class TableNodeModel extends DefaultNodeModel {
 
   getNote() {
     return this._note;
+  }
+
+  getMetadata() {
+    return this._metadata;
   }
 
   addColumn(col) {
@@ -62,17 +91,6 @@ export class TableNodeModel extends DefaultNodeModel {
 
   setName(name) {
     this._data['name'] = name;
-  }
-
-  cloneData(name) {
-    const SKIP_CLONE_KEYS = ['foreign_key'];
-    let newData = {
-      ..._.pickBy(this.getData(), (_v, k)=>(SKIP_CLONE_KEYS.indexOf(k) == -1)),
-    };
-    if(name) {
-      newData['name'] = name;
-    }
-    return newData;
   }
 
   setData(data) {
@@ -116,6 +134,7 @@ export class TableNodeModel extends DefaultNodeModel {
       otherInfo: {
         data: this.getData(),
         note: this.getNote(),
+        metadata: this.getMetadata(),
       },
     };
   }
@@ -146,6 +165,10 @@ export class TableNodeWidget extends React.Component {
       toggleDetails: (event) => {
         this.setState({show_details: event.show_details});
       },
+      dataAvaiable: ()=>{
+        /* Just re-render */
+        this.setState({});
+      }
     });
   }
 
@@ -192,26 +215,37 @@ export class TableNodeWidget extends React.Component {
 
   render() {
     let tableData = this.props.node.getData();
+    let tableMetaData = this.props.node.getMetadata();
     return (
       <div className={'table-node ' + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}}>
         <div className="table-toolbar">
-          <DetailsToggleButton className='btn-xs' showDetails={this.state.show_details} onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}} />
+          <DetailsToggleButton className='btn-xs' showDetails={this.state.show_details}
+            onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}}
+            disabled={tableMetaData.is_promise} />
           {this.props.node.getNote() &&
             <IconButton icon="far fa-sticky-note" className="btn-xs btn-warning ml-auto" onClick={()=>{
               this.props.node.fireEvent({}, 'showNote');
-            }} title="Check note" />}
+            }} title="Check note"/>}
         </div>
-        <div className="d-flex table-schema-data">
-          <RowIcon icon={SchemaIcon}/>
-          <div className="table-schema my-auto">{tableData.schema}</div>
-        </div>
-        <div className="d-flex table-name-data">
-          <RowIcon icon={TableIcon} />
-          <div className="table-name my-auto">{tableData.name}</div>
-        </div>
-        <div className="table-cols">
-          {_.map(tableData.columns, (col)=>this.generateColumn(col, tableData))}
-        </div>
+        {tableMetaData.is_promise && <>
+          <div className="d-flex table-name-data">
+            {!tableMetaData.data_failed && <div className="table-name my-auto">{gettext('Fetching...')}</div>}
+            {tableMetaData.data_failed && <div className="table-name my-auto fetch-error">{gettext('Failed to get data. Please delete this table.')}</div>}
+          </div>
+        </>}
+        {!tableMetaData.is_promise && <>
+          <div className="d-flex table-schema-data">
+            <RowIcon icon={SchemaIcon}/>
+            <div className="table-schema my-auto">{tableData.schema}</div>
+          </div>
+          <div className="d-flex table-name-data">
+            <RowIcon icon={TableIcon} />
+            <div className="table-name my-auto">{tableData.name}</div>
+          </div>
+          <div className="table-cols">
+            {_.map(tableData.columns, (col)=>this.generateColumn(col, tableData))}
+          </div>
+        </>}
       </div>
     );
   }

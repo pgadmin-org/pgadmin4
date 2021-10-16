@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { generateNodeUrl } from './node_ajax';
+
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',
   'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
@@ -61,8 +63,16 @@ define('pgadmin.browser', [
     function(b) {
       InitTree.initBrowserTree(b).then(() => {
         b.tree.registerDraggableType({
-          'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar' : (data, item)=>{
-            return pgadminUtils.fully_qualify(b, data, item);
+          'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar' : (data, item, treeNodeInfo)=>{
+            let text = pgadminUtils.fully_qualify(b, data, item);
+            return {
+              text: text,
+              objUrl: generateNodeUrl.call(pgBrowser.Nodes[data._type], treeNodeInfo, 'properties', data, true),
+              cur: {
+                from: text.length,
+                to: text.length,
+              },
+            };
           },
           'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule' : (data)=>{
             return pgadminUtils.quote_ident(data._label);
