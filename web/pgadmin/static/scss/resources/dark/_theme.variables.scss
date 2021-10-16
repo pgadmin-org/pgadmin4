@@ -80,6 +80,8 @@ $color-editor-bracket: #d6aaaa;
 $color-editor-operator: #d6aaaa;
 $color-editor-foldmarker: #0000FF !default;
 $color-editor-activeline: #323e43 !default;
+$color-editor-activeline-light: $color-editor-activeline;
+$color-editor-activeline-border-color: none;
 
 $explain-sev-2-bg: #ded17e;
 $explain-sev-3-bg: #824d18;

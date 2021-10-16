@@ -185,6 +185,12 @@ def get_sql(conn, **kwargs):
 
         old_data = trigger_definition(old_data)
 
+        if 'lanname' in old_data and old_data['lanname'] == 'edbspl':
+            data['lanname'] = old_data['lanname']
+        if ('tfunction' in old_data and
+                old_data['tfunction'] == 'Inline EDB-SPL'):
+            data['tfunction'] = old_data['tfunction']
+
         sql = render_template(
             "/".join([template_path, 'update.sql']),
             data=data, o_data=old_data, conn=conn

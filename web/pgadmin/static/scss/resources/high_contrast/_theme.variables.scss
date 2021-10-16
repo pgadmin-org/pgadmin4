@@ -97,6 +97,8 @@ $color-editor-bracket: #D6AAAA;
 $color-editor-operator: $color-fg;
 $color-editor-foldmarker: #FFFFFF;
 $color-editor-activeline: #063057;
+$color-editor-activeline-light: $color-editor-activeline;
+$color-editor-activeline-border-color: none;
 
 $active-color: $color-fg;
 $active-border: 3px solid $color-primary;
