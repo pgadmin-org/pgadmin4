@@ -811,6 +811,9 @@ class ServerNode(PGChildNodeView):
     @staticmethod
     def _update_server_details(server, sharedserver,
                                config_param_map, arg, value):
+        if value == '':
+            value = None
+
         if server.shared and server.user_id != current_user.id:
             setattr(sharedserver, config_param_map[arg], value)
         else:
