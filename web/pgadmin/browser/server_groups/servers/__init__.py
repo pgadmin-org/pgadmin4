@@ -1017,6 +1017,13 @@ class ServerNode(PGChildNodeView):
             request.data, encoding='utf-8'
         )
 
+        # Loop through data and if found any value is blank string then
+        # convert it to None as after porting into React, from frontend
+        # '' blank string is coming as a value instead of null.
+        for item in data:
+            if data[item] == '':
+                data[item] = None
+
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
