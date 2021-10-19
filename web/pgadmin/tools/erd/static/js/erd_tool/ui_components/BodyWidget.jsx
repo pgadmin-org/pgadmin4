@@ -371,7 +371,7 @@ export default class BodyWidget extends React.Component {
 
   onDropNode(e) {
     let nodeDropData = JSON.parse(e.dataTransfer.getData('text'));
-    if(nodeDropData.objUrl) {
+    if(nodeDropData.objUrl && nodeDropData.nodeType === 'table') {
       let matchUrl = `/${this.props.params.sgid}/${this.props.params.sid}/${this.props.params.did}/`;
       if(nodeDropData.objUrl.indexOf(matchUrl) == -1) {
         this.props.alertify.error(gettext('Cannot drop table from outside of the current database.'));

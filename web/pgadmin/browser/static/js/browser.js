@@ -68,6 +68,7 @@ define('pgadmin.browser', [
             return {
               text: text,
               objUrl: generateNodeUrl.call(pgBrowser.Nodes[data._type], treeNodeInfo, 'properties', data, true),
+              nodeType: data._type,
               cur: {
                 from: text.length,
                 to: text.length,
