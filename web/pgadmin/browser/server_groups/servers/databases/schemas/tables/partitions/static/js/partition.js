@@ -319,6 +319,7 @@ function(
         return getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowser);
       },
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

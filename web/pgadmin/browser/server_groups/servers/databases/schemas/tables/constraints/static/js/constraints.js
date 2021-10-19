@@ -44,6 +44,7 @@ define('pgadmin.node.constraints', [
         pgBrowser.add_menus([]);
       },
       model: pgAdmin.Browser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
           oid: undefined,

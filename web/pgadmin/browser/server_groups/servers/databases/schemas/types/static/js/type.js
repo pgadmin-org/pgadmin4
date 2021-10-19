@@ -79,9 +79,9 @@ define('pgadmin.node.type', [
       yet migrated to new react schema. Once the properties for collection
       is removed, remove this model */
       model: pgBrowser.Node.Model.extend({
+        idAttribute: 'oid',
         defaults: {
           name: undefined,
-          oid: undefined,
           is_sys_type: false,
           typtype: undefined,
         },
