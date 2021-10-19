@@ -51,7 +51,7 @@ from pgadmin.utils.master_password import validate_master_password, \
     set_crypt_key, process_masterpass_disabled
 from pgadmin.model import User
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
-    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2
+    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2, WEBSERVER
 from pgadmin.authenticate import AuthSourceManager
 
 try:
@@ -1000,6 +1000,7 @@ def set_master_password():
     # Enable master password if oauth is used
     if not config.SERVER_MODE or OAUTH2 in config.AUTHENTICATION_SOURCES \
         or KERBEROS in config.AUTHENTICATION_SOURCES \
+        or WEBSERVER in config.AUTHENTICATION_SOURCES \
             and config.MASTER_PASSWORD_REQUIRED:
         # if master pass is set previously
         if current_user.masterpass_check is not None and \

@@ -40,3 +40,5 @@ Bug fixes
 | `Issue #6908 <https://redmine.postgresql.org/issues/6908>`_ -  Fixed an issue where each click to refresh the collection node, the number of objects decreasing by tens or more.
 | `Issue #6912 <https://redmine.postgresql.org/issues/6912>`_ -  Fixed browser tree sort order regression issue.
 | `Issue #6915 <https://redmine.postgresql.org/issues/6915>`_ -  Fixed an issue where the blank string is stored instead of NULL in the server table of SQLite database.
+| `Issue #6928 <https://redmine.postgresql.org/issues/6928>`_ -  Ensure that the master password should be prompt when MASTER_PASSWORD_REQUIRED is set to True and AUTHENTICATION_SOURCES is webserver.
+| `Issue #6930 <https://redmine.postgresql.org/issues/6930>`_ -  Fixed an issue where the existing server group is disappeared on rename it.

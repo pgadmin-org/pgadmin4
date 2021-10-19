@@ -205,11 +205,11 @@ export class Tree {
 
   first(item) {
     const model = this.tree.getModel();
-    if (item === undefined || item === null) {
+    if ((item === undefined || item === null) && model.root.children !== null) {
       return model.root.children[0];
     }
 
-    if (item.branchSize > 0) {
+    if (item !== undefined && item !== null && item.branchSize > 0) {
       return item.children[0];
     }
 
@@ -283,6 +283,11 @@ export class Tree {
 
   getData(item) {
     return (item !== undefined && item.getMetadata('data') !== undefined) ? item._metadata.data : [];
+  }
+
+  isRootNode(item) {
+    const model = this.tree.getModel();
+    return item === model.root;
   }
 
   isInode(item) {

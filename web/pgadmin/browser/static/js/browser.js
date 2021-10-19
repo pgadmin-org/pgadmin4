@@ -1267,7 +1267,8 @@ define('pgadmin.browser', [
             var _parent = this.t.parent(this.i) || null;
 
             // If there is no parent then just update the node
-            if(_parent && _parent.length == 0 && ctx.op == 'UPDATE') {
+            if(this.t.isRootNode(_parent) ||
+             (_parent && _parent.length == 0 && ctx.op == 'UPDATE')) {
               updateNode();
             } else {
               var postRemove = function() {
