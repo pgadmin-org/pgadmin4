@@ -43,3 +43,4 @@ Bug fixes
 | `Issue #6928 <https://redmine.postgresql.org/issues/6928>`_ -  Ensure that the master password should be prompt when MASTER_PASSWORD_REQUIRED is set to True and AUTHENTICATION_SOURCES is webserver.
 | `Issue #6929 <https://redmine.postgresql.org/issues/6929>`_ -  Ensure that only the table node should be allowed to drop on the ERD tool.
 | `Issue #6930 <https://redmine.postgresql.org/issues/6930>`_ -  Fixed an issue where the existing server group is disappeared on rename it.
+| `Issue #6935 <https://redmine.postgresql.org/issues/6935>`_ -  Fixed an issue where the wrong SQL is generated when deleting and renaming table columns together.

@@ -176,7 +176,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
 
                 /* If the id attr value is present, then only changed keys can be passed.
                 Otherwise, passing all the keys is useful */
-                let idAttrValue = _.get(origVal, [field.id, rowIndx, field.schema.idAttribute]);
+                let idAttrValue = _.get(sessVal, [field.id, rowIndx, field.schema.idAttribute]);
                 if(_.isUndefined(idAttrValue)) {
                   change['changed'].push({
                     ...changedRow,
