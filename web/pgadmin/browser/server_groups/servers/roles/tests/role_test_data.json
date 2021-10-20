@@ -202,7 +202,9 @@
       "expected_data": {
         "status_code": 200,
         "error_msg": null,
-        "test_result_data": {}
+        "test_result_data": {
+          "result": "REASSIGN OWNED BY role_user_1 TO CURRENT_ROLE"
+        }
       }
     },
     {

@@ -77,7 +77,8 @@ def get_version_mapping_directories(server_type):
     :param server_type:
     :return:
     """
-    return ({'name': "13_plus", 'number': 130000},
+    return ({'name': "14_plus", 'number': 140000},
+            {'name': "13_plus", 'number': 130000},
             {'name': "12_plus", 'number': 120000},
             {'name': "11_plus", 'number': 110000},
             {'name': "10_plus", 'number': 100000},

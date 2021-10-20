@@ -1,0 +1,311 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create function with all options.",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name": "Function1_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "postgres",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "lanname": "plpgsql",
+        "provolatile": "v",
+        "proretset": false,
+        "proisstrict": true,
+        "prosecdef": true,
+        "proiswindow": true,
+        "proparallel": "u",
+        "procost": "100",
+        "prorows": "0",
+        "proleakproof": true,
+        "arguments": [
+          {
+            "argtype": "character varying",
+            "argmode": "IN",
+            "argname": "param",
+            "argdefval": "'1'"
+          }
+        ],
+        "prosrc": "begin\nselect '1';\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [
+          {
+            "name": "enable_sort",
+            "value": true
+          }
+        ],
+        "seclabels": [],
+        "acl": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_function.sql",
+      "expected_msql_file": "create_function.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function comment",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "description": "Some comment"
+      },
+      "expected_sql_file": "alter_function_comment.sql",
+      "expected_msql_file": "alter_function_comment.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create function for alter.",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name": "Function2_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "postgres",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "lanname": "plpgsql",
+        "provolatile": "v",
+        "proparallel": "u",
+        "arguments": [],
+        "procost": "100",
+        "prosrc": "begin\nselect '1';\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [
+          {
+            "name": "enable_sort",
+            "value": true
+          }
+        ],
+        "seclabels": [],
+        "acl": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_function_for_alter.sql",
+      "expected_msql_file": "create_function_for_alter.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function rename.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name":"Function3_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_function_rename.sql",
+      "expected_msql_file": "alter_function_rename.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function code and add parameters.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "prosrc": "begin\nselect '2';\nend\n",
+        "variables": {
+          "added": [
+            {
+              "name": "application_name",
+              "value": "appname"
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_add_parameter.sql",
+      "expected_msql_file": "alter_function_add_parameter.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function delete parameters.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "variables": {
+          "deleted": [
+            {
+              "name": "application_name",
+              "value": true
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_delete_parameter.sql",
+      "expected_msql_file": "alter_function_delete_parameter.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create function for acl.",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name": "Function2_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "postgres",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "lanname": "plpgsql",
+        "provolatile": "v",
+        "proparallel": "u",
+        "arguments": [],
+        "procost": "100",
+        "prosrc": "begin\nselect '1';\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [
+          {
+            "name": "enable_sort",
+            "value": true
+          }
+        ],
+        "seclabels": [],
+        "acl": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_function_for_alter.sql",
+      "expected_msql_file": "create_function_for_alter.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function add acl.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "added": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_add_acl.sql",
+      "expected_msql_file": "alter_function_add_acl.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function remove partial privileges.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "alter",
+      "name": "Alter function change grantee in privileges.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "changed": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "old_grantee": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_change_grantee_acl.sql",
+      "expected_msql_file": "alter_function_change_grantee_acl.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function delete acl.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            },
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_delete_acl.sql",
+      "expected_msql_file": "alter_function_delete_acl.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    }
+  ]
+}
