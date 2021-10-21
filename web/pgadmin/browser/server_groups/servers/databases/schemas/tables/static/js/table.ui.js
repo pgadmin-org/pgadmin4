@@ -537,7 +537,24 @@ export default class TableSchema extends BaseUISchema {
             tabColsResponse.then((res)=>{
               resolve((state)=>{
                 let finalCols = res.map((col)=>obj.columnsSchema.getNewData(col));
-                finalCols = [...state.columns, ...finalCols];
+                let currentSelectedCols = [];
+                if (!_.isEmpty(state.columns)){
+                  currentSelectedCols = state.columns;
+                }
+                let colNameList = [];
+                state.columns.forEach((col=>{
+                  colNameList.push(col.name);
+                }));
+                for (let col of Object.values(finalCols)) {
+                  if(!colNameList.includes(col.name)){
+                    currentSelectedCols.push(col);
+                  }
+                }
+
+                if (!_.isEmpty(currentSelectedCols)){
+                  finalCols = currentSelectedCols;
+                }
+
                 obj.changeColumnOptions(finalCols);
                 return {
                   adding_inherit_cols: false,

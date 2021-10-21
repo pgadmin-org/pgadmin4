@@ -277,10 +277,10 @@ describe('TableSchema', ()=>{
         },
       });
       deferredPromise.then((depChange)=>{
-        let finalCols = [newCol, newCol];
+        let finalCols = [newCol];
         expect(depChange(state)).toEqual({
           adding_inherit_cols: false,
-          columns: [newCol, newCol],
+          columns: [newCol],
         });
         expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(finalCols);
         done();
