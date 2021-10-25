@@ -129,7 +129,7 @@ define('pgadmin.node.role', [
 
         var tree = pgBrowser.tree,
           _i = tree.selected(),
-          _d = _i && _i.length == 1 ? tree.itemData(_i) : undefined,
+          _d = _i ? tree.itemData(_i) : undefined,
           obj = this, finalUrl, old_role_name;
 
         //RoleReassign Model (Objects like role, database)
@@ -435,7 +435,7 @@ define('pgadmin.node.role', [
                 // Find current/selected node
                 var tree = pgBrowser.tree,
                   _i = tree.selected(),
-                  _d = _i && _i.length == 1 ? tree.itemData(_i) : undefined,
+                  _d = _i ? tree.itemData(_i) : undefined,
                   node = _d && pgBrowser.Nodes[_d._type];
 
                 finalUrl = obj.generate_url(_i, 'reassign' , _d, true);
