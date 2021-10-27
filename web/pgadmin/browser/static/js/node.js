@@ -838,6 +838,10 @@ define('pgadmin.browser.node', [
               type: 'DELETE',
             })
               .done(function(res) {
+                if(res.success == 2){
+                  Alertify.error(res.info, 0);
+                  return;
+                }
                 if (res.success == 0) {
                   pgBrowser.report_error(res.errormsg, res.info);
                 } else {
@@ -867,7 +871,6 @@ define('pgadmin.browser.node', [
                 }
                 pgBrowser.report_error(
                   gettext('Error dropping/removing %s: "%s"', obj.label, objName), errmsg);
-
               });
           },
           null

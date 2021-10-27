@@ -205,6 +205,9 @@ define('pgadmin.node.table', [
                         t.select(i);
                       }, 10);
                     }
+                    if (res.success == 2) {
+                      Alertify.error(res.info, 0);
+                    }
                   })
                   .fail(function(xhr, status, error) {
                     Alertify.pgRespErrorNotify(xhr, error);

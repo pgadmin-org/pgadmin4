@@ -1070,6 +1070,10 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                         )
                     )
 
+                lock_on_table = self.get_table_locks(did, res['rows'][0])
+                if lock_on_table != '':
+                    return lock_on_table
+
                 status, res = super(TableView, self).delete(gid, sid, did,
                                                             scid, tid, res)
 

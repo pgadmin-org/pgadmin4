@@ -49,6 +49,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import VacuumSettings
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.dashboard import locks
 
 
 class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
@@ -1952,6 +1953,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         data = res['rows'][0]
 
+        lock_on_table = self.get_table_locks(did, data)
+        if lock_on_table != '':
+            return lock_on_table
+
         sql = render_template("/".join([self.table_template_path,
                                         'truncate.sql']),
                               data=data, cascade=is_cascade,
@@ -2003,6 +2008,41 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             'id': tid,
             'scid': scid
         }
+
+    def get_table_locks(self, did, data):
+        """
+        This function returns the lock details if there is any on table
+        :param did:
+        :param data:
+        :return:
+        """
+        sql = render_template(
+            "/".join([self.table_template_path, 'locks.sql']), did=did
+        )
+        status, lock_table_result = self.conn.execute_dict(sql)
+
+        for row in lock_table_result['rows']:
+            if row['relation'].strip('\"') == data['name']:
+
+                sql = render_template(
+                    "/".join([self.table_template_path,
+                              'get_application_name.sql']), pid=row['pid']
+                )
+                status, res = self.conn.execute_dict(sql)
+
+                application_name = res['rows'][0]['application_name']
+
+                return make_json_response(
+                    success=2,
+                    info=gettext(
+                        "The table is currently locked and the "
+                        "operation cannot be completed. "
+                        "Please try again later. "
+                        "\r\nBlocking Process ID : {0} "
+                        "Application Name : {1}").format(row['pid'],
+                                                         application_name)
+                )
+        return ''
 
     def get_schema_and_table_name(self, tid):
         """
