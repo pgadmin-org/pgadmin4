@@ -1086,11 +1086,13 @@ define('pgadmin.browser', [
                 };
 
               if (binarySearch()) {
-                __ctx.t.before(i, _data).then(() => {
+                __ctx.t.before(i, _data).then((_item) => {
                   if (
                     __ctx.o && __ctx.o.success && typeof(__ctx.o.success) == 'function'
                   ) {
                     __ctx.o.success.apply(__ctx.t, [i, _data]);
+                  } else {
+                    __ctx.t.select(_item);
                   }
                 }, () => {
                   console.warn('Failed to add before...', arguments);
