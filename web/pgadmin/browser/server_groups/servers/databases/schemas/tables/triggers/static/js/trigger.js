@@ -79,12 +79,12 @@ define('pgadmin.node.trigger', [
         },{
           name: 'enable_trigger', node: 'trigger', module: this,
           applies: ['object', 'context'], callback: 'enable_trigger',
-          category: 'connect', priority: 3, label: gettext('Enable trigger'),
+          category: 'connect', priority: 3, label: gettext('Enable'),
           icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
         },{
           name: 'disable_trigger', node: 'trigger', module: this,
           applies: ['object', 'context'], callback: 'disable_trigger',
-          category: 'drop', priority: 3, label: gettext('Disable trigger'),
+          category: 'drop', priority: 3, label: gettext('Disable'),
           icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
         },{
           name: 'create_trigger_onView', node: 'view', module: this,

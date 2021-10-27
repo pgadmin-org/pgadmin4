@@ -115,12 +115,12 @@ define('pgadmin.node.rule', [
         {
           name: 'enable_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'enable_rule',
-          category: 'connect', priority: 3, label: gettext('Enable rule'),
+          category: 'connect', priority: 3, label: gettext('Enable'),
           icon: 'fa fa-check', enable: 'canCreate_with_rule_enable',
         },{
           name: 'disable_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'disable_rule',
-          category: 'drop', priority: 3, label: gettext('Disable rule'),
+          category: 'drop', priority: 3, label: gettext('Disable'),
           icon: 'fa fa-times', enable: 'canCreate_with_rule_disable'
         }
         ]);

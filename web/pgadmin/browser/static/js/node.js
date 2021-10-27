@@ -118,7 +118,7 @@ define('pgadmin.browser.node', [
         applies: ['object', 'context'],
         callback: 'refresh',
         priority: 1,
-        label: gettext('Refresh...'),
+        label: gettext('Refresh'),
         icon: 'fa fa-sync-alt',
       }]);
 

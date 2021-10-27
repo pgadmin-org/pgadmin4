@@ -58,7 +58,7 @@ define([
         callback: 'check_func_debuggable',
         category: gettext('Debugging'),
         priority: 10,
-        label: gettext('Set breakpoint'),
+        label: gettext('Set Breakpoint'),
         data: {
           object: 'function',
           debug_type: 'indirect',
@@ -87,7 +87,7 @@ define([
         callback: 'check_func_debuggable',
         category: gettext('Debugging'),
         priority: 10,
-        label: gettext('Set breakpoint'),
+        label: gettext('Set Breakpoint'),
         data: {
           object: 'procedure',
           debug_type: 'indirect',
@@ -101,7 +101,7 @@ define([
         applies: ['object', 'context'],
         callback: 'check_func_debuggable',
         priority: 10,
-        label: gettext('Set breakpoint'),
+        label: gettext('Set Breakpoint'),
         category: gettext('Debugging'),
         icon: 'fa fa-arrow-circle-right',
         data: {
@@ -116,7 +116,7 @@ define([
         applies: ['object', 'context'],
         callback: 'check_func_debuggable',
         priority: 10,
-        label: gettext('Set breakpoint'),
+        label: gettext('Set Breakpoint'),
         category: gettext('Debugging'),
         icon: 'fa fa-arrow-circle-right',
         data: {
@@ -146,7 +146,7 @@ define([
         callback: 'check_func_debuggable',
         category: gettext('Debugging'),
         priority: 10,
-        label: gettext('Set breakpoint'),
+        label: gettext('Set Breakpoint'),
         data: {
           object: 'edbfunc',
           debug_type: 'indirect',
@@ -175,7 +175,7 @@ define([
         callback: 'check_func_debuggable',
         category: gettext('Debugging'),
         priority: 10,
-        label: gettext('Set breakpoint'),
+        label: gettext('Set Breakpoint'),
         data: {
           object: 'edbproc',
           debug_type: 'indirect',

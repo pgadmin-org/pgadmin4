@@ -45,7 +45,7 @@ define([
         pgAdmin.Browser.add_menus([{
           name: 'refresh', node: this.type, module: this,
           applies: ['object', 'context'], callback: 'refresh',
-          priority: 1, label: gettext('Refresh...'),
+          priority: 1, label: gettext('Refresh'),
           icon: 'fa fa-sync-alt',
         }]);
 

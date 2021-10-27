@@ -714,7 +714,7 @@ class PgadminPage:
             # get the element which contains 'aria-expanded' info
 
             xpath_for_refresh_btn = "//li[@class='context-menu-item']" \
-                                    "/span[text()='Refresh...']"
+                                    "/span[text()='Refresh']"
 
             # add code to refresh button, sometime the collapsing button
             #  is not visible even if there is sub node.
