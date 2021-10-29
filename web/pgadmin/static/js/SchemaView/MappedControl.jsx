@@ -44,6 +44,8 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
     return <FormInputText name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props} type='int'/>;
   case 'numeric':
     return <FormInputText name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props} type='numeric'/>;
+  case 'tel':
+    return <FormInputText name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props} type='tel'/>;
   case 'text':
     return <FormInputText name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props}/>;
   case 'multiline':

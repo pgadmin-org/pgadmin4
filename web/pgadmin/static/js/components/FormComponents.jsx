@@ -320,7 +320,7 @@ export const InputText = forwardRef(({
     let changeVal = e.target.value;
 
     /* For type number, we set type as tel with number regex to get validity.*/
-    if(['numeric', 'int'].indexOf(type) > -1) {
+    if(['numeric', 'int', 'tel'].indexOf(type) > -1) {
       if(!e.target.validity.valid && changeVal !== '' && changeVal !== '-') {
         return;
       }
@@ -347,7 +347,7 @@ export const InputText = forwardRef(({
         id: cid,
         maxLength: maxlength,
         'aria-describedby': helpid,
-        ...(type ? {pattern: patterns[type]} : {})
+        ...(type ? {pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type]} : {})
       }}
       readOnly={Boolean(readonly)}
       disabled={Boolean(disabled)}

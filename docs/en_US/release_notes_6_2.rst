@@ -9,7 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
-
+| `Issue #3834 <https://redmine.postgresql.org/issues/3834>`_ -  Added support of Aggregate and Operator node in view-only mode.
 
 Housekeeping
 ************

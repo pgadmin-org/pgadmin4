@@ -506,6 +506,8 @@ module.exports = [{
             'pure|pgadmin.node.table',
             'pure|pgadmin.node.partition',
             'pure|pgadmin.node.compound_trigger',
+            'pure|pgadmin.node.aggregate',
+            'pure|pgadmin.node.operator',
           ],
         },
       },

@@ -182,7 +182,8 @@ class DataTypeReader:
                     'label': row['typname'], 'value': row['typname'],
                     'typval': typeval, 'precision': precision,
                     'length': length, 'min_val': min_val, 'max_val': max_val,
-                    'is_collatable': row['is_collatable']
+                    'is_collatable': row['is_collatable'],
+                    'oid': row['oid']
                 })
 
         except Exception as e:
