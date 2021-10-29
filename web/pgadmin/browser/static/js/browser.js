@@ -440,14 +440,16 @@ define('pgadmin.browser', [
       initializeBrowserTree(obj);
 
       // Syntax highlight the SQL Pane
-      obj.editor = CodeMirror.fromTextArea(
-        document.getElementById('sql-textarea'), {
-          lineNumbers: true,
-          mode: 'text/x-pgsql',
-          readOnly: true,
-          extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-          screenReaderLabel: gettext('SQL'),
-        });
+      if(document.getElementById('sql-textarea')){
+        obj.editor = CodeMirror.fromTextArea(
+          document.getElementById('sql-textarea'), {
+            lineNumbers: true,
+            mode: 'text/x-pgsql',
+            readOnly: true,
+            extraKeys: pgAdmin.Browser.editor_shortcut_keys,
+            screenReaderLabel: gettext('SQL'),
+          });
+      }
       /* Cache may take time to load for the first time
        * Reflect the changes once cache is available
        */
@@ -465,8 +467,8 @@ define('pgadmin.browser', [
       });
 
       setTimeout(function() {
-        obj.editor.setValue('-- ' + select_object_msg);
-        obj.editor.refresh();
+        obj?.editor?.setValue('-- ' + select_object_msg);
+        obj?.editor?.refresh();
       }, 10);
 
       // Build the treeview context menu

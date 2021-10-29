@@ -100,7 +100,10 @@ _.extend(pgBrowser, {
   },
 
   lock_layout: function(docker, op) {
-    let menu_items = this.menus['file']['mnu_locklayout']['menu_items'];
+    let menu_items = [];
+    if('mnu_locklayout' in this.menus['file']) {
+      menu_items = this.menus['file']['mnu_locklayout']['menu_items'];
+    }
 
     switch(op) {
     case this.lock_layout_levels.PREVENT_DOCKING:
@@ -114,13 +117,15 @@ _.extend(pgBrowser, {
       break;
     }
 
-    _.each(menu_items, function(menu_item) {
-      if(menu_item.name != ('mnu_lock_'+op)) {
-        menu_item.change_checked(false);
-      } else {
-        menu_item.change_checked(true);
-      }
-    });
+    if(menu_items) {
+      _.each(menu_items, function(menu_item) {
+        if(menu_item.name != ('mnu_lock_'+op)) {
+          menu_item.change_checked(false);
+        } else {
+          menu_item.change_checked(true);
+        }
+      });
+    }
   },
 
   save_lock_layout: function(op) {

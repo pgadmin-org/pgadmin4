@@ -124,14 +124,14 @@ _.extend(pgBrowser, {
     if(module === 'sqleditor' || module === null || typeof module === 'undefined') {
       let sqlEditPreferences = obj.get_preferences_for_module('sqleditor');
 
-      $(obj.editor.getWrapperElement()).css(
+      $(obj?.editor?.getWrapperElement()).css(
         'font-size',SqlEditorUtils.calcFontSize(sqlEditPreferences.sql_font_size)
       );
-      obj.editor.setOption('tabSize', sqlEditPreferences.tab_size);
-      obj.editor.setOption('lineWrapping', sqlEditPreferences.wrap_code);
-      obj.editor.setOption('autoCloseBrackets', sqlEditPreferences.insert_pair_brackets);
-      obj.editor.setOption('matchBrackets', sqlEditPreferences.brace_matching);
-      obj.editor.refresh();
+      obj?.editor?.setOption('tabSize', sqlEditPreferences.tab_size);
+      obj?.editor?.setOption('lineWrapping', sqlEditPreferences.wrap_code);
+      obj?.editor?.setOption('autoCloseBrackets', sqlEditPreferences.insert_pair_brackets);
+      obj?.editor?.setOption('matchBrackets', sqlEditPreferences.brace_matching);
+      obj?.editor?.refresh();
     }
   },
 
