@@ -16,7 +16,8 @@ _default_database_response = [
     {
         'typname': 'type name',
         'elemoid': 1560,
-        'is_collatable': True
+        'is_collatable': True,
+        'oid': 16635
     }
 ]
 _default_expected_function_output = [
@@ -28,7 +29,8 @@ _default_expected_function_output = [
         'length': True,
         'min_val': 1,
         'max_val': 2147483647,
-        'is_collatable': True
+        'is_collatable': True,
+        'oid': 16635
     }
 ]
 _default_manager = dict(
