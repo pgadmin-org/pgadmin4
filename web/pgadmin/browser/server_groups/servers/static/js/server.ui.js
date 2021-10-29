@@ -143,7 +143,7 @@ export default class ServerSchema extends BaseUISchema {
         mode: ['properties', 'create', 'edit'],
         readonly: function(state){
           var serverOwner = obj.userId;
-          if (obj.isNew(state) && serverOwner != current_user.id) {
+          if (!obj.isNew(state) && serverOwner != current_user.id) {
             return true;
           }
           return false;

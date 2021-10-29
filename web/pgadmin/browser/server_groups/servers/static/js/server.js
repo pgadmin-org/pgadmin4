@@ -813,14 +813,12 @@ define('pgadmin.node.server', [
 
     var connect_to_server = function(obj, data, tree, item, reconnect) {
     // Open properties dialog in edit mode
-      const selectedTreeNode = tree.selected().length > 0 ? tree.selected() : tree.first();
-      const selectedTreeNodeData = selectedTreeNode && selectedTreeNode.length === 1 ? tree.itemData(selectedTreeNode) : undefined;
       var server_url = obj.generate_url(item, 'obj', data, true);
       // Fetch the updated data
       $.get(server_url)
         .done(function(res) {
           if (res.shared && _.isNull(res.username) && data.user_id != current_user.id){
-            if (selectedTreeNodeData._type == 'server' && !res.service){
+            if (!res.service){
               pgAdmin.Browser.Node.callbacks.show_obj_properties.call(
                 pgAdmin.Browser.Nodes[tree.itemData(item)._type], {action: 'edit'}
               );
