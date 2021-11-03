@@ -37,13 +37,9 @@ ldap3==2.*
 Flask-BabelEx==0.*
 gssapi==1.6.*
 flask-socketio>=5.0.1
+eventlet==0.31.0
 httpagentparser==1.9.*
 user-agents==2.2.0
 pywinpty==1.1.1; sys_platform=="win32"
 Authlib==0.15.*
 requests==2.25.*
-
-# NOTE: This should be updated to the first release of eventlet > 0.32.0 ASAP!
-git+git://github.com/eventlet/eventlet.git@15d3c2477510229e1b49c60fccfde5ffe94b2a76; python_version >= '3.10'
-eventlet==0.31.0; python_version < '3.10'
-dnspython==2.1.*; python_version >= '3.10'
