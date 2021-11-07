@@ -25,3 +25,4 @@ Bug fixes
 | `Issue #6940 <https://redmine.postgresql.org/issues/6940>`_ -  Fixed an issue where user details are not shown when the non-admin user tries to connect to the shared server.
 | `Issue #6949 <https://redmine.postgresql.org/issues/6949>`_ -  Ensure that dialog should be opened when clicking on Reassign/Drop owned menu.
 | `Issue #6954 <https://redmine.postgresql.org/issues/6954>`_ -  Ensure that changing themes should work on Windows when system high contrast mode is enabled.
+| `Issue #6976 <https://redmine.postgresql.org/issues/6976>`_ -  Fixed an issue where textarea should be allowed to resize and have more than 255 chars.

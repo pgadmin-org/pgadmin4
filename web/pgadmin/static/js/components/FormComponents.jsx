@@ -345,7 +345,7 @@ export const InputText = forwardRef(({
       className={classes.formInput}
       inputProps={{
         id: cid,
-        maxLength: maxlength,
+        maxLength: controlProps?.multiline ? null : maxlength,
         'aria-describedby': helpid,
         ...(type ? {pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type]} : {})
       }}
