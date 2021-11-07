@@ -24,3 +24,4 @@ Bug fixes
 | `Issue #6859 <https://redmine.postgresql.org/issues/6859>`_ -  Fixed an issue where properties panel is not updated when any object is added from the browser tree.
 | `Issue #6940 <https://redmine.postgresql.org/issues/6940>`_ -  Fixed an issue where user details are not shown when the non-admin user tries to connect to the shared server.
 | `Issue #6949 <https://redmine.postgresql.org/issues/6949>`_ -  Ensure that dialog should be opened when clicking on Reassign/Drop owned menu.
+| `Issue #6954 <https://redmine.postgresql.org/issues/6954>`_ -  Ensure that changing themes should work on Windows when system high contrast mode is enabled.

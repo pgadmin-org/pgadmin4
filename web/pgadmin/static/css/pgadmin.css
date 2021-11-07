@@ -46,3 +46,9 @@
   line-height: 1;
   -webkit-font-smoothing: antialiased;
 }
+
+@media screen and (forced-colors: active) {
+  body {
+    forced-color-adjust: none !important;
+  }
+}
