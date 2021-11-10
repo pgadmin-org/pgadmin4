@@ -58,16 +58,12 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
                                        self.function_name)
 
     def _function_node_expandable(self):
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
-        self.page.toggle_open_schema_node(self.server['name'],
-                                          self.server['db_password'],
-                                          self.test_db, 'public')
-        self.page.toggle_open_function_node()
-        self.page.click_a_tree_node(
-            self.function_name + "()",
-            TreeAreaLocators.sub_nodes_of_functions_node)
+        self.page.expand_schema_child_node("Server", self.server['name'],
+                                           self.server['db_password'],
+                                           self.test_db, 'public', "Functions")
+        function_node = self.page.check_if_element_exists_with_scroll(
+            TreeAreaLocators.function_node(self.function_name + "()"))
+        function_node.click()
 
     def _debug_function(self):
         self.page.driver.find_element_by_link_text("Object").click()

@@ -295,9 +295,9 @@ def setup_webdriver_specification(arguments):
             options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-setuid-sandbox")
-        options.add_argument("--window-size=1280,1024")
+        options.add_argument("--window-size=1790,1080")
         options.add_argument("--disable-infobars")
-        options.add_experimental_option('w3c', False)
+        # options.add_experimental_option('w3c', False)
         driver_local = webdriver.Chrome(chrome_options=options)
 
     # maximize browser window

@@ -73,7 +73,7 @@ class CopySQLFeatureTest(BaseFeatureTest):
         time.sleep(5)
 
         self.driver.switch_to.default_content()
-        self.driver.switch_to_frame(
+        self.driver.switch_to.frame(
             self.driver.find_element_by_tag_name("iframe"))
 
         code_mirror = self.driver.find_elements_by_xpath(
@@ -89,16 +89,12 @@ class CopySQLFeatureTest(BaseFeatureTest):
         self.test_table_name = "test_table" + str(random.randint(1000, 3000))
         test_utils.create_table(self.server, self.test_db,
                                 self.test_table_name)
-
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
-        self.page.toggle_open_tables_node(
-            self.server['name'], self.server['db_password'],
-            self.test_db, 'public')
-        self.page.click_a_tree_node(
-            self.test_table_name,
-            TreeAreaLocators.sub_nodes_of_tables_node)
+        self.page.expand_tables_node("Server", self.server['name'],
+                                     self.server['db_password'], self.test_db,
+                                     'public')
+        table_node = self.page.check_if_element_exists_with_scroll(
+            TreeAreaLocators.table_node(self.test_table_name))
+        table_node.click()
 
     def _update_preferences_setting(self):
         file_menu = self.page.find_by_css_selector(

@@ -12,6 +12,7 @@ import random
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
@@ -94,7 +95,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _test_copies_rows(self):
         self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to_frame(
+        self.page.driver.switch_to.frame(
             self.page.driver.find_element_by_tag_name("iframe"))
 
         select_row = self.page.find_by_xpath(
@@ -106,7 +107,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         copy_row.click()
 
         self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to_frame(
+        self.page.driver.switch_to.frame(
             self.page.driver.find_element_by_tag_name("iframe"))
 
         scratch_pad_ele = self.page.find_by_css_selector(
@@ -121,7 +122,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _test_copies_columns(self):
         self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to_frame(
+        self.page.driver.switch_to.frame(
             self.page.driver.find_element_by_tag_name("iframe"))
 
         column_header = self.page.find_by_css_selector(
@@ -133,7 +134,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         copy_btn.click()
 
         self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to_frame(
+        self.page.driver.switch_to.frame(
             self.page.driver.find_element_by_tag_name("iframe"))
 
         scratch_pad_ele = self.page.find_by_css_selector(
@@ -169,13 +170,13 @@ class QueryToolJourneyTest(BaseFeatureTest):
             failed_history_detail_pane.text
         )
         self.page.wait_for_elements(
-            lambda driver: driver.find_elements_by_css_selector(
-                QueryToolLocators.query_history_entries))
+            lambda driver: driver.find_elements(
+                By.CSS_SELECTOR, QueryToolLocators.query_history_entries))
 
         # get the query history rows and click the previous query row which
         # was executed and verify it
-        history_rows = self.driver.find_elements_by_css_selector(
-            QueryToolLocators.query_history_entries)
+        history_rows = self.driver.find_elements(
+            By.CSS_SELECTOR, QueryToolLocators.query_history_entries)
         history_rows[1].click()
 
         selected_history_entry = self.page.find_by_css_selector(
@@ -209,8 +210,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_tab(self.query_history_tab_name)
 
         query_list = self.page.wait_for_elements(
-            lambda driver: driver.find_elements_by_css_selector(
-                QueryToolLocators.query_history_entries))
+            lambda driver: driver.find_elements(
+                By.CSS_SELECTOR, QueryToolLocators.query_history_entries))
 
         self.assertTrue(17, len(query_list))
 
@@ -420,9 +421,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_modal('Yes')
 
     def _navigate_to_query_tool(self):
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
+        self.page.expand_database_node("Server", self.server['name'],
+                                       self.server['db_password'],
+                                       self.test_db)
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
 

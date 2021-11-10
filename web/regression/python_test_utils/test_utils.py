@@ -422,6 +422,32 @@ def does_function_exist(server, db_name, fun_name):
     return str(result[0][0])
 
 
+def grant_role(server, db_name, role_name="test_role",
+               grant_role="<h1>test</h1>"):
+    try:
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
+        pg_cursor = connection.cursor()
+        sql_query = '''GRANT "%s" TO %s;''' % (grant_role, role_name)
+
+        pg_cursor.execute(
+            sql_query
+        )
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
 def create_role(server, db_name, role_name="test_role"):
     try:
         connection = get_db_connection(

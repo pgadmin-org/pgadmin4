@@ -121,13 +121,9 @@ CREATE TABLE public.nonintpkey
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
-
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
-        self.page.toggle_open_tables_node(self.server['name'],
-                                          self.server['db_password'],
-                                          self.test_db, 'public')
+        self.page.expand_tables_node("Server", self.server['name'],
+                                     self.server['db_password'], self.test_db,
+                                     'public')
 
         self._load_config_data('table_insert_update_cases')
         data_local = config_data
@@ -169,12 +165,17 @@ CREATE TABLE public.nonintpkey
         config_data = config_data_json[config_key]
 
     def _perform_test_for_table(self, table_name, config_data_local):
-        self.page.click_a_tree_node(
-            table_name,
-            TreeAreaLocators.sub_nodes_of_tables_node)
+        # self.page.click_a_tree_node(
+        #     table_name,
+        #     TreeAreaLocators.sub_nodes_of_tables_node)
+        table_node = self.page.check_if_element_exists_with_scroll(
+            TreeAreaLocators.table_node(table_name))
+        table_node.click()
+
         # Open Object -> View/Edit data
         self._view_data_grid(table_name)
 
+        time.sleep(3)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         # Run test to insert a new row in table with default values
         self._add_row(config_data_local)
@@ -237,7 +238,7 @@ CREATE TABLE public.nonintpkey
 
         if cell_type in ['int', 'int[]']:
             if value == 'clear':
-                cell_el.find_element_by_css_selector('input').clear()
+                cell_el.find_element(By.CSS_SELECTOR, 'input').clear()
             else:
                 ActionChains(self.driver).send_keys(value). \
                     send_keys(Keys.ENTER).perform()
@@ -273,13 +274,13 @@ CREATE TABLE public.nonintpkey
         else:
             # Boolean editor test for to True click
             if data[1] == 'true':
-                checkbox_el = cell_el.find_element_by_xpath(
-                    ".//*[contains(@class, 'multi-checkbox')]")
+                checkbox_el = cell_el.find_element(
+                    By.XPATH, ".//*[contains(@class, 'multi-checkbox')]")
                 checkbox_el.click()
             # Boolean editor test for to False click
             elif data[1] == 'false':
-                checkbox_el = cell_el.find_element_by_xpath(
-                    ".//*[contains(@class, 'multi-checkbox')]")
+                checkbox_el = cell_el.find_element(
+                    By.XPATH, ".//*[contains(@class, 'multi-checkbox')]")
                 # Sets true
                 checkbox_el.click()
                 # Sets false
@@ -307,7 +308,7 @@ CREATE TABLE public.nonintpkey
             ), CheckForViewDataTest.TIMEOUT_STRING
         )
         self.page.driver.switch_to.frame(
-            self.page.driver.find_element_by_tag_name('iframe')
+            self.page.driver.find_element(By.TAG_NAME, 'iframe')
         )
 
     def _copy_paste_row(self, config_data_l):
@@ -380,7 +381,7 @@ CREATE TABLE public.nonintpkey
                 try:
                     result_row = self.page.find_by_xpath(xpath)
                     element = \
-                        result_row.find_element_by_class_name("r" + str(idx))
+                        result_row.find_element(By.CLASS_NAME, "r" + str(idx))
                     self.page.driver.execute_script(
                         scroll_on_arg_for_js, element)
                     break
@@ -398,6 +399,6 @@ CREATE TABLE public.nonintpkey
         list_item.sort(reverse=True)
         for idx in list_item:
             time.sleep(0.4)
-            element = result_row.find_element_by_class_name("r" + str(idx))
+            element = result_row.find_element(By.CLASS_NAME, "r" + str(idx))
             self.page.driver.execute_script(
                 scroll_on_arg_for_js, element)

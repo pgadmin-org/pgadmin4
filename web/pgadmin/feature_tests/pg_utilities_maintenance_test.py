@@ -91,29 +91,25 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         self.verify_command()
 
     def _open_maintenance_dialogue(self):
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.database_name)
         if self.test_level == 'table':
-            self.page.toggle_open_schema_node(self.server['name'],
-                                              self.server['db_password'],
-                                              self.database_name, 'public')
-            self.page.toggle_open_tables_node(self.server['name'],
-                                              self.server['db_password'],
-                                              self.database_name, 'public')
-            retry = 5
-            status = False
-            while retry > 0:
-                status = self.page.click_a_tree_node(
-                    self.table_name,
-                    TreeAreaLocators.sub_nodes_of_tables_node)
-                if status:
-                    break
-                else:
-                    retry -= 1
-            self.assertTrue(status, "Table name {} is not selected".format(
-                self.table_name))
+            self.page.expand_tables_node("Server", self.server['name'],
+                                         self.server['db_password'],
+                                         self.database_name, 'public')
 
+            table_node = self.page.check_if_element_exists_with_scroll(
+                TreeAreaLocators.table_node(self.table_name))
+
+            status = False
+            if table_node:
+                status = True
+            self.assertTrue(status, "Table name {} is not visible/selected".
+                            format(self.table_name))
+            table_node.click()
+
+        else:
+            self.page.expand_database_node("Server", self.server['name'],
+                                           self.server['db_password'],
+                                           self.database_name)
         self.page.retry_click(
             (By.LINK_TEXT,
              NavMenuLocators.tools_menu_link_text),

@@ -36,9 +36,9 @@ class QueryToolFeatureTest(BaseFeatureTest):
     def before(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
+        self.page.expand_database_node("Server", self.server['name'],
+                                       self.server['db_password'],
+                                       self.test_db)
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
         self._reset_options()
@@ -128,7 +128,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
                    QueryToolLocators.btn_explain_buffers,
                    QueryToolLocators.btn_explain_timing):
             btn = self.page.find_by_css_selector(op)
-            check = btn.find_element_by_tag_name('i')
+            check = btn.find_element(By.TAG_NAME, 'i')
             if 'visibility-hidden' not in check.get_attribute('class'):
                 btn.click()
 
@@ -286,10 +286,10 @@ SELECT generate_series(1, 1000) as id order by id desc"""
         )
 
         # Search for 'Output' word in result (verbose option)
-        canvas.find_element_by_xpath("//*[contains(string(), 'Output')]")
+        canvas.find_element(By.XPATH, "//*[contains(string(), 'Output')]")
 
         # Search for 'Total Cost' word in result (cost option)
-        canvas.find_element_by_xpath("//*[contains(string(),'Total Cost')]")
+        canvas.find_element(By.XPATH, "//*[contains(string(),'Total Cost')]")
 
     def _query_tool_explain_analyze_with_buffers_and_timing(self):
         query = """-- Explain analyze query with buffers and timing
@@ -382,8 +382,8 @@ SELECT relname FROM pg_catalog.pg_class
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
-        el = canvas.find_elements_by_xpath(
-            QueryToolLocators.output_column_data_xpath.format(table_name))
+        el = canvas.find_elements(By.XPATH, QueryToolLocators.
+                                  output_column_data_xpath.format(table_name))
 
         assert len(el) == 0, "Table '{}' created with auto commit disabled " \
                              "and without any explicit commit.".format(
@@ -699,7 +699,7 @@ SELECT 1, pg_sleep(300)"""
                    QueryToolLocators.btn_explain_buffers,
                    QueryToolLocators.btn_explain_timing):
             btn = self.page.find_by_css_selector(op)
-            check = btn.find_element_by_tag_name('i')
+            check = btn.find_element(By.TAG_NAME, 'i')
             if 'visibility-hidden' not in check.get_attribute('class'):
                 btn.click()
         # click cost button
@@ -720,7 +720,7 @@ SELECT 1, pg_sleep(300)"""
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css))
         )
         # Search for 'Output' word in result (verbose option)
-        canvas.find_element_by_xpath("//*[contains(string(), 'JIT')]")
+        canvas.find_element(By.XPATH, "//*[contains(string(), 'JIT')]")
 
         self.page.clear_query_tool()
 
@@ -732,7 +732,7 @@ class WaitForAnyElementWithText(object):
 
     def __call__(self, driver):
         try:
-            elements = EC._find_elements(driver, self.locator)
+            elements = driver.find_elements(*self.locator)
             for elem in elements:
                 if self.text in elem.text:
                     return True

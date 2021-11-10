@@ -133,7 +133,7 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
                 "and contains(.,'" + locator + "')]"
             )
 
-            field = file_menu.find_element_by_name('key')
+            field = file_menu.find_element(By.NAME, 'key')
             field.click()
             field.send_keys(key)
 
@@ -141,5 +141,5 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
         self.page.click_modal('Save')
 
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".ajs-modal")
+            lambda driver: driver.find_element(By.CSS_SELECTOR, ".ajs-modal")
         )

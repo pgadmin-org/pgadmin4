@@ -31,16 +31,13 @@ class TableDdlFeatureTest(BaseFeatureTest):
         self.test_table_name = "test_table" + str(random.randint(1000, 3000))
         test_utils.create_table(self.server, self.test_db,
                                 self.test_table_name)
+        self.page.expand_tables_node("Server", self.server['name'],
+                                     self.server['db_password'], self.test_db,
+                                     'public')
+        table_node = self.page.check_if_element_exists_with_scroll(
+            TreeAreaLocators.table_node(self.test_table_name))
+        table_node.click()
 
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
-        self.page.toggle_open_tables_node(
-            self.server['name'], self.server['db_password'],
-            self.test_db, 'public')
-        self.page.click_a_tree_node(
-            self.test_table_name,
-            TreeAreaLocators.sub_nodes_of_tables_node)
         self.page.click_tab("SQL")
 
         # Wait till data is displayed in SQL Tab

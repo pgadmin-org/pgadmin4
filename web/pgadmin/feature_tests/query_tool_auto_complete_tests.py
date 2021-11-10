@@ -12,6 +12,7 @@ import random
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.feature_utils.locators import QueryToolLocators
@@ -55,9 +56,9 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         test_utils.create_table(self.server, self.test_db,
                                 self.second_table_name)
 
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
+        self.page.expand_database_node("Server", self.server['name'],
+                                       self.server['db_password'],
+                                       self.test_db)
 
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
@@ -171,7 +172,7 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
                 Keys.CONTROL).send_keys(Keys.SPACE).key_up(
                 Keys.CONTROL).perform()
             if self.page.check_if_element_exist_by_xpath(
-                    QueryToolLocators.code_mirror_hint_box_xpath, 20):
+                    QueryToolLocators.code_mirror_hint_box_xpath, 15):
                 hint_displayed = True
                 break
             else:
@@ -184,8 +185,8 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         else:
             # if no IntelliSense is present it means there is only one option
             #  so check if required string is present in codeMirror
-            code_mirror = self.driver.find_elements_by_xpath(
-                QueryToolLocators.code_mirror_data_xpath)
+            code_mirror = self.driver.find_elements(
+                By.XPATH, QueryToolLocators.code_mirror_data_xpath)
             for data in code_mirror:
                 code_mirror_text = data.text
                 print("Single entry..........")

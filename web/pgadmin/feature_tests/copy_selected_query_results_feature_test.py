@@ -8,6 +8,7 @@
 ##########################################################################
 
 import random
+import time
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -37,9 +38,9 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             self.server, self.test_db, self.test_table_name)
 
     def runTest(self):
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
+        self.page.expand_database_node("Servers", self.server['name'],
+                                       self.server['db_password'],
+                                       self.test_db)
         self.page.open_query_tool()
 
         self.page.fill_codemirror_area_with(
@@ -60,7 +61,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
     def paste_values_to_scratch_pad(self):
         self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to_frame(
+        self.page.driver.switch_to.frame(
             self.page.driver.find_element_by_tag_name("iframe"))
         scratch_pad_ele = self.page.find_by_css_selector(
             QueryToolLocators.scratch_pad_css)

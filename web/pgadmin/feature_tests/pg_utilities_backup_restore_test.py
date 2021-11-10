@@ -67,9 +67,9 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.wait = WebDriverWait(self.page.driver, 20)
 
     def runTest(self):
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.database_name)
+        self.page.expand_database_node("Server", self.server['name'],
+                                       self.server['db_password'],
+                                       self.database_name)
 
         # Backup
         self.initiate_backup()

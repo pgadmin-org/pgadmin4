@@ -42,6 +42,8 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
                                self.role)
         test_utils.create_role(self.server, "postgres",
                                "<h1>test</h1>")
+        test_utils.grant_role(self.server, "postgres",
+                              self.role, "<h1>test</h1>")
         self.wait = WebDriverWait(self.page.driver, 20)
 
     def runTest(self):
@@ -58,11 +60,13 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
                              "<h1>test</h1>")
 
     def _role_node_expandable(self, role):
-        self.page.expand_server_node(
-            self.server['name'], self.server['db_password'])
-        self.page.toggle_open_tree_item('Login/Group Roles')
-        self.page.click_a_tree_node(
-            role, TreeAreaLocators.sub_nodes_of_login_group_node)
+        self.page.expand_server_child_node("Server", self.server['name'],
+                                           self.server['db_password'],
+                                           'Login/Group Roles')
+
+        role_node = self.page.check_if_element_exists_with_scroll(
+            TreeAreaLocators.role_node(role))
+        role_node.click()
 
     def _check_role_membership_control(self):
         self.page.driver.find_element_by_link_text(
@@ -70,24 +74,22 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         property_object = self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.properties_obj_css)))
         property_object.click()
-        WebDriverWait(self.page.driver, 4).until(
+        membership_tab = WebDriverWait(self.page.driver, 4).until(
             EC.presence_of_element_located((
-                By.XPATH, "//a[normalize-space(text())='Membership']")))
-        self.click_membership_tab()
+                By.XPATH, "//span[normalize-space(text())='Membership']")))
+        membership_tab.click()
+
         # Fetch the source code for our custom control
         source_code = self.page.find_by_xpath(
-            "//div[contains(@class,'rolmembership')]"
-        ).get_attribute('innerHTML')
+            "//span[contains(@class,'icon-')]/following-sibling::span"
+        ).text
 
         self._check_escaped_characters(
             source_code,
             '&lt;h1&gt;test&lt;/h1&gt;',
             'Role Membership Control'
         )
-        self.page.find_by_xpath(
-            "//button[contains(@type, 'cancel') and "
-            "contains(.,'Cancel')]"
-        ).click()
+        self.page.find_by_xpath("//button/span[text()='Close']").click()
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code

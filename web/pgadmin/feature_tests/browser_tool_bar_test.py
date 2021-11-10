@@ -47,7 +47,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
               file=sys.stderr, end="")
         self.test_view_data_tool_button()
         print("OK.", file=sys.stderr)
-        #
+
         # Check for filtered rows button
         print("\nFiltered Rows ToolBar Button ",
               file=sys.stderr, end="")
@@ -60,28 +60,24 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
                                 self.test_table_name)
 
     def test_query_tool_button(self):
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
+        self.page.expand_database_node("Servers", self.server['name'],
+                                       self.server['db_password'],
+                                       self.test_db)
         self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,
              BrowserToolBarLocators.open_query_tool_button_css),
             (By.CSS_SELECTOR, BrowserToolBarLocators.query_tool_panel_css)),
             'Query tool did not open on clicking Query Tool button.')
+        self.page.close_query_tool(prompt=False)
 
     def test_view_data_tool_button(self):
-        self.page.click_a_tree_node(
-            self.test_db,
-            TreeAreaLocators.sub_nodes_of_databases_node(self.server['name']))
-        self.page.toggle_open_schema_node(
-            self.server['name'], self.server['db_password'],
-            self.test_db, 'public')
-        self.page.toggle_open_tables_node(
-            self.server['name'], self.server['db_password'],
-            self.test_db, 'public')
-        self.page.click_a_tree_node(
-            self.test_table_name,
-            TreeAreaLocators.sub_nodes_of_tables_node)
+        self.page.expand_tables_node("Servers", self.server['name'],
+                                     self.server['db_password'], self.test_db,
+                                     "public")
+
+        table_node = self.page.check_if_element_exists_with_scroll(
+            TreeAreaLocators.table_node(self.test_table_name))
+        table_node.click()
 
         self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,

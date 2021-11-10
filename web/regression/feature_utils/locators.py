@@ -249,8 +249,8 @@ class ConnectToServerDiv:
     password_field = "//input[@id='password']"
 
     ok_button = \
-        "//div [@class='alertify  ajs-modeless ajs-movable ajs-zoom']" \
-        "//button[text()='OK']"
+        "//button[@class='ajs-button btn btn-primary fa fa-check " \
+        "pg-alertify-button']"
 
     error_message = \
         "//form[@id='frmPassword']/div/div//div[@class='alert-text']"
@@ -258,3 +258,12 @@ class ConnectToServerDiv:
     cancel_button = \
         "//div [@class='alertify  ajs-modeless ajs-movable ajs-zoom']" \
         "//button[text()='Cancel']"
+
+
+class PropertyDialogueLocators:
+    # This will contain xpaths for elements in properties dialogue
+    server_dialogue_title = "//div[text()='Create - Server']"
+
+    server_connection_tab = "//button/span[text()='Connection']"
+
+    server_tab_save = "//button/span[text()='Save']"

@@ -9,12 +9,14 @@
 
 import sys
 import random
+import time
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException, \
     WebDriverException
+from selenium.webdriver.common.by import By
 from regression.feature_utils.locators import QueryToolLocators
 from regression.feature_utils.tree_area_locators import TreeAreaLocators
 
@@ -74,7 +76,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         while retry > 0:
             try:
                 self.page.refresh_page()
-                self.page.toggle_open_servers_group()
                 self._tables_node_expandable()
                 self._check_xss_in_dependents_tab()
                 retry = 0
@@ -106,15 +107,13 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             self.server, self.test_db, self.test_table_name)
 
     def _tables_node_expandable(self):
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
-        self.page.toggle_open_tables_node(self.server['name'],
-                                          self.server['db_password'],
-                                          self.test_db, 'public')
-        self.page.click_a_tree_node(
-            self.test_table_name,
-            TreeAreaLocators.sub_nodes_of_tables_node)
+        self.page.expand_tables_node("Server", self.server['name'],
+                                     self.server['db_password'], self.test_db,
+                                     'public')
+
+        table_node = self.page.check_if_element_exists_with_scroll(
+            TreeAreaLocators.table_node(self.test_table_name))
+        table_node.click()
 
     def _check_xss_in_browser_tree(self):
         print(
@@ -138,6 +137,12 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             file=sys.stderr, end=""
         )
         self.page.click_tab("SQL")
+
+        # Wait till data is displayed in SQL Tab
+        self.assertTrue(self.page.check_if_element_exist_by_xpath(
+            "//*[contains(@class,'CodeMirror-lines') and "
+            "contains(.,'CREATE TABLE')]", 10), "No data displayed in SQL tab")
+
         # Fetch the inner html & check for escaped characters
         source_code = self.page.find_by_xpath(
             "//*[contains(@class,'CodeMirror-lines') and "
@@ -197,7 +202,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "contains(@style, 'top:0px')]"
         )
 
-        cells = result_row.find_elements_by_tag_name('div')
+        cells = result_row.find_elements(By.TAG_NAME, 'div')
 
         # remove first element as it is row number.
         source_code = cells[1].get_attribute('innerHTML')
@@ -239,8 +244,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         while retry > 0:
             try:
                 history_ele = self.driver \
-                    .find_element_by_css_selector(
-                        ".query-detail .content-value")
+                    .find_element(By.CSS_SELECTOR,
+                                  ".query-detail .content-value")
                 source_code = history_ele.get_attribute('innerHTML')
                 break
             except StaleElementReferenceException:
@@ -279,7 +284,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         )
 
         self.page.find_by_css_selector(".slick-header-column")
-        cells = self.driver.\
+        cells = self.driver. \
             find_elements_by_css_selector(".slick-header-column")
 
         # remove first element as it is row number.

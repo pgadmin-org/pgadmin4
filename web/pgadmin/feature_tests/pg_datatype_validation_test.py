@@ -154,7 +154,9 @@ class PGDataypeFeatureTest(BaseFeatureTest):
     def runTest(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
-        self._schema_node_expandable()
+        self.page.expand_database_node("Server", self.server['name'],
+                                       self.server['db_password'],
+                                       self.test_db)
 
         # Check data types
         self._check_datatype()
@@ -163,17 +165,15 @@ class PGDataypeFeatureTest(BaseFeatureTest):
     def after(self):
         self.page.remove_server(self.server)
 
+    # TODO - To be remove
     def _schema_node_expandable(self):
-        self.page.expand_database_node(
-            self.server['name'],
-            self.server['db_password'], self.test_db)
+        self.page.expand_database_node("Server", self.server['name'],
+                                       self.server['db_password'],
+                                       self.test_db)
 
     def _check_datatype(self):
         # Slick grid does not render all the column if viewport is not enough
         # wide. So execute test as batch of queries.
-        self.page.click_a_tree_node(
-            self.test_db,
-            TreeAreaLocators.sub_nodes_of_databases_node(self.server['name']))
         self.page.open_query_tool()
         self._create_enum_type()
         for batch in config_data:
