@@ -1441,6 +1441,7 @@ define('pgadmin.browser', [
                 '_label': this.new._label,
                 'label': this.new.label,
               });
+              this.t.update(ctx.i, this.new);
               this.t.setLabel(ctx.i, {label: this.new.label});
               this.t.addIcon(ctx.i, {icon: this.new.icon});
               this.t.setId(ctx.i, {id: this.new.id});

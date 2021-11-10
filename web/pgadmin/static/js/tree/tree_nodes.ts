@@ -30,8 +30,8 @@ export class ManageTreeNodes {
   })
 
   public updateNode = (_path, _data)  => new Promise((res, rej) => {
-    if (_path in this.tree) {
-      const item = this.tree[_path];
+    const item = this.findNode(_path);
+    if (item) {
       item.name = _data.label;
       item.metadata.data = _data;
     }

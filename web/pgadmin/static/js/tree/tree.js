@@ -81,7 +81,7 @@ export class Tree {
   }
 
   async update(item, data) {
-    await this.tree.update(item, data.itemData);
+    await this.tree.update(item, data);
   }
 
   async remove(item) {
