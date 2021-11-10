@@ -736,6 +736,13 @@ OAUTH2_AUTO_CREATE_USER = True
 
 WEBSERVER_AUTO_CREATE_USER = True
 
+# REMOTE_USER variable will be used to check the environment variable
+# is set or not first, if not available,
+# request header will be checked for the same.
+# Possible values: REMOTE_USER, HTTP_X_FORWARDED_USER, X-Forwarded-User
+
+WEBSERVER_REMOTE_USER = 'REMOTE_USER'
+
 ##########################################################################
 # PSQL tool settings
 ##########################################################################
