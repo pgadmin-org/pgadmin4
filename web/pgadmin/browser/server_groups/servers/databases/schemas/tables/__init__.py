@@ -29,6 +29,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     columns import utils as column_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.exclusion_constraint import utils as exclusion_utils
+from pgadmin.utils.exception import ExecuteError
 
 
 class TableModule(SchemaChildModule):
@@ -1023,6 +1024,11 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             status, res = self._fetch_table_properties(did, scid, tid)
             if not status:
                 return res
+
+            lock_on_table = self.get_table_locks(did, res['rows'][0])
+            if lock_on_table != '':
+                return ExecuteError(
+                    error_msg=str(lock_on_table.json['info']))
 
             return super(TableView, self).update(
                 gid, sid, did, scid, tid, data=data, res=res)
