@@ -99,7 +99,7 @@ export class ManageTreeNodes {
         else {
           if (node.metadata.data._type.includes("coll-")) {
             let _type = node.metadata.data._type.replace("coll-", "")
-            url = _type + '/nodes/' + _parent_url;
+            url = _type + '/nodes/' + _parent_url + '/';
           }
           else {
             url = node.metadata.data._type + '/children/' + _parent_url + '/' + node.metadata.data._id;

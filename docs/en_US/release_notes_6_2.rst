@@ -22,6 +22,7 @@ Bug fixes
 | `Issue #6780 <https://redmine.postgresql.org/issues/6780>`_ -  Ensure that columns should be merged if the newly added column is present in the parent table.
 | `Issue #6809 <https://redmine.postgresql.org/issues/6809>`_ -  Fixed an issue where pgAdmin is not opening properly.
 | `Issue #6859 <https://redmine.postgresql.org/issues/6859>`_ -  Fixed an issue where properties panel is not updated when any object is added from the browser tree.
+| `Issue #6905 <https://redmine.postgresql.org/issues/6905>`_ -  Fixed an issue where database nodes are not getting loaded behind a reverse proxy with SSL.
 | `Issue #6939 <https://redmine.postgresql.org/issues/6939>`_ -  Fixed an issue where older server group name displayed in the confirmation pop-up when the user removes server group.
 | `Issue #6940 <https://redmine.postgresql.org/issues/6940>`_ -  Fixed an issue where user details are not shown when the non-admin user tries to connect to the shared server.
 | `Issue #6949 <https://redmine.postgresql.org/issues/6949>`_ -  Ensure that dialog should be opened when clicking on Reassign/Drop owned menu.
