@@ -104,7 +104,13 @@ if config.SERVER_MODE:
 
 # Authentication sources
 if len(config.AUTHENTICATION_SOURCES) > 0:
-    app.PGADMIN_EXTERNAL_AUTH_SOURCE = config.AUTHENTICATION_SOURCES[0]
+    # Creating a temporary auth source list removing INTERNAL
+    # This change is done to avoid selecting INTERNAL authentication when user
+    # mistakenly keeps that the first option.
+    auth_source = [x for x in config.AUTHENTICATION_SOURCES
+                   if x != INTERNAL]
+    app.PGADMIN_EXTERNAL_AUTH_SOURCE = auth_source[0] \
+        if len(auth_source) > 0 else INTERNAL
 else:
     app.PGADMIN_EXTERNAL_AUTH_SOURCE = INTERNAL
 

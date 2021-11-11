@@ -22,6 +22,7 @@ Bug fixes
 | `Issue #5427 <https://redmine.postgresql.org/issues/5427>`_ -  Fixed pgAdmin freezing issue by providing the error message for the operation that can't perform due to lock on the particular table.
 | `Issue #6780 <https://redmine.postgresql.org/issues/6780>`_ -  Ensure that columns should be merged if the newly added column is present in the parent table.
 | `Issue #6809 <https://redmine.postgresql.org/issues/6809>`_ -  Fixed an issue where pgAdmin is not opening properly.
+| `Issue #6832 <https://redmine.postgresql.org/issues/6832>`_ -  Ensure that internal authentication when combined with other authentication providers, the order of internal source should not matter while picking up the provider.
 | `Issue #6859 <https://redmine.postgresql.org/issues/6859>`_ -  Fixed an issue where properties panel is not updated when any object is added from the browser tree.
 | `Issue #6905 <https://redmine.postgresql.org/issues/6905>`_ -  Fixed an issue where database nodes are not getting loaded behind a reverse proxy with SSL.
 | `Issue #6939 <https://redmine.postgresql.org/issues/6939>`_ -  Fixed an issue where older server group name displayed in the confirmation pop-up when the user removes server group.
