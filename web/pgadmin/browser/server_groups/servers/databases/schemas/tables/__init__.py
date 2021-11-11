@@ -319,19 +319,19 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
 
     def get_icon_css_class(self, table_info, default_val='icon-table'):
         if ('is_inherits' in table_info and
-            table_info['is_inherits'] == '1') or \
+            table_info['is_inherits'] > '0') or \
                 ('coll_inherits' in table_info and
                  len(table_info['coll_inherits']) > 0):
 
             if ('is_inherited' in table_info and
-                table_info['is_inherited'] == '1')\
+                table_info['is_inherited'] > '0')\
                     or ('relhassubclass' in table_info and
                         table_info['relhassubclass']):
                 default_val = 'icon-table-multi-inherit'
             else:
                 default_val = 'icon-table-inherits'
         elif ('is_inherited' in table_info and
-              table_info['is_inherited'] == '1')\
+              table_info['is_inherited'] > '0')\
                 or ('relhassubclass' in table_info and
                     table_info['relhassubclass']):
             default_val = 'icon-table-inherited'
