@@ -17,7 +17,7 @@
 {% set empty_bracket = "\n(\n)"%}
 {% endif %}
 {% set with_clause = false%}
-{% if data.fillfactor or data.parallel_workers or data.toast_tuple_target or data.autovacuum_custom or data.autovacuum_enabled in ('t', 'f') or data.toast_autovacuum or data.toast_autovacuum_enabled in ('t', 'f') %}
+{% if data.fillfactor or data.parallel_workers or data.toast_tuple_target or (data.autovacuum_custom and data.add_vacuum_settings_in_sql) or data.autovacuum_enabled in ('t', 'f') or (data.toast_autovacuum and data.add_vacuum_settings_in_sql) or data.toast_autovacuum_enabled in ('t', 'f') %}
 {% set with_clause = true%}
 {% endif %}
 CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{conn|qtIdent(data.schema, data.name)}}{{empty_bracket}}

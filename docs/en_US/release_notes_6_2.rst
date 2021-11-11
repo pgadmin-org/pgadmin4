@@ -25,6 +25,7 @@ Bug fixes
 | `Issue #6832 <https://redmine.postgresql.org/issues/6832>`_ -  Ensure that internal authentication when combined with other authentication providers, the order of internal source should not matter while picking up the provider.
 | `Issue #6859 <https://redmine.postgresql.org/issues/6859>`_ -  Fixed an issue where properties panel is not updated when any object is added from the browser tree.
 | `Issue #6905 <https://redmine.postgresql.org/issues/6905>`_ -  Fixed an issue where database nodes are not getting loaded behind a reverse proxy with SSL.
+| `Issue #6925 <https://redmine.postgresql.org/issues/6925>`_ -  Fixed SQL syntax error if select "Custom auto-vacuum" option and not set Autovacuum option to Yes or No.
 | `Issue #6939 <https://redmine.postgresql.org/issues/6939>`_ -  Fixed an issue where older server group name displayed in the confirmation pop-up when the user removes server group.
 | `Issue #6940 <https://redmine.postgresql.org/issues/6940>`_ -  Fixed an issue where user details are not shown when the non-admin user tries to connect to the shared server.
 | `Issue #6949 <https://redmine.postgresql.org/issues/6949>`_ -  Ensure that dialog should be opened when clicking on Reassign/Drop owned menu.

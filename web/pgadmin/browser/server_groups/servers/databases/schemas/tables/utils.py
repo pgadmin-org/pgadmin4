@@ -2096,8 +2096,18 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if data is None:
             if vacuum_key in old_data:
                 for opt in old_data[vacuum_key]:
-                    if 'value' in opt and opt['value'] is None:
+                    if 'add_vacuum_settings_in_sql' not in old_data:
+                        old_data['add_vacuum_settings_in_sql'] = False
+
+                    if ('value' in opt and opt['value'] is None) or \
+                            ('value' in opt and opt['value'] == ''):
                         opt.pop('value')
+
+                    if 'value' in opt and 'add_vacuum_settings_in_sql' in \
+                        old_data and not \
+                            old_data['add_vacuum_settings_in_sql']:
+                        old_data['add_vacuum_settings_in_sql'] = True
+
         # Iterate vacuum table
         elif vacuum_key in data and 'changed' in data[vacuum_key] \
                 and vacuum_key in old_data:
