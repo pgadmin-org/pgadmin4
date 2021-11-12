@@ -87,8 +87,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             (By.XPATH,
              NavMenuLocators.process_watcher_alertfier))
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(
-                ".loading-logs"), 10)
+            lambda driver: driver.find_element(
+                By.CSS_SELECTOR, ".loading-logs"), 10)
 
         expected_backup_success_msg = "Successfully completed."
         self.assertEqual(status, expected_backup_success_msg)
@@ -133,8 +133,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             (By.XPATH,
              NavMenuLocators.process_watcher_alertfier))
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(
-                ".loading-logs"), 10)
+            lambda driver: driver.find_element(
+                By.CSS_SELECTOR, ".loading-logs"), 10)
         self.assertEqual(status, expected_backup_success_msg)
 
         # Check for XSS in Restore details
@@ -209,15 +209,16 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             try:
                 take_bckup.click()
                 if self.page.wait_for_element_to_disappear(
-                    lambda driver: driver.find_element_by_name(
+                    lambda driver: driver.find_element(
+                        By.NAME,
                         NavMenuLocators.backup_filename_txt_box_name)):
                     click = False
             except Exception:
                 pass
 
     def initiate_restore(self):
-        tools_menu = self.driver.find_element_by_link_text(
-            NavMenuLocators.tools_menu_link_text)
+        tools_menu = self.driver.find_element(
+            By.LINK_TEXT, NavMenuLocators.tools_menu_link_text)
         tools_menu.click()
 
         restore_obj = self.page.find_by_css_selector(
@@ -239,7 +240,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         restore_btn.click()
 
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(
+            lambda driver: driver.find_element(
+                By.CSS_SELECTOR,
                 NavMenuLocators.restore_file_name_txt_box_name))
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
@@ -286,8 +288,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         default_binary_path = self.server['default_binary_paths']
         if default_binary_path is not None:
             def get_server_version_string():
-                server_version = {130000: '13', 120000: '12', 110000: '11',
-                                  100000: '10', 90600: '9.6'}
+                server_version = {140000: '14', 130000: '13', 120000: '12',
+                                  110000: '11', 100000: '10', 90600: '9.6'}
                 for k, v in server_version.items():
                     if k <= self.server_information['server_version']:
                         return v
@@ -317,5 +319,5 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.click_modal('Save')
 
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".ajs-modal")
+            lambda driver: driver.find_element(By.CSS_SELECTOR, ".ajs-modal")
         )

@@ -193,7 +193,7 @@ class PgadminPage:
             " 'Remove Panel')]").click()
         if prompt:
             self.driver.switch_to.frame(
-                self.driver.find_elements_by_tag_name("iframe")[0])
+                self.driver.find_elements(By.TAG_NAME, "iframe")[0])
             time.sleep(.5)
             self.click_element(self.find_by_xpath(
                 '//button[contains(@class, "ajs-button") and '
@@ -241,8 +241,8 @@ class PgadminPage:
     def check_execute_option(self, option):
         """"This function will check auto commit or auto roll back based on
         user input. If button is already checked, no action will be taken"""
-        query_options = self.driver.find_element_by_css_selector(
-            QueryToolLocators.btn_query_dropdown)
+        query_options = self.driver.find_element(
+            By.CSS_SELECTOR, QueryToolLocators.btn_query_dropdown)
         expanded = query_options.get_attribute("aria-expanded")
         if expanded == "false":
             query_options.click()
@@ -250,8 +250,8 @@ class PgadminPage:
         def update_execute_option_setting(
                 css_selector_of_option_status, css_selector_of_option,):
             retry = 3
-            check_status = self.driver.find_element_by_css_selector(
-                css_selector_of_option_status)
+            check_status = self.driver.find_element(
+                By.CSS_SELECTOR, css_selector_of_option_status)
             if 'visibility-hidden' in check_status.get_attribute('class'):
                 while retry > 0:
                     self.find_by_css_selector(css_selector_of_option).click()

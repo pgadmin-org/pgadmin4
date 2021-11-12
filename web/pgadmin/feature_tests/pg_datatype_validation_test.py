@@ -137,7 +137,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         self.page.click_modal('Save')
 
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".ajs-modal")
+            lambda driver: driver.find_element(By.CSS_SELECTOR, ".ajs-modal")
         )
         time.sleep(0.5)
 
@@ -200,8 +200,8 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
             # For every sample data-type value, check the expected output.
             cnt = 2
-            cells = canvas.find_elements_by_css_selector(
-                QueryToolLocators.query_output_cells)
+            cells = canvas.find_elements(
+                By.CSS_SELECTOR, QueryToolLocators.query_output_cells)
             # remove first element as it is row number.
             cells.pop(0)
             for val, cell, datatype in zip(

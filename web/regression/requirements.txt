@@ -25,5 +25,5 @@ python-mimeparse==1.6.0
 testscenarios==0.5.0
 testtools==2.3.0
 traceback2==1.4.0
-selenium==4.0.0
+selenium==4.0.0a6
 coverage==5.0.1

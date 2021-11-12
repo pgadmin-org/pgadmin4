@@ -285,7 +285,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         self.page.find_by_css_selector(".slick-header-column")
         cells = self.driver. \
-            find_elements_by_css_selector(".slick-header-column")
+            find_elements(By.CSS_SELECTOR, ".slick-header-column")
 
         # remove first element as it is row number.
         # currently 4th col
@@ -315,9 +315,9 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             # Re-try logic
             try:
                 ActionChains(self.driver).move_to_element(
-                    self.driver.find_element_by_css_selector(
-                        'div.pgadmin-explain-container > svg > g > g > image'
-                    )
+                    self.driver.find_element(
+                        By.CSS_SELECTOR,
+                        'div.pgadmin-explain-container > svg > g > g > image')
                 ).click().perform()
                 break
             except Exception:
@@ -331,7 +331,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                     )
                     raise
 
-        source_code = self.driver.find_element_by_css_selector(
+        source_code = self.driver.find_element(
+            By.CSS_SELECTOR,
             '.pgadmin-explain-details:not(.d-none)').get_attribute('innerHTML')
 
         self._check_escaped_characters(

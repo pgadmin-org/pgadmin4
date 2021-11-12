@@ -56,8 +56,8 @@ class CopySQLFeatureTest(BaseFeatureTest):
             % self.test_table_name, 10), "No data displayed in SQL tab")
 
         # Fetch the inner html & check for escaped characters
-        source_code = self.driver.find_elements_by_xpath(
-            QueryToolLocators.code_mirror_data_xpath)
+        source_code = self.driver.find_elements(
+            By.XPATH, QueryToolLocators.code_mirror_data_xpath)
 
         sql_query = ''
         for data in source_code:
@@ -74,10 +74,10 @@ class CopySQLFeatureTest(BaseFeatureTest):
 
         self.driver.switch_to.default_content()
         self.driver.switch_to.frame(
-            self.driver.find_element_by_tag_name("iframe"))
+            self.driver.find_element(By.TAG_NAME, "iframe"))
 
-        code_mirror = self.driver.find_elements_by_xpath(
-            QueryToolLocators.code_mirror_data_xpath)
+        code_mirror = self.driver.find_elements(
+            By.XPATH, QueryToolLocators.code_mirror_data_xpath)
         query_tool_result = ''
         for data in code_mirror:
             query_tool_result += data.text

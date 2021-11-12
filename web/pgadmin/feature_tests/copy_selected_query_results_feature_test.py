@@ -12,6 +12,7 @@ import time
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.feature_utils.locators import QueryToolLocators
@@ -62,7 +63,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
     def paste_values_to_scratch_pad(self):
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to.frame(
-            self.page.driver.find_element_by_tag_name("iframe"))
+            self.page.driver.find_element(By.TAG_NAME, "iframe"))
         scratch_pad_ele = self.page.find_by_css_selector(
             QueryToolLocators.scratch_pad_css)
         self.page.paste_values(scratch_pad_ele)

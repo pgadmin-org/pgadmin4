@@ -468,8 +468,9 @@ SELECT relname FROM pg_catalog.pg_class
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
-        el = canvas.find_elements_by_xpath(
-            QueryToolLocators.output_column_data_xpath.format(table_name))
+        el = canvas.find_elements(
+            By.XPATH, QueryToolLocators.output_column_data_xpath.format(
+                table_name))
 
         assert len(el) != 0, "Table '{}' is not created with auto " \
                              "commit enabled.".format(table_name)
@@ -561,8 +562,9 @@ SELECT relname FROM pg_catalog.pg_class
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
-        el = canvas.find_elements_by_xpath(
-            QueryToolLocators.output_column_data_xpath.format(table_name))
+        el = canvas.find_elements(
+            By.XPATH, QueryToolLocators.output_column_data_xpath.format(
+                table_name))
 
         assert len(el) == 0, "Table '{}' created even after ROLLBACK due to " \
                              "sql error.".format(table_name)

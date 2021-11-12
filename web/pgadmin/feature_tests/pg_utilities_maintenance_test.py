@@ -81,8 +81,8 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         self._open_maintenance_dialogue()
         self.page.click_modal('OK')
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_xpath(
-                NavMenuLocators.maintenance_operation))
+            lambda driver: driver.find_element(
+                By.XPATH, NavMenuLocators.maintenance_operation))
 
         # Wait for the backup status alertfier
         self.wait.until(EC.visibility_of_element_located(
@@ -129,8 +129,8 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             (By.XPATH,
              NavMenuLocators.process_watcher_alertfier))
         self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element_by_css_selector(".loading-logs")
-        )
+            lambda driver: driver.find_element(
+                By.CSS_SELECTOR, ".loading-logs"))
 
         if status != "Successfully completed.":
             self.assertEqual(status, "Successfully completed.")

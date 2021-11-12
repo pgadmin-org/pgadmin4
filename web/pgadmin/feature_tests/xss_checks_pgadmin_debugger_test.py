@@ -134,7 +134,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
             self._close_debugger()
 
     def _close_debugger(self):
-        self.page.driver.switch_to_default_content()
+        self.page.driver.switch_to.default_content()
         self.page.click_element(
             self.page.find_by_xpath(
                 "//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]")
