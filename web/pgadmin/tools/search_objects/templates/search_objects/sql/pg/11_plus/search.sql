@@ -147,7 +147,7 @@ FROM (
         WHEN t.typname IN ('trigger', 'event_trigger') THEN lng.lanname NOT IN ('edbspl', 'sql', 'internal')
         ELSE true
         END
-    AND ({{ CATALOGS.DB_SUPPORT('n') }}) AND NOT p.proisagg
+    AND ({{ CATALOGS.DB_SUPPORT('n') }}) AND p.prokind != 'a'
 {% endif %}
 {% if all_obj %}
     UNION

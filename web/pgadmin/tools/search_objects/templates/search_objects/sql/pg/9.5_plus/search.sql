@@ -374,7 +374,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['aggregate'] %}
-    SELECT 'aggregate' AS obj_type, pr.proname AS obj_name,
+    SELECT 'aggregate'::text AS obj_type, pr.proname AS obj_name,
     ':schema.'|| ns.oid || ':/' || ns.nspname || '/' || ':aggregate.' || ag.aggfnoid::oid ||':/' || pr.proname AS obj_path,
     ns.nspname AS schema_name,
     {{ show_node_prefs['aggregate'] }} AS show_node, pg_catalog.pg_get_function_arguments(aggfnoid::oid) AS other_info
@@ -387,7 +387,7 @@ FROM (
     UNION
 {% endif %}
 {% if all_obj or obj_type in ['operator'] %}
-    SELECT 'operator' AS obj_type, op.oprname AS obj_name,
+    SELECT 'operator'::text AS obj_type, op.oprname AS obj_name,
     ':schema.'|| ns.oid || ':/' || ns.nspname || '/' || ':operator.' || op.oid::oid ||':/' || op.oprname AS obj_path,
     ns.nspname AS schema_name,
     {{ show_node_prefs['operator'] }} AS show_node,

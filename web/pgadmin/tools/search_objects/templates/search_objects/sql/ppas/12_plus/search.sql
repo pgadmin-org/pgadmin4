@@ -164,7 +164,7 @@ FROM (
         ON t.oid = pr.prorettype left JOIN pg_catalog.pg_language l
         ON l.oid = pr.prolang
         WHERE NOT (t.typname = 'trigger' AND l.lanname = 'edbspl')
-        AND ({{ CATALOGS.DB_SUPPORT('n') }} AND {{ CATALOGS.DB_SUPPORT('np') }}) AND NOT pr.proisagg
+        AND ({{ CATALOGS.DB_SUPPORT('n') }} AND {{ CATALOGS.DB_SUPPORT('np') }}) AND pr.prokind != 'a'
     ) fd
     {% if not all_obj %}
     WHERE fd.obj_type = '{{ obj_type }}'
