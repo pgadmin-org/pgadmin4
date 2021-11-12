@@ -147,7 +147,7 @@ FROM (
         WHEN t.typname IN ('trigger', 'event_trigger') THEN lng.lanname NOT IN ('edbspl', 'sql', 'internal')
         ELSE true
         END
-    AND ({{ CATALOGS.DB_SUPPORT('n') }})
+    AND ({{ CATALOGS.DB_SUPPORT('n') }}) AND NOT p.proisagg
 {% endif %}
 {% if all_obj %}
     UNION
@@ -515,6 +515,40 @@ FROM (
     JOIN pg_catalog.pg_policies rw ON (pl.polname=rw.policyname AND t.relname=rw.tablename)
     JOIN pg_catalog.pg_namespace n on t.relnamespace = n.oid
     where {{ CATALOGS.DB_SUPPORT('n') }}
+{% endif %}
+{% if all_obj %}
+    UNION
+{% endif %}
+{% if all_obj or obj_type in ['aggregate'] %}
+    SELECT 'aggregate' AS obj_type, pr.proname AS obj_name,
+    ':schema.'|| ns.oid || ':/' || ns.nspname || '/' || ':aggregate.' || ag.aggfnoid::oid ||':/' || pr.proname AS obj_path,
+    ns.nspname AS schema_name,
+    {{ show_node_prefs['aggregate'] }} AS show_node, pg_catalog.pg_get_function_arguments(aggfnoid::oid) AS other_info
+    FROM pg_aggregate ag
+    LEFT OUTER JOIN pg_catalog.pg_proc pr ON pr.oid = ag.aggfnoid
+    LEFT OUTER JOIN pg_catalog.pg_namespace ns ON ns.oid=pr.pronamespace
+    WHERE ({{ CATALOGS.DB_SUPPORT('ns') }})
+{% endif %}
+{% if all_obj %}
+    UNION
+{% endif %}
+{% if all_obj or obj_type in ['operator'] %}
+    SELECT 'operator' AS obj_type, op.oprname AS obj_name,
+    ':schema.'|| ns.oid || ':/' || ns.nspname || '/' || ':operator.' || op.oid::oid ||':/' || op.oprname AS obj_path,
+    ns.nspname AS schema_name,
+    {{ show_node_prefs['operator'] }} AS show_node,
+    CASE WHEN lt.typname IS NOT NULL AND rt.typname IS NOT NULL THEN
+		pg_catalog.format_type(lt.oid, NULL) || ', ' || pg_catalog.format_type(rt.oid, NULL)
+	 WHEN lt.typname IS NULL AND rt.typname IS NOT NULL THEN
+	    pg_catalog.format_type(rt.oid, NULL)
+	 WHEN lt.typname IS NOT NULL AND rt.typname IS NULL THEN
+	    pg_catalog.format_type(lt.oid, NULL)
+	 ELSE '' END AS other_info
+    FROM pg_catalog.pg_operator op
+    LEFT OUTER JOIN pg_catalog.pg_namespace ns ON ns.oid=op.oprnamespace
+    LEFT OUTER JOIN pg_catalog.pg_type lt ON lt.oid=op.oprleft
+    LEFT OUTER JOIN pg_catalog.pg_type rt ON rt.oid=op.oprright
+    WHERE ({{ CATALOGS.DB_SUPPORT('ns') }})
 {% endif %}
 
 ) sn
