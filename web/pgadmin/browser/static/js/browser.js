@@ -430,7 +430,7 @@ define('pgadmin.browser', [
 
         // Stored layout in database from the previous session
         var layout = pgBrowser.utils.layout;
-        obj.restore_layout(obj.docker, layout, obj.buildDefaultLayout.bind(obj));
+        obj.restore_layout(obj.docker, layout, obj.buildDefaultLayout.bind(obj), true);
 
         obj.docker.on(wcDocker.EVENT.LAYOUT_CHANGED, function() {
           obj.save_current_layout('Browser/Layout', obj.docker);

@@ -56,28 +56,21 @@ _.extend(pgBrowser, {
     }
   },
 
-  restore_layout: function(docker, layout, defaultLayoutCallback) {
+  restore_layout: function(docker, layout, defaultLayoutCallback, checkLayout= false) {
     // Try to restore the layout if there is one
     if (layout != '') {
       try {
         docker.restore(layout);
-        // Check restore layout is restored pgAdmin 4 layout successfully if not then reset layout to default pgAdmin 4 layout.
-        var reset_layout_to_default = true;
-        for (const [key, value] of Object.entries(this.panels)) {
-          if(value.name !== 'browser' || key !== 'browser') {
-            var _panel = docker.findPanels(value.name);
-            if(_panel.length > 0){
-              reset_layout_to_default = false;
-              break;
+        if(checkLayout) {
+          // Check restore layout is restored pgAdmin 4 layout successfully if not then reset layout to default pgAdmin 4 layout.
+          var _panel = docker.findPanels('properties');
+          if(_panel.length == 0 && defaultLayoutCallback){
+            // clear the wcDocker before reset layout.
+            docker.clear();
+            Alertify.info(gettext('pgAdmin has detected some issues with the UI layout, so reset it to the default.'), 0);
+            if(defaultLayoutCallback){
+              defaultLayoutCallback(docker);
             }
-          }
-        }
-        if(reset_layout_to_default && defaultLayoutCallback) {
-          // clear the wcDocker before reset layout.
-          docker.clear();
-          Alertify.info(gettext('pgAdmin has detected some issues with the UI layout, so reset it to the default.'), 0);
-          if(defaultLayoutCallback){
-            defaultLayoutCallback(docker);
           }
         }
       }
