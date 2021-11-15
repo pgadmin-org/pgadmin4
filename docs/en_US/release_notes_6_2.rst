@@ -28,6 +28,8 @@ Bug fixes
 | `Issue #6905 <https://redmine.postgresql.org/issues/6905>`_ -  Fixed an issue where database nodes are not getting loaded behind a reverse proxy with SSL.
 | `Issue #6925 <https://redmine.postgresql.org/issues/6925>`_ -  Fixed SQL syntax error if select "Custom auto-vacuum" option and not set Autovacuum option to Yes or No.
 | `Issue #6939 <https://redmine.postgresql.org/issues/6939>`_ -  Fixed an issue where older server group name displayed in the confirmation pop-up when the user removes server group.
+| `Issue #6944 <https://redmine.postgresql.org/issues/6944>`_ -  Fixed an issue where JSON editor preview colours have inappropriate contrast in dark mode.
+| `Issue #6945 <https://redmine.postgresql.org/issues/6945>`_ -  Fixed JSON Editor scrolling issue in code mode.
 | `Issue #6940 <https://redmine.postgresql.org/issues/6940>`_ -  Fixed an issue where user details are not shown when the non-admin user tries to connect to the shared server.
 | `Issue #6949 <https://redmine.postgresql.org/issues/6949>`_ -  Ensure that dialog should be opened when clicking on Reassign/Drop owned menu.
 | `Issue #6954 <https://redmine.postgresql.org/issues/6954>`_ -  Ensure that changing themes should work on Windows when system high contrast mode is enabled.

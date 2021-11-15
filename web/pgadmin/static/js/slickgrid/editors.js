@@ -327,6 +327,12 @@ import Alertify from 'pgadmin.alertifyjs';
       }
     };
 
+    this.resizeJsoneditorObserver = new ResizeObserver(() => {
+      if ($editor){
+        $editor.resize();
+      }
+    });
+
     this.save = function() {
       args.commitChanges();
     };
@@ -352,6 +358,7 @@ import Alertify from 'pgadmin.alertifyjs';
     };
 
     this.destroy = function() {
+      this.resizeJsoneditorObserver.unobserve(document.getElementById('pg-json-editor'));
       $editor.destroy();
       $wrapper.remove();
     };
@@ -408,6 +415,7 @@ import Alertify from 'pgadmin.alertifyjs';
           throw(error);
         }, 'jsoneditorchunk');
       }
+      this.resizeJsoneditorObserver.observe(document.getElementById('pg-json-editor'));
     };
 
     this.serializeValue = function() {
@@ -641,6 +649,7 @@ import Alertify from 'pgadmin.alertifyjs';
     };
 
     this.destroy = function() {
+      this.resizeJsoneditorObserver.unobserve(document.getElementById('pg-json-editor'));
       $editor.destroy();
       $wrapper.remove();
     };
@@ -648,6 +657,13 @@ import Alertify from 'pgadmin.alertifyjs';
     this.focus = function() {
       $editor.focus();
     };
+
+    // listen to resize event for json editor
+    this.resizeJsoneditorObserver = new ResizeObserver(() => {
+      if ($editor){
+        $editor.resize();
+      }
+    });
 
     this.loadValue = function(item) {
       var data = defaultValue = item[args.column.field];
@@ -689,6 +705,7 @@ import Alertify from 'pgadmin.alertifyjs';
       }, function(error){
         throw(error);
       }, 'jsoneditorchunk');
+      this.resizeJsoneditorObserver.observe(document.getElementById('pg-json-editor'));
     };
 
     this.serializeValue = function() {

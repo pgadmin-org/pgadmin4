@@ -230,7 +230,9 @@ div.jsoneditor td.jsoneditor-tree {
 }
 
 pre.jsoneditor-preview{
- background-color: $color-gray-lighter !important;
+  background-color: $color-gray-lighter !important;
+  opacity: 0.8;
+  color: $color-fg;
 }
 
 
