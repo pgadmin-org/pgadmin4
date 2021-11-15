@@ -102,11 +102,18 @@ class ServerType(object):
                     bin_paths_server_based = \
                         copy.deepcopy(BINARY_PATHS['as_bin_paths'])
 
+                bin_path_dict = \
+                    {item['version']: item for item in bin_paths_server_based}
+                old_path_dict = \
+                    {item['version']: item for item in json.loads(old_path)}
+
+                for item in bin_path_dict:
+                    bin_path_dict[item].update(old_path_dict.get(item, {}))
+
+                bin_paths_server_based = list(bin_path_dict.values())
                 if not ServerType.is_binary_path_of_type_json(old_path):
                     set_binary_path(old_path, bin_paths_server_based,
                                     key, set_as_default=True)
-                else:
-                    bin_paths_server_based = json.loads(old_path)
 
                 # Set the DEFAULT_BINARY_PATHS if any
                 ServerType.set_default_binary_path(bin_paths_server_based, key)
