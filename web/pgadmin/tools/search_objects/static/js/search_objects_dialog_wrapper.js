@@ -289,7 +289,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
       tree.findNodeWithToggle(rowData.id_path)
         .then((treeItem)=>{
           setTimeout(() => {
-            tree.select(treeItem, true);
+            tree.select(treeItem, true, 'center');
           }, 100);
           this.showMessage(null);
         })

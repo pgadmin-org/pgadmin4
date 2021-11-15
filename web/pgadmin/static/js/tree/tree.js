@@ -140,12 +140,12 @@ export class Tree {
     await this.tree.toggleDirectory(item);
   }
 
-  async select(item, ensureVisible=false) {
-    await this.tree.setActiveFile(item, ensureVisible);
+  async select(item, ensureVisible=false, align='auto') {
+    await this.tree.setActiveFile(item, ensureVisible, align);
   }
 
-  async selectNode(item, ensureVisible=false) {
-    this.tree.setActiveFile(item, ensureVisible);
+  async selectNode(item, ensureVisible=false, align='auto') {
+    this.tree.setActiveFile(item, ensureVisible, align);
   }
 
   async unload(item) {
