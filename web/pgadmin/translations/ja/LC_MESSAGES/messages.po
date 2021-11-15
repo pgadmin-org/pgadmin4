@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-12 20:00+0530\n"
-"PO-Revision-Date: 2021-10-04 02:21+0900\n"
+"PO-Revision-Date: 2021-11-13 22:32+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -231,11 +231,11 @@ msgstr "構成パラメータを正しく設定してください。"
 
 #: pgadmin/authenticate/webserver.py:74
 msgid "webserver"
-msgstr ""
+msgstr "ウェブサーバー"
 
 #: pgadmin/authenticate/webserver.py:90
 msgid "Webserver authenticate failed."
-msgstr ""
+msgstr "ウェブサーバーの認証に失敗しました。"
 
 #: pgadmin/browser/__init__.py:69
 msgid "Your password has not been changed."
@@ -2606,59 +2606,59 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/__init__.py:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.js:22
 msgid "Aggregates"
-msgstr ""
+msgstr "集約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.js:35
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.js:66
 msgid "Aggregate"
-msgstr ""
+msgstr "集約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:72
 msgid "System aggregate?"
-msgstr ""
+msgstr "システムの集約"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:81
 msgid "Input types"
-msgstr ""
+msgstr "入力型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:86
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:125
 msgid "State type"
-msgstr ""
+msgstr "状態型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:91
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:130
 msgid "State function"
-msgstr ""
+msgstr "状態関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:96
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:135
 msgid "State data size"
-msgstr ""
+msgstr "状態データのサイズ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:101
 msgid "Final type"
-msgstr ""
+msgstr "最終型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:106
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:140
 msgid "Final function"
-msgstr ""
+msgstr "最終関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:111
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:145
 msgid "Final function modify"
-msgstr ""
+msgstr "最終関数の変更属性"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:116
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:150
 msgid "Pass extra arguments to final function"
-msgstr ""
+msgstr "最終関数に追加の引数を渡す"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:120
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:159
 msgid "Initial condition"
-msgstr ""
+msgstr "初期の状態値"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:126
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:131
@@ -2669,15 +2669,15 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:155
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:160
 msgid "Moving Options"
-msgstr ""
+msgstr "移動集約のオプション"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:154
 msgid "Inverse function"
-msgstr ""
+msgstr "逆遷移関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:164
 msgid "Sort operator"
-msgstr ""
+msgstr "並べ替え演算子"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:165
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:170
@@ -2697,15 +2697,15 @@ msgstr "詳細設定"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:169
 msgid "Combine function"
-msgstr ""
+msgstr "結合関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:174
 msgid "Serialization function"
-msgstr ""
+msgstr "シリアライズ化関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:179
 msgid "Deserialization function"
-msgstr ""
+msgstr "デシリアライズ化関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/__init__.py:47
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/static/js/catalog_object.js:29
@@ -3709,7 +3709,7 @@ msgstr "自身の実行時間"
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/__init__.py:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.js:22
 msgid "Operators"
-msgstr ""
+msgstr "演算子"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.js:35
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.js:66
@@ -3719,19 +3719,19 @@ msgstr "演算子"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:59
 msgid "System operator?"
-msgstr ""
+msgstr "システムの演算子"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:68
 msgid "Left type"
-msgstr ""
+msgstr "左辺の型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:73
 msgid "Right type"
-msgstr ""
+msgstr "右辺の型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:78
 msgid "Result type"
-msgstr ""
+msgstr "結果型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:83
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.js:114
@@ -3741,11 +3741,11 @@ msgstr "種別"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:88
 msgid "Operator function"
-msgstr ""
+msgstr "演算子関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:93
 msgid "Restrict function"
-msgstr ""
+msgstr "制約関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:94
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:99
@@ -3754,27 +3754,27 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:114
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:119
 msgid "Implementation"
-msgstr ""
+msgstr "実装"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:98
 msgid "Join function"
-msgstr ""
+msgstr "結合関数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:103
 msgid "Commutator"
-msgstr ""
+msgstr "交代演算子"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:108
 msgid "Negator"
-msgstr ""
+msgstr "否定演算子"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:113
 msgid "Supports hash"
-msgstr ""
+msgstr "ハッシュ結合可"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/operators/static/js/operator.ui.js:118
 msgid "Supports merge"
-msgstr ""
+msgstr "マージ結合可"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.js:36
@@ -4217,6 +4217,8 @@ msgid ""
 "Please try again later. \r\n"
 "Blocking Process ID : {0} Application Name : {1}"
 msgstr ""
+"このテーブルは現在ロックされているため、操作を完了できません。後でもう一度試してください。 \r\n"
+"ブロックしているプロセス ID : {0} アプリケーション名 : {1}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:491
 msgid "Column is dropped"
@@ -5241,7 +5243,7 @@ msgstr "行 (算出)"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:270
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:826
 msgid "Is inherited?"
-msgstr ""
+msgstr "継承"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:274
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:323
@@ -5527,7 +5529,7 @@ msgstr "ルール..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:197
 msgid "Disable rule failed"
-msgstr ""
+msgstr "ルールの無効化に失敗しました"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:246
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:218
@@ -5537,7 +5539,7 @@ msgstr "名前を指定してください。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:81
 msgid "Rule enabled?"
-msgstr ""
+msgstr "ルールを有効化"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:110
 msgid "Do instead?"
@@ -9476,7 +9478,7 @@ msgstr "追加情報"
 msgid ""
 "pgAdmin has detected some issues with the UI layout, so reset it to the "
 "default."
-msgstr ""
+msgstr "UI のレイアウトに何か問題が発生したため、既定の状態に初期化します。"
 
 #: pgadmin/browser/static/js/layout.js:163
 msgid "Failed to save the lock layout setting."
@@ -12471,7 +12473,7 @@ msgstr "デバッグ"
 #: pgadmin/tools/debugger/static/js/debugger.js:149
 #: pgadmin/tools/debugger/static/js/debugger.js:178
 msgid "Set Breakpoint"
-msgstr ""
+msgstr "ブレークポイントを設定"
 
 #: pgadmin/tools/debugger/static/js/debugger.js:325
 #: pgadmin/tools/debugger/static/js/debugger.js:494
@@ -12826,11 +12828,11 @@ msgstr "参照先の列"
 
 #: pgadmin/tools/erd/static/js/erd_tool/nodes/TableNode.jsx:240
 msgid "Fetching..."
-msgstr ""
+msgstr "取得しています..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/nodes/TableNode.jsx:241
 msgid "Failed to get data. Please delete this table."
-msgstr ""
+msgstr "データの取得に失敗しました。このテーブルを削除してください。"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:199
 msgid "Client error"
@@ -12861,7 +12863,7 @@ msgstr "テーブル: %s (%s)"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:392
 msgid "Cannot drop table from outside of the current database."
-msgstr ""
+msgstr "現在のデータベースの外部に存在するテーブルは削除できません。"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:435
 msgid "Delete ?"
@@ -14996,75 +14998,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー: {0}"
-
-#~ msgid "Inherits tables?"
-#~ msgstr "テーブルを継承"
-
-#~ msgid "Enable trigger"
-#~ msgstr "トリガを有効化"
-
-#~ msgid "Disable trigger"
-#~ msgstr "トリガを無効化"
-
-#~ msgid "Refresh..."
-#~ msgstr "再読み込み..."
-
-#~ msgid "EDB Advanced Server Help Path"
-#~ msgstr "EDB Advanced Server のヘルプパス"
-
-#~ msgid ""
-#~ "Path to the EDB Advanced Server "
-#~ "documentation. $VERSION$ will be replaced "
-#~ "with the major.minor version number."
-#~ msgstr ""
-#~ "EDB Advanced Server ドキュメントへのパスです。$VERSION$ は"
-#~ " major.minor のバージョン番号で置換されます。"
-
-#~ msgid "Set breakpoint"
-#~ msgstr "ブレークポイントを設定"
-
-#~ msgid "Left Table"
-#~ msgstr "左テーブル"
-
-#~ msgid "Left table Column"
-#~ msgstr "左テーブルの列"
-
-#~ msgid "Right Table"
-#~ msgstr "右テーブル"
-
-#~ msgid "Right table Column"
-#~ msgstr "右テーブルの列"
-
-#~ msgid "Select the left table column."
-#~ msgstr "左テーブルの列を選択してください。"
-
-#~ msgid "Select the right table."
-#~ msgstr "右テーブルを選択してください。"
-
-#~ msgid "Select the right table column."
-#~ msgstr "右テーブルの列を選択してください。"
-
-#~ msgid "Select the local column."
-#~ msgstr "ローカルの列を選択してください。"
-
-#~ msgid "Select the referenced table."
-#~ msgstr "参照先のテーブルを選択してください。"
-
-#~ msgid "Select the referenced table column."
-#~ msgstr "参照先のテーブルの列を選択してください。"
-
-#~ msgid "Column name cannot be empty."
-#~ msgstr "列名は必須です。"
-
-#~ msgid "Column type cannot be empty."
-#~ msgstr "列のデータ型は必須です。"
-
-#~ msgid "Table name cannot be empty."
-#~ msgstr "テーブル名は必須です。"
-
-#~ msgid "Table name already exists."
-#~ msgstr "テーブル名はすでに存在します。"
-
-#~ msgid "Table schema cannot be empty."
-#~ msgstr "スキーマは必須です。"
 
