@@ -99,6 +99,9 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
         "/".join([template_path, 'column_details.sql']), idx=idx
     )
     status, rset = conn.execute_2darray(SQL)
+    # Remove column if duplicate column is present in list.
+    rset['rows'] = [i for n, i in enumerate(rset['rows']) if
+                    i not in rset['rows'][n + 1:]]
     if not status:
         return internal_server_error(errormsg=rset)
 
