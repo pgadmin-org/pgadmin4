@@ -603,7 +603,8 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
                                                         version_of_browser,
                                                         ser['name'])
                     # Launch client url in browser
-                    test_utils.launch_url_in_browser(driver_object, url_client)
+                    test_utils.launch_url_in_browser(
+                        driver_object, url_client, 60)
 
                     # Add name for thread
                     thread_name = "parallel_tests" + ser['name']

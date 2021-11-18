@@ -431,7 +431,7 @@ class PgadminPage:
         :param server_group_name: containing server
         :param server_name:
         :param server_password:
-        :return: true if server node is expnaded else false
+        :return: true if server node is expanded else false
         """
         server_expanded = False
         server_node_xpath = TreeAreaLocators.server_node(server_name)
@@ -444,14 +444,14 @@ class PgadminPage:
                 self.driver.execute_script(
                     self.js_executor_scrollintoview_arg, server_node)
                 if self.check_if_element_exist_by_xpath(
-                        server_node_exp_status_xpath, 1):
+                        server_node_exp_status_xpath, 2):
                     server_expanded = True
                 else:
                     server_expanded = self.click_expand_server_node(
                         server_name, server_password, server_node)
                     if not server_expanded:
                         print("(expand_server_node)The Server node is not "
-                              "expnaded", file=sys.stderr)
+                              "expanded", file=sys.stderr)
             else:
                 print("(expand_server_node)The Server node not found",
                       file=sys.stderr)
@@ -478,7 +478,8 @@ class PgadminPage:
                 webdriver.ActionChains(self.driver).double_click(
                     server_node).perform()
                 if self.check_if_element_exist_by_xpath(
-                        TreeAreaLocators.server_node_exp_status(server_name)):
+                        TreeAreaLocators.server_node_exp_status(server_name),
+                        10):
                     server_node_expansion_status = True
         else:
             if self.click_and_connect_server(server_name, server_password):
@@ -586,7 +587,7 @@ class PgadminPage:
                 server_child_expanded = self.click_to_expand_tree_node(
                     child_node_ele, server_child_node_exp_status_xpath)
                 if not server_child_expanded:
-                    print("Child not is not expanded after clickng ",
+                    print("Child not is not expanded after clicking ",
                           file=sys.stderr)
         else:
             print("The server/previous nodes not expanded", file=sys.stderr)
@@ -1293,7 +1294,8 @@ class PgadminPage:
                             top_el).perform()
                         r_scroll -= 1
         else:
-            print("check_if_element_exists_with_scroll > Element NOT found")
+            print("check_if_element_exists_with_scroll > Element NOT found",
+                  xpath, file=sys.stderr)
             return False
 
     def find_by_xpath_list(self, xpath):

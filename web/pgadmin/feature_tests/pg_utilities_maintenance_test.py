@@ -165,19 +165,24 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         test_gui_helper.close_process_watcher(self)
 
     def after(self):
-        test_gui_helper.close_bgprocess_popup(self)
-        test_utils.delete_table(self.server, self.database_name,
-                                self.table_name)
-        self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, self.database_name)
+        try:
+            test_gui_helper.close_bgprocess_popup(self)
+            test_utils.delete_table(self.server, self.database_name,
+                                    self.table_name)
+            self.page.remove_server(self.server)
+        except Exception as e:
+            print("PGUtilitiesMaintenanceFeatureTest - "
+                  "Exception occurred in after method")
+        finally:
+            connection = test_utils.get_db_connection(
+                self.server['db'],
+                self.server['username'],
+                self.server['db_password'],
+                self.server['host'],
+                self.server['port'],
+                self.server['sslmode']
+            )
+            test_utils.drop_database(connection, self.database_name)
 
     def check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code

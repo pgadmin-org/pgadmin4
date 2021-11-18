@@ -88,7 +88,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
              NavMenuLocators.process_watcher_alertfier))
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element(
-                By.CSS_SELECTOR, ".loading-logs"), 10)
+                By.CSS_SELECTOR, ".loading-logs"), 18)
 
         expected_backup_success_msg = "Successfully completed."
         self.assertEqual(status, expected_backup_success_msg)
@@ -157,18 +157,23 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             os.remove(backup_file)
 
     def after(self):
-        test_gui_helper.close_process_watcher(self)
-        test_gui_helper.close_bgprocess_popup(self)
-        self.page.remove_server(self.server)
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        test_utils.drop_database(connection, self.database_name)
+        try:
+            test_gui_helper.close_process_watcher(self)
+            test_gui_helper.close_bgprocess_popup(self)
+            self.page.remove_server(self.server)
+        except Exception as e:
+            print("PGUtilitiesBackupFeatureTest - "
+                  "Exception occurred in after method")
+        finally:
+            connection = test_utils.get_db_connection(
+                self.server['db'],
+                self.server['username'],
+                self.server['db_password'],
+                self.server['host'],
+                self.server['port'],
+                self.server['sslmode']
+            )
+            test_utils.drop_database(connection, self.database_name)
 
     def _check_detailed_window_for_xss(self, tool_name):
         source_code = self.page.find_by_css_selector(
