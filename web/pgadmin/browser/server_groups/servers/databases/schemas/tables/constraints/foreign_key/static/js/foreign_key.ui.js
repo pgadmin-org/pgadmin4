@@ -37,6 +37,7 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
       local_column: undefined,
       references: undefined,
       referenced: undefined,
+      _disable_references: false,
     });
 
     this.fieldOptions = fieldOptions;
@@ -48,12 +49,12 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
   }
 
   addDisabled(state) {
-    return !(state.local_column && state.references && state.referenced);
+    return !(state.local_column && (state.references || this.origData.references) && state.referenced);
   }
 
   /* Data to ForeignKeyColumnSchema will added using the header form */
   getNewData(data) {
-    let references_table_name = _.find(this.refTables, (t)=>t.value==data.references)?.label;
+    let references_table_name = _.find(this.refTables, (t)=>t.value==data.references || t.value == this.origData.references)?.label;
     return {
       local_column: data.local_column,
       referenced: data.referenced,
@@ -73,6 +74,9 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
       options: this.fieldOptions.references,
       optionsReloadBasis: this.fieldOptions.references?.map ? _.join(this.fieldOptions.references.map((c)=>c.label), ',') : null,
       optionsLoaded: (rows)=>obj.refTables=rows,
+      disabled: (state) => {
+        return state._disable_references ? true : false;
+      }
     },{
       id: 'referenced', label: gettext('Referencing'), editable: false, deps: ['references'],
       type: (state)=>{
@@ -82,6 +86,9 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
           optionsReloadBasis: state.references,
         };
       },
+    },
+    {
+      id: '_disable_references', label: '', type: 'switch', visible: false
     }];
   }
 }
@@ -357,6 +364,12 @@ export default class ForeignKeySchema extends BaseUISchema {
               currColumns[idx].local_column = _.get(topState, tabColPath).name;
             }
           }
+        }
+        if(actionObj.type == SCHEMA_STATE_ACTIONS.ADD_ROW) {
+          obj.fkHeaderSchema.origData.references = null;
+          // Set references value.
+          obj.fkHeaderSchema.origData.references = obj.fkHeaderSchema.sessData.references;
+          obj.fkHeaderSchema.origData._disable_references = true;
         }
         return {columns: currColumns};
       },
