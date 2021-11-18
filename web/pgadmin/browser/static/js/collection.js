@@ -431,7 +431,10 @@ define([
                 pgBrowser.Events.trigger(
                   'pgadmin:browser:tree:refresh', sel_item || pgBrowser.tree.selected(), {
                     success: function() {
-                      sel_node.callbacks.selected.apply(sel_node, [sel_item]);
+                      setTimeout(function() {
+                        pgBrowser.tree.select(sel_item);
+                        sel_node.callbacks.selected.apply(sel_node, [sel_item]);
+                      }, 100);
                     },
                   });
               }

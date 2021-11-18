@@ -101,7 +101,7 @@ basicSettings = createMuiTheme(basicSettings, {
       },
       inputMultiline: {
         padding: basicSettings.spacing(0.75, 1.5),
-        resize: 'auto',
+        resize: 'vertical',
       },
       adornedEnd: {
         paddingRight: basicSettings.spacing(1.5),
