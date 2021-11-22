@@ -23,4 +23,3 @@ Bug fixes
 | `Issue #6986 <https://redmine.postgresql.org/issues/6986>`_ -  Fixed an issue where the user can't debug function with timestamp parameter.
 | `Issue #6989 <https://redmine.postgresql.org/issues/6989>`_ -  Fixed an issue where the Change Password menu option is missing for internal authentication source when more than one authentication source is defined.
 | `Issue #7006 <https://redmine.postgresql.org/issues/7006>`_ -  Ensure that Python 3.10 and the latest eventlet dependency should not break the application.
-| `Issue #7013 <https://redmine.postgresql.org/issues/7013>`_ -  Fix an RPM build issue that could lead to a conflict with python3 at installation.
