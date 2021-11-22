@@ -740,8 +740,7 @@ def index():
     session['allow_save_password'] = True
 
     if config.SERVER_MODE:
-        if len(config.AUTHENTICATION_SOURCES) == 1\
-                and INTERNAL in config.AUTHENTICATION_SOURCES:
+        if session['auth_source_manager']['current_source'] == INTERNAL:
             auth_only_internal = True
         auth_source = session['auth_source_manager'][
             'source_friendly_name']
