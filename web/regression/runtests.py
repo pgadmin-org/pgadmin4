@@ -604,7 +604,7 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
                                                         ser['name'])
                     # Launch client url in browser
                     test_utils.launch_url_in_browser(
-                        driver_object, url_client, 60)
+                        driver_object, url_client, timeout=60)
 
                     # Add name for thread
                     thread_name = "parallel_tests" + ser['name']
@@ -847,10 +847,14 @@ if __name__ == '__main__':
                             client_url = app_starter_local.start_app()
 
                             if config.DEBUG:
+                                pgAdmin_wait_time = \
+                                    selenoid_config['pgAdmin_max_up_time']
                                 print('pgAdmin is launched with DEBUG=True, '
-                                      'hence sleeping for 50 seconds.',
+                                      'hence sleeping for %s seconds.',
+                                      pgAdmin_wait_time,
                                       file=sys.stderr)
-                                time.sleep(50)
+
+                                time.sleep(int(pgAdmin_wait_time))
 
                             # Running Parallel tests
                             if len(parallel_tests) > 0:
