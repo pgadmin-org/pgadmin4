@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #6984 <https://redmine.postgresql.org/issues/6984>`_ -  Port Backup Global, Backup Server, and Backup object dialog in React.
 
 Bug fixes
 *********

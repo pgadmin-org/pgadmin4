@@ -497,6 +497,72 @@ define('pgadmin.browser.node', [
 
       return null;
     },
+    addUtilityPanel: function() {
+      var body = window.document.body,
+        el = document.createElement('div');
+
+      body.insertBefore(el, body.firstChild);
+
+      var new_panel = pgBrowser.docker.addPanel(
+        'utility_props', window.wcDocker.DOCK.FLOAT, undefined, {
+          w: (screen.width < 700 ?
+            screen.width * 0.95 : screen.width * 0.5),
+          h: (screen.height < 500 ?
+            screen.height * 0.95 : screen.height * 0.5),
+          x: (screen.width < 700 ? '2%' : '25%'),
+          y: (screen.height < 500 ? '2%' : '25%'),
+        }
+      );
+      /*set movable false to prevent dialog from docking,
+      by setting this we can able to move the dialog but can't dock it
+      in to the frame. e.g: can't dock it in to properties and other tabs. */
+      setTimeout(function() {
+        new_panel.moveable(false);
+      }, 0);
+
+      body.removeChild(el);
+
+      return new_panel;
+    },
+    registerUtilityPanel: function() {
+      var w = pgBrowser.docker,
+        p = w.findPanels('utility_props');
+
+      if (p && p.length == 1)
+        return;
+
+      var events = {};
+      events[wcDocker.EVENT.RESIZE_ENDED] = function() {
+        var $container = this.$container.find('.obj_properties').first(),
+          v = $container.data('obj-view');
+
+        if (v && v.model && v.model) {
+          v.model.trigger(
+            'pg-browser-resized', {
+              'view': v,
+              'panel': this,
+              'container': $container,
+            });
+
+        }
+      };
+
+      p = new pgBrowser.Panel({
+        name: 'utility_props',
+        showTitle: true,
+        isCloseable: true,
+        isPrivate: true,
+        isLayoutMember: false,
+        canMaximise: true,
+        elContainer: true,
+        content: '<div class="obj_properties container-fluid h-100"><div role="status" class="pg-panel-message">' + gettext('Please wait while we fetch information ...') + '</div></div>',
+        onCreate: function(myPanel, $container) {
+          $container.addClass('pg-no-overflow');
+        },
+        events: events,
+      });
+      p.load(pgBrowser.docker);
+    },
     register_node_panel: function() {
       var w = pgBrowser.docker,
         p = w.findPanels('node_props');

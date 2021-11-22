@@ -537,7 +537,7 @@ class DatabaseView(PGChildNodeView):
         """
         This function to return list of avialable encodings
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         SQL = render_template(
             "/".join([self.template_path, 'get_encodings.sql'])
         )

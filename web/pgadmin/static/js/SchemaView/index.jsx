@@ -706,7 +706,7 @@ function SchemaDialogView({
                 {gettext('Reset')}
               </DefaultButton>
               <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={<SaveIcon />} disabled={!dirty || saving || Boolean(formErr.name) || !formReady}>
-                {gettext('Save')}
+                {props.customSaveBtnName ? gettext(props.customSaveBtnName) : gettext('Save')}
               </PrimaryButton>
             </Box>
           </Box>}
@@ -739,6 +739,7 @@ SchemaDialogView.propTypes = {
   disableDialogHelp: PropTypes.bool,
   showFooter: PropTypes.bool,
   resetKey: PropTypes.any,
+  customSaveBtnName: PropTypes.string,
 };
 
 const usePropsStyles = makeStyles((theme)=>({

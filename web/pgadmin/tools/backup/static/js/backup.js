@@ -6,18 +6,20 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-
+import {getUtilityView, removeNodeView} from '../../../../browser/static/js/utility_view';
+import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/static/js/node_ajax';
+import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema} from './backup.ui';
+import BackupGlobalSchema, {getMiscellaneousSchema as getMiscellaneousGlobalSchema} from './backupGlobal.ui';
 // Backup dialog
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.alertifyjs', 'backbone', 'pgadmin.backgrid',
   'pgadmin.backform', 'pgadmin.browser', 'sources/utils',
   'tools/backup/static/js/menu_utils',
-  'tools/backup/static/js/backup_dialog',
   'sources/nodes/supported_database_node',
 ], function(
-  gettext, url_for, $, _, alertify, Backbone, Backgrid, Backform, pgBrowser,
-  commonUtils, menuUtils, globalBackupDialog, supportedNodes
+  gettext, url_for, $, _, pgAdmin, alertify, Backbone, Backgrid, Backform, pgBrowser,
+  commonUtils, menuUtils, supportedNodes
 ) {
 
   // if module is already initialized, refer to that.
@@ -43,524 +45,6 @@ define([
      with schema.
   */
 
-  //Backup Model (Server Node)
-  var BackupModel = Backbone.Model.extend({
-    idAttribute: 'id',
-    defaults: {
-      file: undefined,
-      role: undefined,
-      dqoute: false,
-      verbose: true,
-      type: undefined,
-      /* global */
-    },
-    schema: [{
-      id: 'file',
-      label: gettext('Filename'),
-      type: 'text',
-      disabled: false,
-      control: Backform.FileControl,
-      dialog_type: 'create_file',
-      supp_types: ['*', 'sql', 'backup'],
-    }, {
-      id: 'role',
-      label: gettext('Role name'),
-      control: 'node-list-by-name',
-      node: 'role',
-      select2: {
-        allowClear: false,
-      },
-    }, {
-      type: 'nested',
-      control: 'fieldset',
-      label: gettext('Miscellaneous'),
-      contentClass: 'row',
-      schema: [{
-        id: 'verbose',
-        label: gettext('Verbose messages'),
-        type: 'switch',
-        disabled: false,
-        group: gettext('Miscellaneous'),
-      }, {
-        id: 'dqoute',
-        label: gettext('Force double quote on identifiers'),
-        type: 'switch',
-        disabled: false,
-        group: gettext('Miscellaneous'),
-        controlLabelClassName: 'control-label pg-el-sm-6 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-6 pg-el-12',
-      }],
-    }, {
-      id: 'globals_note',
-      label: gettext('Note'),
-      text: gettext('Only objects global to the entire database will be backed up, in PLAIN format'),
-      type: 'note',
-    }, {}],
-    validate: function() {
-      // TODO: HOW TO VALIDATE ???
-      return null;
-    },
-  });
-
-  //Backup Model (Objects like Database/Schema/Table)
-  var BackupObjectModel = Backbone.Model.extend({
-    idAttribute: 'id',
-    defaults: {
-      file: undefined,
-      role: undefined,
-      format: 'custom',
-      verbose: true,
-      blobs: true,
-      encoding: undefined,
-      schemas: [],
-      tables: [],
-      database: undefined,
-    },
-    schema: [{
-      id: 'file',
-      label: gettext('Filename'),
-      type: 'text',
-      disabled: false,
-      control: Backform.FileControl.extend({
-        render: function() {
-          var attributes = this.model.toJSON();
-          if (attributes.format == 'directory') {
-            this.field.attributes.dialog_type = 'select_folder';
-          }
-          else {
-            this.field.attributes.dialog_type = 'create_file';
-          }
-
-          Backform.InputControl.prototype.render.apply(this, arguments);
-          return this;
-        },
-      }),
-      dialog_type: 'create_file',
-      supp_types: ['*', 'sql', 'backup'],
-      deps: ['format'],
-    }, {
-      id: 'format',
-      label: gettext('Format'),
-      type: 'text',
-      disabled: false,
-      control: 'select2',
-      select2: {
-        allowClear: false,
-        width: '100%',
-      },
-      options: [{
-        label: gettext('Custom'),
-        value: 'custom',
-      },
-      {
-        label: gettext('Tar'),
-        value: 'tar',
-      },
-      {
-        label: gettext('Plain'),
-        value: 'plain',
-      },
-      {
-        label: gettext('Directory'),
-        value: 'directory',
-      },
-      ],
-      visible: function(m) {
-        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server') {
-          setTimeout(function() { m.set('format', 'plain'); }, 10);
-          return false;
-        }
-        return true;
-      },
-    }, {
-      id: 'ratio',
-      label: gettext('Compression ratio'),
-      type: 'int',
-      min: 0,
-      max: 9,
-      deps: ['format'],
-      disabled: function(m) {
-        return (m.get('format') === 'tar');
-      },
-      visible: function(m) {
-        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
-          return false;
-        return true;
-      },
-    }, {
-      id: 'encoding',
-      label: gettext('Encoding'),
-      type: 'text',
-      disabled: false,
-      node: 'database',
-      control: 'node-ajax-options',
-      url: 'get_encodings',
-      visible: function(m) {
-        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server') {
-          var t = pgBrowser.tree,
-            i = t.selected(),
-            d = i ? t.itemData(i) : undefined;
-          return _.isUndefined(d) ? false : d.version >= 110000;
-        }
-        return true;
-      },
-    }, {
-      id: 'no_of_jobs',
-      label: gettext('Number of jobs'),
-      type: 'int',
-      deps: ['format'],
-      disabled: function(m) {
-        return (m.get('format') !== 'directory');
-      },
-      visible: function(m) {
-        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
-          return false;
-        return true;
-      },
-    }, {
-      id: 'role',
-      label: gettext('Role name'),
-      control: 'node-list-by-name',
-      node: 'role',
-      select2: {
-        allowClear: false,
-      },
-    },  {
-      id: 'server_note',
-      label: gettext('Note'),
-      text: gettext('The backup format will be PLAIN'),
-      type: 'note',
-      visible: function(m) {
-        return m.get('type') === 'server';
-      },
-    }, {
-      type: 'nested',
-      control: 'fieldset',
-      label: gettext('Sections'),
-      group: gettext('Dump options'),
-      contentClass: 'row',
-      schema: [{
-        id: 'pre_data',
-        label: gettext('Pre-data'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        group: gettext('Sections'),
-        deps: ['only_data', 'only_schema'],
-        disabled: function(m) {
-          return m.get('only_data') ||
-            m.get('only_schema');
-        },
-      }, {
-        id: 'data',
-        label: gettext('Data'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        group: gettext('Sections'),
-        deps: ['only_data', 'only_schema'],
-        disabled: function(m) {
-          return m.get('only_data') ||
-            m.get('only_schema');
-        },
-      }, {
-        id: 'post_data',
-        label: gettext('Post-data'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        group: gettext('Sections'),
-        deps: ['only_data', 'only_schema'],
-        disabled: function(m) {
-          return m.get('only_data') ||
-            m.get('only_schema');
-        },
-      }],
-      visible: function(m) {
-        if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
-          return false;
-        return true;
-      },
-    }, {
-      type: 'nested',
-      control: 'fieldset',
-      label: gettext('Type of objects'),
-      group: gettext('Dump options'),
-      contentClass: 'row',
-      schema: [{
-        id: 'only_data',
-        label: gettext('Only data'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        group: gettext('Type of objects'),
-        deps: ['pre_data', 'data', 'post_data', 'only_schema'],
-        disabled: function(m) {
-          return m.get('pre_data') ||
-            m.get('data') ||
-            m.get('post_data') ||
-            m.get('only_schema');
-        },
-      }, {
-        id: 'only_schema',
-        label: gettext('Only schema'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        group: gettext('Type of objects'),
-        deps: ['pre_data', 'data', 'post_data', 'only_data'],
-        disabled: function(m) {
-          return m.get('pre_data') ||
-            m.get('data') ||
-            m.get('post_data') ||
-            m.get('only_data');
-        },
-      }, {
-        id: 'blobs',
-        label: gettext('Blobs'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Type of objects'),
-        visible: function(m) {
-          if (!_.isUndefined(m.get('type')) && m.get('type') === 'server') {
-            setTimeout(function() { m.set('blobs', false); }, 10);
-            return false;
-          }
-          return true;
-        },
-      }],
-    }, {
-      type: 'nested',
-      control: 'fieldset',
-      label: gettext('Do not save'),
-      group: gettext('Dump options'),
-      contentClass: 'row',
-      schema: [{
-        id: 'dns_owner',
-        label: gettext('Owner'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Do not save'),
-      }, {
-        id: 'dns_privilege',
-        label: gettext('Privilege'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Do not save'),
-      }, {
-        id: 'dns_tablespace',
-        label: gettext('Tablespace'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Do not save'),
-      }, {
-        id: 'dns_unlogged_tbl_data',
-        label: gettext('Unlogged table data'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Do not save'),
-      }, {
-        id: 'no_comments',
-        label: gettext('Comments'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Do not save'),
-        visible: function() {
-          var t = pgBrowser.tree,
-            i = t.selected(),
-            s = _.isUndefined(i) ? undefined : t.getTreeNodeHierarchy(i)['server'];
-
-          return _.isUndefined(s) ? false : s.version >= 110000;
-        },
-      }],
-    }, {
-      type: 'nested',
-      control: 'fieldset',
-      label: gettext('Queries'),
-      group: gettext('Dump options'),
-      contentClass: 'row',
-      schema: [{
-        id: 'use_column_inserts',
-        label: gettext('Use Column Inserts'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Queries'),
-      }, {
-        id: 'use_insert_commands',
-        label: gettext('Use Insert Commands'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Queries'),
-      }, {
-        id: 'include_create_database',
-        label: gettext('Include CREATE DATABASE statement'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Queries'),
-        visible: function(m) {
-          if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
-            return false;
-          return true;
-        },
-      }, {
-        id: 'include_drop_database',
-        label: gettext('Include DROP DATABASE statement'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        group: gettext('Queries'),
-        deps: ['only_data'],
-        disabled: function(m) {
-          if (m.get('only_data')) {
-            setTimeout(function() { m.set('include_drop_database', false); }, 10);
-            return true;
-          }
-          return false;
-        },
-      }, {
-        id: 'load_via_partition_root',
-        label: gettext('Load Via Partition Root'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Queries'),
-        visible: function(m) {
-          if (!_.isUndefined(m.get('type')) && m.get('type') === 'server')
-            return false;
-
-          var t = pgBrowser.tree,
-            i = t.selected(),
-            s = _.isUndefined(i) ? undefined : t.getTreeNodeHierarchy(i)['server'];
-
-          return _.isUndefined(s) ? false : s.version >= 110000;
-        },
-      }],
-    }, {
-      type: 'nested',
-      control: 'fieldset',
-      label: gettext('Disable'),
-      group: gettext('Dump options'),
-      contentClass: 'row',
-      schema: [{
-        id: 'disable_trigger',
-        label: gettext('Trigger'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        group: gettext('Disable'),
-        deps: ['only_data'],
-        disabled: function(m) {
-          return !(m.get('only_data'));
-        },
-      }, {
-        id: 'disable_quoting',
-        label: gettext('$ quoting'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Disable'),
-      }],
-    }, {
-      type: 'nested',
-      control: 'fieldset',
-      label: gettext('Miscellaneous'),
-      group: gettext('Dump options'),
-      contentClass: 'row',
-      schema: [{
-        id: 'with_oids',
-        label: gettext('With OID(s)'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        deps: ['use_column_inserts', 'use_insert_commands'],
-        group: gettext('Miscellaneous'),
-        disabled: function(m) {
-          var t = pgBrowser.tree,
-            i = t.selected(),
-            s = _.isUndefined(i) ? undefined : t.getTreeNodeHierarchy(i)['server'];
-
-          if (!_.isUndefined(s) && s.version >= 120000)
-            return true;
-
-          if (m.get('use_column_inserts') || m.get('use_insert_commands')) {
-            setTimeout(function() { m.set('with_oids', false); }, 10);
-            return true;
-          }
-          return false;
-        },
-      }, {
-        id: 'verbose',
-        label: gettext('Verbose messages'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Miscellaneous'),
-      }, {
-        id: 'dqoute',
-        label: gettext('Force double quote on identifiers'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Miscellaneous'),
-      }, {
-        id: 'use_set_session_auth',
-        label: gettext('Use SET SESSION AUTHORIZATION'),
-        type: 'switch',
-        extraToggleClasses: 'pg-el-sm-6',
-        controlLabelClassName: 'control-label pg-el-sm-5 pg-el-12',
-        controlsClassName: 'pgadmin-controls pg-el-sm-7 pg-el-12',
-        disabled: false,
-        group: gettext('Miscellaneous'),
-      }],
-    }],
-    validate: function() {
-      return null;
-    },
-  });
-
   // Create an Object Backup of pgBrowser class
   pgBrowser.Backup = {
     init: function() {
@@ -574,7 +58,7 @@ define([
         name: 'backup_global',
         module: this,
         applies: ['tools'],
-        callback: 'start_backup_global',
+        callback: 'startBackupGlobal',
         priority: 12,
         label: gettext('Backup Globals...'),
         icon: 'fa fa-save',
@@ -586,7 +70,7 @@ define([
         name: 'backup_server',
         module: this,
         applies: ['tools'],
-        callback: 'start_backup_server',
+        callback: 'startBackupServer',
         priority: 12,
         label: gettext('Backup Server...'),
         icon: 'fa fa-save',
@@ -599,7 +83,7 @@ define([
         module: this,
         node: 'server',
         applies: ['context'],
-        callback: 'start_backup_global',
+        callback: 'startBackupGlobal',
         priority: 12,
         label: gettext('Backup Globals...'),
         icon: 'fa fa-save',
@@ -612,7 +96,7 @@ define([
         module: this,
         node: 'server',
         applies: ['context'],
-        callback: 'start_backup_server',
+        callback: 'startBackupServer',
         priority: 12,
         label: gettext('Backup Server...'),
         icon: 'fa fa-save',
@@ -624,7 +108,7 @@ define([
         name: 'backup_object',
         module: this,
         applies: ['tools'],
-        callback: 'backup_objects',
+        callback: 'backupObjects',
         priority: 11,
         label: gettext('Backup...'),
         icon: 'fa fa-save',
@@ -642,7 +126,7 @@ define([
           node: menuUtils.backupSupportedNodes[idx],
           module: this,
           applies: ['context'],
-          callback: 'backup_objects',
+          callback: 'backupObjects',
           priority: 11,
           label: gettext('Backup...'),
           icon: 'fa fa-save',
@@ -655,34 +139,161 @@ define([
       pgBrowser.add_menus(menus);
       return this;
     },
-    start_backup_global: function(action, item) {
-      let dialog = new globalBackupDialog.BackupDialog(
-        pgBrowser,
-        $,
-        alertify,
-        BackupModel
-      );
-      dialog.draw(action, item, {'globals': true}, pgBrowser.stdW.calc(pgBrowser.stdW.md), pgBrowser.stdH.calc(pgBrowser.stdH.md));
+    startBackupGlobal: function(action, treeItem) {
+      pgBrowser.Node.registerUtilityPanel();
+      var panel = pgBrowser.Node.addUtilityPanel();
+      var tree = pgBrowser.tree,
+        i = treeItem || tree.selected(),
+        data = i ? tree.itemData(i) : undefined,
+        j = panel.$container.find('.obj_properties').first();
+
+      var schema = this.getGlobalUISchema(treeItem);
+      panel.title('Backup Globals');
+      panel.focus();
+      var typeOfDialog = 'globals';
+      var serverIdentifier = this.retrieveServerIdentifier();
+
+      var extraData = this.setExtraParameters(typeOfDialog);
+      this.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
     },
-    start_backup_server: function(action, item) {
-      let dialog = new globalBackupDialog.BackupDialog(
-        pgBrowser,
-        $,
-        alertify,
-        BackupObjectModel
-      );
-      dialog.draw(action, item, {'server': true}, pgBrowser.stdW.calc(pgBrowser.stdW.md), pgBrowser.stdH.calc(pgBrowser.stdH.md));
+    startBackupServer: function(action, treeItem) {
+      pgBrowser.Node.registerUtilityPanel();
+      var panel = pgBrowser.Node.addUtilityPanel();
+      var tree = pgBrowser.tree,
+        i = treeItem || tree.selected(),
+        data = i ? tree.itemData(i) : undefined,
+        j = panel.$container.find('.obj_properties').first();
+
+      var schema = this.getUISchema(treeItem, 'server');
+      panel.title(gettext('Backup Server'));
+      panel.focus();
+      var typeOfDialog = 'server';
+      var serverIdentifier = this.retrieveServerIdentifier();
+
+      var extraData = this.setExtraParameters(typeOfDialog);
+      this.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
+    },
+    saveCallBack: function(data, dialog) {
+      pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
+    },
+    showBackupDialog: function(schema, item, j, data, panel, typeOfDialog, serverIdentifier, extraData) {
+      if(schema) {
+        let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
+        removeNodeView(j[0]);
+
+        let urlShortcut = 'backup.create_server_job';
+        if (typeOfDialog === 'backup_objects') {
+          urlShortcut = 'backup.create_object_job';
+        }
+        const baseUrl = url_for(urlShortcut, {
+          'sid': serverIdentifier,
+        });
+        var sqlHelpUrl = 'backup.html';
+        var helpUrl = url_for('help.static', {
+          'filename': this.getHelpFile(typeOfDialog),
+        });
+        getUtilityView(
+          schema, treeNodeInfo, 'create', 'dialog', j[0], panel, this.saveCallBack, extraData, 'Backup', baseUrl, sqlHelpUrl, helpUrl);
+      }
     },
     // Callback to draw Backup Dialog for objects
-    backup_objects: function(action, treeItem) {
-      let dialog = new globalBackupDialog.BackupDialog(
-        pgBrowser,
-        $,
-        alertify,
-        BackupObjectModel
-      );
-      dialog.draw(action, treeItem, null, pgBrowser.stdW.calc(pgBrowser.stdW.md), pgBrowser.stdH.calc(pgBrowser.stdH.md));
+    backupObjects: function(action, treeItem) {
+      pgBrowser.Node.registerUtilityPanel();
+      var panel = pgBrowser.Node.addUtilityPanel();
+      var tree = pgBrowser.tree,
+        i = treeItem || tree.selected(),
+        data = i ? tree.itemData(i) : undefined,
+        j = panel.$container.find('.obj_properties').first();
+
+      var schema = this.getUISchema(treeItem,  'backup_objects');
+      panel.title(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`);
+      panel.focus();
+
+      var typeOfDialog = 'backup_objects';
+      var serverIdentifier = this.retrieveServerIdentifier();
+
+      var extraData = this.setExtraParameters(typeOfDialog);
+      this.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
+
     },
+    getUISchema: function(treeItem, backupType) {
+      let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
+      const selectedNode = pgBrowser.tree.selected();
+      let itemNodeData = pgBrowser.tree.findNodeByDomElement(selectedNode).getData();
+      return new BackupSchema(
+        ()=> getSectionSchema(),
+        ()=> getTypeObjSchema({backupType: backupType}),
+        ()=> getSaveOptSchema({nodeInfo: treeNodeInfo}),
+        ()=> getQueryOptionSchema({nodeInfo: treeNodeInfo, backupType: backupType}),
+        ()=> getDisabledOptionSchema({nodeInfo: treeNodeInfo}),
+        ()=> getMiscellaneousSchema({nodeInfo: treeNodeInfo}),
+        {
+          role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+          encoding: ()=>getNodeAjaxOptions('get_encodings', pgBrowser.Nodes['database'], treeNodeInfo, itemNodeData, {
+            cacheNode: 'database',
+            cacheLevel: 'server',
+          }),
+        },
+        treeNodeInfo,
+        pgBrowser,
+        backupType
+      );
+    },
+    getGlobalUISchema: function(treeItem) {
+      let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
+      const selectedNode = pgBrowser.tree.selected();
+      let itemNodeData = pgBrowser.tree.findNodeByDomElement(selectedNode).getData();
+      return new BackupGlobalSchema(
+        ()=> getMiscellaneousGlobalSchema(),
+        {
+          role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+        }
+      );
+    },
+    retrieveServerIdentifier() {
+      const selectedNode = pgBrowser.tree.selected();
+
+      var node = pgBrowser.tree.findNodeByDomElement(selectedNode);
+      const treeInfo = pgBrowser.tree.getTreeNodeHierarchy(node);
+      return treeInfo.server._id;
+    },
+    setExtraParameters(typeOfDialog) {
+      var extraData = {};
+      const selectedNode = pgBrowser.tree.selected();
+      var selectedTreeNode = pgBrowser.tree.findNodeByDomElement(selectedNode);
+      const treeInfo = pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
+      if (typeOfDialog === 'backup_objects') {
+
+        extraData['database'] = treeInfo.database._label;
+
+        const nodeData = selectedTreeNode.getData();
+        if (nodeData._type === 'schema') {
+          extraData['schemas'] = [nodeData._label];
+        }
+
+        if (nodeData._type === 'table' || nodeData._type === 'partition') {
+          extraData['tables'] = [[treeInfo.schema._label, nodeData._label]];
+        }
+
+        /*(if (_.isEmpty(this.view.model.get('ratio'))) {
+          this.view.model.unset('ratio');
+        }*/
+      } else if(typeOfDialog === 'server') {
+        extraData['type'] = 'server';
+      } else if(typeOfDialog === 'globals') {
+        extraData['type'] = 'globals';
+      }
+
+      return extraData;
+    },
+    getHelpFile: function (dialog_type) {
+      if (dialog_type == 'globals') {
+        return 'backup_globals_dialog.html';
+      } else if (dialog_type == 'server') {
+        return 'backup_server_dialog.html';
+      }
+      return 'backup_dialog.html';
+    }
   };
   return pgBrowser.Backup;
 });
