@@ -78,7 +78,7 @@ class NavMenuLocators:
     restore_file_name_txt_box_name = "file"
 
     backup_btn_xpath = \
-        "//button[contains(@class,'fa-save')and contains(.,'Backup')]"
+        "//button[ contains(.,'Backup')]"
 
     bcg_process_status_alertifier_css = \
         ".ajs-message.ajs-bg-bgprocess.ajs-visible"

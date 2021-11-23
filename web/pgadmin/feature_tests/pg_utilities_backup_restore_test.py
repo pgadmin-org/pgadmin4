@@ -88,7 +88,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
              NavMenuLocators.process_watcher_alertfier))
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element(
-                By.CSS_SELECTOR, ".loading-logs"), 18)
+                By.CSS_SELECTOR, ".loading-logs"), 15)
 
         expected_backup_success_msg = "Successfully completed."
         self.assertEqual(status, expected_backup_success_msg)
@@ -204,13 +204,14 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         element.click()
         self.page.fill_input_by_field_name(
             NavMenuLocators.backup_filename_txt_box_name,
-            "test_backup", loose_focus=True)
+            "test_backup", input_keys=True, loose_focus=True)
 
         # Click on the take Backup button
         take_bckup = self.page.find_by_xpath(
             NavMenuLocators.backup_btn_xpath)
         click = True
-        while click:
+        retry = 3
+        while click and retry > 0:
             try:
                 take_bckup.click()
                 if self.page.wait_for_element_to_disappear(
@@ -219,6 +220,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                         NavMenuLocators.backup_filename_txt_box_name)):
                     click = False
             except Exception:
+                retry -= 1
                 pass
 
     def initiate_restore(self):

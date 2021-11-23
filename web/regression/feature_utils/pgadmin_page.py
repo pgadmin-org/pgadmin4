@@ -384,12 +384,17 @@ class PgadminPage:
         :param tree_node_exp_check_xpath:
         :return: True is tree_node_exp_check_xpath present in DOM else false
         """
-        webdriver.ActionChains(self.driver).double_click(
-            tree_node_web_element).perform()
-        if self.check_if_element_exist_by_xpath(tree_node_exp_check_xpath):
-            return True
-        else:
-            return False
+        retry = 2
+        while retry > 0:
+            webdriver.ActionChains(self.driver).double_click(
+                tree_node_web_element).perform()
+            if self.check_if_element_exist_by_xpath(tree_node_exp_check_xpath):
+                return True
+            elif retry == 1:
+                return False
+            else:
+                time.sleep(1)
+                retry -= 1
 
     def expand_server_group_node(self, server_group_name):
         """
