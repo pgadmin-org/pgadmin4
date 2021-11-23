@@ -41,6 +41,7 @@ echo "Creating the server package..."
 cat << EOF > "${BUILDROOT}/server.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
+%global _build_id_links none
 
 # Bytecompiling Python 3 doesn't work on RHEL/CentOS 7, so make it a no-op
 %if 0%{?rhel} && 0%{?rhel} == 7
@@ -84,6 +85,7 @@ echo "Creating the desktop package..."
 cat << EOF > "${BUILDROOT}/desktop.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
+%global _build_id_links none
 
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
@@ -131,6 +133,7 @@ echo "Creating the web package..."
 cat << EOF > "${BUILDROOT}/web.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
+%global _build_id_links none
 
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
@@ -178,6 +181,7 @@ echo "Creating the meta package..."
 cat << EOF > "${BUILDROOT}/meta.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
+%global _build_id_links none
 
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
