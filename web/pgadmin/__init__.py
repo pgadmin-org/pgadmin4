@@ -310,7 +310,7 @@ def create_app(app_name=None):
         if config.SERVER_MODE is False:
             # Get the user language preference from the miscellaneous module
             user_id = None
-            if current_user.is_authenticated:
+            if current_user.__ne__(None) and current_user.is_authenticated:
                 user_id = current_user.id
             else:
                 user = user_datastore.find_user(email=config.DESKTOP_USER)
