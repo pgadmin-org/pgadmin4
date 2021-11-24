@@ -466,7 +466,7 @@ define([
         </div>
         <div class="alert-text-body" role="status">${message}</div>
       </div>`;
-      var alert = alertify.notify(alertMessage, timeout);
+      var alert = alertify.notify(alertMessage, 'custom', timeout);
       return alert;
     },
     warning: function(message, timeout) {
