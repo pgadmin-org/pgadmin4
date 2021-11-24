@@ -174,7 +174,14 @@ define([
       this.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
     },
     saveCallBack: function(data, dialog) {
-      pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
+      if(data.errormsg) {
+        alertify.alert(
+          gettext('Utility not found'),
+          gettext(data.errormsg)
+        );
+      } else {
+        pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
+      }
     },
     showBackupDialog: function(schema, item, j, data, panel, typeOfDialog, serverIdentifier, extraData) {
       if(schema) {
