@@ -10,7 +10,7 @@
 """Code to handle data sorting in view data mode."""
 import pickle
 import simplejson as json
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask import current_app
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \

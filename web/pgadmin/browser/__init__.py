@@ -22,7 +22,7 @@ import six
 import time
 from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, after_this_request, redirect, session
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_gravatar import Gravatar
 from flask_login import current_user, login_required
 from flask_security.changeable import change_user_password

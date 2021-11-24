@@ -11,7 +11,7 @@
 
 import pgadmin.utils.driver as driver
 from flask import url_for, render_template, Response, request
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.utils import PgAdminModule, replace_binary_path
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files

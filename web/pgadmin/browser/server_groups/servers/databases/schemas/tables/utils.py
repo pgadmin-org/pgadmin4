@@ -14,7 +14,7 @@ import copy
 from functools import wraps
 import simplejson as json
 from flask import render_template, jsonify, request
-from flask_babelex import gettext
+from flask_babel import gettext
 
 from pgadmin.browser.server_groups.servers.databases.schemas\
     .tables.base_partition_table import BasePartitionTable

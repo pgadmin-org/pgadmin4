@@ -16,7 +16,7 @@ import copy
 from flask import Response, session, url_for, request
 from flask import render_template, current_app as app
 from flask_security import current_user, login_required
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     make_response as ajax_response, internal_server_error

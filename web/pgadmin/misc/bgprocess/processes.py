@@ -29,7 +29,7 @@ from pgadmin.utils.constants import KERBEROS
 import pytz
 from dateutil import parser
 from flask import current_app, session
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask_security import current_user
 
 import config

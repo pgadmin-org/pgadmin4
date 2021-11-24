@@ -13,7 +13,7 @@ import six
 from flask import current_app, flash
 from flask_security import login_user
 from abc import abstractmethod, abstractproperty
-from flask_babelex import gettext
+from flask_babel import gettext
 
 from .registry import AuthSourceRegistry
 from pgadmin.model import User

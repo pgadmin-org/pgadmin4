@@ -10,7 +10,7 @@
 """ Implements Utility class for Triggers. """
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \

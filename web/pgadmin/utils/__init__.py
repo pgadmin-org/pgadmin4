@@ -14,7 +14,7 @@ from collections import defaultdict
 from operator import attrgetter
 
 from flask import Blueprint, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import current_user, login_required
 from threading import Lock
 
@@ -58,21 +58,21 @@ class PgAdminModule(Blueprint):
         # To be implemented by child classes
         pass
 
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         """
         Override the default register function to automagically register
         sub-modules at once.
         """
-        if first_registration:
-            self.submodules = list(app.find_submodules(self.import_name))
 
-        super(PgAdminModule, self).register(app, options, first_registration)
+        self.submodules = list(app.find_submodules(self.import_name))
+
+        super(PgAdminModule, self).register(app, options)
 
         for module in self.submodules:
-            if first_registration:
-                module.parentmodules.append(self)
-            app.register_blueprint(module)
-            app.register_logout_hook(module)
+            module.parentmodules.append(self)
+            if app.blueprints.get(module.name) is None:
+                app.register_blueprint(module)
+                app.register_logout_hook(module)
 
     def get_own_stylesheets(self):
         """

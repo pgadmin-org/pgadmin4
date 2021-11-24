@@ -18,7 +18,7 @@ from config import PG_DEFAULT_DRIVER
 from flask import Response, url_for, request
 from flask import render_template, copy_current_request_context, \
     current_app as app
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required, current_user
 from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils import PgAdminModule

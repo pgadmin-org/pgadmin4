@@ -13,7 +13,7 @@ import config
 import copy
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.preferences import Preferences
 from werkzeug.exceptions import InternalServerError
 from pgadmin.utils.constants import BINARY_PATHS

@@ -23,36 +23,35 @@ Python Dependencies
 
 Name                                                             Version          Licence                              URL
 ----                                                             -------          -------                              ---
-Flask                                                            1.1.4            BSD-3-Clause                         https://palletsprojects.com/p/flask/
+Flask                                                            2.0.2            BSD-3-Clause                         https://palletsprojects.com/p/flask
 Flask-Gravatar                                                   0.5.0            BSD                                  https://github.com/zzzsochi/Flask-Gravatar/
 Flask-Login                                                      0.5.0            MIT                                  https://github.com/maxcountryman/flask-login
 Flask-Mail                                                       0.9.1            BSD                                  https://github.com/rduplain/flask-mail
-Flask-Migrate                                                    2.7.0            MIT                                  http://github.com/miguelgrinberg/flask-migrate/
+Flask-Migrate                                                    3.1.0            UNKNOWN                              https://github.com/miguelgrinberg/flask-migrate
 Flask-SQLAlchemy                                                 2.5.1            BSD-3-Clause                         https://github.com/pallets/flask-sqlalchemy
-Flask-WTF                                                        0.15.1           BSD                                  https://github.com/wtforms/flask-wtf
+Flask-WTF                                                        1.0.0            BSD-3-Clause                         https://github.com/wtforms/flask-wtf/
 Flask-Compress                                                   1.10.1           MIT                                  https://github.com/colour-science/flask-compress
+Flask-Paranoid                                                   0.2.0            MIT                                  http://github.com/miguelgrinberg/flask-paranoid/
+Flask-Babel                                                      2.0.0            BSD                                  http://github.com/python-babel/flask-babel
+Flask-Security-Too                                               4.1.2            MIT                                  https://github.com/Flask-Middleware/flask-security
+Flask-SocketIO                                                   5.1.1            UNKNOWN                              https://github.com/miguelgrinberg/flask-socketio
+WTForms                                                          3.0.0            BSD-3-Clause                         https://wtforms.readthedocs.io/
 passlib                                                          1.7.4            BSD                                  https://passlib.readthedocs.io
 pytz                                                             2021.3           MIT                                  http://pythonhosted.org/pytz
-simplejson                                                       3.17.5           MIT License                          https://github.com/simplejson/simplejson
+simplejson                                                       3.17.6           MIT License                          https://github.com/simplejson/simplejson
 six                                                              1.16.0           MIT                                  https://github.com/benjaminp/six
 speaklater3                                                      1.4              UNKNOWN                              https://github.com/ThomasWaldmann/speaklater
 sqlparse                                                         0.4.2            BSD-3-Clause                         https://github.com/andialbrecht/sqlparse
-WTForms                                                          2.3.3            BSD-3-Clause                         https://wtforms.readthedocs.io/
-Flask-Paranoid                                                   0.2.0            MIT                                  http://github.com/miguelgrinberg/flask-paranoid/
 psutil                                                           5.8.0            BSD                                  https://github.com/giampaolo/psutil
 psycopg2                                                         2.8.6            LGPL with exceptions                 https://psycopg.org/
 python-dateutil                                                  2.8.2            Dual License                         https://github.com/dateutil/dateutil
-SQLAlchemy                                                       1.3.24           MIT                                  http://www.sqlalchemy.org
-itsdangerous                                                     1.1.0            BSD                                  https://palletsprojects.com/p/itsdangerous/
-Flask-Security-Too                                               4.1.2            MIT                                  https://github.com/Flask-Middleware/flask-security
+SQLAlchemy                                                       1.4.27           MIT                                  https://www.sqlalchemy.org
 bcrypt                                                           3.2.0            Apache License, Version 2.0          https://github.com/pyca/bcrypt/
 cryptography                                                     3.4.8            BSD or Apache License, Version 2.0   https://github.com/pyca/cryptography
 sshtunnel                                                        0.4.0            MIT                                  https://github.com/pahaz/sshtunnel
 ldap3                                                            2.9.1            LGPL v3                              https://github.com/cannatag/ldap3
-Flask-BabelEx                                                    0.9.4            BSD                                  http://github.com/mrjoes/flask-babelex
 gssapi                                                           1.6.14           LICENSE.txt                          https://github.com/pythongssapi/python-gssapi
-Flask-SocketIO                                                   5.1.1            UNKNOWN                              https://github.com/miguelgrinberg/flask-socketio
-eventlet                                                         0.31.0           UNKNOWN                              http://eventlet.net
+eventlet                                                         0.33.0           UNKNOWN                              http://eventlet.net
 httpagentparser                                                  1.9.1            http://www.opensource.org/licenses/mit-license.php http://shon.github.com/httpagentparser
 user-agents                                                      2.2.0            MIT                                  https://github.com/selwin/python-user-agents
 pywinpty                                                         1.1.1            Unknown                              Unknown
@@ -62,7 +61,7 @@ requests                                                         2.25.1         
 NOTE: This report was generated using Python 3.9. Full information may not be
 shown for Python modules that are not required with this version.
 
-35 dependencies listed.
+34 dependencies listed.
 
 Javascript Dependencies
 =======================

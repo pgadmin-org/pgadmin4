@@ -8,7 +8,7 @@
 ##########################################################################
 
 """Definition of constants for SQLEditor."""
-from flask_babelex import gettext
+from flask_babel import gettext
 
 # Async Constants
 ASYNC_OK = 1

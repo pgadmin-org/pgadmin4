@@ -12,7 +12,7 @@ from functools import wraps
 import pgadmin.browser.server_groups as sg
 import simplejson as json
 from flask import render_template, request, jsonify, current_app
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 import dateutil.parser as dateutil_parser
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -23,7 +23,7 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.constants import ERROR_FETCHING_ROLE_INFORMATION
 
 from config import PG_DEFAULT_DRIVER
-from flask_babelex import gettext
+from flask_babel import gettext
 
 _REASSIGN_OWN_SQL = 'reassign_own.sql'
 

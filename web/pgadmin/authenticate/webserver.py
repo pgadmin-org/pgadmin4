@@ -14,7 +14,7 @@ import string
 import config
 from flask import request, current_app, session, Response, render_template, \
     url_for
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_user
 from .internal import BaseAuthentication
 from pgadmin.model import User
@@ -27,10 +27,10 @@ from os import environ, path, remove
 
 
 class WebserverModule(PgAdminModule):
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         # Do not look for the sub_modules,
         # instead call blueprint.register(...) directly
-        super(PgAdminModule, self).register(app, options, first_registration)
+        super(PgAdminModule, self).register(app, options)
 
     def get_exposed_url_endpoints(self):
         return ['webserver.login',

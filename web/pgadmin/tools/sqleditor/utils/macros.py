@@ -10,7 +10,7 @@
 """Handle Macros for SQL Editor."""
 
 import simplejson as json
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask import current_app, request
 from flask_security import login_required, current_user
 from pgadmin.utils.ajax import make_response as ajax_response,\

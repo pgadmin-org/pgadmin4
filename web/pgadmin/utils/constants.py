@@ -8,7 +8,7 @@
 ##########################################################################
 
 """Application wide constants."""
-from flask_babelex import gettext
+from flask_babel import gettext
 
 # Mimetypes
 MIMETYPE_APP_HTML = 'text/html'

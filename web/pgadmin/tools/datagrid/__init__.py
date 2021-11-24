@@ -17,7 +17,7 @@ from threading import Lock
 from flask import Response, url_for, session, request, make_response
 from werkzeug.useragents import UserAgent
 from flask import current_app as app, render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required, current_user
 from pgadmin.tools.sqleditor.command import ObjectRegistry, SQLFilter
 from pgadmin.tools.sqleditor import check_transaction_status

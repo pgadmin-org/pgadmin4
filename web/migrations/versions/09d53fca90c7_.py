@@ -209,8 +209,11 @@ def upgrade():
             os.urandom(32)).decode()
         db.engine.execute(sql)
 
-        sql = "INSERT INTO keys (name, value) VALUES ('SECRET_KEY', '%s')" % base64.urlsafe_b64encode(
-            os.urandom(32)).decode()
+        if hasattr(config, 'SECRET_KEY'):
+            sql = "INSERT INTO keys (name, value) VALUES ('SECRET_KEY', '%s')" % config.SECRET_KEY
+        else:
+            sql = "INSERT INTO keys (name, value) VALUES ('SECRET_KEY', '%s')" % base64.urlsafe_b64encode(
+                os.urandom(32)).decode()
         db.engine.execute(sql)
 
         # If SECURITY_PASSWORD_SALT is not in the config, but we're upgrading, then it must (unless the

@@ -23,8 +23,8 @@ from importlib import import_module
 from flask import Flask, abort, request, current_app, session, url_for
 from flask_socketio import SocketIO
 from werkzeug.exceptions import HTTPException
-from flask_babelex import Babel, gettext
-from flask_babelex import gettext as _
+from flask_babel import Babel, gettext
+from flask_babel import gettext as _
 from flask_login import user_logged_in, user_logged_out
 from flask_mail import Mail
 from flask_paranoid import Paranoid
@@ -78,17 +78,21 @@ class PgAdmin(Flask):
         super(PgAdmin, self).__init__(*args, **kwargs)
 
     def find_submodules(self, basemodule):
-        for module_name in find_modules(basemodule, True):
-            if module_name in self.config['MODULE_BLACKLIST']:
+        try:
+            for module_name in find_modules(basemodule, True):
+                if module_name in self.config['MODULE_BLACKLIST']:
+                    self.logger.info(
+                        'Skipping blacklisted module: %s' % module_name
+                    )
+                    continue
                 self.logger.info(
-                    'Skipping blacklisted module: %s' % module_name
-                )
-                continue
-            self.logger.info('Examining potential module: %s' % module_name)
-            module = import_module(module_name)
-            for key in list(module.__dict__.keys()):
-                if isinstance(module.__dict__[key], PgAdminModule):
-                    yield module.__dict__[key]
+                    'Examining potential module: %s' % module_name)
+                module = import_module(module_name)
+                for key in list(module.__dict__.keys()):
+                    if isinstance(module.__dict__[key], PgAdminModule):
+                        yield module.__dict__[key]
+        except Exception as _:
+            return []
 
     @property
     def submodules(self):
@@ -704,8 +708,9 @@ def create_app(app_name=None):
     ##########################################################################
     for module in app.find_submodules('pgadmin'):
         app.logger.info('Registering blueprint module: %s' % module)
-        app.register_blueprint(module)
-        app.register_logout_hook(module)
+        if app.blueprints.get(module.name) is None:
+            app.register_blueprint(module)
+            app.register_logout_hook(module)
 
     @app.before_request
     def limit_host_addr():

@@ -14,7 +14,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView

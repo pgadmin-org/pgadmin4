@@ -13,7 +13,7 @@ import simplejson as json
 from datetime import datetime, time
 
 from flask import render_template, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 
 from config import PG_DEFAULT_DRIVER
 

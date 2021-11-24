@@ -13,7 +13,9 @@ New features
 Housekeeping
 ************
 
+| `Issue #6088 <https://redmine.postgresql.org/issues/6088>`_ -  Replace Flask-BabelEx with Flask-Babel.
 | `Issue #6984 <https://redmine.postgresql.org/issues/6984>`_ -  Port Backup Global, Backup Server, and Backup object dialog in React.
+| `Issue #7010 <https://redmine.postgresql.org/issues/7010>`_ -  Upgrade Flask to version 2.
 
 Bug fixes
 *********

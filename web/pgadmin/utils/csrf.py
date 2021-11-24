@@ -24,7 +24,8 @@ class _PGCSRFProtect(CSRFProtect):
         """
 
         exempt_views = [
-            'flask.helpers.send_static_file',
+            'flask.app.<lambda>',
+            'flask.scaffold.send_static_file',
             'flask_security.views.login',
             'flask_security.views.logout',
             'pgadmin.tools.translations',

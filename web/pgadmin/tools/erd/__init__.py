@@ -13,7 +13,7 @@ import simplejson as json
 from flask import url_for, request
 from flask import render_template, current_app as app
 from flask_security import login_required
-from flask_babelex import gettext
+from flask_babel import gettext
 from werkzeug.useragents import UserAgent
 from pgadmin.utils import PgAdminModule, \
     SHORTCUT_FIELDS as shortcut_fields

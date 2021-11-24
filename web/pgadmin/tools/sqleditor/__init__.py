@@ -17,7 +17,7 @@ import simplejson as json
 from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
 from flask import Response, url_for, render_template, session, current_app
 from flask import request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required, current_user
 from pgadmin.misc.file_manager import Filemanager
 from pgadmin.tools.sqleditor.command import QueryToolCommand

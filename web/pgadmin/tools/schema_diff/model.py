@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-from flask_babelex import gettext
+from flask_babel import gettext
 
 
 class SchemaDiffModel(object):

@@ -20,7 +20,7 @@ from collections import deque
 import psycopg2
 import threading
 from flask import g, current_app, session
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import current_user
 from pgadmin.utils.crypto import decrypt, encrypt
 from psycopg2.extensions import encodings

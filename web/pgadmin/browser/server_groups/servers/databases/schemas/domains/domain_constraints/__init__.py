@@ -14,7 +14,7 @@ from functools import wraps
 
 import simplejson as json
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 
 import pgadmin.browser.server_groups.servers.databases.schemas.domains \
     as domains

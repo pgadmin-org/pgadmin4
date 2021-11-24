@@ -14,7 +14,7 @@ import copy
 
 from flask import current_app, flash, Response, request, url_for, \
     session, redirect
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security.views import _security
 from flask_security.utils import get_post_logout_redirect, \
     get_post_login_redirect, logout_user

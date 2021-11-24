@@ -14,7 +14,7 @@ import random
 import simplejson as json
 import pgadmin.browser.server_groups.servers.databases.schemas as schema
 from flask import render_template, request, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader, VacuumSettings
 from pgadmin.utils.ajax import internal_server_error, \
@@ -116,34 +116,28 @@ class PartitionsModule(CollectionNodeModule):
         """
         return backend_supported(self, manager, **kwargs)
 
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         """
         Override the default register function to automatically register
         sub-modules of table node under partition table node.
         """
 
-        if first_registration:
-            self.submodules = list(app.find_submodules(self.import_name))
-
-        super(CollectionNodeModule, self).register(
-            app, options, first_registration
-        )
+        self.submodules = list(app.find_submodules(self.import_name))
+        super(CollectionNodeModule, self).register(app, options)
 
         for module in self.submodules:
-            if first_registration:
-                module.parentmodules.append(self)
+            module.parentmodules.append(self)
             app.register_blueprint(module)
 
         # Now add sub modules of table node to partition table node.
-        if first_registration:
-            # Exclude 'partition' module for now to avoid cyclic import issue.
-            modules_to_skip = ['partition', 'column']
-            for parent in self.parentmodules:
-                if parent.node_type == 'table':
-                    self.submodules += [
-                        submodule for submodule in parent.submodules
-                        if submodule.node_type not in modules_to_skip
-                    ]
+        # Exclude 'partition' module for now to avoid cyclic import issue.
+        modules_to_skip = ['partition', 'column']
+        for parent in self.parentmodules:
+            if parent.node_type == 'table':
+                self.submodules += [
+                    submodule for submodule in parent.submodules
+                    if submodule.node_type not in modules_to_skip
+                ]
 
     @property
     def module_use_template_javascript(self):

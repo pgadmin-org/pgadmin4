@@ -14,7 +14,7 @@ import config
 from authlib.integrations.flask_client import OAuth
 from flask import current_app, url_for, session, request,\
     redirect, Flask, flash
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_user, current_user
 from flask_security.utils import get_post_logout_redirect, \
     get_post_login_redirect, logout_user
@@ -32,10 +32,10 @@ OAUTH2_AUTHORIZE = 'oauth2.authorize'
 
 
 class Oauth2Module(PgAdminModule):
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         # Do not look for the sub_modules,
         # instead call blueprint.register(...) directly
-        super(PgAdminModule, self).register(app, options, first_registration)
+        super(PgAdminModule, self).register(app, options)
 
     def get_exposed_url_endpoints(self):
         return [OAUTH2_AUTHORIZE,

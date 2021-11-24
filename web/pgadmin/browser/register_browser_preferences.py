@@ -7,7 +7,7 @@
 #
 ##########################################################################
 import sys
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_TABS_SETTINGS, \
     PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER

@@ -8,7 +8,7 @@
 ##########################################################################
 
 from flask import current_app, render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER

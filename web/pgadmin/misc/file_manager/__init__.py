@@ -24,7 +24,7 @@ from werkzeug.exceptions import InternalServerError
 import simplejson as json
 from flask import render_template, Response, session, request as req, \
     url_for, current_app, send_from_directory
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory

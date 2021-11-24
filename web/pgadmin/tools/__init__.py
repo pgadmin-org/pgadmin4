@@ -11,7 +11,7 @@
 
 from flask import render_template, Response
 from flask import url_for
-from flask_babelex import Domain, gettext
+from flask_babel import Domain, gettext
 
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request

@@ -11,7 +11,7 @@ import simplejson as json
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for, session
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import current_user, login_required
 from pgadmin.browser.server_groups.servers.types import ServerType
 from pgadmin.browser.utils import PGChildNodeView
@@ -302,19 +302,18 @@ class ServerModule(sg.ServerGroupPluginModule):
 
         return scripts
 
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         """
         Override the default register function to automagically register
         sub-modules at once.
         """
-        if first_registration:
-            driver = get_driver(PG_DEFAULT_DRIVER, app)
-            app.jinja_env.filters['qtLiteral'] = driver.qtLiteral
-            app.jinja_env.filters['qtIdent'] = driver.qtIdent
-            app.jinja_env.filters['qtTypeIdent'] = driver.qtTypeIdent
-            app.jinja_env.filters['hasAny'] = has_any
+        driver = get_driver(PG_DEFAULT_DRIVER, app)
+        app.jinja_env.filters['qtLiteral'] = driver.qtLiteral
+        app.jinja_env.filters['qtIdent'] = driver.qtIdent
+        app.jinja_env.filters['qtTypeIdent'] = driver.qtTypeIdent
+        app.jinja_env.filters['hasAny'] = has_any
 
-        super(ServerModule, self).register(app, options, first_registration)
+        super(ServerModule, self).register(app, options)
 
     # We do not have any preferences for server node.
     def register_preferences(self):

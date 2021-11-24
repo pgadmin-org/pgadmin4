@@ -11,7 +11,7 @@
 import math
 from functools import wraps
 from flask import render_template, url_for, Response, g, request
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required
 import simplejson as json
 from pgadmin.utils import PgAdminModule

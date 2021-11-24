@@ -13,7 +13,7 @@ import base64
 from os import environ, path, remove
 
 from werkzeug.datastructures import Headers, MultiDict
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask import request, Response, session,\
     current_app, render_template, flash, url_for
 from flask_security.views import _security
@@ -53,10 +53,10 @@ if config.KRB_KTNAME and config.KRB_KTNAME != '<KRB5_KEYTAB_FILE>':
 
 
 class KerberosModule(PgAdminModule):
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         # Do not look for the sub_modules,
         # instead call blueprint.register(...) directly
-        super(PgAdminModule, self).register(app, options, first_registration)
+        super(PgAdminModule, self).register(app, options)
 
     def get_exposed_url_endpoints(self):
         return ['kerberos.login',

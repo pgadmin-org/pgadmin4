@@ -8,7 +8,7 @@
 ##########################################################################
 
 """Register preferences for query tool"""
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_EXPLAIN, PREF_LABEL_OPTIONS,\
     PREF_LABEL_EDITOR, PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID,\

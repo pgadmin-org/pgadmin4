@@ -22,7 +22,7 @@ import sqlalchemy as sa
 from alembic import op
 from flask import current_app
 from flask_security import Security, SQLAlchemyUserDatastore
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
 from pgadmin.model import db, User, Role
 from pgadmin.setup import get_version
 from pgadmin.setup import user_info
@@ -116,14 +116,24 @@ VALUES(1, 1, 'Servers')
             os.urandom(32)
         ).decode()
     )
+
+    secret_key = getattr(
+        config, 'SECRET_KEY', base64.urlsafe_b64encode(
+            os.urandom(32)
+        ).decode()
+    )
     if current_app.extensions.get('security') is None:
         current_app.config['SECURITY_PASSWORD_SALT'] = current_salt
+        current_app.config['SECRET_KEY'] = secret_key
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
         Security(current_app, user_datastore, register_blueprint=False)
     else:
         current_app.config['SECURITY_PASSWORD_SALT'] = current_salt
+        current_app.config['SECRET_KEY'] = secret_key
+
     setattr(config, 'SECURITY_PASSWORD_SALT', current_salt)
-    password = encrypt_password(password)
+    setattr(config, 'SECRET_KEY', secret_key)
+    password = hash_password(password)
 
     db.engine.execute("""
 INSERT INTO "user"

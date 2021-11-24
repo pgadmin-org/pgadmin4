@@ -22,7 +22,7 @@
           read-only.
 """
 from flask import render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 from collections import OrderedDict
 from werkzeug.exceptions import InternalServerError
 

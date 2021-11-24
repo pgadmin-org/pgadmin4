@@ -16,7 +16,7 @@ from ldap3 import Connection, Server, Tls, ALL, ALL_ATTRIBUTES, ANONYMOUS,\
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError,\
     LDAPInvalidScopeError, LDAPAttributeError, LDAPInvalidFilterError,\
     LDAPStartTLSError, LDAPSSLConfigurationError
-from flask_babelex import gettext
+from flask_babel import gettext
 from urllib.parse import urlparse
 
 from .internal import BaseAuthentication
