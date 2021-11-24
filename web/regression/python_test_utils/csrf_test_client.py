@@ -99,7 +99,8 @@ class TestClient(testing.FlaskClient):
             # ask Flask to save that value to the cookie jar in the test
             # client. This is where we actually use that request shim we
             # made!
-            self.app.save_session(flask.session, request)
+            self.app.session_interface.save_session(
+                self.app, flask.session, request)
 
             return csrf_token
 
