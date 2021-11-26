@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #6872 <https://redmine.postgresql.org/issues/6872>`_ -  Include GSSAPI support in the PostgreSQL libraries and utilities on macOS.
 
 Housekeeping
 ************
