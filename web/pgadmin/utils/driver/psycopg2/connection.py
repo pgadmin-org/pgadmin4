@@ -1113,7 +1113,6 @@ WHERE db.datname = current_database()""")
             formatted exception message
         """
         status, cur = self.__cursor()
-        self.row_count = 0
 
         if not status:
             return False, str(cur)
@@ -1163,8 +1162,6 @@ WHERE db.datname = current_database()""")
                 )
             )
             return False, errmsg
-
-        self.row_count = cur.rowcount
 
         return True, None
 

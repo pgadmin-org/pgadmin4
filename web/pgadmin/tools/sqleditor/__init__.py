@@ -560,7 +560,7 @@ def fetch(trans_id, fetch_all=None):
             status = 'Error'
         else:
             status = 'Success'
-            res_len = len(result)
+            res_len = len(result) if result else 0
             if fetch_row_cnt != -1 and res_len == ON_DEMAND_RECORD_COUNT:
                 has_more_rows = True
 
