@@ -28,3 +28,4 @@ Bug fixes
 | `Issue #7005 <https://redmine.postgresql.org/issues/7005>`_ -  Fixed an issue where On-demand rows throw an error when any row cell is edited and saved it then scroll to get more rows.
 | `Issue #7006 <https://redmine.postgresql.org/issues/7006>`_ -  Ensure that Python 3.10 and the latest eventlet dependency should not break the application.
 | `Issue #7013 <https://redmine.postgresql.org/issues/7013>`_ -  Fix an RPM build issue that could lead to a conflict with python3 at installation.
+| `Issue #7015 <https://redmine.postgresql.org/issues/7015>`_ -  Fixed an issue where the error is thrown while creating a new server using Add New Server from the dashboard while tree item is not selected.

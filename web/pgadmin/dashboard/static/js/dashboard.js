@@ -394,9 +394,9 @@ define('pgadmin.dashboard', [
     // Handler function to support the "Add Server" link
     add_new_server: function() {
       if (pgBrowser && pgBrowser.tree) {
-        var i = pgBrowser.tree.selected().length != 0 ?
-            pgBrowser.tree.selected() :
-            pgBrowser.tree.first(null, false),
+        var i = _.isUndefined(pgBrowser.tree.selected()) ?
+            pgBrowser.tree.first(null, false):
+            pgBrowser.tree.selected(),
           serverModule = require('pgadmin.node.server'),
           itemData = pgBrowser.tree.itemData(i);
 
@@ -1141,7 +1141,7 @@ define('pgadmin.dashboard', [
         this.chartsDomObj && this.chartsDomObj.unmount();
       } else {
         var t = pgBrowser.tree,
-          i = t.selected(),
+          i = t ? t.selected() : 0,
           d = i && t.itemData(i);
 
         this.chartsDomObj && this.chartsDomObj.setPageVisible(dashboardVisible);
