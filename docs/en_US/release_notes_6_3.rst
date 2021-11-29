@@ -31,3 +31,4 @@ Bug fixes
 | `Issue #7013 <https://redmine.postgresql.org/issues/7013>`_ -  Fix an RPM build issue that could lead to a conflict with python3 at installation.
 | `Issue #7015 <https://redmine.postgresql.org/issues/7015>`_ -  Fixed an issue where the error is thrown while creating a new server using Add New Server from the dashboard while tree item is not selected.
 | `Issue #7024 <https://redmine.postgresql.org/issues/7024>`_ -  Fixed an issue where reverse engineering SQL is wrong for Aggregate.
+| `Issue #7040 <https://redmine.postgresql.org/issues/7040>`_ -  Add "section" to the Debian package control files.
