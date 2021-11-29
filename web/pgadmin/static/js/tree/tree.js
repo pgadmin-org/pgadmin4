@@ -123,6 +123,10 @@ export class Tree {
     await this.tree.toggleDirectory(item);
   }
 
+  async ensureLoaded(item) {
+    await item.ensureLoaded();
+  }
+
   async ensureVisible(item){
     await this.tree.ensureVisible(item);
   }

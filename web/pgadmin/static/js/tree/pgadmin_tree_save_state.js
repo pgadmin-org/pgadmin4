@@ -302,7 +302,7 @@ _.extend(pgBrowser.browserTreeState, {
             let index = tmpItemData.indexOf(data.id);
 
             pgBrowser.tree.open(item);
-
+            pgBrowser.tree.ensureLoaded(item);
             if (index == (tmpItemData.length - 1 )) {
               let tIndex = treeData[treeHierarchy[self.parent]['_id']]['paths'].indexOf(tData);
               treeData[treeHierarchy[self.parent]['_id']]['paths'].splice(tIndex, 1);
@@ -364,7 +364,6 @@ _.extend(pgBrowser.browserTreeState, {
       if (!_.isUndefined(databaseItem))
         this.current_state[topParent]['selected'][databaseItem] = selectedItem;
     }
-
   },
   select_tree_item(item) {
     let treeData = this.stored_state || {},
@@ -373,12 +372,12 @@ _.extend(pgBrowser.browserTreeState, {
       tmpTreeData = treeData[treeHierarchy[this.parent]['_id']];
 
 
-    if (treeHierarchy.hasOwnProperty('database')) {
-      let databaseItem = treeHierarchy['database']['id'];
+    if (treeHierarchy.hasOwnProperty('server')) {
+      let selectedItem = treeHierarchy['server']['id'];
 
-      if (tmpTreeData && 'selected' in tmpTreeData && databaseItem in tmpTreeData['selected']) {
-        if (tmpTreeData['selected'][databaseItem] == data.id) {
-          pgBrowser.tree.select(item);
+      if (tmpTreeData && 'selected' in tmpTreeData && selectedItem in tmpTreeData['selected']) {
+        if (tmpTreeData['selected'][selectedItem] == data.id) {
+          pgBrowser.tree.select(item, true, 'center');
         }
       }
     }

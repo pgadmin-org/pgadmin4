@@ -1274,7 +1274,14 @@ define('pgadmin.browser', [
             // If there is no parent then just update the node
             if(this.t.isRootNode(_parent) ||
              (_parent && _parent.length == 0 && ctx.op == 'UPDATE')) {
-              updateNode();
+              var that = this;
+              this.t.remove(this.i).then(() => {
+                that.t.before(that.i, that.new).then((new_item) => {
+                  that.t.select(new_item);
+                }, () => {
+                  console.warn('Failed to add before..', arguments);
+                });
+              });
             } else {
               var postRemove = function() {
                 // If item has parent but no grand parent
