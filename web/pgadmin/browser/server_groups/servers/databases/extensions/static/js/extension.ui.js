@@ -93,14 +93,14 @@ export default class ExtensionsSchema extends BaseUISchema {
         id: 'schema', label: gettext('Schema'), type: 'select',
         mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         first_empty: true, deps: ['name'],
-        controlProps: { allowClear: false }, editable: false,
+        controlProps: { allowClear: true }, editable: false,
         options: this.schemaList,
         disabled: function (state) {
-          /*
-           * enable or disable schema field if model's relocatable
-           * attribute is True or False
-           */
-          return (!state.relocatable);
+          if (!obj.isNew(state) && !state.relocatable) {
+            return true;
+          }
+
+          return false;
         },
       },
       {
