@@ -17,7 +17,6 @@ maintenance functions to be executed. Multiple versions are included in the
 following directories to allow use with different versions of the database
 server:
 
-* PostgreSQL 9.6: */usr/local/pgsql-9.6*
 * PostgreSQL 10: */usr/local/pgsql-10*
 * PostgreSQL 11: */usr/local/pgsql-11*
 * PostgreSQL 12: */usr/local/pgsql-12*
@@ -33,8 +32,7 @@ The default binary paths set in the container are as follows:
         'pg-13': '/usr/local/pgsql-13',
         'pg-12': '/usr/local/pgsql-12',
         'pg-11': '/usr/local/pgsql-11',
-        'pg-10': '/usr/local/pgsql-10',
-        'pg-9.6': '/usr/local/pgsql-9.6'
+        'pg-10': '/usr/local/pgsql-10'
     }
 
 this may be changed in the :ref:`preferences`.
