@@ -19,7 +19,9 @@ depends_on = None
 
 def upgrade():
 
-    db.engine.execute("ALTER TABLE user RENAME TO user_old")
+    db.engine.execute("create table user_old as select * from user")
+
+    db.engine.execute("DROP TABLE user")
 
     db.engine.execute("""
         CREATE TABLE user (

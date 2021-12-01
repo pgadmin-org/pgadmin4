@@ -19,7 +19,10 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute("ALTER TABLE user RENAME TO user_old")
+
+    db.engine.execute("create table user_old as select * from user")
+
+    db.engine.execute("DROP TABLE user")
 
     db.engine.execute("""
         CREATE TABLE user (
@@ -48,7 +51,6 @@ def upgrade():
             confirmed_at, masterpass_check, auth_source, fs_uniquifier)
             VALUES(:id, :username, :email, :password, :active, :confirmed_at,
             :masterpass_check, :auth_source, :fs_uniquifier)""")
-
     db.engine.execute(statement, [
         {
             **row,
@@ -57,7 +59,6 @@ def upgrade():
     ])
 
     db.engine.execute("DROP TABLE user_old")
-
 
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.
