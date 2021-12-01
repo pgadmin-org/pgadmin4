@@ -17,6 +17,11 @@ module.exports = {
   'extends': [
     'eslint:recommended',
     'plugin:react/recommended',
+    /* Uncomment the below line to use linter error for React Hooks.
+       By Default commented so that builds are generated successfully.
+       Once all the errors will be resolved will uncomment it and commit it.
+    */
+    // "plugin:react-hooks/recommended",
   ],
   'parser': '@babel/eslint-parser',
   'parserOptions': {
