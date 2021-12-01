@@ -113,7 +113,7 @@
     "dagre": "^0.8.4",
     "date-fns": "^2.24.0",
     "diff-arrays-of-objects": "^1.1.8",
-    "dropzone": "^5.7.4",
+    "dropzone": "^5.9.3",
     "html2canvas": "^1.0.0-rc.7",
     "immutability-helper": "^3.0.0",
     "imports-loader": "^2.0.0",

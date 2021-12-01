@@ -13,7 +13,7 @@ Flask-Gravatar==0.*
 Flask-Login==0.*
 Flask-Mail==0.*
 Flask-Migrate==3.*
-Flask-SQLAlchemy==2.*
+Flask-SQLAlchemy==2.5.*
 Flask-WTF==1.*
 Flask-Compress==1.*
 Flask-Paranoid==0.*

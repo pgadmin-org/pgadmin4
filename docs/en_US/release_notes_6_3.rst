@@ -32,3 +32,4 @@ Bug fixes
 | `Issue #7015 <https://redmine.postgresql.org/issues/7015>`_ -  Fixed an issue where the error is thrown while creating a new server using Add New Server from the dashboard while tree item is not selected.
 | `Issue #7024 <https://redmine.postgresql.org/issues/7024>`_ -  Fixed an issue where reverse engineering SQL is wrong for Aggregate.
 | `Issue #7040 <https://redmine.postgresql.org/issues/7040>`_ -  Add "section" to the Debian package control files.
+| `Issue #7044 <https://redmine.postgresql.org/issues/7044>`_ -  Update the dropzone version to 5.9.3 and Flask-SQLAlchemy to 2.5.*.

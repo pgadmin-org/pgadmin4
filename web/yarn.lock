@@ -3802,10 +3802,10 @@ download@^7.1.0:
     p-event "^2.1.0"
     pify "^3.0.0"
 
-dropzone@^5.7.4:
-  version "5.8.0"
-  resolved "https://registry.yarnpkg.com/dropzone/-/dropzone-5.8.0.tgz#8a3c27f4ac6d29e4e37bbe2522b5fc17821075f8"
-  integrity sha512-aJQ0VpHrhkm7TcAaeUgCgnyGP/7gNXjNBM6xxx+7HPlLiHfFUa2PkfRMU3wHgBNPyH+UcF/zpJWY3QCt4l61xQ==
+dropzone@^5.9.3:
+  version "5.9.3"
+  resolved "https://registry.yarnpkg.com/dropzone/-/dropzone-5.9.3.tgz#b3070ae090fa48cbc04c17535635537ca72d70d6"
+  integrity sha512-Azk8kD/2/nJIuVPK+zQ9sjKMRIpRvNyqn9XwbBHNq+iNuSccbJS6hwm1Woy0pMST0erSo0u4j+KJaodndDk4vA==
 
 duplexer2@^0.1.2, duplexer2@~0.1.0, duplexer2@~0.1.2:
   version "0.1.4"
