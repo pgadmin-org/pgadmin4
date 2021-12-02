@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
@@ -521,7 +523,7 @@ define([
                     pgTools.DirectDebug.polling_timeout_idle = true;
 
                     //Set the alertify message to inform the user that execution is completed.
-                    Alertify.success(res.info, 3);
+                    Notify.success(res.info, 3000);
 
                     // Update the message tab of the debugger
                     if (res.data.status_message) {
@@ -555,7 +557,7 @@ define([
                       pgTools.DirectDebug.polling_timeout_idle = true;
 
                       //Set the alertify message to inform the user that execution is completed.
-                      Alertify.success(res.info, 3);
+                      Notify.success(res.info, 3000);
 
                       // Update the message tab of the debugger
                       if (res.data.status_message) {
@@ -601,7 +603,7 @@ define([
                   //Set the Alertify message to inform the user that execution is
                   // completed with error.
                   if (!pgTools.DirectDebug.is_user_aborted_debugging) {
-                    Alertify.error(res.info, 3);
+                    Notify.error(res.info, 3000);
                   }
 
                   // Update the message tab of the debugger
@@ -847,7 +849,7 @@ define([
 
               // Set the Alertify message to inform the user that execution
               // is completed.
-              Alertify.success(res.info, 3);
+              Notify.success(res.info, 3000);
             } else if (res.data.status === 'NotConnected') {
               Alertify.alert(
                 gettext('Debugger Error'),
@@ -1316,9 +1318,9 @@ define([
               self.GetLocalVariables(pgTools.DirectDebug.trans_id);
               // Show the message to the user that deposit value is success or failure
               if (res.data.result) {
-                Alertify.success(res.data.info, 3);
+                Notify.success(res.data.info, 3000);
               } else {
-                Alertify.error(res.data.info, 3);
+                Notify.error(res.data.info, 3000);
               }
             }
           })

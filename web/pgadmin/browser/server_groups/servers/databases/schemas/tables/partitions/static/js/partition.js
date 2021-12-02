@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodePartitionTableSchema } from './partition.ui';
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -159,7 +160,7 @@ function(
           })
             .done(function(res) {
               if (res.success == 1) {
-                Alertify.success(res.info);
+                Notify.success(res.info);
                 t.unload(i);
                 t.setInode(i);
                 t.deselect(i);
@@ -169,7 +170,7 @@ function(
               }
             })
             .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
         },
@@ -207,7 +208,7 @@ function(
                 })
                   .done(function(res) {
                     if (res.success == 1) {
-                      Alertify.success(res.info);
+                      Notify.success(res.info);
                       t.removeIcon(i);
                       data.icon = 'icon-partition';
                       t.addIcon(i, {icon: data.icon});
@@ -221,7 +222,7 @@ function(
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   });
               }},
@@ -249,7 +250,7 @@ function(
                 })
                   .done(function(res) {
                     if (res.success == 1) {
-                      Alertify.success(res.info);
+                      Notify.success(res.info);
                       t.removeIcon(i);
                       data.icon = 'icon-partition';
                       t.addIcon(i, {icon: data.icon});
@@ -263,7 +264,7 @@ function(
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   });
               }
@@ -292,7 +293,7 @@ function(
                 })
                   .done(function(res) {
                     if (res.success == 1) {
-                      Alertify.success(res.info);
+                      Notify.success(res.info);
                       var n = t.next(i);
                       if (!n) {
                         n = t.prev(i);
@@ -307,7 +308,7 @@ function(
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                   });
               }
             },

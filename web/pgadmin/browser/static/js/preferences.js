@@ -10,9 +10,9 @@
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
 import $ from 'jquery';
-import * as Alertify from 'pgadmin.alertifyjs';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
 import pgWindow from 'sources/window';
+import Notify from '../../../static/js/helpers/Notifier';
 
 //var modifyAnimation = require('sources/modify_animation');
 
@@ -91,10 +91,6 @@ _.extend(pgBrowser, {
           self.preference_version(self.generate_preference_version());
 
           pgBrowser.keyboardNavigation.init();
-          //          if(pgBrowser.tree) {
-          //            modifyAnimation.modifyAcitreeAnimation(self);
-          //            modifyAnimation.modifyAlertifyAnimation(self);
-          //          }
 
           // Initialize Tree saving/reloading
           pgBrowser.browserTreeState.init();
@@ -113,7 +109,7 @@ _.extend(pgBrowser, {
           }
         })
         .fail(function(xhr, status, error) {
-          Alertify.pgRespErrorNotify(xhr, error);
+          Notify.pgRespErrorNotify(xhr, error);
         });
     }, 500);
   },

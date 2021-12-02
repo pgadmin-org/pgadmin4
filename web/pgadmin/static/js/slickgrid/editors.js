@@ -15,7 +15,7 @@
 
 import JSONBigNumberLib from 'json-bignumber';
 import gettext from 'sources/gettext';
-import Alertify from 'pgadmin.alertifyjs';
+import Notify from '../../../static/js/helpers/Notifier';
 
 (function($, JSONBigNumber) {
   // register namespace
@@ -405,7 +405,7 @@ import Alertify from 'pgadmin.alertifyjs';
             modes: ['code', 'form', 'tree','preview'],
             onError: function (error){
               var msg = 'Invalid Json: ' + error.message.split(':')[0];
-              Alertify.error(gettext(msg));
+              Notify.error(gettext(msg));
             }
           };
           $editor = new JSONEditor(jsonContainer, options);
@@ -428,7 +428,7 @@ import Alertify from 'pgadmin.alertifyjs';
             modes: ['code', 'form', 'tree','preview'],
             onError: function (error){
               var msg = 'Invalid Json: ' + error.message.split(':')[0];
-              Alertify.error(gettext(msg));
+              Notify.error(gettext(msg));
             }
           };
           if(jsonContainer) {

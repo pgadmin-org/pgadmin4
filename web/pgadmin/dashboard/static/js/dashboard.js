@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../static/js/helpers/Notifier';
+
 define('pgadmin.dashboard', [
   'sources/url_for', 'sources/gettext', 'require', 'jquery', 'underscore',
   'sources/pgadmin', 'backbone', 'backgrid',
@@ -105,14 +107,14 @@ define('pgadmin.dashboard', [
           })
             .done(function(res) {
               if (res == gettext('Success')) {
-                Alertify.success(txtSuccess);
+                Notify.success(txtSuccess);
                 refresh_grid();
               } else {
-                Alertify.error(txtError);
+                Notify.error(txtError);
               }
             })
             .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
             });
         },
         function() {
@@ -237,7 +239,7 @@ define('pgadmin.dashboard', [
                 $(div).html(data);
               })
               .fail(function(xhr, error) {
-                Alertify.pgNotifier(
+                Notify.pgNotifier(
                   error, xhr,
                   gettext('An error occurred whilst loading the dashboard.'),
                   function(msg) {
@@ -356,7 +358,7 @@ define('pgadmin.dashboard', [
                       self.init_dashboard();
                     })
                     .fail(function(xhr, error) {
-                      Alertify.pgNotifier(
+                      Notify.pgNotifier(
                         error, xhr,
                         gettext('An error occurred whilst loading the dashboard.'),
                         function(msg) {
@@ -1171,7 +1173,7 @@ define('pgadmin.dashboard', [
         } else {
           txtMessage = gettext('You cannot terminate background worker processes.');
         }
-        Alertify.info(txtMessage);
+        Notify.info(txtMessage);
         return false;
         // If it is the last active connection on maintenance db then error out
       } else if (maintenance_database == m.get('datname') &&
@@ -1181,11 +1183,11 @@ define('pgadmin.dashboard', [
         } else {
           txtMessage = gettext('You are not allowed to terminate the main active session.');
         }
-        Alertify.error(txtMessage);
+        Notify.error(txtMessage);
         return false;
       } else if (is_cancel_session && m.get('state') == 'idle') {
         // If this session is already idle then do nothing
-        Alertify.info(
+        Notify.info(
           gettext('The session is already in idle state.')
         );
         return false;
@@ -1205,7 +1207,7 @@ define('pgadmin.dashboard', [
         } else {
           txtMessage = gettext('Superuser privileges are required to terminate another users query.');
         }
-        Alertify.error(txtMessage);
+        Notify.error(txtMessage);
         return false;
       }
     },

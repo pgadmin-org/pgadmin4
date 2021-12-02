@@ -8,13 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeForeignKeySchema } from './foreign_key.ui';
+import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.foreign_key', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
-  'pgadmin.browser.collection',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Alertify
+  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser
 ) {
   // Extend the browser's node class for foreign key node
   if (!pgBrowser.Nodes['foreign_key']) {
@@ -71,7 +71,7 @@ define('pgadmin.node.foreign_key', [
             })
               .done(function(res) {
                 if (res.success == 1) {
-                  Alertify.success(res.info);
+                  Notify.success(res.info);
                   t.removeIcon(i);
                   data.valid = true;
                   data.icon = 'icon-foreign_key';
@@ -81,7 +81,7 @@ define('pgadmin.node.foreign_key', [
                 }
               })
               .fail(function(xhr, status, error) {
-                Alertify.pgRespErrorNotify(xhr, error);
+                Notify.pgRespErrorNotify(xhr, error);
                 t.unload(i);
               });
           }

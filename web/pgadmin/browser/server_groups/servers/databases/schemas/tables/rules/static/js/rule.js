@@ -7,13 +7,13 @@
 //
 //////////////////////////////////////////////////////////////
 import RuleSchema from './rule.ui';
-
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.rule', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.alertifyjs',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode, alertify) {
+  'pgadmin.node.schema.dir/schema_child_tree_node',
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode) {
 
   /**
     Create and add a rule collection into nodes
@@ -145,7 +145,7 @@ define('pgadmin.node.rule', [
             dataType: 'json',
           })
             .done(function() {
-              alertify.success('Rule updated.');
+              Notify.success('Rule updated.');
               t.removeIcon(i);
               data.icon = 'icon-rule';
               t.addIcon(i, {icon: data.icon});
@@ -158,7 +158,7 @@ define('pgadmin.node.rule', [
               }, 10);
             })
             .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
         },
@@ -181,7 +181,7 @@ define('pgadmin.node.rule', [
             dataType: 'json',
           })
             .done(function() {
-              alertify.success('Rule updated');
+              Notify.success('Rule updated');
               t.removeIcon(i);
               data.icon = 'icon-rule-bad';
               t.addIcon(i, {icon: data.icon});
@@ -194,7 +194,7 @@ define('pgadmin.node.rule', [
               }, 10);
             })
             .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error, gettext('Disable rule failed'));
+              Notify.pgRespErrorNotify(xhr, error, gettext('Disable rule failed'));
               t.unload(i);
             });
         },

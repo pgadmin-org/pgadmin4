@@ -197,8 +197,6 @@ describe('queryToolActions', () => {
         spyOn(queryToolActions, '_costsEnabled').and.returnValue(true);
         spyOn(queryToolActions, '_summary').and.returnValue(false);
         spyOn(queryToolActions, '_settings').and.returnValue(false);
-        spyOn(queryToolActions, '_summary').and.returnValue(false);
-        spyOn(queryToolActions, '_settings').and.returnValue(false);
       });
 
       it('calls the execute function', () => {

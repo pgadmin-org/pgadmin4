@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from 'static/js/helpers/Notifier';
+
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertifyjs',
   'sources/pgadmin', 'pgadmin.browser', 'backbone', 'backgrid', 'backform',
@@ -528,7 +530,7 @@ define([
                 })
                   .done(function(res) {
                     if (res.success) {
-                      Alertify.success(gettext('Import/Export job created.'), 5);
+                      Notify.success(gettext('Import/Export job created.'), 5000);
                       pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                     } else {
                       Alertify.alert(

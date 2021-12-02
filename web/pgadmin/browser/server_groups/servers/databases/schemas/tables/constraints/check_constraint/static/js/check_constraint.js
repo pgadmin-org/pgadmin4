@@ -8,13 +8,14 @@
 //////////////////////////////////////////////////////////////
 
 import CheckConstraintSchema from './check_constraint.ui';
+import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
 
 // Check Constraint Module: Node
 define('pgadmin.node.check_constraint', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify, schemaChildTreeNode) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChildTreeNode) {
 
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraint']) {
@@ -74,7 +75,7 @@ define('pgadmin.node.check_constraint', [
             })
               .done(function(res) {
                 if (res.success == 1) {
-                  alertify.success(res.info);
+                  Notify.success(res.info);
                   t.removeIcon(i);
                   data.valid = true;
                   data.icon = 'icon-check_constraint';
@@ -84,7 +85,7 @@ define('pgadmin.node.check_constraint', [
                 }
               })
               .fail(function(xhr, status, error) {
-                alertify.pgRespErrorNotify(xhr, error);
+                Notify.pgRespErrorNotify(xhr, error);
                 t.unload(i);
               });
           }

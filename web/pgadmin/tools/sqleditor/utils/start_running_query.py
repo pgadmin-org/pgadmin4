@@ -108,7 +108,7 @@ class StartRunningQuery:
                 'status': status, 'result': result,
                 'can_edit': can_edit, 'can_filter': can_filter,
                 'info_notifier_timeout':
-                    self.blueprint_object.info_notifier_timeout.get(),
+                    self.blueprint_object.info_notifier_timeout.get() * 1000,
                 'notifies': notifies,
                 'transaction_status': trans_status,
             }

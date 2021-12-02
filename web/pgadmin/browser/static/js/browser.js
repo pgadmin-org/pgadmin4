@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { generateNodeUrl } from './node_ajax';
+import Notify from '../../../static/js/helpers/Notifier';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',
@@ -675,7 +676,7 @@ define('pgadmin.browser', [
           }
         }
       }).fail(function(xhr, status, error) {
-        Alertify.pgRespErrorNotify(xhr, error);
+        Notify.pgRespErrorNotify(xhr, error);
       });
     },
 
@@ -690,7 +691,7 @@ define('pgadmin.browser', [
           self.set_master_password('');
         }
       }).fail(function(xhr, status, error) {
-        Alertify.pgRespErrorNotify(xhr, error);
+        Notify.pgRespErrorNotify(xhr, error);
       });
     },
 
@@ -723,7 +724,7 @@ define('pgadmin.browser', [
           }, 500);
         }
       }).fail(function(xhr, status, error) {
-        Alertify.pgRespErrorNotify(xhr, error);
+        Notify.pgRespErrorNotify(xhr, error);
       });
     },
 
@@ -1836,7 +1837,7 @@ define('pgadmin.browser', [
                 });
               }
 
-              Alertify.pgNotifier(error, xhr, gettext('Error retrieving details for the node.'), function (msg) {
+              Notify.pgNotifier(error, xhr, gettext('Error retrieving details for the node.'), function (msg) {
                 if (msg == 'CRYPTKEY_SET') {
                   fetchNodeInfo(__i, __d, __n);
                 } else {
@@ -2054,7 +2055,7 @@ define('pgadmin.browser', [
               fetchNodeInfo(_callback);
             })
             .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               fetchNodeInfo(_callback);
             });
         };

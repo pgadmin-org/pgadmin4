@@ -8,16 +8,15 @@
 //////////////////////////////////////////////////////////////
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../../static/js/node_ajax';
 import TriggerSchema from './trigger.ui';
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.alertifyjs',
-  'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.backform', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, alertify,
-  SchemaChildTreeNode
+  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-trigger']) {
@@ -116,7 +115,7 @@ define('pgadmin.node.trigger', [
           })
             .done(function(res) {
               if (res.success == 1) {
-                alertify.success(res.info);
+                Notify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger';
                 t.addIcon(i, {icon: data.icon});
@@ -130,7 +129,7 @@ define('pgadmin.node.trigger', [
               }
             })
             .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
         },
@@ -154,7 +153,7 @@ define('pgadmin.node.trigger', [
           })
             .done(function(res) {
               if (res.success == 1) {
-                alertify.success(res.info);
+                Notify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger-bad';
                 t.addIcon(i, {icon: data.icon});
@@ -168,7 +167,7 @@ define('pgadmin.node.trigger', [
               }
             })
             .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error, gettext('Disable trigger failed'));
+              Notify.pgRespErrorNotify(xhr, error, gettext('Disable trigger failed'));
               t.unload(i);
             });
         },

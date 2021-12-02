@@ -14,6 +14,7 @@ import pgAdmin from 'sources/pgadmin';
 import Backform from 'pgadmin.backform';
 import url_for from 'sources/url_for';
 import alertify from 'pgadmin.alertifyjs';
+import Notify from '../helpers/Notifier';
 
 
 export default function newConnectionDialogModel(response, sgid, sid, handler, conn_self) {
@@ -61,7 +62,7 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
         } else {
           msg = e.responseJSON.errormsg;
         }
-        alertify.error(msg);
+        Notify.error(msg);
       });
     },
     render: function() {

@@ -6,6 +6,9 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser', 'backbone',
@@ -369,7 +372,7 @@ define([
                   .done(function(res) {
                     if (res.data && res.data.status) {
                     //Do nothing as we are creating the job and exiting from the main dialog
-                      Alertify.success(res.data.info);
+                      Notify.success(res.data.info);
                       pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                     } else {
                       Alertify.alert(

@@ -25,6 +25,7 @@ import Loader from 'sources/components/Loader';
 import Alertify from 'pgadmin.alertifyjs';
 import PropTypes from 'prop-types';
 import PrivilegeSchema from '../../../tools/grant_wizard/static/js/privilege_schema.ui';
+import Notify from '../../../static/js/helpers/Notifier';
 
 const useStyles = makeStyles(() =>
   ({
@@ -205,7 +206,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
         setLoaderText('');
       })
       .catch(() => {
-        Alertify.error(gettext('Error while fetching grant wizard data.'));
+        Notify.error(gettext('Error while fetching grant wizard data.'));
         setLoaderText('');
       });
   }, [nodeData]);
@@ -235,7 +236,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
           setLoaderText('');
         })
         .catch(() => {
-          Alertify.error(gettext('Error while fetching SQL.'));
+          Notify.error(gettext('Error while fetching SQL.'));
         });
       break;
     default:
@@ -261,7 +262,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
       })
       .catch((error) => {
         setLoaderText('');
-        Alertify.error(gettext(`Error while saving grant wizard data: ${error.response.data.errormsg}`));
+        Notify.error(gettext(`Error while saving grant wizard data: ${error.response.data.errormsg}`));
       });
   };
 

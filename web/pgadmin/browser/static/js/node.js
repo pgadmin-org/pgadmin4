@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import {getNodeView, removeNodeView} from './node_view';
+import Notify from '../../../static/js/helpers/Notifier';
 
 define('pgadmin.browser.node', [
   'sources/url_for',
@@ -463,7 +464,7 @@ define('pgadmin.browser.node', [
                       info: info,
                     }
                   )) {
-                    Alertify.pgNotifier(
+                    Notify.pgNotifier(
                       options.textStatus, xhr,
                       gettext('Error retrieving properties - %s', options.errorThrown || _label),
                       function(msg) {
@@ -873,9 +874,9 @@ define('pgadmin.browser.node', [
 
           if (!(_.isFunction(obj.canDropCascade) ?
             obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
-            Alertify.error(
+            Notify.error(
               gettext('The %s "%s" cannot be dropped.', obj.label, d.label),
-              10
+              10000
             );
             return;
           }
@@ -890,9 +891,9 @@ define('pgadmin.browser.node', [
 
           if (!(_.isFunction(obj.canDrop) ?
             obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
-            Alertify.error(
+            Notify.error(
               gettext('The %s "%s" cannot be dropped/removed.', obj.label, d.label),
-              10
+              10000
             );
             return;
           }
@@ -905,7 +906,7 @@ define('pgadmin.browser.node', [
             })
               .done(function(res) {
                 if(res.success == 2){
-                  Alertify.error(res.info, 0);
+                  Notify.error(res.info, null);
                   return;
                 }
                 if (res.success == 0) {
@@ -1504,7 +1505,7 @@ define('pgadmin.browser.node', [
                   $(pnlDependents).removeData('node-prop');
               },
               error: function(_m, jqxhr) {
-                Alertify.pgNotifier(
+                Notify.pgNotifier(
                   'error', jqxhr,
                   gettext('Error saving properties')
                 );

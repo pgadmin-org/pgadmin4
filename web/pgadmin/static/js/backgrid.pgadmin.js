@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../static/js/helpers/Notifier';
+
 define([
   'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
   'moment', 'bignumber', 'codemirror', 'sources/utils', 'sources/keyboard_shortcuts', 'sources/select2/configure_show_on_scroll',
@@ -2426,7 +2428,7 @@ define([
           Alertify.alert(gettext('Validate binary path'), gettext(res.data));
         })
         .fail(function(xhr, error) {
-          Alertify.pgNotifier(error, xhr, gettext('Failed to validate binary path.'));
+          Notify.pgNotifier(error, xhr, gettext('Failed to validate binary path.'));
         });
     },
   });

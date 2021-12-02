@@ -14,6 +14,7 @@ import Alertify from 'pgadmin.alertifyjs';
 import pgAdmin from 'sources/pgadmin';
 import Backform from 'pgadmin.backform';
 import newConnectionDialogModel from 'sources/sqleditor/new_connection_dialog_model';
+import Notify from 'static/js/helpers/Notifier';
 
 
 let NewConnectionDialog = {
@@ -243,7 +244,7 @@ let NewConnectionDialog = {
               });
               if(!is_create_connection) {
                 let errmsg = 'Connection with this configuration already present.';
-                Alertify.info(errmsg);
+                Notify.info(errmsg);
               } else {
                 let connection_details = {
                   'server_group': handler.gridView.handler.url_params.sgid,

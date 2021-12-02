@@ -9,16 +9,15 @@
 
 import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 import CompoundTriggerSchema from './compound_trigger.ui';
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.compound_trigger', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, alertify,
-  SchemaChildTreeNode
+  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-compound_trigger']) {
@@ -121,7 +120,7 @@ define('pgadmin.node.compound_trigger', [
           })
             .done(function(res) {
               if (res.success == 1) {
-                alertify.success(res.info);
+                Notify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-compound_trigger';
                 t.addIcon(i, {icon: data.icon});
@@ -135,7 +134,7 @@ define('pgadmin.node.compound_trigger', [
               }
             })
             .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
         },
@@ -159,7 +158,7 @@ define('pgadmin.node.compound_trigger', [
           })
             .done(function(res) {
               if (res.success == 1) {
-                alertify.success(res.info);
+                Notify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-compound_trigger-bad';
                 t.addIcon(i, {icon: data.icon});
@@ -173,7 +172,7 @@ define('pgadmin.node.compound_trigger', [
               }
             })
             .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error, gettext('Disable compound trigger failed'));
+              Notify.pgRespErrorNotify(xhr, error, gettext('Disable compound trigger failed'));
               t.unload(i);
             });
         },

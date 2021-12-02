@@ -22,7 +22,7 @@ function isNotificationEnabled(sqlEditor) {
   return sqlEditor.info_notifier_timeout >= 0;
 }
 
-export function callRenderAfterPoll(sqlEditor, alertify, res) {
+export function callRenderAfterPoll(sqlEditor, Notify, res) {
   sqlEditor.query_end_time = new Date();
   sqlEditor.rows_affected = res.rows_affected;
   sqlEditor.has_more_rows = res.has_more_rows;
@@ -41,7 +41,7 @@ export function callRenderAfterPoll(sqlEditor, alertify, res) {
     sqlEditor.update_msg_history(true, res.result, false);
     sqlEditor.reset_data_store();
     if (isNotificationEnabled(sqlEditor)) {
-      alertify.success(msg, sqlEditor.info_notifier_timeout);
+      Notify.success(msg, sqlEditor.info_notifier_timeout);
     }
     sqlEditor.enable_disable_download_btn(true);
   }

@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeTableSchema } from './table.ui';
+import Notify from '../../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.table', [
   'pgadmin.tables.js/enable_disable_triggers',
@@ -141,7 +142,7 @@ define('pgadmin.node.table', [
         enable_triggers_on_table: function(args) {
           tableFunctions.enableTriggers(
             pgBrowser.tree,
-            Alertify,
+            Notify,
             this.generate_url.bind(this),
             args
           );
@@ -150,7 +151,7 @@ define('pgadmin.node.table', [
         disable_triggers_on_table: function(args) {
           tableFunctions.disableTriggers(
             pgBrowser.tree,
-            Alertify,
+            Notify,
             this.generate_url.bind(this),
             args
           );
@@ -193,7 +194,7 @@ define('pgadmin.node.table', [
                 })
                   .done(function(res) {
                     if (res.success == 1) {
-                      Alertify.success(res.info);
+                      Notify.success(res.info);
                       t.removeIcon(i);
                       data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
                       t.addIcon(i, {icon: data.icon});
@@ -206,11 +207,11 @@ define('pgadmin.node.table', [
                       }, 10);
                     }
                     if (res.success == 2) {
-                      Alertify.error(res.info, 0);
+                      Notify.error(res.info, 0);
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   });
               }
@@ -239,7 +240,7 @@ define('pgadmin.node.table', [
                 })
                   .done(function(res) {
                     if (res.success == 1) {
-                      Alertify.success(res.info);
+                      Notify.success(res.info);
                       t.removeIcon(i);
                       data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
                       t.addIcon(i, {icon: data.icon});
@@ -253,7 +254,7 @@ define('pgadmin.node.table', [
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   });
               }
@@ -280,7 +281,7 @@ define('pgadmin.node.table', [
             type:'GET',
           })
             .done(function(res) {
-              Alertify.success(res.info);
+              Notify.success(res.info);
               d.rows_cnt = res.data.total_rows;
               t.unload(i);
               t.setInode(i);
@@ -290,7 +291,7 @@ define('pgadmin.node.table', [
               }, 10);
             })
             .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
         },

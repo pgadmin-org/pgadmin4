@@ -12,6 +12,7 @@
 beforeAll(function () {
   spyOn(console, 'warn').and.callThrough();
   spyOn(console, 'error').and.callThrough();
+  jasmine.getEnv().allowRespy(true);
 });
 
 afterEach(function (done) {

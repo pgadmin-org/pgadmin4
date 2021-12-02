@@ -11,6 +11,7 @@ import MViewSchema from './mview.ui';
 import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import { getNodeVacuumSettingsSchema } from '../../../../../static/js/vacuum.ui';
+import Notify from '../../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.mview', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -290,7 +291,7 @@ define('pgadmin.node.mview', [
             .done(function(refreshed_res) {
               if (refreshed_res.data && refreshed_res.data.status) {
               //Do nothing as we are creating the job and exiting from the main dialog
-                Alertify.success(refreshed_res.data.info);
+                Notify.success(refreshed_res.data.info);
                 pgBrowser.Events.trigger('pgadmin-bgprocess:created', obj);
               } else {
                 Alertify.alert(
@@ -300,7 +301,7 @@ define('pgadmin.node.mview', [
               }
             })
             .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(
+              Notify.pgRespErrorNotify(
                 xhr, error, gettext('Failed to create materialized view refresh job.')
               );
             });

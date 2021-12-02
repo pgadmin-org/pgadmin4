@@ -17,11 +17,13 @@
  *  @author Simon Georget <simon (at) linea21 (dot) com>
  *  @copyright  Authors
  */
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define([
-  'jquery', 'underscore', 'pgadmin.alertifyjs',
+  'jquery', 'underscore',
   'sources/gettext', 'sources/url_for', 'dropzone', 'sources/pgadmin',
   'sources/csrf', 'tablesorter', 'tablesorter-metric',
-], function($, _, Alertify, gettext, url_for, Dropzone, pgAdmin, csrf) {
+], function($, _, gettext, url_for, Dropzone, pgAdmin, csrf) {
 
   pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -296,9 +298,9 @@ define([
                 // UnBind toolbar functions.
                 $('.fileinfo').find('button.rename, button.delete, button.download').off();
 
-                Alertify.success(lg.successful_rename);
+                Notify.success(lg.successful_rename);
               } else {
-                Alertify.error(result.Error);
+                Notify.error(result.Error);
               }
 
               finalName = result['New Name'];
@@ -337,14 +339,14 @@ define([
           if (result.Code === 1) {
             isDeleted = true;
             if (isDeleted) {
-              Alertify.success(lg.successful_delete);
+              Notify.success(lg.successful_delete);
               var rootpath = result.Path.substring(0, result.Path.length - 1); // removing the last slash
               rootpath = rootpath.substr(0, rootpath.lastIndexOf('/') + 1);
               getFolderInfo(rootpath);
             }
           } else {
             isDeleted = false;
-            Alertify.error(result.Error);
+            Notify.error(result.Error);
           }
         });
       return isDeleted;
@@ -408,7 +410,7 @@ define([
         } else {
           $('.file_manager_ok').addClass('disabled');
           $('.file_manager_ok').attr('disabled', true);
-          Alertify.error(data.Error);
+          Notify.error(data.Error);
         }
 
         // Disable select button if user select file.
@@ -443,13 +445,13 @@ define([
         } else {
           $('.file_manager_ok').addClass('disabled');
           $('.file_manager_ok').attr('disabled', true);
-          Alertify.error(data.Error);
+          Notify.error(data.Error);
         }
       })
       .fail(function() {
         $('.file_manager_ok').addClass('disabled');
         $('.file_manager_ok').attr('disabled', true);
-        Alertify.error(
+        Notify.error(
           gettext('Error occurred while checking access permission.')
         );
       });
@@ -742,7 +744,7 @@ define([
         // hide activity indicator
         $('.fileinfo').find('span.activity').hide();
         if (data.Code === 0) {
-          Alertify.error(data.Error);
+          Notify.error(data.Error);
           return;
         }
 
@@ -1294,7 +1296,7 @@ define([
         }
       },
       error: function (error) {
-        Alertify.error(error);
+        Notify.error(error);
       },
     });
   };
@@ -1774,18 +1776,18 @@ define([
                   $this.find('.dz-upload').addClass('success');
                 }, 1000);
                 $this.find('.dz-upload').css('width', '100%').html('100%');
-                Alertify.success(lg.upload_success);
+                Notify.success(lg.upload_success);
               } else {
                 $this.find('.dz-upload').addClass('error');
                 $this.find('.dz-upload').css('width', '0%').html('0%');
-                Alertify.error(resp_data.Error);
+                Notify.error(resp_data.Error);
               }
               getFolderInfo(path);
             },
             totaluploadprogress: function() {},
             complete: function(file) {
               if (file.status == 'error') {
-                Alertify.error(lg.upload_error);
+                Notify.error(lg.upload_error);
               }
               $('.upload_file .dz_cross_btn').removeAttr('disabled');
               getFolderInfo(path);
@@ -1958,15 +1960,15 @@ define([
               function(resp) {
                 var result = resp.data.result;
                 if (result.Code === 1) {
-                  Alertify.success(lg.successful_added_folder);
+                  Notify.success(lg.successful_added_folder);
                   getFolderInfo(result.Parent);
                 } else {
-                  Alertify.error(result.Error);
+                  Notify.error(result.Error);
                 }
               }
             );
           } else {
-            Alertify.error(lg.no_foldername);
+            Notify.error(lg.no_foldername);
           }
         };
 

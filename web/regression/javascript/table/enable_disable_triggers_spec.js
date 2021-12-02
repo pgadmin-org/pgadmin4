@@ -19,7 +19,7 @@ import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 describe('#enableTriggers', () => {
   let networkMock;
   let tree;
-  let alertify;
+  let Notify;
   let generateUrlSpy;
   beforeEach(() => {
     networkMock = new MockAdapter(axios);
@@ -47,7 +47,7 @@ describe('#enableTriggers', () => {
     const tableNoData = tree.addNewNode('table-no-data', undefined, ['<li>table-no-data</li>']);
     tree.addChild(schema1, tableNoData);
 
-    alertify = jasmine.createSpyObj('alertify', ['success', 'error']);
+    Notify = jasmine.createSpyObj('Notify', ['success', 'error']);
     generateUrlSpy = jasmine.createSpy('generateUrl');
     generateUrlSpy.and.returnValue('/some/place');
   });
@@ -58,7 +58,7 @@ describe('#enableTriggers', () => {
       });
 
       setTimeout(() => {
-        expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+        expect(enableTriggers(tree, Notify, generateUrlSpy, {})).toEqual(false);
         done();
       }, 0);
     });
@@ -73,7 +73,7 @@ describe('#enableTriggers', () => {
         });
 
         setTimeout(() => {
-          expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+          expect(enableTriggers(tree, Notify, generateUrlSpy, {})).toEqual(false);
           done();
         }, 0);
       });
@@ -95,15 +95,15 @@ describe('#enableTriggers', () => {
 
         it('displays an alert box with success', (done) => {
           tree.selectNode([{id: 'table1'}]);
-          enableTriggers(tree, alertify, generateUrlSpy, {});
+          enableTriggers(tree, Notify, generateUrlSpy, {});
           setTimeout(() => {
-            expect(alertify.success).toHaveBeenCalledWith('some information');
+            expect(Notify.success).toHaveBeenCalledWith('some information');
             done();
           }, 0);
         });
 
         it('reloads the node', (done) => {
-          enableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          enableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
             expect(tree.selected()).toEqual(['<li>table1</li>']);
             done();
@@ -111,7 +111,7 @@ describe('#enableTriggers', () => {
         });
 
         it('call backend with the correct parameters', (done) => {
-          enableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          enableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
             expect(networkMockCalledWith.data).toEqual(JSON.stringify({is_enable_trigger: 'O'}));
             done();
@@ -131,15 +131,15 @@ describe('#enableTriggers', () => {
 
         it('displays an error alert', (done) => {
           tree.selectNode([{id: 'table1'}]);
-          enableTriggers(tree, alertify, generateUrlSpy, {});
+          enableTriggers(tree, Notify, generateUrlSpy, {});
           setTimeout(() => {
-            expect(alertify.error).toHaveBeenCalledWith('some error message');
+            expect(Notify.error).toHaveBeenCalledWith('some error message');
             done();
           }, 0);
         });
 
         it('unload the node', (done) => {
-          enableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          enableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
 
           setTimeout(() => {
             expect(tree.findNodeByDomElement([{id: 'table1'}]).children.length).toEqual(0);
@@ -154,7 +154,7 @@ describe('#enableTriggers', () => {
 describe('#disableTriggers', () => {
   let networkMock;
   let tree;
-  let alertify;
+  let Notify;
   let generateUrlSpy;
   beforeEach(() => {
     networkMock = new MockAdapter(axios);
@@ -175,7 +175,7 @@ describe('#disableTriggers', () => {
     const tableNoData = new TreeNode('table-no-data', undefined, ['<li>table-no-data</li>']);
     tree.addChild(schema1, tableNoData);
 
-    alertify = jasmine.createSpyObj('alertify', ['success', 'error']);
+    Notify = jasmine.createSpyObj('Notify', ['success', 'error']);
     generateUrlSpy = jasmine.createSpy('generateUrl');
     generateUrlSpy.and.returnValue('/some/place');
     spyOn(tree, 'unload').and.callFake(function() {
@@ -192,7 +192,7 @@ describe('#disableTriggers', () => {
       });
 
       setTimeout(() => {
-        expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+        expect(disableTriggers(tree, Notify, generateUrlSpy, {})).toEqual(false);
         done();
       }, 0);
     });
@@ -207,7 +207,7 @@ describe('#disableTriggers', () => {
         });
 
         setTimeout(() => {
-          expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+          expect(disableTriggers(tree, Notify, generateUrlSpy, {})).toEqual(false);
           done();
         }, 0);
       });
@@ -229,15 +229,15 @@ describe('#disableTriggers', () => {
 
         it('displays an alert box with success', (done) => {
           tree.selectNode([{id: 'table1'}]);
-          disableTriggers(tree, alertify, generateUrlSpy, {});
+          disableTriggers(tree, Notify, generateUrlSpy, {});
           setTimeout(() => {
-            expect(alertify.success).toHaveBeenCalledWith('some information');
+            expect(Notify.success).toHaveBeenCalledWith('some information');
             done();
           }, 0);
         });
 
         it('reloads the node', (done) => {
-          disableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          disableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
             expect(tree.selected()).toEqual(['<li>table1</li>']);
             done();
@@ -245,7 +245,7 @@ describe('#disableTriggers', () => {
         });
 
         it('call backend with the correct parameters', (done) => {
-          disableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          disableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
             expect(networkMockCalledWith.data).toEqual(JSON.stringify({is_enable_trigger: 'D'}));
             done();
@@ -265,15 +265,15 @@ describe('#disableTriggers', () => {
 
         it('displays an error alert', (done) => {
           tree.selectNode([{id: 'table1'}]);
-          disableTriggers(tree, alertify, generateUrlSpy, {});
+          disableTriggers(tree, Notify, generateUrlSpy, {});
           setTimeout(() => {
-            expect(alertify.error).toHaveBeenCalledWith('some error message');
+            expect(Notify.error).toHaveBeenCalledWith('some error message');
             done();
           }, 0);
         });
 
         it('unload the node', (done) => {
-          disableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          disableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
 
           setTimeout(() => {
             expect(tree.findNodeByDomElement([{id: 'table1'}]).children.length).toEqual(0);

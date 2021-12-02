@@ -11,6 +11,7 @@ import { getNodeAjaxOptions, getNodeListByName } from '../../../../../static/js/
 import { getNodePrivilegeRoleSchema } from '../../../static/js/privilege.ui';
 import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import DatabaseSchema from './database.ui';
+import Notify from '../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -232,7 +233,7 @@ define('pgadmin.node.database', [
                       if(res.data.info_prefix) {
                         res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
                       }
-                      Alertify.success(res.info);
+                      Notify.success(res.info);
                       t.removeIcon(i);
                       data.connected = false;
                       data.icon = 'icon-database-not-connected';
@@ -244,7 +245,7 @@ define('pgadmin.node.database', [
 
                     } else {
                       try {
-                        Alertify.error(res.errormsg);
+                        Notify.error(res.errormsg);
                       } catch (e) {
                         console.warn(e.stack || e);
                       }
@@ -252,7 +253,7 @@ define('pgadmin.node.database', [
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   });
               },
@@ -428,7 +429,7 @@ define('pgadmin.node.database', [
                 function(error) {
                   tree.setInode(_item);
                   tree.addIcon(_item, {icon: 'icon-database-not-connected'});
-                  Alertify.pgNotifier(error, xhr, gettext('Connect  to database.'));
+                  Notify.pgNotifier(error, xhr, gettext('Connect  to database.'));
                 }
               );
             } else {
@@ -437,7 +438,7 @@ define('pgadmin.node.database', [
                 tree.addIcon(_item, {icon: 'icon-database-not-connected'});
               }
 
-              Alertify.pgNotifier('error', xhr, error, function(msg) {
+              Notify.pgNotifier('error', xhr, error, function(msg) {
                 setTimeout(function() {
                   if (msg == 'CRYPTKEY_SET') {
                     connect_to_database(_model, _data, _tree, _item, _wasConnected);
@@ -472,9 +473,9 @@ define('pgadmin.node.database', [
                 res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
               }
               if(res.data.already_connected) {
-                Alertify.info(res.info);
+                Notify.info(res.info);
               } else {
-                Alertify.success(res.info);
+                Notify.success(res.info);
               }
               obj.trigger('connected', obj, _item, _data);
               pgBrowser.Events.trigger(

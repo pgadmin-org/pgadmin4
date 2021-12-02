@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define('misc.sql', [
   'sources/gettext', 'underscore', 'jquery',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
@@ -154,7 +156,7 @@ define('misc.sql', [
                     item: item,
                     info: treeHierarchy,
                   })) {
-                    Alertify.pgNotifier(
+                    Notify.pgNotifier(
                       error, xhr,
                       gettext('Error retrieving the information - %s', message || _label),
                       function(msg) {

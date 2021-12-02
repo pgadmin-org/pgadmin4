@@ -9,14 +9,14 @@
 
 import axios from 'axios';
 
-export function disableTriggers(tree, alertify, generateUrl, args) {
-  return setTriggers(tree, alertify, generateUrl, args, {is_enable_trigger: 'D' });
+export function disableTriggers(tree, Notify, generateUrl, args) {
+  return setTriggers(tree, Notify, generateUrl, args, {is_enable_trigger: 'D' });
 }
-export function enableTriggers(tree, alertify, generateUrl, args) {
-  return setTriggers(tree, alertify, generateUrl, args, {is_enable_trigger: 'O' });
+export function enableTriggers(tree, Notify, generateUrl, args) {
+  return setTriggers(tree, Notify, generateUrl, args, {is_enable_trigger: 'O' });
 }
 
-function setTriggers(tree, alertify, generateUrl, args, params) {
+function setTriggers(tree, Notify, generateUrl, args, params) {
   const treeNode = retrieveTreeNode(args, tree);
 
   if (!treeNode || treeNode.getData() === null || treeNode.getData() === undefined)
@@ -28,7 +28,7 @@ function setTriggers(tree, alertify, generateUrl, args, params) {
   )
     .then((res) => {
       if (res.data.success === 1) {
-        alertify.success(res.data.info);
+        Notify.success(res.data.info);
         treeNode.reload(tree);
       }
     })
@@ -36,7 +36,7 @@ function setTriggers(tree, alertify, generateUrl, args, params) {
       try {
         const err = xhr.response.data;
         if (err.success === 0) {
-          alertify.error(err.errormsg);
+          Notify.error(err.errormsg);
         }
       } catch (e) {
         console.warn(e.stack || e);

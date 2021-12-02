@@ -10,6 +10,7 @@ import RoleSchema from './role.ui';
 import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import { getNodeListByName } from '../../../../../static/js/node_ajax';
 import { getMembershipSchema } from '../../../static/js/membership.ui';
+import Notify from '../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.role', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -543,7 +544,7 @@ define('pgadmin.node.role', [
                         roleReassignData
                       ).then(function (response) {
                         if(response.data)
-                          alertify.success(response.data.info);
+                          Notify.success(response.data.info);
                       }).catch(function (error) {
                         try {
                           const err = error.response.data;

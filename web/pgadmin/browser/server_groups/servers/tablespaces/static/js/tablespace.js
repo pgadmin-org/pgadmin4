@@ -11,6 +11,7 @@ import { getNodeListByName } from '../../../../../static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../static/js/privilege.ui';
 import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import TablespaceSchema from './tablespace.ui';
+import Notify from '../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.tablespace', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
@@ -301,14 +302,14 @@ define('pgadmin.node.tablespace', [
                         })
                           .done(function(res) {
                             if (res.success) {
-                              Alertify.success(res.info);
+                              Notify.success(res.info);
                               self.close();
                             } else {
-                              Alertify.error(res.errormsg);
+                              Notify.error(res.errormsg);
                             }
                           })
                           .fail(function(xhr, status, error) {
-                            Alertify.pgRespErrorNotify(xhr, error);
+                            Notify.pgRespErrorNotify(xhr, error);
                           });
                       },
                       function() {

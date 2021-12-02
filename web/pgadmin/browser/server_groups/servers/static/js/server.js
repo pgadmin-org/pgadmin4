@@ -9,6 +9,7 @@
 
 import { getNodeListById } from '../../../../static/js/node_ajax';
 import ServerSchema from './server.ui';
+import Notify from '../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
@@ -252,7 +253,7 @@ define('pgadmin.node.server', [
               })
                 .done(function(res) {
                   if (res.success == 1) {
-                    Alertify.success(res.info);
+                    Notify.success(res.info);
                     d = t.itemData(i);
                     t.removeIcon(i);
                     d.connected = false;
@@ -269,7 +270,7 @@ define('pgadmin.node.server', [
                     }
                     else {
                       try {
-                        Alertify.error(res.errormsg);
+                        Notify.error(res.errormsg);
                       } catch (e) {
                         console.warn(e.stack || e);
                       }
@@ -277,7 +278,7 @@ define('pgadmin.node.server', [
                     }
                   }})
                 .fail(function(xhr, status, error) {
-                  Alertify.pgRespErrorNotify(xhr, error);
+                  Notify.pgRespErrorNotify(xhr, error);
                   t.unload(i);
                 });
             };
@@ -346,14 +347,14 @@ define('pgadmin.node.server', [
                 })
                   .done(function(res) {
                     if (res.data.status) {
-                      Alertify.success(res.data.result);
+                      Notify.success(res.data.result);
                     }
                     else {
-                      Alertify.error(res.data.result);
+                      Notify.error(res.data.result);
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   });
               },
@@ -387,15 +388,15 @@ define('pgadmin.node.server', [
                   data:{ 'value': JSON.stringify(value) },
                 })
                   .done(function(res) {
-                    Alertify.success(res.data.result, 10);
+                    Notify.success(res.data.result, 10000);
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                     t.unload(i);
                   });
               } else {
                 evt.cancel = true;
-                Alertify.error( gettext('Please enter a valid name.'), 10);
+                Notify.error(gettext('Please enter a valid name.'), 10000);
               }
             },
             // We will execute this function when user clicks on the Cancel
@@ -552,14 +553,14 @@ define('pgadmin.node.server', [
                               );
                             }
 
-                            Alertify.success(res.info);
+                            Notify.success(res.info);
                             self.close();
                           } else {
-                            Alertify.error(res.errormsg);
+                            Notify.error(res.errormsg);
                           }
                         })
                         .fail(function(xhr, status, error) {
-                          Alertify.pgRespErrorNotify(xhr, error);
+                          Notify.pgRespErrorNotify(xhr, error);
                         });
                     }
                   },
@@ -579,7 +580,7 @@ define('pgadmin.node.server', [
                 Alertify.changeServerPassword(d).resizeTo('40%','52%');
               })
               .fail(function(xhr, status, error) {
-                Alertify.pgRespErrorNotify(xhr, error);
+                Notify.pgRespErrorNotify(xhr, error);
               });
           }
 
@@ -604,7 +605,7 @@ define('pgadmin.node.server', [
           })
             .done(function(res) {
               if (res.success == 1) {
-                Alertify.success(res.info);
+                Notify.success(res.info);
                 t.itemData(i).wal_pause=res.data.wal_pause;
                 t.unload(i);
                 t.setInode(i);
@@ -616,7 +617,7 @@ define('pgadmin.node.server', [
               }
             })
             .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
         },
@@ -639,7 +640,7 @@ define('pgadmin.node.server', [
           })
             .done(function(res) {
               if (res.success == 1) {
-                Alertify.success(res.info);
+                Notify.success(res.info);
                 t.itemData(i).wal_pause=res.data.wal_pause;
                 t.unload(i);
                 t.setInode(i);
@@ -651,7 +652,7 @@ define('pgadmin.node.server', [
               }
             })
             .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
         },
@@ -675,15 +676,15 @@ define('pgadmin.node.server', [
                 })
                   .done(function(res) {
                     if (res.success == 1) {
-                      Alertify.success(res.info);
+                      Notify.success(res.info);
                       t.itemData(i).is_password_saved=res.data.is_password_saved;
                     }
                     else {
-                      Alertify.error(res.info);
+                      Notify.error(res.info);
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                   });
               },
               function() { return true; }
@@ -712,15 +713,15 @@ define('pgadmin.node.server', [
                 })
                   .done(function(res) {
                     if (res.success == 1) {
-                      Alertify.success(res.info);
+                      Notify.success(res.info);
                       t.itemData(i).is_tunnel_password_saved=res.data.is_tunnel_password_saved;
                     }
                     else {
-                      Alertify.error(res.info);
+                      Notify.error(res.info);
                     }
                   })
                   .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
+                    Notify.pgRespErrorNotify(xhr, error);
                   });
               },
               function() { return true; }
@@ -826,7 +827,7 @@ define('pgadmin.node.server', [
               tree.unload(item);
               tree.setInode(item);
               tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
-              Alertify.info('Please enter the server details to connect to the server. This server is a shared server.');
+              Notify.info('Please enter the server details to connect to the server. This server is a shared server.');
             }else{
               data.is_connecting = false;
               tree.unload(item);
@@ -865,11 +866,11 @@ define('pgadmin.node.server', [
               },
               function() {
                 tree.addIcon(_item, {icon: 'icon-server-not-connected'});
-                Alertify.pgNotifier('Connection error', xhr, gettext('Connect to server.'));
+                Notify.pgNotifier('Connection error', xhr, gettext('Connect to server.'));
               }
             );
           } else {
-            Alertify.pgNotifier('error', xhr, error, function(msg) {
+            Notify.pgNotifier('error', xhr, error, function(msg) {
               setTimeout(function() {
                 if (msg == 'CRYPTKEY_SET') {
                   connect_to_server(_node, _data, _tree, _item, _wasConnected);
@@ -899,13 +900,13 @@ define('pgadmin.node.server', [
             serverInfo[_data._id] = _.extend({}, _data);
 
             if (_data.version < 90500) {
-              Alertify.warning(gettext('You have connected to a server version that is older ' +
+              Notify.warning(gettext('You have connected to a server version that is older ' +
                 'than is supported by pgAdmin. This may cause pgAdmin to break in strange and ' +
                 'unpredictable ways. Or a plague of frogs. Either way, you have been warned!') +
                 '<br /><br />' +
-                res.info, 0);
+                res.info, null);
             } else {
-              Alertify.success(res.info);
+              Notify.success(res.info);
             }
 
             obj.trigger('connected', obj, _item, _data);
@@ -1089,7 +1090,7 @@ define('pgadmin.node.server', [
             serverInfo[data._id] = _.extend({}, data);
 
             if(data.errmsg) {
-              Alertify.error(data.errmsg);
+              Notify.error(data.errmsg);
             }
           }
         })
@@ -1100,7 +1101,7 @@ define('pgadmin.node.server', [
           }else{
             tree.addIcon(item, {icon: 'icon-server-not-connected'});
           }
-          Alertify.pgRespErrorNotify(xhr, error);
+          Notify.pgRespErrorNotify(xhr, error);
         });
     };
   }

@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define('misc.dependencies', [
   'sources/gettext', 'underscore', 'jquery', 'backbone',
   'pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs', 'pgadmin.backgrid',
@@ -268,7 +270,7 @@ define('misc.dependencies', [
                   item: item,
                   info: treeHierarchy,
                 })) {
-                  Alertify.pgNotifier(
+                  Notify.pgNotifier(
                     error, xhr,
                     gettext('Error retrieving data from the server: %s', message || _label),
                     function(alertMsg) {
@@ -391,7 +393,7 @@ define('misc.dependencies', [
                 item: item,
                 info: treeHierarchy,
               })) {
-                Alertify.pgNotifier(
+                Notify.pgNotifier(
                   error, xhr,
                   gettext('Error retrieving data from the server: %s', message || _label),
                   function(alertMsg) {

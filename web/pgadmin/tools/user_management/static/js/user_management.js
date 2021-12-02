@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertifyjs',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node', 'pgadmin.backform',
@@ -680,7 +682,7 @@ define([
                   } else {
                     msg = e.responseJSON.errormsg;
                   }
-                  alertify.error(msg);
+                  Notify.error(msg);
                 });
               },
               render: function() {
@@ -788,12 +790,12 @@ define([
                             self.model.destroy({
                               wait: true,
                               success: function() {
-                                alertify.success(gettext('User deleted.'));
+                                Notify.success(gettext('User deleted.'));
                                 alertify.changeOwnershipDialog().destroy();
                                 alertify.UserManagement().destroy();
                               },
                               error: function() {
-                                alertify.error(
+                                Notify.error(
                                   gettext('Error during deleting user.')
                                 );
                               },
@@ -825,10 +827,10 @@ define([
               .done(function(res) {
                 alertify.changeOwnershipDialog().destroy();
                 alertify.UserManagement().destroy();
-                alertify.success(gettext(res.info));
+                Notify.success(gettext(res.info));
               })
               .fail(function() {
-                alertify.error(gettext('Unable to change owner.'));
+                Notify.error(gettext('Unable to change owner.'));
               });
           },
           deleteUser: function() {
@@ -840,10 +842,10 @@ define([
                 self.model.destroy({
                   wait: true,
                   success: function() {
-                    alertify.success(gettext('User deleted.'));
+                    Notify.success(gettext('User deleted.'));
                   },
                   error: function() {
-                    alertify.error(
+                    Notify.error(
                       gettext('Error during deleting user.')
                     );
                   },
@@ -1103,13 +1105,13 @@ define([
                           });
 
                           m.startNewSession();
-                          alertify.success(gettext('User \'%s\' saved.',
+                          Notify.success(gettext('User \'%s\' saved.',
                             m.get('username')
                           ));
                         },
                         error: function(res, jqxhr) {
                           m.startNewSession();
-                          alertify.error(
+                          Notify.error(
                             gettext('Error saving user: \'%s\'',
                               jqxhr.responseJSON.errormsg
                             )

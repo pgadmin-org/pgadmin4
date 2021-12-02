@@ -286,7 +286,7 @@ def start_view_data(trans_id):
             'filter_applied': filter_applied,
             'limit': limit, 'can_edit': can_edit,
             'can_filter': can_filter, 'sql': sql,
-            'info_notifier_timeout': blueprint.info_notifier_timeout.get()
+            'info_notifier_timeout': blueprint.info_notifier_timeout.get() * 1000
         }
     )
 

@@ -17,6 +17,7 @@ import axios from 'axios';
 var queryToolActions = require('sources/sqleditor/query_tool_actions');
 import filterDialogModel from 'sources/sqleditor/filter_dialog_model';
 import {handleQueryToolAjaxError} from 'sources/sqleditor/query_tool_http_error_handler';
+import Notify from '../../../static/js/helpers/Notifier';
 
 let FilterDialog = {
   geturl: function(transId, reconnect) {
@@ -236,7 +237,7 @@ let FilterDialog = {
                     setTimeout(
                       function() {
                         self.close(); // Close the dialog now
-                        Alertify.success(gettext('Filter updated successfully'));
+                        Notify.success(gettext('Filter updated successfully'));
                         queryToolActions.executeQuery(handler);
                       }, 10
                     );
@@ -256,7 +257,7 @@ let FilterDialog = {
 
                   setTimeout(
                     function() {
-                      Alertify.error(error);
+                      Notify.error(error);
                     }, 10
                   );
                 });

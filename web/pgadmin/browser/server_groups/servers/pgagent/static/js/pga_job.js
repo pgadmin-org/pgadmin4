@@ -10,12 +10,13 @@
 import { getNodeAjaxOptions } from '../../../../../static/js/node_ajax';
 import PgaJobSchema from './pga_job.ui';
 import { getNodePgaJobStepSchema } from '../../steps/static/js/pga_jobstep.ui';
+import Notify from '../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.pga_job', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.pga_jobstep', 'pgadmin.node.pga_schedule',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify) {
+], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-pga_job']) {
     pgBrowser.Nodes['coll-pga_job'] =
@@ -125,7 +126,7 @@ define('pgadmin.node.pga_job', [
           // now.
             .done(function() { t.unload(i); })
             .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
+              Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
         }

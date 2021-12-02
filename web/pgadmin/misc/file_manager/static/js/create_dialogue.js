@@ -13,6 +13,7 @@ import $ from 'jquery';
 import Alertify from 'pgadmin.alertifyjs';
 import pgAdmin from 'sources/pgadmin';
 import {removeTransId, set_last_traversed_dir} from './helpers';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 // Declare the Create mode dialog
 module.exports =  Alertify.dialog('createModeDlg', function() {
@@ -127,12 +128,12 @@ module.exports =  Alertify.dialog('createModeDlg', function() {
             permission = true;
           } else {
             $('.file_manager_ok').addClass('disabled');
-            Alertify.error(data.Error);
+            Notify.error(data.Error);
           }
         })
         .fail(function() {
           $('.file_manager_ok').addClass('disabled');
-          Alertify.error(gettext('Error occurred while checking access permission.'));
+          Notify.error(gettext('Error occurred while checking access permission.'));
         });
       return permission;
     },

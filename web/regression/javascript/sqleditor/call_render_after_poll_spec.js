@@ -11,7 +11,7 @@ import {callRenderAfterPoll} from '../../../pgadmin/static/js/sqleditor/call_ren
 import moment from 'moment';
 
 describe('#callRenderAfterPoll', () => {
-  let sqlEditorSpy, queryResult, alertify;
+  let sqlEditorSpy, queryResult, Notify;
   beforeEach(() => {
     let today = moment('2018-01-01 10:12:31').toDate();
     jasmine.clock().install();
@@ -28,7 +28,7 @@ describe('#callRenderAfterPoll', () => {
       check_db_name_change: jasmine.createSpy('SQLEditor.check_db_name_change'),
       query_start_time: new Date(),
     };
-    alertify = jasmine.createSpyObj('alertify', ['success']);
+    Notify = jasmine.createSpyObj('Notify', ['success']);
   });
 
   afterEach(function () {
@@ -50,19 +50,19 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('renders the editor', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy._render).toHaveBeenCalledWith(queryResult);
       });
 
       it('inform sqleditor that the query stopped running', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.setIsQueryRunning).toHaveBeenCalledWith(false);
       });
 
       it('hides the loading icon', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });
@@ -79,7 +79,7 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('saves execution information in the history', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
           true,
@@ -89,19 +89,19 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('resets the changed data store', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.reset_data_store).toHaveBeenCalled();
       });
 
       it('inform sqleditor that the query stopped running', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.setIsQueryRunning).toHaveBeenCalledWith(false);
       });
 
       it('hides the loading icon', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });
@@ -109,9 +109,9 @@ describe('#callRenderAfterPoll', () => {
       describe('notifications are enabled', () => {
         it('display notification', () => {
           sqlEditorSpy.info_notifier_timeout = 10;
-          callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+          callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
-          expect(alertify.success).toHaveBeenCalledWith(
+          expect(Notify.success).toHaveBeenCalledWith(
             'Query returned successfully in 0 msec.',
             10
           );
@@ -119,7 +119,7 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('disables the save results button', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.enable_disable_download_btn).toHaveBeenCalledWith(true);
 
@@ -143,25 +143,25 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('renders the editor', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy._render).toHaveBeenCalledWith(queryResult);
       });
 
       it('inform sqleditor that the query stopped running', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.setIsQueryRunning).toHaveBeenCalledWith(false);
       });
 
       it('hides the loading icon', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });
 
       it('enables sqleditor tools buttons', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.disable_tool_buttons).toHaveBeenCalledWith(false);
       });
@@ -178,7 +178,7 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('saves execution information in the history', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
           true,
@@ -188,25 +188,25 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('resets the changed data store', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.reset_data_store).toHaveBeenCalled();
       });
 
       it('inform sqleditor that the query stopped running', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.setIsQueryRunning).toHaveBeenCalledWith(false);
       });
 
       it('hides the loading icon', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });
 
       it('enables sqleditor tools buttons', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.disable_tool_buttons).toHaveBeenCalledWith(false);
       });
@@ -214,9 +214,9 @@ describe('#callRenderAfterPoll', () => {
       describe('notifications are enabled', () => {
         it('display notification', () => {
           sqlEditorSpy.info_notifier_timeout = 10;
-          callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+          callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
-          expect(alertify.success).toHaveBeenCalledWith(
+          expect(Notify.success).toHaveBeenCalledWith(
             'Query returned successfully in 0 msec.',
             10
           );
@@ -224,7 +224,7 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('disables the save results button', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.enable_disable_download_btn).toHaveBeenCalledWith(true);
 
@@ -232,7 +232,7 @@ describe('#callRenderAfterPoll', () => {
       });
 
       it('check whether database has been moved/renamed', () => {
-        callRenderAfterPoll(sqlEditorSpy, alertify, queryResult);
+        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
 
         expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:check_synchronous_db_name_change', queryResult);
 

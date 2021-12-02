@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import {removeNodeView} from './node_view';
+import Notify from '../../../static/js/helpers/Notifier';
 
 define([
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
@@ -362,7 +363,7 @@ define([
               item: item,
               info: info,
             })) {
-              Alertify.pgNotifier(
+              Notify.pgNotifier(
                 error, xhr, gettext('Error retrieving properties - %s', error.message || that.label),
                 function(msg) {
                   if(msg === 'CRYPTKEY_SET') {
@@ -440,7 +441,7 @@ define([
               }
               return true;
             }).fail(function(xhr, error) {
-              Alertify.pgNotifier(
+              Notify.pgNotifier(
                 error, xhr,
                 gettext('Error dropping %s', d._label.toLowerCase()),
                 function(alertMsg) {

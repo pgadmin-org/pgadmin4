@@ -13,11 +13,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, FormControl, OutlinedInput, FormHelperText,
   Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import ReportProblemIcon from '@material-ui/icons/ReportProblemRounded';
-import InfoIcon from '@material-ui/icons/InfoRounded';
+import ErrorRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Select, {components as RSComponents} from 'react-select';
@@ -91,6 +91,7 @@ export const MESSAGE_TYPE = {
   ERROR: 'Error',
   INFO: 'Info',
   CLOSE: 'Close',
+  WARNING: 'Warning'
 };
 
 /* Icon based on MESSAGE_TYPE */
@@ -99,11 +100,13 @@ function FormIcon({type, close=false, ...props}) {
   if(close) {
     TheIcon = CloseIcon;
   } else if(type === MESSAGE_TYPE.SUCCESS) {
-    TheIcon = CheckIcon;
+    TheIcon = CheckRoundedIcon;
   } else if(type === MESSAGE_TYPE.ERROR) {
-    TheIcon = ReportProblemIcon;
+    TheIcon = ErrorRoundedIcon;
   } else if(type === MESSAGE_TYPE.INFO) {
-    TheIcon = InfoIcon;
+    TheIcon = InfoRoundedIcon;
+  } else if(type === MESSAGE_TYPE.WARNING) {
+    TheIcon = WarningRoundedIcon;
   }
 
   return <TheIcon fontSize="small" {...props} />;
@@ -1035,6 +1038,20 @@ const useStylesFormFooter = makeStyles((theme)=>({
   iconError: {
     color: theme.palette.error.main,
   },
+  containerInfo: {
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.light,
+  },
+  iconInfo: {
+    color: theme.palette.primary.main,
+  },
+  containerWarning: {
+    borderColor: theme.palette.warning.main,
+    backgroundColor: theme.palette.warning.light,
+  },
+  iconWarning: {
+    color: theme.palette.warning.main,
+  },
   message: {
     marginLeft: theme.spacing(0.5),
   },
@@ -1044,26 +1061,38 @@ const useStylesFormFooter = makeStyles((theme)=>({
 }));
 
 /* The form footer used mostly for showing error */
-export function FormFooterMessage({type=MESSAGE_TYPE.SUCCESS, message, closable=true, onClose=()=>{}}) {
+export function FormFooterMessage(props) {
   const classes = useStylesFormFooter();
 
-  if(!message) {
+  if(!props.message) {
     return <></>;
   }
   return (
     <Box className={classes.root}>
-      <Box className={clsx(classes.container, classes[`container${type}`])}>
-        <FormIcon type={type} className={classes[`icon${type}`]}/>
-        <Box className={classes.message}>{message}</Box>
-        {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
-          <FormIcon close={true}/>
-        </IconButton>}
-      </Box>
+      <NotifierMessage {...props}></NotifierMessage>
     </Box>
   );
 }
 
 FormFooterMessage.propTypes = {
+  message: PropTypes.string,
+};
+
+export function NotifierMessage({type=MESSAGE_TYPE.SUCCESS, message, closable=true, onClose=()=>{}}) {
+  const classes = useStylesFormFooter();
+
+  return (
+    <Box className={clsx(classes.container, classes[`container${type}`])}>
+      <FormIcon type={type} className={classes[`icon${type}`]}/>
+      <Box className={classes.message}>{message}</Box>
+      {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
+        <FormIcon close={true}/>
+      </IconButton>}
+    </Box>
+  );
+}
+
+NotifierMessage.propTypes = {
   type: PropTypes.oneOf(Object.values(MESSAGE_TYPE)).isRequired,
   message: PropTypes.string,
   closable: PropTypes.bool,

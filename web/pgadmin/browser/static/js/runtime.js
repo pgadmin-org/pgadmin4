@@ -10,8 +10,8 @@
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
 import $ from 'jquery';
-import * as Alertify from 'pgadmin.alertifyjs';
 import gettext from 'sources/gettext';
+import Notify from '../../../static/js/helpers/Notifier';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -26,7 +26,7 @@ _.extend(pgBrowser, {
         'command': cmd_string,
       }),
     }).fail(function(xhr, error) {
-      Alertify.pgNotifier(error, xhr, gettext('Failed to send signal to runtime.'));
+      Notify.pgNotifier(error, xhr, gettext('Failed to send signal to runtime.'));
     });
   },
 

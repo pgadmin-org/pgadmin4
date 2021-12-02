@@ -19,6 +19,8 @@ import {generateScript} from 'tools/datagrid/static/js/show_query_tool';
 import 'pgadmin.sqleditor';
 import pgWindow from 'sources/window';
 import _ from 'underscore';
+import Notify from '../../../../static/js/helpers/Notifier';
+
 
 import { SchemaDiffSelect2Control, SchemaDiffHeaderView,
   SchemaDiffFooterView, SchemaDiffSqlControl} from './schema_diff.backform';
@@ -880,7 +882,7 @@ export default class SchemaDiffUI {
         }
       })
       .fail(function(xhr, error) {
-        Alertify.pgNotifier(error, xhr, gettext('Failed to connect the database.'));
+        Notify.pgNotifier(error, xhr, gettext('Failed to connect the database.'));
       });
 
   }
@@ -889,7 +891,7 @@ export default class SchemaDiffUI {
     var  onFailure = function(
         xhr, status, error, sid, err_callback
       ) {
-        Alertify.pgNotifier('error', xhr, error, function(msg) {
+        Notify.pgNotifier('error', xhr, error, function(msg) {
           setTimeout(function() {
             Alertify.dlgServerPass(
               gettext('Connect to Server'),

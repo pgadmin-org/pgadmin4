@@ -14,6 +14,7 @@ __webpack_public_path__ = window.resourceBasePath;
 
 import {launchDataGrid} from 'tools/datagrid/static/js/show_query_tool';
 import {generateDatagridTitle} from 'tools/datagrid/static/js/show_data';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 define('tools.querytool', [
   'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
@@ -1400,7 +1401,7 @@ define('tools.querytool', [
       });
 
       grid.onValidationError.subscribe(function (e, args) {
-        alertify.error(args.validationResults.msg);
+        Notify.error(args.validationResults.msg);
       });
 
       // Resize SlickGrid when window resize
@@ -2317,7 +2318,7 @@ define('tools.querytool', [
             self.set_editor_title(_.unescape(connection_details['conn_title']));
             self.handler.setTitle(_.unescape(self.handler.url_params.title));
             let success_msg = connection_details['server_name'] + '/' + connection_details['database_name'] + '- Database connected';
-            alertify.success(success_msg);
+            Notify.success(success_msg);
             if(ref){
               let connection_data = {
                 'server_group': self.handler.url_params.sgid,
@@ -2356,7 +2357,7 @@ define('tools.querytool', [
             }
             alertify.connectServer('Connect to server', xhr.responseJSON.result, connection_details['server'], false, connection_info);
           } else {
-            alertify.error(xhr.responseJSON['errormsg']);
+            Notify.error(xhr.responseJSON['errormsg']);
           }
         });
     },
@@ -2622,7 +2623,7 @@ define('tools.querytool', [
         }),passdata)
           .done(function(res) {
             if (res.success == 1) {
-              alertify.success(res.info);
+              Notify.success(res.info);
               if (create_transaction) {
                 self.initTransaction();
               } else if ('fn' in self.state) {
@@ -2749,7 +2750,7 @@ define('tools.querytool', [
         });
 
         pgBrowser.Events.on('pgadmin:query_tool:connected_fail:' + transId, (xhr, error)=>{
-          alertify.pgRespErrorNotify(xhr, error);
+          Notify.pgRespErrorNotify(xhr, error);
         });
 
         self.initTransaction();
@@ -3061,7 +3062,7 @@ define('tools.querytool', [
       // We need this because we have separated columns route & result route
       // We need to combine both result here in wrapper before rendering grid
       call_render_after_poll: function(queryResult) {
-        callRenderAfterPoll.callRenderAfterPoll(this,alertify,queryResult);
+        callRenderAfterPoll.callRenderAfterPoll(this, Notify, queryResult);
       },
 
 
@@ -3144,7 +3145,7 @@ define('tools.querytool', [
 
             // Display the notifier if the timeout is set to >= 0
             if (self_col.info_notifier_timeout >= 0) {
-              alertify.success(msg1 + ' ' + msg2, self_col.info_notifier_timeout);
+              Notify.success(msg1 + ' ' + msg2, self_col.info_notifier_timeout);
             }
 
             var _msg = msg1 + '\n' + msg2;
@@ -3531,7 +3532,7 @@ define('tools.querytool', [
           } else {
             $('#btn-save-data').prop('disabled', true);
           }
-          alertify.success(gettext('Row(s) deleted.'));
+          Notify.success(gettext('Row(s) deleted.'));
         } else {
 
           let strikeout = true;
@@ -3721,21 +3722,21 @@ define('tools.querytool', [
               // Clear msgs after successful save
               self.set_sql_message('');
 
-              alertify.success(gettext('Data saved successfully.'));
+              Notify.success(gettext('Data saved successfully.'));
 
               if(is_commit_required)
-                alertify.info(gettext('Auto-commit is off. You still need to commit changes to the database.'));
+                Notify.info(gettext('Auto-commit is off. You still need to commit changes to the database.'));
 
 
             } else {
             // Something went wrong while saving data on the db server
               self.set_sql_message(res.data.result);
               var err_msg = gettext('%s.', res.data.result);
-              alertify.error(err_msg, 20);
+              Notify.error(err_msg, 20000);
               // If the transaction is not idle, notify the user that previous queries are not rolled back,
               // only the failed save queries.
               if (transaction_status != 0)
-                alertify.info(gettext('Saving data changes was rolled back but the current transaction is ' +
+                Notify.info(gettext('Saving data changes was rolled back but the current transaction is ' +
                                       'still active; previous queries are unaffected.'));
               grid.setSelectedRows([]);
               // To highlight the row at fault
@@ -3959,7 +3960,7 @@ define('tools.querytool', [
               pgAdmin, self, er, '_select_file_handler', stateParams, false
             );
             if (msg)
-              alertify.error(msg);
+              Notify.error(msg);
             // hide cursor
             $busy_icon_div.removeClass('show_progress');
           });
@@ -3988,7 +3989,7 @@ define('tools.querytool', [
         })
           .done(function(res) {
             if (res.data.status) {
-              alertify.success(gettext('File saved successfully.'));
+              Notify.success(gettext('File saved successfully.'));
               self.gridView.current_file = e;
               self.setTitle(self.gridView.current_file.replace(/^.*[\\\/]/g, ''), true);
               self.gridView.query_tool_obj.file_data = file_data;
@@ -4013,7 +4014,7 @@ define('tools.querytool', [
               pgAdmin, self, er, '_save_file_handler', stateParams, false
             );
             if (msg)
-              alertify.error(msg);
+              Notify.error(msg);
           });
       },
 

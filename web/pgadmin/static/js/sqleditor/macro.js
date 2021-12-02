@@ -16,6 +16,7 @@ import pgAdmin from 'sources/pgadmin';
 import Backform from 'pgadmin.backform';
 import macroModel from 'sources/sqleditor/macro_model';
 import axios from 'axios';
+import Notify from '../../../static/js/helpers/Notifier';
 
 let MacroDialog = {
   'dialog': function(handler) {
@@ -303,7 +304,7 @@ let MacroDialog = {
                     $($.find('div.btn-group.mr-1.user_macros ul.dropdown-menu')).html($(str));
 
                     self.close(); // Close the dialog now
-                    Alertify.success(gettext('Macro updated successfully'));
+                    Notify.success(gettext('Macro updated successfully'));
                   }, 10
                 );
               } else {
@@ -321,7 +322,7 @@ let MacroDialog = {
 
               setTimeout(
                 function() {
-                  Alertify.error(error.response.data.errormsg);
+                  Notify.error(error.response.data.errormsg);
                 }, 10
               );
             });

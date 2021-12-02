@@ -17,10 +17,10 @@ import { OutlinedInput, FormHelperText, IconButton, FormControlLabel,
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
-import ReportProblemIcon from '@material-ui/icons/ReportProblemRounded';
-import InfoIcon from '@material-ui/icons/InfoRounded';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckIcon from '@material-ui/icons/CheckCircleOutlineRounded';
+import ErrorRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
+import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 
 
 import {FormInputText, FormInputFileSelect, FormInputSQL,
@@ -560,7 +560,7 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(CheckIcon).exists()).toBeTrue();
+      expect(ctrl.find(CheckRoundedIcon).exists()).toBeTrue();
       expect(ctrl.text()).toBe('Some message');
     });
 
@@ -568,12 +568,17 @@ describe('FormComponents', ()=>{
       ctrl.setProps({
         type: MESSAGE_TYPE.ERROR,
       });
-      expect(ctrl.find(ReportProblemIcon).exists()).toBeTrue();
+      expect(ctrl.find(ErrorRoundedIcon).exists()).toBeTrue();
 
       ctrl.setProps({
         type: MESSAGE_TYPE.INFO,
       });
-      expect(ctrl.find(InfoIcon).exists()).toBeTrue();
+      expect(ctrl.find(InfoRoundedIcon).exists()).toBeTrue();
+
+      ctrl.setProps({
+        type: MESSAGE_TYPE.WARNING,
+      });
+      expect(ctrl.find(WarningRoundedIcon).exists()).toBeTrue();
     });
 
     it('closable', ()=>{

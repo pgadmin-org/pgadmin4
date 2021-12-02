@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define('misc.statistics', [
   'sources/gettext', 'underscore', 'jquery', 'backbone',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backgrid', 'alertify', 'sources/size_prettify',
@@ -295,7 +297,7 @@ define('misc.statistics', [
                   item: item,
                   info: treeHierarchy,
                 })) {
-                  Alertify.pgNotifier(
+                  Notify.pgNotifier(
                     error, xhr,
                     gettext('Error retrieving the information - %s', message || _label),
                     function(alertMsg) {

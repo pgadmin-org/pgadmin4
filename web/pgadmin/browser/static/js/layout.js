@@ -10,10 +10,10 @@
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
 import $ from 'jquery';
-import * as Alertify from 'pgadmin.alertifyjs';
 import gettext from 'sources/gettext';
 import 'wcdocker';
 import pgWindow from 'sources/window';
+import Notify from '../../../static/js/helpers/Notifier';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -67,7 +67,7 @@ _.extend(pgBrowser, {
           if(_panel.length == 0 && defaultLayoutCallback){
             // clear the wcDocker before reset layout.
             docker.clear();
-            Alertify.info(gettext('pgAdmin has reset the layout because the previously saved layout is invalid.'), 0);
+            Notify.info(gettext('pgAdmin has reset the layout because the previously saved layout is invalid.'), null);
             if(defaultLayoutCallback){
               defaultLayoutCallback(docker);
             }
@@ -153,7 +153,7 @@ _.extend(pgBrowser, {
     }).done(function() {
       browser.cache_preferences('browser');
     }).fail(function(xhr, error) {
-      Alertify.pgNotifier(error, xhr, gettext('Failed to save the lock layout setting.'));
+      Notify.pgNotifier(error, xhr, gettext('Failed to save the lock layout setting.'));
     });
   },
 

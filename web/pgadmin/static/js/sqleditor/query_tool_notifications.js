@@ -10,7 +10,7 @@
 import gettext from 'sources/gettext';
 import Backgrid from 'pgadmin.backgrid';
 import Backbone from 'backbone';
-import Alertify from 'pgadmin.alertifyjs';
+import Notify from '../helpers/Notifier';
 
 let NotificationsModel = Backbone.Model.extend({
   defaults: {
@@ -121,7 +121,7 @@ let queryToolNotifications = {
           notify_msg = gettext('Asynchronous notification "%s" received from server process with PID %s', notify_messages[i].channel, notify_messages[i].pid);
         }
 
-        Alertify.info(notify_msg);
+        Notify.info(notify_msg);
       }
 
       // Add notify messages to the collection.
