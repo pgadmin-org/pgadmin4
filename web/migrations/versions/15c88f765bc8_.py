@@ -21,7 +21,7 @@ from pgadmin.model import db
 
 # revision identifiers, used by Alembic.
 revision = '15c88f765bc8'
-down_revision = '6650c52670c2'
+down_revision = '3ce25f562f3b'
 branch_labels = None
 depends_on = None
 
