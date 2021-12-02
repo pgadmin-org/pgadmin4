@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #6543 <https://redmine.postgresql.org/issues/6543>`_ -  Added support for Two-factor authentication for improving security.
 | `Issue #6872 <https://redmine.postgresql.org/issues/6872>`_ -  Include GSSAPI support in the PostgreSQL libraries and utilities on macOS.
 
 Housekeeping

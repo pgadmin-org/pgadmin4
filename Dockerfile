@@ -76,6 +76,9 @@ RUN     apk add --no-cache \
         krb5-dev \
         rust \
         cargo \
+        zlib-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
         python3-dev && \
     python3 -m venv --system-site-packages --without-pip /venv && \
     /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
@@ -177,6 +180,7 @@ RUN apk add \
         py3-pip \
         postfix \
         krb5-libs \
+        libjpeg-turbo \
         shadow \
         sudo \
         libedit \

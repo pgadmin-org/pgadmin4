@@ -366,6 +366,7 @@ $erd-canvas-grid: $color-gray !default;
 $erd-link-color: $color-fg !default;
 $erd-link-selected-color: $color-fg !default;
 
+$login-page-background: $color-primary !default;
 
 @function url-friendly-colour($colour) {
   @return '%23' + str-slice('#{$colour}', 2, -1)

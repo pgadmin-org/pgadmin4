@@ -473,3 +473,11 @@ class UserMacros(db.Model):
     )
     name = db.Column(db.String(1024), nullable=False)
     sql = db.Column(db.Text(), nullable=False)
+
+
+class UserMFA(db.Model):
+    """Stores the options for the MFA for a particular user."""
+    __tablename__ = 'user_mfa'
+    user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), primary_key=True)
+    mfa_auth = db.Column(db.String(64), primary_key=True)
+    options = db.Column(db.Text(), nullable=True)

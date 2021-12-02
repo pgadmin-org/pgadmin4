@@ -14,8 +14,7 @@ Revises: ${down_revision | comma,n}
 Create Date: ${create_date}
 
 """
-from alembic import op
-import sqlalchemy as sa
+from pgadmin.model import db
 ${imports if imports else ""}
 
 # revision identifiers, used by Alembic.

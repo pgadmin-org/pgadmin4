@@ -25,6 +25,7 @@ from flask import current_app, render_template, url_for, make_response, \
 from flask_babel import gettext
 from flask_gravatar import Gravatar
 from flask_login import current_user, login_required
+from flask_login.utils import login_url
 from flask_security.changeable import change_user_password
 from flask_security.decorators import anonymous_user_required
 from flask_security.recoverable import reset_password_token_status, \
@@ -38,6 +39,8 @@ from werkzeug.datastructures import MultiDict
 
 import config
 from pgadmin import current_blueprint
+from pgadmin.authenticate import get_logout_url
+from pgadmin.authenticate.mfa.utils import mfa_required, is_mfa_enabled
 from pgadmin.settings import get_setting, store_setting
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
@@ -695,6 +698,7 @@ def check_browser_upgrade():
 @blueprint.route("/")
 @pgCSRFProtect.exempt
 @login_required
+@mfa_required
 def index():
     """Render and process the main browser window."""
     # Register Gravatar module with the app only if required
@@ -753,7 +757,11 @@ def index():
         username=current_user.username,
         auth_source=auth_source,
         is_admin=current_user.has_role("Administrator"),
-        logout_url=_get_logout_url(),
+        logout_url=get_logout_url(),
+        requirejs=True,
+        basejs=True,
+        mfa_enabled=is_mfa_enabled(),
+        login_url=login_url,
         _=gettext,
         auth_only_internal=auth_only_internal
     ))
@@ -843,7 +851,7 @@ def utils():
             app_version_int=config.APP_VERSION_INT,
             pg_libpq_version=pg_libpq_version,
             support_ssh_tunnel=config.SUPPORT_SSH_TUNNEL,
-            logout_url=_get_logout_url(),
+            logout_url=get_logout_url(),
             platform=sys.platform,
             qt_default_placeholder=QT_DEFAULT_PLACEHOLDER,
             enable_psql=config.ENABLE_PSQL

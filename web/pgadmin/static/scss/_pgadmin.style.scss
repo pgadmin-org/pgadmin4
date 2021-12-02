@@ -931,11 +931,20 @@ table.table-empty-rows{
 }
 
 .login_page {
-  background-color: $color-primary;
+  background-color: $login-page-background;
   height: 100%;
   position:relative;
   z-index:1;
   color: $security-text-color;
+
+  & a {
+    color: $security-text-color;
+  }
+
+  & .panel-container {
+    background-color: rgba($security-btn-color, 0.25);
+    padding: 0px;
+  }
 
   & .panel-header {
     padding-bottom: 1.0rem;
@@ -943,7 +952,10 @@ table.table-empty-rows{
   & .panel-body {
     padding-bottom: 0.8rem;
   }
-  & .btn-login {
+  & .btn-login  {
+    background-color: $security-btn-color;
+  }
+  & .btn-validate {
     background-color: $security-btn-color;
   }
   & .btn-oauth {
@@ -977,8 +989,16 @@ table.table-empty-rows{
     z-index: 100;
 }
 
-.change_pass {
+.auth_page {
   background-color: $color-gray-light;
+
+  & .panel-container {
+    background-color: rgba($color-gray-dark, 0.75);
+    border-radius: $border-radius * 2;
+  }
+}
+
+.change_pass {
   height: 100%;
   position:relative;
   z-index:1;

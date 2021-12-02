@@ -1,0 +1,78 @@
+{% set auth_page = true %}
+{% extends "security/panel.html" %}
+{% block panel_image %}
+<div class="pr-4">
+ <img src="{{ url_for('static', filename='img/login.svg') }}" alt="{{ _('Registration') }}">
+</div>
+{% endblock %}
+{% block panel_title %}{{ _('Authentication registration') }}{% endblock %}
+{% block panel_body %}
+<style>
+
+div.form-group > label > .icon {
+  min-width: 30px;
+  min-height: 35px;
+}
+
+{% if error_message is none %}
+
+{% for mfa in mfa_list %}{% if mfa.icon|length > 0 %}
+
+div#mfa-{{mfa.id | e}} .icon {
+  background: url({{ mfa.icon }})  0% 0% no-repeat transparent;
+  min-height: 30px;
+  min-width: 30px;
+}{% endif %}{% endfor %}
+</style>
+
+<form id='mfa_view' method='post'
+      action='{{ url_for("mfa.register") }}'>
+  <div class='form-group'>
+{% if mfa_view is not defined or mfa_view is none %}
+    <div class='form-group'>
+    {% for mfa in mfa_list %}
+      <div id="mfa-{{ mfa.id }}">
+        <label class="my-1 d-flex align-items-center">
+          <i class="fas mr-2 icon"></i>
+          <span>{{ mfa.label | safe }}</span>
+          <span class="ml-auto">
+            <button class='btn btn-primary btn-block btn-validate' name='{{ mfa.id }}'
+                    type='submit'
+                    value='{% if mfa.registered %}DELETE{% else %}SETUP{% endif %}'>{% if mfa.registered %}{{ _("Delete") }}{% else %}{{ _("Setup") }}{% endif %}</button>
+          </span>
+        </label>
+      </div>
+  {% endfor %}
+    </div>
+  {% if next_url != 'internal' %}
+    <div class="row align-items-center p-2">
+      <button class='btn btn-primary btn-block btn-validate col' type='submit'
+              value='{{ _("Continue") }}'>{{ _("Continue") }}</button>
+    </div>
+  {% endif %}
+{% else %}
+    <div class='form-group'>
+      {{ mfa_view | safe }}
+    </div>
+    <div class="row align-items-center p-2">
+      <button class="btn btn-primary col mr-1" type="submit" name="continue" value="Continue">{{ _("Continue") }}</button>
+      <button class="btn btn-secondary col" type="submit" name="cancel" value="Cancel">{{ _("Cancel") }}</button>
+    </div>
+{% endif %}
+    <input type="hidden" name="next" value="{{ next_url | safe }}"/>
+  </div>
+</form>
+{% else %}
+<div class="form-group pb-3">
+  <div class="card ">
+    <div class="card-body">
+      <div class="alert alert-warning d-flex flex-row mb-0">
+        <i class="fas fa-lg fa-exclamation-triangle mr-3 align-self-center"></i>
+        <div class="h-100">
+          <span class="text-primary text-danger">{{ error_message }}</a></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

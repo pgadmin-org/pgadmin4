@@ -1,10 +1,11 @@
 _setup_env() {
-    APP_RELEASE=`grep "^APP_RELEASE" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
-    APP_REVISION=`grep "^APP_REVISION" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
-    APP_NAME=`grep "^APP_NAME" web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //'`
+    FUNCS_DIR=$(cd `dirname $0` && pwd)/../..
+    APP_RELEASE=`grep "^APP_RELEASE" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g'`
+    APP_REVISION=`grep "^APP_REVISION" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g'`
+    APP_NAME=`grep "^APP_NAME" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //'`
     APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
     APP_SHORT_VERSION=`echo ${APP_LONG_VERSION} | cut -d . -f1,2`
-    APP_SUFFIX=`grep "^APP_SUFFIX" web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g"`
+    APP_SUFFIX=`grep "^APP_SUFFIX" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g"`
     if [ ! -z ${APP_SUFFIX} ]; then
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
@@ -182,7 +183,7 @@ _fixup_imports() {
             for LIB in $(
                 otool -L ${TODO_OBJ} | \
                 sed -n 's|^.*[[:space:]]\([^[:space:]]*\.dylib\).*$|\1|p' | \
-                egrep -v '^(/usr/lib)|(/System)|@executable_path' \
+                egrep -v '^(/usr/lib)|(/System)|@executable_path|@loader_path|/DLC/PIL/' \
             ); do
                 # Copy in any required dependencies
                 LIB_BN="$(basename "${LIB}")" ;
