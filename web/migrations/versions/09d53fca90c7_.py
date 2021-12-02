@@ -47,7 +47,12 @@ def upgrade():
     if version < 5:
         db.engine.execute('ALTER TABLE server ADD COLUMN role text(64)')
     if version < 6:
-        db.engine.execute("ALTER TABLE server RENAME TO server_old")
+        # To Save previous data, create temp table
+
+        db.engine.execute("create table server_old as select * from server")
+
+        db.engine.execute("DROP TABLE server")
+
         db.engine.execute("""
     CREATE TABLE server (
         id INTEGER NOT NULL,
@@ -161,7 +166,10 @@ def upgrade():
         """)
 
     if version < 12:
-        db.engine.execute("ALTER TABLE server RENAME TO server_old")
+        db.engine.execute("create table server_old as select * from server")
+
+        db.engine.execute("DROP TABLE server")
+
         db.engine.execute("""
     CREATE TABLE server (
         id INTEGER NOT NULL,

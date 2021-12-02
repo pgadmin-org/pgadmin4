@@ -49,12 +49,6 @@ def upgrade():
 
     db.engine.execute("DROP TABLE user_old")
 
-    # db.engine.execute("PRAGMA foreign_keys=ON")
-
-    # db.session.commit()
-
-    # db.engine.execute("PRAGMA foreign_keys=ON")
-
 
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.

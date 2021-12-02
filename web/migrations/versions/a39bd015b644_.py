@@ -17,8 +17,13 @@ depends_on = None
 
 
 def upgrade():
-    # Rename older table to save previous data
-    db.engine.execute("ALTER TABLE sharedserver RENAME TO sharedserver_old")
+
+    # To Save previous data, create temp table
+
+    db.engine.execute("create table sharedserver_old as "
+                      "select * from sharedserver")
+
+    db.engine.execute("DROP TABLE sharedserver")
 
     # Create new table with removed not null constraints for port column.
     db.engine.execute("""

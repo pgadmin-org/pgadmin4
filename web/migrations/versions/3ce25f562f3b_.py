@@ -24,11 +24,18 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute("create table user_old as select * from user")
+    # Rename user table to user_old and again user_old to user to change
+    # the foreign key refernce of user_old table which is not exists
 
-    db.engine.execute("DROP TABLE user")
+    db.engine.execute("ALTER TABLE user RENAME TO user_old")
 
     db.engine.execute("ALTER TABLE user_old RENAME TO user")
+
+    # Rename server table to server_old and again server_old to server to change
+    # the foreign key refernce of server_old table which is not exists
+    db.engine.execute("ALTER TABLE server RENAME TO server_old")
+
+    db.engine.execute("ALTER TABLE server_old RENAME TO server")
 
 
 def downgrade():

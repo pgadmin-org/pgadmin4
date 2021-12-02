@@ -19,8 +19,11 @@ depends_on = None
 
 
 def upgrade():
-    # To Save previous data
-    db.engine.execute("ALTER TABLE server RENAME TO server_old")
+    # To Save previous data, create temp table
+
+    db.engine.execute("create table server_old as select * from server")
+
+    db.engine.execute("DROP TABLE server")
 
     # Create table with new constraint definition
     db.engine.execute("""
