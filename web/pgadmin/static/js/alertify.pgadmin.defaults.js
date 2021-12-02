@@ -296,6 +296,23 @@ define([
           break;
         }
       }
+
+      let el_name = ev.target.name;
+      if(el_name == 'key'){
+        let $parentDiv = $el.closest('.value'),
+          $nextField = $parentDiv.find('.shift .btn-checkbox');
+
+        if ($nextField.length == 0) {
+          $nextField = $el.closest('.value').next().find('input.form-control');
+        }
+
+        if ($nextField.length) {
+          $nextField.focus();
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+          ev.stopPropagation();
+        }
+      }
     }
   });
   return alertify;

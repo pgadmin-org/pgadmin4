@@ -35,3 +35,4 @@ Bug fixes
 | `Issue #7031 <https://redmine.postgresql.org/issues/7031>`_ -  Fixed an issue where SQLite database definition is wrong because the USER_ID FK references the table user_old which is not available.
 | `Issue #7040 <https://redmine.postgresql.org/issues/7040>`_ -  Add "section" to the Debian package control files.
 | `Issue #7044 <https://redmine.postgresql.org/issues/7044>`_ -  Update the dropzone version to 5.9.3 and Flask-SQLAlchemy to 2.5.*.
+| `Issue #7046 <https://redmine.postgresql.org/issues/7046>`_ -  Fixed some accessibility issues.
