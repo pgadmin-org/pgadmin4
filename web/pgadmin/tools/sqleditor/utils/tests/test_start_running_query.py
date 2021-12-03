@@ -112,7 +112,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                             'not found.',
                      can_edit=False,
                      can_filter=False,
-                     info_notifier_timeout=5,
+                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -273,7 +273,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5,
+                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -318,7 +318,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5,
+                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -363,7 +363,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5,
+                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -409,7 +409,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5,
+                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
