@@ -9,8 +9,7 @@
 
 """A blueprint module implementing the about box."""
 
-import sys
-from flask import Response, render_template, __version__, url_for, request
+from flask import Response, render_template, url_for, request
 from flask_babel import gettext
 from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
@@ -98,11 +97,11 @@ def index():
             if isinstance(getattr(config, setting), str):
                 settings = \
                     settings + '{} = "{}"\n'.format(
-                        setting, gettext(getattr(config, setting)))
+                        setting, getattr(config, setting))
             else:
                 settings = \
                     settings + '{} = {}\n'.format(
-                        setting, gettext(getattr(config, setting)))
+                        setting, getattr(config, setting))
 
     info['settings'] = settings
 
