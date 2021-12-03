@@ -15,6 +15,12 @@ import CustomPropTypes from '../custom_prop_types';
 
 const useStyles = makeStyles((theme)=>({
   primaryButton: {
+    '&.MuiButton-outlinedSizeSmall': {
+      height: '28px',
+      '& .MuiSvgIcon-root': {
+        height: '0.8em',
+      }
+    },
     '&.Mui-disabled': {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.disabledMain,
@@ -28,6 +34,13 @@ const useStyles = makeStyles((theme)=>({
     backgroundColor: theme.palette.default.main,
     color: theme.palette.default.contrastText,
     border: '1px solid '+theme.palette.default.borderColor,
+    whiteSpace: 'nowrap',
+    '&.MuiButton-outlinedSizeSmall': {
+      height: '28px',
+      '& .MuiSvgIcon-root': {
+        height: '0.8em',
+      }
+    },
     '&.Mui-disabled': {
       color: theme.palette.default.disabledContrastText,
       borderColor: theme.palette.default.disabledBorderColor
@@ -52,35 +65,59 @@ const useStyles = makeStyles((theme)=>({
       backgroundColor: theme.custom.icon.hoverMain,
       color: theme.custom.icon.hoverContrastText,
     }
+  },
+  xsButton: {
+    padding: '2px 1px',
+    height: '24px',
+    '& .MuiSvgIcon-root': {
+      height: '0.8em',
+    }
+  },
+  noBorder: {
+    border: 0,
   }
 }));
 
 /* pgAdmin primary button */
 export const PrimaryButton = forwardRef((props, ref)=>{
-  let {children, className, ...otherProps} = props;
+  let {children, className, size, noBorder, ...otherProps} = props;
   const classes = useStyles();
-
+  let allClassName = [classes.primaryButton, className];
+  if(size == 'xs') {
+    size = undefined;
+    allClassName.push(classes.xsButton);
+  }
+  noBorder && allClassName.push(classes.noBorder);
   return (
-    <Button ref={ref} variant="contained" color="primary" className={clsx(classes.primaryButton, className)} {...otherProps}>{children}</Button>
+    <Button ref={ref} variant="contained" color="primary" size={size} className={clsx(allClassName)} {...otherProps}>{children}</Button>
   );
 });
 PrimaryButton.displayName = 'PrimaryButton';
 PrimaryButton.propTypes = {
+  size: PropTypes.string,
+  noBorder: PropTypes.bool,
   children: CustomPropTypes.children,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 };
 
 /* pgAdmin default button */
 export const DefaultButton = forwardRef((props, ref)=>{
-  let {children, className, ...otherProps} = props;
+  let {children, className, size, noBorder, ...otherProps} = props;
   const classes = useStyles();
-
+  let allClassName = [classes.defaultButton, className];
+  if(size == 'xs') {
+    size = undefined;
+    allClassName.push(classes.xsButton);
+  }
+  noBorder && allClassName.push(classes.noBorder);
   return (
-    <Button ref={ref} variant="outlined" color="default" className={clsx(classes.defaultButton, className)} {...otherProps}>{children}</Button>
+    <Button ref={ref} variant="outlined" color="default" size={size} className={clsx(allClassName)} {...otherProps}>{children}</Button>
   );
 });
 DefaultButton.displayName = 'DefaultButton';
 DefaultButton.propTypes = {
+  size: PropTypes.string,
+  noBorder: PropTypes.bool,
   children: CustomPropTypes.children,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 };

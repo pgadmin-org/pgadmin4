@@ -167,7 +167,7 @@ basicSettings = createMuiTheme(basicSettings, {
         top: 0,
         zIndex: 9999,
       }
-    }
+    },
   },
   transitions: {
     duration: {
@@ -199,6 +199,9 @@ basicSettings = createMuiTheme(basicSettings, {
     },
     MuiCheckbox: {
       disableTouchRipple: true,
+    },
+    MuiDialogTitle: {
+      disableTypography: true,
     }
   },
 });
@@ -389,6 +392,22 @@ function getFinalTheme(baseTheme) {
         root: {
           color: baseTheme.palette.text.muted,
         },
+      },
+      MuiDialogContent: {
+        root: {
+          padding: 0,
+          userSelect: 'text',
+        }
+      },
+      MuiDialogTitle: {
+        root: {
+          fontWeight: 'bold',
+          padding: '5px 10px',
+          cursor: 'move',
+          display: 'flex',
+          alignItems: 'center',
+          ...mixins.panelBorder.bottom,
+        }
       },
     }
   }, baseTheme);

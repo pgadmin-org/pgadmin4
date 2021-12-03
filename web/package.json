@@ -144,6 +144,7 @@
     "react": "^17.0.1",
     "react-aspen": "^1.1.0",
     "react-dom": "^17.0.1",
+    "react-draggable": "^4.4.4",
     "react-select": "^4.2.1",
     "react-table": "^7.6.3",
     "react-virtualized-auto-sizer": "^1.0.6",

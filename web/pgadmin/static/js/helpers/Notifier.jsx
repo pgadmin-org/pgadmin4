@@ -16,35 +16,91 @@ import CustomPropTypes from '../custom_prop_types';
 import gettext from 'sources/gettext';
 import pgWindow from 'sources/window';
 import Alertify from 'pgadmin.alertifyjs';
+import ModalProvider, { useModal } from './ModalProvider';
+import { DefaultButton, PrimaryButton } from '../components/Buttons';
+import { Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import HTMLReactParse from 'html-react-parser';
+import CloseIcon from '@material-ui/icons/CloseRounded';
+import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import PropTypes from 'prop-types';
 
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
 
 let snackbarRef;
-function SnackbarUtilsConfigurator() {
-  snackbarRef = useSnackbar();
-  return <></>;
-}
-
 let notifierInitialized = false;
 export function initializeNotifier(notifierContainer) {
   notifierInitialized = true;
+  const RefLoad = ()=>{
+    snackbarRef = useSnackbar();
+    return <></>;
+  };
   ReactDOM.render(
     <Theme>
       <SnackbarProvider
         maxSnack={30}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-        <SnackbarUtilsConfigurator />
+        <RefLoad />
       </SnackbarProvider>
     </Theme>, notifierContainer
   );
 }
 
-export const FinalNotifyContent = React.forwardRef(({children}, ref) => {
+let modalRef;
+let modalInitialized = false;
+export function initializeModalProvider(modalContainer) {
+  modalInitialized = true;
+  const RefLoad = ()=>{
+    modalRef = useModal();
+    return <></>;
+  };
+  ReactDOM.render(
+    <Theme>
+      <ModalProvider>
+        <RefLoad />
+      </ModalProvider>
+    </Theme>, modalContainer
+  );
+}
+
+const FinalNotifyContent = React.forwardRef(({children}, ref) => {
   return <SnackbarContent style= {{justifyContent:'end'}} ref={ref}>{children}</SnackbarContent>;
 });
 FinalNotifyContent.displayName = 'FinalNotifyContent';
 FinalNotifyContent.propTypes = {
   children: CustomPropTypes.children,
+};
+
+const useAlertStyles = makeStyles((theme)=>({
+  footer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '0.5rem',
+    ...theme.mixins.panelBorder.top,
+  },
+  margin: {
+    marginLeft: '0.25rem',
+  }
+}));
+function AlertContent({text, confirm, onOkClick, onCancelClick}) {
+  const classes = useAlertStyles();
+  return (
+    <Box display="flex" flexDirection="column" height="100%">
+      <Box flexGrow="1" p={2}>{HTMLReactParse(text)}</Box>
+      <Box className={classes.footer}>
+        <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} autoFocus={!confirm}>Close</DefaultButton>
+        {confirm &&
+          <PrimaryButton className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={confirm}>OK</PrimaryButton>
+        }
+      </Box>
+    </Box>
+  );
+}
+AlertContent.propTypes = {
+  text: PropTypes.string,
+  confirm: PropTypes.bool,
+  onOkClick: PropTypes.func,
+  onCancelClick: PropTypes.func,
 };
 
 var Notifier = {
@@ -170,7 +226,39 @@ var Notifier = {
     Alertify.alert().show().set(
       'message', msg.replace(new RegExp(/\r?\n/, 'g'), '<br />')
     ).set('title', promptmsg).set('closable', true);
-  }
+  },
+  alert: (title, text, onCancelClick)=>{
+    if(!modalInitialized) {
+      initializeModalProvider(document.getElementById('modalContainer'));
+    }
+    modalRef.showModal(title, (closeModal)=>{
+      const onCancelClickClose = ()=>{
+        onCancelClick && onCancelClick();
+        closeModal();
+      };
+      return (
+        <AlertContent text={text} onCancelClick={onCancelClickClose} />
+      );
+    });
+  },
+  confirm: (title, text, onOkClick, onCancelClick)=>{
+    if(!modalInitialized) {
+      initializeModalProvider(document.getElementById('modalContainer'));
+    }
+    modalRef.showModal(title, (closeModal)=>{
+      const onCancelClickClose = ()=>{
+        onCancelClick && onCancelClick();
+        closeModal();
+      };
+      const onOkClickClose = ()=>{
+        onOkClick && onOkClick();
+        closeModal();
+      };
+      return (
+        <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} />
+      );
+    });
+  },
 };
 
 if(window.frameElement) {
