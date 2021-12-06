@@ -42,7 +42,7 @@ def get_logout_url() -> str:
             session['auth_source_manager']['current_source'] == \
             KERBEROS:
         return _URL_WITH_NEXT_PARAM.format(url_for(
-            'authenticate.kerberos_logout'), url_for(BROWSER_INDEX))
+            'kerberos.logout'), url_for(BROWSER_INDEX))
 
     return _URL_WITH_NEXT_PARAM.format(
         url_for('security.logout'), url_for(BROWSER_INDEX))

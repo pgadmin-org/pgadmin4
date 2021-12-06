@@ -25,8 +25,8 @@ modify the values for the following parameters.
    :class: longtable
    :widths: 35, 55
 
-   "MFA_ENABLED","The default value for this parameter is False.
-   To enable 2FA, set the value to *True*"
+   "MFA_ENABLED","The default value for this parameter is True.
+   To disable 2FA, set the value to *False*"
    "SUPPORTED_MFA_LIST", "Set the authentication methods to be supported "
    "MFA_EMAIL_SUBJECT", "<APP_NAME> - Verification Code e.g. pgAdmin 4 -
    Verification Code"
