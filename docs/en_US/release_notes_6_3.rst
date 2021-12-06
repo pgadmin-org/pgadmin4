@@ -23,6 +23,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #6840 <https://redmine.postgresql.org/issues/6840>`_ -  Fixed an issue where tooltip data are not displaying on downloaded graphical explain plan.
 | `Issue #6906 <https://redmine.postgresql.org/issues/6906>`_ -  Fixed an issue where referenced table drop-down should be disabled in foreign key -> columns after one row is added.
 | `Issue #6955 <https://redmine.postgresql.org/issues/6955>`_ -  Ensure that sort order should be maintained when renaming a server group.
 | `Issue #6963 <https://redmine.postgresql.org/issues/6963>`_ -  Ensure that the user should be allowed to set the schema of an extension while creating it.

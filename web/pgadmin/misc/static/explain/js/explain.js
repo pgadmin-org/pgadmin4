@@ -937,7 +937,7 @@ define('pgadmin.misc.explain', [
 
     drawImage: function(
       g, image_content, currentXpos, currentYpos, graphContainer,
-      toolTipContainer
+      toolTipContainer, downloadSVG=false
     ) {
       // Draw the actual image for current node
       var image = g.image(
@@ -955,6 +955,73 @@ define('pgadmin.misc.explain', [
       // Draw tooltip
       var image_data = this.toJSON(),
         nodeLabel = this.getLabel();
+
+      if (downloadSVG) {
+        var title = '<title>';
+        _.each(image_data, function (value, key) {
+          if (
+            key !== 'image' &&
+            key !== 'Plans' &&
+            key !== 'level' &&
+            key !== 'image' &&
+            key !== 'image_text' &&
+            key !== 'xpos' &&
+            key !== 'ypos' &&
+            key !== 'width' &&
+            key !== 'height'
+          ) {
+            title += `${key}: ${value}\n`;
+          }
+        });
+
+        title += '</title>';
+
+        image.append(Snap.parse(title));
+
+        image.mouseover(() => {
+          // Empty the tooltip content if it has any and add new data
+          let toolTipBody = toolTipContainer.find('.details-body');
+          let toolTipTitle = toolTipContainer.find('.details-title');
+          toolTipTitle.text(nodeLabel);
+
+          toolTipBody.empty();
+
+          // Remove the title content so that we can show our custom build tooltips.
+          image.node.textContent = '';
+
+          var tooltipTable = $(`
+           <table class='pgadmin-tooltip-table table table-bordered table-noouter-border table-bottom-border table-hover'>
+             <tbody></tbody>
+           </table>`).appendTo(toolTipBody);
+          var tooltip = tooltipTable.find('tbody');
+
+          _.each(image_data, function (value, key) {
+            if (
+              key !== 'image' &&
+              key !== 'Plans' &&
+              key !== 'level' &&
+              key !== 'image' &&
+              key !== 'image_text' &&
+              key !== 'xpos' &&
+              key !== 'ypos' &&
+              key !== 'width' &&
+              key !== 'height'
+            ) {
+              key = _.escape(key);
+              value = _.escape(value);
+              tooltip.append(`
+               <tr>
+                 <td class='label explain-tooltip'>${key}</td>
+                 <td class='label explain-tooltip-val'>${value}</td>
+               </tr>
+             `);
+            }
+          });
+          toolTipContainer.removeClass('d-none');
+          toolTipBody.scrollTop(0);
+        });
+      }
+
       image.click(() => {
         // Empty the tooltip content if it has any and add new data
         let toolTipBody = toolTipContainer.find('.details-body');
@@ -1033,10 +1100,11 @@ define('pgadmin.misc.explain', [
         var onSVGLoaded = function(data) {
           var svg_image = Snap();
           svg_image.append(data);
+          var downloadSVG = true;
 
           that.drawImage(
             g, svg_image.toDataURL(), startX, startY, graphContainer,
-            toolTipContainer
+            toolTipContainer, downloadSVG
           );
 
           // This attribute is required to download the file as SVG image.
