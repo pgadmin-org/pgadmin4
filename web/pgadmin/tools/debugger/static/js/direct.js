@@ -84,7 +84,7 @@ define([
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while setting debugging breakpoint.')
             );
@@ -144,14 +144,14 @@ define([
             if (res.data.status === 'Success') {
               result = res.data.result;
             } else if (res.data.status === 'NotConnected') {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while fetching breakpoint information.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while fetching breakpoint information.')
             );
@@ -206,14 +206,14 @@ define([
             // If status is Success then find the port number to attach the executer.
               self.execute_query(trans_id);
             } else if (res.data.status === 'NotConnected') {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while starting debugging session.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while starting debugging session.')
             );
@@ -250,14 +250,14 @@ define([
                 self.poll_end_execution_result(trans_id);
               }
             } else if (res.data.status === 'NotConnected') {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while executing requested debugging information.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while executing requested debugging information.')
             );
@@ -292,14 +292,14 @@ define([
                 pgTools.DirectDebug.debug_restarted = false;
               }
             } else if (res.data.status === 'NotConnected') {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while fetching variable information.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while fetching variable information.')
             );
@@ -326,14 +326,14 @@ define([
               self.AddStackInformation(res.data.result);
               self.GetLocalVariables(pgTools.DirectDebug.trans_id);
             } else if (res.data.status === 'NotConnected') {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while fetching stack information.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while fetching stack information.')
             );
@@ -436,14 +436,14 @@ define([
                     self.poll_result(trans_id);
                   }
                 } else if (res.data.status === 'NotConnected') {
-                  Alertify.alert(
+                  Notify.alert(
                     gettext('Debugger Error'),
                     gettext('Error while polling result.')
                   );
                 }
               })
               .fail(function() {
-                Alertify.alert(
+                Notify.alert(
                   gettext('Debugger Error'),
                   gettext('Error while polling result.')
                 );
@@ -592,7 +592,7 @@ define([
                     self.update_messages(res.data.status_message);
                   }
                 } else if (res.data.status === 'NotConnected') {
-                  Alertify.alert(
+                  Notify.alert(
                     gettext('Debugger poll end execution error'),
                     res.data.result
                   );
@@ -636,7 +636,7 @@ define([
                 }
               })
               .fail(function() {
-                Alertify.alert(
+                Notify.alert(
                   gettext('Debugger Error'),
                   gettext('Error while polling result.')
                 );
@@ -700,7 +700,7 @@ define([
                   }
                 })
                 .fail(function() {
-                  Alertify.alert(
+                  Notify.alert(
                     gettext('Debugger Error'),
                     gettext('Error while polling result.')
                   );
@@ -711,7 +711,7 @@ define([
             try {
               var err = JSON.parse(xhr.responseText);
               if (err.success == 0) {
-                Alertify.alert(gettext('Debugger Error'), err.errormsg);
+                Notify.alert(gettext('Debugger Error'), err.errormsg);
               }
             } catch (e) {
               console.warn(e.stack || e);
@@ -742,14 +742,14 @@ define([
               if (res.data.status) {
                 self.poll_result(trans_id);
               } else {
-                Alertify.alert(
+                Notify.alert(
                   gettext('Debugger Error'),
                   gettext('Error while executing continue in debugging session.')
                 );
               }
             })
             .fail(function() {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while executing continue in debugging session.')
               );
@@ -774,14 +774,14 @@ define([
             if (res.data.status) {
               self.poll_result(trans_id);
             } else {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while executing step over in debugging session.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while executing step over in debugging session.')
             );
@@ -805,14 +805,14 @@ define([
             if (res.data.status) {
               self.poll_result(trans_id);
             } else {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while executing step into in debugging session.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while executing step into in debugging session.')
             );
@@ -851,14 +851,14 @@ define([
               // is completed.
               Notify.success(res.info, 3000);
             } else if (res.data.status === 'NotConnected') {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while executing stop in debugging session.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while executing stop in debugging session.')
             );
@@ -911,14 +911,14 @@ define([
 
               self.enable_toolbar_buttons();
             } else if (res.data.status === 'NotConnected') {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while toggling breakpoint.')
               );
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while toggling breakpoint.')
             );
@@ -970,7 +970,7 @@ define([
             self.enable_toolbar_buttons();
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while clearing all breakpoint.')
             );
@@ -1325,7 +1325,7 @@ define([
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while depositing variable value.')
             );
@@ -1354,7 +1354,7 @@ define([
             }
           })
           .fail(function() {
-            Alertify.alert(
+            Notify.alert(
               gettext('Debugger Error'),
               gettext('Error while selecting frame.')
             );
@@ -1555,10 +1555,10 @@ define([
             try {
               var err = JSON.parse(xhr.responseText);
               if (err.success == 0) {
-                Alertify.alert(gettext('Debugger Error'), err.errormsg);
+                Notify.alert(gettext('Debugger Error'), err.errormsg);
               }
             } catch (e) {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while starting debugging listener.')
               );
@@ -1583,10 +1583,10 @@ define([
             try {
               var err = JSON.parse(xhr.responseText);
               if (err.success == 0) {
-                Alertify.alert(gettext('Debugger Error'), err.errormsg);
+                Notify.alert(gettext('Debugger Error'), err.errormsg);
               }
             } catch (e) {
-              Alertify.alert(
+              Notify.alert(
                 gettext('Debugger Error'),
                 gettext('Error while starting debugging listener.')
               );
@@ -1620,14 +1620,14 @@ define([
           // If status is Busy then poll the result by recursive call to the poll function
             self.messages(trans_id);
           } else if (res.data.status === 'NotConnected') {
-            Alertify.alert(
+            Notify.alert(
               gettext('Not connected to server or connection with the server has been closed.'),
               res.data.result
             );
           }
         })
         .fail(function() {
-          Alertify.alert(
+          Notify.alert(
             gettext('Debugger Error'),
             gettext('Error while fetching messages information.')
           );
@@ -1910,7 +1910,7 @@ define([
 
       /* Register to log the activity */
       pgBrowser.register_to_activity_listener(document, ()=>{
-        Alertify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Please close the window and login again.'));
+        Notify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Please close the window and login again.'));
       });
 
       controller.poll_result = pgBrowser.override_activity_event_decorator(controller.poll_result).bind(controller);

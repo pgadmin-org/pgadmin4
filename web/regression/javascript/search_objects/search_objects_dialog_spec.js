@@ -11,6 +11,7 @@ import {TreeFake} from '../tree/tree_fake';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
 import gettext from 'sources/gettext';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 
 const context = describe;
 
@@ -67,6 +68,7 @@ describe('SearchObjectsDialog', () => {
     pgBrowser.Nodes.server.hasId = true;
     pgBrowser.Nodes.database.hasId = true;
     jquerySpy = jasmine.createSpy('jquerySpy');
+    spyOn(Notify, 'alert');
 
     const hierarchy = {
       children: [
@@ -143,7 +145,7 @@ describe('SearchObjectsDialog', () => {
 
       it('display an alert with a Search object Error', () => {
         soDialog.draw(null, [{id: 'serverTreeNode'}], null);
-        expect(alertifySpy.alert).toHaveBeenCalledWith(
+        expect(Notify.alert).toHaveBeenCalledWith(
           gettext('Search Objects Error'),
           gettext('Please select a database or its child node from the browser.')
         );

@@ -399,7 +399,7 @@ define([
           }
 
           if (sel_rows.length === 0) {
-            Alertify.alert(gettext('Drop Multiple'),
+            Notify.alert(gettext('Drop Multiple'),
               gettext('Please select at least one object to delete.')
             );
             return;
@@ -463,7 +463,7 @@ define([
           };
 
           if(confirm) {
-            Alertify.confirm(title, msg, dropAjaxHook, null).show();
+            Notify.confirm(title, msg, dropAjaxHook, null);
           } else {
             dropAjaxHook();
           }

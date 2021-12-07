@@ -7,9 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../static/js/helpers/Notifier';
+
 define(
-  ['sources/gettext', 'underscore', 'alertify', 'sources/pgadmin'],
-  function(gettext, _, alertify, pgAdmin) {
+  ['sources/gettext', 'underscore', 'sources/pgadmin'],
+  function(gettext, _, pgAdmin) {
     pgAdmin.Browser = pgAdmin.Browser || {};
 
     _.extend(pgAdmin.Browser, {
@@ -44,7 +46,7 @@ define(
         }
 
         text += '</div>';
-        alertify.alert(
+        Notify.alert(
           title,
           text
         )

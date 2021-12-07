@@ -15,6 +15,7 @@ import Draggable from 'react-draggable';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import CustomPropTypes from '../custom_prop_types';
 import PropTypes from 'prop-types';
+import gettext from 'sources/gettext';
 
 const ModalContext = React.createContext({});
 
@@ -77,7 +78,7 @@ function ModalContainer({id, title, content}) {
     >
       <DialogTitle>
         <Box marginRight="0.25rem">{title}</Box>
-        <Box marginLeft="auto"><PgIconButton icon={<CloseIcon />} size="xs" noBorder onClick={closeModal}/></Box>
+        <Box marginLeft="auto"><PgIconButton title={gettext('Close')} icon={<CloseIcon />} size="xs" noBorder onClick={closeModal}/></Box>
       </DialogTitle>
       <DialogContent>
         {content(closeModal)}
@@ -88,5 +89,5 @@ function ModalContainer({id, title, content}) {
 ModalContainer.propTypes = {
   id: PropTypes.string,
   title: CustomPropTypes.children,
-  content: CustomPropTypes.children,
+  content: PropTypes.func,
 };

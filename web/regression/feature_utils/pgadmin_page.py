@@ -80,14 +80,22 @@ class PgadminPage:
         except TimeoutException:
             pass
 
-    def click_modal(self, button_text):
+    def click_modal(self, button_text, react_dialog=False):
         time.sleep(0.5)
         # Find active alertify dialog in case of multiple alertify dialog
         # & click on that dialog
-        modal_button = self.find_by_xpath(
-            "//div[contains(@class, 'alertify') and "
-            "not(contains(@class, 'ajs-hidden'))]//button[.='%s']"
-            % button_text)
+
+        # In case of react dialog we use different xpath
+        if react_dialog:
+            modal_button = self.find_by_xpath(
+                "//div[@class ='MuiDialogContent-root']"
+                "//span[text()='%s']" % button_text)
+        else:
+            modal_button = self.find_by_xpath(
+                "//div[contains(@class, 'alertify') and "
+                "not(contains(@class, 'ajs-hidden'))]//button[.='%s']"
+                % button_text)
+
         self.click_element(modal_button)
 
     def add_server(self, server_config):
@@ -214,7 +222,8 @@ class PgadminPage:
         self.click_element(
             self.find_by_css_selector(QueryToolLocators.btn_clear)
         )
-        self.click_modal('Yes')
+        self.driver.switch_to.default_content()
+        self.click_modal('Yes', True)
 
     def execute_query(self, query):
         self.fill_codemirror_area_with(query)
@@ -322,7 +331,7 @@ class PgadminPage:
             self.click_element(object_menu_item)
             delete_menu_item = self.find_by_partial_link_text("Remove Server")
             self.click_element(delete_menu_item)
-            self.click_modal('Yes')
+            self.click_modal('Yes', True)
             time.sleep(1)
         else:
             print("%s Server is not removed", server_config['name'],

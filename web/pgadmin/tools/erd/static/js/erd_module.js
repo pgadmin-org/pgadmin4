@@ -7,9 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
-import Alertify from 'pgadmin.alertifyjs';
 import {getPanelTitle} from 'tools/datagrid/static/js/datagrid_panel_title';
 import {getRandomInt, registerDetachEvent} from 'sources/utils';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 
 export function setPanelTitle(erdToolPanel, panelTitle) {
@@ -100,7 +100,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
     // Callback to draw ERD Tool for objects
     showErdTool: function(data, aciTreeIdentifier, gen=false) {
       if (aciTreeIdentifier === undefined) {
-        Alertify.alert(
+        Notify.alert(
           gettext('ERD Error'),
           gettext('No object selected.')
         );
@@ -110,7 +110,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
       const parentData = pgBrowser.tree.getTreeNodeHierarchy(aciTreeIdentifier);
 
       if(_.isUndefined(parentData.database)) {
-        Alertify.alert(
+        Notify.alert(
           gettext('ERD Error'),
           gettext('Please select a database/database object.')
         );

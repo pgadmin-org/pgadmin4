@@ -7,7 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
-define(['sources/gettext', 'alertify'], function (gettext, alertify) {
+import Notify from '../helpers/Notifier';
+
+define(['sources/gettext'], function (gettext) {
   var clipboard = {
     copyTextToClipboard: function (text) {
       var textArea = document.createElement('textarea');
@@ -79,7 +81,7 @@ define(['sources/gettext', 'alertify'], function (gettext, alertify) {
         // triggered on document and then we can set clipboardData.
         document.execCommand('copy');
       } catch (err) {
-        alertify.alert(
+        Notify.alert(
           gettext('Error'),
           gettext('Oops, unable to copy to clipboard'));
       }

@@ -117,9 +117,9 @@ export default class SchemaDiffUI {
   raise_error_on_fail(alert_title, xhr) {
     try {
       var err = JSON.parse(xhr.responseText);
-      Alertify.alert(alert_title, err.errormsg);
+      Notify.alert(alert_title, err.errormsg);
     } catch (e) {
-      Alertify.alert(alert_title, e.statusText);
+      Notify.alert(alert_title, e.statusText);
     }
   }
 
@@ -154,7 +154,7 @@ export default class SchemaDiffUI {
         url_params['target_sid'] == '' || _.isUndefined(url_params['target_sid']) ||
         url_params['target_did'] == '' || _.isUndefined(url_params['target_did'])
     ) {
-      Alertify.alert(gettext('Selection Error'), gettext('Please select source and target.'));
+      Notify.alert(gettext('Selection Error'), gettext('Please select source and target.'));
       return false;
     }
 
@@ -168,7 +168,7 @@ export default class SchemaDiffUI {
       }
     }
     if (isSameOptsSelected) {
-      Alertify.alert(gettext('Selection Error'), gettext('Please select the different source and target.'));
+      Notify.alert(gettext('Selection Error'), gettext('Please select the different source and target.'));
       return false;
     }
 

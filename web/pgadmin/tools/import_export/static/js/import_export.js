@@ -437,7 +437,7 @@ define([
         if (pgBrowser.tree.hasParent(i)) {
           i = pgBrowser.tree.parent(i);
         } else {
-          Alertify.alert(gettext('Please select server or child node from tree.'));
+          Notify.alert(gettext('Please select server or child node from tree.'));
           break;
         }
       }
@@ -533,7 +533,7 @@ define([
                       Notify.success(gettext('Import/Export job created.'), 5000);
                       pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                     } else {
-                      Alertify.alert(
+                      Notify.alert(
                         gettext('Import/Export job creation failed.'),
                         res.errormsg
                       );
@@ -542,7 +542,7 @@ define([
                   .fail(function(xhr) {
                     try {
                       var err = JSON.parse(xhr.responseText);
-                      Alertify.alert(
+                      Notify.alert(
                         gettext('Import/Export job failed.'),
                         err.errormsg
                       );
@@ -696,7 +696,7 @@ define([
       })
         .done(function(res) {
           if (!res.success) {
-            Alertify.alert(
+            Notify.alert(
               gettext('Utility not found'),
               res.errormsg
             );
@@ -710,7 +710,7 @@ define([
           ).set('resizable', true).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
         })
         .fail(function() {
-          Alertify.alert(
+          Notify.alert(
             gettext('Utility not found'),
             gettext('Failed to fetch Utility information')
           );

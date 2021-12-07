@@ -535,7 +535,7 @@ define('pgadmin.node.role', [
                     roleOp = roleReassignData.role_op,
                     confirmBoxTitle = utils.titleize(roleOp);
 
-                  alertify.confirm(
+                  Notify.confirm(
                     gettext('%s Objects', confirmBoxTitle),
                     gettext('Are you sure you wish to %s all the objects owned by the selected role?', roleOp),
                     function() {
@@ -548,7 +548,7 @@ define('pgadmin.node.role', [
                       }).catch(function (error) {
                         try {
                           const err = error.response.data;
-                          alertify.alert(
+                          Notify.alert(
                             gettext('Role reassign/drop failed.'),
                             err.errormsg
                           );

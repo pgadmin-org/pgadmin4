@@ -13,6 +13,7 @@ import CodeMirror from 'bundled_codemirror';
 import * as SqlEditorUtils from 'sources/sqleditor_utils';
 import $ from 'jquery';
 import _ from 'underscore';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 export function showDataGrid(
   datagrid,
@@ -26,7 +27,7 @@ export function showDataGrid(
 ) {
   const node = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
   if (node === undefined || !node.getData()) {
-    alertify.alert(
+    Notify.alert(
       gettext('Data Grid Error'),
       gettext('No object selected.')
     );
@@ -239,15 +240,13 @@ function initFilterDialog(alertify, pgBrowser) {
                   that.close(); // Close the dialog
                 }
                 else {
-                  alertify.alert()
-                    .setting({
-                      'title': gettext('Validation Error'),
-                      'label':gettext('OK'),
-                      'message': gettext(res.data.result),
-                      'onok': function(){
-                        filter_editor.focus();
-                      },
-                    }).show();
+                  Notify.alert(
+                    gettext('Validation Error'),
+                    gettext(res.data.result),
+                    function(){
+                      filter_editor.focus();
+                    },
+                  );
                 }
               })
               .fail(function(e) {
@@ -255,7 +254,7 @@ function initFilterDialog(alertify, pgBrowser) {
                   pgBrowser.report_error(gettext('Error filtering rows - %s.', e.statusText), e.responseJSON.errormsg);
 
                 } else {
-                  alertify.alert(
+                  Notify.alert(
                     gettext('Validation Error'),
                     e
                   );

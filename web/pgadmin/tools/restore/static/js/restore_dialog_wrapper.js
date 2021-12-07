@@ -12,6 +12,7 @@ import _ from 'underscore';
 import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
 import {DialogWrapper} from '../../../../static/js/alertify/dialog_wrapper';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 export class RestoreDialogWrapper extends DialogWrapper {
   constructor(dialogContainerSelector, dialogTitle, typeOfDialog,
@@ -156,10 +157,10 @@ export class RestoreDialogWrapper extends DialogWrapper {
         this.view.model.toJSON()
       ).then(function (res) {
         if (res.data.success) {
-          dialogWrapper.alertify.success(gettext('Restore job created.'), 5);
+          Notify.success(gettext('Restore job created.'), 5);
           dialogWrapper.pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialogWrapper);
         } else {
-          dialogWrapper.alertify.alert(
+          Notify.alert(
             gettext('Restore job creation failed.'),
             res.data.errormsg
           );
@@ -167,7 +168,7 @@ export class RestoreDialogWrapper extends DialogWrapper {
       }).catch(function (error) {
         try {
           const err = error.response.data;
-          dialogWrapper.alertify.alert(
+          Notify.alert(
             gettext('Restore job failed.'),
             err.errormsg
           );

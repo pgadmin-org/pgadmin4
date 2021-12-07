@@ -10,15 +10,17 @@ import {getUtilityView, removeNodeView} from '../../../../browser/static/js/util
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/static/js/node_ajax';
 import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema} from './backup.ui';
 import BackupGlobalSchema, {getMiscellaneousSchema as getMiscellaneousGlobalSchema} from './backupGlobal.ui';
+import Notify from '../../../../static/js/helpers/Notifier';
+
 // Backup dialog
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
-  'pgadmin.alertifyjs', 'backbone', 'pgadmin.backgrid',
+  'backbone', 'pgadmin.backgrid',
   'pgadmin.backform', 'pgadmin.browser', 'sources/utils',
   'tools/backup/static/js/menu_utils',
   'sources/nodes/supported_database_node',
 ], function(
-  gettext, url_for, $, _, pgAdmin, alertify, Backbone, Backgrid, Backform, pgBrowser,
+  gettext, url_for, $, _, pgAdmin, Backbone, Backgrid, Backform, pgBrowser,
   commonUtils, menuUtils, supportedNodes
 ) {
 
@@ -175,7 +177,7 @@ define([
     },
     saveCallBack: function(data, dialog) {
       if(data.errormsg) {
-        alertify.alert(
+        Notify.alert(
           gettext('Utility not found'),
           gettext(data.errormsg)
         );

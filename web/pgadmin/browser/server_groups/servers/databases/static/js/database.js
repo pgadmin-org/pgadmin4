@@ -176,7 +176,7 @@ define('pgadmin.node.database', [
                 connect(self, d, t, i, true);
                 return;
               }
-              Alertify.confirm(
+              Notify.confirm(
                 gettext('Connection lost'),
                 gettext('Would you like to reconnect to the database?'),
                 function() {
@@ -218,7 +218,7 @@ define('pgadmin.node.database', [
             d = i  ? t.itemData(i) : undefined;
 
           if (d) {
-            Alertify.confirm(
+            Notify.confirm(
               gettext('Disconnect the database'),
               gettext('Are you sure you want to disconnect the database - %s?', d.label),
               function() {

@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.browser',
@@ -258,7 +260,7 @@ define([
                 }
               })
               .fail(function() {
-                Alertify.alert(
+                Notify.alert(
                   gettext('Debugger Error'),
                   gettext('Unable to fetch the arguments from server')
                 );
@@ -856,14 +858,14 @@ define([
                     })
                       .done(function() {})
                       .fail(function() {
-                        Alertify.alert(
+                        Notify.alert(
                           gettext('Debugger Error'),
                           gettext('Unable to set the arguments on the server')
                         );
                       });
                   })
                   .fail(function(er) {
-                    Alertify.alert(
+                    Notify.alert(
                       gettext('Debugger Target Initialization Error'),
                       er.responseJSON.errormsg
                     );
@@ -884,7 +886,7 @@ define([
                 })
                   .done(function() {})
                   .fail(function(er) {
-                    Alertify.alert(
+                    Notify.alert(
                       gettext('Debugger Listener Startup Error'),
                       er.responseJSON.errormsg
                     );
@@ -906,7 +908,7 @@ define([
                 })
                   .done(function() {})
                   .fail(function() {
-                    Alertify.alert(
+                    Notify.alert(
                       gettext('Debugger Error'),
                       gettext('Unable to set the arguments on the server')
                     );
@@ -968,7 +970,7 @@ define([
                 );
                 _self.prepare();
               }).fail(function(er) {
-                Alertify.alert(
+                Notify.alert(
                   gettext('Clear failed'),
                   er.responseJSON.errormsg
                 );

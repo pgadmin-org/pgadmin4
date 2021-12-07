@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import Alertify from 'pgadmin.alertifyjs';
 import pgWindow from 'sources/window';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 const pgAdmin = pgWindow.pgAdmin;
 
@@ -124,7 +124,7 @@ export function generateTitle(title_placeholder, title_data) {
  * This function is used refresh the db node after showing alert to the user
  */
 export function refresh_db_node(message, dbNode) {
-  Alertify.alert()
+  Notify.alert()
     .setting({
       'title': gettext('Database moved/renamed'),
       'label':gettext('OK'),

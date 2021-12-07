@@ -27,6 +27,7 @@ import {showERDSqlTool} from 'tools/datagrid/static/js/show_query_tool';
 import 'wcdocker';
 import Theme from '../../../../../../static/js/Theme';
 import TableSchema from '../../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
+import Notify from '../../../../../../static/js/helpers/Notifier';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -179,17 +180,19 @@ export default class BodyWidget extends React.Component {
   }
 
   handleAxiosCatch(err) {
-    let alert = this.props.alertify.alert().set('title', gettext('Error'));
     if (err.response) {
       // client received an error response (5xx, 4xx)
-      alert.set('message', `${err.response.statusText} - ${err.response.data.errormsg}`).show();
+      Notify.alert(
+        gettext('Error'),
+        `${err.response.statusText} - ${err.response.data.errormsg}`
+      );
       console.error('response error', err.response);
     } else if (err.request) {
       // client never received a response, or request never left
-      alert.set('message', gettext('Client error') + ':' + err).show();
+      Notify.alert(gettext('Error'), gettext('Client error') + ':' + err);
       console.error('client eror', err);
     } else {
-      alert.set('message', err.message).show();
+      Notify.alert(gettext('Error'), err.message);
       console.error('other error', err);
     }
   }
@@ -374,7 +377,7 @@ export default class BodyWidget extends React.Component {
     if(nodeDropData.objUrl && nodeDropData.nodeType === 'table') {
       let matchUrl = `/${this.props.params.sgid}/${this.props.params.sid}/${this.props.params.did}/`;
       if(nodeDropData.objUrl.indexOf(matchUrl) == -1) {
-        this.props.alertify.error(gettext('Cannot drop table from outside of the current database.'));
+        Notify.error(gettext('Cannot drop table from outside of the current database.'));
       } else {
         let dataPromise = new Promise((resolve, reject)=>{
           axios.get(nodeDropData.objUrl)
@@ -416,7 +419,7 @@ export default class BodyWidget extends React.Component {
   }
 
   onDeleteNode() {
-    this.props.alertify.confirm(
+    Notify.confirm(
       gettext('Delete ?'),
       gettext('You have selected %s tables and %s links.', this.diagram.getSelectedNodes().length, this.diagram.getSelectedLinks().length)
         + '<br />' + gettext('Are you sure you want to delete ?'),
@@ -513,7 +516,7 @@ export default class BodyWidget extends React.Component {
       'file_name': decodeURI(fileName),
       'file_content': JSON.stringify(this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)),
     }).then(()=>{
-      this.props.alertify.success(gettext('Project saved successfully.'));
+      Notify.success(gettext('Project saved successfully.'));
       this.setState({
         current_file: fileName,
         dirty: false,
@@ -674,9 +677,7 @@ export default class BodyWidget extends React.Component {
         if(err.name) {
           msg = `${err.name}: ${err.message}`;
         }
-        this.props.alertify.alert()
-          .set('title', gettext('Error'))
-          .set('message', msg).show();
+        Notify.alert(gettext('Error'), msg);
       }).then(()=>{
         /* Revert back to the original CSS styles */
         this.canvasEle.classList.remove('html2canvas-reset');

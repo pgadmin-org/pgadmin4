@@ -78,9 +78,8 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         try:
             wait = WebDriverWait(self.page.driver, 2)
             is_error = wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//div[contains(@class, 'alertify') and "
-                           "not(contains(@class, 'ajs-hidden'))]//div["
-                           "contains(@class,'ajs-header')]")
+                (By.XPATH, "//div[@class ='MuiDialogTitle-root']"
+                           "//div[text()='Debugger Error']")
             ))
 
         except TimeoutException:
@@ -91,11 +90,10 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
             click = True
             while click:
                 try:
-                    self.page.click_modal('OK')
+                    self.page.click_modal('OK', True)
                     wait.until(EC.invisibility_of_element(
-                        (By.XPATH, "//div[contains(@class, 'alertify') and "
-                                   "not(contains(@class, 'ajs-hidden'))]//div["
-                                   "contains(@class,'ajs-header')]")
+                        (By.XPATH, "//div[@class ='MuiDialogTitle-root']"
+                                   "//div[text()='Debugger Error']")
                     ))
                     click = False
                 except TimeoutException:

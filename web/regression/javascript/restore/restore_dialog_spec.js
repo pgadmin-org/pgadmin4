@@ -10,6 +10,7 @@ import {TreeFake} from '../tree/tree_fake';
 import {RestoreDialog} from '../../../pgadmin/tools/restore/static/js/restore_dialog';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 
 const context = describe;
 
@@ -44,6 +45,7 @@ describe('RestoreDialog', () => {
     pgBrowser.Nodes.database.hasId = true;
     jquerySpy = jasmine.createSpy('jquerySpy');
     restoreModelSpy = jasmine.createSpy('restoreModelSpy');
+    spyOn(Notify, 'alert');
 
     const hierarchy = {
       children: [
@@ -145,7 +147,7 @@ describe('RestoreDialog', () => {
 
       it('display an alert with a Restore Error', () => {
         restoreDialog.draw(null, [{id: 'root'}], null);
-        expect(alertifySpy.alert).toHaveBeenCalledWith(
+        expect(Notify.alert).toHaveBeenCalledWith(
           'Restore Error',
           'Please select server or child node from the browser tree.'
         );
@@ -161,7 +163,7 @@ describe('RestoreDialog', () => {
         context('server is a PostgreSQL server', () => {
           it('display an alert with "Preferences Error"', () => {
             restoreDialog.draw(null, [{id: 'serverTreeNode'}], null);
-            expect(alertifySpy.alert).toHaveBeenCalledWith(
+            expect(Notify.alert).toHaveBeenCalledWith(
               'Preferences Error',
               'Failed to load preference pg_bin_dir of module paths'
             );
@@ -171,7 +173,7 @@ describe('RestoreDialog', () => {
         context('server is a EPAS server', () => {
           it('display an alert with "Preferences Error"', () => {
             restoreDialog.draw(null, [{id: 'ppasServer'}], null);
-            expect(alertifySpy.alert).toHaveBeenCalledWith(
+            expect(Notify.alert).toHaveBeenCalledWith(
               'Preferences Error',
               'Failed to load preference ppas_bin_dir of module paths'
             );
@@ -188,7 +190,7 @@ describe('RestoreDialog', () => {
           context('server is a PostgreSQL server', () => {
             it('display an alert with "Configuration required"', () => {
               restoreDialog.draw(null, [{id: 'serverTreeNodeWrongPath'}], null);
-              expect(alertifySpy.alert).toHaveBeenCalledWith(
+              expect(Notify.alert).toHaveBeenCalledWith(
                 'Configuration required',
                 'Please configure the PostgreSQL Binary Path in the Preferences dialog.'
               );
@@ -270,7 +272,7 @@ describe('RestoreDialog', () => {
           context('server is a EPAS server', () => {
             it('display an alert with "Configuration required"', () => {
               restoreDialog.draw(null, [{id: 'ppasServerTreeNodeWrongPath'}], null);
-              expect(alertifySpy.alert).toHaveBeenCalledWith(
+              expect(Notify.alert).toHaveBeenCalledWith(
                 'Configuration required',
                 'Please configure the EDB Advanced Server Binary Path in the Preferences dialog.'
               );

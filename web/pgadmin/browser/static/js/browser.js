@@ -545,24 +545,20 @@ define('pgadmin.browser', [
       }).done((res)=> {
         if(res.data.length > 0) {
 
-          Alertify.alert(
+          Notify.alert(
             'Warning',
             'pgAdmin detected unrecoverable corruption in it\'s SQLite configuration database. ' +
             'The database has been backed up and recreated with default settings. '+
             'It may be possible to recover data such as query history manually from '+
             'the original/corrupt file using a tool such as DB Browser for SQLite if desired.'+
             '<br><br>Original file: ' + res.data + '<br>Replacement file: ' +
-            res.data.substring(0, res.data.length - 14)
-          )
-            .set({'closable': true,
-              'onok': function() {
-              },
-            });
-
-
+            res.data.substring(0, res.data.length - 14),
+            function() {
+            }
+          );
         }
       }).fail(function(xhr, status, error) {
-        Alertify.alert(error);
+        Notify.alert(error);
       });
     },
     init_master_password: function() {
@@ -632,7 +628,7 @@ define('pgadmin.browser', [
                 /* Reset Button */
                 event.cancel = true;
 
-                Alertify.confirm(gettext('Reset Master Password'),
+                Notify.confirm(gettext('Reset Master Password'),
                   gettext('This will remove all the saved passwords. This will also remove established connections to '
                     + 'the server and you may need to reconnect again. Do you wish to continue?'),
                   function() {
@@ -642,10 +638,7 @@ define('pgadmin.browser', [
                     return true;
                   },
                   function() {/* If user clicks No */ return true;}
-                ).set('labels', {
-                  ok: gettext('Yes'),
-                  cancel: gettext('No'),
-                });
+                );
               } else if(event.index == 0) {
                 /* help Button */
                 event.cancel = true;

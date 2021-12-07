@@ -11,8 +11,8 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 import _ from 'lodash';
-import { pgAlertify } from  'sources/helpers/legacyConnector';
 import { isEmptyString } from 'sources/validators';
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 
 export function getColumnSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new ColumnSchema(
@@ -296,7 +296,7 @@ export default class IndexSchema extends BaseUISchema {
           };
           if(state.amname != actionObj.oldState.amname) {
             return new Promise((resolve)=>{
-              pgAlertify().confirm(
+              Notify.confirm(
                 gettext('Changing access method will clear columns collection'),
                 function () {
                   setColumns(resolve);

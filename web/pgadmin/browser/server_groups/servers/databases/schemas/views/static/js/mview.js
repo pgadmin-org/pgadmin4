@@ -256,7 +256,7 @@ define('pgadmin.node.mview', [
           if (pgBrowser.tree.hasParent(j)) {
             j = pgBrowser.tree.parent(j);
           } else {
-            Alertify.alert(gettext('Please select server or child node from tree.'));
+            Notify.alert(gettext('Please select server or child node from tree.'));
             break;
           }
         }
@@ -275,7 +275,7 @@ define('pgadmin.node.mview', [
           dataType: 'json',
         }).done(function(res) {
           if (!res.success) {
-            Alertify.alert(
+            Notify.alert(
               gettext('Utility not found'),
               res.errormsg
             );
@@ -294,7 +294,7 @@ define('pgadmin.node.mview', [
                 Notify.success(refreshed_res.data.info);
                 pgBrowser.Events.trigger('pgadmin-bgprocess:created', obj);
               } else {
-                Alertify.alert(
+                Notify.alert(
                   gettext('Failed to create materialized view refresh job.'),
                   refreshed_res.errormsg
                 );
@@ -306,7 +306,7 @@ define('pgadmin.node.mview', [
               );
             });
         }).fail(function() {
-          Alertify.alert(
+          Notify.alert(
             gettext('Utility not found'),
             gettext('Failed to fetch Utility information')
           );

@@ -16,8 +16,8 @@ import {messages} from '../fake_messages';
 import SchemaView, { SCHEMA_STATE_ACTIONS } from '../../../pgadmin/static/js/SchemaView';
 import _ from 'lodash';
 import { getNodeTableSchema, LikeSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
-import * as legacyConnector from 'sources/helpers/legacyConnector';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 
 function getFieldDepChange(schema, id) {
   return _.find(schema.fields, (f)=>f.id==id)?.depChange;
@@ -154,7 +154,7 @@ describe('TableSchema', ()=>{
     beforeEach(()=>{
       spyOn(schemaObj,'changeColumnOptions').and.callThrough();
       spyOn(schemaObj, 'getTableOid').and.returnValue(140391);
-      confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
+      confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
       deferredDepChange = _.find(schemaObj.fields, (f)=>f.id=='typname')?.deferredDepChange;
       schemaObj.ofTypeTables = [
         {label: 'type1', oftype_columns: oftypeColumns}

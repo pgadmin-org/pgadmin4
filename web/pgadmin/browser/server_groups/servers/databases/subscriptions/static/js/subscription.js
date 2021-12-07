@@ -9,8 +9,8 @@
 import { getNodeListByName } from '../../../../../../static/js/node_ajax';
 import SubscriptionSchema from './subscription.ui';
 import getApiInstance from '../../../../../../../static/js/api_instance';
-import { pgAlertify } from  '../../../../../../../../pgadmin/static/js/helpers/legacyConnector';
 import _ from 'lodash';
+import Notify from '../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.subscription', [
   'sources/gettext', 'sources/url_for', 'jquery',
@@ -195,12 +195,12 @@ define('pgadmin.node.subscription', [
                     .then(res=>{
                       if ((res.data.errormsg === '') && !_.isNull(res.data.data)){
                         resolve(res.data.data);
-                        pgAlertify().info(
+                        Notify.info(
                           gettext('Publication fetched successfully.')
                         );
                       }else if(!_.isNull(res.data.errormsg) && _.isNull(res.data.data)){
                         reject(res.data.errormsg);
-                        pgAlertify().alert(
+                        Notify.alert(
                           gettext('Check connection?'),
                           gettext(res.data.errormsg)
                         );

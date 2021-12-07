@@ -453,7 +453,7 @@ define([
           );
         }
       } else {
-        Alertify.alert(gettext('Edit object'), gettext('This object is not user editable.'),
+        Notify.alert(gettext('Edit object'), gettext('This object is not user editable.'),
           function() {
             return true;
           });
@@ -528,7 +528,7 @@ define([
           this.column.get('customDeleteMsg') : that.defaults.defaultDeleteMsg;
         var delete_title = !_.isUndefined(this.column.get('customDeleteTitle')) ?
           this.column.get('customDeleteTitle') : that.defaults.defaultDeleteTitle;
-        Alertify.confirm(
+        Notify.confirm(
           delete_title,
           delete_msg,
           function() {
@@ -548,7 +548,7 @@ define([
           }
         );
       } else {
-        Alertify.alert(gettext('Delete object'), gettext('This object cannot be deleted.'),
+        Notify.alert(gettext('Delete object'), gettext('This object cannot be deleted.'),
           function() {
             return true;
           }
@@ -630,7 +630,7 @@ define([
         this.column.get('customClearMsg') : that.defaults.defaultClearMsg;
       var clear_title = !_.isUndefined(this.column.get('customClearTitle')) ?
         this.column.get('customClearTitle') : that.defaults.defaultClearTitle;
-      Alertify.confirm(
+      Notify.confirm(
         clear_title,
         clear_msg,
         function() {
@@ -2413,7 +2413,7 @@ define([
         val = this.formatter.toRaw(this.$input.prop('value'), model);
 
       if (_.isNull(val) || val.trim() === '') {
-        Alertify.alert(gettext('Validate Path'), gettext('Path should not be empty.'));
+        Notify.alert(gettext('Validate Path'), gettext('Path should not be empty.'));
       }
 
       $.ajax({
@@ -2425,7 +2425,7 @@ define([
         }),
       })
         .done(function(res) {
-          Alertify.alert(gettext('Validate binary path'), gettext(res.data));
+          Notify.alert(gettext('Validate binary path'), gettext(res.data));
         })
         .fail(function(xhr, error) {
           Notify.pgNotifier(error, xhr, gettext('Failed to validate binary path.'));

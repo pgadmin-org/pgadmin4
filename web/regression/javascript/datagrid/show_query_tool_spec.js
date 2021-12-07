@@ -11,6 +11,7 @@ import {TreeFake} from '../tree/tree_fake';
 import {showQueryTool} from '../../../pgadmin/tools/datagrid/static/js/show_query_tool';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 import {pgBrowser} from 'pgadmin.browser.preferences';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 
 const context = describe;
 
@@ -26,11 +27,10 @@ var dummy_cache = [
 
 describe('#showQueryTool', () => {
   let queryTool;
-  let alertify;
   let transId = 98765432;
   beforeEach(() => {
     pgBrowser.preferences_cache = dummy_cache;
-    alertify = jasmine.createSpyObj('alertify', ['alert']);
+    spyOn(Notify, 'alert');
     queryTool = {
       launch_grid: jasmine.createSpy('launch_grid'),
     };
@@ -77,14 +77,14 @@ describe('#showQueryTool', () => {
 
   context('cannot find the tree node', () => {
     beforeEach(() => {
-      showQueryTool(queryTool, pgBrowser, alertify, '', [{id: '10'}], transId);
+      showQueryTool(queryTool, pgBrowser, '', [{id: '10'}], transId);
     });
     it('does not create a transaction', () => {
       expect(queryTool.launch_grid).not.toHaveBeenCalled();
     });
 
     it('display alert', () => {
-      expect(alertify.alert).toHaveBeenCalledWith(
+      expect(Notify.alert).toHaveBeenCalledWith(
         'Query Tool Error',
         'No object selected.'
       );
@@ -93,19 +93,19 @@ describe('#showQueryTool', () => {
 
   context('current node is not underneath a server', () => {
     it('does not create a transaction', () => {
-      showQueryTool(queryTool, pgBrowser, alertify, '', [{id: 'parent'}], transId);
+      showQueryTool(queryTool, pgBrowser, '', [{id: 'parent'}], transId);
       expect(queryTool.launch_grid).not.toHaveBeenCalled();
     });
 
     it('no alert is displayed', () => {
-      expect(alertify.alert).not.toHaveBeenCalled();
+      expect(Notify.alert).not.toHaveBeenCalled();
     });
   });
 
   context('current node is underneath a server', () => {
     context('current node is not underneath a database', () => {
       it('creates a transaction', () => {
-        showQueryTool(queryTool, pgBrowser, alertify, 'http://someurl', [{id: 'server1'}], transId);
+        showQueryTool(queryTool, pgBrowser, 'http://someurl', [{id: 'server1'}], transId);
         expect(queryTool.launch_grid).toHaveBeenCalledWith(
           98765432,
           '/panel/98765432?is_query_tool=true&sgid=1&sid=2&server_type=pg',
@@ -118,7 +118,7 @@ describe('#showQueryTool', () => {
 
     context('current node is underneath a database', () => {
       it('creates a transaction', () => {
-        showQueryTool(queryTool, pgBrowser, alertify, 'http://someurl', [{id: 'database1'}], transId);
+        showQueryTool(queryTool, pgBrowser, 'http://someurl', [{id: 'database1'}], transId);
         expect(queryTool.launch_grid).toHaveBeenCalledWith(
           98765432,
           '/panel/98765432?is_query_tool=true&sgid=1&sid=2&server_type=pg&did=3',

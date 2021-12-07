@@ -6,7 +6,6 @@ import { isEmptyString } from 'sources/validators';
 import PrimaryKeySchema from '../../constraints/index_constraint/static/js/primary_key.ui';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../static/js/SchemaView';
 import { PartitionKeysSchema, PartitionsSchema } from './partition.utils.ui';
-import { pgAlertify } from '../../../../../../../../static/js/helpers/legacyConnector';
 import CheckConstraintSchema from '../../constraints/check_constraint/static/js/check_constraint.ui';
 import UniqueConstraintSchema from '../../constraints/index_constraint/static/js/unique_constraint.ui';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../static/js/node_ajax';
@@ -15,6 +14,7 @@ import { getNodeVacuumSettingsSchema } from '../../../../../static/js/vacuum.ui'
 import { getNodeForeignKeySchema } from '../../constraints/foreign_key/static/js/foreign_key.ui';
 import { getNodeExclusionConstraintSchema } from '../../constraints/exclusion_constraint/static/js/exclusion_constraint.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
+import Notify from '../../../../../../../../static/js/helpers/Notifier';
 
 export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
   const spcname = ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
@@ -598,7 +598,7 @@ export default class TableSchema extends BaseUISchema {
       group: 'advanced', min_version: 90600,
       depChange: (state)=>{
         if (state.rlspolicy && this.origData.rlspolicy != state.rlspolicy) {
-          pgAlertify().alert(
+          Notify.alert(
             gettext('Check Policy?'),
             gettext('Please check if any policy exist. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')
           );
@@ -730,7 +730,7 @@ export default class TableSchema extends BaseUISchema {
         };
         if(!isEmptyString(state.typname) && isEmptyString(actionObj.oldState.typname)) {
           return new Promise((resolve)=>{
-            pgAlertify().confirm(
+            Notify.confirm(
               gettext('Remove column definitions?'),
               gettext('Changing \'Of type\' will remove column definitions.'),
               function () {

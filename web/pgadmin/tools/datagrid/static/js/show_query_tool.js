@@ -12,6 +12,7 @@ import url_for from '../../../../static/js/url_for';
 import {getPanelTitle} from './datagrid_panel_title';
 import {getRandomInt} from 'sources/utils';
 import $ from 'jquery';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 function hasDatabaseInformation(parentData) {
   return parentData.database;
@@ -47,13 +48,13 @@ function generateTitle(pgBrowser, aciTreeIdentifier) {
   return baseTitle;
 }
 
-export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentifier, transId) {
+export function showQueryTool(datagrid, pgBrowser, url, aciTreeIdentifier, transId) {
   const sURL = url || '';
   const queryToolTitle = generateTitle(pgBrowser, aciTreeIdentifier);
 
   const currentNode = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
   if (currentNode === undefined) {
-    alertify.alert(
+    Notify.alert(
       gettext('Query Tool Error'),
       gettext('No object selected.')
     );
@@ -67,10 +68,10 @@ export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentif
   }
 
   const gridUrl = generateUrl(transId, queryToolTitle, parentData);
-  launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL, alertify);
+  launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL);
 }
 
-export function generateScript(parentData, datagrid, alertify) {
+export function generateScript(parentData, datagrid) {
   const queryToolTitle = `${parentData.database}/${parentData.user}@${parentData.server}`;
   const transId = getRandomInt(1, 9999999);
 
@@ -84,10 +85,10 @@ export function generateScript(parentData, datagrid, alertify) {
     +`&server_type=${parentData.stype}`
     +`&did=${parentData.did}`;
 
-  launchDataGrid(datagrid, transId, url_endpoint, queryToolTitle, '', alertify);
+  launchDataGrid(datagrid, transId, url_endpoint, queryToolTitle, '');
 }
 
-export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, datagrid, alertify) {
+export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, datagrid) {
   const transId = getRandomInt(1, 9999999);
   parentData = {
     server_group: {
@@ -103,14 +104,14 @@ export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, datagrid, a
   };
 
   const gridUrl = generateUrl(transId, queryToolTitle, parentData, erdSqlId);
-  launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, '', alertify);
+  launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, '');
 }
 
-export function launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL, alertify) {
+export function launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL) {
   let retVal = datagrid.launch_grid(transId, gridUrl, true, queryToolTitle, sURL);
 
   if(!retVal) {
-    alertify.alert(
+    Notify.alert(
       gettext('Query tool launch error'),
       gettext(
         'Please allow pop-ups for this site to perform the desired action. If the main window of pgAdmin is closed then close this window and open a new pgAdmin session.'

@@ -12,12 +12,12 @@
  * These functions may not be needed once all are migrated
  */
 
-import Alertify from 'pgadmin.alertifyjs';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
+import Notify from './Notifier';
 
 export function confirmDeleteRow(onOK, onCancel, title, message) {
-  Alertify.confirm(
+  Notify.confirm(
     title || gettext('Delete Row'),
     message || gettext('Are you sure you wish to delete this row?'),
     function() {
@@ -29,11 +29,6 @@ export function confirmDeleteRow(onOK, onCancel, title, message) {
       return true;
     }
   );
-}
-
-/* Don't import alertfiy directly in react files. Not good for testability */
-export function pgAlertify() {
-  return Alertify;
 }
 
 /* Used by file select component to re-use existing logic */

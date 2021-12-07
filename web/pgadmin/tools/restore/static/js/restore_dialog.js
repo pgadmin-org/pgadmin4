@@ -14,6 +14,7 @@ import url_for from 'sources/url_for';
 import axios from 'axios/index';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import {hasBinariesConfiguration} from 'sources/utils';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 export class RestoreDialog extends Dialog {
   constructor(pgBrowser, $, alertify, RestoreModel, backform = Backform) {
@@ -29,12 +30,12 @@ export class RestoreDialog extends Dialog {
   }
 
   draw(action, aciTreeItem, width, height) {
-    const serverInformation = retrieveAncestorOfTypeServer(this.pgBrowser, aciTreeItem, gettext('Restore Error'), this.alertify);
+    const serverInformation = retrieveAncestorOfTypeServer(this.pgBrowser, aciTreeItem, gettext('Restore Error'));
     if (!serverInformation) {
       return;
     }
 
-    if (!hasBinariesConfiguration(this.pgBrowser, serverInformation, this.alertify)) {
+    if (!hasBinariesConfiguration(this.pgBrowser, serverInformation)) {
       return;
     }
 
@@ -46,7 +47,7 @@ export class RestoreDialog extends Dialog {
       baseUrl
     ).then(function(res) {
       if (!res.data.success) {
-        that.alertify.alert(
+        Notify.alert(
           gettext('Utility not found'),
           res.data.errormsg
         );
@@ -70,7 +71,7 @@ export class RestoreDialog extends Dialog {
       that.alertify.pg_restore(title, aciTreeItem1, data, node)
         .resizeTo(width, height);
     }).catch(function() {
-      that.alertify.alert(
+      Notify.alert(
         gettext('Utility not found'),
         gettext('Failed to fetch Utility information')
       );

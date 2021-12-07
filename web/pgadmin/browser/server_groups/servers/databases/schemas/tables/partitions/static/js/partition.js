@@ -194,7 +194,7 @@ function(
           if (!d)
             return false;
 
-          Alertify.confirm(
+          Notify.confirm(
             gettext('Truncate Table'),
             gettext('Are you sure you want to truncate table %s?', d.label),
             function (e) {
@@ -238,7 +238,7 @@ function(
           if (!d)
             return false;
 
-          Alertify.confirm(
+          Notify.confirm(
             gettext('Reset statistics'),
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
             function (e) {
@@ -282,7 +282,7 @@ function(
           if (!d)
             return false;
 
-          Alertify.confirm(
+          Notify.confirm(
             gettext('Detach Partition'),
             gettext('Are you sure you want to detach the partition %s?', d._label),
             function (e) {

@@ -815,7 +815,7 @@ define('pgadmin.browser.node', [
                 msg = gettext('Are you sure want to reset the current changes and re-open the panel for %s "%s"?');
               }
 
-              Alertify.confirm(
+              Notify.confirm(
                 gettext('Edit in progress?'),
                 commonUtils.sprintf(msg, o.label.toLowerCase(), d.label),
                 function() {
@@ -898,7 +898,7 @@ define('pgadmin.browser.node', [
             return;
           }
         }
-        Alertify.confirm(title, msg,
+        Notify.confirm(title, msg,
           function() {
             $.ajax({
               url: obj.generate_url(i, input.url, d, true),
@@ -939,12 +939,8 @@ define('pgadmin.browser.node', [
                 pgBrowser.report_error(
                   gettext('Error dropping/removing %s: "%s"', obj.label, objName), errmsg);
               });
-          },
-          null
-        ).set('labels', {
-          ok: gettext('Yes'),
-          cancel: gettext('No'),
-        }).show();
+          }
+        );
       },
       // Callback for creating script(s) & opening them in Query editor
       show_script: function(args, item) {
@@ -1387,7 +1383,7 @@ define('pgadmin.browser.node', [
           let confirm_on_properties_close = pgBrowser.get_preferences_for_module('browser').confirm_on_properties_close;
           if (confirm_on_properties_close && confirm_close && objview && objview.model) {
             if(objview.model.sessChanged()){
-              Alertify.confirm(
+              Notify.confirm(
                 gettext('Warning'),
                 warn_text,
                 function() {
@@ -1399,10 +1395,7 @@ define('pgadmin.browser.node', [
                 function() {
                   return true;
                 }
-              ).set('labels', {
-                ok: gettext('Yes'),
-                cancel: gettext('No'),
-              }).show();
+              );
             } else {
               return true;
             }
@@ -1421,7 +1414,7 @@ define('pgadmin.browser.node', [
             let warn_text;
             warn_text = gettext(objview.model.warn_text);
             if(objview.model.sessChanged()){
-              Alertify.confirm(
+              Notify.confirm(
                 gettext('Warning'),
                 warn_text,
                 function() {
@@ -1433,10 +1426,7 @@ define('pgadmin.browser.node', [
                 function() {
                   return true;
                 }
-              ).set('labels', {
-                ok: gettext('Yes'),
-                cancel: gettext('No'),
-              }).show();
+              );
             } else {
               return true;
             }
@@ -1451,7 +1441,7 @@ define('pgadmin.browser.node', [
             objview = $props && $props.data('obj-view');
 
           if (objview && objview.model && !_.isUndefined(objview.model.inform_text) && !_.isNull(objview.model.inform_text)) {
-            Alertify.alert(
+            Notify.alert(
               gettext('Warning'),
               gettext(objview.model.inform_text)
             );

@@ -647,16 +647,15 @@ SELECT 1, pg_sleep(300)"""
             (By.CSS_SELECTOR, "td.channel"), "foo")
         )
         print("OK.", file=sys.stderr)
-        self.page.clear_query_tool()
 
         print("\tNotify event with data... ", file=sys.stderr, end="")
         if self._supported_server_version():
+            self.page.clear_query_tool()
             self.page.execute_query("SELECT pg_notify('foo', 'Hello')")
             self.page.click_tab('Notifications')
             self.wait.until(WaitForAnyElementWithText(
                 (By.CSS_SELECTOR, 'td.payload'), "Hello"))
             print("OK.", file=sys.stderr)
-            self.page.clear_query_tool()
         else:
             print("Skipped.", file=sys.stderr)
 
@@ -723,8 +722,6 @@ SELECT 1, pg_sleep(300)"""
         )
         # Search for 'Output' word in result (verbose option)
         canvas.find_element(By.XPATH, "//*[contains(string(), 'JIT')]")
-
-        self.page.clear_query_tool()
 
 
 class WaitForAnyElementWithText(object):

@@ -284,15 +284,12 @@ define('pgadmin.node.server', [
             };
 
             if (notify) {
-              Alertify.confirm(
+              Notify.confirm(
                 gettext('Disconnect server'),
                 gettext('Are you sure you want to disconnect the server %s?', d.label),
                 function() { disconnect(); },
-                function() { return true;}
-              ).set('labels', {
-                ok: gettext('OK'),
-                cancel: gettext('Cancel'),
-              });
+                function() { return true;},
+              );
             } else {
               disconnect();
             }
@@ -337,7 +334,7 @@ define('pgadmin.node.server', [
             d = i ? t.itemData(i) : undefined;
 
           if (d) {
-            Alertify.confirm(
+            Notify.confirm(
               gettext('Reload server configuration'),
               gettext('Are you sure you want to reload the server configuration on %s?', d.label),
               function() {
@@ -358,7 +355,7 @@ define('pgadmin.node.server', [
                     t.unload(i);
                   });
               },
-              function() { return true; }
+              function() { return true; },
             );
           }
 
@@ -545,7 +542,7 @@ define('pgadmin.node.server', [
                           if (res.success) {
                           // Notify user to update pgpass file
                             if(is_pgpass_file_used) {
-                              Alertify.alert(
+                              Notify.alert(
                                 gettext('Change Password'),
                                 gettext('Please make sure to disconnect the server'
                                 + ' and update the new password in the pgpass file'
@@ -666,7 +663,7 @@ define('pgadmin.node.server', [
             d = i  ? t.itemData(i) : undefined;
 
           if (d) {
-            Alertify.confirm(
+            Notify.confirm(
               gettext('Clear saved password'),
               gettext('Are you sure you want to clear the saved password for server %s?', d.label),
               function() {
@@ -703,7 +700,7 @@ define('pgadmin.node.server', [
             d = i  ? t.itemData(i) : undefined;
 
           if (d) {
-            Alertify.confirm(
+            Notify.confirm(
               gettext('Clear SSH Tunnel password'),
               gettext('Are you sure you want to clear the saved password of SSH Tunnel for server %s?', d.label),
               function() {
@@ -790,7 +787,7 @@ define('pgadmin.node.server', [
               pgBrowser.Events.on(
                 'pgadmin:server:connect:cancelled', disconnect
               );
-              Alertify.confirm(
+              Notify.confirm(
                 gettext('Connection lost'),
                 gettext('Would you like to reconnect to the database?'),
                 function() {

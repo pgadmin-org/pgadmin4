@@ -272,7 +272,7 @@ let NewConnectionDialog = {
         Alertify.newConnectionDialog('Connect to server.').resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.md);
       }, 500);
     }).fail(function() {
-      Alertify.alert().setting({
+      Notify.alert().setting({
         'title': gettext('Connection lost'),
         'label':gettext('OK'),
         'message': gettext('Connection to the server has been lost.'),

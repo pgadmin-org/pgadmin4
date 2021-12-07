@@ -11,6 +11,8 @@ import erdPref from './erd_preferences';
 import BodyWidget from 'pgadmin.tools.erd/erd_tool/ui_components/BodyWidget';
 import * as ERDSqlTool from 'tools/datagrid/static/js/show_query_tool';
 import { FakeLink, FakeNode } from '../fake_item';
+import Notify from '../../../../pgadmin/static/js/helpers/Notifier';
+
 
 let pgAdmin = {
   Browser: {
@@ -104,7 +106,7 @@ describe('ERD BodyWidget', ()=>{
     spyOn(ERDCore.prototype, 'deserializeData');
     spyOn(ERDCore.prototype, 'addNode').and.returnValue(newNode);
     spyOn(ERDCore.prototype, 'addLink').and.returnValue(new FakeLink());
-    spyOn(alertify, 'confirm').and.callFake((arg1, arg2, okCallback)=>{
+    spyOn(Notify, 'confirm').and.callFake((arg1, arg2, okCallback)=>{
       okCallback();
     });
 

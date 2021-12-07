@@ -698,7 +698,7 @@ define([
                       e.cancel = true; // Do not close dialog
                       let newOwnershipModel = this.ownershipModel.toJSON();
                       if (newOwnershipModel.user == '' || newOwnershipModel.user == undefined) {
-                        alertify.confirm(
+                        Notify.confirm(
                           gettext('Delete user?'),
                           gettext('The shared servers owned by <b>'+ self.model.get('username') +'</b> will be deleted. Do you wish to continue?'),
                           function() {
@@ -751,7 +751,7 @@ define([
           },
           deleteUser: function() {
             let self = this;
-            alertify.confirm(
+            Notify.confirm(
               gettext('Delete user?'),
               gettext('Are you sure you wish to delete this user?'),
               function() {
@@ -777,7 +777,7 @@ define([
             e.preventDefault();
 
             if (self.model.get('id') == userInfo['id']) {
-              alertify.alert(
+              Notify.alert(
                 gettext('Cannot delete user.'),
                 gettext('Cannot delete currently logged in user.'),
                 function() {
@@ -819,7 +819,7 @@ define([
 
               }
             } else {
-              alertify.alert(
+              Notify.alert(
                 gettext('Error'),
                 gettext('This user cannot be deleted.'),
                 function() {
@@ -1071,7 +1071,7 @@ define([
                 })
                 .fail(function() {
                   setTimeout(function() {
-                    alertify.alert(
+                    Notify.alert(
                       gettext('Error'),
                       gettext('Cannot load user roles.')
                     );
@@ -1088,7 +1088,7 @@ define([
                 })
                 .fail(function() {
                   setTimeout(function() {
-                    alertify.alert(
+                    Notify.alert(
                       gettext('Error'),
                       gettext('Cannot load user Sources.')
                     );
@@ -1162,7 +1162,7 @@ define([
                 var self = this;
                 if (!_.all(this.userCollection.pluck('id')) || !_.isEmpty(this.userCollection.invalidUsers)) {
                   e.cancel = true;
-                  alertify.confirm(
+                  Notify.confirm(
                     gettext('Discard unsaved changes?'),
                     gettext('Are you sure you want to close the dialog? Any unsaved changes will be lost.'),
                     function() {

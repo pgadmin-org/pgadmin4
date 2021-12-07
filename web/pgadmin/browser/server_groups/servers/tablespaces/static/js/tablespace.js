@@ -288,7 +288,7 @@ define('pgadmin.node.tablespace', [
                       btn_args =  this.view.model.toJSON();
                     btn_args.old_tblspc = d.label;
                     e.cancel = true;
-                    Alertify.confirm(
+                    Notify.confirm(
                       gettext('Move objects...'),
                       gettext(
                         'Are you sure you wish to move the objects from %s to %s?',

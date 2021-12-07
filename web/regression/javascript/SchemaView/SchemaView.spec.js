@@ -16,6 +16,7 @@ import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import * as legacyConnector from 'sources/helpers/legacyConnector';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 
 const initData = {
   id: 1,
@@ -58,6 +59,7 @@ describe('SchemaView', ()=>{
   /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
     mount = createMount();
+    spyOn(Notify, 'alert');
   });
 
   afterAll(() => {
@@ -242,7 +244,6 @@ describe('SchemaView', ()=>{
 
     it('onSave click', (done)=>{
       simulateValidData();
-      let alertSpy = spyOn(legacyConnector.pgAlertify(), 'alert');
       onSave.calls.reset();
       ctrl.find('PrimaryButton[data-test="Save"]').simulate('click');
       setTimeout(()=>{
@@ -257,7 +258,7 @@ describe('SchemaView', ()=>{
             {field3: null, field4: null, field5:  'rval52'},
           ]
         });
-        expect(alertSpy).toHaveBeenCalledWith('Warning', 'some inform text');
+        expect(Notify.alert).toHaveBeenCalledWith('Warning', 'some inform text');
         done();
       }, 0);
     });
@@ -266,7 +267,7 @@ describe('SchemaView', ()=>{
       it('with confirm check and yes click', (done)=>{
         simulateValidData();
         onDataChange.calls.reset();
-        let confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
+        let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
         ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
         /* Press OK */
         confirmSpy.calls.argsFor(0)[2]();
@@ -281,7 +282,7 @@ describe('SchemaView', ()=>{
 
       it('with confirm check and cancel click', (done)=>{
         simulateValidData();
-        let confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
+        let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
         ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
         /* Press cancel */
         confirmSpy.calls.argsFor(0)[3]();
@@ -301,7 +302,7 @@ describe('SchemaView', ()=>{
         ctrl.update();
         simulateValidData();
         onDataChange.calls.reset();
-        let confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
+        let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
         ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
         setTimeout(()=>{
           ctrl.update();
@@ -380,7 +381,6 @@ describe('SchemaView', ()=>{
           ctrl.update();
           simulateChanges();
 
-          let alertSpy = spyOn(legacyConnector.pgAlertify(), 'alert');
           onSave.calls.reset();
           ctrl.find('PrimaryButton[data-test="Save"]').simulate('click');
           setTimeout(()=>{
@@ -402,7 +402,7 @@ describe('SchemaView', ()=>{
                 ]
               }
             });
-            expect(alertSpy).toHaveBeenCalledWith('Warning', 'some inform text');
+            expect(Notify.alert).toHaveBeenCalledWith('Warning', 'some inform text');
             done();
           }, 0);
         }, 0);
@@ -413,7 +413,7 @@ describe('SchemaView', ()=>{
           ctrl.update();
           simulateChanges();
           onDataChange.calls.reset();
-          let confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
           ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
           /* Press OK */
           confirmSpy.calls.argsFor(0)[2]();

@@ -215,7 +215,7 @@ define([
         if (pgBrowser.tree.hasParent(i)) {
           i = pgBrowser.tree.parent(i);
         } else {
-          Alertify.alert(gettext('Please select server or child node from tree.'));
+          Notify.alert(gettext('Please select server or child node from tree.'));
           break;
         }
       }
@@ -241,7 +241,7 @@ define([
       var treeInfo = t && t.getTreeNodeHierarchy(i);
 
       if (treeInfo.database._label.indexOf('=') >= 0) {
-        Alertify.alert(
+        Notify.alert(
           gettext('Maintenance error'),
           gettext('Maintenance job creation failed. '+
           'Databases with = symbols in the name cannot be maintained using this utility.')
@@ -375,14 +375,14 @@ define([
                       Notify.success(res.data.info);
                       pgBrowser.Events.trigger('pgadmin-bgprocess:created', self);
                     } else {
-                      Alertify.alert(
+                      Notify.alert(
                         gettext('Maintenance job creation failed.'),
                         res.errormsg
                       );
                     }
                   })
                   .fail(function() {
-                    Alertify.alert(
+                    Notify.alert(
                       gettext('Maintenance job creation failed.')
                     );
                   });
@@ -464,7 +464,7 @@ define([
       })
         .done(function(res) {
           if (!res.success) {
-            Alertify.alert(
+            Notify.alert(
               gettext('Utility not found'),
               res.errormsg
             );
@@ -475,7 +475,7 @@ define([
             .resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.md);
         })
         .fail(function() {
-          Alertify.alert(
+          Notify.alert(
             gettext('Utility not found'),
             gettext('Failed to fetch Utility information')
           );

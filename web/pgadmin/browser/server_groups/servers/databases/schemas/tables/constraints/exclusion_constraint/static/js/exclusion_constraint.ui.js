@@ -5,8 +5,8 @@ import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
 import DataGridViewWithHeaderForm from '../../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../../static/js/node_ajax';
-import { pgAlertify } from '../../../../../../../../../../static/js/helpers/legacyConnector';
 import TableSchema from '../../../../static/js/table.ui';
+import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
 
 export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgBrowser, noColumns=false) {
   let tableNode = pgBrowser.Nodes['table'];
@@ -275,7 +275,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       options: this.fieldOptions.amname,
       deferredDepChange: (state, source, topState, actionObj)=>{
         return new Promise((resolve)=>{
-          pgAlertify().confirm(
+          Notify.confirm(
             gettext('Change access method?'),
             gettext('Changing access method will clear columns collection'),
             function () {

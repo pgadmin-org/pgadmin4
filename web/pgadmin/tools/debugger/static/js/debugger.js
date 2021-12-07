@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../../static/js/helpers/Notifier';
+
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'alertify', 'sources/pgadmin', 'pgadmin.browser',
@@ -322,7 +324,7 @@ define([
           try {
             var err = JSON.parse(xhr.responseText);
             if (err.success == 0) {
-              Alertify.alert(gettext('Debugger Error'), err.errormsg);
+              Notify.alert(gettext('Debugger Error'), err.errormsg);
             }
           } catch (e) {
             console.warn(e.stack || e);
@@ -491,12 +493,12 @@ define([
                   self.start_global_debugger();
                 },
                 function(error) {
-                  Alertify.alert(gettext('Debugger Error'), error);
+                  Notify.alert(gettext('Debugger Error'), error);
                 }
               );
             } else {
               if (err.success == 0) {
-                Alertify.alert(gettext('Debugger Error'), err.errormsg);
+                Notify.alert(gettext('Debugger Error'), err.errormsg);
               }
             }
           } catch (e) {
@@ -656,7 +658,7 @@ define([
                 }
               })
               .fail(function(e) {
-                Alertify.alert(
+                Notify.alert(
                   gettext('Debugger Target Initialization Error'),
                   e.responseJSON.errormsg
                 );
@@ -667,7 +669,7 @@ define([
           try {
             var err = JSON.parse(xhr.responseText);
             if (err.success == 0) {
-              Alertify.alert(gettext('Debugger Error'), err.errormsg);
+              Notify.alert(gettext('Debugger Error'), err.errormsg);
             }
           } catch (e) {
             console.warn(e.stack || e);

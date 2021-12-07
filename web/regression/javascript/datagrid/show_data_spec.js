@@ -11,6 +11,7 @@ import {showDataGrid} from '../../../pgadmin/tools/datagrid/static/js/show_data'
 import {TreeFake} from '../tree/tree_fake';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 import {pgBrowser} from 'pgadmin.browser.preferences';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 
 const context = describe;
 
@@ -31,6 +32,8 @@ describe('#show_data', () => {
   beforeEach(() => {
     pgBrowser.preferences_cache = dummy_cache;
     alertify = jasmine.createSpyObj('alertify', ['alert', 'error']);
+    spyOn(Notify, 'error');
+    spyOn(Notify, 'alert');
     datagrid = {
       launch_grid: jasmine.createSpy('launch_grid'),
     };
@@ -114,7 +117,7 @@ describe('#show_data', () => {
 
     it('display alert', () => {
       showDataGrid(datagrid, pgBrowser, alertify, {}, [{id: '10'}], transId);
-      expect(alertify.alert).toHaveBeenCalledWith(
+      expect(Notify.alert).toHaveBeenCalledWith(
         'Data Grid Error',
         'No object selected.'
       );

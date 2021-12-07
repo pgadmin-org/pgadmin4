@@ -12,6 +12,7 @@ import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
 import {FakeModel} from '../fake_model';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 
 let context = describe;
 
@@ -91,6 +92,8 @@ describe('RestoreDialogWrapper', () => {
         return jasmine.createSpyObj('obj', ['appendTo']);
       }
     });
+    spyOn(Notify, 'success');
+    spyOn(Notify, 'alert');
   });
 
   describe('#prepare', () => {
@@ -404,7 +407,7 @@ describe('RestoreDialogWrapper', () => {
           it('create an success alert box', (done) => {
             restoreDialogWrapper.callback(event);
             setTimeout(() => {
-              expect(alertifySpy.success).toHaveBeenCalledWith(
+              expect(Notify.success).toHaveBeenCalledWith(
                 'Restore job created.',
                 5
               );
@@ -445,7 +448,7 @@ describe('RestoreDialogWrapper', () => {
           it('creates an alert box', (done) => {
             restoreDialogWrapper.callback(event);
             setTimeout(() => {
-              expect(alertifySpy.alert).toHaveBeenCalledWith(
+              expect(Notify.alert).toHaveBeenCalledWith(
                 'Restore job failed.',
                 undefined
               );

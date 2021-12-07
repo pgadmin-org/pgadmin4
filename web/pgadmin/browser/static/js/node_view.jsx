@@ -15,7 +15,8 @@ import getApiInstance from 'sources/api_instance';
 import {getHelpUrl, getEPASHelpUrl} from 'pgadmin.help';
 import SchemaView from 'sources/SchemaView';
 import { generateNodeUrl } from './node_ajax';
-import Alertify from 'pgadmin.alertifyjs';
+import Notify from '../../../static/js/helpers/Notifier';
+
 import gettext from 'sources/gettext';
 import 'wcdocker';
 
@@ -125,7 +126,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
     let confirmOnClose = pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_properties_close;
     if (warnOnCloseFlag && confirmOnClose) {
       if(isDirty){
-        Alertify.confirm(
+        Notify.confirm(
           gettext('Warning'),
           gettext('Changes will be lost. Are you sure you want to close the dialog?'),
           function() {
@@ -135,10 +136,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
           function() {
             return true;
           }
-        ).set('labels', {
-          ok: gettext('Yes'),
-          cancel: gettext('No'),
-        }).show();
+        );
       } else {
         return true;
       }

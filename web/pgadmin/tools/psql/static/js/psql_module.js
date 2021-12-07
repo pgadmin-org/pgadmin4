@@ -11,12 +11,12 @@ import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import { SearchAddon } from 'xterm-addon-search';
 import { io } from 'socketio';
-import Alertify from 'pgadmin.alertifyjs';
 import {enable} from 'pgadmin.browser.toolbar';
 import 'wcdocker';
 import {getRandomInt, hasBinariesConfiguration, registerDetachEvent} from 'sources/utils';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 import {generateTitle, refresh_db_node} from 'tools/datagrid/static/js/datagrid_panel_title';
 
@@ -114,14 +114,14 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       return isEnabled;
     },
     psql_tool: function(data, aciTreeIdentifier, gen=false) {
-      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, aciTreeIdentifier, gettext('PSQL Error'), Alertify);
-      if (!hasBinariesConfiguration(pgBrowser, serverInformation, Alertify)) {
+      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, aciTreeIdentifier, gettext('PSQL Error'));
+      if (!hasBinariesConfiguration(pgBrowser, serverInformation)) {
         return;
       }
 
       const node = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
       if (node === undefined || !node.getData()) {
-        Alertify.alert(
+        Notify.alert(
           gettext('PSQL Error'),
           gettext('No object selected.')
         );
@@ -131,7 +131,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       parentData = pgBrowser.tree.getTreeNodeHierarchy(aciTreeIdentifier);
 
       if(_.isUndefined(parentData.server)) {
-        Alertify.alert(
+        Notify.alert(
           gettext('PSQL Error'),
           gettext('Please select a server/database object.')
         );
@@ -350,7 +350,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
               }
             });
           } else{
-            Alertify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
+            Notify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
           }
         });
       });

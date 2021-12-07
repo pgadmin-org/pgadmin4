@@ -228,7 +228,7 @@ define('pgadmin.datagrid', [
           if(d._type.includes('coll-')){
             url = '';
           }
-          showQueryTool.showQueryTool(this, pgBrowser, alertify, url, aciTreeIdentifier, transId);
+          showQueryTool.showQueryTool(this, pgBrowser, url, aciTreeIdentifier, transId);
         }
       },
 

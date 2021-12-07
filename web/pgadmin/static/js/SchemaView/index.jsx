@@ -29,7 +29,6 @@ import { MappedFormControl } from './MappedControl';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import FormView, { getFieldMetaData } from './FormView';
-import { pgAlertify } from '../helpers/legacyConnector';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import { parseApiError } from '../api_instance';
@@ -37,6 +36,7 @@ import DepListener, {DepListenerContext} from './DepListener';
 import FieldSetView from './FieldSetView';
 import DataGridView from './DataGridView';
 import { useIsMounted } from '../custom_hooks';
+import Notify from '../helpers/Notifier';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -514,6 +514,14 @@ function SchemaDialogView({
         });
         setFormReady(true);
         setLoaderText('');
+      }).catch((err)=>{
+        setLoaderText('');
+        if (err.response && err.response.data && err.response.data.errormsg) {
+          Notify.alert(
+            gettext(err.response.statusText),
+            gettext(err.response.data.errormsg)
+          );
+        }
       });
     } else {
       /* Use the defaults as the initital data */
@@ -552,17 +560,14 @@ function SchemaDialogView({
     };
     /* Confirm before reset */
     if(props.confirmOnCloseReset) {
-      pgAlertify().confirm(
+      Notify.confirm(
         gettext('Warning'),
         gettext('Changes will be lost. Are you sure you want to reset?'),
         resetIt,
         function() {
           return true;
-        }
-      ).set('labels', {
-        ok: gettext('Yes'),
-        cancel: gettext('No'),
-      }).show();
+        },
+      );
     } else {
       resetIt();
     }
@@ -582,7 +587,7 @@ function SchemaDialogView({
       changeData[schema.idAttribute] = schema.origData[schema.idAttribute];
     }
     if (schema.warningText) {
-      pgAlertify().confirm(
+      Notify.confirm(
         gettext('Warning'),
         schema.warningText,
         ()=> {
@@ -592,7 +597,7 @@ function SchemaDialogView({
           setSaving(false);
           setLoaderText('');
           return true;
-        }
+        },
       );
     } else {
       save(changeData);
@@ -603,7 +608,7 @@ function SchemaDialogView({
     props.onSave(isNew, changeData)
       .then(()=>{
         if(schema.informText) {
-          pgAlertify().alert(
+          Notify.alert(
             gettext('Warning'),
             schema.informText,
           );
@@ -790,6 +795,14 @@ function SchemaPropertiesView({
       if(checkIsMounted()) {
         setOrigData(data || {});
         setLoaderText('');
+      }
+    }).catch((err)=>{
+      setLoaderText('');
+      if (err.response && err.response.data && err.response.data.errormsg) {
+        Notify.alert(
+          gettext(err.response.statusText),
+          gettext(err.response.data.errormsg)
+        );
       }
     });
   }, [getInitData]);

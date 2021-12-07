@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../static/js/helpers/Notifier';
+
 define('pgadmin.preferences', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
   'pgadmin.alertifyjs', 'sources/pgadmin', 'pgadmin.backform',
@@ -568,7 +570,7 @@ define('pgadmin.preferences', [
                 }
 
                 if(pref.name == 'hide_shared_server') {
-                  Alertify.confirm(
+                  Notify.confirm(
                     gettext('Browser tree refresh required'),
                     gettext('A browser tree refresh is required. Do you wish to refresh the tree?'),
                     function() {
@@ -583,16 +585,15 @@ define('pgadmin.preferences', [
                       preferences.reset();
                       changed = {};
                       return true;
-                    }
-                  ).set('labels', {
-                    ok: gettext('Refresh'),
-                    cancel: gettext('Later'),
-                  });
+                    },
+                    gettext('Refresh'),
+                    gettext('Later')
+                  );
                 }
               });
 
               if(requires_refresh) {
-                Alertify.confirm(
+                Notify.confirm(
                   gettext('Refresh required'),
                   gettext('A page refresh is required to apply the theme. Do you wish to refresh the page now?'),
                   function() {
@@ -600,11 +601,10 @@ define('pgadmin.preferences', [
                     location.reload();
                     return true;
                   },
-                  function() {/* If user clicks No */ return true;}
-                ).set('labels', {
-                  ok: gettext('Refresh'),
-                  cancel: gettext('Later'),
-                });
+                  function() {/* If user clicks No */ return true;},
+                  gettext('Refresh'),
+                  gettext('Later')
+                );
               }
               // Refresh preferences cache
               pgBrowser.cache_preferences(modulesChanged);

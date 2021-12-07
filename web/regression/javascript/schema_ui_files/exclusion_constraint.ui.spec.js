@@ -17,9 +17,9 @@ import SchemaView, { SCHEMA_STATE_ACTIONS } from '../../../pgadmin/static/js/Sch
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
 import _ from 'lodash';
 import { getNodeExclusionConstraintSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui';
-import * as legacyConnector from 'sources/helpers/legacyConnector';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import TableSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 
 class SchemaInColl extends BaseUISchema {
   constructor(schemaObj) {
@@ -259,7 +259,7 @@ describe('ExclusionConstraintSchema', ()=>{
     beforeEach(()=>{
       spyOn(schemaObj.exColumnSchema, 'setOperClassOptions').and.callThrough();
       spyOn(schemaObj.fieldOptions, 'getOperClass').and.returnValue(operClassOptions);
-      confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
+      confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
       deferredDepChange = _.find(schemaObj.fields, (f)=>f.id=='amname')?.deferredDepChange;
     });
 

@@ -414,7 +414,7 @@ define('tools.querytool', [
       if (_.isUndefined(self.sql_panel_obj) || _.isUndefined(self.history_panel) ||
        _.isUndefined(self.data_output_panel) || _.isUndefined(self.explain_panel) ||
        _.isUndefined(self.messages_panel) || _.isUndefined(self.notifications_panel)) {
-        alertify.alert(
+        Notify.alert(
           gettext('Panel Loading Error'),
           gettext('Something went wrong while loading the panels.'
           + ' Please make sure to reset the layout (File > Reset Layout) for the better user experience.')
@@ -778,7 +778,7 @@ define('tools.querytool', [
 
       /* Register to log the activity */
       pgBrowser.register_to_activity_listener(document, ()=>{
-        alertify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Please close the window and login again.'));
+        Notify.alert(gettext('Timeout'), gettext('Your session has timed out due to inactivity. Please close the window and login again.'));
       });
 
       self.render_connection(self.connection_list);
@@ -1967,7 +1967,7 @@ define('tools.querytool', [
        * confirm with the user for unsaved changes.
        */
       if (self.handler.is_query_changed) {
-        alertify.confirm(
+        Notify.confirm(
           gettext('Unsaved changes'),
           gettext('Are you sure you wish to discard the current changes?'),
           function() {
@@ -1978,10 +1978,7 @@ define('tools.querytool', [
           function() {
             return true;
           }
-        ).set('labels', {
-          ok: gettext('Yes'),
-          cancel: gettext('No'),
-        });
+        );
       } else {
         self.query_tool_obj.setValue('');
       }
@@ -1997,7 +1994,7 @@ define('tools.querytool', [
         return;
       }
 
-      alertify.confirm(gettext('Clear history'),
+      Notify.confirm(gettext('Clear history'),
         gettext('Are you sure you wish to clear the history?') + '</br>' +
         gettext('This will remove all of your query history from this and other sessions for this database.'),
         function() {
@@ -2023,10 +2020,7 @@ define('tools.querytool', [
         function() {
           return true;
         }
-      ).set('labels', {
-        ok: gettext('Yes'),
-        cancel: gettext('No'),
-      });
+      );
     },
 
     // Callback function for the auto commit button click.
@@ -2256,7 +2250,7 @@ define('tools.querytool', [
       if(!connection_details['is_selected']) {
         var self = this;
         if(add_new_connection) {
-          alertify.confirm(gettext('Change connection'),
+          Notify.confirm(gettext('Change connection'),
             gettext('By changing the connection you will lose all your unsaved data for the current connection. <br> Do you want to continue?'),
             function() {
               self.change_connection(connection_details, ref, true);
@@ -2267,10 +2261,7 @@ define('tools.querytool', [
               alertify.newConnectionDialog().destroy();
               return true;
             }
-          ).set('labels', {
-            ok: gettext('Yes'),
-            cancel: gettext('No'),
-          });
+          );
         } else {
           self.change_connection(connection_details, ref, false);
         }
@@ -2382,7 +2373,7 @@ define('tools.querytool', [
         pgWindow.default.pgAdmin && pgWindow.default.pgAdmin.Browser
             && pgWindow.default.pgAdmin.Browser.preference_version() <= 0) {
 
-      alertify.alert()
+      Notify.alert()
         .setting({
           'title': gettext('Connection lost'),
           'label':gettext('Close'),
@@ -2567,7 +2558,7 @@ define('tools.querytool', [
       warn_before_continue: function() {
         var self = this;
 
-        alertify.confirm(
+        Notify.confirm(
           gettext('Connection Warning'),
           '<p style="float:left">'+
             '<span class="fa fa-exclamation-triangle warn-icon" aria-hidden="true" role="img">'+
@@ -2607,13 +2598,10 @@ define('tools.querytool', [
             }
           }, function() {
             self.saveState();
-          })
-          .set({
-            labels: {
-              ok: gettext('Continue'),
-              cancel: gettext('Cancel'),
-            },
-          });
+          },
+          gettext('Continue'),
+          gettext('Cancel')
+        );
       },
       init_connection: function(create_transaction, passdata) {
         var self = this;
@@ -2880,7 +2868,7 @@ define('tools.querytool', [
             _.size(self.data_store.updated) ||
             _.size(self.data_store.deleted))
         ) {
-          alertify.confirm(gettext('Unsaved changes'),
+          Notify.confirm(gettext('Unsaved changes'),
             gettext('The data has been modified, but not saved. Are you sure you wish to discard the changes?'),
             function() {
               // The user does not want to save, just continue
@@ -2899,10 +2887,7 @@ define('tools.querytool', [
               $('#btn-flash').prop('disabled', false);
               return true;
             }
-          ).set('labels', {
-            ok: gettext('Yes'),
-            cancel: gettext('No'),
-          });
+          );
         } else {
           if (macroId !== undefined) {
             self._execute_macro_query(explain_prefix, shouldReconnect, macroId);
@@ -3884,7 +3869,7 @@ define('tools.querytool', [
          * confirm with the user for unsaved changes.
          */
         if (self.is_query_changed) {
-          alertify.confirm(gettext('Unsaved changes'),
+          Notify.confirm(gettext('Unsaved changes'),
             gettext('Are you sure you wish to discard the current changes?'),
             function() {
               // User do not want to save, just continue
@@ -3893,10 +3878,7 @@ define('tools.querytool', [
             function() {
               return true;
             }
-          ).set('labels', {
-            ok: gettext('Yes'),
-            cancel: gettext('No'),
-          });
+          );
         } else {
           self._open_select_file_manager();
         }
@@ -4161,7 +4143,7 @@ define('tools.querytool', [
                 // Refresh the sql grid
                   queryToolActions.executeQuery(self);
                 } else {
-                  alertify.alert(gettext('Filter By Selection Error'), res.data.result);
+                  Notify.alert(gettext('Filter By Selection Error'), res.data.result);
                 }
               }
             );
@@ -4172,7 +4154,7 @@ define('tools.querytool', [
               pgAdmin, self, e, '_include_filter', [], true
             );
             if (msg)
-              alertify.alert(gettext('Filter By Selection Error'), msg);
+              Notify.alert(gettext('Filter By Selection Error'), msg);
           });
       },
 
@@ -4221,7 +4203,7 @@ define('tools.querytool', [
                 // Refresh the sql grid
                   queryToolActions.executeQuery(self);
                 } else {
-                  alertify.alert(gettext('Filter Exclude Selection Error'), res.data.result);
+                  Notify.alert(gettext('Filter Exclude Selection Error'), res.data.result);
                 }
               }, 10
             );
@@ -4232,7 +4214,7 @@ define('tools.querytool', [
               pgAdmin, self, e, '_exclude_filter', [], true
             );
             if (msg)
-              alertify.alert(gettext('Filter Exclude Selection Error'), msg);
+              Notify.alert(gettext('Filter Exclude Selection Error'), msg);
           });
       },
 
@@ -4260,7 +4242,7 @@ define('tools.querytool', [
                 // Refresh the sql grid
                   queryToolActions.executeQuery(self);
                 } else {
-                  alertify.alert(gettext('Remove Filter Error'), res.data.result);
+                  Notify.alert(gettext('Remove Filter Error'), res.data.result);
                 }
               }
             );
@@ -4271,7 +4253,7 @@ define('tools.querytool', [
               pgAdmin, self, e, '_remove_filter', [], true
             );
             if (msg)
-              alertify.alert(gettext('Remove Filter Error'), msg);
+              Notify.alert(gettext('Remove Filter Error'), msg);
           });
       },
 
@@ -4428,7 +4410,7 @@ define('tools.querytool', [
                 // Refresh the sql grid
                   queryToolActions.executeQuery(self);
                 } else {
-                  alertify.alert(gettext('Change limit Error'), res.data.result);
+                  Notify.alert(gettext('Change limit Error'), res.data.result);
                 }
               }, 10
             );
@@ -4439,7 +4421,7 @@ define('tools.querytool', [
               pgAdmin, self, e, '_set_limit', [], true
             );
             if (msg)
-              alertify.alert(gettext('Change limit Error'), msg);
+              Notify.alert(gettext('Change limit Error'), msg);
           });
       },
 
@@ -4575,7 +4557,7 @@ define('tools.querytool', [
         })
           .done(function(res) {
             if (!res.data.status) {
-              alertify.alert(gettext('Cancel Query Error'), res.data.result);
+              Notify.alert(gettext('Cancel Query Error'), res.data.result);
             }
             self.disable_tool_buttons(false);
             is_query_running = false;
@@ -4594,7 +4576,7 @@ define('tools.querytool', [
               pgAdmin, self, e, '_cancel_query', [], false
             );
             if (msg)
-              alertify.alert(gettext('Cancel Query Error'), msg);
+              Notify.alert(gettext('Cancel Query Error'), msg);
           });
       },
 
@@ -4674,7 +4656,7 @@ define('tools.querytool', [
           }
           // Check if error message is present
           if (msg)
-            alertify.alert(gettext('Download CSV error'), msg);
+            Notify.alert(gettext('Download CSV error'), msg);
         });
       },
 
@@ -4708,7 +4690,7 @@ define('tools.querytool', [
         })
           .done(function(res) {
             if (!res.data.status)
-              alertify.alert(gettext('Auto Rollback Error'), res.data.result);
+              Notify.alert(gettext('Auto Rollback Error'), res.data.result);
           })
           .fail(function(e) {
 
@@ -4716,7 +4698,7 @@ define('tools.querytool', [
               pgAdmin, self, e, '_auto_rollback', [], true
             );
             if (msg)
-              alertify.alert(gettext('Auto Rollback Error'), msg);
+              Notify.alert(gettext('Auto Rollback Error'), msg);
           });
       },
 
@@ -4742,14 +4724,14 @@ define('tools.querytool', [
         })
           .done(function(res) {
             if (!res.data.status)
-              alertify.alert(gettext('Auto Commit Error'), res.data.result);
+              Notify.alert(gettext('Auto Commit Error'), res.data.result);
           })
           .fail(function(e) {
             let msg = httpErrorHandler.handleQueryToolAjaxError(
               pgAdmin, self, e, '_auto_commit', [], true
             );
             if (msg)
-              alertify.alert(gettext('Auto Commit Error'), msg);
+              Notify.alert(gettext('Auto Commit Error'), msg);
           });
 
       },
@@ -5086,7 +5068,7 @@ define('tools.querytool', [
                       closeEvent.cancel = true;
                     }
                   } else {
-                    alertify.confirm(
+                    Notify.confirm(
                       gettext('Warning'),
                       gettext('The current transaction has been rolled back because the server was disconnected.'),
                       function() {
@@ -5095,10 +5077,10 @@ define('tools.querytool', [
                       },
                       function() {
                         return true;
-                      }
-                    ).set('labels', {
-                      ok: gettext('OK')
-                    });
+                      },
+                      gettext('OK'),
+                      gettext('Cancel')
+                    );
                   }
                 }).fail(function() {
                   /* failure should be ignored */

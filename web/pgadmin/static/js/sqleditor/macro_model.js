@@ -14,7 +14,7 @@ import Backgrid from 'pgadmin.backgrid';
 import url_for from 'sources/url_for';
 import $ from 'jquery';
 import _ from 'underscore';
-import Alertify from 'pgadmin.alertifyjs';
+import Notify from '../helpers/Notifier';
 
 export default function macroModel(transId) {
 
@@ -129,7 +129,7 @@ export default function macroModel(transId) {
                 let macros = that.collection.toJSON().filter(m => m.name !== undefined && m.name !== null);
 
                 if (macros.length > 0) {
-                  Alertify.confirm(
+                  Notify.confirm(
                     gettext('Clear All Rows'),
                     gettext('Are you sure you wish to clear all rows?'),
                     function() {

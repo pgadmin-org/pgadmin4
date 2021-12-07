@@ -98,7 +98,7 @@ define('pgadmin.dashboard', [
         action_url = terminate_session_url + self.model.get('pid');
       }
 
-      Alertify.confirm(
+      Notify.confirm(
         title, txtConfirm,
         function() {
           $.ajax({

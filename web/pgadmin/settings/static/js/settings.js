@@ -7,10 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
+import Notify from '../../../static/js/helpers/Notifier';
+
 define('pgadmin.settings', [
-  'jquery', 'pgadmin.alertifyjs', 'sources/pgadmin',
+  'jquery', 'sources/pgadmin',
   'sources/gettext', 'sources/url_for', 'pgadmin.backform',
-], function($, Alertify, pgAdmin, gettext, url_for) {
+], function($, pgAdmin, gettext, url_for) {
 
   // This defines the Preference/Options Dialog for pgAdmin IV.
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -32,7 +34,7 @@ define('pgadmin.settings', [
     // We will force unload method to not to save current layout
     // and reload the window
     show: function() {
-      Alertify.confirm(gettext('Reset layout'),
+      Notify.confirm(gettext('Reset layout'),
         gettext('Are you sure you want to reset the current layout? This will cause the application to reload and any un-saved data will be lost.'),
         function() {
           var reloadingIndicator = $('<div id="reloading-indicator"></div>');

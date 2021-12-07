@@ -308,7 +308,7 @@ let MacroDialog = {
                   }, 10
                 );
               } else {
-                Alertify.alert(
+                Notify.alert(
                   gettext('Validation Error'),
                   macroResponse.result
                 );

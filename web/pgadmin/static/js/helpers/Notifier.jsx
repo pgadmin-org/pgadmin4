@@ -15,7 +15,6 @@ import { NotifierMessage, MESSAGE_TYPE } from '../components/FormComponents';
 import CustomPropTypes from '../custom_prop_types';
 import gettext from 'sources/gettext';
 import pgWindow from 'sources/window';
-import Alertify from 'pgadmin.alertifyjs';
 import ModalProvider, { useModal } from './ModalProvider';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import { Box } from '@material-ui/core';
@@ -35,6 +34,12 @@ export function initializeNotifier(notifierContainer) {
     snackbarRef = useSnackbar();
     return <></>;
   };
+
+  if (!notifierContainer) {
+    notifierContainer = document.createElement('div');
+    document.body.appendChild(notifierContainer);
+  }
+
   ReactDOM.render(
     <Theme>
       <SnackbarProvider
@@ -54,6 +59,12 @@ export function initializeModalProvider(modalContainer) {
     modalRef = useModal();
     return <></>;
   };
+
+  if (!modalContainer) {
+    modalContainer = document.createElement('div');
+    document.body.appendChild(modalContainer);
+  }
+
   ReactDOM.render(
     <Theme>
       <ModalProvider>
@@ -82,16 +93,16 @@ const useAlertStyles = makeStyles((theme)=>({
     marginLeft: '0.25rem',
   }
 }));
-function AlertContent({text, confirm, onOkClick, onCancelClick}) {
+function AlertContent({text, confirm, okLabel=gettext('OK'), cancelLabel=gettext('Cancel'), onOkClick, onCancelClick}) {
   const classes = useAlertStyles();
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Box flexGrow="1" p={2}>{HTMLReactParse(text)}</Box>
       <Box className={classes.footer}>
-        <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} autoFocus={!confirm}>Close</DefaultButton>
         {confirm &&
-          <PrimaryButton className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={confirm}>OK</PrimaryButton>
+          <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>
         }
+        <PrimaryButton className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
       </Box>
     </Box>
   );
@@ -101,6 +112,8 @@ AlertContent.propTypes = {
   confirm: PropTypes.bool,
   onOkClick: PropTypes.func,
   onCancelClick: PropTypes.func,
+  okLabel: PropTypes.string,
+  cancelLabel: PropTypes.string,
 };
 
 var Notifier = {
@@ -194,54 +207,33 @@ var Notifier = {
             msg = _.escape(resp.result) || _.escape(resp.errormsg) || 'Unknown error';
           }
           if (contentType.indexOf('text/html') == 0) {
-            var alertMessage = promptmsg;
             if (type === 'error') {
-              alertMessage =
-                  '<div class="media text-danger text-14">'
-                  +  '<div class="media-body media-middle">'
-                  +    '<div class="alert-text" role="alert">' + promptmsg + '</div><br/>'
-                  +    '<div class="alert-text" role="alert">' + gettext('Click for details.') + '</div>'
-                  +  '</div>'
-                  + '</div>';
+              this.alert('Error', promptmsg);
             }
-
-            Alertify.notify(
-              alertMessage, type, 0,
-              function() {
-                Alertify.pgIframeDialog().show().set({
-                  frameless: false,
-                }).set(
-                  'pg_msg', msg
-                );
-              });
             return;
           }
         } catch (e) {
-          Alertify.alert().show().set('message', e.message).set(
-            'title', 'Error'
-          ).set('closable', true);
+          this.alert('Error', e.message);
         }
       }
     }
-    Alertify.alert().show().set(
-      'message', msg.replace(new RegExp(/\r?\n/, 'g'), '<br />')
-    ).set('title', promptmsg).set('closable', true);
+    this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));
   },
-  alert: (title, text, onCancelClick)=>{
+  alert: (title, text, okLabel=gettext('OK'), onOkClick)=>{
     if(!modalInitialized) {
       initializeModalProvider(document.getElementById('modalContainer'));
     }
     modalRef.showModal(title, (closeModal)=>{
-      const onCancelClickClose = ()=>{
-        onCancelClick && onCancelClick();
+      const onOkClickClose = ()=>{
+        onOkClick && onOkClick();
         closeModal();
       };
       return (
-        <AlertContent text={text} onCancelClick={onCancelClickClose} />
+        <AlertContent text={text} onOkClick={onOkClickClose} okLabel={okLabel} />
       );
     });
   },
-  confirm: (title, text, onOkClick, onCancelClick)=>{
+  confirm: (title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'))=>{
     if(!modalInitialized) {
       initializeModalProvider(document.getElementById('modalContainer'));
     }
@@ -255,14 +247,14 @@ var Notifier = {
         closeModal();
       };
       return (
-        <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} />
+        <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} okLabel={okLabel} cancelLabel={cancelLabel}/>
       );
     });
   },
 };
 
 if(window.frameElement) {
-  Notifier = pgWindow.Notifier;
+  Notifier = pgWindow.Notifier || Notifier;
 } else {
   pgWindow.Notifier = Notifier;
 }

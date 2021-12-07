@@ -11,6 +11,7 @@ import _ from 'underscore';
 import $ from 'jquery';
 import gettext from 'sources/gettext';
 import 'wcdocker';
+import Notify from './helpers/Notifier';
 
 var wcDocker = window.wcDocker;
 
@@ -363,7 +364,7 @@ export function CSVToArray( strData, strDelimiter, quoteChar){
   return arrData;
 }
 
-export function hasBinariesConfiguration(pgBrowser, serverInformation, alertify) {
+export function hasBinariesConfiguration(pgBrowser, serverInformation) {
   const module = 'paths';
   let preference_name = 'pg_bin_dir';
   let msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
@@ -378,11 +379,11 @@ export function hasBinariesConfiguration(pgBrowser, serverInformation, alertify)
 
   if (preference) {
     if (_.isUndefined(preference.value) || !checkBinaryPathExists(preference.value, serverInformation.version)) {
-      alertify.alert(gettext('Configuration required'), msg);
+      Notify.alert(gettext('Configuration required'), msg);
       return false;
     }
   } else {
-    alertify.alert(
+    Notify.alert(
       gettext('Preferences Error'),
       gettext('Failed to load preference %s of module %s', preference_name, module)
     );
