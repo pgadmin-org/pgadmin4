@@ -1,0 +1,65 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Packages",
+      "endpoint": "NODE-package.obj",
+      "sql_endpoint": "NODE-package.sql_id",
+      "msql_endpoint": "NODE-package.msql",
+      "data":
+      {
+        "name": "pkg_emp_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "description": "test comment",
+        "pkgheadsrc": "FUNCTION func1(v1 integer) RETURN integer;\nPROCEDURE proc1(v1 integer);",
+        "pkgbodysrc": "FUNCTION func1(v1 integer) RETURN integer IS BEGIN RETURN V1+10; END FUNC1;\nPROCEDURE proc1(v1 integer) IS BEGIN DBMS_OUTPUT.put_line(v1+50); END;",
+        "pkgacl": [{
+          "grantee": "enterprisedb",
+          "grantor": "enterprisedb",
+          "privileges": [{
+            "privilege_type": "X",
+            "privilege": true,
+            "with_grant": true
+          }]
+        }],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_package_with_all_options.sql",
+      "expected_msql_file": "create_package_with_all_options_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Packages",
+      "endpoint": "NODE-package.obj_id",
+      "sql_endpoint": "NODE-package.sql_id",
+      "msql_endpoint": "NODE-package.msql_id",
+      "data":
+      {
+        "description": "test comment updated",
+        "owner": "enterprisedb",
+        "pkgacl": {
+          "deleted": [{
+            "grantee": "enterprisedb",
+            "grantor": "enterprisedb",
+            "privileges": [{
+              "privilege_type": "X",
+              "privilege": true,
+              "with_grant": true
+            }]
+          }]
+        },
+        "schema": "public"
+      },
+      "expected_sql_file": "alter_package_headers_and_comment.sql",
+      "expected_msql_file": "alter_package_headers_and_comment_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Package",
+      "endpoint": "NODE-package.delete_id",
+      "data": {
+        "name": "pkg_emp_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]
+}
