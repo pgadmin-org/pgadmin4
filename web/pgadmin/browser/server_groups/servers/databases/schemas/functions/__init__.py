@@ -1455,6 +1455,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             FunctionView._merge_variables(data)
 
+        self._format_prosrc_for_pure_sql(data, False)
+
         if allow_code_formatting:
             self.reformat_prosrc_code(data)
 
@@ -1463,6 +1465,28 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             data=data, o_data=old_data
         )
         return True, '', sql
+
+    def _format_prosrc_for_pure_sql(self, data, view_only=True):
+
+        if self.manager.sversion < 140000:
+            return
+
+        # no need to test whether function/procedure definition is pure sql
+        # or not, the parameter from 'is_pure_sql' is sufficient.
+        if view_only:
+            if 'is_pure_sql' in data and data['is_pure_sql'] is True:
+                data['prosrc'] = data['prosrc_sql']
+                if data['prosrc'].endswith(';') is False:
+                    data['prosrc'] = ''.join((data['prosrc'], ';'))
+            else:
+                data['is_pure_sql'] = False
+        else:
+            # when function/procedure definition is changed, we need to find
+            # whether definition is of pure or have std sql definition.
+            if self._is_function_def_sql_standard(data):
+                data['is_pure_sql'] = True
+                if data['prosrc'].endswith(';') is False:
+                    data['prosrc'] = ''.join((data['prosrc'], ';'))
 
     def _get_sql(self, **kwargs):
         """
@@ -1528,6 +1552,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             data['func_args'] = args.strip(' ')
 
             data['func_args_without'] = ', '.join(args_without_name)
+
+            self._format_prosrc_for_pure_sql(data, False)
 
             if allow_code_formatting:
                 self.reformat_prosrc_code(data)
@@ -1609,6 +1635,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             resp_data['procost'] = None
             resp_data['provolatile'] = None
             resp_data['proparallel'] = None
+
+        self._format_prosrc_for_pure_sql(resp_data)
 
         return resp_data
 
@@ -1945,6 +1973,56 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             res = data
 
         return res
+
+    @staticmethod
+    def _is_function_def_sql_standard(resp_data):
+
+        """
+        This function is responsible for checking the sql to determine
+        whether it is as per SQL-standard or not. In fact, the function
+        is mainly utilised for the sql language with the newly added
+        ATOMIC in the version v14 of Postgres for functions & procedures
+        respectively.
+
+        :param resp_data:
+        :return: boolean
+        """
+        # if language is other than 'sql', return False
+        if 'lanname' in resp_data and resp_data['lanname'] != 'sql':
+            return False
+
+        # invalid regex, these combination should not be present in the sql
+        invalid_match = [r"^.*(?:\'|\")?.*(?=.*?atomic).*(?:\'|\").*$",
+                         r"^.*(?:\"|\')(?=.*(atomic)).*$"]
+
+        # valid regex, these combination a must in definition to detect a
+        # standard sql or pure sql
+        valid_match = [
+            r"(?=.*begin)(.+?(\n)+)(?=.*atomic)|(?=.*begin)(?=.*atomic)",
+            r"(?=return)"
+        ]
+
+        is_func_def_sql_std = False
+
+        if 'prosrc' in resp_data and resp_data['prosrc'] is not None \
+                and resp_data['prosrc'] != '':
+
+            prosrc = str(resp_data['prosrc']).lower().strip('\n').strip('\t')
+
+            for invalid in invalid_match:
+                for match in enumerate(
+                        re.finditer(invalid, prosrc, re.MULTILINE), start=1):
+                    if match:
+                        return is_func_def_sql_std
+
+            for valid in valid_match:
+                for match in enumerate(
+                        re.finditer(valid, prosrc, re.MULTILINE), start=1):
+                    if match:
+                        is_func_def_sql_std = True
+                        return is_func_def_sql_std
+
+        return is_func_def_sql_std
 
 
 SchemaDiffRegistry(blueprint.node_type, FunctionView)

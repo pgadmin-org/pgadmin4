@@ -2560,7 +2560,7 @@ define('tools.querytool', [
 
         Notify.confirm(
           gettext('Connection Warning'),
-          '<p style="float:left">'+
+          '<p style="float:left margin-right:0.5em">'+
             '<span class="fa fa-exclamation-triangle warn-icon" aria-hidden="true" role="img">'+
             '</span>'+
           '</p>'+
