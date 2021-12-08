@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { generateNodeUrl } from './node_ajax';
-import Notify from '../../../static/js/helpers/Notifier';
+import Notify, {initializeModalProvider, initializeNotifier} from '../../../static/js/helpers/Notifier';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',
@@ -439,6 +439,9 @@ define('pgadmin.browser', [
       }
 
       initializeBrowserTree(obj);
+      initializeModalProvider();
+      initializeNotifier();
+
 
       // Syntax highlight the SQL Pane
       if(document.getElementById('sql-textarea')){

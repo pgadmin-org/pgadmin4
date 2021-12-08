@@ -132,7 +132,7 @@ var Notifier = {
   notify(content, autoHideDuration) {
     if (content) {
       if(!notifierInitialized) {
-        initializeNotifier(document.getElementById('notifierContainer'));
+        initializeNotifier();
       }
       let  options = {autoHideDuration, content:(key) => (
         <FinalNotifyContent>{React.cloneElement(content, {onClose:()=>{snackbarRef.closeSnackbar(key);}})}</FinalNotifyContent>
@@ -221,7 +221,7 @@ var Notifier = {
   },
   alert: (title, text, okLabel=gettext('OK'), onOkClick)=>{
     if(!modalInitialized) {
-      initializeModalProvider(document.getElementById('modalContainer'));
+      initializeModalProvider();
     }
     modalRef.showModal(title, (closeModal)=>{
       const onOkClickClose = ()=>{
@@ -235,7 +235,7 @@ var Notifier = {
   },
   confirm: (title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'))=>{
     if(!modalInitialized) {
-      initializeModalProvider(document.getElementById('modalContainer'));
+      initializeModalProvider();
     }
     modalRef.showModal(title, (closeModal)=>{
       const onCancelClickClose = ()=>{
@@ -255,7 +255,7 @@ var Notifier = {
 
 if(window.frameElement) {
   Notifier = pgWindow.Notifier || Notifier;
-} else {
+} else if(!pgWindow.Notifier){
   pgWindow.Notifier = Notifier;
 }
 export default Notifier;
