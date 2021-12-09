@@ -209,7 +209,13 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'funcowner', label: gettext('Owner'), cell: 'string',
       options: this.fieldOptions.role, type: 'select',
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog() : obj.isGreaterThan95,
+      disabled: (state) => {
+        if (!(this.type === 'procedure')) {
+          obj.inCatalog(state);
+        } else {
+          obj.isGreaterThan95(state);
+        }
+      },
       noEmpty: true,
     },{
       id: 'pronamespace', label: gettext('Schema'), cell: 'string',

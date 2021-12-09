@@ -207,7 +207,7 @@ the *Data Output* tab.
 * Table
 
 *Table* tab shows the plan details in table format, it generates table format
-similar to *explain.depsez.com*. Each row of the table represent the data for a
+similar to *explain.depesz.com*. Each row of the table represent the data for a
 *Explain Plan Node*. It may contain the node information, exclusive timing,
 inclusive timing, actual vs planned rows differences, actual rows, planned
 rows, loops.

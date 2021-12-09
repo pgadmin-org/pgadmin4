@@ -121,7 +121,7 @@ define('pgadmin.node.procedure', [
           {
             funcowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
             pronamespace: treeNodeInfo.schema ? treeNodeInfo.schema._id : null,
-            lanname: 'edbspl',
+            lanname:  treeNodeInfo.server.server_type != 'ppas' ? 'sql' : 'edbspl',
           }
         );
       },

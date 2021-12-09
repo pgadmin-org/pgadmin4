@@ -31,6 +31,7 @@ Bug fixes
 | `Issue #6978 <https://redmine.postgresql.org/issues/6978>`_ -  Increase the width of the scrollbars.
 | `Issue #6986 <https://redmine.postgresql.org/issues/6986>`_ -  Fixed an issue where the user can't debug function with timestamp parameter.
 | `Issue #6989 <https://redmine.postgresql.org/issues/6989>`_ -  Fixed an issue where the Change Password menu option is missing for internal authentication source when more than one authentication source is defined.
+| `Issue #7003 <https://redmine.postgresql.org/issues/7003>`_ -  Fixed an issue where Explain Analyze shows negative exclusive time.
 | `Issue #7005 <https://redmine.postgresql.org/issues/7005>`_ -  Fixed an issue where On-demand rows throw an error when any row cell is edited and saved it then scroll to get more rows.
 | `Issue #7006 <https://redmine.postgresql.org/issues/7006>`_ -  Ensure that Python 3.10 and the latest eventlet dependency should not break the application.
 | `Issue #7013 <https://redmine.postgresql.org/issues/7013>`_ -  Fix an RPM build issue that could lead to a conflict with python3 at installation.
@@ -42,3 +43,4 @@ Bug fixes
 | `Issue #7044 <https://redmine.postgresql.org/issues/7044>`_ -  Update the dropzone version to 5.9.3 and Flask-SQLAlchemy to 2.5.*.
 | `Issue #7046 <https://redmine.postgresql.org/issues/7046>`_ -  Fixed some accessibility issues.
 | `Issue #7048 <https://redmine.postgresql.org/issues/7048>`_ -  Fixed unhashable type issue while opening the about dialog.
+| `Issue #7064 <https://redmine.postgresql.org/issues/7064>`_ -  Ensure that the Owner should not be disabled while creating the procedure.
