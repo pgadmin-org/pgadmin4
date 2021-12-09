@@ -736,7 +736,7 @@ define('pgadmin.misc.explain', [
           idx++;
         });
       } else{
-        data['inclusive'] = Math.ceil10(data['Actual Total Time'] / data['loops'], -3)
+        data['inclusive'] = Math.ceil10(data['Actual Total Time'] / data['loops'], -3);
         data['exclusive'] = data['inclusive'];
       }
 
