@@ -125,10 +125,8 @@ _build_runtime() {
     # YARN END
 
     # WGET:
-    # Comment out the below line as the latest version (0.57.0) having some
-    # problem, so for the time being hardcoded the version to 0.55.0
-    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
-    NW_VERSION="0.55.0"
+    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+
     pushd "${BUILDROOT}" > /dev/null
         while true;do
             wget https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-linux-x64.tar.gz && break
