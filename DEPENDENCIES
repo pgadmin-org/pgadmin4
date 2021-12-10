@@ -57,11 +57,14 @@ user-agents                                                      2.2.0          
 pywinpty                                                         1.1.1            Unknown                              Unknown
 Authlib                                                          0.15.5           BSD-3-Clause                         https://authlib.org/
 requests                                                         2.25.1           Apache 2.0                           https://requests.readthedocs.io
+pyotp                                                            2.6.0            MIT License                          https://github.com/pyotp/pyotp
+qrcode                                                           7.3.1            BSD                                  https://github.com/lincolnloop/python-qrcode
+Pillow                                                           8.3.2            HPND                                 https://python-pillow.org
 
 NOTE: This report was generated using Python 3.9. Full information may not be
 shown for Python modules that are not required with this version.
 
-34 dependencies listed.
+37 dependencies listed.
 
 Javascript Dependencies
 =======================
@@ -243,7 +246,7 @@ detect-indent                                                    4.0.0          
 diff-arrays-of-objects                                           1.1.8            MIT                                  git+https://github.com/malcolmvr/diff-arrays-of-objects.git
 dom-helpers                                                      5.2.0            MIT                                  git+https://github.com/react-bootstrap/dom-helpers.git
 dom-serializer                                                   1.3.2            MIT                                  git://github.com/cheeriojs/dom-renderer.git
-dropzone                                                         5.8.0            MIT                                  https://github.com/dropzone/dropzone.git
+dropzone                                                         5.9.3            MIT                                  https://github.com/dropzone/dropzone.git
 emojis-list                                                      3.0.0            MIT                                  git+https://github.com/kikobeats/emojis-list.git
 engine.io-client                                                 5.1.1            MIT                                  https://github.com/socketio/engine.io-client.git
 engine.io-parser                                                 4.0.2            MIT                                  git@github.com:socketio/engine.io-parser.git
@@ -337,6 +340,7 @@ nanopop                                                          2.1.0          
 node-releases                                                    1.1.72           MIT                                  git+https://github.com/chicoxyzzy/node-releases.git
 normalize-url                                                    4.5.1            MIT                                  https://github.com/sindresorhus/normalize-url.git
 notificar                                                        1.0.1            MIT                                  git+https://github.com/neeksandhu/notificar.git
+notistack                                                        1.0.10           MIT                                  git+https://github.com/iamhosseindhv/notistack.git
 object-assign                                                    4.1.1            MIT                                  https://github.com/sindresorhus/object-assign.git
 p-reduce                                                         1.0.0            MIT                                  https://github.com/sindresorhus/p-reduce.git
 p-series                                                         1.1.0            MIT                                  https://github.com/sindresorhus/p-series.git
@@ -391,6 +395,7 @@ react                                                            17.0.2         
 react-aspen                                                      1.1.1            MIT                                  https://github.com/neeksandhu/react-aspen.git
 react-dom                                                        16.14.0          MIT                                  git+https://github.com/facebook/react.git
 react-dom                                                        17.0.2           MIT                                  https://github.com/facebook/react.git
+react-draggable                                                  4.4.4            MIT                                  https://github.com/react-grid-layout/react-draggable.git
 react-input-autosize                                             3.0.0            MIT                                  https://github.com/JedWatson/react-input-autosize.git
 react-is                                                         16.13.1          MIT                                  https://github.com/facebook/react.git
 react-is                                                         17.0.2           MIT                                  https://github.com/facebook/react.git
@@ -517,5 +522,5 @@ precond                                                          0.2.3          
 webcabin-docker                                                  2.2.5            MIT*                                 Unknown
 tablesorter                                                      2.31.3           (MIT OR GPL-2.0)                     git://github.com/Mottie/tablesorter.git
 
-448 dependencies listed.
+450 dependencies listed.
 
