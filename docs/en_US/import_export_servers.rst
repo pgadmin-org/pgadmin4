@@ -23,7 +23,7 @@ the ``--dump-servers`` command line option, followed by the name (and if require
 path) to the desired output file. By default, servers owned by the desktop mode
 user will be dumped (pgadmin4@pgadmin.org by default - see the DESKTOP_USER
 setting in ``config.py``). This can be overridden with the ``--user`` command
-line option. There can be multiple configuations of pgAdmin on the same system.
+line option. There can be multiple configurations of pgAdmin on the same system.
 To dump the servers from specific pgAdmin config DB file, ``--sqlite-path`` option
 can be used. It is also recommended to use this option when running pgAdmin in
 desktop mode. By default SQLITE_PATH setting in ``config.py`` is taken.
@@ -56,7 +56,7 @@ the ``--load-servers`` command line option, followed by the name (and if require
 path) of the JSON file containing the server definitions. Servers will be owned
 by the desktop mode user (pgadmin4@pgadmin.org by default - see the DESKTOP_USER
 setting in ``config.py``). This can be overridden with the ``--user`` command
-line option. There can be multiple configuations of pgAdmin on the same system.
+line option. There can be multiple configurations of pgAdmin on the same system.
 The default behaviour is for the imported servers to be added to the existent list,
 which might lead to duplicates. This can be overridden with the ``--replace`` command
 line option, which will replace the list of servers with the newly imported one.
