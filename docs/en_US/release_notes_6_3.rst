@@ -25,8 +25,10 @@ Bug fixes
 *********
 
 | `Issue #6840 <https://redmine.postgresql.org/issues/6840>`_ -  Fixed an issue where tooltip data are not displaying on downloaded graphical explain plan.
+| `Issue #6877 <https://redmine.postgresql.org/issues/6877>`_ -  Fixed schema diff owner related issue.
 | `Issue #6906 <https://redmine.postgresql.org/issues/6906>`_ -  Fixed an issue where referenced table drop-down should be disabled in foreign key -> columns after one row is added.
 | `Issue #6955 <https://redmine.postgresql.org/issues/6955>`_ -  Ensure that sort order should be maintained when renaming a server group.
+| `Issue #6957 <https://redmine.postgresql.org/issues/6957>`_ -  Fixed schema diff related some issues.
 | `Issue #6963 <https://redmine.postgresql.org/issues/6963>`_ -  Ensure that the user should be allowed to set the schema of an extension while creating it.
 | `Issue #6978 <https://redmine.postgresql.org/issues/6978>`_ -  Increase the width of the scrollbars.
 | `Issue #6986 <https://redmine.postgresql.org/issues/6986>`_ -  Fixed an issue where the user can't debug function with timestamp parameter.

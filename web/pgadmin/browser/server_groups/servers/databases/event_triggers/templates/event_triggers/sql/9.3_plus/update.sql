@@ -13,6 +13,9 @@ CREATE EVENT TRIGGER {{ conn|qtIdent(data.name) if data.name else conn|qtIdent(o
     WHEN TAG IN ({{ data.when if data.when else o_data.when }})
 {% endif %}
     EXECUTE PROCEDURE {{ data.eventfunname if data.eventfunname else o_data.eventfunname }}();
+
+ALTER EVENT TRIGGER {{ conn|qtIdent(o_data.name) }}
+    OWNER TO {{ conn|qtIdent(o_data.eventowner) }};
 {% else %}
 
 {% if data.name and data.name != o_data.name %}

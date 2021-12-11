@@ -22,6 +22,9 @@ CREATE{% if tmp_trusted %} TRUSTED{% endif %} PROCEDURAL LANGUAGE {{ conn|qtIden
 {% if tmp_lanval %}
     VALIDATOR {{ conn|qtIdent(tmp_lanval) }}
 {% endif %};
+
+ALTER LANGUAGE {{ conn|qtIdent(o_data.name) }}
+    OWNER TO {{ conn|qtIdent(o_data.lanowner) }};
 {% endif %}
 {# ============= Update language name ============= #}
 {% if data.name != o_data.name %}

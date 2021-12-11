@@ -39,10 +39,10 @@ CREATE FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, o_data.name) }}(
 {% if o.option and o.value %}
 {% if loop.first %}    OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif %};
-{% if data.owner %}
+{% if data.owner or o_data.owner%}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, o_data.name) }}
-    OWNER TO {{ conn|qtIdent(data.owner) }};
+    OWNER TO {% if data.owner %}{{ conn|qtIdent(data.owner) }}{% else %}{{ conn|qtIdent(o_data.owner) }}{% endif %};
 {% endif -%}
 {% if constraints %}
 {% for c in constraints %}

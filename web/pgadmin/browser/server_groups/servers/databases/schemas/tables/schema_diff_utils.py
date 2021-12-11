@@ -19,13 +19,12 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 
 class SchemaDiffTableCompare(SchemaDiffObjectCompare):
-    table_keys_to_ignore = ['oid', 'schema', 'edit_types',
+    table_keys_to_ignore = ['oid', 'schema', 'edit_types', 'attnum',
                             'col_type', 'references', 'reltuples', 'oid-2',
                             'rows_cnt', 'hastoasttable', 'relhassubclass',
                             'relacl_str', 'setting']
 
-    column_keys_to_ignore = ['attnum', 'atttypid', 'edit_types', 'elemoid',
-                             'seqrelid']
+    column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',

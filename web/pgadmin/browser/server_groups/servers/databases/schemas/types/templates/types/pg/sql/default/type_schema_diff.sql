@@ -62,11 +62,11 @@ CREATE TYPE {% if o_data.schema %}{{ conn|qtIdent(o_data.schema, o_data.name) }}
 );
 {% endif %}
 {###  Type Owner ###}
-{% if data and data.typeowner %}
+{% if data and (data.typeowner or o_data.typeowner)%}
 
 ALTER TYPE {% if o_data.schema %}{{ conn|qtIdent(o_data.schema, o_data.name) }}{% else %}{{ conn|qtIdent(o_data.name) }}{% endif %}
 
-    OWNER TO {{ conn|qtIdent(data.typeowner) }};
+    OWNER TO {% if data.typeowner %}{{ conn|qtIdent(data.typeowner) }}{% elif o_data.typeowner %}{{ conn|qtIdent(o_data.typeowner) }}{% endif %};
 {% endif %}
 {###  Type Comments ###}
 {% if data and data.description %}

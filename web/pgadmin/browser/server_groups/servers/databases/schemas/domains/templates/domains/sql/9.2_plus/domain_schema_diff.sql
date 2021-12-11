@@ -14,8 +14,8 @@ CREATE DOMAIN {{ conn|qtIdent(o_data.basensp, o_data.name) }}
 
     NOT NULL{% endif %};
 
-{% if data.owner %}
-ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, o_data.name) }} OWNER TO {{ conn|qtIdent(data.owner) }};
+{% if data.owner or o_data.owner %}
+ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, o_data.name) }} OWNER TO {% if data.owner %}{{ conn|qtIdent(data.owner) }}{% else %}{{ conn|qtIdent(o_data.owner) }}{% endif %};
 {% endif %}
 {% if data.constraints %}
 {% for c in data.constraints.added %}{% if c.conname and c.consrc %}

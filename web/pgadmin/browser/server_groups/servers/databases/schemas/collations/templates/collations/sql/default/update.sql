@@ -17,6 +17,8 @@ CREATE COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
     FROM {{ data.copy_collation }};
 {% endif %}
 
+ALTER COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
+    OWNER TO {{ conn|qtIdent(o_data.owner) }};
 {% endif %}
 {% if data.owner and data.owner != o_data.owner %}
 ALTER COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}

@@ -390,7 +390,7 @@ def compare_dictionaries(**kwargs):
     if ignore_owner:
         owner_keys = ['owner', 'eventowner', 'funcowner', 'fdwowner',
                       'fsrvowner', 'lanowner', 'relowner', 'seqowner',
-                      'typowner', 'typeowner']
+                      'typeowner']
         ignore_keys = ignore_keys + owner_keys
 
     # Compare the values of duplicates keys.

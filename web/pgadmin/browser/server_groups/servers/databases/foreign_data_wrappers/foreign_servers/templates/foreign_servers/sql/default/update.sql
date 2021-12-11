@@ -29,6 +29,9 @@ CREATE SERVER {{ conn|qtIdent(o_data.name) }}{% if fsrvtype %}
     OPTIONS ({% for variable in o_data.fsrvoptions %}{% if loop.index != 1 %}, {% endif %}
 {{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral }}{% endfor %}){% endif %};
 
+ALTER SERVER {{ conn|qtIdent(o_data.name) }}
+    OWNER TO {{ conn|qtIdent(o_data.fsrvowner) }};
+
 {% else %}
 {# ============= Update foreign server name ============= #}
 {% if data.name != o_data.name %}
