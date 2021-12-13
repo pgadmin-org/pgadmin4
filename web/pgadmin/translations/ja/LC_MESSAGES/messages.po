@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-10 19:48+0530\n"
-"PO-Revision-Date: 2021-11-13 22:32+0900\n"
+"PO-Revision-Date: 2021-12-12 20:34+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -239,91 +239,91 @@ msgstr "ウェブサーバーの認証に失敗しました。"
 
 #: pgadmin/authenticate/mfa/__init__.py:75
 msgid "'{}' is not a valid multi-factor authentication method"
-msgstr ""
+msgstr "'{}' は有効な多要素認証方式ではありません"
 
 #: pgadmin/authenticate/mfa/__init__.py:104
 msgid "No valid multi-factor authentication found, hence - disabling it."
-msgstr ""
+msgstr "有効な多要素認証方式が見つからなかったため、無効化します。"
 
 #: pgadmin/authenticate/mfa/authenticator.py:30
 msgid "Authenticator App"
-msgstr ""
+msgstr "認証アプリ"
 
 #: pgadmin/authenticate/mfa/authenticator.py:59
 msgid ""
 "User has not registered the Time-based One-Time Password (TOTP) "
 "Authenticator for authentication."
-msgstr ""
+msgstr "ユーザが時間ベースのワンタイムパスワード (TOTP) 認証の利用登録をしていません。"
 
 #: pgadmin/authenticate/mfa/authenticator.py:65
 msgid "User does not have valid HASH to generate the OTP."
-msgstr ""
+msgstr "ユーザが OTP 生成用の有効なハッシュを用意していません。"
 
 #: pgadmin/authenticate/mfa/authenticator.py:130
 msgid ""
 "Enter the code shown in your authenticator application for TOTP (Time-"
 "based One-Time Password)"
-msgstr ""
+msgstr "TOTP (時間ベースのワンタイムパスワード) 認証アプリケーションに表示されているコードを入力してください"
 
 #: pgadmin/authenticate/mfa/authenticator.py:134
 #: pgadmin/authenticate/mfa/authenticator.py:186
 #: pgadmin/authenticate/mfa/templates/mfa/email_code_sent.html:17
 msgid "Enter code"
-msgstr ""
+msgstr "コードを入力"
 
 #: pgadmin/authenticate/mfa/authenticator.py:182
 msgid "TOTP Authenticator QRCode"
-msgstr ""
+msgstr "TOTP 認証の QR コード"
 
 #: pgadmin/authenticate/mfa/authenticator.py:183
 msgid ""
 "Scan the QR code and the enter the code from the TOTP Authenticator "
 "application"
-msgstr ""
+msgstr "QR コードをスキャンし、TOTP 認証アプリケーションからのコードを入力してください"
 
 #: pgadmin/authenticate/mfa/authenticator.py:213
 msgid "Failed to validate the code"
-msgstr ""
+msgstr "コードの検証に失敗しました"
 
 #: pgadmin/authenticate/mfa/authenticator.py:217
 msgid "TOTP Authenticator registered successfully for authentication."
-msgstr ""
+msgstr "TOTP 認証の利用登録に成功しました。"
 
 #: pgadmin/authenticate/mfa/email.py:67 pgadmin/authenticate/mfa/email.py:174
 msgid "Not accessible"
-msgstr ""
+msgstr "アクセスできません"
 
 #: pgadmin/authenticate/mfa/email.py:73
 msgid "No email address is available."
-msgstr ""
+msgstr "メールアドレスがありません。"
 
 #: pgadmin/authenticate/mfa/email.py:80
 msgid "{} - Verification Code"
-msgstr ""
+msgstr "{} - 確認コード"
 
 #: pgadmin/authenticate/mfa/email.py:91
 msgid "Failed to send the code to email."
-msgstr ""
+msgstr "メールへのコード送信に失敗しました。"
 
 #: pgadmin/authenticate/mfa/email.py:94
 msgid "A verification code was sent to {}. Check your email and enter the code."
-msgstr ""
+msgstr "確認コードを {} に送信しました。メールに記載されているコードを入力してください。"
 
 #: pgadmin/authenticate/mfa/email.py:149
 msgid "User has not registered for email authentication"
-msgstr ""
+msgstr "ユーザがメール認証の利用登録をしていません"
 
 #: pgadmin/authenticate/mfa/email.py:185
 msgid "Email Authentication"
-msgstr ""
+msgstr "メール認証"
 
 #: pgadmin/authenticate/mfa/email.py:232
 msgid "Enter the email address to send a code"
-msgstr ""
+msgstr "コードを送信するメールアドレスを入力してください"
 
 #: pgadmin/authenticate/mfa/email.py:233
 msgid "Email address"
-msgstr ""
+msgstr "メールアドレス"
 
 #: pgadmin/authenticate/mfa/email.py:235
 #: pgadmin/browser/templates/browser/js/messages.js:46
@@ -338,75 +338,75 @@ msgstr "メモ"
 msgid ""
 "This email address will only be used by the authentication purpose. It "
 "will not update the user's email address."
-msgstr ""
+msgstr "このメールアドレスは認証目的のみに使用されます。ユーザのメールアドレスが変更されることはありません。"
 
 #: pgadmin/authenticate/mfa/email.py:267
 msgid "Enter code here"
-msgstr ""
+msgstr "ここにコードを入力"
 
 #: pgadmin/authenticate/mfa/email.py:283
 msgid "Email Authentication registered successfully."
-msgstr ""
+msgstr "メール認証の登録に成功しました。"
 
 #: pgadmin/authenticate/mfa/email.py:291
 msgid "Invalid code"
-msgstr ""
+msgstr "無効なコードです"
 
 #: pgadmin/authenticate/mfa/views.py:57
 msgid "No authentication method provided."
-msgstr ""
+msgstr "認証方式が指定されていません。"
 
 #: pgadmin/authenticate/mfa/views.py:62
 msgid "No user supported authentication method provided"
-msgstr ""
+msgstr "ユーザ対応の認証方式が指定されていません"
 
 #: pgadmin/authenticate/mfa/views.py:169
 msgid "'{}' is already registerd'"
-msgstr ""
+msgstr "'{}' は既に登録されています'"
 
 #: pgadmin/authenticate/mfa/views.py:175
 msgid "'{}' unregistered from the authentication list."
-msgstr ""
+msgstr "'{}' を認証リストの登録から解除しました。"
 
 #: pgadmin/authenticate/mfa/views.py:181
 msgid "'{}' is not found in the authentication list."
-msgstr ""
+msgstr "'{}' は認証リストにありません。"
 
 #: pgadmin/authenticate/mfa/views.py:258
 msgid "Please close the dialog."
-msgstr ""
+msgstr "ダイアログを閉じてください。"
 
 #: pgadmin/authenticate/mfa/views.py:333
 msgid "Can't access this page, when multi factor authentication is disabled."
-msgstr ""
+msgstr "このページには、多要素認証を無効化した状態だとアクセスできません。"
 
 #: pgadmin/authenticate/mfa/views.py:339
 msgid "Complete the authentication process first"
-msgstr ""
+msgstr "まず認証処理を済ませてください"
 
 #: pgadmin/authenticate/mfa/templates/mfa/email_code_sent.html:10
 msgid "Haven't received an email?"
-msgstr ""
+msgstr "メールが届きませんか？"
 
 #: pgadmin/authenticate/mfa/templates/mfa/email_code_sent.html:10
 msgid "Send again"
-msgstr ""
+msgstr "再び送信"
 
 #: pgadmin/authenticate/mfa/templates/mfa/email_view.html:2
 msgid "Verify with Email Authentication"
-msgstr ""
+msgstr "メール認証で確認"
 
 #: pgadmin/authenticate/mfa/templates/mfa/email_view.html:5
 msgid "Send Code"
-msgstr ""
+msgstr "コードを送信"
 
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:5
 msgid "Registration"
-msgstr ""
+msgstr "登録"
 
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:8
 msgid "Authentication registration"
-msgstr ""
+msgstr "認証の登録"
 
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:41
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:63
@@ -416,7 +416,7 @@ msgstr "削除"
 
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:41
 msgid "Setup"
-msgstr ""
+msgstr "セットアップ"
 
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:50
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:58
@@ -469,7 +469,7 @@ msgstr "認証"
 
 #: pgadmin/authenticate/mfa/templates/mfa/validate.html:117
 msgid "Validate"
-msgstr ""
+msgstr "検証"
 
 #: pgadmin/authenticate/mfa/templates/mfa/validate.html:119
 #: pgadmin/browser/templates/browser/index.html:170
@@ -9671,7 +9671,7 @@ msgstr "追加情報"
 msgid ""
 "pgAdmin has reset the layout because the previously saved layout is "
 "invalid."
-msgstr ""
+msgstr "以前に保存された pgAdmin のレイアウトが無効だったため、レイアウトをリセットしました。"
 
 #: pgadmin/browser/static/js/layout.js:156
 msgid "Failed to save the lock layout setting."
@@ -9701,7 +9701,7 @@ msgstr "スクリプト"
 
 #: pgadmin/browser/static/js/node.js:633
 msgid "Please wait while we fetch information ..."
-msgstr ""
+msgstr "情報を取得するまでお待ちください ..."
 
 #: pgadmin/browser/static/js/node.js:672
 msgid "Please wait while we fetch information about the node from the server..."
@@ -10017,11 +10017,11 @@ msgstr "ツール"
 
 #: pgadmin/browser/templates/browser/index.html:159
 msgid "Authentiction"
-msgstr ""
+msgstr "認証"
 
 #: pgadmin/browser/templates/browser/index.html:162
 msgid "Two-Factor Authentication"
-msgstr ""
+msgstr "2 段階認証"
 
 #: pgadmin/browser/templates/browser/kerberos_login.html:7
 #: pgadmin/browser/templates/browser/kerberos_logout.html:7
@@ -11966,7 +11966,7 @@ msgstr "バックアップ..."
 
 #: pgadmin/tools/backup/static/js/backup.js:182
 msgid "Backup Server"
-msgstr ""
+msgstr "サーバをバックアップ"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:25
 #: pgadmin/tools/restore/static/js/restore.js:159
@@ -12155,7 +12155,7 @@ msgstr "ダンプのオプション"
 #: pgadmin/tools/backup/static/js/backup.ui.js:550
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:98
 msgid "Please provide a filename."
-msgstr ""
+msgstr "ファイル名を指定してください。"
 
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:88
 msgid ""
@@ -14738,7 +14738,7 @@ msgstr "メールアドレスでフィルタ"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:105
 msgid "Chagne Password"
-msgstr ""
+msgstr "パスワードを変更"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:127
 msgid "pgAdmin 4 login"
@@ -15143,31 +15143,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー: {0}"
-
-#~ msgid ""
-#~ "pgAdmin has detected some issues with"
-#~ " the UI layout, so reset it to"
-#~ " the default."
-#~ msgstr "UI のレイアウトに何か問題が発生したため、既定の状態に初期化します。"
-
-#~ msgid "Click for details."
-#~ msgstr "クリックで詳細を開きます。"
-
-#~ msgid "Backup Error"
-#~ msgstr "バックアップエラー"
-
-#~ msgid "Backup (%s: %s)"
-#~ msgstr "バックアップ (%s: %s)"
-
-#~ msgid "Please renew your kerberos ticket, it has been expired."
-#~ msgstr "お使いの Kerberos チケットは有効期限が切れています。新しいチケットを再発行してください。"
-
-#~ msgid "Backup job created."
-#~ msgstr "バックアップジョブが作成されました。"
-
-#~ msgid "Backup job creation failed."
-#~ msgstr "バックアップジョブの作成に失敗しました。"
-
-#~ msgid "Backup job failed."
-#~ msgstr "バックアップジョブが失敗しました。"
 
