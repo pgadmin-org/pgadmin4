@@ -29,10 +29,10 @@
 
 .sql-editor-busy-text-status {
   position: absolute;
-  padding: 0.25rem;
+  padding: 1rem 1.5rem;
   bottom: 0;
   right: 0;
-  left: 0;
+  opacity: 0.8;
   background-color: $color-warning-light;
   color: $color-warning-fg;
 }

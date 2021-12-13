@@ -39,6 +39,7 @@ Bug fixes
 | `Issue #7006 <https://redmine.postgresql.org/issues/7006>`_ -  Ensure that Python 3.10 and the latest eventlet dependency should not break the application.
 | `Issue #7013 <https://redmine.postgresql.org/issues/7013>`_ -  Fix an RPM build issue that could lead to a conflict with python3 at installation.
 | `Issue #7015 <https://redmine.postgresql.org/issues/7015>`_ -  Fixed an issue where the error is thrown while creating a new server using Add New Server from the dashboard while tree item is not selected.
+| `Issue #7020 <https://redmine.postgresql.org/issues/7020>`_ -  Ensure that statue message should not hide the last line of messages when running a long query.
 | `Issue #7024 <https://redmine.postgresql.org/issues/7024>`_ -  Fixed an issue where reverse engineering SQL is wrong for Aggregate.
 | `Issue #7029 <https://redmine.postgresql.org/issues/7029>`_ -  Correct the SQL definition for function/procedure with the Atomic keyword in PG14.
 | `Issue #7031 <https://redmine.postgresql.org/issues/7031>`_ -  Fixed an issue where SQLite database definition is wrong because the USER_ID FK references the table user_old which is not available.
