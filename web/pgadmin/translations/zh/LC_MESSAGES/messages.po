@@ -8737,7 +8737,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:296
 msgid "Cascade?"
-msgstr ""
+msgstr "级联"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:308
 msgid ""
@@ -8775,7 +8775,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:568
 #, python-format
 msgid "%s Objects"
-msgstr ""
+msgstr "%s Objects"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:569
 #, python-format
@@ -12857,25 +12857,25 @@ msgstr "调试器- "
 
 #: pgadmin/tools/erd/__init__.py:45
 msgid "ERD tool"
-msgstr ""
+msgstr "ERD 工具"
 
 #: pgadmin/tools/erd/__init__.py:78
 msgid "Open project"
-msgstr ""
+msgstr "打开工程"
 
 #: pgadmin/tools/erd/__init__.py:96
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:828
 msgid "Save project"
-msgstr ""
+msgstr "保存工程"
 
 #: pgadmin/tools/erd/__init__.py:114
 msgid "Save project as"
-msgstr ""
+msgstr "工程另存为"
 
 #: pgadmin/tools/erd/__init__.py:132
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:834
 msgid "Generate SQL"
-msgstr ""
+msgstr "生成 SQL"
 
 #: pgadmin/tools/erd/__init__.py:150
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:836
@@ -12886,43 +12886,43 @@ msgstr "下载文件"
 #: pgadmin/tools/erd/__init__.py:168
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:840
 msgid "Add table"
-msgstr ""
+msgstr "添加表"
 
 #: pgadmin/tools/erd/__init__.py:186
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:842
 msgid "Edit table"
-msgstr ""
+msgstr "编辑表"
 
 #: pgadmin/tools/erd/__init__.py:204
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:844
 msgid "Clone table"
-msgstr ""
+msgstr "克隆表"
 
 #: pgadmin/tools/erd/__init__.py:222
 msgid "Drop table"
-msgstr ""
+msgstr "删除表"
 
 #: pgadmin/tools/erd/__init__.py:240
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:856
 msgid "Add/Edit note"
-msgstr ""
+msgstr "添加/编辑批注"
 
 #: pgadmin/tools/erd/__init__.py:258
 msgid "One to many link"
-msgstr ""
+msgstr "一对多链接"
 
 #: pgadmin/tools/erd/__init__.py:276
 msgid "Many to many link"
-msgstr ""
+msgstr "多对多链接"
 
 #: pgadmin/tools/erd/__init__.py:294
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:858
 msgid "Auto align"
-msgstr ""
+msgstr "自动对齐"
 
 #: pgadmin/tools/erd/__init__.py:312
 msgid "Show more/fewer details"
-msgstr ""
+msgstr "显示更多/少量详情"
 
 #: pgadmin/tools/erd/__init__.py:330
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:864
@@ -12931,16 +12931,16 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_module.js:49
 msgid "New ERD Project"
-msgstr ""
+msgstr "新建 ERD 工程"
 
 #: pgadmin/tools/erd/static/js/erd_module.js:116
 #: pgadmin/tools/erd/static/js/erd_module.js:126
 msgid "ERD Error"
-msgstr ""
+msgstr "ERD 错误"
 
 #: pgadmin/tools/erd/static/js/erd_module.js:127
 msgid "Please select a database/database object."
-msgstr ""
+msgstr "请选择一个数据库或数据库对象"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:38
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/OneToManyDialog.js:38
@@ -12959,7 +12959,7 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/nodes/TableNode.jsx:240
 msgid "Fetching..."
-msgstr ""
+msgstr "获取中...."
 
 #: pgadmin/tools/erd/static/js/erd_tool/nodes/TableNode.jsx:241
 msgid "Failed to get data. Please delete this table."
@@ -12992,7 +12992,7 @@ msgstr "数据已更改。是否要保存更改？"
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:366
 #, python-format
 msgid "Table: %s (%s)"
-msgstr ""
+msgstr "表: %s (%s)"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:395
 msgid "Cannot drop table from outside of the current database."
@@ -13000,7 +13000,7 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:438
 msgid "Delete ?"
-msgstr ""
+msgstr "删除？"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:439
 #, python-format
@@ -13009,7 +13009,7 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:440
 msgid "Are you sure you want to delete ?"
-msgstr ""
+msgstr "你确定要删除吗？"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:491
 #, fuzzy
@@ -13019,7 +13019,7 @@ msgstr "正在比较对象..."
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:531
 #, fuzzy
 msgid "Saving..."
-msgstr "加载中..."
+msgstr "保存中..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:536
 msgid "Project saved successfully."
@@ -13069,27 +13069,27 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:801
 msgid "Fetching schema data..."
-msgstr ""
+msgstr "获取 schema 数据..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:826
 msgid "Load from file"
-msgstr ""
+msgstr "从文件加载"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:830
 msgid "Save as"
-msgstr ""
+msgstr "另存为"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:846
 msgid "Drop table/link"
-msgstr ""
+msgstr "删除 表/链接"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:850
 msgid "One-to-Many link"
-msgstr ""
+msgstr "一对多链接"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:852
 msgid "Many-to-Many link"
-msgstr ""
+msgstr "多对多链接"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ConnectionBar.jsx:50
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2912
@@ -13098,15 +13098,15 @@ msgstr "正在获取连接..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ConnectionBar.jsx:51
 msgid "Connection failed"
-msgstr ""
+msgstr "连接失败"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ToolBar.jsx:113
 msgid "Show fewer details"
-msgstr ""
+msgstr "显示少量详情"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/ToolBar.jsx:113
 msgid "Show more details"
-msgstr ""
+msgstr "显示更多详情"
 
 #: pgadmin/tools/grant_wizard/__init__.py:362
 msgid "Unable to fetch the {} objects"
@@ -13576,7 +13576,7 @@ msgstr "成功比较指定的数据库。"
 
 #: pgadmin/tools/schema_diff/__init__.py:608
 msgid "Schema Objects"
-msgstr ""
+msgstr "Schema 对象"
 
 #: pgadmin/tools/schema_diff/__init__.py:616
 msgid "Successfully compare the specified schemas."
@@ -13719,7 +13719,7 @@ msgstr "生成脚本错误"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:329
 msgid "No difference found"
-msgstr ""
+msgstr "未找到差异"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:369
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:371
@@ -13757,7 +13757,7 @@ msgstr "选择数据库..."
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:741
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:825
 msgid "Select schema..."
-msgstr ""
+msgstr "选择 schema..."
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:869
 msgid ""
@@ -14431,11 +14431,11 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:285
 msgid "Column data"
-msgstr ""
+msgstr "数据列"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:286
 msgid "Column name"
-msgstr ""
+msgstr "列名"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:288
 msgid ""
@@ -14447,7 +14447,7 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:299
 msgid "Maximum column width"
-msgstr ""
+msgstr "列最大宽度"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:301
 msgid ""
@@ -14507,7 +14507,7 @@ msgstr "解释优化查询"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:417
 msgid "Download Results"
-msgstr ""
+msgstr "下载结果"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:489
 msgid "Accesskey (Open file)"
@@ -14586,17 +14586,17 @@ msgstr "关键字大小写"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:721
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:733
 msgid "Upper case"
-msgstr ""
+msgstr "大写"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:722
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:734
 msgid "Lower case"
-msgstr ""
+msgstr "小写"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:723
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:735
 msgid "Capitalized"
-msgstr ""
+msgstr "Capitalized"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:725
 msgid "Convert keywords to upper, lower, or capitalized casing."
@@ -14723,7 +14723,7 @@ msgstr "按EMail过滤"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:105
 msgid "Chagne Password"
-msgstr ""
+msgstr "修改密码"
 
 #: pgadmin/tools/user_management/static/js/user_management.js:127
 msgid "pgAdmin 4 login"
@@ -14965,27 +14965,27 @@ msgstr ""
 
 #: pgadmin/utils/constants.py:90
 msgid "PostgreSQL 9.6"
-msgstr ""
+msgstr "PostgreSQL 9.6"
 
 #: pgadmin/utils/constants.py:93
 msgid "PostgreSQL 10"
-msgstr ""
+msgstr "PostgreSQL 10"
 
 #: pgadmin/utils/constants.py:96
 msgid "PostgreSQL 11"
-msgstr ""
+msgstr "PostgreSQL 11"
 
 #: pgadmin/utils/constants.py:99
 msgid "PostgreSQL 12"
-msgstr ""
+msgstr "PostgreSQL 12"
 
 #: pgadmin/utils/constants.py:102
 msgid "PostgreSQL 13"
-msgstr ""
+msgstr "PostgreSQL 13"
 
 #: pgadmin/utils/constants.py:105
 msgid "PostgreSQL 14"
-msgstr ""
+msgstr "PostgreSQL 14"
 
 #: pgadmin/utils/exception.py:70
 msgid ""
@@ -15497,7 +15497,7 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Generate ERD (Beta)"
-#~ msgstr ""
+#~ msgstr "生成 ERD (Beta)"
 
 #~ msgid "Current publication"
 #~ msgstr "身份验证"
@@ -15553,7 +15553,7 @@ msgstr ""
 #~ msgstr "请指定值为所有的安全提供程序."
 
 #~ msgid "Select roles"
-#~ msgstr ""
+#~ msgstr "选择角色"
 
 #~ msgid "Location cannot be empty."
 #~ msgstr "位置不能为空。"
@@ -15562,7 +15562,7 @@ msgstr ""
 #~ msgstr "无法更改 ID。"
 
 #~ msgid "PSQL Tool (Beta)"
-#~ msgstr ""
+#~ msgstr "PSQL 工具 (Beta)"
 
 #~ msgid "Maintenance database must be specified."
 #~ msgstr "必须指定维护数据库。"
@@ -15589,7 +15589,7 @@ msgstr ""
 #~ msgstr "执行"
 
 #~ msgid "New ERD Project (Beta)"
-#~ msgstr ""
+#~ msgstr "新建 ERD 工程 (Beta)"
 
 #~ msgid "Object Type"
 #~ msgstr "对象类型"
