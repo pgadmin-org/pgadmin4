@@ -215,7 +215,7 @@ rpmbuild --define "pga_build_root ${BUILDROOT}" -bb "${BUILDROOT}/meta.spec"
 if [ ${OS_VERSION} == 7 ]; then
     cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi-exports.patch" ${HOME}/rpmbuild/SOURCES
     cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi.conf" ${HOME}/rpmbuild/SOURCES
-    curl -o ${HOME}/rpmbuild/SOURCES/mod_wsgi-4.7.1.tar.gz https://codeload.github.com/GrahamDumpleton/mod_wsgi/tar.gz/4.7.1
+    curl -o ${HOME}/rpmbuild/SOURCES/mod_wsgi-4.9.0.tar.gz https://codeload.github.com/GrahamDumpleton/mod_wsgi/tar.gz/4.9.0
     rpmbuild -bb "${SOURCEDIR}/pkg/redhat/pgadmin4-python-mod_wsgi.spec"
 fi
 
