@@ -11,6 +11,7 @@ New features
 
 | `Issue #6543 <https://redmine.postgresql.org/issues/6543>`_ -  Added support for Two-factor authentication for improving security.
 | `Issue #6872 <https://redmine.postgresql.org/issues/6872>`_ -  Include GSSAPI support in the PostgreSQL libraries and utilities on macOS.
+| `Issue #7039 <https://redmine.postgresql.org/issues/7039>`_ -  Added support to disable the auto-discovery of the database servers.
 
 Housekeeping
 ************

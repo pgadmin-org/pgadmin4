@@ -782,6 +782,14 @@ ENABLE_PSQL = False
 ##########################################################################
 ENABLE_BINARY_PATH_BROWSING = False
 
+#############################################################################
+# AUTO_DISCOVER_SERVERS setting is used to enable the pgAdmin to discover the
+# database server automatically on the local machine.
+# When it is set to False, pgAdmin will not discover servers installed on
+# the local machine.
+#############################################################################
+AUTO_DISCOVER_SERVERS = True
+
 ##########################################################################
 # Local config settings
 ##########################################################################

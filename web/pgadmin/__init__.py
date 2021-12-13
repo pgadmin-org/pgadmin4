@@ -537,6 +537,12 @@ def create_app(app_name=None):
     ##########################################################################
     @user_logged_in.connect_via(app)
     def on_user_logged_in(sender, user):
+
+        # If Auto Discover servers is turned off then return from the
+        # function.
+        if not config.AUTO_DISCOVER_SERVERS:
+            return
+
         # Keep hold of the user ID
         user_id = user.id
 
