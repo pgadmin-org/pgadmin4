@@ -12,7 +12,7 @@
 
 Name:		pgadmin4-python3-%{sname}
 Version:	4.9.0
-Release:	2%{?dist}
+Release:	1%{?dist}
 Summary:	A WSGI interface for Python web applications in Apache (customized for pgAdmin4)
 License:	ASL 2.0
 URL:		https://modwsgi.readthedocs.io/

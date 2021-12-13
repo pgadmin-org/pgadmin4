@@ -228,7 +228,7 @@ yumdownloader -y --downloadonly --destdir=$DISTROOT postgresql14-libs
 cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/${APP_NAME}-*${RPM_VERSION}-*.${OS_ARCH}.rpm "${DISTROOT}/"
 cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*${RPM_VERSION}-*.noarch.rpm "${DISTROOT}/"
 if [ ${OS_VERSION} == 7 ]; then
-    cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.7.1-2.el7.x86_64.rpm "${DISTROOT}/"
+    cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.9.0-1.el7.x86_64.rpm "${DISTROOT}/"
 fi
 
 echo "Completed. RPMs created in ${DISTROOT}."
