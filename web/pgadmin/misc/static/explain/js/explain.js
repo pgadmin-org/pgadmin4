@@ -660,7 +660,7 @@ define('pgadmin.misc.explain', [
 
       if ('Actual Total Time' in data && 'Actual Loops' in data) {
         data['inclusive'] = Math.ceil10(
-          data['Actual Total Time'], -3
+          data['Actual Total Time'] * data['Actual Loops'], -3
         );
         data['exclusive'] = data['inclusive'];
         data['inclusive_factor'] =  data['inclusive'] / (
@@ -687,7 +687,7 @@ define('pgadmin.misc.explain', [
         data['rowsx_flag'] = data['rowsx'] <= 10 ? '1' : (
           data['rowsx'] <= 100 ? '2' : (data['rowsx'] <= 1000 ? '3' : '4')
         );
-        data['rowsx'] = Math.ceil10(data['rowsx'] / data['loops'], -2);
+        data['rowsx'] = Math.ceil10(data['rowsx'], -2);
       }
 
       // Start calculating xpos, ypos, width and height for child plans if any
@@ -709,7 +709,6 @@ define('pgadmin.misc.explain', [
               ypos: ypos,
               total_time: data['total_time'] || data['Actual Total Time'],
               parent_node: lvl.join('_'),
-              loops: data['Actual Loops']
             }), _opt));
 
           if (maxChildWidth < plan.get('width')) {
@@ -718,7 +717,7 @@ define('pgadmin.misc.explain', [
 
           if ('exclusive' in data) {
             inclusive = plan.get('inclusive');
-            if (inclusive && inclusive < data['exclusive']) {
+            if (inclusive) {
               data['exclusive'] -= inclusive;
             }
           }
@@ -735,9 +734,6 @@ define('pgadmin.misc.explain', [
           plans.push(plan);
           idx++;
         });
-      } else{
-        data['inclusive'] = Math.ceil10(data['Actual Total Time'] / data['loops'], -3);
-        data['exclusive'] = data['inclusive'];
       }
 
       if ('exclusive' in data) {
