@@ -258,10 +258,7 @@ define('pgadmin.node.database', [
                   });
               },
               function() { return true; }
-            ).set('labels', {
-              ok: gettext('Yes'),
-              cancel: gettext('No'),
-            });
+            );
           }
 
           return false;

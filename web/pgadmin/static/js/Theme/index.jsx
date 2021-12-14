@@ -180,6 +180,9 @@ basicSettings = createMuiTheme(basicSettings, {
       leavingScreen: 95,
     }
   },
+  zIndex: {
+    modal: 2000,
+  },
   props: {
     MuiTextField: {
       variant: 'outlined',

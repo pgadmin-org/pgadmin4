@@ -47,3 +47,4 @@ Bug fixes
 | `Issue #7046 <https://redmine.postgresql.org/issues/7046>`_ -  Fixed some accessibility issues.
 | `Issue #7048 <https://redmine.postgresql.org/issues/7048>`_ -  Fixed unhashable type issue while opening the about dialog.
 | `Issue #7064 <https://redmine.postgresql.org/issues/7064>`_ -  Ensure that the Owner should not be disabled while creating the procedure.
+| `Issue #7071 <https://redmine.postgresql.org/issues/7071>`_ -  Fixed an issue where confirmation pop-up is hidden behind Reassign/Drop Owned Dialog.
