@@ -408,8 +408,8 @@ define([
         applies: ['tools', 'context'],
         callback: 'callback_import_export',
         category: 'import',
-        priority: 10,
-        label: gettext('Import/Export...'),
+        priority: 3,
+        label: gettext('Import/Export Data...'),
         icon: 'fa fa-shopping-cart',
         enable: supportedNodes.enabled.bind(
           null, pgBrowser.tree, ['table']

@@ -49,7 +49,7 @@ define([
         module: this,
         applies: ['tools'],
         callback: 'callback_storage_manager',
-        priority: 2,
+        priority: 11,
         label: gettext('Storage Manager...'),
         enable: true,
       }];

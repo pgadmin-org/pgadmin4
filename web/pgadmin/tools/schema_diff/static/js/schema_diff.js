@@ -39,6 +39,7 @@ define('pgadmin.schemadiff', [
         priority: 1,
         label: gettext('Schema Diff'),
         enable: true,
+        below: true,
       }];
 
       pgBrowser.add_menus(menus);

@@ -498,7 +498,7 @@ define('pgadmin.browser.node', [
 
       return null;
     },
-    addUtilityPanel: function() {
+    addUtilityPanel: function(width, height) {
       var body = window.document.body,
         el = document.createElement('div');
 
@@ -506,10 +506,10 @@ define('pgadmin.browser.node', [
 
       var new_panel = pgBrowser.docker.addPanel(
         'utility_props', window.wcDocker.DOCK.FLOAT, undefined, {
-          w: (screen.width < 700 ?
-            screen.width * 0.95 : screen.width * 0.5),
-          h: (screen.height < 500 ?
-            screen.height * 0.95 : screen.height * 0.5),
+          w: (!_.isUndefined(width) && !_.isNull(width)) ? width :
+            (screen.width < 700 ? screen.width * 0.95 : screen.width * 0.5),
+          h: (!_.isUndefined(height) && !_.isNull(height)) ? height :
+            (screen.height < 500 ? screen.height * 0.95 : screen.height * 0.5),
           x: (screen.width < 700 ? '2%' : '25%'),
           y: (screen.height < 500 ? '2%' : '25%'),
         }

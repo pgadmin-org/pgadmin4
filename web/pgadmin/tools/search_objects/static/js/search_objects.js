@@ -34,8 +34,9 @@ define([
         applies: ['tools'],
         callback: 'show_search_objects',
         enable: this.search_objects_enabled,
-        priority: 1,
+        priority: 3,
         label: gettext('Search Objects...'),
+        below: true,
         data: {
           data_disabled: gettext('Please select a database from the browser tree to search the database objects.'),
         },

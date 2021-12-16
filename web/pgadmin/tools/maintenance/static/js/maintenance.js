@@ -165,7 +165,7 @@ define([
         module: this,
         applies: ['tools'],
         callback: 'callback_maintenance',
-        priority: 10,
+        priority: 3,
         label: gettext('Maintenance...'),
         icon: 'fa fa-wrench',
         enable: supportedNodes.enabled.bind(

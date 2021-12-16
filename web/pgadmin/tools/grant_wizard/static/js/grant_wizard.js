@@ -9,23 +9,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Theme from 'sources/Theme';
-import GrantWizard from 'sources/components/GrantWizard';
+import GrantWizard from './GrantWizard';
 
 
 // Grant Wizard
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'pgadmin.alertifyjs', 'pgadmin.backgrid', 'pgadmin.backform',
-  'pgadmin.browser', 'pgadmin.browser.node',
+  'sources/gettext', 'jquery', 'underscore',
+  'pgadmin.alertifyjs', 'pgadmin.browser',
   'tools/grant_wizard/static/js/menu_utils',
-  'sources/utils',
   'sources/nodes/supported_database_node',
   'backgrid.select.all',
   'backgrid.filter', 'pgadmin.browser.server.privilege',
   'pgadmin.browser.wizard',
 ], function(
-  gettext, url_for, $, _, Backbone, Alertify, Backgrid, Backform, pgBrowser,
-  pgNode, menuUtils, commonUtils, supportedNodes
+  gettext, $, _, Alertify, pgBrowser, menuUtils, supportedNodes
 ) {
 
   // if module is already initialized, refer to that.
@@ -48,7 +45,7 @@ define([
         module: this,
         applies: ['tools'],
         callback: 'start_grant_wizard',
-        priority: 14,
+        priority: 1,
         label: gettext('Grant Wizard...'),
         icon: 'fa fa-unlock',
         enable: supportedNodes.enabled.bind(

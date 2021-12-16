@@ -14,14 +14,11 @@ import Notify from '../../../../static/js/helpers/Notifier';
 
 // Backup dialog
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
-  'backbone', 'pgadmin.backgrid',
-  'pgadmin.backform', 'pgadmin.browser', 'sources/utils',
+  'sources/gettext', 'sources/url_for', 'underscore', 'pgadmin.browser',
   'tools/backup/static/js/menu_utils',
   'sources/nodes/supported_database_node',
 ], function(
-  gettext, url_for, $, _, pgAdmin, Backbone, Backgrid, Backform, pgBrowser,
-  commonUtils, menuUtils, supportedNodes
+  gettext, url_for, _, pgBrowser, menuUtils, supportedNodes
 ) {
 
   // if module is already initialized, refer to that.
@@ -61,7 +58,7 @@ define([
         module: this,
         applies: ['tools'],
         callback: 'startBackupGlobal',
-        priority: 12,
+        priority: 2,
         label: gettext('Backup Globals...'),
         icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
@@ -73,7 +70,7 @@ define([
         module: this,
         applies: ['tools'],
         callback: 'startBackupServer',
-        priority: 12,
+        priority: 2,
         label: gettext('Backup Server...'),
         icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
@@ -86,7 +83,7 @@ define([
         node: 'server',
         applies: ['context'],
         callback: 'startBackupGlobal',
-        priority: 12,
+        priority: 2,
         label: gettext('Backup Globals...'),
         icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
@@ -99,7 +96,7 @@ define([
         node: 'server',
         applies: ['context'],
         callback: 'startBackupServer',
-        priority: 12,
+        priority: 2,
         label: gettext('Backup Server...'),
         icon: 'fa fa-save',
         enable: menuUtils.menuEnabledServer,
@@ -111,7 +108,7 @@ define([
         module: this,
         applies: ['tools'],
         callback: 'backupObjects',
-        priority: 11,
+        priority: 2,
         label: gettext('Backup...'),
         icon: 'fa fa-save',
         enable: supportedNodes.enabled.bind(
@@ -129,7 +126,7 @@ define([
           module: this,
           applies: ['context'],
           callback: 'backupObjects',
-          priority: 11,
+          priority: 2,
           label: gettext('Backup...'),
           icon: 'fa fa-save',
           enable: supportedNodes.enabled.bind(

@@ -392,9 +392,10 @@ define('tools.restore', [
         module: this,
         applies: ['tools'],
         callback: 'restore_objects',
-        priority: 13,
+        priority: 2,
         label: gettext('Restore...'),
         icon: 'fa fa-upload',
+        below: true,
         enable: supportedNodes.enabled.bind(
           null, pgBrowser.tree, menuUtils.restoreSupportedNodes
         ),
