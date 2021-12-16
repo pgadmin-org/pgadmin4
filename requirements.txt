@@ -35,7 +35,7 @@ bcrypt==3.*
 cryptography==3.*
 sshtunnel==0.*
 ldap3==2.*
-gssapi==1.6.*
+gssapi==1.7.*
 eventlet==0.33.0
 httpagentparser==1.9.*
 user-agents==2.2.0
