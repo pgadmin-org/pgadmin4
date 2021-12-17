@@ -52,7 +52,11 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
                         col['has_default_val'] = row['has_default_val']
 
                 else:
-                    col_type['not_null'] = col['not_null'] = None
-                    col_type['has_default_val'] = col['has_default_val'] = None
+                    col_type['not_null'] = col['not_null'] = \
+                        rset['rows'][key]['not_null']
+
+                    col_type['has_default_val'] = \
+                        col['has_default_val'] = \
+                        rset['rows'][key]['has_default_val']
 
     return column_types
