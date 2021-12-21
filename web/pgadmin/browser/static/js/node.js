@@ -1550,6 +1550,12 @@ define('pgadmin.browser.node', [
                     $(pnlDependencies).removeData('node-prop');
                   if (pnlDependents)
                     $(pnlDependents).removeData('node-prop');
+
+                  if(nodeData.success === 0) {
+                    Notify.alert(gettext('Error'),
+                      gettext(nodeData.errormsg)
+                    );
+                  }
                 }
               }
             );

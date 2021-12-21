@@ -17,4 +17,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #6745 <https://redmine.postgresql.org/issues/6745>`_ -  Fixed an issue where Tablespace is created though an error is shown on the dialog.
 | `Issue #7034 <https://redmine.postgresql.org/issues/7034>`_ -  Fixed an issue where Columns with default value not showing when adding a new row.

@@ -322,16 +322,6 @@ class TablespaceView(PGChildNodeView):
 
             if not status:
                 return internal_server_error(errormsg=res)
-            SQL = render_template(
-                "/".join([self.template_path, self._ALTER_SQL]),
-                data=data, conn=self.conn
-            )
-
-            # Checking if we are not executing empty query
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
             # To fetch the oid of newly created tablespace
             SQL = render_template(
@@ -343,6 +333,32 @@ class TablespaceView(PGChildNodeView):
 
             if not status:
                 return internal_server_error(errormsg=tsid)
+
+            SQL = render_template(
+                "/".join([self.template_path, self._ALTER_SQL]),
+                data=data, conn=self.conn
+            )
+
+            # Checking if we are not executing empty query
+            if SQL and SQL.strip('\n') and SQL.strip(' '):
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return jsonify(
+                        node=self.blueprint.generate_browser_node(
+                            tsid,
+                            sid,
+                            data['name'],
+                            icon="icon-tablespace"
+                        ),
+                        success=0,
+                        errormsg=gettext(
+                            'Tablespace created successfully, '
+                            'Set parameter fail: {0}'.format(res)
+                        ),
+                        info=gettext(
+                            res
+                        )
+                    )
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
