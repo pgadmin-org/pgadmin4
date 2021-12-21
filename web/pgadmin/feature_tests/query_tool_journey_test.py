@@ -150,6 +150,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
     def _test_history_tab(self):
         self.page.clear_query_tool()
+        self.page.driver.switch_to.frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
+
         editor_input = self.page.find_by_css_selector(
             QueryToolLocators.query_editor_panel)
         self.page.click_element(editor_input)
@@ -197,6 +200,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self.page.click_tab(self.query_editor_tab_name)
         self.page.clear_query_tool()
+        self.page.driver.switch_to.frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
         self.page.click_element(editor_input)
 
         # Check if 15 more query executed then the history should contain 17
@@ -221,6 +226,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._test_toggle_generated_queries()
 
     def _test_history_query_sources(self):
+        self.page.driver.switch_to.frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
         self.page.click_tab(self.query_editor_tab_name)
         self._execute_sources_test_queries()
 
@@ -297,7 +304,11 @@ class QueryToolJourneyTest(BaseFeatureTest):
         query = "SELECT pk_column FROM %s" % self.test_editable_table_name
         self.page.execute_query(query)
         # Discard changes made by previous test to data grid
-        self.page.click_modal('Yes')
+        self.page.driver.switch_to.default_content()
+        self.page.click_modal('Yes', True)
+        self.page.driver.switch_to.frame(
+            self.page.driver.find_element_by_tag_name("iframe"))
+
         icon_exists = self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.editable_column_icon_xpath
         )
@@ -418,7 +429,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_element(
             self.page.find_by_css_selector(QueryToolLocators.btn_clear_history)
         )
-        self.page.click_modal('Yes')
+        self.driver.switch_to.default_content()
+        self.page.click_modal('Yes', True)
 
     def _navigate_to_query_tool(self):
         self.page.expand_database_node("Server", self.server['name'],
@@ -448,7 +460,11 @@ class QueryToolJourneyTest(BaseFeatureTest):
                                       discard_changes_modal=False):
         self.page.execute_query(query)
         if discard_changes_modal:
-            self.page.click_modal('Yes')
+            self.driver.switch_to.default_content()
+            self.page.click_modal('Yes', True)
+            self.page.driver.switch_to.frame(
+                self.page.driver.find_element_by_tag_name("iframe"))
+
         enumerated_should_be_editable = enumerate(cols_should_be_editable, 1)
 
         import time
