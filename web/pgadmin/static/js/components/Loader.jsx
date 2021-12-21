@@ -34,6 +34,9 @@ const useStyles = makeStyles((theme)=>({
   },
   loader: {
     color: theme.otherVars.loader.color,
+  },
+  message: {
+    marginLeft: '0.5rem',
   }
 }));
 
@@ -46,7 +49,7 @@ export default function Loader({message}) {
     <Box className={classes.root}>
       <Box className={classes.loaderRoot}>
         <CircularProgress className={classes.loader} />
-        <Typography>{message}</Typography>
+        <Typography className={classes.message}>{message}</Typography>
       </Box>
     </Box>
   );

@@ -136,7 +136,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
 
   React.useEffect(() => {
     if (props.disableNextStep) {
-      setdisableNext(props.disableNextStep());
+      setdisableNext(props.disableNextStep(activeStep));
     }
   });
 

@@ -135,7 +135,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
       isVisible: false
     }
   ];
-  var steps = ['Object Selection', 'Privilege Selection', 'Review Selection'];
+  var steps = ['Object Selection', 'Privilege Selection', 'Review'];
   const [selectedObject, setSelectedObject] = React.useState([]);
   const [selectedAcl, setSelectedAcl] = React.useState({});
   const [msqlData, setSQL] = React.useState('');

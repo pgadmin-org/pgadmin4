@@ -81,8 +81,8 @@ define([
     start_grant_wizard: function() {
 
       // Declare Wizard dialog
-      if (!Alertify.wizardDialog) {
-        Alertify.dialog('wizardDialog', function factory() {
+      if (!Alertify.grantWizardDialog) {
+        Alertify.dialog('grantWizardDialog', function factory() {
 
           // Generate wizard main container
           var $container = $('<div class=\'wizard_dlg\' id=\'grantWizardDlg\'></div>');
@@ -122,10 +122,10 @@ define([
                       <GrantWizard sid={sid} did={did} nodeInfo={info} nodeData={d} />
                     </Theme>,
                     document.getElementById('grantWizardDlg'));
-                  Alertify.wizardDialog().elements.modal.style.maxHeight=0;
-                  Alertify.wizardDialog().elements.modal.style.maxWidth='none';
-                  Alertify.wizardDialog().elements.modal.style.overflow='visible';
-                  Alertify.wizardDialog().elements.dimmer.style.display='none';
+                  Alertify.grantWizardDialog().elements.modal.style.maxHeight=0;
+                  Alertify.grantWizardDialog().elements.modal.style.maxWidth='none';
+                  Alertify.grantWizardDialog().elements.modal.style.overflow='visible';
+                  Alertify.grantWizardDialog().elements.dimmer.style.display='none';
                 }
               }, 500);
 
@@ -139,7 +139,7 @@ define([
                 // Clear the view and remove the react component.
                 return setTimeout((function () {
                   ReactDOM.unmountComponentAtNode(document.getElementById('grantWizardDlg'));
-                  return Alertify.wizardDialog().destroy();
+                  return Alertify.grantWizardDialog().destroy();
                 }), 500);
               },
             }
@@ -147,12 +147,12 @@ define([
         });
       }
       // Call Grant Wizard Dialog and set dimensions for wizard
-      Alertify.wizardDialog('').set({
+      Alertify.grantWizardDialog('').set({
         onmaximize:function(){
-          Alertify.wizardDialog().elements.modal.style.maxHeight='initial';
+          Alertify.grantWizardDialog().elements.modal.style.maxHeight='initial';
         },
         onrestore:function(){
-          Alertify.wizardDialog().elements.modal.style.maxHeight=0;
+          Alertify.grantWizardDialog().elements.modal.style.maxHeight=0;
         },
       }).resizeTo(pgBrowser.stdW.lg, pgBrowser.stdH.lg);
     },

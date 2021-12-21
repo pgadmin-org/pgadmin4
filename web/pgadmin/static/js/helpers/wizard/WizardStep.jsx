@@ -17,9 +17,7 @@ const useStyles = makeStyles(() =>
     stepPanel: {
       height: '100%',
       width: '100%',
-      // paddingLeft: '2em',
       minHeight: '100px',
-      // paddingTop: '1em',
       paddingBottom: '1em',
       paddingRight: '1em',
       overflow: 'auto',
