@@ -29,30 +29,8 @@ import Notify from '../../../../static/js/helpers/Notifier';
 
 const useStyles = makeStyles(() =>
   ({
-    grantWizardStep: {
+    root: {
       height: '100%'
-    },
-    grantWizardTitle: {
-      top: '0 !important',
-      opacity: '1 !important',
-      borderRadius: '6px 6px 0px 0px !important',
-      margin: '0 !important',
-      width: '100%',
-      height: '6%'
-    },
-    grantWizardContent: {
-      height: '94% !important'
-    },
-    stepPanelCss: {
-      height: 500,
-      overflow: 'hidden'
-    },
-    objectSelection: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      overflow: 'hidden',
-      marginBottom: '1em'
     },
     searchBox: {
       marginBottom: '1em',
@@ -67,16 +45,16 @@ const useStyles = makeStyles(() =>
       borderLeft: 'none',
       paddingLeft: 5
     },
-    grantWizardPanelContent: {
-      paddingTop: '0.9em !important',
-      overflow: 'hidden'
-    },
     grantWizardSql: {
       height: '90% !important',
       width: '100%'
     },
     privilegeStep: {
       height: '100%',
+      overflow: 'auto'
+    },
+    panelContent: {
+      height: '100%'
     }
   }),
 );
@@ -139,7 +117,6 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
   const [selectedObject, setSelectedObject] = React.useState([]);
   const [selectedAcl, setSelectedAcl] = React.useState({});
   const [msqlData, setSQL] = React.useState('');
-  const [stepType, setStepType] = React.useState('');
   const [searchVal, setSearchVal] = React.useState('');
   const [loaderText, setLoaderText] = React.useState('');
   const [tablebData, setTableData] = React.useState([]);
@@ -213,12 +190,6 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
 
   const wizardStepChange = (data) => {
     switch (data.currentStep) {
-    case 0:
-      setStepType('object_type');
-      break;
-    case 1:
-      setStepType('privileges');
-      break;
     case 2:
       setLoaderText('Loading SQL ...');
       var msql_url = url_for(
@@ -240,7 +211,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
         });
       break;
     default:
-      setStepType('');
+      break;
     }
   };
 
@@ -258,7 +229,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
     api.post(_url, post_data)
       .then(() => {
         setLoaderText('');
-        Alertify.wizardDialog().close();
+        Alertify.grantWizardDialog().close();
       })
       .catch((error) => {
         setLoaderText('');
@@ -266,9 +237,9 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
       });
   };
 
-  const disableNextCheck = () => {
-    return selectedObject.length > 0 && stepType === 'object_type' ?
-      false : selectedAcl?.privilege?.length > 0 && stepType === 'privileges' ? validatePrivilege() : true;
+  const disableNextCheck = (stepId) => {
+    return selectedObject.length > 0 && stepId === 0 ?
+      false : selectedAcl?.privilege?.length > 0 && stepId === 1 ? validatePrivilege() : true;
   };
 
   const onDialogHelp= () => {
@@ -334,21 +305,17 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
   });
 
   return (
-    <>
-      <Box className={clsx('wizard-header', classes.grantWizardTitle)}>{gettext('Grant Wizard')}</Box>
+    <Box className={classes.root}>
       <Loader message={loaderText} />
       <Wizard
+        title={gettext('Grant Wizard')}
         stepList={steps}
-        rootClass={clsx(classes.grantWizardContent)}
-        stepPanelCss={classes.grantWizardPanelContent}
         disableNextStep={disableNextCheck}
         onStepChange={wizardStepChange}
         onSave={onSave}
         onHelp={onDialogHelp}
       >
-        <WizardStep
-          stepId={0}
-          className={clsx(classes.objectSelection, classes.grantWizardStep, classes.stepPanelCss)} >
+        <WizardStep stepId={0}>
           <Box className={classes.searchBox}>
             <Box className={classes.searchPadding}></Box>
             <InputText
@@ -360,37 +327,38 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
               }>
             </InputText>
           </Box>
-          <PgTable
-            className={classes.table}
-            height={window.innerHeight - 450}
-            columns={columns}
-            data={tablebData}
-            isSelectRow={true}
-            searchText={searchVal}
-            getSelectedRows={getTableSelectedRows}>
-          </PgTable>
+          <Box className={classes.panelContent}>
+            <PgTable
+              className={classes.table}
+              height={window.innerHeight - 450}
+              columns={columns}
+              data={tablebData}
+              isSelectRow={true}
+              searchText={searchVal}
+              getSelectedRows={getTableSelectedRows}>
+            </PgTable>
+          </Box>
           <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={errMsg} onClose={onErrClose} />
         </WizardStep>
         <WizardStep
           stepId={1}
-          className={clsx(classes.grantWizardStep, classes.privilegeStep)}>
+          className={clsx(classes.privilegeStep)}>
           {privSchemaInstance &&
-                        <SchemaView
-                          formType={'dialog'}
-                          getInitData={() => { }}
-                          viewHelperProps={{ mode: 'create' }}
-                          schema={privSchemaInstance}
-                          showFooter={false}
-                          isTabView={false}
-                          onDataChange={(isChanged, changedData) => {
-                            setSelectedAcl(changedData);
-                          }}
-                        />
+                    <SchemaView
+                      formType={'dialog'}
+                      getInitData={() => { }}
+                      viewHelperProps={{ mode: 'create' }}
+                      schema={privSchemaInstance}
+                      showFooter={false}
+                      isTabView={false}
+                      onDataChange={(isChanged, changedData) => {
+                        setSelectedAcl(changedData);
+                      }}
+                    />
           }
         </WizardStep>
         <WizardStep
-          stepId={2}
-          className={classes.grantWizardStep}>
+          stepId={2}>
           <Box>{gettext('The SQL below will be executed on the database server to grant the selected privileges. Please click on Finish to complete the process.')}</Box>
           <InputSQL
             onLable={true}
@@ -399,7 +367,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
             value={msqlData.toString()} />
         </WizardStep>
       </Wizard>
-    </>
+    </Box>
   );
 }
 

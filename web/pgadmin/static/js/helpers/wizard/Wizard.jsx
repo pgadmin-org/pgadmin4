@@ -22,10 +22,21 @@ import gettext from 'sources/gettext';
 
 const useStyles = makeStyles((theme) =>
   ({
+    wizardBase: {
+      height: '100%'
+    },
     root: {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
+    },
+    wizardTitle: {
+      top: '0 !important',
+      opacity: '1 !important',
+      borderRadius: '6px 6px 0px 0px !important',
+      margin: '0 !important',
+      width: '100%',
+      height: '6%'
     },
     rightPanel: {
       position: 'relative',
@@ -89,10 +100,20 @@ const useStyles = makeStyles((theme) =>
       padding: '0.5rem',
       display: 'flex',
       flexDirection: 'row',
-      flex: 1
+      flex: 1,
+      position: 'absolute',
+      verticalAlign: 'bottom',
+      bottom: 0,
+      zIndex: 999,
+      width: '100%',
+      background: theme.otherVars.headerBg
+    },
+    wizardPanelContent: {
+      paddingTop: '0.9em !important',
+      overflow: 'hidden',
+      paddingBottom: '6.3em'
     },
     backButton: {
-
       marginRight: theme.spacing(1),
     },
     instructions: {
@@ -108,8 +129,10 @@ const useStyles = makeStyles((theme) =>
     stepDefaultStyle: {
       width: '100%',
       height: '100%',
-      paddingRight: '1em',
       paddingBottom: '1em',
+      paddingRight: '1em',
+      overflow: 'hidden',
+      minHeight: 0
     }
 
   }),
@@ -158,49 +181,50 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
 
 
   return (
-    <div className={clsx(classes.root, props?.rootClass)}>
-      <div className={clsx(classes.wizard, className)}>
-        <Box className={classes.leftPanel}>
-          {steps.map((label, index) => (
-            <Box key={label} className={clsx(classes.stepLabel, index === activeStep ? classes.active : '')}>
-              <Box className={clsx(classes.stepIndex, index === activeStep ? classes.activeIndex : '')}>{index + 1}</Box>
-              <Box className={classes.label}>{label} </Box>
-              <Box className={classes.labelArrow}>{index === activeStep ? <ChevronRightIcon /> : null}</Box>
-            </Box>
-          ))}
-        </Box>
-
-        <div className={clsx(classes.rightPanel, props.stepPanelCss)}>
-          {
-            React.Children.map(props.children, (child) => {
-              return (
-                <div hidden={child.props.stepId !== activeStep} className={clsx(classes.stepDefaultStyle, child.props.className)}>
-                  {child}
-                </div>
-              );
-            })
-          }
-
+    <Box className={classes.wizardBase}>
+      <Box className={clsx('wizard-header', classes.wizardTitle)}>{props.title}</Box>
+      <div className={clsx(classes.root, props?.rootClass)}>
+        <div className={clsx(classes.wizard, className)}>
+          <Box className={classes.leftPanel}>
+            {steps.map((label, index) => (
+              <Box key={label} className={clsx(classes.stepLabel, index === activeStep ? classes.active : '')}>
+                <Box className={clsx(classes.stepIndex, index === activeStep ? classes.activeIndex : '')}>{index + 1}</Box>
+                <Box className={classes.label}>{label} </Box>
+                <Box className={classes.labelArrow}>{index === activeStep ? <ChevronRightIcon /> : null}</Box>
+              </Box>
+            ))}
+          </Box>
+          <div className={clsx(classes.rightPanel, classes.wizardPanelContent, props.stepPanelCss)}>
+            {
+              React.Children.map(props.children, (child) => {
+                return (
+                  <div hidden={child.props.stepId !== activeStep} className={clsx(child.props.className, classes.stepDefaultStyle)}>
+                    {child}
+                  </div>
+                );
+              })
+            }
+          </div>
+        </div>
+        <div className={classes.wizardFooter}>
+          <Box >
+            <PgIconButton data-test="dialog-help" onClick={() => props.onHelp()} icon={<HelpIcon />} title="Help for this dialog."
+              disabled={props.disableDialogHelp} />
+          </Box>
+          <Box className={classes.actionBtn} marginLeft="auto">
+            <DefaultButton onClick={handleBack} disabled={activeStep === 0} className={classes.buttonMargin} startIcon={<FastRewindIcon />}>
+              {gettext('Back')}
+            </DefaultButton>
+            <DefaultButton onClick={() => handleNext()} className={classes.buttonMargin} startIcon={<FastForwardIcon />} disabled={activeStep == steps.length - 1 || disableNext}>
+              {gettext('Next')}
+            </DefaultButton>
+            <PrimaryButton className={classes.buttonMargin} startIcon={<CheckIcon />} disabled={activeStep == steps.length - 1 ? false : true} onClick={onSave}>
+              {gettext('Finish')}
+            </PrimaryButton>
+          </Box>
         </div>
       </div>
-      <div className={classes.wizardFooter}>
-        <Box >
-          <PgIconButton data-test="dialog-help" onClick={() => props.onHelp()} icon={<HelpIcon />} title="Help for this dialog."
-            disabled={props.disableDialogHelp} />
-        </Box>
-        <Box className={classes.actionBtn} marginLeft="auto">
-          <DefaultButton onClick={handleBack} disabled={activeStep === 0} className={classes.buttonMargin} startIcon={<FastRewindIcon />}>
-            {gettext('Back')}
-          </DefaultButton>
-          <DefaultButton onClick={() => handleNext()} className={classes.buttonMargin} startIcon={<FastForwardIcon />} disabled={activeStep == steps.length - 1 || disableNext}>
-            {gettext('Next')}
-          </DefaultButton>
-          <PrimaryButton className={classes.buttonMargin} startIcon={<CheckIcon />} disabled={activeStep == steps.length - 1 ? false : true} onClick={onSave}>
-            {gettext('Finish')}
-          </PrimaryButton>
-        </Box>
-      </div>
-    </div>
+    </Box>
   );
 }
 
@@ -208,6 +232,7 @@ export default Wizard;
 
 Wizard.propTypes = {
   props: PropTypes.object,
+  title: PropTypes.string,
   stepList: PropTypes.array,
   onSave: PropTypes.func,
   onHelp: PropTypes.func,
