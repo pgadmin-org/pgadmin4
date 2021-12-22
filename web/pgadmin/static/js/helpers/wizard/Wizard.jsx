@@ -217,5 +217,7 @@ Wizard.propTypes = {
   stepPanelCss: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   rootClass: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
-  disableDialogHelp: PropTypes.bool
+  disableDialogHelp: PropTypes.bool,
+  beforeNext: PropTypes.func,
+  beforeBack: PropTypes.func,
 };
