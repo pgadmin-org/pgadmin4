@@ -8,29 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box } from '@material-ui/core';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
-const useStyles = makeStyles(() =>
-  ({
-    stepPanel: {
-      height: '100%',
-      width: '100%',
-      minHeight: '100px',
-      paddingBottom: '1em',
-      paddingRight: '1em',
-      overflow: 'auto',
-    }
-  }));
-
-export default function WizardStep({stepId, className, ...props }) {
-  const classes = useStyles();
-
+export default function WizardStep({ ...props }) {
   return (
-
-    <Box id={stepId} className={clsx(classes.stepPanel, className)} style={props?.height ? {height: props.height} : null}>
-      {
+      <> {
         React.Children.map(props.children, (child) => {
           return (
             <>
@@ -39,13 +20,10 @@ export default function WizardStep({stepId, className, ...props }) {
           );
         })
       }
-    </Box>
+    </>
   );
 }
 
 WizardStep.propTypes = {
-  stepId: PropTypes.number,
-  height: PropTypes.number,
-  className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
 };

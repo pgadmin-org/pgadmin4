@@ -107,7 +107,9 @@ const useStyles = makeStyles((theme) =>
     },
     stepDefaultStyle: {
       width: '100%',
-      height: '100%'
+      height: '100%',
+      paddingRight: '1em',
+      paddingBottom: '1em',
     }
 
   }),
@@ -121,11 +123,25 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
 
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // beforeNext should always return a promise
+    if(props.beforeNext) {
+      props.beforeNext(activeStep).then(()=>{
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }).catch(()=>{});
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1 < 0 ? prevActiveStep : prevActiveStep - 1);
+    // beforeBack should always return a promise
+    if(props.beforeBack) {
+      props.beforeBack(activeStep).then(()=>{
+        setActiveStep((prevActiveStep) => prevActiveStep - 1 < 0 ? prevActiveStep : prevActiveStep - 1);
+      }).catch(()=>{});
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep - 1 < 0 ? prevActiveStep : prevActiveStep - 1);
+    }
   };
 
   React.useEffect(() => {
@@ -158,7 +174,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
           {
             React.Children.map(props.children, (child) => {
               return (
-                <div hidden={child.props.stepId !== activeStep} className={clsx(child.props.className, classes.stepDefaultStyle)}>
+                <div hidden={child.props.stepId !== activeStep} className={clsx(classes.stepDefaultStyle, child.props.className)}>
                   {child}
                 </div>
               );
