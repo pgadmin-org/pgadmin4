@@ -13,7 +13,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
 import CustomPropTypes from '../custom_prop_types';
 
 import getStandardTheme from './standard';
@@ -51,7 +51,7 @@ basicSettings = createMuiTheme(basicSettings, {
       root: {
         textTransform: 'none',
         minHeight: 0,
-        padding: '5px 10px',
+        padding: '3px 10px',
         [basicSettings.breakpoints.up('xs')]: {
           minWidth: 0,
         },
@@ -76,7 +76,14 @@ basicSettings = createMuiTheme(basicSettings, {
         padding: basicSettings.spacing(0.5, 1.5),
         '&.Mui-disabled': {
           opacity: 0.65,
-        }
+        },
+        '&.MuiButton-outlinedSizeSmall': {
+          height: '28px',
+          fontSize: '0.875rem',
+          '& .MuiSvgIcon-root': {
+            height: '0.8em',
+          }
+        },
       },
       contained: {
         boxShadow: 'none',
@@ -89,7 +96,7 @@ basicSettings = createMuiTheme(basicSettings, {
       },
       startIcon: {
         marginRight: basicSettings.spacing(0.5),
-      }
+      },
     },
     MuiOutlinedInput: {
       multiline: {
@@ -168,17 +175,19 @@ basicSettings = createMuiTheme(basicSettings, {
         zIndex: 9999,
       }
     },
+    MuiMenu: {
+      list: {
+        padding: '0',
+      }
+    },
+    MuiMenuItem: {
+      root: {
+        fontSize: 14,
+      }
+    }
   },
   transitions: {
-    duration: {
-      shortest: 50,
-      shorter: 100,
-      short: 150,
-      standard: 200,
-      complex: 175,
-      enteringScreen: 125,
-      leavingScreen: 95,
-    }
+    create: () => 'none',
   },
   zIndex: {
     modal: 2000,
@@ -205,6 +214,12 @@ basicSettings = createMuiTheme(basicSettings, {
     },
     MuiDialogTitle: {
       disableTypography: true,
+    },
+    MuiCardHeader: {
+      disableTypography: true,
+    },
+    MuiListItem: {
+      disableGutters: true,
     }
   },
 });
@@ -214,6 +229,9 @@ function getFinalTheme(baseTheme) {
   let mixins = {
     panelBorder: {
       border: '1px solid '+baseTheme.otherVars.borderColor,
+      all: {
+        border: '1px solid '+baseTheme.otherVars.borderColor,
+      },
       top: {
         borderTop: '1px solid '+baseTheme.otherVars.borderColor,
       },
@@ -227,6 +245,16 @@ function getFinalTheme(baseTheme) {
     nodeIcon: {
       backgroundPosition: 'center',
       padding: baseTheme.spacing(0, 1.5),
+    },
+    tabPanel: {
+      height: '100%',
+      padding: baseTheme.spacing(1),
+      overflow: 'auto',
+      backgroundColor: baseTheme.palette.grey[400],
+      position: 'relative',
+    },
+    fontSourceCode: {
+      fontFamily: '"Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     }
   };
 
@@ -412,6 +440,43 @@ function getFinalTheme(baseTheme) {
           ...mixins.panelBorder.bottom,
         }
       },
+      MuiCardHeader: {
+        root: {
+          padding: '4px 8px',
+          ...mixins.panelBorder.bottom,
+        }
+      },
+      MuiCardContent: {
+        root: {
+          padding: 0,
+          '&:last-child': {
+            paddingBottom: 0,
+          }
+        }
+      },
+      MuiListItem: {
+        root: {
+          padding: 0,
+          color: baseTheme.palette.text.primary,
+          backgroundColor: baseTheme.palette.background.default,
+          flexDirection: 'column',
+          alignItems: 'initial',
+          padding: '0px 4px',
+          paddingTop: '0px',
+          paddingBottom: '0px',
+          ...mixins.panelBorder.top,
+          ...mixins.panelBorder.bottom,
+          borderTopColor: 'transparent',
+          cursor: 'pointer',
+          '&$selected': {
+            backgroundColor: baseTheme.palette.primary.light,
+            borderColor: baseTheme.palette.primary.main,
+            '&:hover': {
+              backgroundColor: baseTheme.palette.primary.light,
+            }
+          },
+        }
+      }
     }
   }, baseTheme);
 }
@@ -443,3 +508,77 @@ export default function Theme(props) {
 Theme.propTypes = {
   children: CustomPropTypes.children,
 };
+
+export const commonTableStyles = makeStyles((theme)=>({
+  table: {
+    borderSpacing: 0,
+    width: '100%',
+    overflow: 'auto',
+    backgroundColor: theme.otherVars.tableBg,
+    border: '1px solid '+theme.otherVars.borderColor,
+    '& tbody td, & thead th': {
+      margin: 0,
+      padding: theme.spacing(0.5),
+      border: '1px solid '+theme.otherVars.borderColor,
+      borderBottom: 'none',
+      position: 'relative',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      userSelect: 'text',
+      '&:first-of-type':{
+        borderLeft: 'none',
+      },
+    },
+    '& thead tr:first-of-type th': {
+      borderTop: 'none',
+    },
+    '& tbody tr:last-of-type': {
+      '&:hover td': {
+        borderBottomColor: theme.palette.primary.main,
+      },
+      '& td': {
+        borderBottomColor: theme.otherVars.borderColor,
+      }
+    },
+    '& th': {
+      fontWeight: theme.typography.fontWeightBold,
+      padding: theme.spacing(1, 0.5),
+      textAlign: 'left',
+    },
+    '& tbody > tr': {
+      '&:hover': {
+        backgroundColor: theme.palette.primary.light,
+        '& td': {
+          borderBottom: '1px solid '+theme.palette.primary.main,
+          borderTop: '1px solid '+theme.palette.primary.main,
+        },
+        '&:last-of-type td': {
+          borderBottomColor: theme.palette.primary.main,
+        },
+      },
+    },
+  },
+  noBorder: {
+    border: 0,
+  },
+  borderBottom: {
+    '& tbody tr:last-of-type td': {
+      borderBottom: '1px solid '+theme.otherVars.borderColor,
+    },
+  },
+  noHover: {
+    '& tbody > tr': {
+      '&:hover': {
+        backgroundColor: theme.otherVars.tableBg,
+        '& td': {
+          borderBottomColor: theme.otherVars.borderColor,
+          borderTopColor: theme.otherVars.borderColor,
+        },
+        '&:last-of-type td': {
+          borderBottomColor: theme.otherVars.borderColor,
+        },
+      },
+    },
+  }
+}));
