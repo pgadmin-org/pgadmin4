@@ -11,5 +11,8 @@ BEGIN ATOMIC
  SELECT 1;
 END;
 
+ALTER PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
+    OWNER TO enterprisedb;
+
 COMMENT ON PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
     IS 'demo comments';

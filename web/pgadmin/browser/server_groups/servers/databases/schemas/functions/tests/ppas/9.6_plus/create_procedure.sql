@@ -9,3 +9,6 @@ CREATE OR REPLACE PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(
 AS  begin
 select 1;
 end;
+
+ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"
+    OWNER TO enterprisedb;

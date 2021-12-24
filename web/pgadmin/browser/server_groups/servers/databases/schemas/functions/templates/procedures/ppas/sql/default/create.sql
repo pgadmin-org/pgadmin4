@@ -15,6 +15,12 @@ CREATE{% if add_replace_clause %} OR REPLACE{% endif %} PROCEDURE {{ conn|qtIden
 {% endif %}
 
 AS {{ data.prosrc }};
+
+{% if data.funcowner %}
+ALTER PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
+    OWNER TO {{ conn|qtIdent(data.funcowner) }};
+{% endif -%}
+
 {% if data.acl and not is_sql %}
 {% for p in data.acl %}
 

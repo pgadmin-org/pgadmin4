@@ -26,6 +26,12 @@ AS {% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
 {% else %}
 $BODY${{ data.prosrc }}$BODY${% endif -%};
+
+{% if data.funcowner %}
+ALTER PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
+    OWNER TO {{ conn|qtIdent(data.funcowner) }};
+{% endif -%}
+
 {% if data.acl and not is_sql %}
 {% for p in data.acl %}
 

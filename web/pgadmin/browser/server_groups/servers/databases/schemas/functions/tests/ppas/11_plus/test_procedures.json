@@ -9,7 +9,7 @@
         "name": "Proc1_$%{}[]()&*^!@\"'`\\/#",
         "acl": [],
         "arguments": [{"argtype": "integer", "argmode": "IN", "argname": "i1", "argdefval": ""}],
-        "funcowner": "postgres",
+        "funcowner": "enterprisedb",
         "lanname": "plpgsql",
         "options": [],
         "pronamespace": 2200,

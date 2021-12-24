@@ -12,6 +12,9 @@ select 1;
 end;
 $BODY$;
 
+ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"
+    OWNER TO enterprisedb;
+
 GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC;
 
 COMMENT ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
