@@ -132,7 +132,8 @@ const useStyles = makeStyles((theme) =>
       paddingBottom: '1em',
       paddingRight: '1em',
       overflow: 'hidden',
-      minHeight: 0
+      minHeight: 0,
+      position: 'relative'
     }
 
   }),
