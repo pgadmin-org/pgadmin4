@@ -456,7 +456,6 @@ function getFinalTheme(baseTheme) {
       },
       MuiListItem: {
         root: {
-          padding: 0,
           color: baseTheme.palette.text.primary,
           backgroundColor: baseTheme.palette.background.default,
           flexDirection: 'column',
