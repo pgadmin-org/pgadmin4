@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {RestoreDialogWrapper} from '../../../tools/restore/static/js/restore_dialog_wrapper';
 import SearchObjectsDialogWrapper from '../../../tools/search_objects/static/js/search_objects_dialog_wrapper';
 
 export class DialogFactory {
@@ -28,16 +27,6 @@ export class DialogFactory {
     } else if (typeOfDialog === 'search_objects') {
       return this.createSearchObjectsDialog(dialogTitle, typeOfDialog);
     }
-  }
-
-  createRestoreDialog(dialogTitle, typeOfDialog) {
-    return new RestoreDialogWrapper(
-      this.dialogContainerSelector, dialogTitle, typeOfDialog,
-      this.jquery,
-      this.pgBrowser,
-      this.alertify,
-      this.dialogModel,
-      this.backform);
   }
 
   createSearchObjectsDialog(dialogTitle, typeOfDialog) {

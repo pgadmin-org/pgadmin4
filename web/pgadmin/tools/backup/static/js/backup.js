@@ -11,6 +11,8 @@ import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/stati
 import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema} from './backup.ui';
 import BackupGlobalSchema, {getMiscellaneousSchema as getMiscellaneousGlobalSchema} from './backupGlobal.ui';
 import Notify from '../../../../static/js/helpers/Notifier';
+import getApiInstance from 'sources/api_instance';
+import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 
 // Backup dialog
 define([
@@ -182,6 +184,12 @@ define([
         pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
       }
     },
+    url_for_utility_exists(id, params){
+      return url_for('backup.utility_exists', {
+        'sid': id,
+        'backup_obj_type': params == null ? 'objects' : 'servers',
+      });
+    },
     showBackupDialog: function(schema, item, j, data, panel, typeOfDialog, serverIdentifier, extraData) {
       if(schema) {
         let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
@@ -204,23 +212,42 @@ define([
     },
     // Callback to draw Backup Dialog for objects
     backupObjects: function(action, treeItem) {
-      pgBrowser.Node.registerUtilityPanel();
-      var panel = pgBrowser.Node.addUtilityPanel();
+      var that = this;
       var tree = pgBrowser.tree,
         i = treeItem || tree.selected(),
-        data = i ? tree.itemData(i) : undefined,
-        j = panel.$container.find('.obj_properties').first();
+        data = i ? tree.itemData(i) : undefined;
 
-      var schema = this.getUISchema(treeItem,  'backup_objects');
-      panel.title(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`);
-      panel.focus();
+      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, treeItem, gettext('Backup Error')),
+        sid = serverInformation._type == 'database' ? serverInformation._pid : serverInformation._id,
+        api = getApiInstance(),
+        utility_exists_url = that.url_for_utility_exists(sid);
 
-      var typeOfDialog = 'backup_objects';
-      var serverIdentifier = this.retrieveServerIdentifier();
+      return api({
+        url: utility_exists_url,
+        method: 'GET'
+      }).then((res)=>{
+        if (!res.data.success) {
+          Notify.alert(
+            gettext('Utility not found'),
+            gettext(res.data.errormsg)
+          );
+          return;
+        }
 
-      var extraData = this.setExtraParameters(typeOfDialog);
-      this.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
+        pgBrowser.Node.registerUtilityPanel();
+        var panel = pgBrowser.Node.addUtilityPanel(),
+          j = panel.$container.find('.obj_properties').first();
 
+        var schema = that.getUISchema(treeItem,  'backup_objects');
+        panel.title(gettext(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
+        panel.focus();
+
+        var typeOfDialog = 'backup_objects',
+          serverIdentifier = that.retrieveServerIdentifier(),
+          extraData = that.setExtraParameters(typeOfDialog);
+
+        that.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
+      });
     },
     getUISchema: function(treeItem, backupType) {
       let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(treeItem);

@@ -167,6 +167,10 @@
   border-bottom: $panel-border;
 }
 
+.wcFloating .wcFrameTitleBar.wcNotMoveable {
+  cursor: move; //overriding the existing cursor behavior for not moveable panels
+}
+
 .wcTabIcon {
   background-position: center;
   padding: 0rem 0.75rem;
