@@ -22,3 +22,4 @@ Bug fixes
 | `Issue #7003 <https://redmine.postgresql.org/issues/7003>`_ -  Fixed an issue where Explain Analyze shows negative exclusive time.
 | `Issue #7034 <https://redmine.postgresql.org/issues/7034>`_ -  Fixed an issue where Columns with default value not showing when adding a new row.
 | `Issue #7077 <https://redmine.postgresql.org/issues/7077>`_ -  Fixed an issue where the Owner is not displayed in the reverse engineering SQL for Procedures.
+| `Issue #7078 <https://redmine.postgresql.org/issues/7078>`_ -  Fixed an issue where an operation error message pop up showing the database object's name incorrectly.

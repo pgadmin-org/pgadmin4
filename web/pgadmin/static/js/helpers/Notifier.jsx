@@ -14,6 +14,7 @@ import Theme from 'sources/Theme';
 import { NotifierMessage, MESSAGE_TYPE } from '../components/FormComponents';
 import CustomPropTypes from '../custom_prop_types';
 import gettext from 'sources/gettext';
+import _ from 'lodash';
 import pgWindow from 'sources/window';
 import ModalProvider, { useModal } from './ModalProvider';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';

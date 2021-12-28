@@ -47,7 +47,7 @@ define(
 
         text += '</div>';
         Notify.alert(
-          title,
+          _.unescape(title),
           text
         )
           .set({'closable': true,

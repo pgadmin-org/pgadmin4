@@ -862,7 +862,7 @@ define('pgadmin.browser.node', [
          * Make sure - we're using the correct version of node
          */
         obj = pgBrowser.Nodes[d._type];
-        var objName = d.label;
+        var objName = _.unescape(d.label);
 
         var msg, title;
 

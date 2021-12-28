@@ -111,7 +111,7 @@ define('tools.querytool', [
       this.set_server_version(opts.server_ver);
       this.trigger('pgadmin-sqleditor:view:initialised');
       this.connection_list = [
-        {'server_group': null,'server': null, 'database': null, 'user': null, 'role': null, 'conn_title': '&lt;' + gettext('New Connection') + '&gt;'},
+        {'server_group': null,'server': null, 'database': null, 'user': null, 'role': null, 'conn_title': '<' + gettext('New Connection') + '>'},
       ];
     },
 
@@ -185,9 +185,9 @@ define('tools.querytool', [
         data_list.forEach((option, index) => {
           var opt = '';
           if ('is_selected' in option && option['is_selected']) {
-            opt = '<li class="connection-list-item selected-connection" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.conn_title +'</a></li>';
+            opt = '<li class="connection-list-item selected-connection" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ _.escape(option.conn_title) +'</a></li>';
           } else {
-            opt = '<li class="connection-list-item" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ option.conn_title +'</a></li>';
+            opt = '<li class="connection-list-item" data-index='+ index +'><a class="dropdown-item" href="#" tabindex="0">'+ _.escape(option.conn_title) +'</a></li>';
           }
           $('#connections-list').append(opt);
         });
@@ -3848,7 +3848,7 @@ define('tools.querytool', [
         var self = this;
         var open_new_tab = self.browser_preferences.new_browser_tab_open;
         if(open_new_tab && open_new_tab.includes('qt')) {
-          window.document.title = title;
+          window.document.title = _.escape(title);
         } else {
           _.each(pgWindow.default.pgAdmin.Browser.docker.findPanels('frm_datagrid'), function(p) {
             if (p.isVisible()) {

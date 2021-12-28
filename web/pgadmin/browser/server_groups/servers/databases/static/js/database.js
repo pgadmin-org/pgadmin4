@@ -233,7 +233,7 @@ define('pgadmin.node.database', [
                       if(res.data.info_prefix) {
                         res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
                       }
-                      Notify.success(res.info);
+                      Notify.success(_.unescape(res.info));
                       t.removeIcon(i);
                       data.connected = false;
                       data.icon = 'icon-database-not-connected';
@@ -467,7 +467,7 @@ define('pgadmin.node.database', [
                 res.info = gettext('Database already connected.');
               }
               if(res.data.info_prefix) {
-                res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
+                res.info = `${res.data.info_prefix} - ${res.info}`;
               }
               if(res.data.already_connected) {
                 Notify.info(res.info);
