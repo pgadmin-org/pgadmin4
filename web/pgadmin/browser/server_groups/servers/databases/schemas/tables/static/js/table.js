@@ -183,38 +183,36 @@ define('pgadmin.node.table', [
           Notify.confirm(
             gettext('Truncate Table'),
             gettext('Are you sure you want to truncate table %s?', d.label),
-            function (e) {
-              if (e) {
-                var data = d;
-                $.ajax({
-                  url: obj.generate_url(i, 'truncate' , d, true),
-                  type:'PUT',
-                  data: params,
-                  dataType: 'json',
-                })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Notify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                    if (res.success == 2) {
-                      Notify.error(res.info, 0);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
+            function () {
+              var data = d;
+              $.ajax({
+                url: obj.generate_url(i, 'truncate' , d, true),
+                type:'PUT',
+                data: params,
+                dataType: 'json',
+              })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Notify.success(res.info);
+                    t.removeIcon(i);
+                    data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
+                    t.addIcon(i, {icon: data.icon});
                     t.unload(i);
-                  });
-              }
+                    t.setInode(i);
+                    t.deselect(i);
+                    // Fetch updated data from server
+                    setTimeout(function() {
+                      t.select(i);
+                    }, 10);
+                  }
+                  if (res.success == 2) {
+                    Notify.error(res.info, 0);
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Notify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
+                });
             }, function() {}
           );
         },
@@ -231,33 +229,31 @@ define('pgadmin.node.table', [
           Notify.confirm(
             gettext('Reset statistics'),
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
-            function (e) {
-              if (e) {
-                var data = d;
-                $.ajax({
-                  url: obj.generate_url(i, 'reset' , d, true),
-                  type:'DELETE',
-                })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Notify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
+            function () {
+              var data = d;
+              $.ajax({
+                url: obj.generate_url(i, 'reset' , d, true),
+                type:'DELETE',
+              })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Notify.success(res.info);
+                    t.removeIcon(i);
+                    data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
+                    t.addIcon(i, {icon: data.icon});
                     t.unload(i);
-                  });
-              }
+                    t.setInode(i);
+                    t.deselect(i);
+                    // Fetch updated data from server
+                    setTimeout(function() {
+                      t.select(i);
+                    }, 10);
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Notify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
+                });
             },
             function() {}
           );
