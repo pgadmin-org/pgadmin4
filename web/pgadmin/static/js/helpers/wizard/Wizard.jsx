@@ -12,64 +12,66 @@ import clsx from 'clsx';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import DoneIcon from '@material-ui/icons/Done';
 import HelpIcon from '@material-ui/icons/HelpRounded';
 import CheckIcon from '@material-ui/icons/Check';
 import { DefaultButton, PrimaryButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import PropTypes from 'prop-types';
 import { Box } from '@material-ui/core';
 import gettext from 'sources/gettext';
+import Loader from 'sources/components/Loader';
 
 
 const useStyles = makeStyles((theme) =>
   ({
     wizardBase: {
-      height: '100%'
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column'
     },
     root: {
       display: 'flex',
       flexDirection: 'column',
-      height: '100%',
-    },
-    wizardTitle: {
-      top: '0 !important',
-      opacity: '1 !important',
-      borderRadius: '6px 6px 0px 0px !important',
-      margin: '0 !important',
-      width: '100%',
-      height: '6%'
+      flexGrow: 1,
+      minHeight: 0
     },
     rightPanel: {
       position: 'relative',
-      minHeight: 100,
       display: 'flex',
-      paddingLeft: '1.5em',
-      paddingTop: '0em',
-      flex: 5,
+      flexBasis: '75%',
       overflow: 'auto',
       height: '100%',
+      minHeight: '100px'
     },
     leftPanel: {
       display: 'flex',
-      // padding: '2em',
+      flexBasis: '25%',
       flexDirection: 'column',
       alignItems: 'flex-start',
       borderRight: '1px solid',
       ...theme.mixins.panelBorder.right,
-      flex: 1.6
     },
     label: {
       display: 'inline-block',
       position: 'relative',
-      paddingLeft: '0.5em',
-      flex: 6
+      paddingLeft: '0.5rem',
+      flexBasis: '70%'
     },
     labelArrow: {
       display: 'inline-block',
       position: 'relative',
-      flex: 1
+      flexBasis: '30%'
+    },
+    labelDone: {
+      display: 'inline-block',
+      position: 'relative',
+      flexBasis: '30%',
+      color: theme.otherVars.activeStepBg + ' !important',
+      padding: '4px'
     },
     stepLabel: {
       padding: '1em',
+      paddingRight: 0
     },
     active: {
       fontWeight: 600
@@ -99,19 +101,9 @@ const useStyles = makeStyles((theme) =>
       borderTop: '1px solid #dde0e6 !important',
       padding: '0.5rem',
       display: 'flex',
-      flexDirection: 'row',
-      flex: 1,
-      position: 'absolute',
-      verticalAlign: 'bottom',
-      bottom: 0,
-      zIndex: 999,
       width: '100%',
-      background: theme.otherVars.headerBg
-    },
-    wizardPanelContent: {
-      paddingTop: '0.9em !important',
-      overflow: 'hidden',
-      paddingBottom: '6.3em'
+      background: theme.otherVars.headerBg,
+      zIndex: 999,
     },
     backButton: {
       marginRight: theme.spacing(1),
@@ -129,13 +121,10 @@ const useStyles = makeStyles((theme) =>
     stepDefaultStyle: {
       width: '100%',
       height: '100%',
-      paddingBottom: '1em',
-      paddingRight: '1em',
-      overflow: 'hidden',
-      minHeight: 0,
-      position: 'relative'
+      padding: '8px',
+      display: 'flex',
+      flexDirection: 'column',
     }
-
   }),
 );
 
@@ -183,7 +172,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
 
   return (
     <Box className={classes.wizardBase}>
-      <Box className={clsx('wizard-header', classes.wizardTitle)}>{props.title}</Box>
+      <Box className={clsx('wizard-header')}>{props.title}</Box>
       <div className={clsx(classes.root, props?.rootClass)}>
         <div className={clsx(classes.wizard, className)}>
           <Box className={classes.leftPanel}>
@@ -192,14 +181,16 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
                 <Box className={clsx(classes.stepIndex, index === activeStep ? classes.activeIndex : '')}>{index + 1}</Box>
                 <Box className={classes.label}>{label} </Box>
                 <Box className={classes.labelArrow}>{index === activeStep ? <ChevronRightIcon /> : null}</Box>
+                <Box className={classes.labelDone}>{index < activeStep ? <DoneIcon />: null}</Box>
               </Box>
             ))}
           </Box>
-          <div className={clsx(classes.rightPanel, classes.wizardPanelContent, props.stepPanelCss)}>
+          <div className={clsx(classes.rightPanel, props.stepPanelCss)}>
+            <Loader message={props?.loaderText} />
             {
               React.Children.map(props.children, (child) => {
                 return (
-                  <div hidden={child.props.stepId !== activeStep} className={clsx(child.props.className, classes.stepDefaultStyle)}>
+                  <div hidden={child.props.stepId !== activeStep} className={clsx(classes.stepDefaultStyle, child.props.className)}>
                     {child}
                   </div>
                 );
@@ -207,23 +198,23 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
             }
           </div>
         </div>
-        <div className={classes.wizardFooter}>
-          <Box >
-            <PgIconButton data-test="dialog-help" onClick={() => props.onHelp()} icon={<HelpIcon />} title="Help for this dialog."
-              disabled={props.disableDialogHelp} />
-          </Box>
-          <Box className={classes.actionBtn} marginLeft="auto">
-            <DefaultButton onClick={handleBack} disabled={activeStep === 0} className={classes.buttonMargin} startIcon={<FastRewindIcon />}>
-              {gettext('Back')}
-            </DefaultButton>
-            <DefaultButton onClick={() => handleNext()} className={classes.buttonMargin} startIcon={<FastForwardIcon />} disabled={activeStep == steps.length - 1 || disableNext}>
-              {gettext('Next')}
-            </DefaultButton>
-            <PrimaryButton className={classes.buttonMargin} startIcon={<CheckIcon />} disabled={activeStep == steps.length - 1 ? false : true} onClick={onSave}>
-              {gettext('Finish')}
-            </PrimaryButton>
-          </Box>
-        </div>
+      </div>
+      <div className={classes.wizardFooter}>
+        <Box>
+          <PgIconButton data-test="dialog-help" onClick={() => props.onHelp()} icon={<HelpIcon />} title="Help for this dialog."
+            disabled={props.disableDialogHelp} />
+        </Box>
+        <Box className={classes.actionBtn} marginLeft="auto">
+          <DefaultButton onClick={handleBack} disabled={activeStep === 0} className={classes.buttonMargin} startIcon={<FastRewindIcon />}>
+            {gettext('Back')}
+          </DefaultButton>
+          <DefaultButton onClick={() => handleNext()} className={classes.buttonMargin} startIcon={<FastForwardIcon />} disabled={activeStep == steps.length - 1 || disableNext}>
+            {gettext('Next')}
+          </DefaultButton>
+          <PrimaryButton className={classes.buttonMargin} startIcon={<CheckIcon />} disabled={activeStep == steps.length - 1 ? false : true} onClick={onSave}>
+            {gettext('Finish')}
+          </PrimaryButton>
+        </Box>
       </div>
     </Box>
   );
@@ -246,4 +237,5 @@ Wizard.propTypes = {
   disableDialogHelp: PropTypes.bool,
   beforeNext: PropTypes.func,
   beforeBack: PropTypes.func,
+  loaderText: PropTypes.string
 };

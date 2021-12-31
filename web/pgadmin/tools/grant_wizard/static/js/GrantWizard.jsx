@@ -21,7 +21,6 @@ import { InputSQL, InputText, FormFooterMessage, MESSAGE_TYPE } from '../../../.
 import getApiInstance from '../../../../static/js/api_instance';
 import SchemaView from '../../../../static/js/SchemaView';
 import clsx from 'clsx';
-import Loader from 'sources/components/Loader';
 import Alertify from 'pgadmin.alertifyjs';
 import PropTypes from 'prop-types';
 import PrivilegeSchema from './privilege_schema.ui';
@@ -54,7 +53,8 @@ const useStyles = makeStyles(() =>
       overflow: 'auto'
     },
     panelContent: {
-      height: '100%'
+      flexGrow: 1,
+      minHeight: 0
     }
   }),
 );
@@ -305,69 +305,67 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
   });
 
   return (
-    <Box className={classes.root}>
-      <Loader message={loaderText} />
-      <Wizard
-        title={gettext('Grant Wizard')}
-        stepList={steps}
-        disableNextStep={disableNextCheck}
-        onStepChange={wizardStepChange}
-        onSave={onSave}
-        onHelp={onDialogHelp}
-      >
-        <WizardStep stepId={0}>
-          <Box className={classes.searchBox}>
-            <Box className={classes.searchPadding}></Box>
-            <InputText
-              placeholder={'Search'}
-              className={classes.searchInput}
-              value={searchVal}
-              onChange={(val) => {
-                setSearchVal(val);}
-              }>
-            </InputText>
-          </Box>
-          <Box className={classes.panelContent}>
-            <PgTable
-              className={classes.table}
-              height={window.innerHeight - 450}
-              columns={columns}
-              data={tablebData}
-              isSelectRow={true}
-              searchText={searchVal}
-              getSelectedRows={getTableSelectedRows}>
-            </PgTable>
-          </Box>
-          <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={errMsg} onClose={onErrClose} />
-        </WizardStep>
-        <WizardStep
-          stepId={1}
-          className={clsx(classes.privilegeStep)}>
-          {privSchemaInstance &&
-                    <SchemaView
-                      formType={'dialog'}
-                      getInitData={() => { }}
-                      viewHelperProps={{ mode: 'create' }}
-                      schema={privSchemaInstance}
-                      showFooter={false}
-                      isTabView={false}
-                      onDataChange={(isChanged, changedData) => {
-                        setSelectedAcl(changedData);
-                      }}
-                    />
-          }
-        </WizardStep>
-        <WizardStep
-          stepId={2}>
-          <Box>{gettext('The SQL below will be executed on the database server to grant the selected privileges. Please click on Finish to complete the process.')}</Box>
-          <InputSQL
-            onLable={true}
-            className={classes.grantWizardSql}
-            readonly={true}
-            value={msqlData.toString()} />
-        </WizardStep>
-      </Wizard>
-    </Box>
+    <Wizard
+      title={gettext('Grant Wizard')}
+      stepList={steps}
+      disableNextStep={disableNextCheck}
+      onStepChange={wizardStepChange}
+      onSave={onSave}
+      onHelp={onDialogHelp}
+      loaderText={loaderText}
+    >
+      <WizardStep stepId={0}>
+        <Box className={classes.searchBox}>
+          <Box className={classes.searchPadding}></Box>
+          <InputText
+            placeholder={'Search'}
+            className={classes.searchInput}
+            value={searchVal}
+            onChange={(val) => {
+              setSearchVal(val);}
+            }>
+          </InputText>
+        </Box>
+        <Box className={classes.panelContent}>
+          <PgTable
+            className={classes.table}
+            height={window.innerHeight - 450}
+            columns={columns}
+            data={tablebData}
+            isSelectRow={true}
+            searchText={searchVal}
+            getSelectedRows={getTableSelectedRows}>
+          </PgTable>
+        </Box>
+        <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={errMsg} onClose={onErrClose} />
+      </WizardStep>
+      <WizardStep
+        stepId={1}
+        className={clsx(classes.privilegeStep)}>
+        {privSchemaInstance &&
+                  <SchemaView
+                    formType={'dialog'}
+                    getInitData={() => { }}
+                    viewHelperProps={{ mode: 'create' }}
+                    schema={privSchemaInstance}
+                    showFooter={false}
+                    isTabView={false}
+                    onDataChange={(isChanged, changedData) => {
+                      setSelectedAcl(changedData);
+                    }}
+                  />
+        }
+      </WizardStep>
+      <WizardStep
+        stepId={2}>
+        <Box>{gettext('The SQL below will be executed on the database server to grant the selected privileges. Please click on Finish to complete the process.')}</Box>
+        <InputSQL
+          onLable={true}
+          className={classes.grantWizardSql}
+          readonly={true}
+          value={msqlData.toString()} />
+      </WizardStep>
+    </Wizard>
   );
 }
 

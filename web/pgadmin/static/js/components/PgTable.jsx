@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     borderSpacing: 0,
     width: '100%',
     overflow: 'hidden',
-    height: '99.7%',
+    height: '100%',
     backgroundColor: theme.otherVars.tableBg,
     ...theme.mixins.panelBorder,
     //backgroundColor: theme.palette.background.default,
