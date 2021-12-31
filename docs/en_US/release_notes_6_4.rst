@@ -25,4 +25,5 @@ Bug fixes
 | `Issue #7077 <https://redmine.postgresql.org/issues/7077>`_ -  Fixed an issue where the Owner is not displayed in the reverse engineering SQL for Procedures.
 | `Issue #7078 <https://redmine.postgresql.org/issues/7078>`_ -  Fixed an issue where an operation error message pop up showing the database object's name incorrectly.
 | `Issue #7081 <https://redmine.postgresql.org/issues/7081>`_ -  Fixed an issue in SQL generation for PostgreSQL-14 functions.
+| `Issue #7093 <https://redmine.postgresql.org/issues/7093>`_ -  Fixed an issue where SubPlans may overlap other nodes & make them inaccessible in Graphical EXPLAIN View.
 | `Issue #7096 <https://redmine.postgresql.org/issues/7096>`_ -  Ensure that Truncate and Reset statistics should work.

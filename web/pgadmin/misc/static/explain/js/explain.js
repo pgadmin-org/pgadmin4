@@ -797,6 +797,7 @@ define('pgadmin.misc.explain', [
           'strokeWidth': 1.2,
           fill: 'gray',
           fillOpacity: 0.2,
+          'pointer-events': 'none',
         });
 
         // Provide subplan name
