@@ -15,7 +15,7 @@ import _ from 'lodash';
 
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.procedure', [
-  'sources/gettext', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser', 'alertify',
   'pgadmin.node.function', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node',
