@@ -1455,7 +1455,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             FunctionView._merge_variables(data)
 
-        self._format_prosrc_for_pure_sql(data, False)
+        self._format_prosrc_for_pure_sql(data, False, old_data['lanname'])
 
         if allow_code_formatting:
             self.reformat_prosrc_code(data)
@@ -1466,7 +1466,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         )
         return True, '', sql
 
-    def _format_prosrc_for_pure_sql(self, data, view_only=True):
+    def _format_prosrc_for_pure_sql(self, data, view_only=True, lanname='sql'):
 
         if self.manager.sversion < 140000:
             return
@@ -1483,7 +1483,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             # when function/procedure definition is changed, we need to find
             # whether definition is of pure or have std sql definition.
-            if self._is_function_def_sql_standard(data):
+            if lanname == 'sql' and self._is_function_def_sql_standard(data):
                 data['is_pure_sql'] = True
                 if data['prosrc'].endswith(';') is False:
                     data['prosrc'] = ''.join((data['prosrc'], ';'))
