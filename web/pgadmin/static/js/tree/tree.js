@@ -92,6 +92,15 @@ export class Tree {
     return await this.tree.create(item, data);
   }
 
+  async destroy() {
+    const model = this.tree.getModel();
+    this.rootNode.children = [];
+    if (model.root) {
+      model.root.isExpanded = false;
+      await model.root.hardReloadChildren();
+    }
+  }
+
   next(item) {
     if(item) {
       let parent = this.parent(item);
