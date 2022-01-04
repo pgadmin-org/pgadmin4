@@ -20,7 +20,7 @@ from flask_security import login_required, current_user
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.constants import MIMETYPE_APP_JS
-from web.pgadmin.utils.ajax import make_json_response, internal_server_error
+from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.model import ServerGroup, Server
 from pgadmin.utils import clear_database_servers, dump_database_servers,\
     load_database_servers
