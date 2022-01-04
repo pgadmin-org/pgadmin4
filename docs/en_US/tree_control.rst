@@ -79,7 +79,7 @@ The context-sensitive menus associated with *Tables* and nested *Table* nodes pr
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+
 | Option                  | Action                                                                                                                       |
 +=========================+==============================================================================================================================+
-| *Import/Export...*      | Click open the :ref:`Import/Export... <import_export_data>` dialog to import data to or export data from the selected table. |
+| *Import/Export Data...* | Click open the :ref:`Import/Export... <import_export_data>` dialog to import data to or export data from the selected table. |
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+
 | *Reset Statistics*      | Click to reset statistics for the selected table.                                                                            |
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+

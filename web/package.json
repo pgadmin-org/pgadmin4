@@ -143,6 +143,7 @@
     "raf": "^3.4.1",
     "react": "^17.0.1",
     "react-aspen": "^1.1.0",
+    "react-checkbox-tree": "^1.7.2",
     "react-dom": "^17.0.1",
     "react-draggable": "^4.4.4",
     "react-select": "^4.2.1",

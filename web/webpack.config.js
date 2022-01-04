@@ -543,6 +543,7 @@ module.exports = [{
             'pure|pgadmin.tools.grant_wizard',
             'pure|pgadmin.tools.maintenance',
             'pure|pgadmin.tools.import_export',
+            'pure|pgadmin.tools.import_export_servers',
             'pure|pgadmin.tools.debugger.controller',
             'pure|pgadmin.tools.debugger.direct',
             'pure|pgadmin.node.pga_job',

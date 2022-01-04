@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #4803 <https://redmine.postgresql.org/issues/4803>`_ -  Added support to import/export server groups and servers from GUI.
 
 Housekeeping
 ************
@@ -21,7 +22,7 @@ Bug fixes
 | `Issue #6745 <https://redmine.postgresql.org/issues/6745>`_ -  Fixed an issue where Tablespace is created though an error is shown on the dialog.
 | `Issue #7003 <https://redmine.postgresql.org/issues/7003>`_ -  Fixed an issue where Explain Analyze shows negative exclusive time.
 | `Issue #7034 <https://redmine.postgresql.org/issues/7034>`_ -  Fixed an issue where Columns with default value not showing when adding a new row.
-| `Issue #7075 <https://redmine.postgresql.org/issues/7075>`_ -  Ensure that help should be visible properly for Procedures.
+| `Issue #7075 <https://redmine.postgresql.org/issues/7075>`_ -  Ensure that help should be visible properly for Procedures.
 | `Issue #7077 <https://redmine.postgresql.org/issues/7077>`_ -  Fixed an issue where the Owner is not displayed in the reverse engineering SQL for Procedures.
 | `Issue #7078 <https://redmine.postgresql.org/issues/7078>`_ -  Fixed an issue where an operation error message pop up showing the database object's name incorrectly.
 | `Issue #7081 <https://redmine.postgresql.org/issues/7081>`_ -  Fixed an issue in SQL generation for PostgreSQL-14 functions.

@@ -9,6 +9,7 @@
 
 import os
 import sys
+import json
 import subprocess
 from collections import defaultdict
 from operator import attrgetter
@@ -20,8 +21,11 @@ from threading import Lock
 
 from .paths import get_storage_directory
 from .preferences import Preferences
-from pgadmin.model import Server
-from pgadmin.utils.constants import UTILITIES_ARRAY
+from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND
+from pgadmin.model import db, User, Version, ServerGroup, Server, \
+    SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
+
+ADD_SERVERS_MSG = "Added %d Server Group(s) and %d Server(s)."
 
 
 class PgAdminModule(Blueprint):
@@ -368,6 +372,368 @@ def replace_binary_path(binary_path):
             )
 
     return binary_path
+
+
+def add_value(attr_dict, key, value):
+    """Add a value to the attribute dict if non-empty.
+
+    Args:
+        attr_dict (dict): The dictionary to add the values to
+        key (str): The key for the new value
+        value (str): The value to add
+
+    Returns:
+        The updated attribute dictionary
+    """
+    if value != "" and value is not None:
+        attr_dict[key] = value
+
+    return attr_dict
+
+
+def dump_database_servers(output_file, selected_servers,
+                          dump_user=current_user, from_setup=False):
+    """Dump the server groups and servers.
+    """
+    user = _does_user_exist(dump_user, from_setup)
+    if user is None:
+        return False, USER_NOT_FOUND % dump_user, []
+
+    user_id = user.id
+    # Dict to collect the output
+    object_dict = {}
+    # Counters
+    servers_dumped = 0
+
+    # Dump servers
+    servers = Server.query.filter_by(user_id=user_id).all()
+    server_dict = {}
+    dump_servers = []
+    for server in servers:
+        if selected_servers is None or str(server.id) in selected_servers:
+            # Get the group name
+            group_name = ServerGroup.query.filter_by(
+                user_id=user_id, id=server.servergroup_id).first().name
+
+            attr_dict = {}
+            add_value(attr_dict, "Name", server.name)
+            add_value(attr_dict, "Group", group_name)
+            add_value(attr_dict, "Host", server.host)
+            add_value(attr_dict, "HostAddr", server.hostaddr)
+            add_value(attr_dict, "Port", server.port)
+            add_value(attr_dict, "MaintenanceDB", server.maintenance_db)
+            add_value(attr_dict, "Username", server.username)
+            add_value(attr_dict, "Role", server.role)
+            add_value(attr_dict, "SSLMode", server.ssl_mode)
+            add_value(attr_dict, "Comment", server.comment)
+            add_value(attr_dict, "Shared", server.shared)
+            add_value(attr_dict, "DBRestriction", server.db_res)
+            add_value(attr_dict, "PassFile", server.passfile)
+            add_value(attr_dict, "SSLCert", server.sslcert)
+            add_value(attr_dict, "SSLKey", server.sslkey)
+            add_value(attr_dict, "SSLRootCert", server.sslrootcert)
+            add_value(attr_dict, "SSLCrl", server.sslcrl)
+            add_value(attr_dict, "SSLCompression", server.sslcompression)
+            add_value(attr_dict, "BGColor", server.bgcolor)
+            add_value(attr_dict, "FGColor", server.fgcolor)
+            add_value(attr_dict, "Service", server.service)
+            add_value(attr_dict, "Timeout", server.connect_timeout)
+            add_value(attr_dict, "UseSSHTunnel", server.use_ssh_tunnel)
+            add_value(attr_dict, "TunnelHost", server.tunnel_host)
+            add_value(attr_dict, "TunnelPort", server.tunnel_port)
+            add_value(attr_dict, "TunnelUsername", server.tunnel_username)
+            add_value(attr_dict, "TunnelAuthentication",
+                      server.tunnel_authentication)
+
+            servers_dumped = servers_dumped + 1
+            dump_servers.append({'srno': servers_dumped,
+                                 'server_group': group_name,
+                                 'server': server.name})
+
+            server_dict[servers_dumped] = attr_dict
+
+    object_dict["Servers"] = server_dict
+
+    f = None
+    try:
+        f = open(output_file, "w")
+    except Exception as e:
+        return _handle_error("Error opening output file %s: [%d] %s" %
+                             (output_file, e.errno, e.strerror), from_setup)
+
+    try:
+        f.write(json.dumps(object_dict, indent=4))
+    except Exception as e:
+        return _handle_error("Error writing output file %s: [%d] %s" %
+                             (output_file, e.errno, e.strerror), from_setup)
+
+    f.close()
+
+    msg = "Configuration for %s servers dumped to %s." % \
+          (servers_dumped, output_file)
+    print(msg)
+
+    return True, msg, dump_servers
+
+
+def _validate_servers_data(data, is_admin):
+    """
+    Used internally by load_servers to validate servers data.
+    :param data: servers data
+    :return: error message if any
+    """
+    skip_servers = []
+    # Loop through the servers...
+    if "Servers" not in data:
+        return "'Servers' attribute not found in the specified file."
+
+    for server in data["Servers"]:
+        obj = data["Servers"][server]
+
+        # Check if server is shared.Won't import if user is non-admin
+        if obj.get('Shared', None) and not is_admin:
+            print("Won't import the server '%s' as it is shared " %
+                  obj["Name"])
+            skip_servers.append(server)
+            continue
+
+        def check_attrib(attrib):
+            if attrib not in obj:
+                return ("'%s' attribute not found for server '%s'" %
+                        (attrib, server))
+            return None
+
+        for attrib in ("Group", "Name"):
+            errmsg = check_attrib(attrib)
+            if errmsg:
+                return errmsg
+
+        is_service_attrib_available = obj.get("Service", None) is not None
+
+        if not is_service_attrib_available:
+            for attrib in ("Port", "Username"):
+                errmsg = check_attrib(attrib)
+                if errmsg:
+                    return errmsg
+
+        for attrib in ("SSLMode", "MaintenanceDB"):
+            errmsg = check_attrib(attrib)
+            if errmsg:
+                return errmsg
+
+        if "Host" not in obj and "HostAddr" not in obj and not \
+                is_service_attrib_available:
+            return ("'Host', 'HostAddr' or 'Service' attribute "
+                    "not found for server '%s'" % server)
+
+    for server in skip_servers:
+        del data["Servers"][server]
+    return None
+
+
+def load_database_servers(input_file, selected_servers,
+                          load_user=current_user, from_setup=False):
+    """Load server groups and servers.
+    """
+    try:
+        with open(input_file) as f:
+            data = json.load(f)
+    except json.decoder.JSONDecodeError as e:
+        return _handle_error("Error parsing input file %s: %s" %
+                             (input_file, e), from_setup)
+    except Exception as e:
+        return _handle_error("Error reading input file %s: [%d] %s" %
+                             (input_file, e.errno, e.strerror), from_setup)
+
+    f.close()
+
+    user = _does_user_exist(load_user, from_setup)
+    if user is None:
+        return False, USER_NOT_FOUND % load_user, []
+
+    user_id = user.id
+    # Counters
+    groups_added = 0
+    servers_added = 0
+
+    # Get the server groups
+    groups = ServerGroup.query.filter_by(user_id=user_id)
+
+    # Validate server data
+    error_msg = _validate_servers_data(data, user.has_role("Administrator"))
+    if error_msg is not None and from_setup:
+        print(ADD_SERVERS_MSG % (groups_added, servers_added))
+        return _handle_error(error_msg, from_setup)
+
+    load_servers = []
+    for server in data["Servers"]:
+        if selected_servers is None or str(server) in selected_servers:
+            obj = data["Servers"][server]
+
+            # Get the group. Create if necessary
+            group_id = next(
+                (g.id for g in groups if g.name == obj["Group"]), -1)
+
+            if group_id == -1:
+                new_group = ServerGroup()
+                new_group.name = obj["Group"]
+                new_group.user_id = user_id
+                db.session.add(new_group)
+
+                try:
+                    db.session.commit()
+                except Exception as e:
+                    if from_setup:
+                        print(ADD_SERVERS_MSG % (groups_added, servers_added))
+                    return _handle_error(
+                        "Error creating server group '%s': %s" %
+                        (new_group.name, e), from_setup)
+
+                group_id = new_group.id
+                groups_added = groups_added + 1
+                groups = ServerGroup.query.filter_by(user_id=user_id)
+
+            # Create the server
+            new_server = Server()
+            new_server.name = obj["Name"]
+            new_server.servergroup_id = group_id
+            new_server.user_id = user_id
+            new_server.ssl_mode = obj["SSLMode"]
+            new_server.maintenance_db = obj["MaintenanceDB"]
+
+            new_server.host = obj.get("Host", None)
+
+            new_server.hostaddr = obj.get("HostAddr", None)
+
+            new_server.port = obj.get("Port", None)
+
+            new_server.username = obj.get("Username", None)
+
+            new_server.role = obj.get("Role", None)
+
+            new_server.ssl_mode = obj["SSLMode"]
+
+            new_server.comment = obj.get("Comment", None)
+
+            new_server.db_res = obj.get("DBRestriction", None)
+
+            new_server.passfile = obj.get("PassFile", None)
+
+            new_server.sslcert = obj.get("SSLCert", None)
+
+            new_server.sslkey = obj.get("SSLKey", None)
+
+            new_server.sslrootcert = obj.get("SSLRootCert", None)
+
+            new_server.sslcrl = obj.get("SSLCrl", None)
+
+            new_server.sslcompression = obj.get("SSLCompression", None)
+
+            new_server.bgcolor = obj.get("BGColor", None)
+
+            new_server.fgcolor = obj.get("FGColor", None)
+
+            new_server.service = obj.get("Service", None)
+
+            new_server.connect_timeout = obj.get("Timeout", None)
+
+            new_server.use_ssh_tunnel = obj.get("UseSSHTunnel", None)
+
+            new_server.tunnel_host = obj.get("TunnelHost", None)
+
+            new_server.tunnel_port = obj.get("TunnelPort", None)
+
+            new_server.tunnel_username = obj.get("TunnelUsername", None)
+
+            new_server.tunnel_authentication = \
+                obj.get("TunnelAuthentication", None)
+
+            new_server.shared = \
+                obj.get("Shared", None)
+
+            db.session.add(new_server)
+
+            try:
+                db.session.commit()
+            except Exception as e:
+                if from_setup:
+                    print(ADD_SERVERS_MSG % (groups_added, servers_added))
+                return _handle_error("Error creating server '%s': %s" %
+                                     (new_server.name, e), from_setup)
+
+            servers_added = servers_added + 1
+            load_servers.append({'srno': servers_added,
+                                 'server_group': obj["Group"],
+                                 'server': obj["Name"]})
+
+    msg = ADD_SERVERS_MSG % (groups_added, servers_added)
+    print(msg)
+
+    return True, msg, load_servers
+
+
+def clear_database_servers(load_user=current_user, from_setup=False):
+    """Clear groups and servers configurations.
+    """
+    user = _does_user_exist(load_user, from_setup)
+    if user is None:
+        return False
+
+    user_id = user.id
+
+    # Remove all servers
+    servers = Server.query.filter_by(user_id=user_id)
+    for server in servers:
+        db.session.delete(server)
+
+    # Remove all groups
+    groups = ServerGroup.query.filter_by(user_id=user_id)
+    for group in groups:
+        db.session.delete(group)
+    servers = Server.query.filter_by(user_id=user_id)
+
+    for server in servers:
+        db.session.delete(server)
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        error_msg = "Error clearing server configuration with error (%s)" % \
+                    str(e)
+        if from_setup:
+            print(error_msg)
+            sys.exit(1)
+
+        return False, error_msg
+
+
+def _does_user_exist(user, from_setup):
+    """
+    This function will check user is exist or not. If exist then return
+    """
+    if isinstance(user, User):
+        user = user.email
+
+    user = User.query.filter_by(email=user).first()
+
+    if user is None:
+        print(USER_NOT_FOUND % user)
+        if from_setup:
+            sys.exit(1)
+
+    return user
+
+
+def _handle_error(error_msg, from_setup):
+    """
+    This function is used to print the error msg and exit from app if
+    called from setup.py
+    """
+    if from_setup:
+        print(error_msg)
+        sys.exit(1)
+
+    return False, error_msg, []
 
 
 # Shortcut configuration for Accesskey
