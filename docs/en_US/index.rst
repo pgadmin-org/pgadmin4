@@ -27,3 +27,7 @@ of database objects.
    contributions
    release_notes
    licence
+
+.. note:: Postgres, PostgreSQL and the Slonik Logo are trademarks or
+    registered trademarks of the `PostgreSQL Community Association of Canada
+    <https://www.postgres.ca/>`_, and used with their permission.
