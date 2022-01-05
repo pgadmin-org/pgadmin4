@@ -712,7 +712,7 @@ define([
 
     var loading_icon_url = url_for(
       'static', {
-        'filename': 'js/generated/load-root.gif',
+        'filename': 'img/loading.gif',
       }
     );
 

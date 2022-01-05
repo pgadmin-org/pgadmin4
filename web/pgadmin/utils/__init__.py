@@ -397,7 +397,7 @@ def dump_database_servers(output_file, selected_servers,
     """
     user = _does_user_exist(dump_user, from_setup)
     if user is None:
-        return False, USER_NOT_FOUND % dump_user, []
+        return False, USER_NOT_FOUND % dump_user
 
     user_id = user.id
     # Dict to collect the output
@@ -408,7 +408,6 @@ def dump_database_servers(output_file, selected_servers,
     # Dump servers
     servers = Server.query.filter_by(user_id=user_id).all()
     server_dict = {}
-    dump_servers = []
     for server in servers:
         if selected_servers is None or str(server.id) in selected_servers:
             # Get the group name
@@ -446,9 +445,6 @@ def dump_database_servers(output_file, selected_servers,
                       server.tunnel_authentication)
 
             servers_dumped = servers_dumped + 1
-            dump_servers.append({'srno': servers_dumped,
-                                 'server_group': group_name,
-                                 'server': server.name})
 
             server_dict[servers_dumped] = attr_dict
 
@@ -473,13 +469,14 @@ def dump_database_servers(output_file, selected_servers,
           (servers_dumped, output_file)
     print(msg)
 
-    return True, msg, dump_servers
+    return True, msg
 
 
-def _validate_servers_data(data, is_admin):
+def validate_json_data(data, is_admin):
     """
     Used internally by load_servers to validate servers data.
     :param data: servers data
+    :param is_admin:
     :return: error message if any
     """
     skip_servers = []
@@ -503,6 +500,11 @@ def _validate_servers_data(data, is_admin):
                         (attrib, server))
             return None
 
+        def check_is_integer(value):
+            if not isinstance(value, int):
+                return "Port must be integer for server '%s'" % server
+            return None
+
         for attrib in ("Group", "Name"):
             errmsg = check_attrib(attrib)
             if errmsg:
@@ -515,6 +517,10 @@ def _validate_servers_data(data, is_admin):
                 errmsg = check_attrib(attrib)
                 if errmsg:
                     return errmsg
+                if attrib == 'Port':
+                    errmsg = check_is_integer(obj[attrib])
+                    if errmsg:
+                        return errmsg
 
         for attrib in ("SSLMode", "MaintenanceDB"):
             errmsg = check_attrib(attrib)
@@ -549,7 +555,7 @@ def load_database_servers(input_file, selected_servers,
 
     user = _does_user_exist(load_user, from_setup)
     if user is None:
-        return False, USER_NOT_FOUND % load_user, []
+        return False, USER_NOT_FOUND % load_user
 
     user_id = user.id
     # Counters
@@ -560,12 +566,11 @@ def load_database_servers(input_file, selected_servers,
     groups = ServerGroup.query.filter_by(user_id=user_id)
 
     # Validate server data
-    error_msg = _validate_servers_data(data, user.has_role("Administrator"))
+    error_msg = validate_json_data(data, user.has_role("Administrator"))
     if error_msg is not None and from_setup:
         print(ADD_SERVERS_MSG % (groups_added, servers_added))
         return _handle_error(error_msg, from_setup)
 
-    load_servers = []
     for server in data["Servers"]:
         if selected_servers is None or str(server) in selected_servers:
             obj = data["Servers"][server]
@@ -662,14 +667,11 @@ def load_database_servers(input_file, selected_servers,
                                      (new_server.name, e), from_setup)
 
             servers_added = servers_added + 1
-            load_servers.append({'srno': servers_added,
-                                 'server_group': obj["Group"],
-                                 'server': obj["Name"]})
 
     msg = ADD_SERVERS_MSG % (groups_added, servers_added)
     print(msg)
 
-    return True, msg, load_servers
+    return True, msg
 
 
 def clear_database_servers(load_user=current_user, from_setup=False):
@@ -733,7 +735,7 @@ def _handle_error(error_msg, from_setup):
         print(error_msg)
         sys.exit(1)
 
-    return False, error_msg, []
+    return False, error_msg
 
 
 # Shortcut configuration for Accesskey

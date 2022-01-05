@@ -15,7 +15,7 @@ import { Box, Paper} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Wizard from '../../../../static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../../static/js/helpers/wizard/WizardStep';
-import { FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
+import { FormFooterMessage, MESSAGE_TYPE, FormNote } from '../../../../static/js/components/FormComponents';
 import SchemaView from '../../../../static/js/SchemaView';
 import Loader from 'sources/components/Loader';
 import ImportExportSelectionSchema from './import_export_selection.ui';
@@ -46,6 +46,9 @@ const useStyles = makeStyles(() =>
       flexGrow: 1,
       minHeight: 0,
       overflow: 'auto',
+    },
+    noteContainer: {
+      marginTop: '5px',
     }
   }),
 );
@@ -62,27 +65,48 @@ export default function ImportExportServers() {
   const [selectedServers, setSelectedServers] = React.useState([]);
   const [summaryData, setSummaryData] = React.useState([]);
   const [summaryText, setSummaryText] = React.useState('');
+  const [noteText, setNoteText] = React.useState('');
   const api = getApiInstance();
 
   const onSave = () => {
-    if (selectionFormData.imp_exp == 'i') {
-      Notify.confirm(
-        gettext('Browser tree refresh required'),
-        gettext('A browser tree refresh is required. Do you wish to refresh the tree?'),
-        function() {
-          pgAdmin.Browser.tree.destroy({
-            success: function() {
-              pgAdmin.Browser.initializeBrowserTree(pgAdmin.Browser);
-              return true;
-            },
-          });
-        },
-        function() {
-          return true;
-        },
-        gettext('Refresh'),
-        gettext('Later')
-      );
+    let post_data = {'filename': selectionFormData.filename},
+      save_url = url_for('import_export_servers.save');
+
+    if (selectionFormData.imp_exp == 'e') {
+      post_data['type'] = 'export';
+      post_data['selected_sever_ids'] = selectedServers;
+      api.post(save_url, post_data)
+        .then(() => {
+          Notify.alert(gettext('Export Servers'), gettext('The selected servers were exported successfully.'));
+        })
+        .catch((err) => {
+          Notify.alert(err.response.data.errormsg);
+        });
+    } else if (selectionFormData.imp_exp == 'i') {
+      // Remove the random number added to create unique tree item,
+      let selected_sever_ids = [];
+      selectedServers.forEach((id) => {
+        selected_sever_ids.push(id.split('_')[0]);
+      });
+
+      post_data['type'] = 'import';
+      post_data['selected_sever_ids'] = selected_sever_ids;
+      post_data['replace_servers'] = selectionFormData.replace_servers;
+
+      api.post(save_url, post_data)
+        .then(() => {
+          pgAdmin.Browser.tree.destroy();
+
+          let msg = gettext('The selected servers were imported successfully.');
+          if (selectionFormData.replace_servers) {
+            msg = gettext('The existing server groups and servers were removed, and the selected servers were imported successfully.');
+          }
+
+          Notify.alert(gettext('Import Servers'), msg);
+        })
+        .catch((err) => {
+          Notify.alert(err.response.data.errormsg);
+        });
     }
  
     Alertify.importExportWizardDialog().close();
@@ -109,45 +133,30 @@ export default function ImportExportServers() {
   const wizardStepChange= (data) => {
     switch (data.currentStep) {
     case 2: {
-      let post_data = {'filename': selectionFormData.filename},
-        save_url = url_for('import_export_servers.save');
-      if (selectionFormData.imp_exp == 'e') {
-        setLoaderText('Exporting Server Groups/Servers ...');
-        setSummaryText('Exported following Server Groups/Servers:');
-
-        post_data['type'] = 'export';
-        post_data['selected_sever_ids'] = selectedServers;
-        api.post(save_url, post_data)
-          .then(res => {
-            setLoaderText('');
-            setSummaryData(res.data.data);
-          })
-          .catch((err) => {
-            setLoaderText('');
-            setErrMsg(err.response.data.errormsg);
+      let sumData = [],
+        serverSerialNumber = 0;
+      serverData.forEach((server_group) => {
+        server_group.children.forEach((server) =>{
+          selectedServers.forEach((id) => {
+            if (server.value == id) {
+              serverSerialNumber = serverSerialNumber + 1;
+              sumData.push({'srno': serverSerialNumber,
+                'server_group':server_group.label, 'server': server.label});
+            }
           });
-      } else if (selectionFormData.imp_exp == 'i') {
-        setLoaderText('Importing Server Groups/Servers ...');
-        setSummaryText('Imported following Server Groups/Servers:');
-        // Remove the random number added to create unique tree item,
-        let selected_sever_ids = [];
-        selectedServers.forEach((id) => {
-          selected_sever_ids.push(id.split('_')[0]);
         });
-
-        post_data['type'] = 'import';
-        post_data['selected_sever_ids'] = selected_sever_ids;
-        post_data['replace_servers'] = selectionFormData.replace_servers;
-
-        api.post(save_url, post_data)
-          .then(res => {
-            setLoaderText('');
-            setSummaryData(res.data.data);
-          })
-          .catch((err) => {
-            setLoaderText('');
-            setErrMsg(err.response.data.errormsg);
-          });
+      });
+      setSummaryData(sumData);
+      if (selectionFormData.imp_exp == 'e') {
+        setSummaryText('The following servers will be exported. Click the Finish button to complete the export process.');
+        setNoteText('');
+      } else if (selectionFormData.imp_exp == 'i') {
+        setSummaryText('The following servers will be imported. Click the Finish button to complete the import process.');
+        if (selectionFormData.replace_servers) {
+          setNoteText('All existing server groups and servers will be removed before the servers above are imported. On a successful import process, the browser tree will be refreshed.');
+        } else {
+          setNoteText('On a successful import process, the browser tree will be refreshed.');
+        }
       }
       break;
     }
@@ -252,6 +261,8 @@ export default function ImportExportServers() {
               </tbody>
             </table>
           </Paper>
+          {selectionFormData.imp_exp == 'i' && 
+          <FormNote className={classes.noteContainer} text={gettext(noteText)}/> }
         </WizardStep>
       </Wizard>
     </Box>

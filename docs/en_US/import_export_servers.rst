@@ -24,8 +24,9 @@ menu bar to click on the *Import/Export Servers* option.
 * Use the *Filename* field to select the JSON file to import servers or create the
   new file in case of Export where the servers to be exported in the JSON format.
 
-* Use the *Replace existing servers?* field to specify whether to replace the
-  existing servers or not. This field is applicable only in case of Import Servers.
+* Use the *Remove all the existing servers?* field to specify whether to remove all the
+  existing servers or not before importing the new selected servers.
+  This field is applicable only in case of Import Servers.
 
 Click the *Next* button to continue, or the *X* button to close the wizard.
 
@@ -41,17 +42,10 @@ Click the *Next* button to continue, or the *X* button to close the wizard.
     :alt: Import/Export Servers step three page
     :align: center
 
-Check the summary of the imported/exported servers on the Summary page.
+Check the summary of the servers that are going to be imported/exported on the
+Summary page.
 
 Click the *Finish* button to close the wizard.
-
-.. image:: images/import_export_servers_refresh_tree.png
-    :alt: Import/Export Servers Tree Refresh
-    :align: center
-
-In case of importing the server above confirmation box will be popped up to
-confirm whether to refresh the browser tree or later.
-
 
 Using 'setup.py' command line script
 ####################################

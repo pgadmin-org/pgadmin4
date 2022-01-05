@@ -23,7 +23,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.model import ServerGroup, Server
 from pgadmin.utils import clear_database_servers, dump_database_servers,\
-    load_database_servers
+    load_database_servers, validate_json_data
 
 MODULE_NAME = 'import_export_servers'
 
@@ -131,6 +131,12 @@ def load_servers():
         try:
             with open(filename, 'r') as j:
                 data = json.loads(j.read())
+
+                # Validate the json file and data
+                errmsg = validate_json_data(data, False)
+                if errmsg is not None:
+                    return internal_server_error(errmsg)
+
                 if 'Servers' in data:
                     for server in data["Servers"]:
                         obj = data["Servers"][server]
@@ -184,18 +190,17 @@ def save():
 
     status = False
     errmsg = None
-    summary_data = []
     if data['type'] == 'export':
-        status, errmsg, summary_data = \
+        status, errmsg = \
             dump_database_servers(data['filename'], data['selected_sever_ids'])
     elif data['type'] == 'import':
         # Clear all the existing servers
         if 'replace_servers' in data and data['replace_servers']:
             clear_database_servers()
-        status, errmsg, summary_data = \
+        status, errmsg = \
             load_database_servers(data['filename'], data['selected_sever_ids'])
 
     if not status:
         return internal_server_error(errmsg)
 
-    return make_json_response(success=1, data=summary_data)
+    return make_json_response(success=1)
