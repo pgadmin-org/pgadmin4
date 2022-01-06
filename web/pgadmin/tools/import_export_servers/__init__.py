@@ -107,8 +107,11 @@ def get_servers():
         for server in servers:
             children.append({'value': server.id, 'label': server.name})
 
-        all_servers.append(
-            {'value': group.name, 'label': group.name, 'children': children})
+        # Add server group only when some servers are there.
+        if len(children) > 0:
+            all_servers.append(
+                {'value': group.name, 'label': group.name,
+                 'children': children})
 
     return make_json_response(success=1, data=all_servers)
 

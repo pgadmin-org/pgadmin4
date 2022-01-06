@@ -80,7 +80,7 @@ export default function ImportExportServers() {
           Notify.alert(gettext('Export Servers'), gettext('The selected servers were exported successfully.'));
         })
         .catch((err) => {
-          Notify.alert(err.response.data.errormsg);
+          Notify.alert(gettext('Export Error'), err.response.data.errormsg);
         });
     } else if (selectionFormData.imp_exp == 'i') {
       // Remove the random number added to create unique tree item,
@@ -105,10 +105,10 @@ export default function ImportExportServers() {
           Notify.alert(gettext('Import Servers'), msg);
         })
         .catch((err) => {
-          Notify.alert(err.response.data.errormsg);
+          Notify.alert(gettext('Import error'), err.response.data.errormsg);
         });
     }
- 
+
     Alertify.importExportWizardDialog().close();
   };
 
@@ -174,6 +174,7 @@ export default function ImportExportServers() {
           api.get(get_servers_url)
             .then(res => {
               setLoaderText('');
+              setErrMsg('');
               setServerData(res.data.data);
               resolve();
             })
@@ -190,6 +191,7 @@ export default function ImportExportServers() {
           api.post(load_servers_url, post_data)
             .then(res => {
               setLoaderText('');
+              setErrMsg('');
               setServerData(res.data.data);
               resolve();
             })
@@ -261,7 +263,7 @@ export default function ImportExportServers() {
               </tbody>
             </table>
           </Paper>
-          {selectionFormData.imp_exp == 'i' && 
+          {selectionFormData.imp_exp == 'i' &&
           <FormNote className={classes.noteContainer} text={gettext(noteText)}/> }
         </WizardStep>
       </Wizard>
