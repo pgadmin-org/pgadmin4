@@ -100,7 +100,7 @@ class NavMenuLocators:
                               "//following::input[@name='file']"
 
     restore_button_xpath = \
-        "//button[contains(@class,'fa-upload') and contains(.,'Restore')]"
+        "//button[ contains(.,'Restore')]"
 
     maintenance_operation = "//label[text()='Maintenance operation']"
 

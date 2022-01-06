@@ -142,7 +142,7 @@ define([
     },
     startBackupGlobal: function(action, treeItem) {
       pgBrowser.Node.registerUtilityPanel();
-      var panel = pgBrowser.Node.addUtilityPanel();
+      var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md);
       var tree = pgBrowser.tree,
         i = treeItem || tree.selected(),
         data = i ? tree.itemData(i) : undefined,
@@ -159,7 +159,7 @@ define([
     },
     startBackupServer: function(action, treeItem) {
       pgBrowser.Node.registerUtilityPanel();
-      var panel = pgBrowser.Node.addUtilityPanel();
+      var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md);
       var tree = pgBrowser.tree,
         i = treeItem || tree.selected(),
         data = i ? tree.itemData(i) : undefined,
@@ -235,7 +235,7 @@ define([
         }
 
         pgBrowser.Node.registerUtilityPanel();
-        var panel = pgBrowser.Node.addUtilityPanel(),
+        var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
           j = panel.$container.find('.obj_properties').first();
 
         var schema = that.getUISchema(treeItem,  'backup_objects');

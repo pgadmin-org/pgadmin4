@@ -240,16 +240,24 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         self.page.fill_input_by_field_name(
             NavMenuLocators.restore_file_name_txt_box_name,
-            "test_backup", loose_focus=True)
+            "test_backup", input_keys=True, loose_focus=True)
 
+        # Click on the Restore button
         restore_btn = self.page.find_by_xpath(
             NavMenuLocators.restore_button_xpath)
-        restore_btn.click()
-
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element(
-                By.CSS_SELECTOR,
-                NavMenuLocators.restore_file_name_txt_box_name))
+        click = True
+        retry = 3
+        while click and retry > 0:
+            try:
+                restore_btn.click()
+                if self.page.wait_for_element_to_disappear(
+                    lambda driver: driver.find_element(
+                        By.NAME,
+                        NavMenuLocators.restore_file_name_txt_box_name)):
+                    click = False
+            except Exception:
+                retry -= 1
+                pass
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code

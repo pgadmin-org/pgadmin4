@@ -509,7 +509,7 @@ define('pgadmin.browser.node', [
           w: (!_.isUndefined(width) && !_.isNull(width)) ? width :
             (screen.width < 700 ? screen.width * 0.95 : screen.width * 0.5),
           h: (!_.isUndefined(height) && !_.isNull(height)) ? height :
-            (screen.height < 500 ? screen.height * 0.95 : screen.height * 0.35),
+            (screen.height < 500 ? screen.height * 0.95 : screen.height * 0.4),
           x: (screen.width < 700 ? '2%' : '25%'),
           y: (screen.height < 500 ? '2%' : '25%'),
         }

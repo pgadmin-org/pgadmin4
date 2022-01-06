@@ -515,7 +515,7 @@ export default class BackupSchema extends BaseUISchema {
     }, {
       type: 'nested-fieldset',
       label: gettext('Sections'),
-      group: gettext('Dump options'),
+      group: gettext('Data/Objects'),
       schema:new getSectionSchema(),
       visible: function() {
         if (!_.isUndefined(obj.backupType) && obj.backupType === 'server')
@@ -525,27 +525,27 @@ export default class BackupSchema extends BaseUISchema {
     }, {
       type: 'nested-fieldset',
       label: gettext('Type of objects'),
-      group: gettext('Dump options'),
+      group: gettext('Data/Objects'),
       schema: obj.getTypeObjSchema()
     }, {
       type: 'nested-fieldset',
       label: gettext('Do not save'),
-      group: gettext('Dump options'),
+      group: gettext('Data/Objects'),
       schema: obj.getSaveOptSchema(),
     }, {
       type: 'nested-fieldset',
       label: gettext('Queries'),
-      group: gettext('Dump options'),
+      group: gettext('Options'),
       schema: obj.getQueryOptionSchema(),
     }, {
       type: 'nested-fieldset',
       label: gettext('Disable'),
-      group: gettext('Dump options'),
+      group: gettext('Options'),
       schema: obj.getDisabledOptionSchema(),
     }, {
       type: 'nested-fieldset',
       label: gettext('Miscellaneous'),
-      group: gettext('Dump options'),
+      group: gettext('Options'),
       schema: obj.getMiscellaneousSchema(),
     }];
   }

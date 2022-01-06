@@ -26,6 +26,9 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
   };
   const confirmOnReset = pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_properties_close;
 
+  /* button icons */
+  const saveBtnIcon = extraData.save_btn_icon;
+
   /* on save button callback, promise required */
   const onSaveClick = (isNew, data)=>new Promise((resolve, reject)=>{
     return api({
@@ -90,6 +93,7 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
       schema={_schema}
       viewHelperProps={viewHelperProps}
       customSaveBtnName={saveBtnName}
+      customSaveBtnIconType={saveBtnIcon}
       onSave={onSaveClick}
       onClose={()=>containerPanel.close()}
       onHelp={onHelp}

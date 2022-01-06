@@ -80,7 +80,7 @@ define('tools.restore', [
         ()=>getRestoreSectionSchema({selectedNodeType: itemNodeData._type}),
         ()=>getRestoreTypeObjSchema({selectedNodeType: itemNodeData._type}),
         ()=>getRestoreSaveOptSchema({nodeInfo: treeNodeInfo}),
-        ()=>getRestoreQueryOptionSchema({nodeInfo: treeNodeInfo}),
+        ()=>getRestoreQueryOptionSchema({selectedNodeType: itemNodeData._type, nodeInfo: treeNodeInfo}),
         ()=>getRestoreDisableOptionSchema({nodeInfo: treeNodeInfo}),
         ()=>getRestoreMiscellaneousSchema({nodeInfo: treeNodeInfo}),
         {
@@ -115,6 +115,7 @@ define('tools.restore', [
       if('function' in treeInfo) {
         extraData['functions'] = [nodeData._label];
       }
+      extraData['save_btn_icon'] = 'upload';
       return extraData;
     },
     url_for_utility_exists: function(id){
@@ -146,7 +147,7 @@ define('tools.restore', [
           return;
         }
         pgBrowser.Node.registerUtilityPanel();
-        var panel = pgBrowser.Node.addUtilityPanel(),
+        var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
           j = panel.$container.find('.obj_properties').first();
 
         var schema = that.getUISchema(treeItem);
@@ -159,7 +160,7 @@ define('tools.restore', [
           }),
           extraData = that.setExtraParameters(treeNodeInfo, data);
 
-        var sqlHelpUrl = 'restore.html',
+        var sqlHelpUrl = 'backup.html',
           helpUrl = url_for('help.static', {
             'filename': 'restore_dialog.html',
           });

@@ -100,6 +100,9 @@ export class RestoreTypeObjSchema extends BaseUISchema {
       group: gettext('Type of objects'),
       deps: ['pre_data', 'data', 'post_data', 'only_schema'],
       disabled: function(state) {
+        if(obj.selectedNodeType == 'table') {
+          state.only_data = true;
+        }
         return (obj.selectedNodeType !== 'database' && obj.selectedNodeType !== 'schema') ||
           (state.pre_data ||
             state.data ||
@@ -114,6 +117,9 @@ export class RestoreTypeObjSchema extends BaseUISchema {
       group: gettext('Type of objects'),
       deps: ['pre_data', 'data', 'post_data', 'only_data'],
       disabled: function(state) {
+        if(obj.selectedNodeType == 'index' || obj.selectedNodeType == 'function') {
+          state.only_schema = true;
+        }
         return (obj.selectedNodeType !== 'database' && obj.selectedNodeType !== 'schema') ||
           (state.pre_data ||
             state.data ||
@@ -174,7 +180,7 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       disabled: false,
       group: gettext('Do not save'),
       visible: function() {
-        var serverInfo = obj.fieldOptions.nodeInfo;
+        var serverInfo = obj.fieldOptions.nodeInfo.server;
         return !_.isUndefined(serverInfo) && serverInfo.version >= 110000 ? true : false;
       },
     }];
@@ -218,9 +224,11 @@ export class RestoreQueryOptionSchema extends BaseUISchema {
       label: gettext('Clean before restore'),
       type: 'switch',
       group: gettext('Queries'),
-      disabled: function() {
-        return obj.selectedNodeType === 'function'
-          || obj.selectedNodeType === 'trigger_function';
+      disabled: function(state) {
+        if(obj.selectedNodeType === 'function' || obj.selectedNodeType === 'trigger_function') {
+          state.clean = true;
+          return true;
+        }
       },
     }, {
       id: 'single_transaction',
@@ -407,37 +415,37 @@ export default class RestoreSchema extends BaseUISchema {
     }, {
       type: 'nested-fieldset',
       label: gettext('Sections'),
-      group: gettext('Restore options'),
+      group: gettext('Data/Objects'),
       schema:obj.getSectionSchema(),
       visible: true
     }, {
       type: 'nested-fieldset',
       label: gettext('Type of objects'),
-      group: gettext('Restore options'),
+      group: gettext('Data/Objects'),
       schema:obj.getRestoreTypeObjSchema(),
       visible: true
     }, {
       type: 'nested-fieldset',
       label: gettext('Do not save'),
-      group: gettext('Restore options'),
+      group: gettext('Data/Objects'),
       schema:obj.getRestoreSaveOptSchema(),
       visible: true
     }, {
       type: 'nested-fieldset',
       label: gettext('Queries'),
-      group: gettext('Restore options'),
+      group: gettext('Options'),
       schema:obj.getRestoreQueryOptionSchema(),
       visible: true
     }, {
       type: 'nested-fieldset',
       label: gettext('Disable'),
-      group: gettext('Restore options'),
+      group: gettext('Options'),
       schema:obj.getRestoreDisableOptionSchema(),
       visible: true
     }, {
       type: 'nested-fieldset',
       label: gettext('Miscellaneous / Behavior'),
-      group: gettext('Restore options'),
+      group: gettext('Options'),
       schema:obj.getRestoreMiscellaneousSchema(),
       visible: true
     }];

@@ -12,6 +12,7 @@ import { Box, makeStyles } from '@material-ui/core';
 import {Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
+import PublishIcon from '@material-ui/icons/Publish';
 import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
 import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/InfoRounded';
@@ -683,6 +684,15 @@ function SchemaDialogView({
     formErr: formErr,
   }), [formResetKey, formErr]);
 
+  const getButtonIcon = () => {
+    if(props.customSaveBtnIconType == 'upload') {
+      return <PublishIcon />;
+    }
+    return <SaveIcon />;
+  };
+
+  let ButtonIcon = getButtonIcon();
+
   /* I am Groot */
   return (
     <StateUtilsContext.Provider value={stateUtils}>
@@ -710,7 +720,7 @@ function SchemaDialogView({
               <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
                 {gettext('Reset')}
               </DefaultButton>
-              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={<SaveIcon />} disabled={!dirty || saving || Boolean(formErr.name) || !formReady}>
+              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={ButtonIcon} disabled={!dirty || saving || Boolean(formErr.name) || !formReady}>
                 {props.customSaveBtnName ? gettext(props.customSaveBtnName) : gettext('Save')}
               </PrimaryButton>
             </Box>
@@ -745,6 +755,7 @@ SchemaDialogView.propTypes = {
   showFooter: PropTypes.bool,
   resetKey: PropTypes.any,
   customSaveBtnName: PropTypes.string,
+  customSaveBtnIconType: PropTypes.string,
 };
 
 const usePropsStyles = makeStyles((theme)=>({
