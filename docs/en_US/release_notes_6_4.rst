@@ -28,3 +28,4 @@ Bug fixes
 | `Issue #7081 <https://redmine.postgresql.org/issues/7081>`_ -  Fixed an issue in SQL generation for PostgreSQL-14 functions.
 | `Issue #7093 <https://redmine.postgresql.org/issues/7093>`_ -  Fixed an issue where SubPlans may overlap other nodes & make them inaccessible in Graphical EXPLAIN View.
 | `Issue #7096 <https://redmine.postgresql.org/issues/7096>`_ -  Ensure that Truncate and Reset statistics should work.
+| `Issue #7102 <https://redmine.postgresql.org/issues/7102>`_ -  Fixed a schema diff issue where generated script adds unwanted line endings for Functions/Procedures/Trigger Functions.

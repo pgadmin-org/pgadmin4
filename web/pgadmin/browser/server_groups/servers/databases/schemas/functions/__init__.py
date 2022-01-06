@@ -1896,7 +1896,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 data['schema'] = target_schema
             status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
                                         data=data, fnid=oid, is_sql=False,
-                                        is_schema_diff=True)
+                                        is_schema_diff=True,
+                                        allow_code_formatting=False)
             # Check if return type is changed then we need to drop the
             # function first and then recreate it.
             if 'prorettypename' in data:
