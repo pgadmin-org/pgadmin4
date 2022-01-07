@@ -70,7 +70,7 @@
   }
   i {
     display: inline-block;
-    font: normal normal normal 18px/1 "default-icons";
+    font: normal 18px/1 "default-icons";
     font-size: 18px;
     text-align: center;
     height: 21px !important;
@@ -104,7 +104,6 @@
         transform: none !important;
       }
       &.loading:before {
-        background-position: 6px center !important;
         font-weight: 900;
         font-size: 0.6rem;
         line-height: 2;
@@ -136,7 +135,6 @@
     font: inherit;
     flex-grow: 1;
     user-select: none;
-    cursor: default;
     color: $tree-text-fg !important;
     margin-left: 3px;
     cursor: pointer !important;

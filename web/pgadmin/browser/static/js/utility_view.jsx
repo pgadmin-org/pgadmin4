@@ -46,26 +46,16 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
   });
 
   /* Callback for help button */
-  const onHelp = (isSqlHelp=false, isNew=false)=>{
+  const onHelp = (isSqlHelp=false)=>{
     if(isSqlHelp) {
       let server = treeNodeInfo.server;
-      let url = pgAdmin.Browser.utils.pg_help_path;
+      let help_url = pgAdmin.Browser.utils.pg_help_path;
       let fullUrl = '';
 
       if (server.server_type == 'ppas') {
         fullUrl = getEPASHelpUrl(server.version);
       } else {
-        if (sqlHelpUrl == '') {
-          fullUrl = getHelpUrl(url, sqlHelpUrl, server.version);
-        } else if (sqlHelpUrl != '') {
-          fullUrl = getHelpUrl(url, sqlHelpUrl, server.version);
-        } else {
-          if (isNew) {
-            fullUrl = getHelpUrl(url, sqlHelpUrl, server.version);
-          } else {
-            fullUrl = getHelpUrl(url, sqlHelpUrl, server.version);
-          }
-        }
+        fullUrl = getHelpUrl(help_url, sqlHelpUrl, server.version);
       }
 
       window.open(fullUrl, 'postgres_help');
@@ -97,8 +87,7 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
       onSave={onSaveClick}
       onClose={()=>containerPanel.close()}
       onHelp={onHelp}
-      onDataChange={()=>{
-      }}
+      onDataChange={()=>{}}
       confirmOnCloseReset={confirmOnReset}
       hasSQL={false}
       disableSqlHelp={sqlHelpUrl == undefined || sqlHelpUrl == ''}

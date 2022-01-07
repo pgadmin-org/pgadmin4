@@ -34,7 +34,7 @@ export class DefaultWithSchema extends BaseUISchema {
       id: 'evnt_truncate', label: gettext('TRUNCATE'),
       type: 'switch', group: gettext('With'),
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info']) && !_.isUndefined(this.node_info['node_info'])
+        if(!_.isUndefined(this.node_info['node_info'])
           && !_.isUndefined(this.node_info['node_info'].version) &&
             this.node_info['node_info'].version >= 110000)
           return true;
@@ -45,7 +45,7 @@ export class DefaultWithSchema extends BaseUISchema {
       id: 'publish_via_partition_root', label: gettext('Publish via root?'),
       type: 'switch', group: gettext('With'),
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info']) && !_.isUndefined(this.node_info['node_info'])
+        if(!_.isUndefined(this.node_info['node_info'])
           && !_.isUndefined(this.node_info['node_info'].version) &&
             this.node_info['node_info'].version >= 130000)
           return true;

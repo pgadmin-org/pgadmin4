@@ -505,7 +505,7 @@ function SchemaDialogView({
       if(!getInitData) {
         throw new Error('getInitData must be passed for edit');
       }
-      getInitData && getInitData().then((data)=>{firstEleRef.current;
+      getInitData && getInitData().then((data)=>{
         data = data || {};
         /* Set the origData to incoming data, useful for comparing and reset */
         schema.origData = prepareData(data || {});

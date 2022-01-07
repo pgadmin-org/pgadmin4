@@ -1107,7 +1107,6 @@ textarea {
 ::-webkit-scrollbar-thumb {
     border: 0.25rem solid transparent;
     border-radius: $border-radius*2;
-    background-color: rgba($scrollbar-base-color, 0.7);
     background: rgba($scrollbar-base-color, 0.7) !important;
     background-clip: content-box !important;
 }
@@ -1115,7 +1114,7 @@ textarea {
 ::-webkit-scrollbar-thumb:hover {
     border: 0.25rem solid transparent;
     background-color: $scrollbar-base-color !important;
-    ackground-clip: content-box !important;
+    background-clip: content-box !important;
 }
 
 

@@ -132,7 +132,6 @@ export class ManageTreeNodes {
           }
         }
         throw new Error("Node Load Error...");
-        return [];
       }
 
       let treeData = null;
