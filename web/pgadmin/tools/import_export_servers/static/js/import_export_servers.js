@@ -93,7 +93,7 @@ export default class ImportExportServersModule {
                 Alertify.importExportWizardDialog().elements.modal.style.overflow='visible';
                 Alertify.importExportWizardDialog().elements.dimmer.style.display='none';
               }
-            }, 500);
+            }, 10);
 
           },
           prepare: function () {

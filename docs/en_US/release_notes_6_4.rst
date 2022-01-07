@@ -15,6 +15,7 @@ Housekeeping
 ************
 
 | `Issue #7018 <https://redmine.postgresql.org/issues/7018>`_ -  Port Restore dialog to React.
+| `Issue #7019 <https://redmine.postgresql.org/issues/7019>`_ -  Port Maintenance dialog to React.
 
 Bug fixes
 *********

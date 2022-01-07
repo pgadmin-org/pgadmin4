@@ -127,7 +127,7 @@ define([
                   Alertify.grantWizardDialog().elements.modal.style.overflow='visible';
                   Alertify.grantWizardDialog().elements.dimmer.style.display='none';
                 }
-              }, 500);
+              }, 10);
 
             },
             prepare: function () {

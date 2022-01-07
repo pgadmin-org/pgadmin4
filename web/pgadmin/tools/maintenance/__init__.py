@@ -139,9 +139,9 @@ class Message(IProcessDesc):
             res = _('VACUUM ({0})')
 
             opts = []
-            if self.data['vacuum_full']:
+            if 'vacuum_full' in self.data and self.data['vacuum_full']:
                 opts.append(_('FULL'))
-            if self.data['vacuum_freeze']:
+            if 'vacuum_freeze' in self.data and self.data['vacuum_freeze']:
                 opts.append(_('FREEZE'))
             if self.data['verbose']:
                 opts.append(_('VERBOSE'))
