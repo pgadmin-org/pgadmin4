@@ -28,10 +28,13 @@ Use the fields in the *General* tab to specify the following:
     :alt: Type of objects option on backup server dialog
     :align: center
 
+Click the *Data/Objects* tab to continue. Use the fields in the *Data/Objects*
+tab to provide options related to data or pgAdmin objects that correspond to *pg_dump*.
+
 * Move switches in the **Type of objects** field box to specify details about
   the type of objects that will be backed up.
 
-   * Move the switch next to *Only data* to the *Yes* position to limit the back
+   * Move the switch next to *Only data* towards right position to limit the back
      up to data.
 
    * Move the switch next to *Only schema* to limit the back up to schema-level
@@ -44,19 +47,19 @@ Use the fields in the *General* tab to specify the following:
 * Move switches in the **Do not save** field box to select the objects that will
   not be included in the backup.
 
-   * Move the switch next to *Owner* to the *Yes* position to exclude commands
+   * Move the switch next to *Owner* towards right position to exclude commands
      that set object ownership.
 
-   * Move the switch next to *Privilege* to the *Yes* position to exclude
+   * Move the switch next to *Privilege* towards right position to exclude
      commands that create access privileges.
 
-   * Move the switch next to *Tablespace* to the *Yes* position to exclude
+   * Move the switch next to *Tablespace* towards right position to exclude
      tablespaces.
 
-   * Move the switch next to *Unlogged table data* to the *Yes* position to
+   * Move the switch next to *Unlogged table data* towards right position to
      exclude the contents of unlogged tables.
 
-   * Move the switch next to *Comments* to the *Yes* position to exclude
+   * Move the switch next to *Comments* towards right position to exclude
      commands that set the comments. **Note:** This option is visible only for
      database server greater than or equal to 11.
 
@@ -67,15 +70,15 @@ Use the fields in the *General* tab to specify the following:
 * Move switches in the **Queries** field box to specify the type of statements
   that should be included in the backup.
 
-   * Move the switch next to *Use Column Inserts* to the *Yes* position to dump
+   * Move the switch next to *Use Column Inserts* towards right position to dump
      the data in the form of INSERT statements and include explicit column
      names. Please note: this may make restoration from backup slow.
 
-   * Move the switch next to *Use Insert commands* to the *Yes* position to dump
+   * Move the switch next to *Use Insert commands* towards right position to dump
      the data in the form of INSERT statements rather than using a COPY command.
      Please note: this may make restoration from backup slow.
 
-   * Move the switch next to *Include DROP DATABASE statement* to the *Yes*
+   * Move the switch next to *Include DROP DATABASE statement* towards right
      position to include a command in the backup that will drop any existing
      database object with the same name before recreating the object during a
      backup.
@@ -89,10 +92,10 @@ Use the fields in the *General* tab to specify the following:
   that should be excluded from the backup.
 
    * Move the switch next to *Trigger* (active when creating a data-only backup)
-     to the *Yes* position to include commands that will disable triggers on the
+     towards right position to include commands that will disable triggers on the
      target table while the data is being loaded.
 
-   * Move the switch next to *$ quoting* to the *Yes* position to enable dollar
+   * Move the switch next to *$ quoting* towards right position to enable dollar
      quoting within function bodies; if disabled, the function body will be
      quoted using SQL standard string syntax.
 
@@ -103,16 +106,16 @@ Use the fields in the *General* tab to specify the following:
 * Move switches in the **Miscellaneous** field box to specify miscellaneous
   backup options.
 
-   * Move the switch next to *With OIDs* to the *Yes* position to include object
+   * Move the switch next to *With OIDs* towards right position to include object
      identifiers as part of the table data for each table.
 
-   * Move the switch next to *Verbose messages* to the *No* position to instruct
+   * Move the switch next to *Verbose messages* towards left position to instruct
      *pg_dump* to exclude verbose messages.
 
-   * Move the switch next to *Force double quotes on identifiers* to the *Yes*
+   * Move the switch next to *Force double quotes on identifiers* towards right
      position to force the quoting of all identifiers.
 
-   * Move the switch next to *Use SET SESSION AUTHORIZATION* to the *Yes*
+   * Move the switch next to *Use SET SESSION AUTHORIZATION* towards right
      position to include a statement that will use a SET SESSION AUTHORIZATION
      command to determine object ownership (instead of an ALTER OWNER command).
 

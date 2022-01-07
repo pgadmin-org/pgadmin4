@@ -38,8 +38,9 @@ restore process:
 * Use the drop-down listbox next to *Rolename* to specify the role that will be
   used to authenticate with the server during the restore process.
 
-Click the *Restore options* tab to continue. Use the fields on the *Restore
-options* tab to specify options that correspond to *pg_restore* options.
+Click the *Data/Objects* tab to continue. Use the fields on the *Data/Objects*
+tab to specify options related to data or pgAdmin objects that correspond to
+*pg_restore* options.
 
 .. image:: images/restore_sections.png
     :alt: Restore dialog options section
@@ -48,11 +49,11 @@ options* tab to specify options that correspond to *pg_restore* options.
 * Use the switches in the **Sections** box to specify the content that will be
   restored:
 
-   * Move the switch next to *Pre-data* to the *Yes* position to restore all
+   * Move the switch next to *Pre-data* towards right position to restore all
      data definition items not included in the data or post-data item lists.
-   * Move the switch next to *Data* to the *Yes* position to restore actual
+   * Move the switch next to *Data* towards right position to restore actual
      table data, large-object contents, and sequence values.
-   * Move the switch next to *Post-data* to the *Yes* position to restore
+   * Move the switch next to *Post-data* towards right position position to restore
      definitions of indexes, triggers, rules, and constraints (other than
      validated check constraints).
 
@@ -63,7 +64,7 @@ options* tab to specify options that correspond to *pg_restore* options.
 * Use the switches in the **Type of objects** box to specify the objects that
   will be restored:
 
-   * Move the switch next to *Only data* to the *Yes* position to limit the
+   * Move the switch next to *Only data* towards right position to limit the
      restoration to data.
    * Move the switch next to *Only schema* to limit the restoration to
      schema-level database objects.
@@ -75,15 +76,19 @@ options* tab to specify options that correspond to *pg_restore* options.
 * Use the switches in the **Do not save** box to specify which objects will not
   be restored:
 
-   * Move the switch next to *Owner* to the *Yes* position to exclude commands
+   * Move the switch next to *Owner* towards right position to exclude commands
      that set object ownership.
-   * Move the switch next to *Privilege* to the *Yes* position to exclude
+   * Move the switch next to *Privilege* towards right position to exclude
      commands that create access privileges.
-   * Move the switch next to *Tablespace* to the *Yes* position to exclude
+   * Move the switch next to *Tablespace* towards right position to exclude
      tablespaces.
-   * Move the switch next to *Comments* to the *Yes* position to exclude
+   * Move the switch next to *Comments* towards right position to exclude
      commands that set the comments. **Note:** This option is visible only for
      database server greater than or equal to 11.
+
+Click the *Options* tab to continue. Use these additional fields to specify
+options like cleaning before restore, verbose message or using set session
+authorization that correspond to *pg_restore* options.
 
 .. image:: images/restore_queries.png
     :alt: Restore dialog queries section
@@ -92,12 +97,11 @@ options* tab to specify options that correspond to *pg_restore* options.
 * Use the switches in the **Queries** box to specify the type of statements that
   should be included in the restore:
 
-   * Move the switch next to *Include CREATE DATABASE statement* to the *Yes*
-     position to include a command that creates a new database before performing
-     the restore.
-   * Move the switch next to *Clean before restore* to the *Yes* position to
+   * Move the switch next to *Include CREATE DATABASE statement* towards right position
+     to include a command that creates a new database before performing the restore.
+   * Move the switch next to *Clean before restore* towards right position to
      drop each existing database object (and data) before restoring.
-   * Move the switch next to *Single transaction* to the *Yes* position to
+   * Move the switch next to *Single transaction* towards right position to
      execute the restore as a single transaction (that is, wrap the emitted
      commands in *BEGIN/COMMIT*). This ensures that either all the commands
      complete successfully, or no changes are applied. This option implies
@@ -111,9 +115,9 @@ options* tab to specify options that correspond to *pg_restore* options.
   should be excluded from the restore:
 
    * Move the switch next to *Trigger* (active when creating a data-only
-     restore) to the *Yes* position to include commands that will disable
+     restore) towards right position to include commands that will disable
      triggers on the target table while the data is being loaded.
-   * Move the switch next to *No data for Failed Tables* to the *Yes* position
+   * Move the switch next to *No data for Failed Tables* towards right position
      to ignore data that fails a trigger.
 
 .. image:: images/restore_miscellaneous.png
@@ -123,13 +127,13 @@ options* tab to specify options that correspond to *pg_restore* options.
 * Use the switches in the **Miscellaneous/Behavior** box to specify
   miscellaneous restore options:
 
-   * Move the switch next to *Verbose messages* to the *No* position to instruct
+   * Move the switch next to *Verbose messages* towards left to instruct
      *pg_restore* to exclude verbose messages.
-   * Move the switch next to *Use SET SESSION AUTHORIZATION* to the *Yes*
-     position to include a statement that will use a SET SESSION AUTHORIZATION
+   * Move the switch next to *Use SET SESSION AUTHORIZATION* towards right position
+     to include a statement that will use a SET SESSION AUTHORIZATION
      command to determine object ownership (instead of an ALTER OWNER command).
 
-   * Move the switch next to *Exit on error* to the *Yes* position to instruct
+   * Move the switch next to *Exit on error* towards right position to instruct
      *pg_restore* to exit restore if there is an error in sending SQL commands.
      The default is to continue and to display a count of errors at the end of
      the restore.
