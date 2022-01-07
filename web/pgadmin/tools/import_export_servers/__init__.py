@@ -24,6 +24,8 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.model import ServerGroup, Server
 from pgadmin.utils import clear_database_servers, dump_database_servers,\
     load_database_servers, validate_json_data
+from urllib.parse import unquote
+from pgadmin.utils.paths import get_storage_directory
 
 MODULE_NAME = 'import_export_servers'
 
@@ -130,9 +132,20 @@ def load_servers():
     if 'filename' in data:
         filename = data['filename']
 
-    if filename is not None and os.path.exists(filename):
+    file_path = unquote(filename)
+
+    # retrieve storage directory path
+    storage_manager_path = get_storage_directory()
+    if storage_manager_path:
+        # generate full path of file
+        file_path = os.path.join(
+            storage_manager_path,
+            file_path.lstrip('/').lstrip('\\')
+        )
+
+    if file_path is not None and os.path.exists(file_path):
         try:
-            with open(filename, 'r') as j:
+            with open(file_path, 'r') as j:
                 data = json.loads(j.read())
 
                 # Validate the json file and data

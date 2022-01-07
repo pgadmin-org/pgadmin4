@@ -1985,7 +1985,7 @@ define([
 
         let response = getFileFormat(this.config.options.allowed_file_types);
         let lastSelectedFormat =  response.responseJSON.info;
-        if (_.isUndefined(lastSelectedFormat))
+        if (_.isUndefined(lastSelectedFormat) || allowed_types.indexOf(lastSelectedFormat) < 0)
           set_type = allowed_types[0];
         else
           set_type = lastSelectedFormat;

@@ -22,8 +22,8 @@ from threading import Lock
 from .paths import get_storage_directory
 from .preferences import Preferences
 from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND
-from pgadmin.model import db, User, Version, ServerGroup, Server, \
-    SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
+from pgadmin.model import db, User, ServerGroup, Server
+from urllib.parse import unquote
 
 ADD_SERVERS_MSG = "Added %d Server Group(s) and %d Server(s)."
 
@@ -450,20 +450,36 @@ def dump_database_servers(output_file, selected_servers,
 
     object_dict["Servers"] = server_dict
 
-    f = None
-    try:
-        f = open(output_file, "w")
-    except Exception as e:
-        return _handle_error("Error opening output file %s: [%d] %s" %
-                             (output_file, e.errno, e.strerror), from_setup)
+    # retrieve storage directory path
+    storage_manager_path = get_storage_directory()
 
-    try:
-        f.write(json.dumps(object_dict, indent=4))
-    except Exception as e:
-        return _handle_error("Error writing output file %s: [%d] %s" %
-                             (output_file, e.errno, e.strerror), from_setup)
+    # generate full path of file
+    file_path = unquote(output_file)
 
-    f.close()
+    from pgadmin.misc.file_manager import Filemanager
+    try:
+        Filemanager.check_access_permission(storage_manager_path, file_path)
+    except Exception as e:
+        return _handle_error(str(e), from_setup)
+
+    if storage_manager_path is not None:
+        file_path = os.path.join(
+            storage_manager_path,
+            file_path.lstrip('/').lstrip('\\')
+        )
+
+    # write to file
+    file_content = json.dumps(object_dict, indent=4)
+    error_str = gettext("Error: {0}")
+    try:
+        with open(file_path, 'w') as output_file:
+            output_file.write(file_content)
+    except IOError as e:
+        err_msg = error_str.format(e.strerror)
+        return _handle_error(err_msg, from_setup)
+    except Exception as e:
+        err_msg = error_str.format(e.strerror)
+        return _handle_error(err_msg, from_setup)
 
     msg = "Configuration for %s servers dumped to %s." % \
           (servers_dumped, output_file)
@@ -541,15 +557,26 @@ def load_database_servers(input_file, selected_servers,
                           load_user=current_user, from_setup=False):
     """Load server groups and servers.
     """
+    # retrieve storage directory path
+    storage_manager_path = get_storage_directory()
+    # generate full path of file
+    file_path = unquote(input_file)
+    if storage_manager_path:
+        # generate full path of file
+        file_path = os.path.join(
+            storage_manager_path,
+            file_path.lstrip('/').lstrip('\\')
+        )
+
     try:
-        with open(input_file) as f:
+        with open(file_path) as f:
             data = json.load(f)
     except json.decoder.JSONDecodeError as e:
         return _handle_error("Error parsing input file %s: %s" %
-                             (input_file, e), from_setup)
+                             (file_path, e), from_setup)
     except Exception as e:
         return _handle_error("Error reading input file %s: [%d] %s" %
-                             (input_file, e.errno, e.strerror), from_setup)
+                             (file_path, e.errno, e.strerror), from_setup)
 
     f.close()
 
