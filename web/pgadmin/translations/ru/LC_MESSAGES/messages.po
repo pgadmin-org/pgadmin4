@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-12-10 19:48+0530\n"
+"POT-Creation-Date: 2022-01-07 21:34+0530\n"
 "PO-Revision-Date: 2017-11-09 09:44+0300\n"
 "Last-Translator: Alexander Lakhin <a.lakhin@postgrespro.ru>\n"
 "Language: ru\n"
@@ -21,11 +21,11 @@ msgstr ""
 msgid "Incorrect username or password."
 msgstr ""
 
-#: pgadmin/__init__.py:616 pgadmin/__init__.py:666
+#: pgadmin/__init__.py:622 pgadmin/__init__.py:672
 msgid "Auto-detected {0} installation with the data directory at {1}"
 msgstr ""
 
-#: pgadmin/__init__.py:747
+#: pgadmin/__init__.py:753
 msgid "403 FORBIDDEN"
 msgstr ""
 
@@ -53,8 +53,8 @@ msgstr "Рабочая станция"
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:223
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:312
 #: pgadmin/browser/static/js/browser.js:600
-#: pgadmin/static/js/helpers/Notifier.jsx:96
-#: pgadmin/static/js/helpers/Notifier.jsx:222
+#: pgadmin/static/js/helpers/Notifier.jsx:106
+#: pgadmin/static/js/helpers/Notifier.jsx:232
 #: pgadmin/static/js/slickgrid/editors.js:70
 #: pgadmin/static/js/slickgrid/editors.js:80
 #: pgadmin/static/js/slickgrid/editors.js:81
@@ -68,7 +68,6 @@ msgstr "Рабочая станция"
 #: pgadmin/tools/datagrid/static/js/show_data.js:240
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/FloatingNote.jsx:56
 #: pgadmin/tools/import_export/static/js/import_export.js:502
-#: pgadmin/tools/maintenance/static/js/maintenance.js:307
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:963
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:981
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2624
@@ -330,8 +329,8 @@ msgstr ""
 #: pgadmin/authenticate/mfa/email.py:235
 #: pgadmin/browser/templates/browser/js/messages.js:46
 #: pgadmin/static/js/backform.pgadmin.js:2805
-#: pgadmin/tools/backup/static/js/backup.ui.js:501
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:87
+#: pgadmin/tools/backup/static/js/backup.ui.js:517
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:103
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/FloatingNote.jsx:45
 msgid "Note"
 msgstr "Замечание"
@@ -432,7 +431,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1002
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:221
 #: pgadmin/browser/static/js/browser.js:597
-#: pgadmin/browser/static/js/node.js:1827
+#: pgadmin/browser/static/js/node.js:1650
 #: pgadmin/browser/static/js/wizard.js:137
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:35
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:196
@@ -440,7 +439,7 @@ msgstr ""
 #: pgadmin/misc/file_manager/static/js/select_dialogue.js:131
 #: pgadmin/misc/file_manager/static/js/storage_dialogue.js:25
 #: pgadmin/preferences/static/js/preferences.js:563
-#: pgadmin/static/js/helpers/Notifier.jsx:96
+#: pgadmin/static/js/helpers/Notifier.jsx:106
 #: pgadmin/static/js/slickgrid/editors.js:70
 #: pgadmin/static/js/sqleditor/filter_dialog.js:91
 #: pgadmin/static/js/sqleditor/macro.js:69
@@ -451,8 +450,6 @@ msgstr ""
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:985
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:278
 #: pgadmin/tools/import_export/static/js/import_export.js:497
-#: pgadmin/tools/maintenance/static/js/maintenance.js:302
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:65
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:960
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2629
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:2816
@@ -713,23 +710,23 @@ msgid ""
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:127
-#: pgadmin/static/js/sqleditor/macro_model.js:41 pgadmin/utils/__init__.py:378
-#: pgadmin/utils/__init__.py:387
+#: pgadmin/static/js/sqleditor/macro_model.js:41 pgadmin/utils/__init__.py:773
+#: pgadmin/utils/__init__.py:782
 msgid "Key"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:128
-#: pgadmin/static/js/keyboard_shortcuts.js:77 pgadmin/utils/__init__.py:392
+#: pgadmin/static/js/keyboard_shortcuts.js:77 pgadmin/utils/__init__.py:787
 msgid "Shift"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:129
-#: pgadmin/static/js/keyboard_shortcuts.js:80 pgadmin/utils/__init__.py:398
+#: pgadmin/static/js/keyboard_shortcuts.js:80 pgadmin/utils/__init__.py:793
 msgid "Ctrl"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:130
-#: pgadmin/utils/__init__.py:403
+#: pgadmin/utils/__init__.py:798
 msgid "Alt/Option"
 msgstr ""
 
@@ -774,7 +771,7 @@ msgstr ""
 #: pgadmin/browser/static/js/toolbar.js:31
 #: pgadmin/browser/static/js/toolbar.js:138
 #: pgadmin/tools/search_objects/__init__.py:26
-#: pgadmin/tools/search_objects/static/js/search_objects.js:85
+#: pgadmin/tools/search_objects/static/js/search_objects.js:86
 msgid "Search objects"
 msgstr ""
 
@@ -877,7 +874,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:510
 #: pgadmin/browser/static/js/collection.js:79
-#: pgadmin/browser/static/js/node.js:239
+#: pgadmin/browser/static/js/node.js:204
 #: pgadmin/browser/static/js/toolbar.js:60
 #: pgadmin/browser/static/js/toolbar.js:61
 #: pgadmin/browser/static/js/toolbar.js:132
@@ -897,17 +894,18 @@ msgstr "Отладчик"
 #: pgadmin/browser/register_browser_preferences.py:512
 #: pgadmin/tools/schema_diff/__init__.py:43
 #: pgadmin/tools/schema_diff/static/js/schema_diff.js:50
-#: pgadmin/tools/schema_diff/static/js/schema_diff.js:101
+#: pgadmin/tools/schema_diff/static/js/schema_diff.js:102
 msgid "Schema Diff"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:513
+#: pgadmin/tools/erd/static/js/erd_module.js:49
 msgid "ERD Tool"
 msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:518
 #: pgadmin/browser/static/js/collection.js:98
-#: pgadmin/browser/static/js/node.js:259
+#: pgadmin/browser/static/js/node.js:222
 #: pgadmin/browser/static/js/toolbar.js:73
 #: pgadmin/browser/static/js/toolbar.js:74
 #: pgadmin/browser/static/js/toolbar.js:140
@@ -953,8 +951,8 @@ msgstr "Требуемые свойства отсутствуют."
 #: pgadmin/browser/templates/browser/js/messages.js:48
 #: pgadmin/browser/utils.py:443
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:153
-#: pgadmin/static/js/helpers/Notifier.jsx:160
-#: pgadmin/static/js/helpers/Notifier.jsx:187
+#: pgadmin/static/js/helpers/Notifier.jsx:170
+#: pgadmin/static/js/helpers/Notifier.jsx:197
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:298
 #: pgadmin/tools/grant_wizard/__init__.py:127 pgadmin/utils/exception.py:37
 msgid "Connection to the server has been lost."
@@ -1048,8 +1046,8 @@ msgstr "Режим SSL"
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:681
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:87
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:168
-#: pgadmin/tools/backup/static/js/backup.ui.js:171
-#: pgadmin/tools/restore/static/js/restore.js:279
+#: pgadmin/tools/backup/static/js/backup.ui.js:187
+#: pgadmin/tools/restore/static/js/restore.ui.js:186
 msgid "Comments"
 msgstr "Комментарии"
 
@@ -1110,12 +1108,13 @@ msgstr "Параметр '{0}' нельзя изменять при устано
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:367
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:341
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:602
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:967
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:968
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:540
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:455
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:301
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:372
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:306
+#: pgadmin/tools/import_export_servers/__init__.py:202
 #: pgadmin/tools/sqleditor/utils/macros.py:139
 msgid "Could not find the required parameter ({})."
 msgstr ""
@@ -1318,10 +1317,10 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:491
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:431
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:682
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1170
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1171
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:661
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:562
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:419
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:435
 msgid "Error: Object not found."
 msgstr "Ошибка: объект не найден."
 
@@ -1467,7 +1466,7 @@ msgstr "Приведение..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:227
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:47
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:165
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:324
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:320
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:437
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:208
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:216
@@ -1576,7 +1575,7 @@ msgstr "Имя"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:241
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:61
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:144
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:327
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:323
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:440
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:211
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:219
@@ -1586,7 +1585,7 @@ msgstr "Имя"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:142
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:60
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:396
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:393
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:107
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:145
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:125
@@ -1661,7 +1660,7 @@ msgstr "OID"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:245
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:127
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:342
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:338
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:490
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:569
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:521
@@ -1671,7 +1670,7 @@ msgstr "OID"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:80
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:159
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:82
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:403
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:400
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:117
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:412
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:116
@@ -2044,7 +2043,7 @@ msgstr "Событийный триггер..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:146
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:39
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:162
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:329
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:325
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:442
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:120
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1407
@@ -2052,7 +2051,7 @@ msgstr "Событийный триггер..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:60
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:145
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:63
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:399
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:396
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:110
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:149
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:129
@@ -2060,8 +2059,8 @@ msgstr "Событийный триггер..."
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:58
 #: pgadmin/dashboard/static/js/dashboard.js:883
 #: pgadmin/dashboard/static/js/dashboard.js:1147
-#: pgadmin/tools/backup/static/js/backup.ui.js:147
-#: pgadmin/tools/restore/static/js/restore.js:252
+#: pgadmin/tools/backup/static/js/backup.ui.js:163
+#: pgadmin/tools/restore/static/js/restore.ui.js:168
 msgid "Owner"
 msgstr "Владелец"
 
@@ -2099,12 +2098,12 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:235
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:219
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:260
-#: pgadmin/tools/backup/static/js/backup.ui.js:291
-#: pgadmin/tools/backup/static/js/backup.ui.js:301
-#: pgadmin/tools/backup/static/js/backup.ui.js:534
-#: pgadmin/tools/restore/static/js/restore.js:335
-#: pgadmin/tools/restore/static/js/restore.js:345
-#: pgadmin/tools/restore/static/js/restore.js:354
+#: pgadmin/tools/backup/static/js/backup.ui.js:307
+#: pgadmin/tools/backup/static/js/backup.ui.js:317
+#: pgadmin/tools/backup/static/js/backup.ui.js:550
+#: pgadmin/tools/restore/static/js/restore.ui.js:279
+#: pgadmin/tools/restore/static/js/restore.ui.js:285
+#: pgadmin/tools/restore/static/js/restore.ui.js:450
 msgid "Disable"
 msgstr "Выключить"
 
@@ -2227,7 +2226,7 @@ msgstr "Метки безопасности"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:80
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:116
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:125
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:411
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:408
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:159
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:162
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:165
@@ -2471,12 +2470,18 @@ msgstr "Тип"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:224
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:227
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:239
+#: pgadmin/tools/backup/static/js/backup.ui.js:546
+#: pgadmin/tools/backup/static/js/backup.ui.js:551
+#: pgadmin/tools/backup/static/js/backup.ui.js:556
 #: pgadmin/tools/import_export/static/js/import_export.js:66
 #: pgadmin/tools/import_export/static/js/import_export.js:76
 #: pgadmin/tools/import_export/static/js/import_export.js:277
-#: pgadmin/tools/maintenance/static/js/maintenance.js:70
-#: pgadmin/tools/maintenance/static/js/maintenance.js:94
-#: pgadmin/tools/maintenance/static/js/maintenance.js:130
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:117
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:141
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:145
+#: pgadmin/tools/restore/static/js/restore.ui.js:445
+#: pgadmin/tools/restore/static/js/restore.ui.js:451
+#: pgadmin/tools/restore/static/js/restore.ui.js:457
 #: pgadmin/utils/constants.py:21
 msgid "Options"
 msgstr "Параметры"
@@ -2831,7 +2836,7 @@ msgid "Schema dropped"
 msgstr "Схема удалена"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:816
-#: pgadmin/static/js/SchemaView/index.jsx:662
+#: pgadmin/static/js/SchemaView/index.jsx:664
 #: pgadmin/static/js/backform.pgadmin.js:1971
 msgid "Definition incomplete."
 msgstr "Определение неполное."
@@ -3284,9 +3289,9 @@ msgstr "Значение"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:380
 #: pgadmin/browser/static/js/browser.js:223
 #: pgadmin/browser/templates/browser/js/messages.js:40
-#: pgadmin/misc/static/explain/js/explain.js:1315
-#: pgadmin/misc/static/explain/js/explain.js:1447
-#: pgadmin/misc/static/explain/js/explain.js:1448
+#: pgadmin/misc/static/explain/js/explain.js:1279
+#: pgadmin/misc/static/explain/js/explain.js:1411
+#: pgadmin/misc/static/explain/js/explain.js:1412
 #: pgadmin/misc/statistics/static/js/statistics.js:151
 msgid "Statistics"
 msgstr "Статистика"
@@ -3665,14 +3670,14 @@ msgstr "Не удалось найти функцию в базе данных."
 msgid "The specified function could not be found."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:2056
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:2057
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/procedure.js:38
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:625
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbproc.js:34
 msgid "Procedures"
 msgstr "Процедуры"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:2156
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:2157
 msgid "Trigger Functions"
 msgstr "Триггерные функции"
 
@@ -4261,7 +4266,6 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:210
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:282
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:272
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:304
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:591
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:95
@@ -4270,7 +4274,7 @@ msgstr ""
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:78
 #: pgadmin/static/js/backform.pgadmin.js:574
 #: pgadmin/static/js/backgrid.pgadmin.js:794
-#: pgadmin/static/js/helpers/Notifier.jsx:236
+#: pgadmin/static/js/helpers/Notifier.jsx:246
 #: pgadmin/static/js/sqleditor/history/query_history_entries.js:276
 msgid "Yes"
 msgstr "Да"
@@ -4279,7 +4283,6 @@ msgstr "Да"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:283
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:175
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:98
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:273
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:305
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:592
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:96
@@ -4288,7 +4291,7 @@ msgstr "Да"
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:77
 #: pgadmin/static/js/backform.pgadmin.js:575
 #: pgadmin/static/js/backgrid.pgadmin.js:795
-#: pgadmin/static/js/helpers/Notifier.jsx:236
+#: pgadmin/static/js/helpers/Notifier.jsx:246
 #: pgadmin/static/js/sqleditor/history/query_history_entries.js:276
 msgid "No"
 msgstr "Нет"
@@ -4427,7 +4430,7 @@ msgstr "-- неполное определение для {0}"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:209
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1526
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1339
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:876
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:892
 msgid "-- definition incomplete"
 msgstr "-- неполное определение"
 
@@ -4853,8 +4856,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:91
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:131
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:54
-#: pgadmin/tools/backup/static/js/backup.ui.js:159
-#: pgadmin/tools/restore/static/js/restore.js:270
+#: pgadmin/tools/backup/static/js/backup.ui.js:175
+#: pgadmin/tools/restore/static/js/restore.ui.js:180
 msgid "Tablespace"
 msgstr "Табличное пространство"
 
@@ -5315,8 +5318,8 @@ msgstr "Включить все"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:97
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:115
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:123
-#: pgadmin/browser/static/js/node.js:191 pgadmin/browser/static/js/node.js:290
-#: pgadmin/browser/static/js/node.js:1113
+#: pgadmin/browser/static/js/node.js:157 pgadmin/browser/static/js/node.js:250
+#: pgadmin/browser/static/js/node.js:1000
 #: pgadmin/tools/datagrid/static/js/datagrid.js:243
 #: pgadmin/tools/erd/static/js/erd_module.js:52
 msgid "The selected tree node does not support this option."
@@ -5356,12 +5359,12 @@ msgid "Are you sure you want to truncate table %s?"
 msgstr "Вы действительно хотите опустошить таблицу %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:254
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:242
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:240
 msgid "Reset statistics"
 msgstr "Сбросить статистику"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:255
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:243
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:241
 #, python-format
 msgid "Are you sure you want to reset the statistics for table \"%s\"?"
 msgstr "Вы действительно хотите сбросить статистику для таблицы \"%s\"?"
@@ -5374,7 +5377,7 @@ msgstr "Вы действительно хотите отсоединить се
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:369
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:187
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:306
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:333
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:329
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:477
 msgid "Partitioned table?"
 msgstr ""
@@ -6222,8 +6225,8 @@ msgid "Could not find the trigger in the table."
 msgstr "Не удалось найти триггер в таблице."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:47
-#: pgadmin/tools/backup/static/js/backup.ui.js:289
-#: pgadmin/tools/restore/static/js/restore.js:340
+#: pgadmin/tools/backup/static/js/backup.ui.js:305
+#: pgadmin/tools/restore/static/js/restore.ui.js:276
 msgid "Trigger"
 msgstr "Триггер"
 
@@ -6308,28 +6311,28 @@ msgstr "ANSI"
 msgid "Types"
 msgstr "Типы"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:322
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:615
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1373
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1441
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:323
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:616
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1374
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1442
 msgid "Could not find the type in the database."
 msgstr "Не удалось найти путь в базе данных."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:978
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:979
 msgid "Subtype must be defined for range types."
 msgstr "Для типов-диапазонов должен быть определён подтип."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:992
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:993
 msgid "External types require both input and output conversion functions."
 msgstr ""
 "Для внешних типов требуется указать функции преобразования на входе и на "
 "выходе."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1173
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1174
 msgid "The specified type could not be found.\n"
 msgstr "Не удалось найти указанный тип.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1197
+#: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1198
 msgid "Type dropped"
 msgstr "Тип удалён"
 
@@ -6678,19 +6681,22 @@ msgstr "Введите определение представления."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:271
 #: pgadmin/tools/import_export/static/js/import_export.js:456
-#: pgadmin/tools/maintenance/static/js/maintenance.js:233
+#: pgadmin/tools/maintenance/static/js/maintenance.js:122
 msgid "Please select server or child node from tree."
 msgstr "Выберите сервер или дочерний узел в дереве."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:291
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:324
-#: pgadmin/tools/backup/static/js/backup.js:193
+#: pgadmin/tools/backup/static/js/backup.js:180
+#: pgadmin/tools/backup/static/js/backup.js:231
 #: pgadmin/tools/import_export/static/js/import_export.js:723
 #: pgadmin/tools/import_export/static/js/import_export.js:738
-#: pgadmin/tools/maintenance/static/js/maintenance.js:490
-#: pgadmin/tools/maintenance/static/js/maintenance.js:502
-#: pgadmin/tools/restore/static/js/restore_dialog.js:60
-#: pgadmin/tools/restore/static/js/restore_dialog.js:84
+#: pgadmin/tools/maintenance/static/js/maintenance.js:91
+#: pgadmin/tools/maintenance/static/js/maintenance.js:164
+#: pgadmin/tools/maintenance/static/js/maintenance.js:196
+#: pgadmin/tools/restore/static/js/restore.js:96
+#: pgadmin/tools/restore/static/js/restore.js:144
+#: pgadmin/tools/restore/static/js/restore.js:173
 msgid "Utility not found"
 msgstr ""
 
@@ -6701,8 +6707,8 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:325
 #: pgadmin/tools/import_export/static/js/import_export.js:739
-#: pgadmin/tools/maintenance/static/js/maintenance.js:503
-#: pgadmin/tools/restore/static/js/restore_dialog.js:85
+#: pgadmin/tools/maintenance/static/js/maintenance.js:197
+#: pgadmin/tools/restore/static/js/restore.js:174
 msgid "Failed to fetch Utility information"
 msgstr ""
 
@@ -6776,7 +6782,7 @@ msgid "Size of temporary files"
 msgstr "Размер временных файлов"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:62
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:393
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:390
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:104
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:155
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:2
@@ -6849,26 +6855,26 @@ msgstr "Отключиться от базы данных"
 msgid "Are you sure you want to disconnect the database - %s?"
 msgstr "Вы действительно хотите отключиться от базы данных %s?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:446
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:443
 msgid "Connect  to database."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:461
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:458
 msgid "Connect to database"
 msgstr "Подключиться к базе данных"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:484
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:481
 msgid "Database already connected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:529
-#: pgadmin/static/js/helpers/Notifier.jsx:156
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:526
+#: pgadmin/static/js/helpers/Notifier.jsx:166
 #, python-format
 msgid "Error: Object not found - %s."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:120
-#: pgadmin/tools/backup/static/js/backup.ui.js:467
+#: pgadmin/tools/backup/static/js/backup.ui.js:483
 #: pgadmin/tools/import_export/static/js/import_export.js:120
 msgid "Encoding"
 msgstr "Кодировка"
@@ -8703,7 +8709,6 @@ msgstr "Пользователи"
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:503
 #: pgadmin/browser/static/js/wizard.js:124
 #: pgadmin/tools/import_export/static/js/import_export.js:641
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:119
 msgid "Close error bar"
 msgstr ""
 
@@ -9168,16 +9173,20 @@ msgstr "Не удалось найти табличное пространств
 msgid "Could not find the tablespace information."
 msgstr "Не удалось получить свойства табличного пространства."
 
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:422
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:356
+msgid "Tablespace created successfully, Set parameter fail: {0}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:438
 msgid "The specified tablespace could not be found.\n"
 msgstr "Не удалось найти указанное табличное пространство.\n"
 
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:439
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:455
 msgid "Tablespace dropped"
 msgstr "Табличное пространство удалено"
 
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:512
-#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:564
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:528
+#: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:580
 msgid "Could not find the tablespace on the server."
 msgstr "Не удалось найти табличное пространство на сервере."
 
@@ -9452,7 +9461,7 @@ msgid "Error retrieving details for the node."
 msgstr "Ошибка при получении информации узла."
 
 #: pgadmin/browser/static/js/collection.js:68
-#: pgadmin/browser/static/js/node.js:156
+#: pgadmin/browser/static/js/node.js:122
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:33
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:38
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:27
@@ -9462,9 +9471,9 @@ msgid "Refresh"
 msgstr "Обновить"
 
 #: pgadmin/browser/static/js/collection.js:88
-#: pgadmin/browser/static/js/node.js:249
+#: pgadmin/browser/static/js/node.js:213
 #: pgadmin/tools/search_objects/static/js/search_objects.js:47
-#: pgadmin/tools/search_objects/static/js/search_objects.js:58
+#: pgadmin/tools/search_objects/static/js/search_objects.js:59
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:44
 msgid "Search Objects..."
 msgstr ""
@@ -9491,7 +9500,7 @@ msgstr ""
 
 #: pgadmin/browser/static/js/collection.js:296
 #: pgadmin/browser/static/js/collection.js:357
-#: pgadmin/browser/static/js/node.js:496
+#: pgadmin/browser/static/js/node.js:428
 #: pgadmin/browser/templates/browser/js/messages.js:51
 #: pgadmin/misc/sql/static/js/sql.js:158
 #: pgadmin/misc/statistics/static/js/statistics.js:260
@@ -9499,12 +9508,12 @@ msgid "Retrieving data from the server..."
 msgstr "Получение данных с сервера..."
 
 #: pgadmin/browser/static/js/collection.js:311
-#: pgadmin/browser/static/js/node.js:188
+#: pgadmin/browser/static/js/node.js:154
 msgid "Delete/Drop"
 msgstr "Удалить"
 
 #: pgadmin/browser/static/js/collection.js:325
-#: pgadmin/browser/static/js/node.js:208
+#: pgadmin/browser/static/js/node.js:174
 msgid "Drop Cascade"
 msgstr "Удалить каскадно"
 
@@ -9513,7 +9522,7 @@ msgid "No properties are available for the selected object."
 msgstr ""
 
 #: pgadmin/browser/static/js/collection.js:420
-#: pgadmin/browser/static/js/node.js:541
+#: pgadmin/browser/static/js/node.js:469
 #, python-format
 msgid "Error retrieving properties - %s"
 msgstr "Ошибка при получении свойств: %s"
@@ -9562,7 +9571,7 @@ msgstr ""
 #: pgadmin/browser/static/js/wizard.js:85
 #: pgadmin/browser/static/js/wizard.js:86
 #: pgadmin/browser/templates/browser/messages.html:6
-#: pgadmin/static/js/SchemaView/index.jsx:716
+#: pgadmin/static/js/SchemaView/index.jsx:729
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:90
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:92
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:273
@@ -9597,45 +9606,45 @@ msgstr ""
 msgid "No menu available for this object."
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:168
+#: pgadmin/browser/static/js/node.js:134
 msgid "Properties..."
 msgstr "Свойства..."
 
-#: pgadmin/browser/static/js/node.js:188
+#: pgadmin/browser/static/js/node.js:154
 #, python-format
 msgid "Remove %s"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:273
+#: pgadmin/browser/static/js/node.js:234
 #, python-format
 msgid "%s Script"
 msgstr "Скрипт %s"
 
-#: pgadmin/browser/static/js/node.js:287
+#: pgadmin/browser/static/js/node.js:247
 msgid "Scripts"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:633
+#: pgadmin/browser/static/js/node.js:559
 msgid "Please wait while we fetch information ..."
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:672
+#: pgadmin/browser/static/js/node.js:598
 msgid "Please wait while we fetch information about the node from the server..."
 msgstr "Подождите, пока с сервера загружается информация об узле..."
 
-#: pgadmin/browser/static/js/node.js:900
+#: pgadmin/browser/static/js/node.js:797
 #, python-format
 msgid "Create - %s"
 msgstr "Создание %s"
 
-#: pgadmin/browser/static/js/node.js:916
+#: pgadmin/browser/static/js/node.js:813
 #, python-format
 msgid "Are you sure want to stop editing the properties of %s \"%s\"?"
 msgstr ""
 "Вы действительно хотите завершить редактирование свойств объекта %s "
 "\"%s\"?"
 
-#: pgadmin/browser/static/js/node.js:918
+#: pgadmin/browser/static/js/node.js:815
 #, python-format
 msgid ""
 "Are you sure want to reset the current changes and re-open the panel for "
@@ -9644,11 +9653,11 @@ msgstr ""
 "Вы действительно хотите сбросить текущие изменения и повторно открыть "
 "панель для объекта %s \"%s\"?"
 
-#: pgadmin/browser/static/js/node.js:922
+#: pgadmin/browser/static/js/node.js:819
 msgid "Edit in progress?"
 msgstr "Производится редактирование?"
 
-#: pgadmin/browser/static/js/node.js:977
+#: pgadmin/browser/static/js/node.js:872
 #, python-format
 msgid ""
 "Are you sure you want to drop %s \"%s\" and all the objects that depend "
@@ -9657,100 +9666,112 @@ msgstr ""
 "Вы действительно хотите удалить объект %s \"%s\" и все зависящие от него "
 "объекты?"
 
-#: pgadmin/browser/static/js/node.js:978
+#: pgadmin/browser/static/js/node.js:873
 #, python-format
 msgid "DROP CASCADE %s?"
 msgstr "DROP CASCADE %s?"
 
-#: pgadmin/browser/static/js/node.js:983
+#: pgadmin/browser/static/js/node.js:878
 #, python-format
 msgid "The %s \"%s\" cannot be dropped."
 msgstr "Объект %s \"%s\" не может быть удалён."
 
-#: pgadmin/browser/static/js/node.js:990
+#: pgadmin/browser/static/js/node.js:885
 #, python-format
 msgid "Are you sure you want to remove %s \"%s\"?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:991
+#: pgadmin/browser/static/js/node.js:886
 #, python-format
 msgid "Remove %s?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:993
+#: pgadmin/browser/static/js/node.js:888
 #, python-format
 msgid "Are you sure you want to drop %s \"%s\"?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:994
+#: pgadmin/browser/static/js/node.js:889
 #, python-format
 msgid "Drop %s?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1000
+#: pgadmin/browser/static/js/node.js:895
 #, python-format
 msgid "The %s \"%s\" cannot be dropped/removed."
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1046
+#: pgadmin/browser/static/js/node.js:940
 #, python-format
 msgid "Error dropping/removing %s: \"%s\""
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1483
-#: pgadmin/browser/static/js/node.js:1485
+#: pgadmin/browser/static/js/node.js:1318
+#: pgadmin/browser/static/js/node.js:1320
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:165
 msgid "Edit"
 msgstr "Редактирование"
 
-#: pgadmin/browser/static/js/node.js:1499
-#: pgadmin/browser/static/js/node.js:1805
+#: pgadmin/browser/static/js/node.js:1334
+#: pgadmin/browser/static/js/node.js:1628
 msgid "SQL help for this object type."
 msgstr "Справка SQL по этому типу объектов."
 
-#: pgadmin/browser/static/js/node.js:1553
-#: pgadmin/browser/static/js/node.js:1584
-#: pgadmin/browser/static/js/node.js:1611
+#: pgadmin/browser/static/js/node.js:1387
+#: pgadmin/browser/static/js/node.js:1418
+#: pgadmin/browser/static/js/node.js:1445
 #: pgadmin/browser/static/js/node_view.jsx:139
 #: pgadmin/preferences/static/js/preferences.js:393
-#: pgadmin/static/js/SchemaView/index.jsx:572
-#: pgadmin/static/js/SchemaView/index.jsx:599
-#: pgadmin/static/js/SchemaView/index.jsx:620
+#: pgadmin/static/js/SchemaView/index.jsx:574
+#: pgadmin/static/js/SchemaView/index.jsx:601
+#: pgadmin/static/js/SchemaView/index.jsx:622
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:5509
 msgid "Warning"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1671
+#: pgadmin/browser/static/js/node.js:1500
 msgid "Error saving properties"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1817
+#: pgadmin/browser/static/js/node.js:1555
+#: pgadmin/static/js/selection/clipboard.js:118
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:195
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:202
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:205
+#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:697
+#: pgadmin/tools/user_management/static/js/user_management.js:855
+#: pgadmin/tools/user_management/static/js/user_management.js:1117
+#: pgadmin/tools/user_management/static/js/user_management.js:1134
+msgid "Error"
+msgstr "Ошибка"
+
+#: pgadmin/browser/static/js/node.js:1640
 #: pgadmin/browser/static/js/wizard.js:131
 msgid "Help for this dialog."
 msgstr "Справка к этому диалогу."
 
-#: pgadmin/browser/static/js/node.js:1829
+#: pgadmin/browser/static/js/node.js:1652
 msgid "Cancel changes to this object."
 msgstr "Отменить изменения в этом объекте."
 
-#: pgadmin/browser/static/js/node.js:1842
-#: pgadmin/static/js/SchemaView/index.jsx:719
+#: pgadmin/browser/static/js/node.js:1664
+#: pgadmin/static/js/SchemaView/index.jsx:732
 msgid "Reset"
 msgstr "Сбросить"
 
-#: pgadmin/browser/static/js/node.js:1844
+#: pgadmin/browser/static/js/node.js:1666
 msgid "Reset the fields on this dialog."
 msgstr "Сбросить поля в этом диалоге."
 
-#: pgadmin/browser/static/js/node.js:1852
-#: pgadmin/static/js/SchemaView/index.jsx:573
+#: pgadmin/browser/static/js/node.js:1674
+#: pgadmin/static/js/SchemaView/index.jsx:575
 msgid "Changes will be lost. Are you sure you want to reset?"
 msgstr ""
 
-#: pgadmin/browser/static/js/node.js:1862
+#: pgadmin/browser/static/js/node.js:1684
 #: pgadmin/preferences/static/js/preferences.js:567
 #: pgadmin/preferences/static/js/preferences.js:592
-#: pgadmin/static/js/SchemaView/index.jsx:722
+#: pgadmin/static/js/SchemaView/index.jsx:735
 #: pgadmin/static/js/sqleditor/macro.js:74
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:48
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:287
@@ -9758,11 +9779,11 @@ msgstr ""
 msgid "Save"
 msgstr "Сохранить"
 
-#: pgadmin/browser/static/js/node.js:1864
+#: pgadmin/browser/static/js/node.js:1686
 msgid "Save this object."
 msgstr "Сохранить этот объект."
 
-#: pgadmin/browser/static/js/node.js:2025
+#: pgadmin/browser/static/js/node.js:1835
 #: pgadmin/browser/static/js/node_view.jsx:140
 msgid "Changes will be lost. Are you sure you want to close the dialog?"
 msgstr ""
@@ -9816,8 +9837,6 @@ msgstr ""
 #: pgadmin/static/js/sqleditor/new_connection_dialog.js:77
 #: pgadmin/tools/datagrid/static/js/show_data.js:148
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:872
-#: pgadmin/tools/maintenance/static/js/maintenance.js:294
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:59
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:537
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:538
 msgid "Help"
@@ -9825,17 +9844,17 @@ msgstr "Справка"
 
 #: pgadmin/browser/static/js/wizard.js:139
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:15
-#: pgadmin/static/js/helpers/wizard/Wizard.jsx:186
+#: pgadmin/static/js/helpers/wizard/Wizard.jsx:219
 msgid "Back"
 msgstr "Назад"
 
 #: pgadmin/browser/static/js/wizard.js:141
-#: pgadmin/static/js/helpers/wizard/Wizard.jsx:189
+#: pgadmin/static/js/helpers/wizard/Wizard.jsx:222
 msgid "Next"
 msgstr ""
 
 #: pgadmin/browser/static/js/wizard.js:144
-#: pgadmin/static/js/helpers/wizard/Wizard.jsx:192
+#: pgadmin/static/js/helpers/wizard/Wizard.jsx:225
 msgid "Finish"
 msgstr ""
 
@@ -9864,7 +9883,7 @@ msgid "HELP ARTICLES"
 msgstr ""
 
 #: pgadmin/browser/static/js/quick_search/trigger_search.js:235
-#: pgadmin/misc/file_manager/static/js/utility.js:756
+#: pgadmin/misc/file_manager/static/js/utility.js:721
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:62
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:443
 #: pgadmin/tools/debugger/static/js/direct.js:2044
@@ -10581,14 +10600,14 @@ msgstr ""
 "Путь к документации PostgreSQL. Вместо $VERSION$ будет подставлен номер "
 "версии в формате «основная.дополнительная»."
 
-#: pgadmin/misc/__init__.py:30 pgadmin/tools/backup/static/js/backup.ui.js:336
-#: pgadmin/tools/backup/static/js/backup.ui.js:354
-#: pgadmin/tools/backup/static/js/backup.ui.js:360
-#: pgadmin/tools/backup/static/js/backup.ui.js:366
-#: pgadmin/tools/backup/static/js/backup.ui.js:539
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:25
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:31
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:82
+#: pgadmin/misc/__init__.py:30 pgadmin/tools/backup/static/js/backup.ui.js:352
+#: pgadmin/tools/backup/static/js/backup.ui.js:370
+#: pgadmin/tools/backup/static/js/backup.ui.js:376
+#: pgadmin/tools/backup/static/js/backup.ui.js:382
+#: pgadmin/tools/backup/static/js/backup.ui.js:555
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:41
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:47
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:98
 #: pgadmin/tools/import_export/static/js/import_export.js:276
 #: pgadmin/tools/import_export/static/js/import_export.js:283
 #: pgadmin/tools/import_export/static/js/import_export.js:289
@@ -10763,7 +10782,7 @@ msgid "Grid"
 msgstr "Сетка"
 
 #: pgadmin/misc/file_manager/__init__.py:177
-#: pgadmin/misc/file_manager/static/js/utility.js:1472
+#: pgadmin/misc/file_manager/static/js/utility.js:1398
 msgid "Show hidden files and folders?"
 msgstr "Показывать скрытые файлы и папки?"
 
@@ -10815,7 +10834,7 @@ msgid "There was an error renaming the file:"
 msgstr "При переименовании файла произошла ошибка:"
 
 #: pgadmin/misc/file_manager/static/js/create_dialogue.js:146
-#: pgadmin/misc/file_manager/static/js/utility.js:483
+#: pgadmin/misc/file_manager/static/js/utility.js:455
 msgid "Error occurred while checking access permission."
 msgstr "При проверке прав доступа возникла ошибка."
 
@@ -10826,19 +10845,19 @@ msgstr "При проверке прав доступа возникла оши�
 msgid "Select file"
 msgstr ""
 
-#: pgadmin/misc/file_manager/static/js/utility.js:1460
-#: pgadmin/misc/file_manager/static/js/utility.js:1467
+#: pgadmin/misc/file_manager/static/js/utility.js:1386
+#: pgadmin/misc/file_manager/static/js/utility.js:1393
 msgid "All Files"
 msgstr "Все файлы"
 
-#: pgadmin/misc/file_manager/static/js/utility.js:1476
-#: pgadmin/tools/backup/static/js/backup.ui.js:421
+#: pgadmin/misc/file_manager/static/js/utility.js:1402
+#: pgadmin/tools/backup/static/js/backup.ui.js:437
 #: pgadmin/tools/import_export/static/js/import_export.js:99
-#: pgadmin/tools/restore/static/js/restore.js:100
+#: pgadmin/tools/restore/static/js/restore.ui.js:385
 msgid "Format"
 msgstr "Формат"
 
-#: pgadmin/misc/file_manager/static/js/utility.js:1802
+#: pgadmin/misc/file_manager/static/js/utility.js:1703
 msgid "Drop files here to upload."
 msgstr ""
 
@@ -11004,39 +11023,39 @@ msgstr ""
 msgid "Heap Blocks"
 msgstr ""
 
-#: pgadmin/misc/static/explain/js/explain.js:1313
+#: pgadmin/misc/static/explain/js/explain.js:1277
 msgid "Graphical"
 msgstr ""
 
-#: pgadmin/misc/static/explain/js/explain.js:1314
+#: pgadmin/misc/static/explain/js/explain.js:1278
 msgid "Analysis"
 msgstr ""
 
-#: pgadmin/misc/static/explain/js/explain.js:1385
-#: pgadmin/misc/static/explain/js/explain.js:1386
+#: pgadmin/misc/static/explain/js/explain.js:1349
+#: pgadmin/misc/static/explain/js/explain.js:1350
 #: pgadmin/tools/erd/__init__.py:348
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:866
 msgid "Zoom in"
 msgstr ""
 
-#: pgadmin/misc/static/explain/js/explain.js:1394
-#: pgadmin/misc/static/explain/js/explain.js:1395
+#: pgadmin/misc/static/explain/js/explain.js:1358
+#: pgadmin/misc/static/explain/js/explain.js:1359
 msgid "Zoom to original"
 msgstr ""
 
-#: pgadmin/misc/static/explain/js/explain.js:1403
-#: pgadmin/misc/static/explain/js/explain.js:1404
+#: pgadmin/misc/static/explain/js/explain.js:1367
+#: pgadmin/misc/static/explain/js/explain.js:1368
 #: pgadmin/tools/erd/__init__.py:366
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:868
 msgid "Zoom out"
 msgstr ""
 
-#: pgadmin/misc/static/explain/js/explain.js:1418
-#: pgadmin/misc/static/explain/js/explain.js:1419
+#: pgadmin/misc/static/explain/js/explain.js:1382
+#: pgadmin/misc/static/explain/js/explain.js:1383
 msgid "Download"
 msgstr ""
 
-#: pgadmin/misc/static/explain/js/explain.js:1614
+#: pgadmin/misc/static/explain/js/explain.js:1578
 msgid "Click for details..."
 msgstr ""
 
@@ -11118,6 +11137,7 @@ msgstr "Сброс интерфейса"
 #: pgadmin/tools/debugger/__init__.py:265
 #: pgadmin/tools/grant_wizard/__init__.py:149
 #: pgadmin/tools/import_export/__init__.py:170
+#: pgadmin/tools/import_export_servers/__init__.py:76
 #: pgadmin/tools/maintenance/__init__.py:168
 #: pgadmin/tools/restore/__init__.py:142
 #: pgadmin/tools/search_objects/__init__.py:59
@@ -11196,7 +11216,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: pgadmin/static/js/SchemaView/index.jsx:665
+#: pgadmin/static/js/SchemaView/index.jsx:667
 #: pgadmin/static/js/backform.pgadmin.js:1975
 msgid "No updates."
 msgstr ""
@@ -11340,17 +11360,17 @@ msgstr "Не удалось загрузить настройку %s модул�
 msgid "Add row"
 msgstr ""
 
-#: pgadmin/static/js/SchemaView/index.jsx:258
+#: pgadmin/static/js/SchemaView/index.jsx:260
 #, python-format
 msgid "%s must be unique."
 msgstr ""
 
-#: pgadmin/static/js/SchemaView/index.jsx:260
+#: pgadmin/static/js/SchemaView/index.jsx:262
 #, python-format
 msgid "%s in %s must be unique."
 msgstr ""
 
-#: pgadmin/static/js/SchemaView/index.jsx:283
+#: pgadmin/static/js/SchemaView/index.jsx:285
 #, python-format
 msgid "%s in %s"
 msgstr ""
@@ -11376,54 +11396,17 @@ msgstr ""
 msgid "Select the color"
 msgstr ""
 
-#: pgadmin/static/js/components/GrantWizard.jsx:217
-msgid "Error while fetching grant wizard data."
-msgstr ""
-
-#: pgadmin/static/js/components/GrantWizard.jsx:247
-msgid "Error while fetching SQL."
-msgstr ""
-
-#: pgadmin/static/js/components/GrantWizard.jsx:273
-msgid "Error while saving grant wizard data: ${error.response.data.errormsg}"
-msgstr ""
-
-#: pgadmin/static/js/components/GrantWizard.jsx:337
-msgid "Please select any database object."
-msgstr ""
-
-#: pgadmin/static/js/components/GrantWizard.jsx:346
-msgid "Grant Wizard"
-msgstr "Мастер назначения прав"
-
-#: pgadmin/static/js/components/GrantWizard.jsx:402
-msgid ""
-"The SQL below will be executed on the database server to grant the "
-"selected privileges. Please click on Finish to complete the process."
-msgstr ""
-
-#: pgadmin/static/js/helpers/Notifier.jsx:165
+#: pgadmin/static/js/helpers/Notifier.jsx:175
 msgid "Unknown error"
 msgstr ""
 
-#: pgadmin/static/js/helpers/Notifier.jsx:169
+#: pgadmin/static/js/helpers/Notifier.jsx:179
 msgid "INTERNAL SERVER ERROR"
 msgstr ""
 
-#: pgadmin/static/js/helpers/Notifier.jsx:188
+#: pgadmin/static/js/helpers/Notifier.jsx:198
 msgid "Connection Lost"
 msgstr "Подключение потеряно"
-
-#: pgadmin/static/js/selection/clipboard.js:118
-#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:195
-#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:202
-#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:205
-#: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:697
-#: pgadmin/tools/user_management/static/js/user_management.js:855
-#: pgadmin/tools/user_management/static/js/user_management.js:1117
-#: pgadmin/tools/user_management/static/js/user_management.js:1134
-msgid "Error"
-msgstr "Ошибка"
 
 #: pgadmin/static/js/selection/clipboard.js:119
 msgid "Oops, unable to copy to clipboard"
@@ -11866,236 +11849,248 @@ msgstr "Копирование данных сервера '{0}'..."
 msgid "Running command:"
 msgstr "Выполняется команда:"
 
-#: pgadmin/tools/backup/static/js/backup.js:77
-#: pgadmin/tools/backup/static/js/backup.js:102
+#: pgadmin/tools/backup/static/js/backup.js:64
+#: pgadmin/tools/backup/static/js/backup.js:89
 msgid "Backup Globals..."
 msgstr "Резервная копия глобальных объектов..."
 
-#: pgadmin/tools/backup/static/js/backup.js:81
+#: pgadmin/tools/backup/static/js/backup.js:68
 #, fuzzy
 msgid ""
 "Please select any server from the browser tree to take Backup of global "
 "objects."
 msgstr "Выберите сервер или дочерний узел в дереве объектов."
 
-#: pgadmin/tools/backup/static/js/backup.js:89
-#: pgadmin/tools/backup/static/js/backup.js:115
+#: pgadmin/tools/backup/static/js/backup.js:76
+#: pgadmin/tools/backup/static/js/backup.js:102
 msgid "Backup Server..."
 msgstr "Резервная копия сервера..."
 
-#: pgadmin/tools/backup/static/js/backup.js:93
-#: pgadmin/tools/backup/static/js/backup.js:119
+#: pgadmin/tools/backup/static/js/backup.js:80
+#: pgadmin/tools/backup/static/js/backup.js:106
 #, fuzzy
 msgid "Please select any server from the browser tree to take Server Backup."
 msgstr "Выберите сервер или дочерний узел в дереве объектов."
 
-#: pgadmin/tools/backup/static/js/backup.js:106
-#: pgadmin/tools/backup/static/js/backup.js:133
+#: pgadmin/tools/backup/static/js/backup.js:93
+#: pgadmin/tools/backup/static/js/backup.js:120
 #, fuzzy
 msgid ""
 "Please select any database or schema or table from the browser tree to "
 "take Backup."
 msgstr "Выберите сервер или дочерний узел в дереве объектов."
 
-#: pgadmin/tools/backup/static/js/backup.js:127
-#: pgadmin/tools/backup/static/js/backup.js:145
+#: pgadmin/tools/backup/static/js/backup.js:114
+#: pgadmin/tools/backup/static/js/backup.js:132
 msgid "Backup..."
 msgstr "Резервная копия..."
 
-#: pgadmin/tools/backup/static/js/backup.js:182
+#: pgadmin/tools/backup/static/js/backup.js:169
 msgid "Backup Server"
 msgstr ""
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:25
-#: pgadmin/tools/restore/static/js/restore.js:159
+#: pgadmin/tools/backup/static/js/backup.js:220
+msgid "Backup Error"
+msgstr ""
+
+#: pgadmin/tools/backup/static/js/backup.js:242
+msgid "Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})"
+msgstr ""
+
+#: pgadmin/tools/backup/static/js/backup.ui.js:41
+#: pgadmin/tools/restore/static/js/restore.ui.js:42
 msgid "Pre-data"
 msgstr "Пред-данные"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:27
-#: pgadmin/tools/backup/static/js/backup.ui.js:37
-#: pgadmin/tools/backup/static/js/backup.ui.js:47
-#: pgadmin/tools/backup/static/js/backup.ui.js:509
-#: pgadmin/tools/restore/static/js/restore.js:154
-#: pgadmin/tools/restore/static/js/restore.js:164
-#: pgadmin/tools/restore/static/js/restore.js:179
-#: pgadmin/tools/restore/static/js/restore.js:194
+#: pgadmin/tools/backup/static/js/backup.ui.js:43
+#: pgadmin/tools/backup/static/js/backup.ui.js:53
+#: pgadmin/tools/backup/static/js/backup.ui.js:63
+#: pgadmin/tools/backup/static/js/backup.ui.js:525
+#: pgadmin/tools/restore/static/js/restore.ui.js:44
+#: pgadmin/tools/restore/static/js/restore.ui.js:56
+#: pgadmin/tools/restore/static/js/restore.ui.js:69
+#: pgadmin/tools/restore/static/js/restore.ui.js:426
 msgid "Sections"
 msgstr "Секции"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:35
-#: pgadmin/tools/restore/static/js/restore.js:174
+#: pgadmin/tools/backup/static/js/backup.ui.js:51
+#: pgadmin/tools/restore/static/js/restore.ui.js:54
 msgid "Data"
 msgstr "Данные"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:45
-#: pgadmin/tools/restore/static/js/restore.js:189
+#: pgadmin/tools/backup/static/js/backup.ui.js:61
+#: pgadmin/tools/restore/static/js/restore.ui.js:67
 msgid "Post-data"
 msgstr "Пост-данные"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:83
-#: pgadmin/tools/restore/static/js/restore.js:211
+#: pgadmin/tools/backup/static/js/backup.ui.js:99
+#: pgadmin/tools/restore/static/js/restore.ui.js:106
 msgid "Only data"
 msgstr "Только данные"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:85
-#: pgadmin/tools/backup/static/js/backup.ui.js:97
-#: pgadmin/tools/backup/static/js/backup.ui.js:109
-#: pgadmin/tools/backup/static/js/backup.ui.js:519
-#: pgadmin/tools/restore/static/js/restore.js:206
-#: pgadmin/tools/restore/static/js/restore.js:216
-#: pgadmin/tools/restore/static/js/restore.js:233
+#: pgadmin/tools/backup/static/js/backup.ui.js:101
+#: pgadmin/tools/backup/static/js/backup.ui.js:113
+#: pgadmin/tools/backup/static/js/backup.ui.js:125
+#: pgadmin/tools/backup/static/js/backup.ui.js:535
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:139
+#: pgadmin/tools/restore/static/js/restore.ui.js:108
+#: pgadmin/tools/restore/static/js/restore.ui.js:125
+#: pgadmin/tools/restore/static/js/restore.ui.js:432
 msgid "Type of objects"
 msgstr "Тип объектов"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:95
-#: pgadmin/tools/restore/static/js/restore.js:228
+#: pgadmin/tools/backup/static/js/backup.ui.js:111
+#: pgadmin/tools/restore/static/js/restore.ui.js:123
 msgid "Only schema"
 msgstr "Только схема"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:107
+#: pgadmin/tools/backup/static/js/backup.ui.js:123
 msgid "Blobs"
 msgstr "Большие двоичные объекты"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:150
-#: pgadmin/tools/backup/static/js/backup.ui.js:156
-#: pgadmin/tools/backup/static/js/backup.ui.js:162
-#: pgadmin/tools/backup/static/js/backup.ui.js:168
-#: pgadmin/tools/backup/static/js/backup.ui.js:174
-#: pgadmin/tools/backup/static/js/backup.ui.js:524
-#: pgadmin/tools/restore/static/js/restore.js:247
-#: pgadmin/tools/restore/static/js/restore.js:258
-#: pgadmin/tools/restore/static/js/restore.js:267
-#: pgadmin/tools/restore/static/js/restore.js:276
-#: pgadmin/tools/restore/static/js/restore.js:285
+#: pgadmin/tools/backup/static/js/backup.ui.js:166
+#: pgadmin/tools/backup/static/js/backup.ui.js:172
+#: pgadmin/tools/backup/static/js/backup.ui.js:178
+#: pgadmin/tools/backup/static/js/backup.ui.js:184
+#: pgadmin/tools/backup/static/js/backup.ui.js:190
+#: pgadmin/tools/backup/static/js/backup.ui.js:540
+#: pgadmin/tools/restore/static/js/restore.ui.js:171
+#: pgadmin/tools/restore/static/js/restore.ui.js:177
+#: pgadmin/tools/restore/static/js/restore.ui.js:183
+#: pgadmin/tools/restore/static/js/restore.ui.js:189
+#: pgadmin/tools/restore/static/js/restore.ui.js:438
 msgid "Do not save"
 msgstr "Не сохранять"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:153
-#: pgadmin/tools/restore/static/js/restore.js:261
+#: pgadmin/tools/backup/static/js/backup.ui.js:169
+#: pgadmin/tools/restore/static/js/restore.ui.js:174
 msgid "Privilege"
 msgstr "Права"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:165
+#: pgadmin/tools/backup/static/js/backup.ui.js:181
 msgid "Unlogged table data"
 msgstr "Данные нежурналируемых таблиц"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:212
+#: pgadmin/tools/backup/static/js/backup.ui.js:228
 msgid "Use Column Inserts"
 msgstr "INSERT с указанием столбцов"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:215
-#: pgadmin/tools/backup/static/js/backup.ui.js:221
-#: pgadmin/tools/backup/static/js/backup.ui.js:227
+#: pgadmin/tools/backup/static/js/backup.ui.js:231
 #: pgadmin/tools/backup/static/js/backup.ui.js:237
-#: pgadmin/tools/backup/static/js/backup.ui.js:251
-#: pgadmin/tools/backup/static/js/backup.ui.js:529
-#: pgadmin/tools/restore/static/js/restore.js:298
-#: pgadmin/tools/restore/static/js/restore.js:309
-#: pgadmin/tools/restore/static/js/restore.js:317
-#: pgadmin/tools/restore/static/js/restore.js:330
+#: pgadmin/tools/backup/static/js/backup.ui.js:243
+#: pgadmin/tools/backup/static/js/backup.ui.js:253
+#: pgadmin/tools/backup/static/js/backup.ui.js:267
+#: pgadmin/tools/backup/static/js/backup.ui.js:545
+#: pgadmin/tools/restore/static/js/restore.ui.js:229
+#: pgadmin/tools/restore/static/js/restore.ui.js:234
+#: pgadmin/tools/restore/static/js/restore.ui.js:246
+#: pgadmin/tools/restore/static/js/restore.ui.js:444
 msgid "Queries"
 msgstr "Запросы"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:218
+#: pgadmin/tools/backup/static/js/backup.ui.js:234
 msgid "Use Insert Commands"
 msgstr "Использовать команды INSERT"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:224
-#: pgadmin/tools/restore/static/js/restore.js:303
+#: pgadmin/tools/backup/static/js/backup.ui.js:240
+#: pgadmin/tools/restore/static/js/restore.ui.js:226
 msgid "Include CREATE DATABASE statement"
 msgstr "Добавить CREATE DATABASE"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:235
+#: pgadmin/tools/backup/static/js/backup.ui.js:251
 msgid "Include DROP DATABASE statement"
 msgstr "Добавить DROP DATABASE"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:248
+#: pgadmin/tools/backup/static/js/backup.ui.js:264
 msgid "Load Via Partition Root"
 msgstr ""
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:298
+#: pgadmin/tools/backup/static/js/backup.ui.js:314
 msgid "$ quoting"
 msgstr "Заключение в $"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:333
+#: pgadmin/tools/backup/static/js/backup.ui.js:349
 msgid "With OID(s)"
 msgstr "С OID"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:351
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:22
-#: pgadmin/tools/restore/static/js/restore.js:364
+#: pgadmin/tools/backup/static/js/backup.ui.js:367
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:38
+#: pgadmin/tools/restore/static/js/restore.ui.js:315
 msgid "Verbose messages"
 msgstr "Подробные сообщения"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:357
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:28
+#: pgadmin/tools/backup/static/js/backup.ui.js:373
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:44
 msgid "Force double quote on identifiers"
 msgstr "Использовать двойные кавычки для идентификаторов"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:363
-#: pgadmin/tools/restore/static/js/restore.js:373
+#: pgadmin/tools/backup/static/js/backup.ui.js:379
+#: pgadmin/tools/restore/static/js/restore.ui.js:321
 msgid "Use SET SESSION AUTHORIZATION"
 msgstr "Использовать SET SESSION AUTHORIZATION"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:410
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:63
+#: pgadmin/tools/backup/static/js/backup.ui.js:426
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:79
 #: pgadmin/tools/import_export/static/js/import_export.js:79
 #: pgadmin/tools/import_export/static/js/import_export.js:89
-#: pgadmin/tools/restore/static/js/restore.js:119
+#: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:38
+#: pgadmin/tools/restore/static/js/restore.ui.js:398
 msgid "Filename"
 msgstr "Имя файла"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:427
+#: pgadmin/tools/backup/static/js/backup.ui.js:443
 msgid "Custom"
 msgstr "Специальный"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:431
+#: pgadmin/tools/backup/static/js/backup.ui.js:447
 msgid "Tar"
 msgstr "Tar"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:435
+#: pgadmin/tools/backup/static/js/backup.ui.js:451
 msgid "Plain"
 msgstr "Простой"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:439
-#: pgadmin/tools/restore/static/js/restore.js:113
+#: pgadmin/tools/backup/static/js/backup.ui.js:455
+#: pgadmin/tools/restore/static/js/restore.ui.js:393
 msgid "Directory"
 msgstr "Каталог"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:452
+#: pgadmin/tools/backup/static/js/backup.ui.js:468
 msgid "Compression ratio"
 msgstr "Коэффициент сжатия"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:480
-#: pgadmin/tools/restore/static/js/restore.js:141
+#: pgadmin/tools/backup/static/js/backup.ui.js:496
+#: pgadmin/tools/restore/static/js/restore.ui.js:413
 msgid "Number of jobs"
 msgstr "Число заданий"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:493
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:74
-#: pgadmin/tools/restore/static/js/restore.js:145
+#: pgadmin/tools/backup/static/js/backup.ui.js:509
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:90
+#: pgadmin/tools/restore/static/js/restore.ui.js:417
 msgid "Role name"
 msgstr "Имя роли"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:502
+#: pgadmin/tools/backup/static/js/backup.ui.js:518
 msgid "The backup format will be PLAIN"
 msgstr "Копия будет сохранена в формате PLAIN"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:510
-#: pgadmin/tools/backup/static/js/backup.ui.js:520
-#: pgadmin/tools/backup/static/js/backup.ui.js:525
-#: pgadmin/tools/backup/static/js/backup.ui.js:530
-#: pgadmin/tools/backup/static/js/backup.ui.js:535
-#: pgadmin/tools/backup/static/js/backup.ui.js:540
-msgid "Dump options"
-msgstr "Параметры выгрузки"
+#: pgadmin/tools/backup/static/js/backup.ui.js:526
+#: pgadmin/tools/backup/static/js/backup.ui.js:536
+#: pgadmin/tools/backup/static/js/backup.ui.js:541
+#: pgadmin/tools/restore/static/js/restore.ui.js:427
+#: pgadmin/tools/restore/static/js/restore.ui.js:433
+#: pgadmin/tools/restore/static/js/restore.ui.js:439
+msgid "Data/Objects"
+msgstr ""
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:550
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:98
+#: pgadmin/tools/backup/static/js/backup.ui.js:566
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:114
+#: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:90
+#: pgadmin/tools/restore/static/js/restore.ui.js:468
 msgid "Please provide a filename."
 msgstr ""
 
-#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:88
+#: pgadmin/tools/backup/static/js/backupGlobal.ui.js:104
 msgid ""
 "Only objects global to the entire database will be backed up, in PLAIN "
 "format"
@@ -12130,7 +12125,7 @@ msgstr "Просмотр/редактирование данных"
 #: pgadmin/tools/debugger/static/js/debugger.js:511
 #: pgadmin/tools/debugger/static/js/debugger.js:697
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:873
-#: pgadmin/tools/schema_diff/static/js/schema_diff.js:160
+#: pgadmin/tools/schema_diff/static/js/schema_diff.js:161
 msgid "Rename Panel"
 msgstr ""
 
@@ -12884,10 +12879,6 @@ msgstr ""
 msgid "Zoom to fit"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_module.js:49
-msgid "New ERD Project"
-msgstr ""
-
 #: pgadmin/tools/erd/static/js/erd_module.js:116
 #: pgadmin/tools/erd/static/js/erd_module.js:126
 msgid "ERD Error"
@@ -13067,12 +13058,38 @@ msgstr ""
 msgid "Unable to fetch the {} objects"
 msgstr ""
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:64
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:84
+#: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:194
+msgid "Error while fetching grant wizard data."
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:218
+msgid "Error while fetching SQL."
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:244
+msgid "Error while saving grant wizard data: ${error.response.data.errormsg}"
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:308
+msgid "Please select any database object."
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:317
+msgid "Grant Wizard"
+msgstr "Мастер назначения прав"
+
+#: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:369
+msgid ""
+"The SQL below will be executed on the database server to grant the "
+"selected privileges. Please click on Finish to complete the process."
+msgstr ""
+
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:61
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:81
 msgid "Grant Wizard..."
 msgstr "Мастер назначения прав..."
 
-#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:70
+#: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:67
 #, fuzzy
 msgid ""
 "Please select any database, schema or schema objects from the browser "
@@ -13081,6 +13098,7 @@ msgstr "Выберите сервер или дочерний узел в дер
 
 #: pgadmin/tools/import_export/__init__.py:43
 #: pgadmin/tools/import_export/static/js/import_export.js:63
+#: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:30
 msgid "Import/Export"
 msgstr "Импорт/экспорт"
 
@@ -13114,10 +13132,12 @@ msgid "Please specify a valid file"
 msgstr "Укажите корректный файл"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:68
+#: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:33
 msgid "Import"
 msgstr "Импорт"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:69
+#: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:34
 msgid "Export"
 msgstr "Экспорт"
 
@@ -13244,8 +13264,8 @@ msgstr ""
 " быть однобайтовым. Этот параметр допускается только для формата CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:428
-msgid "Import/Export..."
-msgstr "Импорт/экспорт..."
+msgid "Import/Export Data..."
+msgstr ""
 
 #: pgadmin/tools/import_export/static/js/import_export.js:434
 #, fuzzy
@@ -13285,15 +13305,89 @@ msgstr "Укажите имя файла"
 msgid "Import/Export data - table '%s'"
 msgstr "Импорт/экспорт данных — таблица '%s'"
 
+#: pgadmin/tools/import_export_servers/__init__.py:45
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:214
+msgid "Import/Export Servers"
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/__init__.py:173
+msgid "The specified file is not in the correct format."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/__init__.py:179
+msgid "Unable to load the specified file."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/__init__.py:181
+msgid "The specified file does not exist."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:80
+msgid "Export Servers"
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:80
+msgid "The selected servers were exported successfully."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:83
+msgid "Export Error"
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:100
+msgid "The selected servers were imported successfully."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:102
+msgid ""
+"The existing server groups and servers were removed, and the selected "
+"servers were imported successfully."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:105
+msgid "Import Servers"
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:108
+msgid "Import error"
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:183
+msgid "Error while fetching Server Groups and Servers."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:237
+msgid "Select the Server Groups/Servers to import/export:"
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:65
+msgid "Supports only JSON format."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:68
+msgid "Remove all the existing servers?"
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:70
+msgid ""
+"If this option is turned on then pgAdmin will remove all the existing "
+"database servers and then import the selected servers. This setting is "
+"applicable only while importing the servers."
+msgstr ""
+
+#: pgadmin/tools/import_export_servers/static/js/import_export_servers.js:56
+msgid "Import/Export Servers..."
+msgstr ""
+
 #: pgadmin/tools/maintenance/__init__.py:44
 #: pgadmin/tools/maintenance/__init__.py:130
-#: pgadmin/tools/maintenance/static/js/maintenance.js:283
-#: pgadmin/tools/maintenance/static/js/maintenance.js:293
+#: pgadmin/tools/maintenance/static/js/maintenance.js:175
 msgid "Maintenance"
 msgstr "Обслуживание"
 
 #: pgadmin/tools/maintenance/__init__.py:103
-#: pgadmin/tools/maintenance/static/js/maintenance.js:124
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:73
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:124
 msgid "ANALYZE"
 msgstr "ANALYZE"
 
@@ -13311,10 +13405,12 @@ msgid "REINDEX TABLE"
 msgstr "REINDEX TABLE"
 
 #: pgadmin/tools/maintenance/__init__.py:115
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:128
 msgid "REINDEX"
 msgstr "REINDEX"
 
 #: pgadmin/tools/maintenance/__init__.py:118
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:132
 msgid "CLUSTER"
 msgstr "CLUSTER"
 
@@ -13327,12 +13423,12 @@ msgid "VACUUM ({0})"
 msgstr "VACUUM ({0})"
 
 #: pgadmin/tools/maintenance/__init__.py:143
-#: pgadmin/tools/maintenance/static/js/maintenance.js:104
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:47
 msgid "FULL"
 msgstr "FULL"
 
 #: pgadmin/tools/maintenance/__init__.py:145
-#: pgadmin/tools/maintenance/static/js/maintenance.js:114
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:60
 msgid "FREEZE"
 msgstr "FREEZE"
 
@@ -13340,52 +13436,44 @@ msgstr "FREEZE"
 msgid "Maintenance job created."
 msgstr ""
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:65
-msgid "Maintenance operation"
-msgstr "Операция по обслуживанию"
-
-#: pgadmin/tools/maintenance/static/js/maintenance.js:93
-#: pgadmin/tools/maintenance/static/js/maintenance.js:98
-#: pgadmin/tools/maintenance/static/js/maintenance.js:115
-#: pgadmin/tools/maintenance/static/js/maintenance.js:125
-msgid "Vacuum"
-msgstr "Очистить"
-
-#: pgadmin/tools/maintenance/static/js/maintenance.js:133
-msgid "Verbose Messages"
-msgstr "Подробные сообщения"
-
-#: pgadmin/tools/maintenance/static/js/maintenance.js:183
-#: pgadmin/tools/maintenance/static/js/maintenance.js:203
-#: pgadmin/tools/maintenance/static/js/maintenance.js:497
+#: pgadmin/tools/maintenance/static/js/maintenance.js:47
+#: pgadmin/tools/maintenance/static/js/maintenance.js:66
 msgid "Maintenance..."
 msgstr "Обслуживание..."
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:189
-#: pgadmin/tools/maintenance/static/js/maintenance.js:209
+#: pgadmin/tools/maintenance/static/js/maintenance.js:53
+#: pgadmin/tools/maintenance/static/js/maintenance.js:72
 #, fuzzy
 msgid "Please select any database from the browser tree to do Maintenance."
 msgstr "Выберите сервер или дочерний узел в дереве объектов."
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:260
+#: pgadmin/tools/maintenance/static/js/maintenance.js:144
 msgid "Maintenance error"
 msgstr ""
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:261
+#: pgadmin/tools/maintenance/static/js/maintenance.js:145
 msgid ""
 "Maintenance job creation failed. Databases with = symbols in the name "
 "cannot be maintained using this utility."
 msgstr ""
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:284
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:49
-msgid "Object Help"
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:38
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:61
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:74
+msgid "Vacuum"
+msgstr "Очистить"
+
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:115
+msgid "Maintenance operation"
+msgstr "Операция по обслуживанию"
+
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:120
+msgid "VACUUM"
 msgstr ""
 
-#: pgadmin/tools/maintenance/static/js/maintenance.js:397
-#: pgadmin/tools/maintenance/static/js/maintenance.js:404
-msgid "Maintenance job creation failed."
-msgstr "Создать задание по обслуживанию не удалось."
+#: pgadmin/tools/maintenance/static/js/maintenance.ui.js:148
+msgid "Verbose Messages"
+msgstr "Подробные сообщения"
 
 #: pgadmin/tools/psql/__init__.py:53
 msgid "PSQL"
@@ -13422,9 +13510,6 @@ msgid "To paste data on the PSQL terminal, Clipboard read permission required."
 msgstr ""
 
 #: pgadmin/tools/restore/__init__.py:42
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:48
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:58
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:71
 msgid "Restore"
 msgstr "Восстановить"
 
@@ -13444,77 +13529,50 @@ msgstr "Восстановление резервной копии на серв
 msgid "File could not be found."
 msgstr "Не удалось найти файл."
 
-#: pgadmin/tools/restore/static/js/restore.js:109
-msgid "Custom or tar"
-msgstr "Специальный или tar"
-
-#: pgadmin/tools/restore/static/js/restore.js:155
-#: pgadmin/tools/restore/static/js/restore.js:207
-#: pgadmin/tools/restore/static/js/restore.js:248
-#: pgadmin/tools/restore/static/js/restore.js:299
-#: pgadmin/tools/restore/static/js/restore.js:336
-#: pgadmin/tools/restore/static/js/restore.js:360
-msgid "Restore options"
-msgstr "Параметры восстановления"
-
-#: pgadmin/tools/restore/static/js/restore.js:312
-msgid "Clean before restore"
-msgstr "Очистить перед восстановлением"
-
-#: pgadmin/tools/restore/static/js/restore.js:324
-msgid "Single transaction"
-msgstr "Одна транзакция"
-
-#: pgadmin/tools/restore/static/js/restore.js:348
-msgid "No data for Failed Tables"
-msgstr "Не наполнять таблицы при ошибке создания"
-
-#: pgadmin/tools/restore/static/js/restore.js:359
-#: pgadmin/tools/restore/static/js/restore.js:370
-#: pgadmin/tools/restore/static/js/restore.js:379
-#: pgadmin/tools/restore/static/js/restore.js:388
-msgid "Miscellaneous / Behavior"
-msgstr "Разное / Поведение"
-
-#: pgadmin/tools/restore/static/js/restore.js:382
-msgid "Exit on error"
-msgstr "Выход при ошибке"
-
-#: pgadmin/tools/restore/static/js/restore.js:413
-#: pgadmin/tools/restore/static/js/restore.js:431
+#: pgadmin/tools/restore/static/js/restore.js:44
+#: pgadmin/tools/restore/static/js/restore.js:63
 msgid "Restore..."
 msgstr "Восстановить..."
 
-#: pgadmin/tools/restore/static/js/restore.js:419
+#: pgadmin/tools/restore/static/js/restore.js:51
 #, fuzzy
 msgid "Please select any schema or table from the browser tree to Restore data."
 msgstr "Выберите сервер или дочерний узел в дереве объектов."
 
-#: pgadmin/tools/restore/static/js/restore_dialog.js:29
-#: pgadmin/tools/restore/static/js/restore_dialog.js:41
+#: pgadmin/tools/restore/static/js/restore.js:133
 msgid "Restore Error"
 msgstr ""
 
-#: pgadmin/tools/restore/static/js/restore_dialog.js:78
-#, python-format
-msgid "Restore (%s: %s)"
-msgstr "Восстановление (%s: %s)"
-
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:170
-msgid "Restore job created."
-msgstr "Задание для восстановления создано."
-
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:174
-msgid "Restore job creation failed."
+#: pgadmin/tools/restore/static/js/restore.js:154
+msgid "Restore (${pgBrowser.Nodes[data._type].label}: ${data.label})"
 msgstr ""
 
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:182
-msgid "Restore job failed."
-msgstr ""
+#: pgadmin/tools/restore/static/js/restore.ui.js:232
+msgid "Clean before restore"
+msgstr "Очистить перед восстановлением"
 
-#: pgadmin/tools/restore/static/js/restore_dialog_wrapper.js:261
-msgid "Please provide a filename"
-msgstr "Задайте имя файла"
+#: pgadmin/tools/restore/static/js/restore.ui.js:243
+msgid "Single transaction"
+msgstr "Одна транзакция"
+
+#: pgadmin/tools/restore/static/js/restore.ui.js:282
+msgid "No data for Failed Tables"
+msgstr "Не наполнять таблицы при ошибке создания"
+
+#: pgadmin/tools/restore/static/js/restore.ui.js:318
+#: pgadmin/tools/restore/static/js/restore.ui.js:324
+#: pgadmin/tools/restore/static/js/restore.ui.js:330
+#: pgadmin/tools/restore/static/js/restore.ui.js:456
+msgid "Miscellaneous / Behavior"
+msgstr "Разное / Поведение"
+
+#: pgadmin/tools/restore/static/js/restore.ui.js:327
+msgid "Exit on error"
+msgstr "Выход при ошибке"
+
+#: pgadmin/tools/restore/static/js/restore.ui.js:389
+msgid "Custom or tar"
+msgstr "Специальный или tar"
 
 #: pgadmin/tools/schema_diff/__init__.py:33
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:100
@@ -13639,7 +13697,7 @@ msgstr ""
 msgid "Difference"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/schema_diff.js:110
+#: pgadmin/tools/schema_diff/static/js/schema_diff.js:111
 msgid "Schema Diff initialize error"
 msgstr ""
 
@@ -13752,7 +13810,7 @@ msgstr ""
 msgid "Failed to connect the database."
 msgstr ""
 
-#: pgadmin/tools/search_objects/static/js/search_objects.js:49
+#: pgadmin/tools/search_objects/static/js/search_objects.js:50
 msgid ""
 "Please select a database from the browser tree to search the database "
 "objects."
@@ -13844,7 +13902,7 @@ msgstr "Объект транзакции или сеанса не найден.
 msgid "File type not supported"
 msgstr "Тип файла не поддерживается"
 
-#: pgadmin/tools/sqleditor/__init__.py:1312
+#: pgadmin/tools/sqleditor/__init__.py:1312 pgadmin/utils/__init__.py:473
 msgid "Error: {0}"
 msgstr "Ошибка: {0}"
 
@@ -14661,7 +14719,7 @@ msgstr ""
 "Определяет, будут ли вставляться пробелы вместо табуляции при нажатии "
 "клавиши Tab или использовании автоотступа."
 
-#: pgadmin/tools/storage_manager/static/js/storage_manager.js:53
+#: pgadmin/tools/storage_manager/static/js/storage_manager.js:64
 msgid "Storage Manager..."
 msgstr ""
 
@@ -14856,14 +14914,14 @@ msgstr ""
 "Вы действительно хотите закрыть диалог? Все несохранённые изменения будут"
 " потеряны."
 
-#: pgadmin/utils/__init__.py:282
+#: pgadmin/utils/__init__.py:286
 #, fuzzy
 msgid ""
 "Utility file not found. Please correct the Binary Path in the Preferences"
 " dialog"
 msgstr "Задайте путь к программам PostgreSQL в диалоге настройки."
 
-#: pgadmin/utils/__init__.py:287
+#: pgadmin/utils/__init__.py:291
 #, python-format
 msgid ""
 "'%s' file not found. Please correct the Binary Path in the Preferences "
@@ -14965,6 +15023,11 @@ msgstr ""
 
 #: pgadmin/utils/constants.py:105
 msgid "PostgreSQL 14"
+msgstr ""
+
+#: pgadmin/utils/constants.py:113
+#, python-format
+msgid "The specified user ID (%s) could not be found."
 msgstr ""
 
 #: pgadmin/utils/exception.py:70
@@ -17137,4 +17200,37 @@ msgstr ""
 
 #~ msgid "Backup job failed."
 #~ msgstr "Ошибка задания резервного копирования."
+
+#~ msgid "Dump options"
+#~ msgstr "Параметры выгрузки"
+
+#~ msgid "New ERD Project"
+#~ msgstr ""
+
+#~ msgid "Import/Export..."
+#~ msgstr "Импорт/экспорт..."
+
+#~ msgid "Object Help"
+#~ msgstr ""
+
+#~ msgid "Maintenance job creation failed."
+#~ msgstr "Создать задание по обслуживанию не удалось."
+
+#~ msgid "Restore options"
+#~ msgstr "Параметры восстановления"
+
+#~ msgid "Restore (%s: %s)"
+#~ msgstr "Восстановление (%s: %s)"
+
+#~ msgid "Restore job created."
+#~ msgstr "Задание для восстановления создано."
+
+#~ msgid "Restore job creation failed."
+#~ msgstr ""
+
+#~ msgid "Restore job failed."
+#~ msgstr ""
+
+#~ msgid "Please provide a filename"
+#~ msgstr "Задайте имя файла"
 
