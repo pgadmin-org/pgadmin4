@@ -12,11 +12,10 @@
 import os
 
 from flask import current_app, url_for
-from flask_security import current_user, login_required
+from flask_security import current_user
 from werkzeug.exceptions import InternalServerError
 
 
-@login_required
 def get_storage_directory():
     import config
     if config.SERVER_MODE is not True:
