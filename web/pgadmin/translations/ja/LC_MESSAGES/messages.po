@@ -1,5 +1,5 @@
 # Japanese translations for pgAdmin 4.
-# Copyright (C) 2021 The pgAdmin Development Team
+# Copyright (C) 2022 The pgAdmin Development Team
 # This file is distributed under the same license as the pgAdmin 4 project.
 # Japan PostgreSQL User Group <www.postgresql.jp>, 2017.
 #
@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-07 21:34+0530\n"
-"PO-Revision-Date: 2021-12-12 20:34+0900\n"
+"PO-Revision-Date: 2022-01-08 21:48+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -9259,7 +9259,7 @@ msgstr "テーブル空間情報が見つかりませんでした。"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:356
 msgid "Tablespace created successfully, Set parameter fail: {0}"
-msgstr ""
+msgstr "テーブル空間の作成には成功しましたが、パラメータの設定は失敗しました: {0}"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:438
 msgid "The specified tablespace could not be found.\n"
@@ -11953,11 +11953,11 @@ msgstr "サーバをバックアップ"
 
 #: pgadmin/tools/backup/static/js/backup.js:220
 msgid "Backup Error"
-msgstr ""
+msgstr "バックアップエラー"
 
 #: pgadmin/tools/backup/static/js/backup.js:242
 msgid "Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})"
-msgstr ""
+msgstr "バックアップ (${pgBrowser.Nodes[data._type].label}: ${data.label})"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:41
 #: pgadmin/tools/restore/static/js/restore.ui.js:42
@@ -12143,7 +12143,7 @@ msgstr "バックアップ形式には、平文が使用されます"
 #: pgadmin/tools/restore/static/js/restore.ui.js:433
 #: pgadmin/tools/restore/static/js/restore.ui.js:439
 msgid "Data/Objects"
-msgstr ""
+msgstr "データ/オブジェクト"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:566
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:114
@@ -13304,7 +13304,7 @@ msgstr ""
 
 #: pgadmin/tools/import_export/static/js/import_export.js:428
 msgid "Import/Export Data..."
-msgstr ""
+msgstr "データをインポート/エクスポート..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:434
 msgid "Please select any table from the browser tree to Import/Export data."
@@ -13346,76 +13346,76 @@ msgstr "データをインポート/エクスポート - テーブル '%s'"
 #: pgadmin/tools/import_export_servers/__init__.py:45
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:214
 msgid "Import/Export Servers"
-msgstr ""
+msgstr "サーバをインポート/エクスポート"
 
 #: pgadmin/tools/import_export_servers/__init__.py:173
 msgid "The specified file is not in the correct format."
-msgstr ""
+msgstr "指定されたファイルの形式が正しくありません。"
 
 #: pgadmin/tools/import_export_servers/__init__.py:179
 msgid "Unable to load the specified file."
-msgstr ""
+msgstr "指定されたファイルを読み込めませんでした。"
 
 #: pgadmin/tools/import_export_servers/__init__.py:181
 msgid "The specified file does not exist."
-msgstr ""
+msgstr "指定されたファイルが存在しません。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:80
 msgid "Export Servers"
-msgstr ""
+msgstr "サーバをエクスポート"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:80
 msgid "The selected servers were exported successfully."
-msgstr ""
+msgstr "選択したサーバを正常にエクスポートしました。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:83
 msgid "Export Error"
-msgstr ""
+msgstr "エクスポートエラー"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:100
 msgid "The selected servers were imported successfully."
-msgstr ""
+msgstr "選択したサーバを正常にインポートしました。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:102
 msgid ""
 "The existing server groups and servers were removed, and the selected "
 "servers were imported successfully."
-msgstr ""
+msgstr "既存のサーバグループとサーバを削除し、選択したサーバを正常にインポートしました。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:105
 msgid "Import Servers"
-msgstr ""
+msgstr "サーバをインポート"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:108
 msgid "Import error"
-msgstr ""
+msgstr "インポートエラー"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:183
 msgid "Error while fetching Server Groups and Servers."
-msgstr ""
+msgstr "サーバグループとサーバの取得中にエラーが発生しました。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:237
 msgid "Select the Server Groups/Servers to import/export:"
-msgstr ""
+msgstr "インポート/エクスポートするサーバグループ/サーバを選択:"
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:65
 msgid "Supports only JSON format."
-msgstr ""
+msgstr "JSON 形式のみをサポートしています。"
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:68
 msgid "Remove all the existing servers?"
-msgstr ""
+msgstr "既存のサーバをすべて削除しますか？"
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:70
 msgid ""
 "If this option is turned on then pgAdmin will remove all the existing "
 "database servers and then import the selected servers. This setting is "
 "applicable only while importing the servers."
-msgstr ""
+msgstr "このオプションをオンにすると、選択したサーバをインポートする前に、既存のデータベースサーバをすべて削除します。※ここでの設定は、サーバをインポートするとき以外は無視されます。"
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_servers.js:56
 msgid "Import/Export Servers..."
-msgstr ""
+msgstr "サーバをインポート/エクスポート..."
 
 #: pgadmin/tools/maintenance/__init__.py:44
 #: pgadmin/tools/maintenance/__init__.py:130
@@ -13506,7 +13506,7 @@ msgstr "メンテナンス処理"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:120
 msgid "VACUUM"
-msgstr ""
+msgstr "VACUUM"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:148
 msgid "Verbose Messages"
@@ -13579,7 +13579,7 @@ msgstr "リストアエラー"
 
 #: pgadmin/tools/restore/static/js/restore.js:154
 msgid "Restore (${pgBrowser.Nodes[data._type].label}: ${data.label})"
-msgstr ""
+msgstr "リストア (${pgBrowser.Nodes[data._type].label}: ${data.label})"
 
 #: pgadmin/tools/restore/static/js/restore.ui.js:232
 msgid "Clean before restore"
@@ -15055,7 +15055,7 @@ msgstr "PostgreSQL 14"
 #: pgadmin/utils/constants.py:113
 #, python-format
 msgid "The specified user ID (%s) could not be found."
-msgstr ""
+msgstr "指定されたユーザ ID (%s) が見つかりませんでした。"
 
 #: pgadmin/utils/exception.py:70
 msgid ""
