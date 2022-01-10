@@ -11,7 +11,6 @@
 and settings database."""
 
 import argparse
-import json
 import os
 import sys
 import builtins

@@ -16,7 +16,7 @@ from flask_security import current_user
 from werkzeug.exceptions import InternalServerError
 
 
-def get_storage_directory():
+def get_storage_directory(user=current_user):
     import config
     if config.SERVER_MODE is not True:
         return None
@@ -44,7 +44,7 @@ def get_storage_directory():
 
         return ret_un
 
-    username = _preprocess_username(current_user.username.split('@')[0])
+    username = _preprocess_username(user.username.split('@')[0])
 
     # Figure out the old-style storage directory name
     old_storage_dir = os.path.join(
@@ -53,7 +53,7 @@ def get_storage_directory():
         username
     )
 
-    username = _preprocess_username(current_user.username)
+    username = _preprocess_username(user.username)
 
     # Figure out the new style storage directory name
     storage_dir = os.path.join(

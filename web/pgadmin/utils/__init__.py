@@ -451,7 +451,9 @@ def dump_database_servers(output_file, selected_servers,
     object_dict["Servers"] = server_dict
 
     # retrieve storage directory path
-    storage_manager_path = get_storage_directory()
+    storage_manager_path = None
+    if not from_setup:
+        storage_manager_path = get_storage_directory(user)
 
     # generate full path of file
     file_path = unquote(output_file)
@@ -470,7 +472,7 @@ def dump_database_servers(output_file, selected_servers,
 
     # write to file
     file_content = json.dumps(object_dict, indent=4)
-    error_str = gettext("Error: {0}")
+    error_str = "Error: {0}"
     try:
         with open(file_path, 'w') as output_file:
             output_file.write(file_content)
@@ -481,8 +483,8 @@ def dump_database_servers(output_file, selected_servers,
         err_msg = error_str.format(e.strerror)
         return _handle_error(err_msg, from_setup)
 
-    msg = "Configuration for %s servers dumped to %s." % \
-          (servers_dumped, output_file)
+    msg = "Configuration for %s servers dumped to %s" % \
+          (servers_dumped, output_file.name)
     print(msg)
 
     return True, msg
@@ -557,8 +559,15 @@ def load_database_servers(input_file, selected_servers,
                           load_user=current_user, from_setup=False):
     """Load server groups and servers.
     """
+    user = _does_user_exist(load_user, from_setup)
+    if user is None:
+        return False, USER_NOT_FOUND % load_user
+
     # retrieve storage directory path
-    storage_manager_path = get_storage_directory()
+    storage_manager_path = None
+    if not from_setup:
+        storage_manager_path = get_storage_directory(user)
+
     # generate full path of file
     file_path = unquote(input_file)
     if storage_manager_path:
@@ -579,10 +588,6 @@ def load_database_servers(input_file, selected_servers,
                              (file_path, e.errno, e.strerror), from_setup)
 
     f.close()
-
-    user = _does_user_exist(load_user, from_setup)
-    if user is None:
-        return False, USER_NOT_FOUND % load_user
 
     user_id = user.id
     # Counters
