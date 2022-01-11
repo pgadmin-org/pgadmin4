@@ -208,10 +208,16 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         res = []
+        show_internal = False
+        # If show_system_objects is true then no need to hide any sequences.
+        if self.blueprint.show_system_objects:
+            show_internal = True
+
         SQL = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             scid=scid,
-            seid=seid
+            seid=seid,
+            show_internal=show_internal
         )
         status, rset = self.conn.execute_dict(SQL)
         if not status:
@@ -231,8 +237,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 status=200
             )
 
-        sequence_nodes = self._get_sequence_nodes(rset['rows'])
-        for row in sequence_nodes:
+        for row in rset['rows']:
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
