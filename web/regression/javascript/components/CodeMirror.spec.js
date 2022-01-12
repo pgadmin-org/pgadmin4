@@ -22,11 +22,11 @@ describe('CodeMirror', ()=>{
     },
     cmObj = jasmine.createSpyObj('cmObj', {
       'getValue':()=>'',
-      'setValue': ()=>{},
-      'refresh': ()=>{},
-      'setOption': ()=>{},
-      'removeKeyMap': ()=>{},
-      'addKeyMap': ()=>{},
+      'setValue': ()=>{/*This is intentional (SonarQube)*/},
+      'refresh': ()=>{/*This is intentional (SonarQube)*/},
+      'setOption': ()=>{/*This is intentional (SonarQube)*/},
+      'removeKeyMap': ()=>{/*This is intentional (SonarQube)*/},
+      'addKeyMap': ()=>{/*This is intentional (SonarQube)*/},
       'getWrapperElement': document.createElement('div'),
     });
   beforeEach(()=>{

@@ -33,7 +33,7 @@ let pgAdmin = {
         ];
       },
     },
-    onPreferencesChange: ()=>{},
+    onPreferencesChange: ()=>{/*This is intentional (SonarQube)*/},
     utils: {
       app_version_int: 1234,
     },
@@ -53,7 +53,7 @@ let alertify = jasmine.createSpyObj('alertify', {
   'error': null,
   'confirm': null,
   'alert': {
-    'set': ()=>{},
+    'set': ()=>{/*This is intentional (SonarQube)*/},
   },
 });
 

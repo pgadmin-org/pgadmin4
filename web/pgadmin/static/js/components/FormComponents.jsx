@@ -439,7 +439,7 @@ export function InputSwitch({cid, helpid, value, onChange, readonly, controlProp
     <Switch color="primary"
       checked={Boolean(value)}
       onChange={
-        readonly ? ()=>{} : onChange
+        readonly ? ()=>{/*This is intentional (SonarQube)*/} : onChange
       }
       id={cid}
       inputProps={{
@@ -486,7 +486,7 @@ export function InputCheckbox({cid, helpid, value, onChange, controlProps, reado
         <Checkbox
           id={cid}
           checked={Boolean(value)}
-          onChange={readonly ? ()=>{} : onChange}
+          onChange={readonly ? ()=>{/*This is intentional (SonarQube)*/} : onChange}
           color="primary"
           inputProps={{'aria-describedby': helpid}}
           {...props}/>
@@ -1078,7 +1078,7 @@ FormFooterMessage.propTypes = {
   message: PropTypes.string,
 };
 
-export function NotifierMessage({type=MESSAGE_TYPE.SUCCESS, message, closable=true, onClose=()=>{}}) {
+export function NotifierMessage({type=MESSAGE_TYPE.SUCCESS, message, closable=true, onClose=()=>{/*This is intentional (SonarQube)*/}}) {
   const classes = useStylesFormFooter();
 
   return (

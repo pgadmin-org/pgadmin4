@@ -11,7 +11,7 @@ export default class HistoryCollection {
 
   constructor(history_model) {
     this.historyList = _.sortBy(history_model, o=>o.start_time);
-    this.onAdd(() => {});
+    this.onAdd(() => {/*This is intentional (SonarQube)*/});
   }
 
   length() {

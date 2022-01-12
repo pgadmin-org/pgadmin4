@@ -85,7 +85,7 @@ describe('FormComponents', ()=>{
     });
 
     it('props change', ()=>{
-      let onChange = ()=>{};
+      let onChange = ()=>{/*This is intentional (SonarQube)*/};
       ctrl.setProps({
         readonly: true,
         disabled: true,

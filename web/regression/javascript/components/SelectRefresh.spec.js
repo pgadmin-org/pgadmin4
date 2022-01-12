@@ -50,7 +50,7 @@ describe('components SelectRefresh', ()=>{
             value={1}
             onChange={onChange}
             controlProps={{
-              getOptionsOnRefresh: ()=>{}
+              getOptionsOnRefresh: ()=>{/*This is intentional (SonarQube)*/}
             }}
             {...props}
           />);

@@ -54,7 +54,7 @@ export default class ERDCore {
     this.registerKeyAction(new ZoomCanvasAction({inverseZoom: true}));
   }
 
-  initializeModel(data, callback=()=>{}) {
+  initializeModel(data, callback=()=>{/*This is intentional (SonarQube)*/}) {
     let model = new ERDModel();
     if(data) {
       model.deserializeModel(data, this.engine);
@@ -306,7 +306,7 @@ export default class ERDCore {
   }
 
   addOneToManyLink(onetomanyData) {
-    let newFk = new ForeignKeySchema({}, {}, ()=>{}, {autoindex: false});
+    let newFk = new ForeignKeySchema({}, {}, ()=>{/*This is intentional (SonarQube)*/}, {autoindex: false});
     let tableNodesDict = this.getModel().getNodesDict();
     let fkColumn = {};
     let sourceNode = tableNodesDict[onetomanyData.referenced_table_uid];
@@ -361,10 +361,10 @@ export default class ERDCore {
     let rightNode = nodes[manytomanyData.right_table_uid];
 
     let tableObj = new TableSchema({}, {}, {
-      constraints:()=>{},
-      columns:()=>new ColumnSchema(()=>{}, {}, {}, {}),
-      vacuum_settings:()=>{},
-    }, ()=>{}, ()=>{}, ()=>{}, ()=>{});
+      constraints:()=>{/*This is intentional (SonarQube)*/},
+      columns:()=>new ColumnSchema(()=>{/*This is intentional (SonarQube)*/}, {}, {}, {}),
+      vacuum_settings:()=>{/*This is intentional (SonarQube)*/},
+    }, ()=>{/*This is intentional (SonarQube)*/}, ()=>{/*This is intentional (SonarQube)*/}, ()=>{/*This is intentional (SonarQube)*/}, ()=>{/*This is intentional (SonarQube)*/});
 
     let tableData = tableObj.getNewData({
       name: `${leftNode.getData().name}_${rightNode.getData().name}`,
@@ -558,8 +558,8 @@ export default class ERDCore {
       event: {
         ...event,
         key: '',
-        preventDefault: () => {},
-        stopPropagation: () => {},
+        preventDefault: () => {/*This is intentional (SonarQube)*/},
+        stopPropagation: () => {/*This is intentional (SonarQube)*/},
       },
     });
   }

@@ -55,7 +55,7 @@ describe('GrantWizard', () => {
       viewHelperProps={{
         mode: 'create',
       }}
-      onDataChange={() => { }}
+      onDataChange={() => {/*This is intentional (SonarQube)*/}}
       showFooter={false}
       isTabView={false}
     />);

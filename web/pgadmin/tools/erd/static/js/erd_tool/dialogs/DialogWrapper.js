@@ -91,7 +91,7 @@ export default class DialogWrapper {
         }}
         onSave={this.onSaveClick.bind(this)}
         onClose={()=>self.close()}
-        onDataChange={()=>{}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
         hasSQL={false}
         disableSqlHelp={true}
         disableDialogHelp={true}

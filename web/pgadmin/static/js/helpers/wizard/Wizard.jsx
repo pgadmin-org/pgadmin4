@@ -140,7 +140,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
     if(props.beforeNext) {
       props.beforeNext(activeStep).then(()=>{
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      }).catch(()=>{});
+      }).catch(()=>{/*This is intentional (SonarQube)*/});
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -151,7 +151,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
     if(props.beforeBack) {
       props.beforeBack(activeStep).then(()=>{
         setActiveStep((prevActiveStep) => prevActiveStep - 1 < 0 ? prevActiveStep : prevActiveStep - 1);
-      }).catch(()=>{});
+      }).catch(()=>{/*This is intentional (SonarQube)*/});
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep - 1 < 0 ? prevActiveStep : prevActiveStep - 1);
     }

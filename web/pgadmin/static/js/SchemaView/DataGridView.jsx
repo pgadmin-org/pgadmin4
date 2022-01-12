@@ -258,7 +258,7 @@ export default function DataGridView({
         let colInfo = {
           Header: <>&nbsp;</>,
           id: 'btn-edit',
-          accessor: ()=>{},
+          accessor: ()=>{/*This is intentional (SonarQube)*/},
           disableResizing: true,
           sortable: false,
           dataType: 'edit',
@@ -287,7 +287,7 @@ export default function DataGridView({
         let colInfo = {
           Header: <>&nbsp;</>,
           id: 'btn-delete',
-          accessor: ()=>{},
+          accessor: ()=>{/*This is intentional (SonarQube)*/},
           disableResizing: true,
           sortable: false,
           dataType: 'delete',
@@ -311,7 +311,7 @@ export default function DataGridView({
                       value: row.index,
                     });
 
-                  }, ()=>{}, props.customDeleteTitle, props.customDeleteMsg);
+                  }, ()=>{/*This is intentional (SonarQube)*/}, props.customDeleteTitle, props.customDeleteMsg);
                 }} className={classes.gridRowButton} disabled={!canDeleteRow} />
             );
           }

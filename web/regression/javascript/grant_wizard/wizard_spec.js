@@ -43,8 +43,8 @@ describe('Wizard', () => {
       <Theme>
         <Wizard
           stepList={['Test']}
-          onStepChange={()=> {}}
-          onSave={()=>{}}
+          onStepChange={()=> {/*This is intentional (SonarQube)*/}}
+          onSave={()=>{/*This is intentional (SonarQube)*/}}
           className={''}
           disableNextStep={()=>{return false;}}
         >

@@ -10,7 +10,7 @@ export default class QueryHistory {
     this.histCollection = histModel;
     this.editorPref = {};
 
-    this.onCopyToEditorHandler = ()=>{};
+    this.onCopyToEditorHandler = ()=>{/*This is intentional (SonarQube)*/};
     this.histCollection.onAdd(this.onAddEntry.bind(this));
     this.histCollection.onReset(this.onResetEntries.bind(this));
   }

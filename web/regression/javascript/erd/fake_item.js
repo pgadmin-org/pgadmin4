@@ -39,9 +39,9 @@ export class FakeLink {
   setSelected() {}
   getID() {return this.id;}
   getData() {return this.data;}
-  getSourcePort() {return {remove: ()=>{}};}
+  getSourcePort() {return {remove: ()=>{/*This is intentional (SonarQube)*/}};}
   setSourcePort() {}
-  getTargetPort() {return {remove: ()=>{}};}
+  getTargetPort() {return {remove: ()=>{/*This is intentional (SonarQube)*/}};}
   setTargetPort() {}
   remove() {}
 }

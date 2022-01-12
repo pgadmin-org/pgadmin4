@@ -25,7 +25,7 @@ describe('layout related functions test', function() {
   beforeEach(function(){
     pgBrowser.preferences_cache = dummy_cache;
     pgBrowser.docker = {
-      'lockLayout': ()=>{},
+      'lockLayout': ()=>{/*This is intentional (SonarQube)*/},
     };
 
     _.extend(pgBrowser,{
@@ -33,9 +33,9 @@ describe('layout related functions test', function() {
         'file': {
           'mnu_locklayout': {
             'menu_items': [
-              {'name': 'mnu_lock_none', change_checked: ()=> {}},
-              {'name': 'mnu_lock_docking', change_checked: ()=> {}},
-              {'name': 'mnu_lock_full', change_checked: ()=> {}},
+              {'name': 'mnu_lock_none', change_checked: ()=> {/*This is intentional (SonarQube)*/}},
+              {'name': 'mnu_lock_docking', change_checked: ()=> {/*This is intentional (SonarQube)*/}},
+              {'name': 'mnu_lock_full', change_checked: ()=> {/*This is intentional (SonarQube)*/}},
             ],
           },
         },

@@ -312,7 +312,7 @@ export default class IndexSchema extends BaseUISchema {
               );
             });
           } else {
-            return Promise.resolve(()=>{});
+            return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
           }
         },
       },

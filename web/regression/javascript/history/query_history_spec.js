@@ -69,7 +69,7 @@ describe('QueryHistory', () => {
 
         historyCollection = new HistoryCollection(historyObjects);
         historyComponent = new QueryHistory(historyWrapper, historyCollection);
-        historyComponent.onCopyToEditorClick(()=>{});
+        historyComponent.onCopyToEditorClick(()=>{/*This is intentional (SonarQube)*/});
         historyComponent.render();
 
         queryEntries = historyWrapper.find('#query_list .list-item');

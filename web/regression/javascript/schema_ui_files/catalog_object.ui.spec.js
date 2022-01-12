@@ -46,8 +46,8 @@ describe('CatalogObjectSchema', ()=>{
       viewHelperProps={{
         mode: 'properties',
       }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
     />);
 
   });

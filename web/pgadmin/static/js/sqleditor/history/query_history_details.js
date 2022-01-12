@@ -11,7 +11,7 @@ export default class QueryHistoryDetails {
     this.timeout = null;
     this.isRendered = false;
     this.sqlFontSize = null;
-    this.onCopyToEditorHandler = ()=>{};
+    this.onCopyToEditorHandler = ()=>{/*This is intentional (SonarQube)*/};
 
     this.editorPref = {
       'sql_font_size': '1em',

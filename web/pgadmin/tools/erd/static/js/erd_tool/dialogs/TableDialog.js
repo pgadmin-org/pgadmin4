@@ -39,7 +39,7 @@ export default class TableDialog {
     let treeNodeInfo = undefined;
 
     let columnSchema = new ColumnSchema(
-      ()=>{},
+      ()=>{/*This is intentional (SonarQube)*/},
       treeNodeInfo,
       ()=>colTypes,
       ()=>[],

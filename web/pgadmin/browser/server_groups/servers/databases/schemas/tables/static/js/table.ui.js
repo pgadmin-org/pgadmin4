@@ -284,7 +284,7 @@ export class LikeSchema extends BaseUISchema {
 }
 
 export default class TableSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, schemas={}, getPrivilegeRoleSchema=()=>{}, getColumns=()=>[],
+  constructor(fieldOptions={}, nodeInfo, schemas={}, getPrivilegeRoleSchema=()=>{/*This is intentional (SonarQube)*/}, getColumns=()=>[],
     getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}, inErd=false) {
     super({
       name: undefined,
@@ -750,7 +750,7 @@ export default class TableSchema extends BaseUISchema {
             setColumns(resolve);
           });
         } else {
-          return Promise.resolve(()=>{});
+          return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
         }
       },
     },

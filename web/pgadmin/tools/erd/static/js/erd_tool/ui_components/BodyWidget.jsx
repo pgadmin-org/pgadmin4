@@ -433,7 +433,7 @@ export default class BodyWidget extends React.Component {
         });
         this.diagram.repaint();
       },
-      () => {}
+      () => {/*This is intentional (SonarQube)*/}
     );
   }
 

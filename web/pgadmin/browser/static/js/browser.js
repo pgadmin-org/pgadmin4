@@ -691,7 +691,7 @@ define('pgadmin.browser', [
       });
     },
 
-    set_master_password: function(password='', button_click=false, set_callback=()=>{}) {
+    set_master_password: function(password='', button_click=false, set_callback=()=>{/*This is intentional (SonarQube)*/}) {
       let data=null, self = this;
 
       data = JSON.stringify({

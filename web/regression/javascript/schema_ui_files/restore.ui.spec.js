@@ -45,10 +45,10 @@ describe('RestoreSchema', ()=>{
       viewHelperProps={{
         mode: 'create',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}

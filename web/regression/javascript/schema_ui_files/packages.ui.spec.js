@@ -54,11 +54,11 @@ describe('PackageSchema', ()=>{
       viewHelperProps={{
         mode: 'create',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -74,11 +74,11 @@ describe('PackageSchema', ()=>{
       viewHelperProps={{
         mode: 'create',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -94,8 +94,8 @@ describe('PackageSchema', ()=>{
       viewHelperProps={{
         mode: 'properties',
       }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
     />);
   });
 

@@ -222,7 +222,7 @@ export default function ImportExportServers() {
         <WizardStep stepId={0}>
           <SchemaView
             formType={'dialog'}
-            getInitData={() => { }}
+            getInitData={() => {/*This is intentional (SonarQube)*/}}
             viewHelperProps={{ mode: 'create' }}
             schema={new ImportExportSelectionSchema()}
             showFooter={false}

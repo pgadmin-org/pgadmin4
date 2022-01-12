@@ -87,7 +87,7 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
       onSave={onSaveClick}
       onClose={()=>containerPanel.close()}
       onHelp={onHelp}
-      onDataChange={()=>{}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={confirmOnReset}
       hasSQL={false}
       disableSqlHelp={sqlHelpUrl == undefined || sqlHelpUrl == ''}

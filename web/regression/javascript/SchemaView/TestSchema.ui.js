@@ -30,7 +30,7 @@ class TestSubSchema extends BaseUISchema {
         cell: ()=>({cell: 'select', options: []}),
         mode: ['properties', 'edit', 'create'],
         disabled: (state)=>this.isNew(state), deps: ['field5'],
-        depChange: ()=>{}, optionsLoaded: ()=>{},
+        depChange: ()=>{/*This is intentional (SonarQube)*/}, optionsLoaded: ()=>{/*This is intentional (SonarQube)*/},
       },
       {
         id: 'field5', label: 'Field5', type: 'multiline', group: null,

@@ -138,11 +138,11 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'create',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -156,11 +156,11 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'create',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -175,11 +175,11 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'edit',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -194,14 +194,14 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'properties',
       }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
     />);
   });
-  
+
   it('proiswindow visible', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -254,11 +254,11 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'edit',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -268,7 +268,7 @@ describe('FunctionSchema', ()=>{
 
   it('proiswindow visible', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -321,21 +321,21 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'edit',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
     />);
 
   });
-  
+
   it('proiswindow visible', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -387,11 +387,11 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'edit',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -400,7 +400,7 @@ describe('FunctionSchema', ()=>{
 
   it('proiswindow visible', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -452,11 +452,11 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'edit',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -466,7 +466,7 @@ describe('FunctionSchema', ()=>{
 
   it('proparallel disabled', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -521,11 +521,11 @@ describe('FunctionSchema', ()=>{
       viewHelperProps={{
         mode: 'edit',
       }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
+      onSave={()=>{/*This is intentional (SonarQube)*/}}
+      onClose={()=>{/*This is intentional (SonarQube)*/}}
+      onHelp={()=>{/*This is intentional (SonarQube)*/}}
+      onEdit={()=>{/*This is intentional (SonarQube)*/}}
+      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={false}
       hasSQL={false}
       disableSqlHelp={false}
@@ -566,7 +566,7 @@ describe('FunctionSchema', ()=>{
   });
 
   it('probin validate', () => {
-    let state = { lanname: 'c', prorettypename: 'char' }; 
+    let state = { lanname: 'c', prorettypename: 'char' };
     let setError = jasmine.createSpy('setError');
 
     schemaObj.validate(state, setError);
@@ -574,7 +574,7 @@ describe('FunctionSchema', ()=>{
   });
 
   it('probin validate', () => {
-    let state = { lanname: 'c', probin: 'test1', prorettypename: 'char'}; 
+    let state = { lanname: 'c', probin: 'test1', prorettypename: 'char'};
     let setError = jasmine.createSpy('setError');
 
     schemaObj.validate(state, setError);

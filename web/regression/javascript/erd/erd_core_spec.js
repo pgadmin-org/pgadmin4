@@ -77,7 +77,7 @@ describe('ERDCore', ()=>{
     });
 
     it('registerModelEvent', ()=>{
-      let fn = ()=>{};
+      let fn = ()=>{/*This is intentional (SonarQube)*/};
       erdCoreObj.registerModelEvent('someEvent', fn);
       expect(erdCoreObj.getModel().registerListener).toHaveBeenCalledWith({
         'someEvent': fn,

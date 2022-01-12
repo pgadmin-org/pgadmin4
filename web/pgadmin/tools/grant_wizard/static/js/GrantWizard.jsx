@@ -345,7 +345,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
         {privSchemaInstance &&
                   <SchemaView
                     formType={'dialog'}
-                    getInitData={() => { }}
+                    getInitData={() => {/*This is intentional (SonarQube)*/}}
                     viewHelperProps={{ mode: 'create' }}
                     schema={privSchemaInstance}
                     showFooter={false}

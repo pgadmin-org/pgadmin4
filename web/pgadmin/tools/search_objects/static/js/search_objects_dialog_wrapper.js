@@ -28,7 +28,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
     this.gridContainer = null;
   }
 
-  showMessage(text, is_error, call_after_show=()=>{}) {
+  showMessage(text, is_error, call_after_show=()=>{/*This is intentional (SonarQube)*/}) {
     if(text == '' || text == null) {
       this.statusBar.classList.add('d-none');
     } else {
