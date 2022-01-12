@@ -1272,7 +1272,7 @@ class PgadminPage:
                     lambda d: d.find_element(By.XPATH, xpath))
                 f_scroll, r_scroll = 0, 0
                 return ele
-            except (TimeoutException, NoSuchElementException) as e:
+            except (TimeoutException, NoSuchElementException):
                 tree_height = int((self.driver.find_element(
                     By.XPATH, "//div[@class='file-tree']/div[1]/div/div").
                     value_of_css_property('height')).split("px")[0])

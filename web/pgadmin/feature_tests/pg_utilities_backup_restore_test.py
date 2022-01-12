@@ -161,7 +161,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             test_gui_helper.close_process_watcher(self)
             test_gui_helper.close_bgprocess_popup(self)
             self.page.remove_server(self.server)
-        except Exception as e:
+        except Exception:
             print("PGUtilitiesBackupFeatureTest - "
                   "Exception occurred in after method")
         finally:
@@ -221,7 +221,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                     click = False
             except Exception:
                 retry -= 1
-                pass
 
     def initiate_restore(self):
         tools_menu = self.driver.find_element(
@@ -257,7 +256,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                     click = False
             except Exception:
                 retry -= 1
-                pass
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code

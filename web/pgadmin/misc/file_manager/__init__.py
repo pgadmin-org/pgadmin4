@@ -985,7 +985,7 @@ class Filemanager(object):
             try:
                 # Check if the new file is inside the users directory
                 pathlib.Path(new_name).relative_to(the_dir)
-            except ValueError as _:
+            except ValueError:
                 return self.ERROR_NOT_ALLOWED
 
             with open(new_name, 'wb') as f:

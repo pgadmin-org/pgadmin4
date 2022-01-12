@@ -1296,9 +1296,6 @@ WHERE
         )
         status, res = conn.execute_scalar(SQL)
 
-        if not status:
-            return status, res
-
         return status, res
 
     @check_precondition()
@@ -1325,7 +1322,7 @@ WHERE
                 for k, v in rargs.items():
                     try:
                         data[k] = json.loads(v, encoding='utf-8')
-                    except ValueError as ve:
+                    except ValueError:
                         data[k] = v
 
             required_args = ['role_op', 'did', 'old_role_name',

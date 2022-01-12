@@ -57,7 +57,7 @@ def validate_master_password(password):
             return False
         else:
             return True
-    except Exception as _:
+    except Exception:
         False
 
 
@@ -79,7 +79,7 @@ def set_masterpass_check_text(password, clear=False):
             .update({User.masterpass_check: masterpass_check})
         db.session.commit()
 
-    except Exception as _:
+    except Exception:
         db.session.rollback()
         raise
 

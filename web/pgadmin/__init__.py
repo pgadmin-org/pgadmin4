@@ -91,7 +91,7 @@ class PgAdmin(Flask):
                 for key in list(module.__dict__.keys()):
                     if isinstance(module.__dict__[key], PgAdminModule):
                         yield module.__dict__[key]
-        except Exception as _:
+        except Exception:
             return []
 
     @property
@@ -372,7 +372,7 @@ def create_app(app_name=None):
             os.environ[
                 'CORRUPTED_DB_BACKUP_FILE'] = backup_file_name
             app.logger.info('Database migration completed.')
-        except Exception as e:
+        except Exception:
             app.logger.error('Database migration failed')
             app.logger.error(traceback.format_exc())
             raise RuntimeError('Migration failed')
@@ -384,7 +384,7 @@ def create_app(app_name=None):
         try:
             db_upgrade(app)
             os.environ['CORRUPTED_DB_BACKUP_FILE'] = ''
-        except Exception as e:
+        except Exception:
             backup_db_file()
 
         # check all tables are present in the db.
@@ -785,11 +785,10 @@ def create_app(app_name=None):
                 )
                 abort(401)
             login_user(user)
-        elif config.SERVER_MODE and \
-                not current_user.is_authenticated and \
-                request.endpoint in ('redirects.index', 'security.login'):
-            if app.PGADMIN_EXTERNAL_AUTH_SOURCE in [KERBEROS, WEBSERVER]:
-                return authenticate.login()
+        elif config.SERVER_MODE and not current_user.is_authenticated and \
+                request.endpoint in ('redirects.index', 'security.login') and \
+                app.PGADMIN_EXTERNAL_AUTH_SOURCE in [KERBEROS, WEBSERVER]:
+            return authenticate.login()
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
         # to get the key again when login

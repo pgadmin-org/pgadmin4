@@ -492,7 +492,7 @@ def socket_input(data):
                 enter_key_press(data)
             else:
                 other_key_press(data)
-    except Exception as e:
+    except Exception:
         # Delete socket id from sessions.
         # request.sid: refer request.sid as socket id.
         sio.emit('pty-output',

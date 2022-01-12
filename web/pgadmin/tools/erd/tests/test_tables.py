@@ -52,7 +52,7 @@ class ERDTables(BaseTestGenerator):
                 tables_utils.create_table(self.server, self.db_name, tab[0],
                                           tab[1])
                 connection.close()
-        except Exception as _:
+        except Exception:
             self.dropDB()
             raise
 

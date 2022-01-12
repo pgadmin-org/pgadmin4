@@ -765,7 +765,6 @@ define('tools.querytool', [
       /* If sql editor is in a new tab, event fired is not available
        * instead, a poller is set up who will check
        */
-      //var browser_qt_preferences = pgBrowser.get_preferences_for_module('browser');
       var open_new_tab_qt = self.browser_preferences.new_browser_tab_open;
       if(open_new_tab_qt && open_new_tab_qt.includes('qt')) {
         pgBrowser.bind_beforeunload();
@@ -2010,7 +2009,7 @@ define('tools.querytool', [
               method: 'DELETE',
               contentType: 'application/json',
             })
-              .done(function() {})
+              .done(function() { /* This is intentional */ })
               .fail(function() {
               /* history clear fail should not affect query tool */
               });
@@ -2437,7 +2436,7 @@ define('tools.querytool', [
                   },
                 };
               },
-              build:function() {},
+              build:function() {/* */},
               settings:{
                 message: null,
               },
@@ -2517,7 +2516,7 @@ define('tools.querytool', [
                 function() {
                   self.initTransaction();
                 },
-                function(error) {
+                function() {
                   pgBrowser.Events.trigger(
                     'pgadmin:query_tool:connected_fail:' + self.transId, xhr, error
                   );
@@ -3430,8 +3429,8 @@ define('tools.querytool', [
           contentType: 'application/json',
           data: JSON.stringify(history_entry),
         })
-          .done(function() {})
-          .fail(function() {});
+          .done(function() { /* This is intentional */ })
+          .fail(function() { /* This is intentional */ });
 
         self.gridView.history_collection.add(history_entry);
       },
@@ -5159,7 +5158,7 @@ define('tools.querytool', [
         if(data.data_obj.db_id == db_did && !_.isEqual(db_name, data.data_obj.db_name)) {
 
           var message = `Current database has been moved or renamed to ${data.data_obj.db_name}. Click on the OK button to refresh the database name.`,
-            title = self.url_params.title;
+            title = '';
 
           if(self.is_query_tool) {// for query tool
 

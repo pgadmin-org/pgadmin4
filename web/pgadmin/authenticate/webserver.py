@@ -91,7 +91,7 @@ class WebserverAuthentication(BaseAuthentication):
                 "Webserver authenticate failed.")
 
         session['pass_enc_key'] = ''.join(
-            (random.choice(string.ascii_lowercase) for x in range(10)))
+            (random.choice(string.ascii_lowercase) for _ in range(10)))
         useremail = request.environ.get('mail')
         if not useremail:
             useremail = ''

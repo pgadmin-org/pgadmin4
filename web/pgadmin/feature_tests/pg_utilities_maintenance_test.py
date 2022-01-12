@@ -170,7 +170,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             test_utils.delete_table(self.server, self.database_name,
                                     self.table_name)
             self.page.remove_server(self.server)
-        except Exception as e:
+        except Exception:
             print("PGUtilitiesMaintenanceFeatureTest - "
                   "Exception occurred in after method")
         finally:

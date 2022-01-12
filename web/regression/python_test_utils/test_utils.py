@@ -1796,7 +1796,7 @@ def module_patch(*args):
             patch.getter = lambda: imported
             patch.attribute = '.'.join(components[i:])
             return patch
-        except Exception as exc:
+        except Exception:
             pass
 
     # did not find a module, just return the default mock

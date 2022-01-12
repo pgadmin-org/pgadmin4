@@ -174,7 +174,7 @@ def load_servers():
 
             for item in groups:
                 all_servers.append(groups[item])
-        except Exception as e:
+        except Exception:
             return internal_server_error(
                 _('Unable to load the specified file.'))
     else:

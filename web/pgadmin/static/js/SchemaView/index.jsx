@@ -8,8 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Box, makeStyles } from '@material-ui/core';
-import {Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
+import { Box, makeStyles, Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import PublishIcon from '@material-ui/icons/Publish';
@@ -323,14 +322,13 @@ const getDepChange = (currPath, newState, oldState, action)=>{
 
 const getDeferredDepChange = (currPath, newState, oldState, action)=>{
   if(action.deferredDepChange) {
-    let deferredPromiseList = action.deferredDepChange(currPath, newState, {
+    return action.deferredDepChange(currPath, newState, {
       type: action.type,
       path: action.path,
       value: action.value,
       depChange: action.depChange,
       oldState: _.cloneDeep(oldState),
     });
-    return deferredPromiseList;
   }
 };
 
@@ -821,7 +819,6 @@ function SchemaPropertiesView({
     });
   }, [getInitData]);
 
-  let fullTabs = [];
 
   /* A simple loop to get all the controls for the fields */
   schema.fields.forEach((field)=>{
@@ -831,10 +828,8 @@ function SchemaPropertiesView({
 
     if(field.isFullTab) {
       tabsClassname[group] = classes.noPadding;
-      fullTabs.push(group);
     }
 
-    readonly = true;
     if(modeSupported) {
       group = groupLabels[group] || group || defaultTab;
       if(field.helpMessageMode && field.helpMessageMode.indexOf(viewHelperProps.mode) == -1) {

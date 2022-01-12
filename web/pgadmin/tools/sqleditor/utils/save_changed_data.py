@@ -271,7 +271,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     else:
                         status, res = conn.execute_void(
                             item['sql'], item['data'])
-                except Exception as _:
+                except Exception:
                     failure_handle(res, item.get('row_id', 0))
                     raise
 

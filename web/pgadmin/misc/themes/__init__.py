@@ -21,7 +21,7 @@ def get_all_themes():
 
     try:
         all_themes.update(json.load(open(theme_file_path)))
-    except Exception as _:
+    except Exception:
         pass
 
     return all_themes

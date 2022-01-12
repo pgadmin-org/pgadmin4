@@ -266,7 +266,7 @@ def remove_saved_passwords(user_id):
             .filter(Server.user_id == user_id) \
             .update({Server.password: None, Server.tunnel_password: None})
         db.session.commit()
-    except Exception as _:
+    except Exception:
         db.session.rollback()
         raise
 
