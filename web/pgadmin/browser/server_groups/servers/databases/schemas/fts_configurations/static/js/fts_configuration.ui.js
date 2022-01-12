@@ -67,7 +67,7 @@ class TokenSchema extends BaseUISchema {
 }
 
 export default class FTSConfigurationSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,        // FTS Configuration name
       owner: undefined,       // FTS Configuration owner

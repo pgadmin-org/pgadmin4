@@ -118,7 +118,7 @@ export class ForeignKeyColumnSchema extends BaseUISchema {
 }
 
 export default class ForeignKeySchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, getColumns, initValues={}, inErd=false) {
+  constructor(fieldOptions={}, nodeInfo={}, getColumns=()=>[], initValues={}, inErd=false) {
     super({
       name: undefined,
       reftab: undefined,

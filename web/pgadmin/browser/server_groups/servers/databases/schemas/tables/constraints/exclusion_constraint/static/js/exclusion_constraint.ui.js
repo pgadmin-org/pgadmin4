@@ -186,7 +186,7 @@ class ExclusionColumnSchema extends BaseUISchema {
 }
 
 export default class ExclusionConstraintSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo) {
+  constructor(fieldOptions={}, nodeInfo={}) {
     super({
       name: undefined,
       oid: undefined,

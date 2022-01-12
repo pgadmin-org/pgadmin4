@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import OptionsSchema from '../../../../../static/js/options.ui';
 
 export default class FTSDictionarySchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,        // FTS Dictionary name
       owner: undefined,       // FTS Dictionary owner

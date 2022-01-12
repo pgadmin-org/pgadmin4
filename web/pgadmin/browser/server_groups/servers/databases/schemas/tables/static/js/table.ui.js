@@ -284,7 +284,7 @@ export class LikeSchema extends BaseUISchema {
 }
 
 export default class TableSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, schemas={}, getPrivilegeRoleSchema=()=>{/*This is intentional (SonarQube)*/}, getColumns=()=>[],
+  constructor(fieldOptions={}, nodeInfo={}, schemas={}, getPrivilegeRoleSchema=()=>{/*This is intentional (SonarQube)*/}, getColumns=()=>[],
     getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}, inErd=false) {
     super({
       name: undefined,

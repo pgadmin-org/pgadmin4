@@ -67,7 +67,7 @@ export class DomainConstSchema extends BaseUISchema {
 }
 
 export default class DomainSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       oid: undefined,

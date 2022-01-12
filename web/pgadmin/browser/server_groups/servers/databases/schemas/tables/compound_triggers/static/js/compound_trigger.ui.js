@@ -13,7 +13,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export class ForEventsSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, initValues) {
+  constructor(fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       ...initValues,
     });
@@ -73,7 +73,7 @@ export class ForEventsSchema extends BaseUISchema {
 }
 
 export default class CompoundTriggerSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, initValues) {
+  constructor(fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       name: undefined,
       ...initValues,

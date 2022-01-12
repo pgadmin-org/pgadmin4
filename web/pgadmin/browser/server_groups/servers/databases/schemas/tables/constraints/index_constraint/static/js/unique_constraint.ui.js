@@ -6,7 +6,7 @@ import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/Sc
 import TableSchema from '../../../../static/js/table.ui';
 
 export default class UniqueConstraintSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo) {
+  constructor(fieldOptions={}, nodeInfo={}) {
     super({
       name: undefined,
       oid: undefined,

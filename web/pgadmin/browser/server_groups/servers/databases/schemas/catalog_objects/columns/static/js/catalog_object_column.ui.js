@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 
 export default class CatalogObjectColumnSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       attname: undefined,
       attowner: undefined,

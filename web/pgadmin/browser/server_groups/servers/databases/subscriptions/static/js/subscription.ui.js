@@ -12,7 +12,7 @@ import { isEmptyString } from 'sources/validators';
 import _ from 'lodash';
 
 export default class SubscriptionSchema extends BaseUISchema{
-  constructor(fieldOptions={}, node_info, initValues) {
+  constructor(fieldOptions={}, node_info={}, initValues={}) {
     super({
       name: undefined,
       subowner: undefined,

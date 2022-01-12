@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 
 export default class PackageSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues={}) {
     super({
       name: undefined,
       oid: undefined,

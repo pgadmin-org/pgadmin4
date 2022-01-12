@@ -10,7 +10,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 export default class CastSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,            // Name of the cast
       encoding: 'UTF8',

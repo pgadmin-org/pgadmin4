@@ -26,7 +26,7 @@ export function getNodePgaJobStepSchema(treeNodeInfo, itemNodeData) {
   );
 }
 export default class PgaJobStepSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       jstid: null,
       jstjobid: null,

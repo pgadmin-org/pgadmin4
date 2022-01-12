@@ -14,7 +14,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export default class ViewSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, nodeInfo, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, nodeInfo, fieldOptions={}, initValues={}) {
     super({
       owner: undefined,
       schema: undefined,

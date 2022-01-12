@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../static/js/sec_label.ui';
 
 export default class TablespaceSchema extends BaseUISchema {
-  constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, initValues) {
+  constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       owner: undefined,

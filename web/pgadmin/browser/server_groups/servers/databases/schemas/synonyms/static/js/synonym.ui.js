@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { emptyValidator } from 'sources/validators';
 
 export default class SynonymSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, initValues) {
+  constructor(fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       targettype: 'r',
       ...initValues,

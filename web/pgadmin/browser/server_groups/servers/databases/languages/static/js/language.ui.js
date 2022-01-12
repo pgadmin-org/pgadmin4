@@ -13,7 +13,7 @@ import SecLabelSchema from '../../../../static/js/sec_label.ui';
 import _ from 'lodash';
 
 export default class LanguageSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions={}, node_info, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions={}, node_info={}, initValues={}) {
     super({
       name: undefined,
       lanowner: (node_info) ? node_info['node_info'].user.name: undefined,

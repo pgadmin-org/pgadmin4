@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import OptionsSchema from '../../../../static/js/options.ui';
 
 export default class ForeignDataWrapperSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       fdwowner: undefined,

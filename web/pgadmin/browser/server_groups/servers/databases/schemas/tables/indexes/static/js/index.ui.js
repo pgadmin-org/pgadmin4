@@ -27,7 +27,7 @@ export function getColumnSchema(nodeObj, treeNodeInfo, itemNodeData) {
 }
 
 export class ColumnSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, nodeData, initValues) {
+  constructor(fieldOptions = {}, nodeData, initValues={}) {
     super({
       name: null,
       oid: undefined,
@@ -209,7 +209,7 @@ function inSchema(node_info) {
 }
 
 export default class IndexSchema extends BaseUISchema {
-  constructor(getColumnSchema, fieldOptions = {}, nodeData, initValues) {
+  constructor(getColumnSchema, fieldOptions = {}, nodeData, initValues={}) {
     super({
       name: undefined,
       oid: undefined,

@@ -136,7 +136,7 @@ export function getRestoreTypeObjSchema(fieldOptions) {
 }
 
 export class RestoreSaveOptSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       id: null,
       ...initValues,
@@ -192,7 +192,7 @@ export function getRestoreSaveOptSchema(fieldOptions) {
 }
 
 export class RestoreQueryOptionSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       id: null,
       ...initValues,
@@ -245,7 +245,7 @@ export function getRestoreQueryOptionSchema(fieldOptions) {
 }
 
 export class RestoreDisableOptionSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       id: null,
       ...initValues,
@@ -284,7 +284,7 @@ export function getRestoreDisableOptionSchema(fieldOptions) {
 }
 
 export class RestoreMiscellaneousSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       id: null,
       verbose: true,

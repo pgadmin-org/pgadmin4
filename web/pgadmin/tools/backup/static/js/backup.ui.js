@@ -11,7 +11,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 
 export class SectionSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       ...initValues,
     });
@@ -131,7 +131,7 @@ export function getTypeObjSchema(fieldOptions) {
 }
 
 export class SaveOptSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       id: null,
       ...initValues,
@@ -194,7 +194,7 @@ export function getSaveOptSchema(fieldOptions) {
 }
 
 export class QueryOptionSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       id: null,
       ...initValues,
@@ -274,7 +274,7 @@ export function getQueryOptionSchema(fieldOptions) {
 }
 
 export class DisabledOptionSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       id: null,
       ...initValues,
@@ -316,7 +316,7 @@ export function getDisabledOptionSchema(fieldOptions) {
 }
 
 export class MiscellaneousSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       id: null,
       verbose: true,

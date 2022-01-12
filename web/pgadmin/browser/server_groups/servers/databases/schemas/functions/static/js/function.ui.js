@@ -94,7 +94,7 @@ export class DefaultArgumentSchema extends BaseUISchema {
 }
 
 export default class FunctionSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getNodeVariableSchema, fieldOptions={}, node_info, type, initValues) {
+  constructor(getPrivilegeRoleSchema, getNodeVariableSchema, fieldOptions={}, node_info={}, type='function', initValues={}) {
     super({
       name: undefined,
       oid: undefined,

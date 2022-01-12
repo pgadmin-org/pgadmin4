@@ -56,7 +56,7 @@ export class DefaultWithSchema extends BaseUISchema {
 }
 
 export default class PublicationSchema extends BaseUISchema {
-  constructor(fieldOptions={}, node_info, initValues) {
+  constructor(fieldOptions={}, node_info={}, initValues={}) {
     super({
       name: undefined,
       pubowner: (node_info) ? node_info['node_info'].user.name: undefined,

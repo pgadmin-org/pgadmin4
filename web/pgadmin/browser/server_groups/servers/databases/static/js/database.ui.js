@@ -47,7 +47,7 @@ export class DefaultPrivSchema extends BaseUISchema {
 }
 
 export default class DatabaseSchema extends BaseUISchema {
-  constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, initValues) {
+  constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       owner: undefined,

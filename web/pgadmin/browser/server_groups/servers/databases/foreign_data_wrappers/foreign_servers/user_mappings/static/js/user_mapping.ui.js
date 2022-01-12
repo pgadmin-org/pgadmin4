@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import OptionsSchema from '../../../../../../static/js/options.ui';
 
 export default class UserMappingSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       is_sys_obj: undefined,

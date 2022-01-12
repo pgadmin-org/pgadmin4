@@ -14,7 +14,7 @@ import SecLabelSchema from '../../../../static/js/sec_label.ui';
 import { isEmptyString } from 'sources/validators';
 
 export default class PGSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues={}) {
     super({
       name: undefined,
       namespaceowner: undefined,

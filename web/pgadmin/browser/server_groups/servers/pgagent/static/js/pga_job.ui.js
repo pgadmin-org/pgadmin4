@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import PgaJobScheduleSchema from '../../schedules/static/js/pga_schedule.ui';
 
 export default class PgaJobSchema extends BaseUISchema {
-  constructor(fieldOptions={}, getPgaJobStepSchema, initValues) {
+  constructor(fieldOptions={}, getPgaJobStepSchema=()=>[], initValues={}) {
     super({
       jobname: '',
       jobid: undefined,

@@ -19,7 +19,7 @@ import { getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
 
 
 export default class ForeignTableSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getVariableSchema, getColumns, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, getVariableSchema, getColumns, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       oid: undefined,

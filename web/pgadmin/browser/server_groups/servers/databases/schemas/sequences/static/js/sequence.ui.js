@@ -68,7 +68,7 @@ export class OwnedBySchema extends BaseUISchema {
 
 
 export default class SequenceSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       oid: undefined,

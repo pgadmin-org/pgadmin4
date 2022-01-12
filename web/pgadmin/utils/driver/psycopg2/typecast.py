@@ -76,9 +76,9 @@ RECORD_ARRAY = (2287,)
 #
 # For below two sql psycopg2 returns result in different formats.
 #   SELECT '{foo,bar}'::text[];
-#   print('type of {} ==> {/*This is intentional (SonarQube)*/}'.format(res[0], type(res[0])))
+#   print('type of {} ==> {}'.format(res[0], type(res[0])))
 #   SELECT '{<a>foo</a>,<b>bar</b>}'::xml[];
-#   print('type of {} ==> {/*This is intentional (SonarQube)*/}'.format(res[0], type(res[0])))
+#   print('type of {} ==> {}'.format(res[0], type(res[0])))
 #
 # Output:
 #   type of ['foo', 'bar'] ==> <type 'list'>

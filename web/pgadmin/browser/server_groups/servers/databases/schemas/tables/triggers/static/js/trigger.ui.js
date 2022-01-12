@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 
 export class EventSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       evnt_update: false,
       evnt_insert: false,
@@ -119,7 +119,7 @@ export class EventSchema extends BaseUISchema {
 
 
 export default class TriggerSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       is_row_trigger: true,

@@ -12,7 +12,7 @@ import gettext from 'sources/gettext';
 import { isEmptyString } from 'sources/validators';
 
 export default class CollationSchema extends BaseUISchema {
-  constructor(fieldOptions = {},initValues) {
+  constructor(fieldOptions = {},initValues={}) {
     super({
       name: undefined,
       oid: undefined,

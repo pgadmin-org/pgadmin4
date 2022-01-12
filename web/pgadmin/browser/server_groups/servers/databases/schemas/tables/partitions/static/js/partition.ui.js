@@ -72,8 +72,8 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
 }
 
 export default class PartitionTableSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, schemas, getPrivilegeRoleSchema, getColumns,
-    getCollations, getOperatorClass, getAttachTables, initValues) {
+  constructor(fieldOptions={}, nodeInfo={}, schemas={}, getPrivilegeRoleSchema={}, getColumns=()=>[],
+    getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}) {
     super({
       name: undefined,
       oid: undefined,

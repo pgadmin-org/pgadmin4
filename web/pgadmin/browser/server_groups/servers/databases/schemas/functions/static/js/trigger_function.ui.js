@@ -14,7 +14,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export default class TriggerFunctionSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getVariableSchema, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, getVariableSchema, fieldOptions={}, initValues={}) {
     super({
       name: null,
       oid: null,

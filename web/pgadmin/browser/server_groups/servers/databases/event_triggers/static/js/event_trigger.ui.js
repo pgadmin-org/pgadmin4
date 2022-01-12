@@ -14,7 +14,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export default class EventTriggerSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       oid: undefined,
       name: undefined,

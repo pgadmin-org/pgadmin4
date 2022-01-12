@@ -11,7 +11,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 export default class CatalogSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues) {
+  constructor(fieldOptions = {}, initValues={}) {
     super({
       name: undefined,
       namespaceowner: undefined,

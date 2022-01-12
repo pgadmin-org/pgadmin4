@@ -14,7 +14,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export default class MViewSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getVacuumSettingsSchema, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, getVacuumSettingsSchema, fieldOptions={}, initValues={}) {
     super({
       spcname: undefined,
       toast_autovacuum_enabled: 'x',

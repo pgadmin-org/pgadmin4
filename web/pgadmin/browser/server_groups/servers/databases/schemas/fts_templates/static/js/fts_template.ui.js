@@ -11,7 +11,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 export default class FTSTemplateSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues) {
+  constructor(fieldOptions = {}, initValues={}) {
     super({
       name: null,
       oid: undefined,

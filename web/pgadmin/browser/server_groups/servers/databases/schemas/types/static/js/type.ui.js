@@ -173,7 +173,7 @@ class EnumerationSchema extends BaseUISchema {
 }
 
 class RangeSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, node_info, initValues) {
+  constructor(fieldOptions = {}, node_info={}, initValues={}) {
     super({
       typname: null,
       oid: undefined,
@@ -412,7 +412,7 @@ class RangeSchema extends BaseUISchema {
 }
 
 class ExternalSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, node_info, initValues) {
+  constructor(fieldOptions = {}, node_info={}, initValues={}) {
     super({
       name: null,
       typinput: undefined,
@@ -872,7 +872,7 @@ class ExternalSchema extends BaseUISchema {
 }
 
 class CompositeSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues) {
+  constructor(fieldOptions = {}, initValues={}) {
     super({
       oid: undefined,
       is_sys_type: false,
@@ -1065,7 +1065,7 @@ class CompositeSchema extends BaseUISchema {
 
 class DataTypeSchema extends BaseUISchema {
 
-  constructor(fieldOptions = {}, initValues) {
+  constructor(fieldOptions = {}, initValues={}) {
     super({
       oid: undefined,
       is_sys_type: false,
@@ -1271,7 +1271,7 @@ class DataTypeSchema extends BaseUISchema {
 }
 
 export default class TypeSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getCompositeSchema, getRangeSchema, getExternalSchema, getDataTypeSchema, fieldOptions = {}, initValues) {
+  constructor(getPrivilegeRoleSchema, getCompositeSchema, getRangeSchema, getExternalSchema, getDataTypeSchema, fieldOptions = {}, initValues={}) {
     super({
       name: null,
       oid: undefined,
