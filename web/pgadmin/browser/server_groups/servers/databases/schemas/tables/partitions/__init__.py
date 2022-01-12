@@ -350,6 +350,9 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
 
         status, res = self._fetch_properties(did, scid, tid, ptid)
 
+        if not status:
+            return res
+
         if len(res['rows']) == 0:
             return gone(self.not_found_error_msg())
 
@@ -460,6 +463,9 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         main_sql = []
 
         status, res = self._fetch_properties(did, scid, tid, ptid)
+
+        if not status:
+            return res
 
         if len(res['rows']) == 0:
             return gone(self.not_found_error_msg())
@@ -637,6 +643,9 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         if ptid is not None:
             status, res = self._fetch_properties(did, scid, tid, ptid)
 
+            if not status:
+                return res
+
         SQL, name = self.get_sql(did, scid, ptid, data, res)
         SQL = re.sub('\n{2,}', '\n\n', SQL)
         SQL = SQL.strip('\n')
@@ -677,6 +686,9 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
 
         try:
             status, res = self._fetch_properties(did, scid, tid, ptid)
+
+            if not status:
+                return res
 
             return super(PartitionsView, self).update(
                 gid, sid, did, scid, ptid, data=data, res=res, parent_id=tid)
