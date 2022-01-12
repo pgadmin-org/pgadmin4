@@ -939,7 +939,7 @@ export default class SchemaDiffUI {
               },
             };
           },
-          build:function() {},
+          build:function() {/*This is intentional (SonarQube)*/},
           prepare:function() {
             this.setContent(this.message);
           },

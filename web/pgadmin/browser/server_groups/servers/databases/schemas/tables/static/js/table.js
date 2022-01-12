@@ -213,7 +213,7 @@ define('pgadmin.node.table', [
                   Notify.pgRespErrorNotify(xhr, error);
                   t.unload(i);
                 });
-            }, function() {}
+            }, function() {/*This is intentional (SonarQube)*/}
           );
         },
         reset_table_stats: function(args) {
@@ -255,7 +255,7 @@ define('pgadmin.node.table', [
                   t.unload(i);
                 });
             },
-            function() {}
+            function() {/*This is intentional (SonarQube)*/}
           );
         },
         count_table_rows: function(args) {

@@ -40,8 +40,8 @@ define([
       beforeNext: function() {
         return true;
       },
-      onNext: function() {},
-      onBefore: function() {},
+      onNext: function() {/*This is intentional (SonarQube)*/},
+      onBefore: function() {/*This is intentional (SonarQube)*/},
       /* Callback for before Previous */
       beforePrev: function() {
         return true;

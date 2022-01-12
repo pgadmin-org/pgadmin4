@@ -131,7 +131,7 @@
      @class Backform.ControlFormatter
      @constructor
   */
-  var ControlFormatter = Backform.ControlFormatter = function() {};
+  var ControlFormatter = Backform.ControlFormatter = function() {/*This is intentional (SonarQube)*/};
   _.extend(ControlFormatter.prototype, {
 
     /**
@@ -167,7 +167,7 @@
   });
 
   // Store value in DOM as stringified JSON.
-  var JSONFormatter = Backform.JSONFormatter = function() {};
+  var JSONFormatter = Backform.JSONFormatter = function() {/*This is intentional (SonarQube)*/};
   _.extend(JSONFormatter.prototype, {
     fromRaw: function(rawData, model) {
       return JSON.stringify(rawData);

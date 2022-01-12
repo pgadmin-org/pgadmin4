@@ -393,7 +393,7 @@ define('pgadmin.browser', [
             $el: $('<li><a class="dropdown-item disabled" href="#" role="menuitem">' + gettext('No object selected') + '</a></li>'),
             priority: 1,
             category: 'create',
-            update: function() {},
+            update: function() {/*This is intentional (SonarQube)*/},
           }], false);
         $obj_mnu.append(create_submenu.$el);
       }
@@ -518,8 +518,8 @@ define('pgadmin.browser', [
           type:'POST',
           headers: headers,
         })
-          .done(function() {})
-          .fail(function() {});
+          .done(function() {/*This is intentional (SonarQube)*/})
+          .fail(function() {/*This is intentional (SonarQube)*/});
       }, 300000);
 
       obj.set_master_password('');
@@ -556,7 +556,7 @@ define('pgadmin.browser', [
             'the original/corrupt file using a tool such as DB Browser for SQLite if desired.'+
             '<br><br>Original file: ' + res.data + '<br>Replacement file: ' +
             res.data.substring(0, res.data.length - 14),
-            function() {
+            function() { /*This is intentional (SonarQube)*/
             }
           );
         }

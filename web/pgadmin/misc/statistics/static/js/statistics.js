@@ -27,7 +27,7 @@ define('misc.statistics', [
     return pgBrowser.NodeStatistics;
   }
 
-  var SizeFormatter = Backgrid.SizeFormatter = function() {};
+  var SizeFormatter = Backgrid.SizeFormatter = function() {/*This is intentional (SonarQube)*/};
   _.extend(SizeFormatter.prototype, {
     /**
        Takes a raw value from a model and returns the human readable formatted

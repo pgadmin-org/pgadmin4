@@ -100,7 +100,7 @@ define([
   };
 
   /* Returns raw data as it is */
-  var RawFormatter = Backform.RawFormatter = function() {};
+  var RawFormatter = Backform.RawFormatter = function() {/*This is intentional (SonarQube)*/};
   _.extend(RawFormatter.prototype, {
     fromRaw: function(rawData) {
       return rawData;
@@ -2204,7 +2204,7 @@ define([
     return fields;
   };
 
-  var Select2Formatter = function() {};
+  var Select2Formatter = function() {/*This is intentional (SonarQube)*/};
   _.extend(Select2Formatter.prototype, {
     fromRaw: function(rawData) {
       return encodeURIComponent(rawData);
@@ -2492,7 +2492,7 @@ define([
       }
       return this;
     },
-    formatter: function() {},
+    formatter: function() {/*This is intentional (SonarQube)*/},
     cleanup: function() {
       Backform.Fieldset.prototype.cleanup.apply(this);
     },
@@ -3352,7 +3352,7 @@ define([
     },
   });
 
-  var KeyCodeControlFormatter = Backform.KeyCodeControlFormatter = function() {};
+  var KeyCodeControlFormatter = Backform.KeyCodeControlFormatter = function() {/*This is intentional (SonarQube)*/};
 
   _.extend(KeyCodeControlFormatter.prototype, {
     fromRaw: function (rawData) {

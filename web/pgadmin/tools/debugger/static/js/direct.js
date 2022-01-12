@@ -33,7 +33,7 @@ define([
   if (pgTools.DirectDebug)
     return pgTools.DirectDebug;
 
-  var controller = new(function() {});
+  var controller = new(function() {/*This is intentional (SonarQube)*/});
 
   _.extend(
     controller, Backbone.Events, {
@@ -1491,7 +1491,7 @@ define([
     Function is responsible to create the new wcDocker instance for debugger and
     initialize the debugger panel inside the docker instance.
   */
-  var DirectDebug = function() {};
+  var DirectDebug = function() {/*This is intentional (SonarQube)*/};
 
   _.extend(DirectDebug.prototype, {
     /* We should get the transaction id from the server during initialization here */

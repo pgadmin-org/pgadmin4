@@ -256,8 +256,8 @@ describe('ERDCore', ()=>{
 
       spyOn(erdCoreObj, 'getNewLink').and.callFake(function() {
         return {
-          setSourcePort: function() {},
-          setTargetPort: function() {},
+          setSourcePort: function() {/*This is intentional (SonarQube)*/},
+          setTargetPort: function() {/*This is intentional (SonarQube)*/},
         };
       });
       spyOn(erdCoreObj, 'getNewPort').and.returnValue({id: 'id'});

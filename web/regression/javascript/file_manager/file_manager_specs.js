@@ -124,7 +124,7 @@ describe('fileSelectDialog', function () {
       };
 
       spyOn(Alertify, 'fileSelectionDlg').and.callFake(function() {
-        this.resizeTo = function() {};
+        this.resizeTo = function() {/*This is intentional (SonarQube)*/};
         return this;
       });
 
@@ -140,7 +140,7 @@ describe('fileSelectDialog', function () {
       };
 
       spyOn(Alertify, 'createModeDlg').and.callFake(function() {
-        this.resizeTo = function() {};
+        this.resizeTo = function() {/*This is intentional (SonarQube)*/};
         return this;
       });
 
@@ -208,7 +208,7 @@ describe('fileSelectDialog', function () {
       };
 
       spyOn(Alertify, 'fileStorageDlg').and.callFake(function() {
-        this.resizeTo = function() {};
+        this.resizeTo = function() {/*This is intentional (SonarQube)*/};
         return this;
       });
 

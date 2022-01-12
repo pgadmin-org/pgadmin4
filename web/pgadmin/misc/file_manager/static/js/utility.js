@@ -1765,7 +1765,7 @@ define([
               formData.append('mode', 'add');
               formData.append('currentpath', path);
               $('.upload_file .dz_cross_btn').attr('disabled', 'disabled');
-              setTimeout(function() {}, 10000);
+              setTimeout(function() {/*This is intentional (SonarQube)*/}, 10000);
             },
             success: function(file, response) {
               var resp_data = response.data.result,
@@ -1784,7 +1784,7 @@ define([
               }
               getFolderInfo(path);
             },
-            totaluploadprogress: function() {},
+            totaluploadprogress: function() {/*This is intentional (SonarQube)*/},
             complete: function(file) {
               if (file.status == 'error') {
                 Notify.error(lg.upload_error);

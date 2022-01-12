@@ -1340,7 +1340,7 @@ define([
    * displayed in the cell.
    */
   var InputStringArrayCellFormatter = Backgrid.Extension.InputStringArrayCellFormatter =
-    function() {};
+    function() {/*This is intentional (SonarQube)*/};
   _.extend(InputStringArrayCellFormatter.prototype, {
     /**
      * Takes a raw value from a model and returns an optionally formatted
@@ -1368,7 +1368,7 @@ define([
    * displayed in the cell.
    */
   var InputIntegerArrayCellFormatter = Backgrid.Extension.InputIntegerArrayCellFormatter =
-    function() {};
+    function() {/*This is intentional (SonarQube)*/};
   _.extend(InputIntegerArrayCellFormatter.prototype, {
     /**
      * Takes a raw value from a model and returns an optionally formatted
@@ -1402,7 +1402,7 @@ define([
    * displayed in the cell.
    */
   var InputNumberArrayCellFormatter= Backgrid.Extension.InputNumberArrayCellFormatter =
-    function() {};
+    function() {/*This is intentional (SonarQube)*/};
   _.extend(InputNumberArrayCellFormatter.prototype, {
     /**
      * Takes a raw value from a model and returns an optionally formatted
@@ -1542,7 +1542,7 @@ define([
    *
    * @class Backgrid.Extension.DependentCell
    **/
-  var DependentCell = Backgrid.Extension.DependentCell = function() {};
+  var DependentCell = Backgrid.Extension.DependentCell = function() {/*This is intentional (SonarQube)*/};
 
   _.extend(
     DependentCell.prototype, {
@@ -1582,7 +1582,7 @@ define([
    @extends Backgrid.CellFormatter
    @constructor
   */
-  var PasswordFormatter = Backgrid.PasswordFormatter = function() {};
+  var PasswordFormatter = Backgrid.PasswordFormatter = function() {/*This is intentional (SonarQube)*/};
   PasswordFormatter.prototype = new Backgrid.CellFormatter();
   _.extend(PasswordFormatter.prototype, {
     fromRaw: function(rawValue) {
@@ -1639,7 +1639,7 @@ define([
    *  JSONBCell Formatter.
    */
   var JSONBCellFormatter = Backgrid.Extension.JSONBCellFormatter =
-    function() {};
+    function() {/*This is intentional (SonarQube)*/};
   _.extend(JSONBCellFormatter.prototype, {
     fromRaw: function(rawData) {
       // json data
@@ -2104,7 +2104,7 @@ define([
     },
   });
 
-  var BooleanCellFormatter = Backgrid.BooleanCellFormatter = function() {};
+  var BooleanCellFormatter = Backgrid.BooleanCellFormatter = function() {/*This is intentional (SonarQube)*/};
   _.extend(BooleanCellFormatter.prototype, {
     fromRaw: function (rawValue) {
       if (_.isUndefined(rawValue) || _.isNull(rawValue)) {

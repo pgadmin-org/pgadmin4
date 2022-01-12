@@ -24,7 +24,7 @@ define([
   if (pgBrowser.Collection)
     return pgBrowser.Collection;
 
-  pgBrowser.Collection = function() {};
+  pgBrowser.Collection = function() {/*This is intentional (SonarQube)*/};
 
   _.extend(
     pgBrowser.Collection,

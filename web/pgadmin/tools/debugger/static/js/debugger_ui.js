@@ -856,7 +856,7 @@ define([
                         'data': JSON.stringify(sqlite_func_args_list),
                       },
                     })
-                      .done(function() {})
+                      .done(function() {/*This is intentional (SonarQube)*/})
                       .fail(function() {
                         Notify.alert(
                           gettext('Debugger Error'),
@@ -884,7 +884,7 @@ define([
                     'data': JSON.stringify(args_value_list),
                   },
                 })
-                  .done(function() {})
+                  .done(function() {/*This is intentional (SonarQube)*/})
                   .fail(function(er) {
                     Notify.alert(
                       gettext('Debugger Listener Startup Error'),
@@ -906,7 +906,7 @@ define([
                     'data': JSON.stringify(sqlite_func_args_list),
                   },
                 })
-                  .done(function() {})
+                  .done(function() {/*This is intentional (SonarQube)*/})
                   .fail(function() {
                     Notify.alert(
                       gettext('Debugger Error'),

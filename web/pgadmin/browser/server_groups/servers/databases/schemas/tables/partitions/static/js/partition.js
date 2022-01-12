@@ -269,7 +269,7 @@ function(
                   });
               }
             },
-            function() {}
+            function() {/*This is intentional (SonarQube)*/}
           );
         },
         detach_partition: function(args) {
@@ -312,7 +312,7 @@ function(
                   });
               }
             },
-            function() {}
+            function() {/*This is intentional (SonarQube)*/}
           );
         },
       },

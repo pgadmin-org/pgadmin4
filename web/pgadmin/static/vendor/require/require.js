@@ -1975,7 +1975,7 @@ var requirejs, require, define;
                 // Post a task to the event loop to work around a bug in WebKit
                 // where the worker gets garbage-collected after calling
                 // importScripts(): https://webkit.org/b/153317
-                setTimeout(function() {}, 0);
+                setTimeout(function() {/*This is intentional (SonarQube)*/}, 0);
                 importScripts(url);
 
                 //Account for anonymous modules
