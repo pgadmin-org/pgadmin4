@@ -34,6 +34,7 @@
     position: absolute;
     width: 1px;
     height: 100%;
+    // set box-shadow to show tree indent guide.
     box-shadow: -16px 0 0 0 $color-gray-light,
       -32px 0 0 0 $color-gray-light,
       -48px 0 0 0 $color-gray-light,
@@ -46,7 +47,30 @@
       -160px 0 0 0 $color-gray-light,
       -176px 0 0 0 $color-gray-light,
       -192px 0 0 0 $color-gray-light,
-      -208px 0 0 0 $color-gray-light;
+      -208px 0 0 0 $color-gray-light,
+      -224px 0 0 0 $color-gray-light,
+      -240px 0 0 0 $color-gray-light,
+      -256px 0 0 0 $color-gray-light,
+      -272px 0 0 0 $color-gray-light,
+      -288px 0 0 0 $color-gray-light,
+      -304px 0 0 0 $color-gray-light,
+      -320px 0 0 0 $color-gray-light,
+      -336px 0 0 0 $color-gray-light,
+      -352px 0 0 0 $color-gray-light,
+      -368px 0 0 0 $color-gray-light,
+      -384px 0 0 0 $color-gray-light,
+      -400px 0 0 0 $color-gray-light,
+      -416px 0 0 0 $color-gray-light,
+      -432px 0 0 0 $color-gray-light,
+      -448px 0 0 0 $color-gray-light,
+      -464px 0 0 0 $color-gray-light,
+      -480px 0 0 0 $color-gray-light,
+      -496px 0 0 0 $color-gray-light,
+      -512px 0 0 0 $color-gray-light,
+      -528px 0 0 0 $color-gray-light,
+      -544px 0 0 0 $color-gray-light,
+      -544px 0 0 0 $color-gray-light,
+      -560px 0 0 0 $color-gray-light;
   }
   &:hover, &.pseudo-active {
     background-color: $tree-bg-hover !important;
@@ -142,6 +166,13 @@
       color: $tree-fg-hover !important;
     }
   }
+}
+
+// Set the tree depth CSS from depth level 21 to 50 as in default CSS depth is set from 0 to 20.
+@for $i from 21 through 50 {
+    .file-entry.depth-#{$i} {
+        padding-left: 16px * ($i - 1);
+    }
 }
 
 .children-count {
