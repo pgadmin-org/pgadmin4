@@ -671,7 +671,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
    * displayed in the cell.
    */
   var PrivilegeCellFormatter = Backgrid.Extension.PrivilegeCellFormatter =
-    function () {};
+    function () {/*This is intentional (SonarQube)*/};
   _.extend(PrivilegeCellFormatter.prototype, {
     notation: {
       'CREATE' : 'C',

@@ -559,8 +559,7 @@ export default class BackupSchema extends BaseUISchema {
         setError('file', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('file', errmsg);
+        setError('file', null);
       }
     }
   }

@@ -245,7 +245,7 @@ describe('ERDCore', ()=>{
             return {'name': name};
           },
           addPort: function() {
-
+            /*This is intentional (SonarQube)*/
           },
           getData: function() {
             return table;

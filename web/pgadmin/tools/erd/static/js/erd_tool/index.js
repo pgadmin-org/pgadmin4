@@ -24,7 +24,7 @@ export default class ERDTool {
   }
 
   getPreferencesForModule() {
-
+    /*This is intentional (SonarQube)*/
   }
 
   render() {

@@ -250,7 +250,7 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
                     },
                   };
                 },
-                build:function() {
+                build:function() { /*This is intentional (SonarQube)*/
                 },
                 prepare:function() {
                   this.setContent(this.message);
@@ -469,6 +469,5 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
     },
   });
 
-  let model = new newConnectionModel();
-  return model;
+  return new newConnectionModel();
 }

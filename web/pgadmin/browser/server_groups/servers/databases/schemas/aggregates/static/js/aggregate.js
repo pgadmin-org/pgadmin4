@@ -77,8 +77,7 @@ define('pgadmin.node.aggregate', [
         ],
       }),
       getSchema: ()=>{
-        let schema = new AggregateSchema();
-        return schema;
+        return new AggregateSchema();
       }
     });
   }

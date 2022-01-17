@@ -228,8 +228,7 @@ export default class LanguageSchema extends BaseUISchema {
       setError('lanproc', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('lanproc', errmsg);
+      setError('lanproc', null);
     }
     return false;
   }

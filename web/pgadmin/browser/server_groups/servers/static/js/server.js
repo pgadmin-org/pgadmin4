@@ -737,14 +737,13 @@ define('pgadmin.node.server', [
         }
       },
       getSchema: (treeNodeInfo, itemNodeData)=>{
-        let schema = new ServerSchema(
+        return new ServerSchema(
           getNodeListById(pgBrowser.Nodes['server_group'], treeNodeInfo, itemNodeData),
           itemNodeData.user_id,
           {
             gid: treeNodeInfo['server_group']._id,
           }
         );
-        return schema;
       },
       connection_lost: function(i, resp) {
         if (pgBrowser.tree) {

@@ -204,8 +204,7 @@ export default class PgaJobStepSchema extends BaseUISchema {
           setError('jstconnstr', errMsg);
           return true;
         } else {
-          errMsg = null;
-          setError('jstconnstr', errMsg);
+          setError('jstconnstr', null);
         }
       }
     } else {

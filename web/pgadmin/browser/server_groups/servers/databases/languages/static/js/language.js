@@ -104,7 +104,7 @@ define('pgadmin.node.language', [
       }),
 
       getSchema: function(treeNodeInfo, itemNodeData){
-        let schema = new LanguageSchema(
+        return new LanguageSchema(
           (privileges)=>getNodePrivilegeRoleSchema(this, treeNodeInfo, itemNodeData, privileges),
           {
             lan_functions: ()=>getNodeAjaxOptions('get_functions', this, treeNodeInfo, itemNodeData),
@@ -116,7 +116,6 @@ define('pgadmin.node.language', [
             node_info: treeNodeInfo.server,
           },
         );
-        return schema;
       },
     });
   }

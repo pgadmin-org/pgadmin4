@@ -172,8 +172,7 @@ export default class CastSchema extends BaseUISchema {
       setError('srctyp', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('srctyp', errmsg);
+      setError('srctyp', null);
     }
 
     if (isEmptyString(state.trgtyp)) {
@@ -181,8 +180,7 @@ export default class CastSchema extends BaseUISchema {
       setError('trgtyp', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('trgtyp', errmsg);
+      setError('trgtyp', null);
     }
     return false;
   }

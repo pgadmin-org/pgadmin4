@@ -239,8 +239,7 @@ export default class ForeignTableSchema extends BaseUISchema {
         setError('ftsrvname', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('ftsrvname', errmsg);
+        setError('ftsrvname', null);
       }
 
     }

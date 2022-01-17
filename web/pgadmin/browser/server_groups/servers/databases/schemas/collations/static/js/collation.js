@@ -107,7 +107,7 @@ define('pgadmin.node.collation', [
       }),
       getSchema: (treeNodeInfo, itemNodeData)=>{
         let nodeObj = pgAdmin.Browser.Nodes['collation'];
-        let schema = new CollationSchema(
+        return new CollationSchema(
           {
             rolesList: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData, {cacheLevel: 'server'}),
             schemaList: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {cacheLevel: 'database'}),
@@ -118,7 +118,6 @@ define('pgadmin.node.collation', [
             schema: ('schema' in treeNodeInfo)? treeNodeInfo.schema.label : ''
           }
         );
-        return schema;
       }
     });
   }

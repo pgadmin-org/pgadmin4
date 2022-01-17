@@ -379,16 +379,14 @@ export default class SubscriptionSchema extends BaseUISchema{
       setError('host', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('host', errmsg);
+      setError('host', null);
     }
     if(isEmptyString(state.username)) {
       errmsg = gettext('Username must be specified.');
       setError('username', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('username', errmsg);
+      setError('username', null);
     }
 
     if(isEmptyString(state.port)) {
@@ -396,8 +394,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       setError('port', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('port', errmsg);
+      setError('port', null);
     }
 
     if(isEmptyString(state.pub)) {
@@ -405,8 +402,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       setError('pub', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('pub', errmsg);
+      setError('pub', null);
     }
 
     if (state.use_ssh_tunnel) {
@@ -415,8 +411,7 @@ export default class SubscriptionSchema extends BaseUISchema{
         setError('tunnel_host', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_host', errmsg);
+        setError('tunnel_host', null);
       }
 
       if(isEmptyString(state.tunnel_port)) {
@@ -424,8 +419,7 @@ export default class SubscriptionSchema extends BaseUISchema{
         setError('tunnel_port', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_port', errmsg);
+        setError('tunnel_port', null);
       }
 
       if(isEmptyString(state.tunnel_username)) {
@@ -433,8 +427,7 @@ export default class SubscriptionSchema extends BaseUISchema{
         setError('tunnel_username', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_username', errmsg);
+        setError('tunnel_username', null);
       }
 
       if (state.tunnel_authentication) {
@@ -443,8 +436,7 @@ export default class SubscriptionSchema extends BaseUISchema{
           setError('tunnel_identity_file', errmsg);
           return true;
         } else {
-          errmsg = null;
-          setError('tunnel_identity_file', errmsg);
+          setError('tunnel_identity_file', null);
         }
       }
     }

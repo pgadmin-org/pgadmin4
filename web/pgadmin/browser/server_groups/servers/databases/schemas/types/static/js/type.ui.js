@@ -1054,9 +1054,8 @@ class CompositeSchema extends BaseUISchema {
         return true;
       }
       if(_.isUndefined(errmsg) || errmsg == null) {
-        errmsg = null;
-        setError('member_name', errmsg);
-        setError('type', errmsg);
+        setError('member_name', null);
+        setError('type', null);
       }
     }
     return false;

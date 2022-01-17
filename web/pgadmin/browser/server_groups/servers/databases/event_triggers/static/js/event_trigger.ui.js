@@ -118,14 +118,12 @@ export default class EventTriggerSchema extends BaseUISchema {
         setError('eventfunname', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('eventfunname', errmsg);
+        setError('eventfunname', null);
       }
 
     } else {
-      errmsg = null;
       _.each(['eventfunname'], (item) => {
-        setError(item, errmsg);
+        setError(item, null);
       });
     }
   }

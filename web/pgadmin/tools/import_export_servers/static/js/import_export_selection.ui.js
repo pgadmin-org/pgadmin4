@@ -91,8 +91,7 @@ export default class ImportExportSelectionSchema extends BaseUISchema {
         setError('filename', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('filename', errmsg);
+        setError('filename', null);
       }
     }
   }

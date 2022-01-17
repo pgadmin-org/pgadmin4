@@ -147,8 +147,7 @@ export default class PackageSchema extends BaseUISchema {
       setError('pkgheadsrc', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('pkgheadsrc', errmsg);
+      setError('pkgheadsrc', null);
     }
     return null;
   }

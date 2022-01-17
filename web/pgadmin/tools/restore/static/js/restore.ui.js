@@ -460,8 +460,7 @@ export default class RestoreSchema extends BaseUISchema {
         setError('file', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('file', errmsg);
+        setError('file', null);
       }
     }
   }

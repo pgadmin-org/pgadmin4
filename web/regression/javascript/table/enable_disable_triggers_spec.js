@@ -54,7 +54,7 @@ describe('#enableTriggers', () => {
 
   describe('no node is selected', () => {
     it('does not send the request to the backend', (done) => {
-      networkMock.onAny('.*').reply(200, () => {
+      networkMock.onAny('.*').reply(200, () => { /*This is intentional (SonarQube)*/
       });
 
       setTimeout(() => {
@@ -70,6 +70,7 @@ describe('#enableTriggers', () => {
         tree.selectNode([{id: 'table-no-data'}]);
 
         networkMock.onAny('.*').reply(200, () => {
+          /*This is intentional (SonarQube)*/
         });
 
         setTimeout(() => {
@@ -189,6 +190,7 @@ describe('#disableTriggers', () => {
   describe('no node is selected', () => {
     it('does not send the request to the backend', (done) => {
       networkMock.onAny('.*').reply(200, () => {
+        /*This is intentional (SonarQube)*/
       });
 
       setTimeout(() => {
@@ -204,6 +206,7 @@ describe('#disableTriggers', () => {
         tree.selectNode([{id: 'table-no-data'}]);
 
         networkMock.onAny('.*').reply(200, () => {
+          /*This is intentional (SonarQube)*/
         });
 
         setTimeout(() => {

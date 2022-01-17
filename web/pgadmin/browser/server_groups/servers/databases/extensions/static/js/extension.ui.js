@@ -166,8 +166,7 @@ export default class ExtensionsSchema extends BaseUISchema {
       setError('name', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('name', errmsg);
+      setError('name', null);
     }
     return false;
   }

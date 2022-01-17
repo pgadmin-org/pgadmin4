@@ -88,6 +88,7 @@ define([
           var $container = $('<div class=\'wizard_dlg\' id=\'grantWizardDlg\'></div>');
           return {
             main: function () {
+              /*This is intentional (SonarQube)*/
             },
             setup: function () {
               return {

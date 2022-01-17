@@ -109,8 +109,7 @@ export class EventSchema extends BaseUISchema {
         setError('evnt_insert', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('evnt_insert', errmsg);
+        setError('evnt_insert', null);
       }
     }
   }
@@ -488,8 +487,7 @@ export default class TriggerSchema extends BaseUISchema {
         setError('tfunction', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tfunction', errmsg);
+        setError('tfunction', null);
       }
     }
   }

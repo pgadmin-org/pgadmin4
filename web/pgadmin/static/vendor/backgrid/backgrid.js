@@ -191,7 +191,7 @@ _.extend(Command.prototype, {
    @class Backgrid.CellFormatter
    @constructor
 */
-var CellFormatter = Backgrid.CellFormatter = function () {};
+var CellFormatter = Backgrid.CellFormatter = function () {/*This is intentional (SonarQube)*/};
 _.extend(CellFormatter.prototype, {
 
   /**
@@ -541,7 +541,7 @@ _.extend(DatetimeFormatter.prototype, {
    @extends Backgrid.CellFormatter
    @constructor
  */
-var StringFormatter = Backgrid.StringFormatter = function () {};
+var StringFormatter = Backgrid.StringFormatter = function () {/*This is intentional (SonarQube)*/};
 StringFormatter.prototype = new CellFormatter();
 _.extend(StringFormatter.prototype, {
   /**
@@ -567,7 +567,7 @@ _.extend(StringFormatter.prototype, {
    @extends Backgrid.CellFormatter
    @constructor
  */
-var EmailFormatter = Backgrid.EmailFormatter = function () {};
+var EmailFormatter = Backgrid.EmailFormatter = function () {/*This is intentional (SonarQube)*/};
 EmailFormatter.prototype = new CellFormatter();
 _.extend(EmailFormatter.prototype, {
   /**
@@ -600,7 +600,7 @@ _.extend(EmailFormatter.prototype, {
    @extends Backgrid.CellFormatter
    @constructor
 */
-var SelectFormatter = Backgrid.SelectFormatter = function () {};
+var SelectFormatter = Backgrid.SelectFormatter = function () {/*This is intentional (SonarQube)*/};
 SelectFormatter.prototype = new CellFormatter();
 _.extend(SelectFormatter.prototype, {
 

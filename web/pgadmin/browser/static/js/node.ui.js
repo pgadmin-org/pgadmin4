@@ -24,7 +24,7 @@ define([
     'select2/dropdown/attachBody',
   ], function(Utils, Dropdown, AttachBody) {
 
-    function SelectAll() {}
+    function SelectAll() {/*This is intentional (SonarQube)*/}
     SelectAll.prototype.render = function(decorated) {
       let self = this;
       let $rendered = decorated.call(this);

@@ -201,9 +201,9 @@ define('pgadmin.node.extension', [
       }),
       getSchema: (treeNodeInfo, itemNodeData)=>{
         let nodeObj = pgAdmin.Browser.Nodes['extension'];
-        let schema = new ExtensionsSchema(
+        return new ExtensionsSchema(
           {
-            extensionsList:()=>getNodeAjaxOptions('avails', nodeObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'}, 
+            extensionsList:()=>getNodeAjaxOptions('avails', nodeObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'},
               (data)=>{
                 let res = [];
                 if (data && _.isArray(data)) {
@@ -216,7 +216,6 @@ define('pgadmin.node.extension', [
             schemaList:()=>getNodeListByName('schema', treeNodeInfo, itemNodeData)
           }
         );
-        return schema;
       }
     });
   }

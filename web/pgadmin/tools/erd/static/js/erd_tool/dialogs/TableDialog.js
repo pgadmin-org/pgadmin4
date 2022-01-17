@@ -22,7 +22,7 @@ class EmptySchema extends BaseUISchema {
     return [];
   }
   changeColumnOptions() {
-
+    /*This is intentional (SonarQube)*/
   }
 }
 

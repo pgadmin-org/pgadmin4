@@ -274,8 +274,7 @@ export default class TriggerFunctionSchema extends BaseUISchema {
         setError('prosrc', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('prosrc', errmsg);
+        setError('prosrc', null);
       }
 
     }

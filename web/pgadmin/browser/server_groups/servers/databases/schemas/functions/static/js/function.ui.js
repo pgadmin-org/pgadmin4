@@ -148,7 +148,7 @@ export default class FunctionSchema extends BaseUISchema {
   }
 
   isVisible(state) {
-    if(!(this.type === 'procedure')){
+    if(this.type !== 'procedure'){
       if (state.sysproc) { return false; }
       return true;
     }else{
@@ -210,7 +210,7 @@ export default class FunctionSchema extends BaseUISchema {
       id: 'funcowner', label: gettext('Owner'), cell: 'string',
       options: this.fieldOptions.role, type: 'select',
       disabled: (state) => {
-        if (!(this.type === 'procedure')) {
+        if (this.type !== 'procedure') {
           obj.inCatalog(state);
         } else {
           obj.isGreaterThan95(state);
@@ -320,7 +320,7 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'VOLATILE', 'value': 'v'},
         {'label': 'STABLE', 'value': 's'},
         {'label': 'IMMUTABLE', 'value': 'i'},
-      ], disabled: (!(this.type === 'procedure')) ? obj.inCatalog() : obj.isGreaterThan95,
+      ], disabled: (this.type !== 'procedure') ? obj.inCatalog() : obj.isGreaterThan95,
       controlProps: {allowClear: false},
     },{
       id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
@@ -333,7 +333,7 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'prosecdef', label: gettext('Security of definer?'),
       group: gettext('Options'), type: 'switch',
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): ()=>{
+      disabled: (this.type !== 'procedure') ? obj.inCatalog(): ()=>{
         return obj.node_info['node_info'].server.version < 90500;
       },
     },{
@@ -349,13 +349,13 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'RESTRICTED', 'value': 'r'},
         {'label': 'SAFE', 'value': 's'},
       ],
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): obj.isGreaterThan96,
+      disabled: (this.type !== 'procedure') ? obj.inCatalog(): obj.isGreaterThan96,
       min_version: 90600,
       controlProps: {allowClear: false},
     },{
       id: 'procost', label: gettext('Estimated cost'), group: gettext('Options'),
       cell:'string', type: 'text', deps: ['lanname'],
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isGreaterThan95,
+      disabled: (this.type !== 'procedure') ? obj.isDisabled: obj.isGreaterThan95,
     },{
       id: 'prorows', label: gettext('Estimated rows'), type: 'text',
       deps: ['proretset'], visible: obj.isVisible,
@@ -370,7 +370,7 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'proleakproof', label: gettext('Leak proof?'),
       group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): obj.isGreaterThan95,
+      disabled: (this.type !== 'procedure') ? obj.inCatalog(): obj.isGreaterThan95,
       deps: ['lanname'],
     },{
       id: 'prosupportfunc', label: gettext('Support function'),
@@ -411,20 +411,19 @@ export default class FunctionSchema extends BaseUISchema {
       canEdit: false, canDelete: true, uniqueCol : ['provider'],
       disabled: obj.inCatalog(),
       visible: function() {
-        return this.node_info && !(this.type === 'procedure');
+        return this.node_info && this.type !== 'procedure';
       },
     },
     ];
   }
   validate(state, setError) {
     let errmsg = null;
-    if (!(this.type === 'procedure') &&(isEmptyString(state.prorettypename))) {
+    if (this.type !== 'procedure' &&(isEmptyString(state.prorettypename))) {
       errmsg = gettext('Return type cannot be empty.');
       setError('prorettypename', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('prorettypename', errmsg);
+      setError('prorettypename', null);
     }
 
     if ((String(state.lanname) == 'c')) {
@@ -433,8 +432,7 @@ export default class FunctionSchema extends BaseUISchema {
         setError('probin', errmsg);
         return true;
       }else {
-        errmsg = null;
-        setError('probin', errmsg);
+        setError('probin', null);
       }
 
       if (isEmptyString(state.prosrc_c)) {
@@ -442,8 +440,7 @@ export default class FunctionSchema extends BaseUISchema {
         setError('prosrc_c', errmsg);
         return true;
       }else {
-        errmsg = null;
-        setError('prosrc_c', errmsg);
+        setError('prosrc_c', null);
       }
 
     }else {
@@ -453,8 +450,7 @@ export default class FunctionSchema extends BaseUISchema {
         setError('prosrc', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('prosrc', errmsg);
+        setError('prosrc', null);
       }
     }
   }

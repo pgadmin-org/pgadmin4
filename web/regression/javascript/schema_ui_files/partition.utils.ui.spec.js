@@ -29,8 +29,8 @@ class SchemaInColl extends BaseUISchema {
     this.collSchema = schemaObj;
     this.columns = columns;
   }
-  getCollations() {}
-  getOperatorClass() {}
+  getCollations() {/*This is intentional (SonarQube)*/}
+  getOperatorClass() {/*This is intentional (SonarQube)*/}
 
   get baseFields() {
     return [{

@@ -148,7 +148,7 @@ define('pgadmin.node.publication', [
       }),
 
       getSchema: function(treeNodeInfo, itemNodeData){
-        let schema = new PublicationSchema(
+        return new PublicationSchema(
           {
             publicationTable: ()=>getNodeAjaxOptions('get_tables', this, treeNodeInfo, itemNodeData),
             role:()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
@@ -156,7 +156,6 @@ define('pgadmin.node.publication', [
             node_info: treeNodeInfo.server,
           },
         );
-        return schema;
       },
 
     });

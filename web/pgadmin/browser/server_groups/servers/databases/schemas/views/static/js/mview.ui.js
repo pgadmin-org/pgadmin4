@@ -132,8 +132,7 @@ export default class MViewSchema extends BaseUISchema {
         setError('definition', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('definition', errmsg);
+        setError('definition', null);
       }
 
       if (state.definition) {
@@ -146,9 +145,8 @@ export default class MViewSchema extends BaseUISchema {
       }
       return false;
     } else {
-      errmsg = null;
       _.each(['definition'], (item) => {
-        setError(item, errmsg);
+        setError(item, null);
       });
     }
   }

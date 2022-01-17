@@ -61,6 +61,7 @@ export default class ImportExportServersModule {
         var $container = $('<div class=\'wizard_dlg\' id=\'importExportServersDlg\'></div>');
         return {
           main: function () {
+            /*This is intentional (SonarQube)*/
           },
           setup: function () {
             return {

@@ -77,8 +77,7 @@ define('pgadmin.node.operator', [
         ],
       }),
       getSchema: ()=>{
-        let schema = new OperatorSchema();
-        return schema;
+        return new OperatorSchema();
       }
     });
   }

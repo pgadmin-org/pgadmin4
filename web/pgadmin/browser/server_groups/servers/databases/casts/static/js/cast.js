@@ -88,7 +88,7 @@ define('pgadmin.node.cast', [
       }),
 
       getSchema: function(treeNodeInfo, itemNodeData){
-        let schema = new CastSchema({
+        return new CastSchema({
           getTypeOptions: ()=>getNodeAjaxOptions('get_type', this, treeNodeInfo, itemNodeData),
           getFuncOptions: (srcTyp, trgtyp) =>
           {
@@ -113,15 +113,14 @@ define('pgadmin.node.cast', [
                   .catch((err)=>{
                     reject(err);
                   });
-              }else{
-                let data = [];
+              } else {
+                data = [];
                 resolve(data);
               }
             });
           },
         },
         );
-        return schema;
       },
     });
 
