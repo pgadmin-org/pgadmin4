@@ -618,6 +618,12 @@ const customReactSelectStyles = (theme, readonly)=>({
     ...provided,
     padding: theme.otherVars.reactSelect.padding,
   }),
+  groupHeading: (provided)=>({
+    ...provided,
+    color: 'inherit',
+    fontSize: '0.85em',
+    textTransform: 'none',
+  }),
   menu: (provided)=>({
     ...provided,
     backgroundColor: theme.palette.background.default,
@@ -701,6 +707,16 @@ CustomSelectSingleValue.propTypes = {
   data: PropTypes.object,
 };
 
+export function flattenSelectOptions(options) {
+  return _.flatMap(options, (option)=>{
+    if(option.options) {
+      return option.options;
+    } else {
+      return option;
+    }
+  });
+}
+
 function getRealValue(options, value, creatable, formatter) {
   let realValue = null;
   if(_.isArray(value)) {
@@ -716,7 +732,8 @@ function getRealValue(options, value, creatable, formatter) {
       }
     }
   } else {
-    realValue = _.find(options, (option)=>option.value==value) ||
+    let flatOptions = flattenSelectOptions(options);
+    realValue = _.find(flatOptions, (option)=>option.value==value) ||
         (creatable && !_.isUndefined(value) && !_.isNull(value) ? {label:value, value: value} : null);
   }
   return realValue;
@@ -742,6 +759,17 @@ export function InputSelect({
         /* If component unmounted, dont update state */
         if(!umounted) {
           optionsLoaded && optionsLoaded(res, value);
+          /* Auto select if any option has key as selected */
+          const flatRes = flattenSelectOptions(res || []);
+          let selectedVal;
+          if(controlProps.multiple) {
+            selectedVal = _.filter(flatRes, (o)=>o.selected)?.map((o)=>o.value);
+          } else {
+            selectedVal = _.find(flatRes, (o)=>o.selected)?.value;
+          }
+          if(!_.isUndefined(selectedVal)) {
+            onChange && onChange(selectedVal);
+          }
           setFinalOptions([res || [], false]);
         }
       });
@@ -751,7 +779,8 @@ export function InputSelect({
 
   /* Apply filter if any */
   const filteredOptions = (controlProps.filter && controlProps.filter(finalOptions)) || finalOptions;
-  let realValue = getRealValue(filteredOptions, value, controlProps.creatable, controlProps.formatter);
+  const flatFiltered = flattenSelectOptions(filteredOptions);
+  let realValue = getRealValue(flatFiltered, value, controlProps.creatable, controlProps.formatter);
   if(realValue && _.isPlainObject(realValue) && _.isUndefined(realValue.value)) {
     console.error('Undefined option value not allowed', realValue, filteredOptions);
   }
@@ -763,7 +792,7 @@ export function InputSelect({
 
   const styles = customReactSelectStyles(theme, readonly || disabled);
 
-  const onChangeOption = useCallback((selectVal, action)=>{
+  const onChangeOption = useCallback((selectVal)=>{
     if(_.isArray(selectVal)) {
       // Check if select all option is selected
       if (!_.isUndefined(selectVal.find(x => x.label === 'Select All'))) {
@@ -775,9 +804,9 @@ export function InputSelect({
       } else {
         selectVal = selectVal.map((option)=>option.value);
       }
-      onChange && onChange(selectVal, action.name);
+      onChange && onChange(selectVal);
     } else {
-      onChange && onChange(selectVal ? selectVal.value : null, action.name);
+      onChange && onChange(selectVal ? selectVal.value : null);
     }
   }, [onChange, filteredOptions]);
 
@@ -797,7 +826,7 @@ export function InputSelect({
     inputId: cid,
     placeholder: (readonly || disabled) ? '' : controlProps.placeholder || gettext('Select an item...'),
     ...otherProps,
-    ...props
+    ...props,
   };
   if(!controlProps.creatable) {
     return (
@@ -856,9 +885,9 @@ export function InputColor({value, controlProps, disabled, onChange, currObj}) {
   const pickrObj = useRef();
   const classes = useStyles();
 
-  const setColor = (value)=>{
+  const setColor = (newVal)=>{
     pickrObj.current &&
-      pickrObj.current.setColor((_.isUndefined(value) || value == '') ? pickrOptions.defaultColor : value);
+      pickrObj.current.setColor((_.isUndefined(newVal) || newVal == '') ? pickrOptions.defaultColor : newVal);
   };
 
   const destroyPickr = ()=>{
