@@ -799,7 +799,7 @@ define('pgadmin.browser', [
                 priority: _m.priority, data: _m.data, url: _m.url || '#',
                 target: _m.target, icon: _m.icon,
                 enable: function() {
-                  if(_m.enable) {
+                  if (_.isEmpty(_m.enable)) {
                     return true;
                   }
 
