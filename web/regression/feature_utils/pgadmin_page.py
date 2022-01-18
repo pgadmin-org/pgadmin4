@@ -88,7 +88,7 @@ class PgadminPage:
         # In case of react dialog we use different xpath
         if react_dialog:
             modal_button = self.find_by_xpath(
-                "//div[@class ='MuiDialogContent-root']"
+                "//button[contains(@class,'MuiButtonBase-root')]"
                 "//span[text()='%s']" % button_text)
         else:
             modal_button = self.find_by_xpath(

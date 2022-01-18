@@ -99,6 +99,10 @@ define([
     setExtraParameters(treeInfo) {
       var extraData = {};
       extraData['database'] = treeInfo.database._label;
+      if(treeInfo?.schema) {
+        extraData['schema'] = treeInfo?.schema._label;
+        extraData['table'] = treeInfo?.table._label;
+      }
       extraData['save_btn_icon'] = 'done';
       return extraData;
     },
