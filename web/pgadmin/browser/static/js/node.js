@@ -73,7 +73,7 @@ define('pgadmin.browser.node', [
         }
       },
       callbacks = _.keys(child.callbacks);
-    for (var idx = 0; idx < callbacks.length; idx++) bindToChild(callbacks[idx]);
+    for (let cb_val of callbacks) bindToChild(cb_val);
 
     // Registering the node by calling child.Init(...) function
     child.Init.apply(child);
@@ -504,12 +504,19 @@ define('pgadmin.browser.node', [
 
       body.insertBefore(el, body.firstChild);
 
+      var new_width = screen.width < 700 ? screen.width * 0.95 : screen.width * 0.5,
+        new_height = screen.height < 500 ? screen.height * 0.95 : screen.height * 0.4;
+      if (!_.isUndefined(width) && !_.isNull(width)) {
+        new_width = width;
+      }
+      if (!_.isUndefined(height) && !_.isNull(height)) {
+        new_height = height;
+      }
+
       var new_panel = pgBrowser.docker.addPanel(
         'utility_props', window.wcDocker.DOCK.FLOAT, undefined, {
-          w: (!_.isUndefined(width) && !_.isNull(width)) ? width :
-            (screen.width < 700 ? screen.width * 0.95 : screen.width * 0.5),
-          h: (!_.isUndefined(height) && !_.isNull(height)) ? height :
-            (screen.height < 500 ? screen.height * 0.95 : screen.height * 0.4),
+          w: new_width,
+          h: new_height,
           x: (screen.width < 700 ? '2%' : '25%'),
           y: (screen.height < 500 ? '2%' : '25%'),
         }

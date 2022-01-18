@@ -307,7 +307,10 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
           var field = cols[i].sortCol.field;
           var sign = cols[i].sortAsc ? 1 : -1;
           var value1 = dataRow1[field], value2 = dataRow2[field];
-          var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
+          var result = 0;
+          if (value1 != value2) {
+            result = (value1 > value2 ? 1 : -1) * sign;
+          }
           if (result != 0) {
             return result;
           }
@@ -676,7 +679,6 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
         null,
         null,
       );
-      return;
     }
   }
 }

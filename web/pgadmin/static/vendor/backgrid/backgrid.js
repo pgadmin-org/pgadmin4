@@ -306,14 +306,14 @@ _.extend(NumberFormatter.prototype, {
     var rawData = '';
 
     var thousands = formattedData.split(this.orderSeparator);
-    for (var i = 0; i < thousands.length; i++) {
-      rawData += thousands[i];
+    for (let thousand_val of thousands) {
+      rawData += thousand_val;
     }
 
     var decimalParts = rawData.split(this.decimalSeparator);
     rawData = '';
-    for (var j = 0; j < decimalParts.length; j++) {
-      rawData = rawData + decimalParts[j] + '.';
+    for (let decimal_val of decimalParts) {
+      rawData = rawData + decimal_val + '.';
     }
 
     if (rawData[rawData.length - 1] === '.') {
@@ -456,7 +456,10 @@ _.extend(DatetimeFormatter.prototype, {
       data = data.trim();
       var parts = data.split(this.ISO_SPLITTER_RE) || [];
       date = this.DATE_RE.test(parts[0]) ? parts[0] : '';
-      time = date && parts[1] ? parts[1] : this.TIME_RE.test(parts[0]) ? parts[0] : '';
+      time = this.TIME_RE.test(parts[0]) ? parts[0] : '';
+      if (date && parts[1]) {
+        time = parts[1];
+      }
     }
 
     var YYYYMMDD = this.DATE_RE.exec(date) || [];
@@ -613,7 +616,10 @@ _.extend(SelectFormatter.prototype, {
      @return {Array.<*>}
   */
   fromRaw: function (rawValue, model) {
-    return _.isArray(rawValue) ? rawValue : rawValue != null ? [rawValue] : [];
+    if (_.isArray(rawValue)) {
+      return rawValue;
+    }
+    return rawValue != null ? [rawValue] : [];
   }
 });
 
@@ -1447,11 +1453,11 @@ var SelectCellEditor = Backgrid.SelectCellEditor = CellEditor.extend({
 
   _renderOptions: function (nvps, selectedValues) {
     var options = '';
-    for (var i = 0; i < nvps.length; i++) {
+    for (let nvps_val of nvps) {
       options = options + this.template({
-        text: nvps[i][0],
-        value: nvps[i][1],
-        selected: _.indexOf(selectedValues, nvps[i][1]) > -1
+        text: nvps_val[0],
+        value: nvps_val[1],
+        selected: _.indexOf(selectedValues, nvps_val[1]) > -1
       });
     }
     return options;
@@ -1478,8 +1484,8 @@ var SelectCellEditor = Backgrid.SelectCellEditor = CellEditor.extend({
     var optgroupName = null;
     var optgroup = null;
 
-    for (var i = 0; i < optionValues.length; i++) {
-      optionValue = optionValues[i];
+    for (let option_val of optionValues) {
+      optionValue = option_val;
 
       if (_.isArray(optionValue)) {
         optionText  = optionValue[0];
@@ -1629,11 +1635,11 @@ var SelectCell = Backgrid.SelectCell = Cell.extend({
     try {
       if (!_.isArray(optionValues) || _.isEmpty(optionValues)) throw new TypeError;
 
-      for (var k = 0; k < rawData.length; k++) {
-        var rawDatum = rawData[k];
+      for (let raw_val of rawData) {
+        var rawDatum = raw_val;
 
-        for (var i = 0; i < optionValues.length; i++) {
-          var optionValue = optionValues[i];
+        for (let opt_val of optionValues) {
+          var optionValue = opt_val;
 
           if (_.isArray(optionValue)) {
             var optionText  = optionValue[0];
@@ -1644,8 +1650,8 @@ var SelectCell = Backgrid.SelectCell = Cell.extend({
           else if (_.isObject(optionValue)) {
             var optionGroupValues = optionValue.values;
 
-            for (var j = 0; j < optionGroupValues.length; j++) {
-              var optionGroupValue = optionGroupValues[j];
+            for (let opt_grp_val of optionGroupValues) {
+              var optionGroupValue = opt_grp_val;
               if (optionGroupValue[1] == rawDatum) {
                 selectedText.push(optionGroupValue[0]);
               }
@@ -1993,8 +1999,8 @@ var Row = Backgrid.Row = Backbone.View.extend({
     this.$el.empty();
 
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < this.cells.length; i++) {
-      fragment.appendChild(this.cells[i].render().el);
+    for (let cell_val of this.cells) {
+      fragment.appendChild(cell_val.render().el);
     }
 
     this.el.appendChild(fragment);
@@ -2010,8 +2016,8 @@ var Row = Backgrid.Row = Backbone.View.extend({
      @chainable
   */
   remove: function () {
-    for (var i = 0; i < this.cells.length; i++) {
-      var cell = this.cells[i];
+    for (let cell_val of this.cells) {
+      var cell = cell_val;
       cell.remove.apply(cell, arguments);
     }
     return Backbone.View.prototype.remove.apply(this, arguments);
@@ -2374,12 +2380,10 @@ var Body = Backgrid.Body = Backbone.View.extend({
 
     this.row = options.row || this.row || Row;
     this.rows = this.collection.map(function (model) {
-      var row = new this.row({
+      return new this.row({
         columns: this.columns,
         model: model
       });
-
-      return row;
     }, this);
 
     this.emptyText = options.emptyText;
@@ -2527,17 +2531,15 @@ var Body = Backgrid.Body = Backbone.View.extend({
      instance as its sole parameter when done.
   */
   refresh: function () {
-    for (var i = 0; i < this.rows.length; i++) {
-      this.rows[i].remove();
+    for (let row_val of this.rows) {
+      row_val.remove();
     }
 
     this.rows = this.collection.map(function (model) {
-      var row = new this.row({
+      return new this.row({
         columns: this.columns,
         model: model
       });
-
-      return row;
     }, this);
     this._unshiftEmptyRowMayBe();
 
@@ -2557,8 +2559,8 @@ var Body = Backgrid.Body = Backbone.View.extend({
     this.$el.empty();
 
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < this.rows.length; i++) {
-      var row = this.rows[i];
+    for (let row_val of this.rows) {
+      var row = row_val;
       fragment.appendChild(row.render().el);
     }
 
@@ -2575,8 +2577,8 @@ var Body = Backgrid.Body = Backbone.View.extend({
      @chainable
   */
   remove: function () {
-    for (var i = 0; i < this.rows.length; i++) {
-      var row = this.rows[i];
+    for (let row_val of this.rows) {
+      var row = row_val;
       row.remove.apply(row, arguments);
     }
     return Backbone.View.prototype.remove.apply(this, arguments);

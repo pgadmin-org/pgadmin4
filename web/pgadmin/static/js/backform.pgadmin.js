@@ -1128,6 +1128,14 @@ define([
         },
       });
 
+      let placeholder = pgAdmin.enable_binary_path_browsing ? gettext('Select binary path...') : gettext('Enter binary path...'),
+        browse_btn_visible = pgAdmin.enable_binary_path_browsing ? true : false;
+
+      if (pgAdmin.server_mode === 'False') {
+        placeholder = gettext('Select binary path...');
+        browse_btn_visible = true;
+      }
+
       this.gridColumns = [{
         name: 'isDefault',
         label: gettext('Set as default'),
@@ -1161,10 +1169,10 @@ define([
         cell: Backgrid.Extension.SelectFileCell,
         dialog_type: 'select_folder',
         dialog_title: gettext('Select Folder'),
-        placeholder: pgAdmin.server_mode === 'False' ? gettext('Select binary path...') : pgAdmin.enable_binary_path_browsing ? gettext('Select binary path...') : gettext('Enter binary path...'),
+        placeholder: placeholder,
         browse_btn_label: gettext('Select path'),
         check_btn_label: gettext('Validate utilities'),
-        browse_btn_visible: pgAdmin.server_mode === 'False' ? true : pgAdmin.enable_binary_path_browsing ? true : false
+        browse_btn_visible: browse_btn_visible
       }];
 
       var BinPathCollection = this.BinPathCollection =  new (Backbone.Collection.extend({
@@ -1224,8 +1232,7 @@ define([
 
       // Check if unique columns provided are also in model attributes.
       if (uniqueCol.length > _.intersection(columns, uniqueCol).length) {
-        var errorMsg = 'Developer: Unique columns [ ' + _.difference(uniqueCol, columns) + ' ] not found in collection model [ ' + columns + ' ].';
-        throw errorMsg;
+        throw new Error('Developer: Unique columns [ ' + _.difference(uniqueCol, columns) + ' ] not found in collection model [ ' + columns + ' ].');
       }
 
       var collection = self.collection = self.model.get(self.field.get('name'));
@@ -2061,13 +2068,16 @@ define([
         // here?
         if (s.type == 'group') {
           var visible = true;
-          ver_in_limit = (_.isUndefined(server_info) ? true :
-            ((_.isUndefined(s.server_type) ? true :
+          if (_.isUndefined(server_info)) {
+            ver_in_limit = true;
+          } else {
+            ver_in_limit = ((_.isUndefined(s.server_type) ? true :
               (server_info.type in s.server_type)) &&
               (_.isUndefined(s.min_version) ? true :
                 (server_info.version >= s.min_version)) &&
               (_.isUndefined(s.max_version) ? true :
-                (server_info.version <= s.max_version))));
+                (server_info.version <= s.max_version)));
+          }
 
           if (s.mode && _.isObject(s.mode))
             visible = (_.indexOf(s.mode, mode) > -1);
@@ -2097,13 +2107,16 @@ define([
 
           // Generate the empty group list (if not exists)
           groups[group] = (groups[group] || []);
-          ver_in_limit = (_.isUndefined(server_info) ? true :
-            ((_.isUndefined(s.server_type) ? true :
+          if (_.isUndefined(server_info)) {
+            ver_in_limit = true;
+          } else {
+            ver_in_limit = ((_.isUndefined(s.server_type) ? true :
               (server_info.type in s.server_type)) &&
               (_.isUndefined(s.min_version) ? true :
                 (server_info.version >= s.min_version)) &&
               (_.isUndefined(s.max_version) ? true :
-                (server_info.version <= s.max_version))));
+                (server_info.version <= s.max_version)));
+          }
 
           var disabled = (
               !ver_in_limit || in_catalog
@@ -3434,10 +3447,10 @@ define([
     keyPathAccessor: function(obj, path) {
       var res = obj;
       path = path.split('.');
-      for (var i = 0; i < path.length; i++) {
+      for (let path_val of path) {
         if (_.isNull(res)) return null;
-        if (_.isEmpty(path[i])) continue;
-        if (!_.isUndefined(res[path[i]])) res = res[path[i]];
+        if (_.isEmpty(path_val)) continue;
+        if (!_.isUndefined(res[path_val])) res = res[path_val];
       }
       return res;
     },

@@ -185,9 +185,8 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
         .filter((column) => {
           if (column.isVisible === undefined || columns.isVisible === true) {
             return false;
-          } else{
-            return true;
           }
+          return true;
         }
         )
         .map((column) => column.accessor)

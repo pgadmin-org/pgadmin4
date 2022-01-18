@@ -447,7 +447,7 @@ define([
               panelTitleFunc.refresh_db_node(message, dbNode);
             }
 
-            var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
+            var label = debuggerUtils.getAppropriateLabel(treeInfo);
             debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, db_label, db_label, null, pgBrowser);
 
             panel.focus();
@@ -472,7 +472,7 @@ define([
                     // Remove the leading and trailing white spaces.
                     value = value.trim();
                     let preferences = pgBrowser.get_preferences_for_module('browser');
-                    var name = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
+                    var name = debuggerUtils.getAppropriateLabel(treeInfo);
                     debuggerUtils.setDebuggerTitle(panel, preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                   }
                 },
@@ -621,7 +621,7 @@ define([
                     panelTitleFunc.refresh_db_node(message, dbNode);
                   }
 
-                  var label = newTreeInfo.function ? newTreeInfo.function.label : newTreeInfo.trigger_function ? newTreeInfo.trigger_function.label : newTreeInfo.trigger ? newTreeInfo.trigger.label : newTreeInfo.procedure.label;
+                  var label = debuggerUtils.getAppropriateLabel(newTreeInfo);
                   debuggerUtils.setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, db_label, null, pgBrowser);
 
                   panel.focus();
@@ -646,7 +646,7 @@ define([
                           // Remove the leading and trailing white spaces.
                           value = value.trim();
                           let preferences = pgBrowser.get_preferences_for_module('browser');
-                          var name = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
+                          var name = debuggerUtils.getAppropriateLabel(treeInfo);
                           debuggerUtils.setDebuggerTitle(panel, preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                         }
                       },

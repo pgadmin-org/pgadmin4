@@ -14,7 +14,7 @@ define(['jquery',
   'sources/selection/range_selection_helper',
   'sources/url_for',
 ], function ($, gettext, ColumnSelector, RowSelector, RangeSelectionHelper, url_for) {
-  var GridSelector = function (columnDefinitions) {
+  return function (columnDefinitions) {
     var Slick = window.Slick,
       rowSelector = new RowSelector(columnDefinitions),
       columnSelector = new ColumnSelector(columnDefinitions),
@@ -89,6 +89,4 @@ define(['jquery',
       'onGridColumnSelectAll': onGridColumnSelectAll,
     });
   };
-
-  return GridSelector;
 });

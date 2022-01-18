@@ -798,9 +798,13 @@ define('pgadmin.browser', [
                 category: _m.category, callback: _m.callback,
                 priority: _m.priority, data: _m.data, url: _m.url || '#',
                 target: _m.target, icon: _m.icon,
-                enable: (_m.enable == '' ? true : (_.isString(_m.enable) &&
-                  _m.enable.toLowerCase() == 'false') ?
-                  false : _m.enable),
+                enable: function() {
+                  if(_m.enable) {
+                    return true;
+                  }
+
+                  return (_.isString(_m.enable) && _m.enable.toLowerCase() == 'false') ? false : _m.enable;
+                },
                 node: _m.node, checked: _m.checked, below: _m.below,
               });
             };
@@ -811,8 +815,8 @@ define('pgadmin.browser', [
               if(m.menu_items) {
                 let sub_menu_items = [];
 
-                for(let i=0; i<m.menu_items.length; i++) {
-                  sub_menu_items.push(get_menuitem_obj(m.menu_items[i]));
+                for(let mnu_val of m.menu_items) {
+                  sub_menu_items.push(get_menuitem_obj(mnu_val));
                 }
                 _menus[m.name]['menu_items'] = sub_menu_items;
               }
@@ -936,8 +940,6 @@ define('pgadmin.browser', [
         _o.notFound && typeof(_o.notFound) == 'function' &&
           _o.notFound(_d);
       }
-
-      return;
     },
 
     onAddTreeNode: function(_data, _hierarchy, _opts) {
@@ -948,9 +950,10 @@ define('pgadmin.browser', [
           i: null, // current item
           p: _.toArray(_hierarchy || {}).sort(
             function(a, b) {
-              return (a.priority === b.priority) ? 0 : (
-                a.priority < b.priority ? -1 : 1
-              );
+              if (a.priority === b.priority) {
+                return 0;
+              }
+              return (a.priority < b.priority ? -1 : 1);
             }
           ), // path of the parent
           pathOfTreeItems: [], // path Item
@@ -1210,9 +1213,10 @@ define('pgadmin.browser', [
           hasId: true,
           p: _.toArray(_hierarchy || {}).sort(
             function(a, b) {
-              return (a.priority === b.priority) ? 0 : (
-                a.priority < b.priority ? -1 : 1
-              );
+              if (a.priority === b.priority) {
+                return 0;
+              }
+              return (a.priority < b.priority ? -1 : 1);
             }
           ), // path of the old object
           pathOfTreeItems: [], // path items
@@ -1306,13 +1310,11 @@ define('pgadmin.browser', [
                     // it right now.
                     this.notFound = errorOut;
 
-                    // var _d = {_id: this.new._pid, _type: self.d._type};
                     var loaded = this.t.wasLoad(parent),
                       onLoad = function() {
                         self.i = parent;
                         self.pathOfTreeItems.push({coll: false, item: parent, d: self.d});
                         self.success();
-                        return;
                       };
 
                     if (!loaded && self.load) {
@@ -1333,7 +1335,6 @@ define('pgadmin.browser', [
                       onLoad();
                     }
                   }
-                  return;
                 } else {
                   // This is for rest of the nodes
                   var _parentData = this.d;
@@ -1357,7 +1358,6 @@ define('pgadmin.browser', [
                   } else {
                     addItemNode();
                   }
-                  return;
                 }
               }.bind(this);
 
@@ -1706,7 +1706,6 @@ define('pgadmin.browser', [
       this.tree.refresh(_i).then(() =>{
         if (_opts && _opts.success) _opts.success();
       });
-      return;
     },
 
     onRefreshTreeNode: function(_i, _opts) {

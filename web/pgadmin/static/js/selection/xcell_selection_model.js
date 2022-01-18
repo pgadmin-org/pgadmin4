@@ -14,7 +14,7 @@ define([
   'sources/window',
   'slickgrid',
 ], function ($, _, RangeSelectionHelper, pgWindow) {
-  var XCellSelectionModel = function (options) {
+  return function (options) {
 
     var KEY_ARROW_RIGHT = 39;
     var KEY_ARROW_LEFT = 37;
@@ -65,8 +65,8 @@ define([
     function removeInvalidRanges(ranges) {
       var result = [];
 
-      for (var i = 0; i < ranges.length; i++) {
-        var r = ranges[i];
+      for (let range_val of ranges) {
+        var r = range_val;
         if (_grid.canCellBeSelected(r.fromRow, r.fromCell) && _grid.canCellBeSelected(r.toRow, r.toCell)) {
           result.push(r);
         }
@@ -90,8 +90,8 @@ define([
     function setSelectedRows(rows) {
       _ranges = [];
 
-      for(var i = 0 ; i < rows.length ; i++) {
-        _ranges.push(RangeSelectionHelper.rangeForRow(_grid, rows[i]));
+      for(let row_val of rows) {
+        _ranges.push(RangeSelectionHelper.rangeForRow(_grid, row_val));
       }
     }
 
@@ -237,5 +237,4 @@ define([
       'onSelectedRangesChanged': new Slick.Event(),
     });
   };
-  return XCellSelectionModel;
 });

@@ -632,13 +632,17 @@ const customReactSelectStyles = (theme, readonly)=>({
     color: 'inherit',
   }),
   option: (provided, state)=>{
+    let bgColor = 'inherit';
+    if (state.isFocused) {
+      bgColor = theme.palette.grey[400];
+    } else if (state.isSelected) {
+      bgColor = theme.palette.primary.light;
+    }
     return {
       ...provided,
       padding: '0.5rem',
       color: 'inherit',
-      backgroundColor: state.isFocused ?
-        theme.palette.grey[400] : (state.isSelected ?
-          theme.palette.primary.light : 'inherit'),
+      backgroundColor: bgColor,
     };
   },
   multiValue: (provided)=>({

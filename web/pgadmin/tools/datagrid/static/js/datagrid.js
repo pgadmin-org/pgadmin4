@@ -120,10 +120,10 @@ define('pgadmin.datagrid', [
         }];
 
         // Create context menu
-        for (var idx = 0; idx < supported_nodes.length; idx++) {
+        for (let node_val of supported_nodes) {
           menus.push({
-            name: 'view_all_rows_context_' + supported_nodes[idx],
-            node: supported_nodes[idx],
+            name: 'view_all_rows_context_' + node_val,
+            node: node_val,
             module: this,
             data: {
               mnuid: 3,
@@ -135,8 +135,8 @@ define('pgadmin.datagrid', [
             priority: 101,
             label: gettext('All Rows'),
           }, {
-            name: 'view_first_100_rows_context_' + supported_nodes[idx],
-            node: supported_nodes[idx],
+            name: 'view_first_100_rows_context_' + node_val,
+            node: node_val,
             module: this,
             data: {
               mnuid: 1,
@@ -148,8 +148,8 @@ define('pgadmin.datagrid', [
             priority: 102,
             label: gettext('First 100 Rows'),
           }, {
-            name: 'view_last_100_rows_context_' + supported_nodes[idx],
-            node: supported_nodes[idx],
+            name: 'view_last_100_rows_context_' + node_val,
+            node: node_val,
             module: this,
             data: {
               mnuid: 2,
@@ -161,8 +161,8 @@ define('pgadmin.datagrid', [
             priority: 103,
             label: gettext('Last 100 Rows'),
           }, {
-            name: 'view_filtered_rows_context_' + supported_nodes[idx],
-            node: supported_nodes[idx],
+            name: 'view_filtered_rows_context_' + node_val,
+            node: node_val,
             module: this,
             data: {
               mnuid: 4,

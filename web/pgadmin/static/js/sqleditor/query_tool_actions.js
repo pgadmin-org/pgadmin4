@@ -65,7 +65,7 @@ let queryToolActions = {
   },
 
   explain: function (sqlEditorController) {
-    // let explainQuery = `EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE ${verbose}, COSTS ${costEnabled}, BUFFERS OFF, TIMING OFF) `;
+    /* let explainQuery = `EXPLAIN (FORMAT JSON, ANALYZE OFF, VERBOSE ${verbose}, COSTS ${costEnabled}, BUFFERS OFF, TIMING OFF) `; */
     const explainObject = {
       format: 'json',
       analyze: false,

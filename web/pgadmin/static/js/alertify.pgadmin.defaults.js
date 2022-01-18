@@ -36,9 +36,6 @@ define([
         this.pgResizeTimeout = null;
 
         /** Calculations based on https://getbootstrap.com/docs/4.1/layout/grid/#grid-options **/
-        if (w < 480) {
-          elAttr = 'xs';
-        }
         if (w >= 480) {
           elAttr = 'sm';
         }
@@ -104,9 +101,9 @@ define([
      * with undefined keyCode. The undefined keyCode matches the undefined key
      * of alertify and triggers the button
      */
-    for(let i=0; i<this.__internal.buttons.length; i++) {
-      if(_.isUndefined(this.__internal.buttons[i]['key'])) {
-        this.__internal.buttons[i]['key'] = null;
+    for(let btn_val of this.__internal.buttons) {
+      if(_.isUndefined(btn_val['key'])) {
+        btn_val['key'] = null;
       }
     }
     let self = this;
@@ -288,8 +285,8 @@ define([
     if(ev.which === 13 || ev.which === 27) {
       let suppressForClasses = ['select2-selection', 'select2-search__field'];
       let $el = $(ev.target);
-      for(let i=0; i<suppressForClasses.length; i++){
-        if($el.hasClass(suppressForClasses[i])){
+      for(let class_val of suppressForClasses){
+        if($el.hasClass(class_val)){
           ev.preventDefault();
           ev.stopImmediatePropagation();
           ev.stopPropagation();

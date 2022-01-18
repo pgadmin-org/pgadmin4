@@ -238,8 +238,11 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
   };
 
   const disableNextCheck = (stepId) => {
-    return selectedObject.length > 0 && stepId === 0 ?
-      false : selectedAcl?.privilege?.length > 0 && stepId === 1 ? validatePrivilege() : true;
+    if (selectedObject.length > 0 && stepId === 0) {
+      return false;
+    }
+
+    return selectedAcl?.privilege?.length > 0 && stepId === 1 ? validatePrivilege() : true;
   };
 
   const onDialogHelp= () => {

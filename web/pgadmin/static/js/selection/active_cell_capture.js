@@ -12,7 +12,7 @@ define([
   'sources/selection/range_selection_helper',
 ], function ($, RangeSelectionHelper) {
 
-  var ActiveCellCapture = function () {
+  return function () {
     var KEY_RIGHT = 39;
     var KEY_LEFT = 37;
     var KEY_UP = 38;
@@ -200,6 +200,4 @@ define([
       }
     }
   };
-
-  return ActiveCellCapture;
 });

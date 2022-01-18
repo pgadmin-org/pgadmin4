@@ -72,19 +72,19 @@ describe('layout related functions test', function() {
 
   describe('lock_layout', function() {
     let change_checked_test= function(menu_name) {
-      for(let i=0; i<menu_items.length; i++) {
-        if(menu_items[i].name == menu_name) {
-          expect(menu_items[i].change_checked).toHaveBeenCalledWith(true);
+      for(let mnu_val of menu_items) {
+        if(mnu_val.name == menu_name) {
+          expect(mnu_val.change_checked).toHaveBeenCalledWith(true);
         } else {
-          expect(menu_items[i].change_checked).toHaveBeenCalledWith(false);
+          expect(mnu_val.change_checked).toHaveBeenCalledWith(false);
         }
       }
     };
 
     beforeEach(function(){
       spyOn(pgBrowser.docker, 'lockLayout');
-      for(let i=0; i<menu_items.length; i++) {
-        spyOn(menu_items[i], 'change_checked');
+      for(let mnu_val of menu_items) {
+        spyOn(mnu_val, 'change_checked');
       }
     });
 

@@ -123,12 +123,11 @@
   }
 
   CodeMirror.registerHelper('fold', 'sql', function(cm, start) {
-    var fromToPos = pgadminKeywordRangeFinder(cm, start, [
+    return pgadminKeywordRangeFinder(cm, start, [
       {start: 'BEGIN', end:'END;'},
       {start: 'IF', end:'END IF'},
       {start: 'LOOP', end:'END LOOP'},
       {start: 'CASE', end:'END CASE'},
     ]);
-    return fromToPos;
   });
 });

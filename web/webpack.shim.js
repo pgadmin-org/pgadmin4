@@ -358,8 +358,8 @@ var webpackShimConfig = {
         return true;
       }
     } else {
-      for(let i=0; i<match_modules.length; i++) {
-        if(module.rawRequest.indexOf(match_modules[i]) >= 0) {
+      for(let value of match_modules) {
+        if(module.rawRequest.indexOf(value) >= 0) {
           return true;
         }
       }

@@ -74,9 +74,9 @@ define('pgadmin.misc.explain', [
             return res;
           };
 
-        for (var i = 0; i < words.length; i++) {
+        for (let word_val of words) {
           var tmpArr = splitTextInMultiLine(
-            curr_line, width_so_far, words[i]
+            curr_line, width_so_far, word_val
           );
 
           if (curr_line) {
@@ -666,9 +666,16 @@ define('pgadmin.misc.explain', [
         data['inclusive_factor'] =  data['inclusive'] / (
           data['total_time'] || data['Actual Total Time']
         );
-        data['inclusive_flag'] = data['inclusive_factor'] <= 0.1 ? '1' :
-          data['inclusive_factor'] < 0.5 ? '2' :
-            data['inclusive_factor'] <= 0.9 ? '3' : '4';
+
+        if (data['inclusive_factor'] <= 0.1) {
+          data['inclusive_flag'] = '1';
+        } else if (data['inclusive_factor'] < 0.5) {
+          data['inclusive_flag'] = '2';
+        } else if (data['inclusive_factor'] <= 0.9) {
+          data['inclusive_flag'] = '3';
+        } else {
+          data['inclusive_flag'] = '4';
+        }
       }
 
       if ('Actual Rows' in data && 'Plan Rows' in data) {
@@ -684,9 +691,17 @@ define('pgadmin.misc.explain', [
           );
           data['rowsx_direction'] = 'positive';
         }
-        data['rowsx_flag'] = data['rowsx'] <= 10 ? '1' : (
-          data['rowsx'] <= 100 ? '2' : (data['rowsx'] <= 1000 ? '3' : '4')
-        );
+
+        if (data['rowsx'] <= 10) {
+          data['rowsx_flag'] = '1';
+        } else if (data['rowsx'] <= 100 ) {
+          data['rowsx_flag'] = '2';
+        } else if (data['rowsx'] <= 1000 ) {
+          data['rowsx_flag'] = '3';
+        } else {
+          data['rowsx_flag'] = '4';
+        }
+
         if('loops' in data) {
           data['rowsx'] = Math.ceil10(data['rowsx'] / data['loops'] || 1, -2);
         } else {
@@ -751,9 +766,16 @@ define('pgadmin.misc.explain', [
         data['exclusive_factor'] = (
           data['exclusive'] / (data['total_time'] || data['Actual Total Time'])
         );
-        data['exclusive_flag'] = data['exclusive_factor'] <= 0.1 ? '1' :
-          data['exclusive_factor'] < 0.5 ? '2' :
-            data['exclusive_factor'] <= 0.9 ? '3' : '4';
+
+        if (data['exclusive_factor'] <= 0.1) {
+          data['exclusive_flag'] = '1';
+        } else if (data['exclusive_factor'] < 0.5) {
+          data['exclusive_flag'] = '2';
+        } else if (data['exclusive_factor'] <= 0.9) {
+          data['exclusive_flag'] = '3';
+        } else {
+          data['exclusive_flag'] = '4';
+        }
       }
 
       // Final Width and Height of current node
@@ -844,7 +866,11 @@ define('pgadmin.misc.explain', [
         // Calculate arrow width according to cost of a particular plan
         if (start_cost != undefined && total_cost != undefined) {
           arrow_size = Math.round(Math.log((start_cost + total_cost) / 2 + start_cost));
-          arrow_size = arrow_size < 1 ? 1 : arrow_size > 10 ? 10 : arrow_size;
+          if (arrow_size < 1) {
+            arrow_size = 1;
+          } else if (arrow_size > 10) {
+            arrow_size = 10;
+          }
         }
 
         var arrow_view_box = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT];

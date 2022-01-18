@@ -210,9 +210,7 @@ export default function macroModel(transId) {
           // Render subNode grid
           var subNodeGrid = grid.render().$el;
 
-          var $dialog = gridBody.append(subNodeGrid);
-
-          return $dialog;
+          return gridBody.append(subNodeGrid);
         },
       }),
       columns: ['key_label', 'name', 'sql'],
@@ -223,6 +221,5 @@ export default function macroModel(transId) {
     },
   });
 
-  let model = new MacroCollectionModel();
-  return model;
+  return new MacroCollectionModel();
 }

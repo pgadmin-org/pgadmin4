@@ -428,8 +428,7 @@ function itemToTable(item, columns, ignoredColumnIndex) {
 }
 
 function generateInfoContent(infoList) {
-  let infoContent = infoList.join('<br>');
-  return infoContent;
+  return infoList.join('<br>');
 }
 
 module.exports = GeometryViewer;

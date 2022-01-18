@@ -1523,11 +1523,11 @@ define('tools.querytool', [
     update_grid_data: function(data) {
       this.dataView.beginUpdate();
 
-      for (var i = 0; i < data.length; i++) {
+      for (let data_val of data) {
         // Convert 2darray to dict.
         var item = {};
         for (var j = 1; j < this.grid_columns.length; j++) {
-          item[this.grid_columns[j]['field']] = data[i][this.grid_columns[j]['pos']];
+          item[this.grid_columns[j]['field']] = data_val[this.grid_columns[j]['pos']];
         }
 
         item[this.client_primary_key] = (this.client_primary_key_counter++).toString();
@@ -3237,13 +3237,12 @@ define('tools.querytool', [
           var col_type = '',
             column_label = '',
             col_cell;
-          var type = pg_types[c.type_code] ?
-            pg_types[c.type_code][0] :
-            // This is the case where user might
-            // have use casting so we will use type
-            // returned by cast function
-            pg_types[pg_types.length - 1][0] ?
-              pg_types[pg_types.length - 1][0] : 'unknown';
+          var type = 'unknown';
+          if (pg_types[c.type_code]) {
+            type = pg_types[c.type_code][0];
+          } else if (pg_types[pg_types.length - 1][0]) {
+            type = pg_types[pg_types.length - 1][0];
+          }
 
           if (!is_primary_key)
             col_type += type;
@@ -3494,11 +3493,11 @@ define('tools.querytool', [
           grid.resetActiveCell();
 
           dataView.beginUpdate();
-          for (var i = 0; i < deleted_keys.length; i++) {
-            delete self.data_store.staged_rows[deleted_keys[i]];
-            delete self.data_store.added[deleted_keys[i]];
-            delete self.data_store.added_index[deleted_keys[i]];
-            dataView.deleteItem(deleted_keys[i]);
+          for (let del_val of deleted_keys) {
+            delete self.data_store.staged_rows[del_val];
+            delete self.data_store.added[del_val];
+            delete self.data_store.added_index[del_val];
+            dataView.deleteItem(del_val);
           }
           dataView.endUpdate();
           self.rows_to_delete.apply(self, [dataView.getItems()]);
@@ -3523,7 +3522,6 @@ define('tools.querytool', [
           _.each(_.keys(self.data_store.staged_rows), function(key) {
             if(key in self.data_store.deleted) {
               strikeout = false;
-              return;
             }
           });
 
@@ -3685,8 +3683,8 @@ define('tools.querytool', [
                   dataView.setItems(data, self.client_primary_key);
                 } else {
                   dataView.beginUpdate();
-                  for (var j = 0; j < rows.length; j++) {
-                    var item = grid.getData().getItemById(rows[j]);
+                  for (let row_val of rows) {
+                    var item = grid.getData().getItemById(row_val);
                     data.push(item);
                     dataView.deleteItem(item[self.client_primary_key]);
                   }

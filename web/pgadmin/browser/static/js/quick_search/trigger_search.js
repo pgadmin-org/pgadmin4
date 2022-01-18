@@ -167,7 +167,6 @@ export function Search() {
           if(input_value && input_value.length > 0){
             toggleDropdownMenu();
           }
-          return;
         }
       }
       // Bind the event listener

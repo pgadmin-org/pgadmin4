@@ -287,7 +287,6 @@ function hasSchemaOrCatalogOrViewInformation(parentData) {
 }
 
 export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title=null, backend_entity=null) {
-  //const baseTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
   var preferences = pgBrowser.get_preferences_for_module('browser');
   const parentData = pgBrowser.tree.getTreeNodeHierarchy(
     aciTreeIdentifier
@@ -313,7 +312,5 @@ export function generateDatagridTitle(pgBrowser, aciTreeIdentifier, custom_title
     'table': node.getData().label,
     'type': 'datagrid',
   };
-  var title = generateTitle(dtg_title_placeholder, title_data);
-
-  return title;
+  return generateTitle(dtg_title_placeholder, title_data);
 }

@@ -52,10 +52,10 @@ define('tools.restore', [
         },
       }];
 
-      for (var idx = 0; idx < menuUtils.restoreSupportedNodes.length; idx++) {
+      for (let sup_node_val of menuUtils.restoreSupportedNodes) {
         menus.push({
-          name: 'restore_' + menuUtils.restoreSupportedNodes[idx],
-          node: menuUtils.restoreSupportedNodes[idx],
+          name: 'restore_' + sup_node_val,
+          node: sup_node_val,
           module: this,
           applies: ['context'],
           callback: 'restoreObjects',
@@ -173,7 +173,6 @@ define('tools.restore', [
           gettext('Utility not found'),
           gettext('Failed to fetch Utility information')
         );
-        return;
       });
     },
   };

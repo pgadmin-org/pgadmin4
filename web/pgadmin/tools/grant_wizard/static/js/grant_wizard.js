@@ -57,10 +57,10 @@ define([
       }];
 
       // Add supported menus into the menus list
-      for (var idx = 0; idx < menuUtils.supportedNodes.length; idx++) {
+      for (let mnu_val of menuUtils.supportedNodes) {
         menus.push({
-          name: 'grant_wizard_schema_context_' + menuUtils.supportedNodes[idx],
-          node: menuUtils.supportedNodes[idx],
+          name: 'grant_wizard_schema_context_' + mnu_val,
+          node: mnu_val,
           module: this,
           applies: ['context'],
           callback: 'start_grant_wizard',

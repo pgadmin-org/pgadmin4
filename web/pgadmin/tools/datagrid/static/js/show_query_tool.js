@@ -44,8 +44,7 @@ function hasServerInformations(parentData) {
 }
 
 function generateTitle(pgBrowser, aciTreeIdentifier) {
-  const baseTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
-  return baseTitle;
+  return getPanelTitle(pgBrowser, aciTreeIdentifier);
 }
 
 export function showQueryTool(datagrid, pgBrowser, url, aciTreeIdentifier, transId) {

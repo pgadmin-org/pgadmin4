@@ -104,19 +104,19 @@ define([
 
         var breakpoint_list = new Array();
 
-        for (var i = 0; i < br_list.length; i++) {
-          if (br_list[i].linenumber != -1) {
-            breakpoint_list.push(br_list[i].linenumber);
+        for (let val of br_list) {
+          if (val.linenumber != -1) {
+            breakpoint_list.push(val.linenumber);
           }
         }
 
-        for (i = 0; i < breakpoint_list.length; i++) {
-          var info = pgTools.DirectDebug.editor.lineInfo((breakpoint_list[i] - 1));
+        for (let brk_val of breakpoint_list) {
+          var info = pgTools.DirectDebug.editor.lineInfo((brk_val - 1));
 
           if (info.gutterMarkers != undefined) {
-            pgTools.DirectDebug.editor.setGutterMarker((breakpoint_list[i] - 1), 'breakpoints', null);
+            pgTools.DirectDebug.editor.setGutterMarker((brk_val - 1), 'breakpoints', null);
           } else {
-            pgTools.DirectDebug.editor.setGutterMarker((breakpoint_list[i] - 1), 'breakpoints', function() {
+            pgTools.DirectDebug.editor.setGutterMarker((brk_val - 1), 'breakpoints', function() {
               var marker = document.createElement('div');
               marker.style.color = '#822';
               marker.innerHTML = '●';
@@ -937,9 +937,9 @@ define([
 
         var breakpoint_list = new Array();
 
-        for (var i = 0; i < br_list.length; i++) {
-          if (br_list[i].linenumber != -1) {
-            breakpoint_list.push(br_list[i].linenumber);
+        for (let val of br_list) {
+          if (val.linenumber != -1) {
+            breakpoint_list.push(val.linenumber);
           }
         }
 
@@ -957,12 +957,12 @@ define([
         })
           .done(function(res) {
             if (res.data.status) {
-              for (var j = 0; j < breakpoint_list.length; j++) {
-                var info = pgTools.DirectDebug.editor.lineInfo((breakpoint_list[j] - 1));
+              for (let brk_val of breakpoint_list) {
+                var info = pgTools.DirectDebug.editor.lineInfo((brk_val - 1));
 
                 if (info) {
                   if (info.gutterMarkers != undefined) {
-                    pgTools.DirectDebug.editor.setGutterMarker((breakpoint_list[j] - 1), 'breakpoints', null);
+                    pgTools.DirectDebug.editor.setGutterMarker((brk_val - 1), 'breakpoints', null);
                   }
                 }
               }
@@ -1168,12 +1168,12 @@ define([
 
         var my_obj = [];
         if (result.length != 0) {
-          for (var i = 0; i < result.length; i++) {
-            if (result[i].varclass == 'L') {
+          for (let res_val of result) {
+            if (res_val.varclass == 'L') {
               my_obj.push({
-                'name': result[i].name,
-                'type': result[i].dtype,
-                'value': result[i].value,
+                'name': res_val.name,
+                'type': res_val.dtype,
+                'value': res_val.value,
               });
             }
           }
@@ -1254,12 +1254,12 @@ define([
 
         var param_obj = [];
         if (result.length != 0) {
-          for (var i = 0; i < result.length; i++) {
-            if (result[i].varclass == 'A') {
+          for (let res_val of result) {
+            if (res_val.varclass == 'A') {
               param_obj.push({
-                'name': result[i].name,
-                'type': result[i].dtype,
-                'value': result[i].value,
+                'name': res_val.name,
+                'type': res_val.dtype,
+                'value': res_val.value,
               });
             }
           }

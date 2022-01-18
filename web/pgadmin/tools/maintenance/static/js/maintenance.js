@@ -55,10 +55,10 @@ define([
       }];
 
       // Add supported menus into the menus list
-      for (var idx = 0; idx < menuUtils.maintenanceSupportedNodes.length; idx++) {
+      for (let sup_node_val of menuUtils.maintenanceSupportedNodes) {
         menus.push({
-          name: 'maintenance_context_' + menuUtils.maintenanceSupportedNodes[idx],
-          node: menuUtils.maintenanceSupportedNodes[idx],
+          name: 'maintenance_context_' + sup_node_val,
+          node: sup_node_val,
           module: this,
           applies: ['context'],
           callback: 'callback_maintenance',
@@ -164,7 +164,6 @@ define([
               gettext('Utility not found'),
               res.data.errormsg
             );
-            return;
           } else{
 
             pgBrowser.Node.registerUtilityPanel();
@@ -196,7 +195,6 @@ define([
             gettext('Utility not found'),
             gettext('Failed to fetch Utility information')
           );
-          return;
         });
     },
   };

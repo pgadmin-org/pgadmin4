@@ -10,7 +10,7 @@
 import Notify from '../helpers/Notifier';
 
 define(['sources/gettext'], function (gettext) {
-  var clipboard = {
+  return {
     copyTextToClipboard: function (text) {
       var textArea = document.createElement('textarea');
 
@@ -92,5 +92,4 @@ define(['sources/gettext'], function (gettext) {
       return window.parent.window.clipboardData || '';
     },
   };
-  return clipboard;
 });

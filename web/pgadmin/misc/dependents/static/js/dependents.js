@@ -51,10 +51,13 @@ define('misc.dependents', [
         parse: function(res) {
           var node = pgBrowser.Nodes[res.type];
           if(res.icon == null || res.icon == '') {
-            res.icon = node ? (_.isFunction(node['node_image']) ?
-              (node['node_image']).apply(node, [null, null]) :
-              (node['node_image'] || ('icon-' + res.type))) :
-              ('icon-' + res.type);
+            if (node) {
+              res.icon = _.isFunction(node['node_image']) ?
+                (node['node_image']).apply(node, [null, null]) :
+                (node['node_image'] || ('icon-' + res.type));
+            } else {
+              res.icon = ('icon-' + res.type);
+            }
           }
           res.type = pgadminUtils.titleize(res.type.replace(/_/g, ' '), true);
           return res;

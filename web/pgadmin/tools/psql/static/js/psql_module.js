@@ -243,13 +243,11 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
     },
     psql_terminal: function() {
       // theme colors
-      var term = new terminal({
+      return new terminal({
         cursorBlink: true,
         macOptionIsMeta: true,
         scrollback: 5000,
       });
-
-      return term;
     },
     psql_Addon: function(term) {
       const fitAddon = this.psql_fit_screen();

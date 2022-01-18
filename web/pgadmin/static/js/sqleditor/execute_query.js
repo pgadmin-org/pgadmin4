@@ -231,11 +231,10 @@ class ExecuteQuery {
   }
 
   static prepareAnalyzeSql(sqlStatement, analyzeSql) {
-    let sqlStatementWithAnalyze = {
+    return {
       sql: sqlStatement,
       explain_plan: analyzeSql,
     };
-    return sqlStatementWithAnalyze;
   }
 
   onExecuteHTTPError(httpMessage) {

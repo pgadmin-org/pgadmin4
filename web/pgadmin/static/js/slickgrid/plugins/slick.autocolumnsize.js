@@ -95,8 +95,8 @@
       if (window.Slick.Data && data instanceof window.Slick.Data.DataView) {
         data = data.getItems();
       }
-      for (var i = 0; i < data.length; i++) {
-        texts.push(data[i][columnDef.field]);
+      for (let data_val of data) {
+        texts.push(data_val[columnDef.field]);
       }
       var template = getMaxTextTemplate(texts, columnDef, colIndex, data, rowEl);
       var width = getTemplateWidth(rowEl, template);

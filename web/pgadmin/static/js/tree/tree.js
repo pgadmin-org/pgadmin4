@@ -231,7 +231,10 @@ export class Tree {
 
   children(item) {
     const model = this.tree.getModel();
-    return item ? (item.children !== null ? item.children : []) : model.root.children;
+    if (item) {
+      return (item.children !== null ? item.children : []);
+    }
+    return model.root.children;
   }
 
   itemFrom(domElem) {

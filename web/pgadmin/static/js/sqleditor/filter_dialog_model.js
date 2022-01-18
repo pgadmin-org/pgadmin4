@@ -133,6 +133,5 @@ export default function filterDialogModel(response) {
     },
   });
 
-  let model = new FilterCollectionModel();
-  return model;
+  return new FilterCollectionModel();
 }

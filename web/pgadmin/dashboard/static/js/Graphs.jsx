@@ -43,10 +43,10 @@ export function transformData(labels, refreshRate) {
 export function legendCallback(chart) {
   var text = [];
   text.push('<div class="' + chart.id + '-legend d-flex">');
-  for (var i = 0; i < chart.data.datasets.length; i++) {
-    text.push('<div class="legend-value"><span style="background-color:' + chart.data.datasets[i].backgroundColor + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
-    if (chart.data.datasets[i].label) {
-      text.push('<span class="legend-label">' + chart.data.datasets[i].label + '</span>');
+  for (let chart_val of chart.data.datasets) {
+    text.push('<div class="legend-value"><span style="background-color:' + chart_val.backgroundColor + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+    if (chart_val.label) {
+      text.push('<span class="legend-label">' + chart_val.label + '</span>');
     }
     text.push('</div>');
   }

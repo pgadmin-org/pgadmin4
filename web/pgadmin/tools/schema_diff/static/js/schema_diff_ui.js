@@ -278,8 +278,8 @@ export default class SchemaDiffUI {
     if (sel_rows.length > 0) {
       let script_array = {1: [], 2: [], 3: [], 4: [], 5: []},
         script_body = '';
-      for (var row = 0; row < sel_rows.length; row++) {
-        let data = self.grid.getData().getItem(sel_rows[row]);
+      for (let sel_row_val of sel_rows) {
+        let data = self.grid.getData().getItem(sel_row_val);
         if(!_.isUndefined(data.diff_ddl)) {
           if (!(data.dependLevel in script_array)) script_array[data.dependLevel] = [];
           // Check whether the selected object belongs to source only schema
@@ -384,11 +384,11 @@ export default class SchemaDiffUI {
         formatter: function (g) {
           let icon = 'icon-coll-' + g.value;
           let identical=0, different=0, source_only=0, target_only=0;
-          for (var i = 0; i < g.rows.length; i++) {
-            if (g.rows[i]['status'] == self.filters[0]) identical++;
-            else if (g.rows[i]['status'] == self.filters[1]) different++;
-            else if (g.rows[i]['status'] == self.filters[2]) source_only++;
-            else if (g.rows[i]['status'] == self.filters[3]) target_only++;
+          for (let row_val of g.rows) {
+            if (row_val['status'] == self.filters[0]) identical++;
+            else if (row_val['status'] == self.filters[1]) different++;
+            else if (row_val['status'] == self.filters[2]) source_only++;
+            else if (row_val['status'] == self.filters[3]) target_only++;
           }
           return '<i class="wcTabIcon '+ icon +'"></i><span>' + g.rows[0].label + ' - ' + gettext('Identical') + ': <strong>' + identical + '</strong>&nbsp;&nbsp;' + gettext('Different') + ': <strong>' + different + '</strong>&nbsp;&nbsp;' + gettext('Source Only') + ': <strong>' + source_only + '</strong>&nbsp;&nbsp;' + gettext('Target Only') + ': <strong>' + target_only + '</strong></span>';
         },
@@ -684,9 +684,9 @@ export default class SchemaDiffUI {
           if (!_.isUndefined(m.get('source_sid')) && !_.isNull(m.get('source_sid'))
               && m.get('source_sid') !== '') {
             setTimeout(function() {
-              for (var i = 0; i < self_local.options.length; i++) {
-                if (self_local.options[i].is_maintenance_db) {
-                  m.set('source_did', self_local.options[i].value);
+              for (let opt_val of self_local.options) {
+                if (opt_val.is_maintenance_db) {
+                  m.set('source_did', opt_val.value);
                 }
               }
             }, 10);
@@ -768,9 +768,9 @@ export default class SchemaDiffUI {
           if (!_.isUndefined(m.get('target_sid')) && !_.isNull(m.get('target_sid'))
               && m.get('target_sid') !== '') {
             setTimeout(function() {
-              for (var i = 0; i < self_local.options.length; i++) {
-                if (self_local.options[i].is_maintenance_db) {
-                  m.set('target_did', self_local.options[i].value);
+              for (let opt_val of self_local.options) {
+                if (opt_val.is_maintenance_db) {
+                  m.set('target_did', opt_val.value);
                 }
               }
             }, 10);

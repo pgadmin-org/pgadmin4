@@ -77,7 +77,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
 
     erdToolEnabled: function(obj) {
       /* Same as query tool */
-      var isEnabled = (() => {
+      return (() => {
         if (!_.isUndefined(obj) && !_.isNull(obj)) {
           if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
             if (obj._type == 'database' && obj.allowConn) {
@@ -94,7 +94,6 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
           return false;
         }
       })();
-      return isEnabled;
     },
 
     // Callback to draw ERD Tool for objects

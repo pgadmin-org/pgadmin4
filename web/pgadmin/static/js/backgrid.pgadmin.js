@@ -1040,8 +1040,8 @@ define([
       if(select2_opts.first_empty) {
         optionValues.unshift(this.defaults.opt);
       }
-      for (var i = 0; i < optionValues.length; i++) {
-        var opt = optionValues[i];
+      for (let option_val of optionValues) {
+        var opt = option_val;
 
         if (_.isArray(opt)) {
 
@@ -1331,7 +1331,6 @@ define([
             }, 10);
           }
         }, 10);
-        return;
       },
     });
 
@@ -1759,12 +1758,16 @@ define([
        */
     fromRaw: function(rawData) {
       if (rawData == null) return '';
-
-      var m = this.modelInUnixOffset ? moment(rawData) :
-        this.modelInUnixTimestamp ? moment.unix(rawData) :
-          this.modelInUTC ?
-            moment.utc(rawData, this.modelFormat, this.modelLang) :
-            moment(rawData, this.modelFormat, this.modelLang);
+      var m = null;
+      if (this.modelInUnixOffset) {
+        m = moment(rawData);
+      } else if (this.modelInUnixTimestamp) {
+        m = moment.unix(rawData);
+      } else if (this.modelInUTC) {
+        m = moment.utc(rawData, this.modelFormat, this.modelLang);
+      } else {
+        m = moment(rawData, this.modelFormat, this.modelLang);
+      }
 
       if (this.displayInUnixOffset) return +m;
 
@@ -1789,12 +1792,16 @@ define([
        @return {string}
        */
     toRaw: function(formattedData) {
-
-      var m = this.displayInUnixOffset ? moment(+formattedData) :
-        this.displayInUnixTimestamp ? moment.unix(+formattedData) :
-          this.displayInUTC ?
-            moment.utc(formattedData, this.displayFormat, this.displayLang) :
-            moment(formattedData, this.displayFormat, this.displayLang);
+      var m = null;
+      if (this.displayInUnixOffset) {
+        m = moment(+formattedData);
+      } else if (this.displayInUnixTimestamp) {
+        m = moment.unix(+formattedData);
+      } else if (this.displayInUTC) {
+        m = moment.utc(formattedData, this.displayFormat, this.displayLang);
+      } else {
+        m = moment(formattedData, this.displayFormat, this.displayLang);
+      }
 
       if (!m || !m.isValid()) return (this.allowEmpty && formattedData === '') ? null : undefined;
 

@@ -265,10 +265,10 @@ define('pgadmin.node.primary_key', [
                 });
               }
               path = path.split('.');
-              for (var i = 0; i < path.length; i++) {
+              for (let path_val of path) {
                 if (_.isNull(res)) return null;
-                if (_.isEmpty(path[i])) continue;
-                if (!_.isUndefined(res[path[i]])) res = res[path[i]];
+                if (_.isEmpty(path_val)) continue;
+                if (!_.isUndefined(res[path_val])) res = res[path_val];
               }
               return _.isObject(res) && !_.isArray(res) ? null : res;
             },

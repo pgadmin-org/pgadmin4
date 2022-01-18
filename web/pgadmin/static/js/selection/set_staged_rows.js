@@ -59,11 +59,10 @@ define(
 
     function getPrimaryKeysForSelectedRows(self, selectedRows) {
       var dataView = self.grid.getData();
-      var stagedRows = getRowPrimaryKeyValuesToStage(selectedRows, _.keys(self.keys), dataView, self.client_primary_key);
-      return stagedRows;
+      return getRowPrimaryKeyValuesToStage(selectedRows, _.keys(self.keys), dataView, self.client_primary_key);
     }
 
-    var setStagedRows = function () {
+    return function () {
       var self = this;
 
       function setStagedRows(rowsToStage) {
@@ -103,6 +102,5 @@ define(
         setStagedRows({});
       }
     };
-    return setStagedRows;
   }
 );

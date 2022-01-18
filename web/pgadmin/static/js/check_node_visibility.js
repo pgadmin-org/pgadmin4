@@ -10,7 +10,7 @@
 define(['jquery', 'underscore'],
   function ($, _) {
 
-    var check_node_visibility = function (pgBrowser, node_type) {
+    return function (pgBrowser, node_type) {
       if(_.isUndefined(node_type) || _.isNull(node_type)) {
         return true;
       }
@@ -39,6 +39,4 @@ define(['jquery', 'underscore'],
         return true;
       }
     };
-
-    return check_node_visibility;
   });

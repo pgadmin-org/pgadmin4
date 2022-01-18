@@ -340,8 +340,8 @@ define([
               // as we have created a new grid instance.
               if(selectedModels.length > 0) {
                 that.collection.each(function (model) {
-                  for(var inx=0; inx < selectedModels.length; inx++){
-                    if (selectedModels[inx].id == model.id){
+                  for(let model_val of selectedModels){
+                    if (model_val.id == model.id){
                       model.trigger('backgrid:select', model, true);
                     }
                   }
@@ -467,7 +467,6 @@ define([
           } else {
             dropAjaxHook();
           }
-          return;
         }.bind(that);
       },
       __loadMoreRows: function(e) {

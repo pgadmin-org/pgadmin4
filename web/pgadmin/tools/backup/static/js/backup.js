@@ -121,10 +121,10 @@ define([
         },
       }];
 
-      for (var idx = 0; idx < menuUtils.backupSupportedNodes.length; idx++) {
+      for (let node_val of menuUtils.backupSupportedNodes) {
         menus.push({
-          name: 'backup_' + menuUtils.backupSupportedNodes[idx],
-          node: menuUtils.backupSupportedNodes[idx],
+          name: 'backup_' + node_val,
+          node: node_val,
           module: this,
           applies: ['context'],
           callback: 'backupObjects',

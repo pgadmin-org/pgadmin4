@@ -167,7 +167,7 @@ define([
     }
   };
 
-  var res = function(debugInfo, restartDebug, isEdbProc, transId) {
+  return function(debugInfo, restartDebug, isEdbProc, transId) {
     if (!Alertify.debuggerInputArgsDialog) {
       Alertify.dialog('debuggerInputArgsDialog', function factory() {
         return {
@@ -782,7 +782,7 @@ define([
                           'frm_debugger', wcDocker.DOCK.STACKED, dashboardPanel[0]
                         );
                       var browser_pref = pgBrowser.get_preferences_for_module('browser');
-                      var label = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
+                      var label = debuggerUtils.getAppropriateLabel(treeInfo);
                       debuggerUtils.setDebuggerTitle(panel, browser_pref, label, treeInfo.schema.label, treeInfo.database.label, null, pgBrowser);
                       panel.focus();
 
@@ -805,7 +805,7 @@ define([
                             if(value) {
                               // Remove the leading and trailing white spaces.
                               value = value.trim();
-                              var name = treeInfo.function ? treeInfo.function.label : treeInfo.trigger_function ? treeInfo.trigger_function.label : treeInfo.trigger ? treeInfo.trigger.label : treeInfo.procedure.label;
+                              var name = debuggerUtils.getAppropriateLabel(treeInfo);
                               debuggerUtils.setDebuggerTitle(panel, self.preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
                             }
                           },
@@ -1054,6 +1054,4 @@ define([
     ).resizeTo(pgBrowser.stdW.md,pgBrowser.stdH.md);
 
   };
-
-  return res;
 });

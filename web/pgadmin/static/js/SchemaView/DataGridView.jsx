@@ -277,7 +277,7 @@ export default function DataGridView({
             />;
           }
         };
-        colInfo.Cell.displayName = 'Cell',
+        colInfo.Cell.displayName = 'Cell';
         colInfo.Cell.propTypes = {
           row: PropTypes.object.isRequired,
         };
@@ -316,7 +316,7 @@ export default function DataGridView({
             );
           }
         };
-        colInfo.Cell.displayName = 'Cell',
+        colInfo.Cell.displayName = 'Cell';
         colInfo.Cell.propTypes = {
           row: PropTypes.object.isRequired,
         };
@@ -381,7 +381,7 @@ export default function DataGridView({
               />;
             },
           };
-          colInfo.Cell.displayName = 'Cell',
+          colInfo.Cell.displayName = 'Cell';
           colInfo.Cell.propTypes = {
             row: PropTypes.object.isRequired,
             value: PropTypes.any,

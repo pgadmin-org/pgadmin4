@@ -12,7 +12,7 @@ define([
   'sources/selection/range_selection_helper',
   'slickgrid',
 ], function ($, RangeSelectionHelper) {
-  var ColumnSelector = function () {
+  return function () {
     var Slick = window.Slick,
       gridEventBus = new Slick.EventHandler(),
       onBeforeColumnSelectAll = new Slick.Event(),
@@ -161,5 +161,4 @@ define([
       'toggleColumnHeaderForCopyHeader': toggleColumnHeaderForCopyHeader,
     });
   };
-  return ColumnSelector;
 });

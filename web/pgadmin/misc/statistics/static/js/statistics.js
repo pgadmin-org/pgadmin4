@@ -413,12 +413,14 @@ define('misc.statistics', [
       this.columns = this.statistic_columns;
       for (var idx in columns) {
         name = (columns[idx])['name'];
+        let val = null;
+        if (row && row[name]) {
+          val = _.indexOf(prettifyFields, name) != -1 ? sizePrettify(row[name]) : row[name];
+        }
         res.push({
           'statistics': name,
           // Check if row is undefined?
-          'value': row && row[name] ?
-            ((_.indexOf(prettifyFields, name) != -1) ?
-              sizePrettify(row[name]) : row[name]) : null,
+          'value': val,
         });
       }
 

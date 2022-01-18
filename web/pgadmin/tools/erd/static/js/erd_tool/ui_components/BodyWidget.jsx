@@ -8,9 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 import * as React from 'react';
-import { CanvasWidget } from '@projectstorm/react-canvas-core';
+import { CanvasWidget, Action, InputType } from '@projectstorm/react-canvas-core';
 import axios from 'axios';
-import { Action, InputType } from '@projectstorm/react-canvas-core';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import html2canvas from 'html2canvas';
@@ -40,8 +39,8 @@ export class KeyboardShortcutAction extends Action {
     });
     this.shortcuts = {};
 
-    for(let i=0; i<shortcut_handlers.length; i++){
-      let [key, handler] = shortcut_handlers[i];
+    for(let shortcut_val of shortcut_handlers){
+      let [key, handler] = shortcut_val;
       if(key) {
         this.shortcuts[this.shortcutKey(key.alt, key.control, key.shift, false, key.key.key_code)] = handler;
       }

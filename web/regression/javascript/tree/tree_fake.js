@@ -107,8 +107,12 @@ export class TreeFake extends Tree {
     let idx = 0;
     let node_cnt = 0;
     let result = {};
-    let item = TreeNode.prototype.isPrototypeOf(identifier) ? identifier :
-      (identifier.path ? this.findNode(identifier.path) : this.findNodeByDomElement(identifier));
+    let item = null;
+    if (TreeNode.prototype.isPrototypeOf(identifier)) {
+      item = identifier;
+    } else {
+      item = identifier.path ? this.findNode(identifier.path) : this.findNodeByDomElement(identifier);
+    }
 
     if (item == undefined || item == null) return null;
 

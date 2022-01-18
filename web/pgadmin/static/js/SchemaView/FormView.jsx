@@ -101,14 +101,18 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
   }
 
   let {visible, disabled, readonly, editable} = field;
+  let verInLimit;
 
-  let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
-    ((_.isUndefined(field.server_type) ? true :
+  if (_.isUndefined(viewHelperProps.serverInfo)) {
+    verInLimit= true;
+  } else {
+    verInLimit = ((_.isUndefined(field.server_type) ? true :
       (viewHelperProps.serverInfo.type in field.server_type)) &&
       (_.isUndefined(field.min_version) ? true :
         (viewHelperProps.serverInfo.version >= field.min_version)) &&
       (_.isUndefined(field.max_version) ? true :
-        (viewHelperProps.serverInfo.version <= field.max_version))));
+        (viewHelperProps.serverInfo.version <= field.max_version)));
+  }
 
   retData.readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
   if(!retData.readonly) {

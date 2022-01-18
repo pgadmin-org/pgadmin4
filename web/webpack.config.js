@@ -95,8 +95,8 @@ function cssToBeSkiped(curr_path) {
     return true;
   }
 
-  for(let i=0; i< webpackShimConfig.css_bundle_skip.length; i++) {
-    if(path.join(__dirname, webpackShimConfig.css_bundle_skip[i]) === curr_path){
+  for(let value of webpackShimConfig.css_bundle_skip) {
+    if(path.join(__dirname, value) === curr_path){
       return true;
     }
   }
@@ -133,11 +133,11 @@ let pgadminScssStyles = [];
 let pgadminCssStyles = [];
 
 /* Include what is given in shim config */
-for(let i=0; i<webpackShimConfig.css_bundle_include.length; i++) {
-  if(webpackShimConfig.css_bundle_include[i].endsWith('.scss')) {
-    pgadminScssStyles.push(path.join(__dirname, webpackShimConfig.css_bundle_include[i]));
-  } else if(webpackShimConfig.css_bundle_include[i].endsWith('.css')){
-    pgadminCssStyles.push(path.join(__dirname, webpackShimConfig.css_bundle_include[i]));
+for(let value of webpackShimConfig.css_bundle_include) {
+  if(value.endsWith('.scss')) {
+    pgadminScssStyles.push(path.join(__dirname, value));
+  } else if(value.endsWith('.css')){
+    pgadminCssStyles.push(path.join(__dirname, value));
   }
 }
 

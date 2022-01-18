@@ -9,7 +9,7 @@
 
 define([],
   function () {
-    var sizePrettify = function (rawSize) {
+    return function (rawSize) {
       var size = Math.abs(rawSize),
         limit = 10 * 1024,
         limit2 = limit - 1,
@@ -28,6 +28,4 @@ define([],
         return Math.round(size) + ' ' + sizeUnits[cnt];
       }
     };
-
-    return sizePrettify;
   });

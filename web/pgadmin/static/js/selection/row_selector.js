@@ -13,7 +13,7 @@ define([
   'sources/selection/column_selector',
   'slickgrid',
 ], function ($, RangeSelectionHelper, ColumnSelector) {
-  var RowSelector = function () {
+  return function () {
     var Slick = window.Slick;
 
     var gridEventBus = new Slick.EventHandler();
@@ -107,6 +107,4 @@ define([
       'getColumnDefinitions': getColumnDefinitions,
     });
   };
-
-  return RowSelector;
 });

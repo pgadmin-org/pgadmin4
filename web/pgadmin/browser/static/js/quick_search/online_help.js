@@ -13,8 +13,8 @@ import url_for from 'sources/url_for';
 
 const extractSearchResult = (list) => {
   let result = {};
-  for (let idx = 0; idx < list.length; idx++) {
-    let link = list[idx].getElementsByTagName('A');
+  for (let list_val of list) {
+    let link = list_val.getElementsByTagName('A');
     // we are not going to display more than first 10 result as per design
     if (link.length == 0) {
       break;

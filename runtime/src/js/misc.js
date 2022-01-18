@@ -293,8 +293,8 @@ const setZoomEvents = () => {
 // This function is used to iterate all open windows and set the zoom level.
 const setZoomLevelForAllWindows = () => {
   nw.Window.getAll(function(winArray) {
-    for (var i = 0; i < winArray.length; i++) {
-      winArray[i].zoomLevel = pgAdminWindowObject.zoomLevel;
+    for (let arr_val of winArray) {
+      arr_val.zoomLevel = pgAdminWindowObject.zoomLevel;
     }
   })
 };
@@ -336,9 +336,9 @@ const toggleFullScreen = () => {
 
     // Change the menu label.
     var menu_label = pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML;
-    if (menu_label.indexOf('Enter Full Screen') > 0) {
+    if (menu_label.indexOf('Enter Full Screen') >= 0) {
       pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Enter', 'Exit');
-    } else if (menu_label.indexOf('Exit Full Screen') > 0) {
+    } else if (menu_label.indexOf('Exit Full Screen') >= 0) {
       pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Exit', 'Enter');
     }
   }

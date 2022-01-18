@@ -86,10 +86,22 @@ function get_function_name(function_name) {
   }
   return func_name;
 }
+function getAppropriateLabel(treeInfo) {
+  if (treeInfo.function) {
+    return treeInfo.function.label;
+  } else if (treeInfo.trigger_function) {
+    return treeInfo.trigger_function.label;
+  } else if (treeInfo.trigger) {
+    return treeInfo.trigger.label;
+  } else {
+    return treeInfo.procedure.label;
+  }
+}
 
 module.exports = {
   setFocusToDebuggerEditor: setFocusToDebuggerEditor,
   getFunctionId: getFunctionId,
   getProcedureId: getProcedureId,
   setDebuggerTitle: setDebuggerTitle,
+  getAppropriateLabel: getAppropriateLabel,
 };
