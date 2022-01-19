@@ -798,13 +798,7 @@ define('pgadmin.browser', [
                 category: _m.category, callback: _m.callback,
                 priority: _m.priority, data: _m.data, url: _m.url || '#',
                 target: _m.target, icon: _m.icon,
-                enable: function() {
-                  if (_.isEmpty(_m.enable)) {
-                    return true;
-                  }
-
-                  return (_.isString(_m.enable) && _m.enable.toLowerCase() == 'false') ? false : _m.enable;
-                },
+                enable: (_m.enable == '' ? true : (_.isString(_m.enable) && _m.enable.toLowerCase() == 'false') ? false : _m.enable),
                 node: _m.node, checked: _m.checked, below: _m.below,
               });
             };
