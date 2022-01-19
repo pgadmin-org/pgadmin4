@@ -260,7 +260,7 @@ _.extend(pgBrowser.browserTreeState, {
   },
   expand_from_previous_state: function(item) {
     let self = this,
-      treeData = self.stored_state || {},
+      treeData = this.current_state || {},
       data = item && pgBrowser.tree.itemData(item),
       treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 

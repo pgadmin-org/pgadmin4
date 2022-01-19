@@ -239,6 +239,7 @@ define('pgadmin.node.database', [
                       data.icon = 'icon-database-not-connected';
                       t.addIcon(i, {icon: data.icon});
                       t.unload(i);
+                      pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state', i);
                       setTimeout(function() {
                         t.select(prv_i);
                       }, 10);
