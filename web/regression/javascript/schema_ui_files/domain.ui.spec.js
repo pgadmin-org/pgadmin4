@@ -15,8 +15,7 @@ import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import DomainSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui';
-import { DomainConstSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui';
+import DomainSchema, { DomainConstSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui';
 
 describe('DomainSchema', ()=>{
   let mount;

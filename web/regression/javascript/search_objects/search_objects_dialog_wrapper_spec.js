@@ -73,7 +73,7 @@ describe('SearchObjectsDialogWrapper', () => {
       },
       keyboardNavigation: jasmine.createSpyObj('keyboardNavigation', ['getDialogTabNavigator']),
     };
-    pgBrowser.tree =  new TreeFake(pgBrowser),
+    pgBrowser.tree =  new TreeFake(pgBrowser);
     noDataNode = pgBrowser.tree.addNewNode('level1.1', undefined, [{id: 'level1'}]);
     serverTreeNode = pgBrowser.tree.addNewNode('level2.1', {
       _type: 'server',

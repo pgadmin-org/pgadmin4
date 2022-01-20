@@ -40,6 +40,7 @@ SCHEMA_VERSION = 32
 
 db = SQLAlchemy()
 USER_ID = 'user.id'
+SERVER_ID = 'server.id'
 
 # Define models
 roles_users = db.Table(
@@ -341,7 +342,7 @@ class QueryHistoryModel(db.Model):
         db.Integer, db.ForeignKey(USER_ID), nullable=False, primary_key=True
     )
     sid = db.Column(
-        db.Integer(), db.ForeignKey('server.id'), nullable=False,
+        db.Integer(), db.ForeignKey(SERVER_ID), nullable=False,
         primary_key=True)
     dbname = db.Column(db.String(), nullable=False, primary_key=True)
     query_info = db.Column(db.String(), nullable=False)
@@ -357,7 +358,7 @@ class Database(db.Model):
     schema_res = db.Column(db.String(256), nullable=True)
     server = db.Column(
         db.Integer,
-        db.ForeignKey('server.id'),
+        db.ForeignKey(SERVER_ID),
         nullable=False,
         primary_key=True
     )
@@ -370,7 +371,7 @@ class SharedServer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     osid = db.Column(
         db.Integer,
-        db.ForeignKey('server.id'),
+        db.ForeignKey(SERVER_ID),
         nullable=False
     )
     user_id = db.Column(

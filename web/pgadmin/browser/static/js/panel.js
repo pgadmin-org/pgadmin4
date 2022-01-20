@@ -171,9 +171,6 @@ define(
               p.pgResizeTimeout = null;
 
               /** Calculations based on https://getbootstrap.com/docs/4.1/layout/grid/#grid-options **/
-              if (w < 480) {
-                elAttr = 'xs';
-              }
               if (w >= 480) {
                 elAttr = 'sm';
               }

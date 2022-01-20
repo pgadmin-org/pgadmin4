@@ -14,8 +14,7 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import PgaJobScheduleSchema from '../../../pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui';
-import { ExceptionsSchema } from '../../../pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui';
+import PgaJobScheduleSchema, { ExceptionsSchema } from '../../../pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui';
 
 describe('PgaJobScheduleSchema', ()=>{
   let mount;

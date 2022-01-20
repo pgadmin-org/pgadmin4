@@ -9,8 +9,7 @@
 
 import $ from 'jquery';
 import Mousetrap from 'mousetrap';
-import { findAndSetFocus } from './utils';
-import { parseShortcutValue } from './utils';
+import { findAndSetFocus, parseShortcutValue } from './utils';
 
 class dialogTabNavigator {
   constructor(dialogContainer, backwardShortcut, forwardShortcut) {

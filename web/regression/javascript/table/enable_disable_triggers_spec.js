@@ -26,9 +26,7 @@ describe('#enableTriggers', () => {
     tree = new TreeFake();
 
     spyOn(tree, 'unload').and.callFake(function() {
-      return new Promise((resolve)=>{
-        resolve('Success!');
-      });
+      return Promise.resolve('Success!');
     });
 
     const server1 = tree.addNewNode('server1', {_id: 1}, ['<li>server1</li>']);
@@ -180,9 +178,7 @@ describe('#disableTriggers', () => {
     generateUrlSpy = jasmine.createSpy('generateUrl');
     generateUrlSpy.and.returnValue('/some/place');
     spyOn(tree, 'unload').and.callFake(function() {
-      return new Promise((resolve)=>{
-        resolve('Success!');
-      });
+      return Promise.resolve('Success!');
     });
 
   });

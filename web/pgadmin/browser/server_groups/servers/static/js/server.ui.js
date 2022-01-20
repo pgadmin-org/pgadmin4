@@ -19,7 +19,7 @@ import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from 'sources/validators';
 
 export default class ServerSchema extends BaseUISchema {
-  constructor(serverGroupOptions=[], userId, initValues={}) {
+  constructor(serverGroupOptions=[], userId=0, initValues={}) {
     super({
       gid: undefined,
       id: undefined,

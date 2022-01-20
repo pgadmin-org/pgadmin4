@@ -70,11 +70,7 @@ export default class SynonymSchema extends BaseUISchema {
         readonly: function(state) {
           // If tagetType is synonym then disable it
           if(!obj.inCatalog()) {
-            if(state.targettype == 's') {
-              return true;
-            } else {
-              return false;
-            }
+            return state.targettype == 's';
           }
           return true;
         },

@@ -331,7 +331,7 @@ export function getRestoreMiscellaneousSchema(fieldOptions) {
 //Restore Schema
 export default class RestoreSchema extends BaseUISchema {
 
-  constructor(getRestoreSectionSchema, getRestoreTypeObjSchema, getRestoreSaveOptSchema, getRestoreQueryOptionSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, fieldOptions = {}, treeNodeInfo, pgBrowser) {
+  constructor(getRestoreSectionSchema, getRestoreTypeObjSchema, getRestoreSaveOptSchema, getRestoreQueryOptionSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null) {
     super({
       custom: false,
       file: undefined,

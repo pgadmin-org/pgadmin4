@@ -131,8 +131,7 @@ export default function ImportExportServers() {
   });
 
   const wizardStepChange= (data) => {
-    switch (data.currentStep) {
-    case 2: {
+    if (data.currentStep == 2) {
       let sumData = [],
         serverSerialNumber = 0;
       serverData.forEach((server_group) => {
@@ -158,10 +157,6 @@ export default function ImportExportServers() {
           setNoteText('On a successful import process, the browser tree will be refreshed.');
         }
       }
-      break;
-    }
-    default:
-      break;
     }
   };
 

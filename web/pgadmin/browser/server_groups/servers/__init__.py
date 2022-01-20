@@ -1512,10 +1512,10 @@ class ServerNode(PGChildNodeView):
         # Check if any psql terminal is running for the current disconnecting
         # server. If any terminate the psql tool connection.
         if 'sid_soid_mapping' in current_app.config and str(sid) in \
-                current_app.config['sid_soid_mapping']:
-            if str(sid) in current_app.config['sid_soid_mapping']:
-                for i in current_app.config['sid_soid_mapping'][str(sid)]:
-                    sio.emit('disconnect-psql', namespace='/pty', to=i)
+                current_app.config['sid_soid_mapping'] and \
+                str(sid) in current_app.config['sid_soid_mapping']:
+            for i in current_app.config['sid_soid_mapping'][str(sid)]:
+                sio.emit('disconnect-psql', namespace='/pty', to=i)
 
         status = manager.release()
 

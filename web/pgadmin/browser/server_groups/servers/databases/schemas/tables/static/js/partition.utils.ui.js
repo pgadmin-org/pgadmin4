@@ -4,7 +4,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { emptyValidator, isEmptyString } from '../../../../../../../../static/js/validators';
 
 export class PartitionKeysSchema extends BaseUISchema {
-  constructor(columns=[], getCollations, getOperatorClass) {
+  constructor(columns=[], getCollations=[], getOperatorClass=[]) {
     super({
       key_type: 'column',
     });
@@ -424,7 +424,9 @@ export class PartitionsSchema extends BaseUISchema {
         msg = gettext('For hash partition Modulus field cannot be empty.');
         setError('values_modulus', msg);
         return true;
-      } if(isEmptyString(state.values_remainder)) {
+      }
+
+      if(isEmptyString(state.values_remainder)) {
         msg = gettext('For hash partition Remainder field cannot be empty.');
         setError('values_remainder', msg);
         return true;

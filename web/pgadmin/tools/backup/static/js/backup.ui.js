@@ -381,7 +381,7 @@ export function getMiscellaneousSchema(fieldOptions) {
 }
 
 export default class BackupSchema extends BaseUISchema {
-  constructor(getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema, fieldOptions = {}, treeNodeInfo, pgBrowser, backupType) {
+  constructor(getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null, backupType='server') {
     super({
       file: undefined,
       format: 'custom',

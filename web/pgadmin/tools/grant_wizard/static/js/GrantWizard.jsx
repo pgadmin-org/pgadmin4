@@ -189,8 +189,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
   }, [nodeData]);
 
   const wizardStepChange = (data) => {
-    switch (data.currentStep) {
-    case 2:
+    if (data.currentStep == 2) {
       setLoaderText('Loading SQL ...');
       var msql_url = url_for(
         'grant_wizard.modified_sql', {
@@ -209,9 +208,6 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
         .catch(() => {
           Notify.error(gettext('Error while fetching SQL.'));
         });
-      break;
-    default:
-      break;
     }
   };
 

@@ -12,9 +12,8 @@ import { render } from 'react-dom';
 import { FileTreeX, TreeModelX } from 'pgadmin4-tree';
 import {Tree} from './tree';
 
-import { IBasicFileSystemHost } from 'react-aspen';
+import { IBasicFileSystemHost, Directory } from 'react-aspen';
 import { ManageTreeNodes } from './tree_nodes';
-import { Directory } from 'react-aspen';
 import pgAdmin from 'sources/pgadmin';
 
 var initBrowserTree = async (pgBrowser) => {
@@ -29,8 +28,7 @@ var initBrowserTree = async (pgBrowser) => {
   const host: IBasicFileSystemHost = {
     pathStyle: 'unix',
     getItems: async (path) => {
-      let nodes = await mtree.readNode(path);
-      return nodes;
+      return await mtree.readNode(path);
     },
     sortComparator: (a: FileEntry | Directory, b: FileEntry | Directory) => {
       // No nee to sort columns
@@ -39,9 +37,13 @@ var initBrowserTree = async (pgBrowser) => {
       if (a.constructor === b.constructor) {
         return pgAdmin.natural_sort(a.fileName, b.fileName);
       }
-      return a.constructor === Directory ? -1
-        : b.constructor === Directory ? 1
-        : 0
+      let retval = 0;
+      if (a.constructor === Directory) {
+        retval = -1;
+      } else if (b.constructor === Directory) {
+        retval = 1;
+      }
+      return retval;
 	},
   }
 

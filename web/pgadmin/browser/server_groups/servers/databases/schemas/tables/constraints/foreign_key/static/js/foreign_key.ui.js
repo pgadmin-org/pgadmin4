@@ -204,11 +204,7 @@ export default class ForeignKeySchema extends BaseUISchema {
       deps: ['condeferrable'],
       disabled: function(state) {
         // Disable if condeferred is false or unselected.
-        if(state.condeferrable) {
-          return false;
-        } else {
-          return true;
-        }
+        return !state.condeferrable;
       },
       readonly: obj.isReadonly,
       depChange: (state)=>{
@@ -284,11 +280,7 @@ export default class ForeignKeySchema extends BaseUISchema {
       mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
       deps:['autoindex', 'hasindex'],
       disabled: (state)=>{
-        if(!state.autoindex && !state.hasindex) {
-          return true;
-        } else {
-          return false;
-        }
+        return !state.autoindex && !state.hasindex;
       },
       readonly: this.isReadonly,
     },{

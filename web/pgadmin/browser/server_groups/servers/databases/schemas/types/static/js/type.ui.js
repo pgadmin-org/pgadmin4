@@ -958,7 +958,6 @@ class CompositeSchema extends BaseUISchema {
                 // set the values in state
                 state.is_tlength = false;
               }
-              return;
             }
           });
         }
@@ -1306,7 +1305,6 @@ export default class TypeSchema extends BaseUISchema {
       tempCol.forEach(function(enumVal) {
         if(enumVal == undefined) {
           dontAddColumn = true;
-          return;
         }
       });
     }
@@ -1314,7 +1312,7 @@ export default class TypeSchema extends BaseUISchema {
   }
 
   schemaCheck(state) {
-    if(this.fieldOptions.node_info && 'schema' in this.fieldOptions.node_info)
+    if(this.fieldOptions.node_info && this.fieldOptions.node_info.indexOf('schema') >= 0)
     {
       if(!state)
         return true;

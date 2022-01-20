@@ -196,12 +196,12 @@ export default class ColumnSchema extends BaseUISchema {
       editable: function(state) {
         // If primary key already exist then disable.
         if (
-          obj.top && ((
+          obj.top && (
             !_.isUndefined(obj.top.origData['oid'])
               && !_.isUndefined(obj.top.origData['primary_key'])
               && obj.top.origData['primary_key'].length > 0
               && !_.isUndefined(obj.top.origData['primary_key'][0]['oid'])
-          ))
+          )
         ) {
           return false;
         }

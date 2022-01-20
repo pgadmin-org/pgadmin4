@@ -68,9 +68,7 @@ _.extend(pgBrowser, {
             // clear the wcDocker before reset layout.
             docker.clear();
             Notify.info(gettext('pgAdmin has reset the layout because the previously saved layout is invalid.'), null);
-            if(defaultLayoutCallback){
-              defaultLayoutCallback(docker);
-            }
+            defaultLayoutCallback(docker);
           }
         }
       }

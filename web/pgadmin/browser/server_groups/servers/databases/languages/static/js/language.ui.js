@@ -38,13 +38,10 @@ export default class LanguageSchema extends BaseUISchema {
   }
   // This function check whether the server is less than 13 or not.
   isLessThan13(){
-    if(!_.isUndefined(this.node_info)
+    return !_.isUndefined(this.node_info)
           && !_.isUndefined(this.node_info['node_info'])
           && !_.isUndefined(this.node_info['node_info'].version)
-          && this.node_info['node_info'].version < 130000)
-    { return true; }
-    else{ return false; }
-
+          && this.node_info['node_info'].version < 130000;
   }
   isDisabled(state){
     if (this.templateList.some(template => template.tmplname === state.name)){

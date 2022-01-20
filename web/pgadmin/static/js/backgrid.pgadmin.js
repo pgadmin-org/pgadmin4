@@ -1589,9 +1589,10 @@ define([
       if (_.isUndefined(rawValue) || _.isNull(rawValue)) return '';
 
       var pass = '';
-      for (var i = 0; i < rawValue.length; i++) {
+      rawValue.forEach(() => {
         pass += '*';
-      }
+      });
+
       return pass;
     },
   });

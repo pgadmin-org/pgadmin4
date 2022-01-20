@@ -74,8 +74,7 @@ define([
         return m;
       }
 
-      var idx = 1,
-        len = _.size(m);
+      var idx, len = _.size(m);
 
       switch (mode) {
       case 'properties':

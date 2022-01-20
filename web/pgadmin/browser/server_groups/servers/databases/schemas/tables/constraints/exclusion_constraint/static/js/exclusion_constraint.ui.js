@@ -325,11 +325,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       deps: ['condeferrable'],
       disabled: function(state) {
         // Disable if condeferred is false or unselected.
-        if(state.condeferrable) {
-          return false;
-        } else {
-          return true;
-        }
+        return !state.condeferrable;
       },
       readonly: obj.isReadonly,
       depChange: (state)=>{

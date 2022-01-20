@@ -220,7 +220,7 @@ var Notifier = {
     }
     this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));
   },
-  alert: (title, text, okLabel=gettext('OK'), onOkClick)=>{
+  alert: (title, text, onOkClick, okLabel=gettext('OK'))=>{
     if(!modalInitialized) {
       initializeModalProvider();
     }

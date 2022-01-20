@@ -333,10 +333,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         :return: True or False based on condition
         """
         # check whether the table is partition or not, then check conislocal
-        if 'relispartition' in data and data['relispartition'] is True:
-            if 'conislocal' in constraint \
-                    and constraint['conislocal'] is False:
-                return True
+        if 'relispartition' in data and data['relispartition'] is True and \
+                'conislocal' in constraint and \
+                constraint['conislocal'] is False:
+            return True
         return False
 
     def get_table_dependents(self, tid):

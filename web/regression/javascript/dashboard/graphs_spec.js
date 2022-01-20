@@ -3,8 +3,7 @@ import React from 'react';
 import {mount} from 'enzyme';
 import '../helper/enzyme.helper';
 
-import Graphs, {GraphsWrapper} from '../../../pgadmin/dashboard/static/js/Graphs';
-import {X_AXIS_LENGTH, POINT_SIZE, transformData, legendCallback,
+import Graphs, {GraphsWrapper, X_AXIS_LENGTH, POINT_SIZE, transformData, legendCallback,
   getStatsUrl, statsReducer} from '../../../pgadmin/dashboard/static/js/Graphs';
 
 describe('Graphs.js', ()=>{

@@ -11,8 +11,8 @@ import React, { useCallback } from 'react';
 import _ from 'lodash';
 
 import { FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor,
-  FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, FormNote, FormInputDateTimePicker, PlainString } from '../components/FormComponents';
-import { InputSelect, InputText, InputCheckbox, InputDateTimePicker } from '../components/FormComponents';
+  FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, FormNote, FormInputDateTimePicker, PlainString,
+  InputSelect, InputText, InputCheckbox, InputDateTimePicker } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
 import PropTypes from 'prop-types';

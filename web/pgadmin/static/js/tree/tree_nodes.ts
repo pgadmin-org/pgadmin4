@@ -14,7 +14,7 @@ import _ from 'underscore';
 import { FileType } from 'react-aspen'
 import { findInTree } from './tree';
 
-import { dirname, unix } from 'path-fx';
+import { unix } from 'path-fx';
 
 export class ManageTreeNodes {
   constructor(fs) {
@@ -115,17 +115,17 @@ export class ManageTreeNodes {
         }
       }
 
-      async function jsonData(url) {
-        let res = await fetch(url, {
+      async function jsonData(fetch_url) {
+        let result = await fetch(fetch_url, {
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'X-pgA-CSRFToken': pgAdmin.csrf_token
           },
         });
 
-        if (res.status == 200) {
+        if (result.status == 200) {
           try {
-            let json = await res.json();
+            let json = await result.json();
             return json.data;
           } catch (e) {
             console.warn(e);
@@ -146,7 +146,7 @@ export class ManageTreeNodes {
         }
       }
 
-      let d = await fill(treeData);
+      await fill(treeData);
       if (node.children.length > 0) res(node.children);
       else res(null);
 

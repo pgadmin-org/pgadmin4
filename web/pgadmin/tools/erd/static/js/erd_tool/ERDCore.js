@@ -10,8 +10,7 @@
 /*
  * The ERDCore is the middleware between the canvas engine and the UI DOM.
  */
-import createEngine from '@projectstorm/react-diagrams';
-import {DagreEngine, PathFindingLinkFactory, PortModelAlignment} from '@projectstorm/react-diagrams';
+import createEngine, {DagreEngine, PathFindingLinkFactory, PortModelAlignment} from '@projectstorm/react-diagrams';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 

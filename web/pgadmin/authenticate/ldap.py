@@ -29,6 +29,9 @@ from pgadmin.utils.constants import LDAP
 ERROR_SEARCHING_LDAP_DIRECTORY = gettext(
     "Error searching the LDAP directory: {}")
 
+ERROR_CONNECTING_LDAP_SERVER = gettext(
+    "Error connecting to the LDAP server: {}\n")
+
 
 class LDAPAuthentication(BaseAuthentication):
     """Ldap Authentication Class"""
@@ -122,18 +125,16 @@ class LDAPAuthentication(BaseAuthentication):
 
         except LDAPSocketOpenError as e:
             current_app.logger.exception(
-                "Error connecting to the LDAP server: {}\n".format(e))
-            return False, gettext("Error connecting to the LDAP server: {}\n"
-                                  ).format(e.args[0])
+                ERROR_CONNECTING_LDAP_SERVER.format(e))
+            return False, ERROR_CONNECTING_LDAP_SERVER.format(e.args[0])
         except LDAPBindError as e:
             current_app.logger.exception(
                 "Error binding to the LDAP server.")
             return False, gettext("Error binding to the LDAP server.")
         except Exception as e:
             current_app.logger.exception(
-                "Error connecting to the LDAP server: {}\n".format(e))
-            return False, gettext("Error connecting to the LDAP server: {}\n"
-                                  ).format(e.args[0])
+                ERROR_CONNECTING_LDAP_SERVER.format(e))
+            return False, ERROR_CONNECTING_LDAP_SERVER.format(e.args[0])
 
         # Enable TLS if STARTTLS is configured
         if self.start_tls:

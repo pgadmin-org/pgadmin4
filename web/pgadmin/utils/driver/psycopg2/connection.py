@@ -569,18 +569,17 @@ WHERE db.datname = current_database()""")
         FROM
             pg_catalog.pg_stat_gssapi
         WHERE pid = pg_backend_pid()""")
-                    if status is None:
-                        if cur.rowcount > 0:
-                            res_enc = cur.fetchmany(1)[0]
-                            manager.db_info[res['did']]['gss_authenticated'] =\
-                                res_enc['gss_authenticated']
-                            manager.db_info[res['did']]['gss_encrypted'] = \
-                                res_enc['encrypted']
+                    if status is None and cur.rowcount > 0:
+                        res_enc = cur.fetchmany(1)[0]
+                        manager.db_info[res['did']]['gss_authenticated'] =\
+                            res_enc['gss_authenticated']
+                        manager.db_info[res['did']]['gss_encrypted'] = \
+                            res_enc['encrypted']
 
-                            if len(manager.db_info) == 1:
-                                manager.gss_authenticated = \
-                                    res_enc['gss_authenticated']
-                                manager.gss_encrypted = res_enc['encrypted']
+                        if len(manager.db_info) == 1:
+                            manager.gss_authenticated = \
+                                res_enc['gss_authenticated']
+                            manager.gss_encrypted = res_enc['encrypted']
 
         self._set_user_info(cur, manager, **kwargs)
 
