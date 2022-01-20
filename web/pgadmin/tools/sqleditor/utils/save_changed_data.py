@@ -233,9 +233,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
         })
 
         if is_savepoint:
-            sql = 'ROLLBACK TO SAVEPOINT save_data;'
-            msg = 'A ROLLBACK was done for the save operation only. ' \
-                  'The active transaction is not affected.'
+            sql , msg  = 'ROLLBACK TO SAVEPOINT save_data;', 
+                           'A ROLLBACK was done for the save operation only. The active transaction is not affected.'
         else:
             sql = 'ROLLBACK;'
             msg = 'A ROLLBACK was done for the save transaction.'
