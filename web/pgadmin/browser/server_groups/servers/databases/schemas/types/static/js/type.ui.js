@@ -1269,7 +1269,7 @@ class DataTypeSchema extends BaseUISchema {
 }
 
 export default class TypeSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getCompositeSchema, getRangeSchema, getExternalSchema, getDataTypeSchema, fieldOptions = {}, initValues={}) {
+  constructor(getPrivilegeRoleSchema, compositeSchema, rangeSchema, externalSchema, dataTypeSchema, fieldOptions = {}, initValues={}) {
     super({
       name: null,
       oid: undefined,
@@ -1287,10 +1287,10 @@ export default class TypeSchema extends BaseUISchema {
       ...fieldOptions
     };
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
-    this.compositeSchema = getCompositeSchema(); // create only once the composite schema to avoid initializing the current (i.e. top)
-    this.getRangeSchema = getRangeSchema;
-    this.getExternalSchema = getExternalSchema;
-    this.getDataTypeSchema = getDataTypeSchema;
+    this.compositeSchema = compositeSchema(); // create only once the composite schema to avoid initializing the current (i.e. top)
+    this.getRangeSchema = rangeSchema;
+    this.getExternalSchema = externalSchema;
+    this.getDataTypeSchema = dataTypeSchema;
     this.nodeInfo = this.fieldOptions.node_info;
   }
 

@@ -582,9 +582,9 @@ define([
               url: baseUrl,
               method: 'GET',
             })
-              .done(function(res) {
+              .done(function(result) {
 
-                var data = res.data;
+                var data = result.data;
 
                 var url = url_for('debugger.direct', {
                   'trans_id': trans_id,

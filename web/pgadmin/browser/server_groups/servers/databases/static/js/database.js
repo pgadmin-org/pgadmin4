@@ -424,10 +424,10 @@ define('pgadmin.node.database', [
                 function() {
                   connect_to_database(_model, _data, _tree, _item, _wasConnected);
                 },
-                function(error) {
+                function(fun_error) {
                   tree.setInode(_item);
                   tree.addIcon(_item, {icon: 'icon-database-not-connected'});
-                  Notify.pgNotifier(error, xhr, gettext('Connect  to database.'));
+                  Notify.pgNotifier(fun_error, xhr, gettext('Connect  to database.'));
                 }
               );
             } else {

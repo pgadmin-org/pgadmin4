@@ -331,7 +331,7 @@ export function getRestoreMiscellaneousSchema(fieldOptions) {
 //Restore Schema
 export default class RestoreSchema extends BaseUISchema {
 
-  constructor(getRestoreSectionSchema, getRestoreTypeObjSchema, getRestoreSaveOptSchema, getRestoreQueryOptionSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null) {
+  constructor(restoreSectionSchema, restoreTypeObjSchema, restoreSaveOptSchema, restoreQueryOptionSchema, restoreDisableOptionSchema, restoreMiscellaneousSchema, fieldOptions = {}, treeNodeInfo={}, pgBrowser=null) {
     super({
       custom: false,
       file: undefined,
@@ -355,12 +355,12 @@ export default class RestoreSchema extends BaseUISchema {
       ...fieldOptions,
     };
 
-    this.getSectionSchema = getRestoreSectionSchema;
-    this.getRestoreTypeObjSchema = getRestoreTypeObjSchema;
-    this.getRestoreSaveOptSchema = getRestoreSaveOptSchema;
-    this.getRestoreQueryOptionSchema = getRestoreQueryOptionSchema;
-    this.getRestoreDisableOptionSchema = getRestoreDisableOptionSchema;
-    this.getRestoreMiscellaneousSchema = getRestoreMiscellaneousSchema;
+    this.getSectionSchema = restoreSectionSchema;
+    this.getRestoreTypeObjSchema = restoreTypeObjSchema;
+    this.getRestoreSaveOptSchema = restoreSaveOptSchema;
+    this.getRestoreQueryOptionSchema = restoreQueryOptionSchema;
+    this.getRestoreDisableOptionSchema = restoreDisableOptionSchema;
+    this.getRestoreMiscellaneousSchema = restoreMiscellaneousSchema;
     this.treeNodeInfo = treeNodeInfo;
     this.pgBrowser = pgBrowser;
   }

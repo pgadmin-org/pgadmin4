@@ -831,7 +831,6 @@ define('pgadmin.node.server', [
               tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
             }
           }
-          return;
         }).always(function(){
           data.is_connecting = false;
         });

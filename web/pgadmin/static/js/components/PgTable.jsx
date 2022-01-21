@@ -171,9 +171,9 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
           return [...CLOUMNS];
         }
       });
-      hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {
+      hooks.useInstanceBeforeDimensions.push(({ tmpHeaderGroups }) => {
         // fix the parent group of the selection button to not be resizable
-        const selectionGroupHeader = headerGroups[0].headers[0];
+        const selectionGroupHeader = tmpHeaderGroups[0].headers[0];
         selectionGroupHeader.resizable = false;
       });
     }

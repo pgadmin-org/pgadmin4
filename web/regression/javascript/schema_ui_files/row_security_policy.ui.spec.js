@@ -14,7 +14,6 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-//import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import RowSecurityPolicySchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui';
 
 

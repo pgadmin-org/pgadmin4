@@ -76,7 +76,7 @@ export function getVacuumSchema(fieldOptions) {
 //Maintenance Schema
 export default class MaintenanceSchema extends BaseUISchema {
 
-  constructor(getVacuumSchema, fieldOptions = {}) {
+  constructor(vacuumSchema, fieldOptions = {}) {
     super({
       op: 'VACUUM',
       verbose: true,
@@ -90,7 +90,7 @@ export default class MaintenanceSchema extends BaseUISchema {
       ...fieldOptions,
     };
 
-    this.getVacuumSchema = getVacuumSchema;
+    this.getVacuumSchema = vacuumSchema;
     this.nodeInfo = fieldOptions.nodeInfo;
   }
 

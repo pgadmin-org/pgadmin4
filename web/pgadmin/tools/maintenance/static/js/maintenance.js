@@ -179,7 +179,7 @@ define([
             panel.focus();
 
             let urlShortcut = 'maintenance.create_job',
-              baseUrl =  url_for(urlShortcut, {
+              jobUrl =  url_for(urlShortcut, {
                 'sid': treeInfo.server._id,
                 'did': treeInfo.database._id
               });
@@ -191,7 +191,7 @@ define([
               });
 
             getUtilityView(
-              schema, treeInfo, 'select', 'dialog', j[0], panel, that.saveCallBack, extraData, 'OK', baseUrl, sqlHelpUrl, helpUrl);
+              schema, treeInfo, 'select', 'dialog', j[0], panel, that.saveCallBack, extraData, 'OK', jobUrl, sqlHelpUrl, helpUrl);
           }
         })
         .catch(function() {

@@ -381,7 +381,7 @@ export function getMiscellaneousSchema(fieldOptions) {
 }
 
 export default class BackupSchema extends BaseUISchema {
-  constructor(getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null, backupType='server') {
+  constructor(sectionSchema, typeObjSchema, saveOptSchema, queryOptionSchema, disabledOptionSchema, miscellaneousSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null, backupType='server') {
     super({
       file: undefined,
       format: 'custom',
@@ -399,12 +399,12 @@ export default class BackupSchema extends BaseUISchema {
     this.treeNodeInfo = treeNodeInfo;
     this.pgBrowser = pgBrowser;
     this.backupType = backupType;
-    this.getSectionSchema = getSectionSchema;
-    this.getTypeObjSchema = getTypeObjSchema;
-    this.getSaveOptSchema = getSaveOptSchema;
-    this.getQueryOptionSchema = getQueryOptionSchema;
-    this.getDisabledOptionSchema = getDisabledOptionSchema;
-    this.getMiscellaneousSchema = getMiscellaneousSchema;
+    this.getSectionSchema = sectionSchema;
+    this.getTypeObjSchema = typeObjSchema;
+    this.getSaveOptSchema = saveOptSchema;
+    this.getQueryOptionSchema = queryOptionSchema;
+    this.getDisabledOptionSchema = disabledOptionSchema;
+    this.getMiscellaneousSchema = miscellaneousSchema;
   }
 
   get idAttribute() {

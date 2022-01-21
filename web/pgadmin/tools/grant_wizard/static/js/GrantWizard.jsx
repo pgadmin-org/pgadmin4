@@ -142,7 +142,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
   }, [privileges]);
 
   React.useEffect(() => {
-    const privSchema = new PrivilegeSchema((privileges) => getNodePrivilegeRoleSchema('', nodeInfo, nodeData, privileges));
+    const privSchema = new PrivilegeSchema((privs) => getNodePrivilegeRoleSchema('', nodeInfo, nodeData, privs));
     setPrivSchemaInstance(privSchema);
     setLoaderText('Loading...');
 
@@ -288,13 +288,13 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
         selObj.push(row.values);
       });
     }
-    var privileges = new Set();
+    var privs = new Set();
     objectTypes.forEach((objType) => {
       privOptions[objType]?.acl.forEach((priv) => {
-        privileges.add(priv);
+        privs.add(priv);
       });
     });
-    setPrivileges(Array.from(privileges));
+    setPrivileges(Array.from(privs));
     setSelectedObject(selObj);
     setErrMsg(selObj.length === 0 ? gettext('Please select any database object.') : '');
   };

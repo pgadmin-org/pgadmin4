@@ -32,7 +32,6 @@ export class OwnedBySchema extends BaseUISchema {
         return t._id;
       }
     }
-    return;
   }
 
   get baseFields() {

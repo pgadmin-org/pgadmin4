@@ -25,7 +25,6 @@ describe('ExecuteQuery', () => {
   const startTime = new Date(2018, 1, 29, 12, 15, 52);
   beforeEach(() => {
     networkMock = new MockAdapter(axios);
-    // jasmine.addMatchers({jQuerytoHaveBeenCalledWith: jQuerytoHaveBeenCalledWith});
     userManagementMock = jasmine.createSpyObj('UserManagement', [
       'isPgaLoginRequired',
       'pgaLogin',

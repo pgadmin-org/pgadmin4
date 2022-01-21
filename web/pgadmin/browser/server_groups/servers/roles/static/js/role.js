@@ -266,14 +266,14 @@ define('pgadmin.node.role', [
               deps: ['role_op'],
               filter: function(d) {
                 // Exclude the currently selected
-                let tree = pgBrowser.tree,
-                  _i = tree.selected(),
-                  _d = _i && _i.length == 1 ? tree.itemData(_i) : undefined;
+                let ltree = pgBrowser.tree,
+                  _idx = ltree.selected(),
+                  _data = _idx && _idx.length == 1 ? ltree.itemData(_idx) : undefined;
 
-                if(!_d)
+                if(!_data)
                   return true;
 
-                return d && (d.label != _d.label);
+                return d && (d.label != _data.label);
               },
             },
             {
@@ -434,18 +434,18 @@ define('pgadmin.node.role', [
                 //Disable Okay button
                 self.__internal.buttons[2].element.disabled = true;
                 // Find current/selected node
-                var tree = pgBrowser.tree,
-                  _i = tree.selected(),
-                  _d = _i ? tree.itemData(_i) : undefined,
-                  node = _d && pgBrowser.Nodes[_d._type];
+                var ltree = pgBrowser.tree,
+                  _idx = ltree.selected(),
+                  _data = _idx ? ltree.itemData(_idx) : undefined,
+                  node = _data && pgBrowser.Nodes[_data._type];
 
-                finalUrl = obj.generate_url(_i, 'reassign' , _d, true);
-                old_role_name = _d.label;
+                finalUrl = obj.generate_url(_idx, 'reassign' , _data, true);
+                old_role_name = _data.label;
 
-                if (!_d)
+                if (!_data)
                   return;
                 // Create treeInfo
-                var treeInfo = pgBrowser.tree.getTreeNodeHierarchy(_i);
+                var treeInfo = pgBrowser.tree.getTreeNodeHierarchy(_idx);
                 // Instance of backbone model
                 var newModel = new RoleReassignObjectModel({}, {node_info: treeInfo}),
                   fields = Backform.generateViewSchema(
@@ -552,8 +552,8 @@ define('pgadmin.node.role', [
                             gettext('Role reassign/drop failed.'),
                             err.errormsg
                           );
-                        } catch (e) {
-                          console.warn(e.stack || e);
+                        } catch (ex) {
+                          console.warn(ex.stack || ex);
                         }
                       });
                     },

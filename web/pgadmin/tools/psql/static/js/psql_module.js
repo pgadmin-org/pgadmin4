@@ -214,21 +214,21 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       }
 
     },
-    getPanelUrls: function(transId, panelTitle, parentData) {
+    getPanelUrls: function(transId, panelTitle, pData) {
       let openUrl = url_for('psql.panel', {
         trans_id: transId,
       });
       const misc_preferences = pgBrowser.get_preferences_for_module('misc');
       var theme = misc_preferences.theme;
 
-      openUrl += `?sgid=${parentData.server_group._id}`
-        +`&sid=${parentData.server._id}`
-        +`&did=${parentData.database._id}`
-        +`&server_type=${parentData.server.server_type}`
+      openUrl += `?sgid=${pData.server_group._id}`
+        +`&sid=${pData.server._id}`
+        +`&did=${pData.database._id}`
+        +`&server_type=${pData.server.server_type}`
         + `&theme=${theme}`;
       let db_label = '';
-      if(parentData.database && parentData.database._id) {
-        db_label = _.escape(parentData.database._label.replace('\\', '\\\\'));
+      if(pData.database && pData.database._id) {
+        db_label = _.escape(pData.database._label.replace('\\', '\\\\'));
         db_label = db_label.replace('\'', '\'');
         db_label = db_label.replace('"', '\"');
         openUrl += `&db=${db_label}`;

@@ -14,8 +14,6 @@ import * as SqlEditorUtils from 'sources/sqleditor_utils';
 import pgWindow from 'sources/window';
 import Notify from '../../../static/js/helpers/Notifier';
 
-//var modifyAnimation = require('sources/modify_animation');
-
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
 /* Add cache related methods and properties */

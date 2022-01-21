@@ -303,12 +303,12 @@ export default function FormView({
             readonly={readonly}
             disabled={disabled}
             visible={visible}
-            onChange={(value)=>{
+            onChange={(changeValue)=>{
               /* Get the changes on dependent fields as well */
               dataDispatch({
                 type: SCHEMA_STATE_ACTIONS.SET_VALUE,
                 path: accessPath.concat(id),
-                value: value,
+                value: changeValue,
               });
             }}
             hasError={hasError}

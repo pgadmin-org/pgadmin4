@@ -1205,7 +1205,6 @@ define([
           });
 
         }
-      //input_object.set_cap(data_cap);
       })
       .fail(function() {
         $('.storage_dialog #uploader .input-path').prop('disabled', false);
@@ -1448,7 +1447,6 @@ define([
           }
           // Save it in preference
           save_show_hidden_file_option(tmp_data['is_checked'], pgAdmin.FileUtils.transId);
-          return;
         };
       }
 
@@ -1635,14 +1633,12 @@ define([
                   if (config.options.dialog_type == 'create_file') {
                     var status = checkPermission(path);
                     if (status) {
-                      //$('.file_manager').trigger('enter-key');
                       $('.file_manager_ok').trigger('click');
                     }
                   } else if (config.options.dialog_type == 'select_file') {
                     var file_status = getFileInfo(path);
                     if (file_status) {
                       $('.file_manager_ok').trigger('click');
-                      //$('.file_manager').trigger('enter-key');
                     }
                   }
                 }

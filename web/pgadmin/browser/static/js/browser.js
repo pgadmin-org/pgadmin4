@@ -2031,7 +2031,7 @@ define('pgadmin.browser', [
             null, 'nodes', childDummyInfo, true, childTreeInfo
           );
 
-          var _node = _node || arguments[1];
+          _node = _node || arguments[1];
 
           $.ajax({
             url: childNodeUrl,

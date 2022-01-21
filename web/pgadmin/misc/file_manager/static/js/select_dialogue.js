@@ -142,9 +142,7 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
       Alertify.pgDialogBuild.apply(this);
     },
     hooks: {
-      onshow: function() {
-        //        $(this.elements.body).addClass('pgadmin-storage-body');
-      },
+      onshow: function() {/* This is intentional (SonarQube) */},
     },
   };
 });

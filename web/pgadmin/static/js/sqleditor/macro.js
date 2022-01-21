@@ -251,7 +251,6 @@ let MacroDialog = {
             e.cancel = true;
             pgAdmin.Browser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
               null, null);
-            return;
           } else if (e.button['data-btn-name'] === 'ok') {
             e.cancel = true; // Do not close dialog
 

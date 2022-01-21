@@ -46,7 +46,7 @@ export function getMiscellaneousSchema() {
 }
 
 export default class BackupGlobalSchema extends BaseUISchema {
-  constructor(getMiscellaneousSchema, fieldOptions = {}) {
+  constructor(miscellaneousSchema, fieldOptions = {}) {
     super({
       id: null,
       verbose: true,
@@ -57,7 +57,7 @@ export default class BackupGlobalSchema extends BaseUISchema {
       ...fieldOptions,
     };
 
-    this.getMiscellaneousSchema = getMiscellaneousSchema;
+    this.getMiscellaneousSchema = miscellaneousSchema;
   }
 
   get idAttribute() {

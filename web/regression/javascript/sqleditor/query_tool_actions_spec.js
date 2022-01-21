@@ -62,7 +62,6 @@ describe('queryToolActions', () => {
       it('calls the execute function', () => {
         queryToolActions.explainAnalyze(sqlEditorController);
 
-        // let explainAnalyzeQuery = 'EXPLAIN (FORMAT JSON, ANALYZE ON, VERBOSE OFF, COSTS OFF, BUFFERS OFF, TIMING OFF) ';
         const explainObject = {
           format: 'json',
           analyze: true,

@@ -73,7 +73,6 @@ export default class ForeignTableSchema extends BaseUISchema {
         return t.value;
       }
     }
-    return;
   }
 
 
@@ -133,9 +132,9 @@ export default class ForeignTableSchema extends BaseUISchema {
 
             if(tabColsResponse) {
               tabColsResponse.then((res)=>{
-                resolve((state)=>{
+                resolve((tmpstate)=>{
                   let finalCols = res.map((col)=>obj.columnsObj.getNewData(col));
-                  finalCols = [...state.columns, ...finalCols];
+                  finalCols = [...tmpstate.columns, ...finalCols];
                   return {
                     adding_inherit_cols: false,
                     columns: finalCols,
@@ -156,9 +155,9 @@ export default class ForeignTableSchema extends BaseUISchema {
               removeOid = this.getTableOid(tabName);
             }
             if(removeOid) {
-              resolve((state)=>{
-                let finalCols = state.columns;
-                _.remove(state.columns, (col)=>col.inheritedid==removeOid);
+              resolve((tmpstate)=>{
+                let finalCols = tmpstate.columns;
+                _.remove(tmpstate.columns, (col)=>col.inheritedid==removeOid);
                 return {
                   adding_inherit_cols: false,
                   columns: finalCols

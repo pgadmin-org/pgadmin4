@@ -136,7 +136,7 @@ describe('IndexSchema', ()=>{
 
       columnSchemaObj.op_class_types = [];
       options.push({label: '', value: ''});
-      status = columnSchemaObj.setOpClassTypes(options);
+      columnSchemaObj.setOpClassTypes(options);
       expect(columnSchemaObj.op_class_types.length).toBe(1);
     });
   });

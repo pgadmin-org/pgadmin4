@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-// import TypeSchema from './type.ui';
 import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import TypeSchema, { getCompositeSchema, getRangeSchema, getExternalSchema, getDataTypeSchema } from './type.ui';

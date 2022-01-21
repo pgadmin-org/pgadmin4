@@ -51,8 +51,8 @@ export default function CheckBoxTree({treeData, ...props}) {
         nodes={treeData}
         checked={checked}
         expanded={expanded}
-        onCheck={checked => setChecked(checked)}
-        onExpand={expanded => setExpanded(expanded)}
+        onCheck={checkedVal => setChecked(checkedVal)}
+        onExpand={expandedVal => setExpanded(expandedVal)}
         showNodeIcon={false}
         icons={{
           check: <CheckBoxIcon className={classes.checked}/>,

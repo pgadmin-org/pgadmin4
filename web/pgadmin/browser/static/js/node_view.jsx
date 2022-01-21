@@ -96,21 +96,21 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
   const onHelp = (isSqlHelp=false, isNew=false)=>{
     if(isSqlHelp) {
       let server = treeNodeInfo.server;
-      let url = pgAdmin.Browser.utils.pg_help_path;
+      let helpUrl = pgAdmin.Browser.utils.pg_help_path;
       let fullUrl = '';
 
       if (server.server_type == 'ppas' && nodeObj.epasHelp) {
         fullUrl = getEPASHelpUrl(server.version);
       } else {
         if (nodeObj.sqlCreateHelp == '' && nodeObj.sqlAlterHelp != '') {
-          fullUrl = getHelpUrl(url, nodeObj.sqlAlterHelp, server.version);
+          fullUrl = getHelpUrl(helpUrl, nodeObj.sqlAlterHelp, server.version);
         } else if (nodeObj.sqlCreateHelp != '' && nodeObj.sqlAlterHelp == '') {
-          fullUrl = getHelpUrl(url, nodeObj.sqlCreateHelp, server.version);
+          fullUrl = getHelpUrl(helpUrl, nodeObj.sqlCreateHelp, server.version);
         } else {
           if (isNew) {
-            fullUrl = getHelpUrl(url, nodeObj.sqlCreateHelp, server.version);
+            fullUrl = getHelpUrl(helpUrl, nodeObj.sqlCreateHelp, server.version);
           } else {
-            fullUrl = getHelpUrl(url, nodeObj.sqlAlterHelp, server.version);
+            fullUrl = getHelpUrl(helpUrl, nodeObj.sqlAlterHelp, server.version);
           }
         }
       }

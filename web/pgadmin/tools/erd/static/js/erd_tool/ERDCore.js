@@ -311,8 +311,8 @@ export default class ERDCore {
     let sourceNode = tableNodesDict[onetomanyData.referenced_table_uid];
     let targetNode = tableNodesDict[onetomanyData.local_table_uid];
 
-    fkColumn.local_column = _.find(targetNode.getColumns(), (col)=>col.attnum==onetomanyData.local_column_attnum).name;
-    fkColumn.referenced = _.find(sourceNode.getColumns(), (col)=>col.attnum==onetomanyData.referenced_column_attnum).name;
+    fkColumn.local_column = _.find(targetNode.getColumns(), (colm)=>colm.attnum==onetomanyData.local_column_attnum).name;
+    fkColumn.referenced = _.find(sourceNode.getColumns(), (colm)=>colm.attnum==onetomanyData.referenced_column_attnum).name;
     fkColumn.references = onetomanyData.referenced_table_uid;
     fkColumn.references_table_name = sourceNode.getData().name;
 

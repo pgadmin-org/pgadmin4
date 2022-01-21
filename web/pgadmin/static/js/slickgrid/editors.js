@@ -864,7 +864,6 @@ import Notify from '../../../static/js/helpers/Notifier';
     };
 
     this.isValueChanged = function() {
-      // var select_value = this.serializeValue();
       var select_value = $select.data('checked');
       return (!(select_value === 2 && (defaultValue == null || defaultValue == undefined))) &&
         (select_value !== defaultValue);

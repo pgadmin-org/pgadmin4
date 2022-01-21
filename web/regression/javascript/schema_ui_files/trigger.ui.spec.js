@@ -14,7 +14,6 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-//import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import TriggerSchema, { EventSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui';
 
 describe('TriggerSchema', ()=>{

@@ -615,9 +615,7 @@ define('pgadmin.preferences', [
             Alertify.pgDialogBuild.apply(this);
           },
           hooks: {
-            onshow: function() {
-              // $(this.elements.body).addClass('pgadmin-preference-body');
-            },
+            onshow: function() {/* This is intentional (SonarQube) */},
           },
         };
       });

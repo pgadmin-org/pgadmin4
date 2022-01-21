@@ -147,7 +147,6 @@ define([
               gettext('Utility not found'),
               res.data.errormsg
             );
-            return;
           }else{
             // Open the Alertify dialog for the import/export module
             pgBrowser.Node.registerUtilityPanel();
@@ -179,7 +178,6 @@ define([
             gettext('Utility not found'),
             gettext('Failed to fetch Utility information')
           );
-          return;
         });
     },
   };

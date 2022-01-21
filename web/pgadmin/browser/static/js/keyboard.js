@@ -244,7 +244,6 @@ _.extend(pgBrowser.keyboardNavigation, {
     const tree = this.getTreeDetails();
 
     $('#tree').trigger('focus');
-    // tree.t.focus(tree.i);
     tree.t.select(tree.i);
   },
   bindSubMenuQueryTool: function() {

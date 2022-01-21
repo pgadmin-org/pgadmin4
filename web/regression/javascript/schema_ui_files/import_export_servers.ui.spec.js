@@ -52,7 +52,7 @@ describe('ImportExportServers', () => {
   });
 
   it('export', () => {
-    let schemaObj = new ImportExportSelectionSchema(
+    schemaObj = new ImportExportSelectionSchema(
       {imp_exp: 'e', filename: 'test.json'});
     mount(<SchemaView
       formType='dialog'

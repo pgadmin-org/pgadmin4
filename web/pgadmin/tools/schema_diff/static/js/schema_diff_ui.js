@@ -860,7 +860,7 @@ export default class SchemaDiffUI {
           if (index === -1) self.sel_filters.push(filter);
         } else {
           $(filter_class).addClass('visibility-hidden');
-          if(index !== -1 ) delete self.sel_filters[index];
+          if(index !== -1 ) self.sel_filters.splice(index, 1);
         }
       }
     });

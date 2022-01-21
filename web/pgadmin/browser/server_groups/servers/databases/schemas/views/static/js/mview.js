@@ -310,7 +310,6 @@ define('pgadmin.node.mview', [
             gettext('Utility not found'),
             gettext('Failed to fetch Utility information')
           );
-          return;
         });
       },
 

@@ -192,7 +192,7 @@ let NewConnectionDialog = {
               self.showNewConnectionProgress[0]
             ).addClass('d-none');
           },
-          get_title: function(qt_title_placeholder, selected_database_name, newConnCollectionModel, response) {
+          get_title: function(qt_title_placeholder, selected_database_name, newConnCollectionModel, tmpResponse) {
             qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%DATABASE%'), selected_database_name);
             if(newConnCollectionModel['role']) {
               qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), newConnCollectionModel['role']);
@@ -200,7 +200,7 @@ let NewConnectionDialog = {
               qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%USERNAME%'), newConnCollectionModel['user']);
             }
 
-            qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%SERVER%'), response.server_name);
+            qt_title_placeholder = qt_title_placeholder.replace(new RegExp('%SERVER%'), tmpResponse.server_name);
             return qt_title_placeholder;
           },
           callback: function(e) {
@@ -209,7 +209,6 @@ let NewConnectionDialog = {
               e.cancel = true;
               pgAdmin.Browser.showHelp(e.button.element.name, e.button.element.getAttribute('url'),
                 null, null);
-              return;
             } else if (e.button['data-btn-name'] === 'ok') {
               e.cancel = true; // Do not close dialog
               let newConnCollectionModel = this.newConnCollectionModel.toJSON();

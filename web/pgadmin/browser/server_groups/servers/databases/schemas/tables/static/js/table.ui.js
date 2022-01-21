@@ -387,7 +387,6 @@ export default class TableSchema extends BaseUISchema {
         return t.tid;
       }
     }
-    return;
   }
 
   // Check for column grid when to Add
@@ -535,14 +534,14 @@ export default class TableSchema extends BaseUISchema {
 
           if(tabColsResponse) {
             tabColsResponse.then((res)=>{
-              resolve((state)=>{
+              resolve((tmpstate)=>{
                 let finalCols = res.map((col)=>obj.columnsSchema.getNewData(col));
                 let currentSelectedCols = [];
-                if (!_.isEmpty(state.columns)){
-                  currentSelectedCols = state.columns;
+                if (!_.isEmpty(tmpstate.columns)){
+                  currentSelectedCols = tmpstate.columns;
                 }
                 let colNameList = [];
-                state.columns.forEach((col=>{
+                tmpstate.columns.forEach((col=>{
                   colNameList.push(col.name);
                 }));
                 for (let col of Object.values(finalCols)) {
@@ -576,9 +575,9 @@ export default class TableSchema extends BaseUISchema {
             removeOid = this.getTableOid(tabName);
           }
           if(removeOid) {
-            resolve((state)=>{
-              let finalCols = state.columns;
-              _.remove(state.columns, (col)=>col.inheritedid==removeOid);
+            resolve((tmpstate)=>{
+              let finalCols = tmpstate.columns;
+              _.remove(tmpstate.columns, (col)=>col.inheritedid==removeOid);
               obj.changeColumnOptions(finalCols);
               return {
                 adding_inherit_cols: false,

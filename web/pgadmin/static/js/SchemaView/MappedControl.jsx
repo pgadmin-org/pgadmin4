@@ -23,15 +23,15 @@ import { SelectRefresh} from '../components/SelectRefresh';
 function MappedFormControlBase({type, value, id, onChange, className, visible, inputRef, noLabel, ...props}) {
   const name = id;
   const onTextChange = useCallback((e) => {
-    let value = e;
+    let val = e;
     if(e && e.target) {
-      value = e.target.value;
+      val = e.target.value;
     }
-    onChange && onChange(value);
+    onChange && onChange(val);
   }, []);
 
-  const onSqlChange = useCallback((value) => {
-    onChange && onChange(value);
+  const onSqlChange = useCallback((changedValue) => {
+    onChange && onChange(changedValue);
   }, []);
 
   if(!visible) {
@@ -103,12 +103,12 @@ MappedFormControlBase.propTypes = {
 function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, visible, reRenderRow,...props}) {
   const name = id;
   const onTextChange = useCallback((e) => {
-    let value = e;
+    let val = e;
     if(e && e.target) {
-      value = e.target.value;
+      val = e.target.value;
     }
 
-    onCellChange && onCellChange(value);
+    onCellChange && onCellChange(val);
   }, []);
 
   /* Some grid cells are based on options selected in other cells.

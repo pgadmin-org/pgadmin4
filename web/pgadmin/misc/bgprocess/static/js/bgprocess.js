@@ -373,8 +373,6 @@ define('misc.bgprocess', [
               ev = ev || window.event;
               ev.cancelBubble = true;
               ev.stopPropagation();
-
-              return;
             });
 
             // On Click event to stop the process.

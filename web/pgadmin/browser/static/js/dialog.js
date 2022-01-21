@@ -22,8 +22,8 @@ function url_dialog(_title, _url, _help_filename, _width, _height) {
 
   alertify.dialog(dlgName, function factory() {
     return {
-      main: function(_title) {
-        this.set({'title': _title});
+      main: function(_tmptitle) {
+        this.set({'title': _tmptitle});
       },
       build: function() {
         alertify.pgDialogBuild.apply(this);
@@ -95,7 +95,6 @@ function url_dialog(_title, _url, _help_filename, _width, _height) {
             e.button.element.name, e.button.element.getAttribute('url'),
             null, null
           );
-          return;
         }
       },
     };

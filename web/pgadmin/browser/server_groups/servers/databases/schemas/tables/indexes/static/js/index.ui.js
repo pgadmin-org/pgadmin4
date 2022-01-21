@@ -208,7 +208,7 @@ function inSchema(node_info) {
 }
 
 export default class IndexSchema extends BaseUISchema {
-  constructor(getColumnSchema, fieldOptions = {}, nodeData = [], initValues={}) {
+  constructor(columnSchema, fieldOptions = {}, nodeData = [], initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -230,7 +230,7 @@ export default class IndexSchema extends BaseUISchema {
     this.node_info = {
       ...nodeData.node_info
     };
-    this.getColumnSchema = getColumnSchema;
+    this.getColumnSchema = columnSchema;
   }
 
   get idAttribute() {
