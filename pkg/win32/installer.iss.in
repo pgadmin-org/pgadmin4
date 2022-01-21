@@ -10,6 +10,7 @@
 #define MyAppInvalidPath "Please provide a valid path."
 #define MyAppErrorMsgIsWin32 "You already have a 32 bit installation of pgAdmin 4. Please uninstall this before installing the 64 bit version."
 #define MyAppErrorMsgIsWin64 "You already have a 64 bit installation of pgAdmin 4. Please uninstall this before installing the 32 bit version."
+#define MinimumWindowsVer 6.2.9200
 
 [Setup]
 AppId={#MyAppName}{#MyAppVersion}
@@ -35,6 +36,7 @@ UninstallDisplayIcon={app}\runtime\{#MyAppExeName}
 ArchitecturesInstallIn64BitMode={#MyAppArchitecturesMode}
 AllowNoIcons=yes
 WizardImageFile=sidebar.bmp
+MinVersion={#MinimumWindowsVer}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
