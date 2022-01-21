@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #7017 <https://redmine.postgresql.org/issues/7017>`_ -  Port Import/Export dialog to React.
 
 Bug fixes
 *********

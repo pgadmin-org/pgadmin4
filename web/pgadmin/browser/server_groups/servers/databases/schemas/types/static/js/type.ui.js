@@ -1312,7 +1312,7 @@ export default class TypeSchema extends BaseUISchema {
   }
 
   schemaCheck(state) {
-    if(this.fieldOptions.node_info && this.fieldOptions.node_info.indexOf('schema') >= 0)
+    if(this.fieldOptions.node_info && 'schema' in this.fieldOptions.node_info)
     {
       if(!state)
         return true;
