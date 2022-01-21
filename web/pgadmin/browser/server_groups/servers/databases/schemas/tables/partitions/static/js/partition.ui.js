@@ -54,13 +54,13 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
     ()=>{
       return getNodeAjaxOptions('get_attach_tables', partNode, treeNodeInfo, itemNodeData, {
         useCache:false,
-        customGenerateUrl: (treeNodeInfo, actionType)=>{
+        customGenerateUrl: (trNodeInfo, actionType)=>{
           return pgadminUtils.sprintf('table/%s/%s/%s/%s/%s/%s',
-            encodeURIComponent(actionType), encodeURIComponent(treeNodeInfo['server_group']._id),
-            encodeURIComponent(treeNodeInfo['server']._id),
-            encodeURIComponent(treeNodeInfo['database']._id),
-            encodeURIComponent(treeNodeInfo['partition'].schema_id),
-            encodeURIComponent(treeNodeInfo['partition']._id)
+            encodeURIComponent(actionType), encodeURIComponent(trNodeInfo['server_group']._id),
+            encodeURIComponent(trNodeInfo['server']._id),
+            encodeURIComponent(trNodeInfo['database']._id),
+            encodeURIComponent(trNodeInfo['partition'].schema_id),
+            encodeURIComponent(trNodeInfo['partition']._id)
           );
         }});
     },
