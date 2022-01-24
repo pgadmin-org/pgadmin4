@@ -12,6 +12,25 @@ import getApiInstance from '../../../static/js/api_instance';
 import {generate_url} from 'sources/browser/generate_url';
 import pgAdmin from 'sources/pgadmin';
 
+/* It generates the URL based on collection node selected */
+export function generateCollectionURL(item, type) {
+  var opURL = {
+    'properties': 'obj',
+    'children': 'nodes',
+    'drop': 'obj',
+  };
+  let nodeObj= this;
+  var collectionPickFunction = function (treeInfoValue, treeInfoKey) {
+    return (treeInfoKey != nodeObj.type);
+  };
+  var treeInfo = pgAdmin.Browser.tree.getTreeNodeHierarchy(item);
+  var actionType = type in opURL ? opURL[type] : type;
+  return generate_url(
+    pgAdmin.Browser.URL, treeInfo, actionType, nodeObj.node,
+    collectionPickFunction
+  );
+}
+
 /* It generates the URL based on tree node selected */
 export function generateNodeUrl(treeNodeInfo, actionType, itemNodeData, withId, jumpAfterNode) {
   let opURL = {

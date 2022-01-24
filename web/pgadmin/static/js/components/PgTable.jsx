@@ -30,14 +30,23 @@ const useStyles = makeStyles((theme) => ({
     height: '100% !important',
     width: '100% !important',
   },
+  fixedSizeList: {
+    position: 'relative',
+    direction: 'ltr',
+    overflowX: 'hidden !important',
+    overflow: 'overlay !important'
+  },
   table: {
+    flexGrow:1,
+    minHeight:0,
     borderSpacing: 0,
     width: '100%',
     overflow: 'hidden',
-    height: '100%',
-    backgroundColor: theme.otherVars.tableBg,
-    ...theme.mixins.panelBorder,
-    //backgroundColor: theme.palette.background.default,
+    borderRadius: theme.shape.borderRadius,
+  },
+  extraTable:{
+    backgroundColor: theme.palette.grey[400],
+    flexGrow:1,
   },
 
   tableCell: {
@@ -49,6 +58,10 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+    backgroundColor: theme.otherVars.tableBg,
+    // ...theme.mixins.panelBorder.top,
+    ...theme.mixins.panelBorder.left,
+
   },
   selectCell: {
     textAlign: 'center'
@@ -60,8 +73,11 @@ const useStyles = makeStyles((theme) => ({
     overflowY: 'auto',
     overflowX: 'hidden',
     alignContent: 'center',
+    backgroundColor: theme.otherVars.tableBg,
     ...theme.mixins.panelBorder.bottom,
     ...theme.mixins.panelBorder.right,
+    ...theme.mixins.panelBorder.top,
+    ...theme.mixins.panelBorder.left,
   },
   resizer: {
     display: 'inline-block',
@@ -75,8 +91,10 @@ const useStyles = makeStyles((theme) => ({
     touchAction: 'none',
   },
   cellIcon: {
-    paddingLeft: '1.5em',
-    height: 35
+    paddingLeft: '1.8em',
+    paddingTop: '0.35em',
+    height: 35,
+    backgroundPosition: '1%',
   }
 }),
 );
@@ -171,9 +189,9 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
           return [...CLOUMNS];
         }
       });
-      hooks.useInstanceBeforeDimensions.push(({ tmpHeaderGroups }) => {
+      hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {
         // fix the parent group of the selection button to not be resizable
-        const selectionGroupHeader = tmpHeaderGroups[0].headers[0];
+        const selectionGroupHeader = headerGroups[0].headers[0];
         selectionGroupHeader.resizable = false;
       });
     }
@@ -235,15 +253,26 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
   );
   // Render the UI for your table
   return (
-    <AutoSizer className={classes.autoResizer}>
-      {({ height }) => (
+    <AutoSizer className={(props.type ==='panel' ? props.className: classes.autoResizer)}>
+      {({ height}) => (
         <div {...getTableProps()} className={classes.table}>
           <div>
-            {headerGroups.map(headerGroup => (
+            {headerGroups.map((headerGroup) => (
               <div key={''} {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                  <div key={column.id} {...column.getHeaderProps()} className={clsx(classes.tableCellHeader, column.className)}>
-                    <div {...(column.sortble ? column.getSortByToggleProps() : {})}>
+                {headerGroup.headers.map((column) => (
+                  <div
+                    key={column.id}
+                    {...column.getHeaderProps()}
+                    className={clsx(
+                      classes.tableCellHeader,
+                      column.className
+                    )}
+                  >
+                    <div
+                      {...(column.sortble
+                        ? column.getSortByToggleProps()
+                        : {})}
+                    >
                       {column.render('Header')}
                       <span>
                         {column.isSorted
@@ -252,21 +281,23 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
                             : ' 🔼'
                           : ''}
                       </span>
-                      {column.resizable &&
+                      {column.resizable && (
                         <div
                           {...column.getResizerProps()}
                           className={classes.resizer}
-                        />}
+                        />
+                      )}
                     </div>
                   </div>
                 ))}
+                {/* <span className={classes.extraTable}></span> */}
               </div>
             ))}
           </div>
 
-          <div {...getTableBodyProps()}>
-
+          <div {...getTableBodyProps()} className={classes}>
             <FixedSizeList
+              className={classes.fixedSizeList}
               height={height - 75}
               itemCount={rows.length}
               itemSize={35}
@@ -274,7 +305,6 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
             >
               {RenderRow}
             </FixedSizeList>
-
           </div>
         </div>
       )}

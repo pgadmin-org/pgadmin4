@@ -7,6 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { getPanelView, removePanelView } from './panel_view';
+
 define(
   ['underscore', 'sources/pgadmin', 'jquery', 'wcdocker'],
   function(_, pgAdmin, $) {
@@ -127,6 +129,19 @@ define(
                     myPanel.on(ev, that.handleVisibility.bind(myPanel, ev));
                   });
               }
+
+              pgBrowser.Events.on('pgadmin-browser:tree:selected', () => {
+
+                if(myPanel.isVisible()) {
+                  removePanelView($container[0]);
+                  getPanelView(
+                    pgBrowser.tree,
+                    $container[0],
+                    pgBrowser,
+                    myPanel._type
+                  );
+                }
+              });
             },
           });
         }
@@ -193,26 +208,43 @@ define(
       handleVisibility: function(eventName) {
         // Supported modules
         let type_module = {
-          'dashboard': pgAdmin.Dashboard,
-          'statistics': pgBrowser.NodeStatistics,
-          'dependencies': pgBrowser.NodeDependencies,
-          'dependents': pgBrowser.NodeDependents,
+          dashboard: pgAdmin.Dashboard,
         };
-
         let module = type_module[this._type];
-        if(_.isUndefined(module))
-          return;
+        if (_.isNull(pgBrowser.tree)) return;
 
-        if(_.isUndefined(module.toggleVisibility))
-          return;
+        let selectedPanel = pgBrowser.docker.findPanels(this._type)[0];
+        let isPanelVisible = selectedPanel.isVisible();
+        var $container = selectedPanel
+          .layout()
+          .scene()
+          .find('.pg-panel-content');
 
-        if (eventName == 'panelClosed') {
-          /* Pass the closed flag also */
-          module.toggleVisibility.call(module, false, true);
-        } else if (eventName == 'panelVisibilityChanged') {
-          module.toggleVisibility.call(module, pgBrowser.docker.findPanels(this._type)[0].isVisible(), false);
+        if (this._type === 'dashboard') {
+          if (eventName == 'panelClosed') {
+            module.toggleVisibility.call(module, false, true);
+          } else if (eventName == 'panelVisibilityChanged') {
+            module.toggleVisibility.call(
+              module,
+              pgBrowser.docker.findPanels(this._type)[0].isVisible(),
+              false
+            );
+          }
         }
-      },
+
+        if (isPanelVisible) {
+          if (eventName == 'panelClosed') {
+            removePanelView($container[0]);
+          } else if (eventName == 'panelVisibilityChanged') {
+            getPanelView(
+              pgBrowser.tree,
+              $container[0],
+              pgBrowser,
+              this._type
+            );
+          }
+        }
+      }
 
     });
 
