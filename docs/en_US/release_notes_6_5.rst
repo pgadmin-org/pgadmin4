@@ -23,5 +23,6 @@ Bug fixes
 | `Issue #7035 <https://redmine.postgresql.org/issues/7035>`_ -  Fixed an issue where connections keep open to (closed) connections on the initial connection to the database server.
 | `Issue #7085 <https://redmine.postgresql.org/issues/7085>`_ -  Ensure that Partitioned tables should be visible correctly when creating multiple partition levels.
 | `Issue #7100 <https://redmine.postgresql.org/issues/7100>`_ -  Fixed an issue where the Browser tree gets disappears when scrolling sequences.
+| `Issue #7123 <https://redmine.postgresql.org/issues/7123>`_ -  Fixed an issue where restore generates incorrect options for the schema.
 | `Issue #7127 <https://redmine.postgresql.org/issues/7127>`_ -  Added validation for Hostname in the server dialog.
 | `Issue #7135 <https://redmine.postgresql.org/issues/7135>`_ -  Enforce the minimum Windows version that the installer will run on.

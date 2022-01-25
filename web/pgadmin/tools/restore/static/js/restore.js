@@ -105,7 +105,7 @@ define('tools.restore', [
       extraData['database'] = treeInfo.database._label;
 
       if('schema' in treeInfo) {
-        extraData['schemas'] = treeInfo.schema._label;
+        extraData['schemas'] = [treeInfo.schema._label];
       }
 
       if('table' in treeInfo) {
