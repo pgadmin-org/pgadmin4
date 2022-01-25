@@ -9,19 +9,12 @@
 
 """A blueprint module implementing the storage manager functionality"""
 
-import simplejson as json
-import os
-
-from flask import url_for, Response, render_template, request, current_app
+from flask import url_for, Response, render_template
 from flask_babel import gettext as _
-from flask_security import login_required, current_user
-from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir, IS_WIN, does_utility_exist
-from pgadmin.utils.ajax import make_json_response, bad_request
+from flask_security import login_required
 
-from config import PG_DEFAULT_DRIVER
-from pgadmin.model import Server
+from pgadmin.utils import PgAdminModule
+from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'storage_manager'

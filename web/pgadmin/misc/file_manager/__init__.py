@@ -1222,7 +1222,9 @@ class Filemanager(object):
         else:
             dir_path = os.path.dirname(path)
 
-        response = send_from_directory(dir_path, name, as_attachment=True)
+        response = send_from_directory(dir_path, name,
+                                       mimetype='application/octet-stream',
+                                       as_attachment=True)
         response.headers["filename"] = name
 
         return response
