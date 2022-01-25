@@ -239,19 +239,7 @@ define('pgadmin.dashboard', [
                 $(div).html(data);
               })
               .fail(function(xhr, error) {
-                Notify.pgNotifier(
-                  error, xhr,
-                  gettext('An error occurred whilst loading the dashboard.'),
-                  function(msg) {
-                    if(msg === 'CRYPTKEY_SET') {
-                      ajaxHook();
-                    } else {
-                      $(div).html(
-                        '<div class="pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-                      );
-                    }
-                  }
-                );
+                self.onFail(xhr, error, div, ajaxHook);
               });
           };
           $(div).html(
@@ -264,6 +252,22 @@ define('pgadmin.dashboard', [
           $(dashboardPanel).data('did', -1);
         }
       }
+    },
+
+    onFail: function(xhr, error, div, ajaxHook) {
+      Notify.pgNotifier(
+        error, xhr,
+        gettext('An error occurred whilst loading the dashboard.'),
+        function(msg) {
+          if(msg === 'CRYPTKEY_SET') {
+            ajaxHook();
+          } else {
+            $(div).html(
+              '<div class="pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
+            );
+          }
+        }
+      );
     },
 
     // Handle Server Disconnect
@@ -358,19 +362,7 @@ define('pgadmin.dashboard', [
                       self.init_dashboard();
                     })
                     .fail(function(xhr, error) {
-                      Notify.pgNotifier(
-                        error, xhr,
-                        gettext('An error occurred whilst loading the dashboard.'),
-                        function(msg) {
-                          if(msg === 'CRYPTKEY_SET') {
-                            ajaxHook();
-                          } else {
-                            $(div).html(
-                              '<div class="pg-panel-message" role="alert">' + gettext('An error occurred whilst loading the dashboard.') + '</div>'
-                            );
-                          }
-                        }
-                      );
+                      self.onFail(xhr, error, div, ajaxHook);
                     });
                 };
                 $(div).html(
@@ -631,6 +623,16 @@ define('pgadmin.dashboard', [
         }
       }
     },
+
+    renderTab: function(e, tab_grid_map) {
+      let prevGrid = tab_grid_map[$(e.relatedTarget).attr('aria-controls')];
+      $(prevGrid).data('filtertext', $('#txtGridSearch').val());
+
+      let currGrid = tab_grid_map[$(e.target).attr('aria-controls')];
+      $('#txtGridSearch').val($(currGrid).data('filtertext'));
+      pgAdmin.Dashboard.render_grid_data(currGrid);
+    },
+
     reflectPreferencesServer: function() {
       var self = this;
       var $dashboardContainer = $('.dashboard-container');
@@ -895,12 +897,7 @@ define('pgadmin.dashboard', [
 
         // (Re)render the appropriate tab
         $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-          let prevGrid = tab_grid_map[$(e.relatedTarget).attr('aria-controls')];
-          $(prevGrid).data('filtertext', $('#txtGridSearch').val());
-
-          let currGrid = tab_grid_map[$(e.target).attr('aria-controls')];
-          $('#txtGridSearch').val($(currGrid).data('filtertext'));
-          pgAdmin.Dashboard.render_grid_data(currGrid);
+          self.renderTab(e, tab_grid_map);
         });
 
         $('#btn_refresh').off('click').on('click', () => {
@@ -1123,12 +1120,7 @@ define('pgadmin.dashboard', [
 
         // (Re)render the appropriate tab
         $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-          let prevGrid = tab_grid_map[$(e.relatedTarget).attr('aria-controls')];
-          $(prevGrid).data('filtertext', $('#txtGridSearch').val());
-
-          let currGrid = tab_grid_map[$(e.target).attr('aria-controls')];
-          $('#txtGridSearch').val($(currGrid).data('filtertext'));
-          pgAdmin.Dashboard.render_grid_data(currGrid);
+          self.renderTab(e, tab_grid_map);
         });
 
         $('#btn_refresh').off('click').on('click', () => {

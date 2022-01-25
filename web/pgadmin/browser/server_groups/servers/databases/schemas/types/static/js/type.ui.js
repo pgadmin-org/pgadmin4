@@ -145,6 +145,13 @@ function getDataTypeSchema(nodeObj, treeNodeInfo, itemNodeData) {
   );
 }
 
+function isVisible(state, type) {
+  if(state.typtype === type) {
+    return true;
+  }
+  return false;
+}
+
 class EnumerationSchema extends BaseUISchema {
 
   constructor() {
@@ -249,18 +256,7 @@ class RangeSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -277,18 +273,7 @@ class RangeSchema extends BaseUISchema {
             placeholder: '',
             width: '100%',
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -336,18 +321,7 @@ class RangeSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -377,18 +351,7 @@ class RangeSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -479,6 +442,33 @@ class ExternalSchema extends BaseUISchema {
     return result;
   }
 
+  filterFunctionOptions(state, options) {
+    let res = [];
+    if (state && this.isNew(state)) {
+      res = this.external_func_combo(options);
+    } else {
+      res = options;
+    }
+    return res;
+  }
+
+  getFunctionType(state) {
+    let obj = this;
+    return {
+      type: 'select',
+      options: obj.fieldOptions.externalFunctionsList,
+      optionsLoaded: (options) => { obj.fieldOptions.externalFunctionsList = options; },
+      controlProps: {
+        allowClear: true,
+        placeholder: '',
+        width: '100%',
+        filter: (options) => {
+          return obj.filterFunctionOptions(state, options);
+        }
+      }
+    };
+  }
+
   get baseFields() {
     var obj = this;
     return [{
@@ -491,50 +481,14 @@ class ExternalSchema extends BaseUISchema {
         return !obj.isNew(state);
       },
       type: (state) => {
-        return {
-          type: 'select',
-          options: obj.fieldOptions.externalFunctionsList,
-          optionsLoaded: (options) => { obj.fieldOptions.externalFunctionsList = options; },
-          controlProps: {
-            allowClear: true,
-            placeholder: '',
-            width: '100%',
-            filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                res = obj.external_func_combo(options);
-              } else {
-                res = options;
-              }
-              return res;
-            }
-          }
-        };
+        return obj.getFunctionType(state);
       },
     }, {
       id: 'typoutput', label: gettext('Output function'),
       mode: ['properties', 'create', 'edit'],
       group: gettext('Required'),
       type: (state) => {
-        return {
-          type: 'select',
-          options: obj.fieldOptions.externalFunctionsList,
-          optionsLoaded: (options) => { obj.fieldOptions.externalFunctionsList = options; },
-          controlProps: {
-            allowClear: true,
-            placeholder: '',
-            width: '100%',
-            filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                res = obj.external_func_combo(options);
-              } else {
-                res = options;
-              }
-              return res;
-            }
-          }
-        };
+        return obj.getFunctionType(state);
       },
       readonly: function (state) {
         return !obj.isNew(state);
@@ -586,13 +540,7 @@ class ExternalSchema extends BaseUISchema {
             placeholder: '',
             width: '100%',
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                res = obj.external_func_combo(options);
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.filterFunctionOptions(state, options);
             }
           }
         };
@@ -705,25 +653,7 @@ class ExternalSchema extends BaseUISchema {
       id: 'typanalyze', label: gettext('Analyze function'),
       group: gettext('Optional-1'),
       type: (state) => {
-        return {
-          type: 'select',
-          options: obj.fieldOptions.externalFunctionsList,
-          optionsLoaded: (options) => { obj.fieldOptions.externalFunctionsList = options; },
-          controlProps: {
-            allowClear: true,
-            placeholder: '',
-            width: '100%',
-            filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                res = obj.external_func_combo(options);
-              } else {
-                res = options;
-              }
-              return res;
-            }
-          }
-        };
+        return obj.getFunctionType(state);
       },
       mode: ['properties', 'create','edit'],
       disabled: () => obj.inCatalog(),
@@ -908,6 +838,14 @@ class CompositeSchema extends BaseUISchema {
     return 'oid';
   }
 
+  onTypeChange(state, changeSource) {
+    if(_.isArray(changeSource) && changeSource[2] == 'type') {
+      return {...state
+        , value: null
+      };
+    }
+  }
+
   get baseFields() {
     var obj = this;
     return [{
@@ -970,11 +908,7 @@ class CompositeSchema extends BaseUISchema {
       id: 'precision', label: gettext('Scale'), deps: ['type'],
       type: 'text', disabled: false, cell: 'int',
       depChange: (state, changeSource)=>{
-        if(_.isArray(changeSource) && changeSource[2] == 'type') {
-          return {...state
-            , value: null
-          };
-        }
+        return obj.onTypeChange(state, changeSource);
       },
       editable: (state) => {
         // We will store type from selected from combobox
@@ -1003,11 +937,7 @@ class CompositeSchema extends BaseUISchema {
     }, {
       id: 'collation', label: gettext('Collation'), type: 'text',
       depChange: (state, changeSource)=>{
-        if(_.isArray(changeSource) && changeSource[2] == 'type') {
-          return {...state
-            , value: null
-          };
-        }
+        return obj.onTypeChange(state, changeSource);
       },
       cell: ()=>({
         cell: 'select', options: obj.fieldOptions.collations,
@@ -1138,9 +1068,7 @@ class DataTypeSchema extends BaseUISchema {
       readonly: function (state) {
         return !dataTypeObj.isNew(state);
       },
-      visible: function (state) {
-        return state.typtype === 'V';
-      }
+      visible: (state) => isVisible(state, 'V'),
     },{
     // Note: There are ambiguities in the PG catalogs and docs between
     // precision and scale. In the UI, we try to follow the docs as
@@ -1155,9 +1083,7 @@ class DataTypeSchema extends BaseUISchema {
       readonly: function (state) {
         return !dataTypeObj.isNew(state);
       },
-      visible: function (state) {
-        return state.typtype === 'N';
-      },
+      visible: (state) => isVisible(state, 'N'),
       disabled: function(state) {
 
         var of_type = state.type,
@@ -1217,9 +1143,7 @@ class DataTypeSchema extends BaseUISchema {
         return !dataTypeObj.isNew(state);
       },
       cell: 'int',
-      visible: function (state) {
-        return state.typtype === 'N';
-      },
+      visible: (state) => isVisible(state, 'N'),
       disabled: function(state) {
         var of_type = state.type,
           flag = true;
@@ -1416,9 +1340,7 @@ export default class TypeSchema extends BaseUISchema {
           state.composite.splice(0, state.composite.length);
         }
       },
-      visible: (state) => {
-        return state.typtype === 'c';
-      },
+      visible: (state) => isVisible(state, 'c'),
     },
     {
       id: 'enum', label: gettext('Enumeration type'),
@@ -1437,9 +1359,7 @@ export default class TypeSchema extends BaseUISchema {
       disabled: () => obj.inCatalog(),
       deps: ['typtype'],
       uniqueCol : ['label'],
-      visible: function(state) {
-        return state.typtype === 'e';
-      },
+      visible: (state) => isVisible(state, 'e'),
     }, {
       type: 'nested-fieldset',
       group: gettext('Definition'),
@@ -1456,9 +1376,7 @@ export default class TypeSchema extends BaseUISchema {
       group: gettext('Definition'),
       label: '',
       mode: ['edit', 'create'],
-      visible: (state) => {
-        return state.typtype && state.typtype === 'r';
-      },
+      visible: (state) => isVisible(state, 'r'),
       deps: ['typtype'],
       schema: obj.getRangeSchema(),
     }, {
@@ -1466,9 +1384,7 @@ export default class TypeSchema extends BaseUISchema {
       group: gettext('Definition'),
       label: gettext('External Type'), deps: ['typtype'],
       mode: ['create', 'edit'], tabPanelExtraClasses:'inline-tab-panel-padded',
-      visible: function(state) {
-        return state.typtype === 'b';
-      },
+      visible: (state) => isVisible(state, 'b'),
       schema: obj.getExternalSchema(),
     },
     {
@@ -1480,99 +1396,54 @@ export default class TypeSchema extends BaseUISchema {
       id: 'member_list', label: gettext('Members'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'c') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'c'),
     },{
       id: 'enum_list', label: gettext('Labels'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'e') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'e'),
     },
     {
       id: 'typname', label: gettext('SubType'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'opcname', label: gettext('Subtype operator class'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'collname', label: gettext('Collation'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'rngcanonical', label: gettext('Canonical function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'rngsubdiff', label: gettext('Subtype diff function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'typinput', label: gettext('Input function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'b') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'b'),
     },
     {
       id: 'typoutput', label: gettext('Output function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'b') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'b'),
     },
     {
       id: 'type', label: gettext('Data Type'), cell: 'string',
@@ -1589,34 +1460,19 @@ export default class TypeSchema extends BaseUISchema {
       id: 'tlength', label: gettext('Length/Precision'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'N') {
-          return true;
-        }
-        return false;
-      }
+      visible: (state) => isVisible(state, 'N'),
     },
     {
       id: 'precision', label: gettext('Scale'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'N') {
-          return true;
-        }
-        return false;
-      }
+      visible: (state) => isVisible(state, 'N'),
     },
     {
       id: 'maxsize', label: gettext('Size'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'V') {
-          return true;
-        }
-        return false;
-      }
+      visible: (state) => isVisible(state, 'V'),
     },
     {
       id: 'type_acl', label: gettext('Privileges'), cell: 'string',

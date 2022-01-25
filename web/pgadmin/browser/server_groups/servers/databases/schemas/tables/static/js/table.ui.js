@@ -97,6 +97,13 @@ export class ConstraintsSchema extends BaseUISchema {
     return _.some(_.map(state.columns, 'name'));
   }
 
+  canAdd(state) {
+    if (state.is_partitioned && this.top.getServerVersion() < 110000) {
+      return false;
+    }
+    return true;
+  }
+
   get baseFields() {
     let obj = this;
     return [{
@@ -108,10 +115,7 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'columns'],
       disabled: this.inCatalog,
       canAdd: function(state) {
-        if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
-          return false;
-        }
-        return true;
+        return obj.canAdd(state);
       },
       canAddRow: function(state) {
         return ((state.primary_key||[]).length < 1 && obj.anyColumnAdded(state));
@@ -137,10 +141,7 @@ export class ConstraintsSchema extends BaseUISchema {
       group: gettext('Foreign Key'), mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned', 'columns'],
       canAdd: function(state) {
-        if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
-          return false;
-        }
-        return true;
+        return obj.canAdd(state);
       },
       columns : ['name', 'columns','references_table_name'],
       disabled: this.inCatalog,
@@ -172,10 +173,7 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'columns'],
       disabled: this.inCatalog,
       canAdd: function(state) {
-        if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
-          return false;
-        }
-        return true;
+        return obj.canAdd(state);
       },
       canAddRow: obj.anyColumnAdded,
       depChange: (state)=>{
@@ -194,10 +192,7 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'columns', 'constraint'],
       disabled: this.inCatalog,
       canAdd: function(state) {
-        if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
-          return false;
-        }
-        return true;
+        return obj.canAdd(state);
       },
       canAddRow: obj.anyColumnAdded,
       depChange: (state)=>{

@@ -29,6 +29,16 @@ export default class CastSchema extends BaseUISchema {
     return 'oid';
   }
 
+  getCastName(state) {
+    var srctype = state.srctyp;
+    var trgtype = state.trgtyp;
+    if(srctype != undefined && srctype != '' &&
+          trgtype != undefined && trgtype != '')
+      return state.name = srctype+'->'+trgtype;
+    else
+      return state.name = '';
+  }
+
   get baseFields() {
     let obj = this;
     return [{
@@ -53,13 +63,7 @@ export default class CastSchema extends BaseUISchema {
             * target type are set, if yes then fetch values from both
             * controls and generate cast name
             */
-        var srctype = state.srctyp;
-        var trgtype = state.trgtyp;
-        if(srctype != undefined && srctype != '' &&
-              trgtype != undefined && trgtype != '')
-          return state.name = srctype+'->'+trgtype;
-        else
-          return state.name = '';
+        return obj.getCastName(state);
       },
     },
 
@@ -83,13 +87,7 @@ export default class CastSchema extends BaseUISchema {
             * target type are set, if yes then fetch values from both
             * controls and generate cast name
             */
-        var srctype = state.srctyp;
-        var trgtype = state.trgtyp;
-        if(srctype != undefined && srctype != '' &&
-              trgtype != undefined && trgtype != '')
-          return state.name = srctype+'->'+trgtype;
-        else
-          return state.name = '';
+        return obj.getCastName(state);
       },
     },
     /*

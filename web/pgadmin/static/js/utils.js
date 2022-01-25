@@ -427,11 +427,6 @@ export function registerDetachEvent(panel){
     });
   });
   panel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
-    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').attr({
-      style: 'z-index: 1200'
-    });
-  });
-  panel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
     var docker = this.docker(this._panel);
     var dockerPos = docker.$container.offset();
     var pos = this.$container.offset();
@@ -442,5 +437,8 @@ export function registerDetachEvent(panel){
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('left', pos.left - dockerPos.left);
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('width', width);
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').find('.wcIFrameFloating').css('height', height);
+    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').attr({
+      style: 'z-index: 1200'
+    });
   });
 }

@@ -218,6 +218,30 @@ define([
     }
   };
 
+  var filterRows = function(self, filter, rows, node) {
+    var res = [];
+    _.each(rows, function(r) {
+      if (filter(r)) {
+        var l = (_.isFunction(node['node_label']) ?
+            (node['node_label']).apply(node, [r, self.model, self]) :
+            r.label),
+          image = (_.isFunction(node['node_image']) ?
+            (node['node_image']).apply(
+              node, [r, self.model, self]
+            ) :
+            (node['node_image'] || ('icon-' + node.type)));
+
+        res.push({
+          'value': r._id,
+          'image': image,
+          'label': l,
+        });
+      }
+    });
+
+    return res;
+  };
+
   var NodeListByIdControl = Backform.NodeListByIdControl = NodeAjaxOptionsControl.extend({
     controlClassName: 'pgadmin-node-select form-control',
     defaults: _.extend({}, NodeAjaxOptionsControl.prototype.defaults, {
@@ -226,33 +250,12 @@ define([
       transform: function(rows) {
         var self = this,
           node = self.field.get('schema_node'),
-          res = [],
           filter = self.field.get('filter') || function() {
             return true;
           };
 
         filter = filter.bind(self);
-
-        _.each(rows, function(r) {
-          if (filter(r)) {
-            var l = (_.isFunction(node['node_label']) ?
-                (node['node_label']).apply(node, [r, self.model, self]) :
-                r.label),
-              image = (_.isFunction(node['node_image']) ?
-                (node['node_image']).apply(
-                  node, [r, self.model, self]
-                ) :
-                (node['node_image'] || ('icon-' + node.type)));
-
-            res.push({
-              'value': r._id,
-              'image': image,
-              'label': l,
-            });
-          }
-        });
-
-        return res;
+        return filterRows(self, filter, rows, node);
       },
       select2: {
         allowClear: true,
@@ -473,42 +476,23 @@ define([
     },
   });
 
+  var transformFunc = function(rows, control) {
+    var self = control || this,
+      node = self.column.get('schema_node'),
+      filter = self.column.get('filter') || function() {
+        return true;
+      };
+
+    filter = filter.bind(self);
+    return filterRows(self, filter, rows, node);
+  };
+
   Backgrid.Extension.NodeListByIdCell = NodeAjaxOptionsCell.extend({
     controlClassName: 'pgadmin-node-select backgrid-cell',
     defaults: _.extend({}, NodeAjaxOptionsCell.prototype.defaults, {
       url: 'nodes',
       filter: undefined,
-      transform: function(rows, control) {
-        var self = control || this,
-          node = self.column.get('schema_node'),
-          res = [],
-          filter = self.column.get('filter') || function() {
-            return true;
-          };
-
-        filter = filter.bind(self);
-
-        _.each(rows, function(r) {
-          if (filter(r)) {
-            var l = (_.isFunction(node['node_label']) ?
-                (node['node_label']).apply(node, [r, self.model, self]) :
-                r.label),
-              image = (_.isFunction(node['node_image']) ?
-                (node['node_image']).apply(
-                  node, [r, self.model, self]
-                ) :
-                (node['node_image'] || ('icon-' + node.type)));
-
-            res.push({
-              'value': r._id,
-              'image': image,
-              'label': l,
-            });
-          }
-        });
-
-        return res;
-      },
+      transform: transformFunc,
       select2: {
         placeholder: gettext('Select an item...'),
         width: 'style',
@@ -523,37 +507,7 @@ define([
     defaults: _.extend({}, NodeAjaxOptionsCell.prototype.defaults, {
       url: 'nodes',
       filter: undefined,
-      transform: function(rows, control) {
-        var self = control || this,
-          node = self.column.get('schema_node'),
-          res = [],
-          filter = self.column.get('filter') || function() {
-            return true;
-          };
-
-        filter = filter.bind(self);
-
-        _.each(rows, function(r) {
-          if (filter(r)) {
-            var l = (_.isFunction(node['node_label']) ?
-                (node['node_label']).apply(node, [r, self.model, self]) :
-                r.label),
-              image = (_.isFunction(node['node_image']) ?
-                (node['node_image']).apply(
-                  node, [r, self.model, self]
-                ) :
-                (node['node_image'] || ('icon-' + node.type)));
-
-            res.push({
-              'value': r.label,
-              'image': image,
-              'label': l,
-            });
-          }
-        });
-
-        return res;
-      },
+      transform: transformFunc,
       select2: {
         placeholder: gettext('Select an item...'),
         width: 'style',

@@ -313,6 +313,10 @@ define('pgadmin.node.database', [
         },
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
+        let c_types = ()=>getNodeAjaxOptions('get_ctypes', this, treeNodeInfo, itemNodeData, {
+          cacheLevel: 'server',
+        });
+
         return new DatabaseSchema(
           ()=>getNodeVariableSchema(this, treeNodeInfo, itemNodeData, false, true),
           (privileges)=>getNodePrivilegeRoleSchema(this, treeNodeInfo, itemNodeData, privileges),
@@ -339,14 +343,8 @@ define('pgadmin.node.database', [
               ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
                 return (m.label != 'pg_global');
               }),
-            datcollate:
-              ()=>getNodeAjaxOptions('get_ctypes', this, treeNodeInfo, itemNodeData, {
-                cacheLevel: 'server',
-              }),
-            datctype:
-              ()=>getNodeAjaxOptions('get_ctypes', this, treeNodeInfo, itemNodeData, {
-                cacheLevel: 'server',
-              }),
+            datcollate: c_types,
+            datctype: c_types,
           },
           {
             datowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,

@@ -632,6 +632,16 @@ export default class SchemaDiffUI {
     }
   }
 
+  transformFunc(data) {
+    let group_template_options = [];
+    for (let key in data) {
+      if (data.hasOwnProperty(key)) {
+        group_template_options.push({'group': key, 'optval': data[key]});
+      }
+    }
+    return group_template_options;
+  }
+
   render() {
     let self = this;
     let panel = self.docker.findPanels('schema_diff_header_panel')[0];
@@ -645,13 +655,7 @@ export default class SchemaDiffUI {
         name: 'source_sid', label: false,
         control: SchemaDiffSelect2Control,
         transform: function(data) {
-          let group_template_options = [];
-          for (let key in data) {
-            if (data.hasOwnProperty(key)) {
-              group_template_options.push({'group': key, 'optval': data[key]});
-            }
-          }
-          return group_template_options;
+          return self.transformFunc(data);
         },
         url: url_for('schema_diff.servers'),
         select2: {
@@ -729,13 +733,7 @@ export default class SchemaDiffUI {
         name: 'target_sid', label: false,
         control: SchemaDiffSelect2Control,
         transform: function(data) {
-          let group_template_options = [];
-          for (let key in data) {
-            if (data.hasOwnProperty(key)) {
-              group_template_options.push({'group': key, 'optval': data[key]});
-            }
-          }
-          return group_template_options;
+          return self.transformFunc(data);
         },
         group: 'target',
         url: url_for('schema_diff.servers'),

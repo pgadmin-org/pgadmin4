@@ -27,6 +27,14 @@ export class RestoreSectionSchema extends BaseUISchema {
     return 'id';
   }
 
+  isDisabled(state) {
+    return this.selectedNodeType !== 'function' &&
+          this.selectedNodeType !== 'table' &&
+          this.selectedNodeType !== 'trigger' &&
+          this.selectedNodeType !== 'trigger_function' &&
+          (state.only_data || state.only_schema);
+  }
+
   get baseFields() {
     let obj = this;
     return [{
@@ -36,10 +44,7 @@ export class RestoreSectionSchema extends BaseUISchema {
       group: gettext('Sections'),
       deps: ['only_data', 'only_schema'],
       disabled: function(state) {
-        return obj.selectedNodeType !== 'function' && obj.selectedNodeType !== 'table' &&
-        obj.selectedNodeType !== 'trigger' &&
-        obj.selectedNodeType !== 'trigger_function' &&
-        (state.only_data || state.only_schema);
+        return obj.isDisabled(state);
       },
     }, {
       id: 'data',
@@ -48,11 +53,7 @@ export class RestoreSectionSchema extends BaseUISchema {
       group: gettext('Sections'),
       deps: ['only_data', 'only_schema'],
       disabled: function(state) {
-        return obj.selectedNodeType !== 'function' &&
-          obj.selectedNodeType !== 'table' &&
-          obj.selectedNodeType !== 'trigger' &&
-          obj.selectedNodeType !== 'trigger_function' &&
-          (state.only_data || state.only_schema);
+        return obj.isDisabled(state);
       },
     }, {
       id: 'post_data',
@@ -61,11 +62,7 @@ export class RestoreSectionSchema extends BaseUISchema {
       group: gettext('Sections'),
       deps: ['only_data', 'only_schema'],
       disabled: function(state) {
-        return obj.selectedNodeType !== 'function' &&
-          obj.selectedNodeType !== 'table' &&
-          obj.selectedNodeType !== 'trigger' &&
-          obj.selectedNodeType !== 'trigger_function' &&
-          (state.only_data || state.only_schema);
+        return obj.isDisabled(state);
       },
     }];
   }

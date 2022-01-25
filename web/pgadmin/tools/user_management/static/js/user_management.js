@@ -192,6 +192,13 @@ define([
       alertify.PgaLogin(title, url).resizeTo(pgBrowser.stdW.md, pgBrowser.stdH.md);
     },
 
+    is_editable: function(m) {
+      if (m instanceof Backbone.Collection) {
+        return true;
+      }
+      return (m.get('id') != userInfo['id']);
+    },
+
     // Callback to draw User Management Dialog.
     show_users: function() {
       if (!userInfo['is_admin']) return;
@@ -310,10 +317,7 @@ define([
               return options;
             },
             editable: function(m) {
-              if (m instanceof Backbone.Collection) {
-                return true;
-              }
-              return (m.get('id') != userInfo['id']);
+              return self.is_editable(m);
             },
           }, {
             id: 'active',
@@ -323,10 +327,7 @@ define([
             cellHeaderClasses: 'width_percent_10',
             sortable: false,
             editable: function(m) {
-              if (m instanceof Backbone.Collection) {
-                return true;
-              }
-              return (m.get('id') != userInfo['id']);
+              return self.is_editable(m);
             },
           }, {
             id: 'newPassword',
@@ -519,29 +520,13 @@ define([
                 }
               }
             } else {
-              if (!!this.get('username') && this.collection.nonFilter.where({
+              if (!!this.get('username') && (this.collection.nonFilter.where({
                 'username': this.get('username'), 'auth_source': LDAP,
-              }).length > 1) {
-                errmsg = gettext('The username %s already exists.',
-                  this.get('username')
-                );
-
-                this.errorModel.set('username', errmsg);
-                return errmsg;
-              }
-              else if (!!this.get('username') && this.collection.nonFilter.where({
+              }).length > 1) || (this.collection.nonFilter.where({
                 'username': this.get('username'), 'auth_source': KERBEROS,
-              }).length > 1) {
-                errmsg = gettext('The username %s already exists.',
-                  this.get('username')
-                );
-
-                this.errorModel.set('username', errmsg);
-                return errmsg;
-              }
-              else if (!!this.get('username') && this.collection.nonFilter.where({
+              }).length > 1) || (this.collection.nonFilter.where({
                 'username': this.get('username'), 'auth_source': OAUTH2,
-              }).length > 1) {
+              }).length > 1)) {
                 errmsg = gettext('The username %s already exists.',
                   this.get('username')
                 );

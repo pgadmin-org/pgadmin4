@@ -130,9 +130,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       }), group: gettext('Definition'),
       editable: false,
       readonly: function(state) {
-        if(!obj.isNew(state)) {
-          return true;
-        }
+        return obj.isReadOnly(state);
       },
       disabled: function(state) {
         // Disable if index is selected.
@@ -161,9 +159,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       },
       deps: ['index'],
       readonly: function(state) {
-        if(!obj.isNew(state)) {
-          return true;
-        }
+        return obj.isReadOnly(state);
       },
       disabled: function(state) {
         // Disable if index is selected.
@@ -228,10 +224,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       id: 'condeferrable', label: gettext('Deferrable?'),
       type: 'switch', group: gettext('Definition'), deps: ['index'],
       readonly: function(state) {
-        if(!obj.isNew(state)) {
-          return true;
-        }
-        return false;
+        return obj.isReadOnly(state);
       },
       disabled: function(state) {
         // Disable if index is selected.
@@ -249,10 +242,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       type: 'switch', group: gettext('Definition'),
       deps: ['condeferrable'],
       readonly: function(state) {
-        if(!obj.isNew(state)) {
-          return true;
-        }
-        return false;
+        return obj.isReadOnly(state);
       },
       disabled: function(state) {
         // Disable if index is selected.

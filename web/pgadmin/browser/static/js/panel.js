@@ -133,7 +133,6 @@ define(
               pgBrowser.Events.on('pgadmin-browser:tree:selected', () => {
 
                 if(myPanel.isVisible()) {
-                  removePanelView($container[0]);
                   getPanelView(
                     pgBrowser.tree,
                     $container[0],

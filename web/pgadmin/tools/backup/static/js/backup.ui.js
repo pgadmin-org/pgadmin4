@@ -193,6 +193,12 @@ export function getSaveOptSchema(fieldOptions) {
   return new SaveOptSchema(fieldOptions);
 }
 
+function isVisible () {
+  if (!_.isUndefined(this.backupType) && this.backupType === 'server')
+    return false;
+  return true;
+}
+
 export class QueryOptionSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
@@ -465,11 +471,7 @@ export default class BackupSchema extends BaseUISchema {
       disabled: function(state) {
         return (state.format === 'tar');
       },
-      visible: function() {
-        if (!_.isUndefined(obj.backupType) && obj.backupType === 'server')
-          return false;
-        return true;
-      },
+      visible: isVisible,
     }, {
       id: 'encoding',
       label: gettext('Encoding'),
@@ -491,11 +493,7 @@ export default class BackupSchema extends BaseUISchema {
       disabled: function(state) {
         return (state.format !== 'directory');
       },
-      visible: function() {
-        if (!_.isUndefined(obj.backupType) && obj.backupType === 'server')
-          return false;
-        return true;
-      },
+      visible: isVisible,
     }, {
       id: 'role',
       label: gettext('Role name'),
@@ -517,11 +515,7 @@ export default class BackupSchema extends BaseUISchema {
       label: gettext('Sections'),
       group: gettext('Data/Objects'),
       schema:new getSectionSchema(),
-      visible: function() {
-        if (!_.isUndefined(obj.backupType) && obj.backupType === 'server')
-          return false;
-        return true;
-      },
+      visible: isVisible,
     }, {
       type: 'nested-fieldset',
       label: gettext('Type of objects'),

@@ -147,6 +147,10 @@ export default class ColumnSchema extends BaseUISchema {
     return null;
   }
 
+  attCell(state) {
+    return { cell: this.attlenRange(state) ? 'int' : '' };
+  }
+
   get baseFields() {
     let obj = this;
 
@@ -281,9 +285,7 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'attlen', label: gettext('Length/Precision'),
       deps: ['cltype'], type: 'int', group: gettext('Definition'), width: 120, disableResizing: true,
       cell: (state)=>{
-        return {
-          cell: obj.attlenRange(state) ? 'int' : '',
-        };
+        return obj.attCell(state);
       },
       depChange: (state)=>{
         let range = this.attlenRange(state);
@@ -311,9 +313,7 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'attprecision', label: gettext('Scale'), width: 60, disableResizing: true,
       deps: ['cltype'], type: 'int', group: gettext('Definition'),
       cell: (state)=>{
-        return {
-          cell: obj.attlenRange(state) ? 'int' : '',
-        };
+        return obj.attCell(state);
       },
       depChange: (state)=>{
         let range = this.attprecisionRange(state);

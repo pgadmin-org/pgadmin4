@@ -126,6 +126,49 @@ define('pgadmin.node.primary_key', [
           include: [],
         },
 
+        genResetColOptions: function() {
+          var self = this;
+
+          setTimeout(function () {
+            self.custom_options();
+            self.render.apply(self);
+          }, 50);
+        },
+
+        genCustomOptions: function() {
+          // We will add all the columns entered by user in table model
+          var columns = this.model.top.get('columns'),
+            added_columns_from_tables = [];
+
+          if (columns.length > 0) {
+            _.each(columns.models, function(m) {
+              var col = m.get('name');
+              if(!_.isUndefined(col) && !_.isNull(col)) {
+                added_columns_from_tables.push(
+                  {label: col, value: col, image:'icon-column'}
+                );
+              }
+            });
+          }
+          // Set the values in to options so that user can select
+          this.field.set('options', added_columns_from_tables);
+        },
+        checkReadOnly(m) {
+          // If we are in table edit mode then
+          if (_.has(m, 'top') && !_.isUndefined(m.top)
+            && !m.top.isNew()) {
+            // If OID is undefined then user is trying to add
+            // new constraint which should be allowed for Unique
+            return !_.isUndefined(m.get('oid'));
+          }
+
+          // We can't update columns of existing index constraint.
+          if (!m.isNew()) {
+            return true;
+          }
+
+          return false;
+        },
         // Define the schema for the index constraint node
         schema: [{
           id: 'name', label: gettext('Name'), type: 'text',
@@ -294,30 +337,10 @@ define('pgadmin.node.primary_key', [
               });
             },
             resetColOptions: function() {
-              var self = this;
-
-              setTimeout(function () {
-                self.custom_options();
-                self.render.apply(self);
-              }, 50);
+              this.genResetColOptions();
             },
             custom_options: function() {
-              // We will add all the columns entered by user in table model
-              var columns = this.model.top.get('columns'),
-                added_columns_from_tables = [];
-
-              if (columns.length > 0) {
-                _.each(columns.models, function(m) {
-                  var col = m.get('name');
-                  if(!_.isUndefined(col) && !_.isNull(col)) {
-                    added_columns_from_tables.push(
-                      {label: col, value: col, image:'icon-column'}
-                    );
-                  }
-                });
-              }
-              // Set the values in to options so that user can select
-              this.field.set('options', added_columns_from_tables);
+              this.genCustomOptions();
             },
             onChange: function() {
               var self = this,
@@ -412,18 +435,7 @@ define('pgadmin.node.primary_key', [
           },
           select2:{allowClear:false},
           readonly: function(m) {
-            // If we are in table edit mode then
-            if (_.has(m, 'top') && !_.isUndefined(m.top)
-              && !m.top.isNew()) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should be allowed for Unique
-              return !_.isUndefined(m.get('oid'));
-            }
-
-            // We can't update columns of existing index constraint.
-            if (!m.isNew()) {
-              return true;
-            }
+            return this.checkReadOnly(m);
           },
           disabled: function(m) {
             // Disable if index is selected.
@@ -477,46 +489,15 @@ define('pgadmin.node.primary_key', [
               }
             },
             resetColOptions: function() {
-              var self = this;
-
-              setTimeout(function () {
-                self.custom_options();
-                self.render.apply(self);
-              }, 50);
+              this.genResetColOptions();
             },
             custom_options: function() {
-              // We will add all the columns entered by user in table model
-              var columns = this.model.top.get('columns'),
-                added_columns_from_tables = [];
-
-              if (columns.length > 0) {
-                _.each(columns.models, function(m) {
-                  var col = m.get('name');
-                  if(!_.isUndefined(col) && !_.isNull(col)) {
-                    added_columns_from_tables.push(
-                      {label: col, value: col, image:'icon-column'}
-                    );
-                  }
-                });
-              }
-              // Set the values in to options so that user can select
-              this.field.set('options', added_columns_from_tables);
+              this.genCustomOptions();
             },
           }),
           deps: ['index'], node: 'column',
           readonly: function(m) {
-            // If we are in table edit mode then
-            if (_.has(m, 'top') && !_.isUndefined(m.top)
-              && !m.top.isNew()) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should be allowed for Unique
-              return !_.isUndefined(m.get('oid'));
-            }
-
-            // We can't update columns of existing index constraint.
-            if (!m.isNew()) {
-              return true;
-            }
+            return this.checkReadOnly(m);
           },
           disabled: function(m) {
             // Disable if index is selected.
@@ -596,18 +577,7 @@ define('pgadmin.node.primary_key', [
           id: 'condeferrable', label: gettext('Deferrable?'),
           type: 'switch', group: gettext('Definition'), deps: ['index'],
           readonly: function(m) {
-            // If we are in table edit mode then
-            if (_.has(m, 'top') && !_.isUndefined(m.top)
-              && !m.top.isNew()) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should allowed for Unique
-              return !_.isUndefined(m.get('oid'));
-            }
-
-            // We can't update condeferrable of existing index constraint.
-            if (!m.isNew()) {
-              return true;
-            }
+            return this.checkReadOnly(m);
           },
           disabled: function(m) {
             // Disable if index is selected.
@@ -627,18 +597,7 @@ define('pgadmin.node.primary_key', [
           type: 'switch', group: gettext('Definition'),
           deps: ['condeferrable'],
           readonly: function(m) {
-            // If we are in table edit mode then
-            if (_.has(m, 'top') && !_.isUndefined(m.top)
-              && !m.top.isNew()) {
-              // If OID is undefined then user is trying to add
-              // new constraint which should allowed for Unique
-              return !_.isUndefined(m.get('oid'));
-            }
-
-            // We can't update condeferred of existing index constraint.
-            if (!m.isNew()) {
-              return true;
-            }
+            return this.checkReadOnly(m);
           },
           disabled: function(m) {
             // Disable if condeferred is false or unselected.

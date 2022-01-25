@@ -23,17 +23,22 @@ export class VacuumSchema extends BaseUISchema {
     return 'op';
   }
 
+  isDisabled(state) {
+    if(state?.op) {
+      return (state.op != 'VACUUM');
+    } else {
+      return false;
+    }
+  }
+
 
   get baseFields() {
+    let obj = this;
     return  [{
       id: 'vacuum_full',
       group: gettext('Vacuum'),
       disabled: function(state) {
-        if(state?.op) {
-          return (state.op != 'VACUUM');
-        } else {
-          return false;
-        }
+        return obj.isDisabled(state);
       },
       type: 'switch',
       label: gettext('FULL'),
@@ -42,11 +47,7 @@ export class VacuumSchema extends BaseUISchema {
       id: 'vacuum_freeze',
       deps: ['op'],
       disabled: function(state) {
-        if(state?.op) {
-          return (state.op != 'VACUUM');
-        } else {
-          return false;
-        }
+        return obj.isDisabled(state);
       },
       type: 'switch',
       label: gettext('FREEZE'),
@@ -56,11 +57,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       disabled: function(state) {
-        if(state?.op) {
-          return (state.op != 'VACUUM');
-        } else {
-          return false;
-        }
+        return obj.isDisabled(state);
       },
       label: gettext('ANALYZE'),
       group: gettext('Vacuum'),

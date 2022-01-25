@@ -8,6 +8,16 @@ import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../.
 import TableSchema from '../../../../static/js/table.ui';
 import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
 
+function getData(data) {
+  let res = [];
+  if (data && _.isArray(data)) {
+    _.each(data, function(d) {
+      res.push({label: d[0], value: d[1]});
+    });
+  }
+  return res;
+}
+
 export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgBrowser, noColumns=false) {
   let tableNode = pgBrowser.Nodes['table'];
   return new ExclusionConstraintSchema({
@@ -17,22 +27,10 @@ export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgB
       return (m.label != 'pg_global');
     }),
     getOperClass: (urlParams)=>getNodeAjaxOptions('get_oper_class', tableNode, treeNodeInfo, itemNodeData, {urlParams: urlParams, useCache:false}, (data)=>{
-      let res = [];
-      if (data && _.isArray(data)) {
-        _.each(data, function(d) {
-          res.push({label: d[0], value: d[1]});
-        });
-      }
-      return res;
+      return getData(data);
     }),
     getOperator: (urlParams)=>getNodeAjaxOptions('get_operator', tableNode, treeNodeInfo, itemNodeData, {urlParams: urlParams, useCache:false}, (data)=>{
-      let res = [];
-      if (data && _.isArray(data)) {
-        _.each(data, function(d) {
-          res.push({label: d[0], value: d[1]});
-        });
-      }
-      return res;
+      return getData(data);
     }),
   }, treeNodeInfo);
 }

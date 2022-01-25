@@ -19,8 +19,20 @@ let StatisticsModel = Backbone.Model.extend({
     Summary: {},
   },
 
+  explainToolTip: function(key, value, tooltip) {
+    key = _.escape(key);
+    value = _.escape(value);
+    tooltip.append(`
+      <tr>
+        <td class="label explain-tooltip">  ${key}</td>
+        <td class="label explain-tooltip-val">${value}</td>
+      </tr>
+    `);
+  },
+
   set_statistics: function(toolTipContainer) {
-    var jit_stats = this.get('JIT'),
+    var self= this,
+      jit_stats = this.get('JIT'),
       triggers_stats = this.get('Triggers'),
       summary = this.get('Summary');
 
@@ -40,14 +52,7 @@ let StatisticsModel = Backbone.Model.extend({
     if (Object.keys(jit_stats).length > 0){
       tooltip.append('<tr><td colspan="2" class="label explain-tooltip">' + gettext('JIT:') + '</td></tr>');
       _.each(jit_stats, function(value, key) {
-        key = _.escape(key);
-        value = _.escape(value);
-        tooltip.append(`
-          <tr>
-            <td class="label explain-tooltip">  ${key}</td>
-            <td class="label explain-tooltip-val">${value}</td>
-          </tr>
-        `);
+        self.explainToolTip(key, value, tooltip);
       });
     }
 
@@ -93,14 +98,7 @@ let StatisticsModel = Backbone.Model.extend({
     if (Object.keys(summary).length > 0){
       tooltip.append('<tr><td colspan="2" class="label explain-tooltip">' + gettext('Summary:') + '</td></tr>');
       _.each(summary, function(value, key) {
-        key = _.escape(key);
-        value = _.escape(value);
-        tooltip.append(`
-          <tr>
-            <td class="label explain-tooltip">  ${key}</td>
-            <td class="label explain-tooltip-val">${value}</td>
-          </tr>
-        `);
+        self.explainToolTip(key, value, tooltip);
       });
     }
 

@@ -35,6 +35,16 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
   let warnOnCloseFlag = true;
   const confirmOnCloseReset = pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_properties_close;
 
+  let onError = (err)=> {
+    if(err.response){
+      console.error('error resp', err.response);
+    } else if(err.request){
+      console.error('error req', err.request);
+    } else if(err.message){
+      console.error('error msg', err.message);
+    }
+  };
+
   /* Called when dialog is opened in edit mode, promise required */
   let initData = ()=>new Promise((resolve, reject)=>{
     api.get(url(false))
@@ -42,13 +52,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
         resolve(res.data);
       })
       .catch((err)=>{
-        if(err.response){
-          console.error('error resp', err.response);
-        } else if(err.request){
-          console.error('error req', err.request);
-        } else if(err.message){
-          console.error('error msg', err.message);
-        }
+        onError(err);
         reject(err);
       });
   });
@@ -80,13 +84,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
       }).then((res)=>{
         resolve(res.data.data);
       }).catch((err)=>{
-        if(err.response){
-          console.error('error resp', err.response);
-        } else if(err.request){
-          console.error('error req', err.request);
-        } else if(err.message){
-          console.error('error msg', err.message);
-        }
+        onError(err);
         reject(err);
       });
     });

@@ -355,7 +355,7 @@ export default function DataGridView({
             disableResizing: false,
             sortable: true,
             ...widthParms,
-            Cell: ({cellValue, row, ...other}) => {
+            Cell: ({value, row, ...other}) => {
               /* Make sure to take the latest field info from schema */
               field = _.find(schemaRef.current.fields, (f)=>f.id==field.id) || field;
 
@@ -365,7 +365,7 @@ export default function DataGridView({
                 console.error('cell is required ', field);
               }
 
-              return <MappedCellControl rowIndex={row.index} value={cellValue}
+              return <MappedCellControl rowIndex={row.index} value={value}
                 row={row.original} {...field}
                 readonly={!editable}
                 disabled={false}
@@ -385,7 +385,6 @@ export default function DataGridView({
           colInfo.Cell.propTypes = {
             row: PropTypes.object.isRequired,
             value: PropTypes.any,
-            cellValue: PropTypes.any,
             onCellChange: PropTypes.func,
           };
           return colInfo;

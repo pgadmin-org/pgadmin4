@@ -119,23 +119,23 @@ export function launchDataGrid(datagrid, transId, gridUrl, queryToolTitle, sURL)
   }
 }
 
+function setPanelTitle(panel, value) {
+  if(value) {
+    $('#' + panel.$title.index() + ' div:first').addClass('wcPanelTab-dynamic');
+  } else {
+    $('#' + panel.$title.index() + ' div:first').removeClass('wcPanelTab-dynamic');
+  }
+}
+
 export function _set_dynamic_tab(pgBrowser, value){
   var datagrid_panels = pgBrowser.docker.findPanels('frm_datagrid');
   datagrid_panels.forEach(panel => {
-    if(value) {
-      $('#' + panel.$title.index() + ' div:first').addClass('wcPanelTab-dynamic');
-    } else {
-      $('#' + panel.$title.index() + ' div:first').removeClass('wcPanelTab-dynamic');
-    }
+    setPanelTitle(panel, value);
   });
 
   var debugger_panels = pgBrowser.docker.findPanels('frm_debugger');
   debugger_panels.forEach(panel => {
-    if(value) {
-      $('#' + panel.$title.index() + ' div:first').addClass('wcPanelTab-dynamic');
-    } else {
-      $('#' + panel.$title.index() + ' div:first').removeClass('wcPanelTab-dynamic');
-    }
+    setPanelTitle(panel, value);
   });
 
 }

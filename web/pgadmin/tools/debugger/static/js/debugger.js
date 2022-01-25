@@ -300,6 +300,17 @@ define([
       });
     },
 
+    onFail: function(xhr) {
+      try {
+        var err = JSON.parse(xhr.responseText);
+        if (err.success == 0) {
+          Notify.alert(gettext('Debugger Error'), err.errormsg);
+        }
+      } catch (e) {
+        console.warn(e.stack || e);
+      }
+    },
+
     check_func_debuggable: function(args, item) {
       var t = pgBrowser.tree,
         i = item || t.selected(),
@@ -321,15 +332,26 @@ define([
           self.start_global_debugger(args, item, res.data.trans_id);
         })
         .fail(function(xhr) {
-          try {
-            var err = JSON.parse(xhr.responseText);
-            if (err.success == 0) {
-              Notify.alert(gettext('Debugger Error'), err.errormsg);
-            }
-          } catch (e) {
-            console.warn(e.stack || e);
-          }
+          self.onFail(xhr);
         });
+    },
+
+    panel_rename_event: function(panel_data, panel, treeInfo) {
+      Alertify.prompt('', panel_data.$titleText[0].textContent,
+        // We will execute this function when user clicks on the OK button
+        function(evt, value) {
+          if(value) {
+            // Remove the leading and trailing white spaces.
+            value = value.trim();
+            let preferences = pgBrowser.get_preferences_for_module('browser');
+            var name = debuggerUtils.getAppropriateLabel(treeInfo);
+            debuggerUtils.setDebuggerTitle(panel, preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
+          }
+        },
+        // We will execute this function when user clicks on the Cancel
+        // button.  Do nothing just close it.
+        function(evt) { evt.cancel = false; }
+      ).set({'title': gettext('Rename Panel')});
     },
 
     //Callback function when user start the indirect debugging ( Listen to another session to invoke the target )
@@ -465,21 +487,7 @@ define([
 
             // Panel Rename event
             panel.on(wcDocker.EVENT.RENAME, function(panel_data) {
-              Alertify.prompt('', panel_data.$titleText[0].textContent,
-                // We will execute this function when user clicks on the OK button
-                function(evt, value) {
-                  if(value) {
-                    // Remove the leading and trailing white spaces.
-                    value = value.trim();
-                    let preferences = pgBrowser.get_preferences_for_module('browser');
-                    var name = debuggerUtils.getAppropriateLabel(treeInfo);
-                    debuggerUtils.setDebuggerTitle(panel, preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
-                  }
-                },
-                // We will execute this function when user clicks on the Cancel
-                // button.  Do nothing just close it.
-                function(evt) { evt.cancel = false; }
-              ).set({'title': gettext('Rename Panel')});
+              self.panel_rename_event(panel_data, panel, treeInfo);
             });
           }
         })
@@ -639,21 +647,7 @@ define([
 
                   // Panel Rename event
                   panel.on(wcDocker.EVENT.RENAME, function(panel_data) {
-                    Alertify.prompt('', panel_data.$titleText[0].textContent,
-                      // We will execute this function when user clicks on the OK button
-                      function(evt, value) {
-                        if(value) {
-                          // Remove the leading and trailing white spaces.
-                          value = value.trim();
-                          let preferences = pgBrowser.get_preferences_for_module('browser');
-                          var name = debuggerUtils.getAppropriateLabel(treeInfo);
-                          debuggerUtils.setDebuggerTitle(panel, preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgBrowser);
-                        }
-                      },
-                      // We will execute this function when user clicks on the Cancel
-                      // button.  Do nothing just close it.
-                      function(evt) { evt.cancel = false; }
-                    ).set({'title': gettext('Rename Panel')});
+                    self.panel_rename_event(panel_data, panel, treeInfo);
                   });
                 }
               })
@@ -666,14 +660,7 @@ define([
           }
         })
         .fail(function(xhr) {
-          try {
-            var err = JSON.parse(xhr.responseText);
-            if (err.success == 0) {
-              Notify.alert(gettext('Debugger Error'), err.errormsg);
-            }
-          } catch (e) {
-            console.warn(e.stack || e);
-          }
+          self.onFail(xhr);
         });
     },
   };

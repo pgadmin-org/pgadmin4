@@ -536,14 +536,7 @@ define([
                     // Execution completed so disable the buttons other than
                     // "Continue/Start" button because user can still
                     // start the same execution again.
-                    setTimeout(function() {
-                      self.enable('stop', false);
-                      self.enable('step_over', false);
-                      self.enable('step_into', false);
-                      self.enable('toggle_breakpoint', false);
-                      self.enable('clear_all_breakpoints', false);
-                      self.enable('continue', true);
-                    }, 500);
+                    setTimeout(self.disable_toolbar_buttons(), 500);
 
                     // Stop further polling
                     pgTools.DirectDebug.is_polling_required = false;
@@ -570,14 +563,7 @@ define([
                       // Execution completed so disable the buttons other than
                       // "Continue/Start" button because user can still
                       // start the same execution again.
-                      setTimeout(function() {
-                        self.enable('stop', false);
-                        self.enable('step_over', false);
-                        self.enable('step_into', false);
-                        self.enable('toggle_breakpoint', false);
-                        self.enable('clear_all_breakpoints', false);
-                        self.enable('continue', true);
-                      }, 500);
+                      setTimeout(self.disable_toolbar_buttons(), 500);
 
                       // Stop further pooling
                       pgTools.DirectDebug.is_polling_required = false;

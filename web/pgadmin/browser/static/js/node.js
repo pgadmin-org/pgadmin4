@@ -532,6 +532,22 @@ define('pgadmin.browser.node', [
 
       return new_panel;
     },
+
+    onEventResizeEnded: function() {
+      var $container = this.$container.find('.obj_properties').first(),
+        v = $container.data('obj-view');
+
+      if (v && v.model && v.model) {
+        v.model.trigger(
+          'pg-browser-resized', {
+            'view': v,
+            'panel': this,
+            'container': $container,
+          });
+
+      }
+    },
+
     registerUtilityPanel: function() {
       var w = pgBrowser.docker,
         p = w.findPanels('utility_props');
@@ -540,20 +556,7 @@ define('pgadmin.browser.node', [
         return;
 
       var events = {};
-      events[wcDocker.EVENT.RESIZE_ENDED] = function() {
-        var $container = this.$container.find('.obj_properties').first(),
-          v = $container.data('obj-view');
-
-        if (v && v.model && v.model) {
-          v.model.trigger(
-            'pg-browser-resized', {
-              'view': v,
-              'panel': this,
-              'container': $container,
-            });
-
-        }
-      };
+      events[wcDocker.EVENT.RESIZE_ENDED] = this.onEventResizeEnded;
 
       p = new pgBrowser.Panel({
         name: 'utility_props',
@@ -579,20 +582,7 @@ define('pgadmin.browser.node', [
         return;
 
       var events = {};
-      events[wcDocker.EVENT.RESIZE_ENDED] = function() {
-        var $container = this.$container.find('.obj_properties').first(),
-          v = $container.data('obj-view');
-
-        if (v && v.model && v.model) {
-          v.model.trigger(
-            'pg-browser-resized', {
-              'view': v,
-              'panel': this,
-              'container': $container,
-            });
-
-        }
-      };
+      events[wcDocker.EVENT.RESIZE_ENDED] = this.onEventResizeEnded;
 
       p = new pgBrowser.Panel({
         name: 'node_props',

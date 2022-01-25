@@ -66,18 +66,7 @@ export default class FTSParserSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -93,18 +82,7 @@ export default class FTSParserSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -120,18 +98,7 @@ export default class FTSParserSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -147,18 +114,7 @@ export default class FTSParserSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -174,18 +130,7 @@ export default class FTSParserSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };

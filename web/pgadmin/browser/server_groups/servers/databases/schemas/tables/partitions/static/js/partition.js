@@ -127,6 +127,21 @@ function(
           encodeURIComponent(info['partition']._id)
         );
       },
+      on_done: function(res, data, t, i) {
+        if (res.success == 1) {
+          Notify.success(res.info);
+          t.removeIcon(i);
+          data.icon = 'icon-partition';
+          t.addIcon(i, {icon: data.icon});
+          t.unload(i);
+          t.setInode(i);
+          t.deselect(i);
+          // Fetch updated data from server
+          setTimeout(function() {
+            t.select(i);
+          }, 10);
+        }
+      },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       callbacks: {
@@ -197,35 +212,22 @@ function(
           Notify.confirm(
             gettext('Truncate Table'),
             gettext('Are you sure you want to truncate table %s?', d.label),
-            function (e) {
-              if (e) {
-                var data = d;
-                $.ajax({
-                  url: obj.generate_url(i, 'truncate' , d, true),
-                  type:'PUT',
-                  data: params,
-                  dataType: 'json',
+            function () {
+              var data = d;
+              $.ajax({
+                url: obj.generate_url(i, 'truncate' , d, true),
+                type:'PUT',
+                data: params,
+                dataType: 'json',
+              })
+                .done(function(res) {
+                  obj.on_done(res, data, t, i);
                 })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Notify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = 'icon-partition';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
-                    t.unload(i);
-                  });
-              }},
+                .fail(function(xhr, status, error) {
+                  Notify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
+                });
+            },
           );
         },
         reset_table_stats: function(args) {
@@ -241,33 +243,19 @@ function(
           Notify.confirm(
             gettext('Reset statistics'),
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
-            function (e) {
-              if (e) {
-                var data = d;
-                $.ajax({
-                  url: obj.generate_url(i, 'reset' , d, true),
-                  type:'DELETE',
+            function () {
+              var data = d;
+              $.ajax({
+                url: obj.generate_url(i, 'reset' , d, true),
+                type:'DELETE',
+              })
+                .done(function(res) {
+                  obj.on_done(res, data, t, i);
                 })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Notify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = 'icon-partition';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
-                    t.unload(i);
-                  });
-              }
+                .fail(function(xhr, status, error) {
+                  Notify.pgRespErrorNotify(xhr, error);
+                  t.unload(i);
+                });
             },
             function() {/*This is intentional (SonarQube)*/}
           );
@@ -285,32 +273,30 @@ function(
           Notify.confirm(
             gettext('Detach Partition'),
             gettext('Are you sure you want to detach the partition %s?', d._label),
-            function (e) {
-              if (e) {
-                $.ajax({
-                  url: obj.generate_url(i, 'detach' , d, true),
-                  type:'PUT',
-                })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Notify.success(res.info);
-                      var n = t.next(i);
+            function () {
+              $.ajax({
+                url: obj.generate_url(i, 'detach' , d, true),
+                type:'PUT',
+              })
+                .done(function(res) {
+                  if (res.success == 1) {
+                    Notify.success(res.info);
+                    var n = t.next(i);
+                    if (!n) {
+                      n = t.prev(i);
                       if (!n) {
-                        n = t.prev(i);
-                        if (!n) {
-                          n = t.parent(i);
-                        }
-                      }
-                      t.remove(i);
-                      if (n) {
-                        t.select(n);
+                        n = t.parent(i);
                       }
                     }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
-                  });
-              }
+                    t.remove(i);
+                    if (n) {
+                      t.select(n);
+                    }
+                  }
+                })
+                .fail(function(xhr, status, error) {
+                  Notify.pgRespErrorNotify(xhr, error);
+                });
             },
             function() {/*This is intentional (SonarQube)*/}
           );

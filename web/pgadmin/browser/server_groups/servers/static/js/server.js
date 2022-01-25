@@ -584,6 +584,20 @@ define('pgadmin.node.server', [
           return false;
         },
 
+        on_done: function(res, t, i) {
+          if (res.success == 1) {
+            Notify.success(res.info);
+            t.itemData(i).wal_pause=res.data.wal_pause;
+            t.unload(i);
+            t.setInode(i);
+            t.deselect(i);
+            // Fetch updated data from server
+            setTimeout(function() {
+              t.select(i);
+            }, 10);
+          }
+        },
+
         /* Pause WAL Replay */
         pause_wal_replay: function(args) {
           var input = args || {},
@@ -601,17 +615,7 @@ define('pgadmin.node.server', [
             dataType: 'json',
           })
             .done(function(res) {
-              if (res.success == 1) {
-                Notify.success(res.info);
-                t.itemData(i).wal_pause=res.data.wal_pause;
-                t.unload(i);
-                t.setInode(i);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
+              obj.on_done(res, t, i);
             })
             .fail(function(xhr, status, error) {
               Notify.pgRespErrorNotify(xhr, error);
@@ -636,17 +640,7 @@ define('pgadmin.node.server', [
             dataType: 'json',
           })
             .done(function(res) {
-              if (res.success == 1) {
-                Notify.success(res.info);
-                t.itemData(i).wal_pause=res.data.wal_pause;
-                t.unload(i);
-                t.setInode(i);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
+              obj.on_done(res, t, i);
             })
             .fail(function(xhr, status, error) {
               Notify.pgRespErrorNotify(xhr, error);

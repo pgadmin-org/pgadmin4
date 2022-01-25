@@ -75,6 +75,19 @@ export class ColumnSchema extends BaseUISchema {
       this.op_class_types = options;
   }
 
+  isEditable(state) {
+    let topObj = this._top;
+    if(this.inSchemaWithModelCheck(state)) {
+      return false;
+    } else if (topObj._sessData && topObj._sessData.amname === 'btree') {
+      state.is_sort_nulls_applicable = true;
+      return true;
+    } else {
+      state.is_sort_nulls_applicable = false;
+    }
+    return false;
+  }
+
   get baseFields() {
     let columnSchemaObj = this;
     return [
@@ -161,31 +174,13 @@ export class ColumnSchema extends BaseUISchema {
           }
         },
         editable: function(state) {
-          let topObj = columnSchemaObj._top;
-          if(columnSchemaObj.inSchemaWithModelCheck(state)) {
-            return false;
-          } else if (topObj._sessData && topObj._sessData.amname === 'btree') {
-            state.is_sort_nulls_applicable = true;
-            return true;
-          } else {
-            state.is_sort_nulls_applicable = false;
-            return false;
-          }
+          return columnSchemaObj.isEditable(state);
         },
         deps: ['amname'],
       },{
         id: 'nulls', label: gettext('NULLs'),
         editable: function(state) {
-          let topObj = columnSchemaObj._top;
-          if(columnSchemaObj.inSchemaWithModelCheck(state)) {
-            return false;
-          } else if (topObj._sessData && topObj._sessData.amname === 'btree') {
-            state.is_sort_nulls_applicable = true;
-            return true;
-          } else {
-            state.is_sort_nulls_applicable = false;
-            return false;
-          }
+          return columnSchemaObj.isEditable(state);
         },
         deps: ['amname', 'sort_order'],
         type:'select', cell: 'select',
@@ -235,6 +230,39 @@ export default class IndexSchema extends BaseUISchema {
 
   get idAttribute() {
     return 'oid';
+  }
+
+  getColumns() {
+    return {
+      type: 'select',
+      options: this.fieldOptions.columnList,
+      optionsLoaded: (options) => { this.fieldOptions.columnList = options; },
+      controlProps: {
+        allowClear: false,
+        multiple: true,
+        placeholder: gettext('Select the column(s)'),
+        width: 'style',
+        filter: (options) => {
+          let res = [];
+          if (options && _.isArray(options)) {
+            _.each(options, function(d) {
+              if(d.label != '')
+                res.push({label: d.label, value: d.value, image:'icon-column'});
+            });
+          }
+          return res;
+        }
+      }
+    };
+  }
+
+  isVisible() {
+    if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
+      && !_.isUndefined(this.node_info.server.version) &&
+      this.node_info.server.version >= 110000)
+      return true;
+
+    return false;
   }
 
   get baseFields() {
@@ -324,35 +352,10 @@ export default class IndexSchema extends BaseUISchema {
           return !indexSchemaObj.isNew(state);
         },
         type: () => {
-          return {
-            type: 'select',
-            options: indexSchemaObj.fieldOptions.columnList,
-            optionsLoaded: (options) => { indexSchemaObj.fieldOptions.columnList = options; },
-            controlProps: {
-              allowClear: false,
-              multiple: true,
-              placeholder: gettext('Select the column(s)'),
-              width: 'style',
-              filter: (options) => {
-                let res = [];
-                if (options && _.isArray(options)) {
-                  _.each(options, function(d) {
-                    if(d.label != '')
-                      res.push({label: d.label, value: d.value, image:'icon-column'});
-                  });
-                }
-                return res;
-              }
-            }
-          };
+          return indexSchemaObj.getColumns();
         },
         visible: function() {
-          if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
-            && !_.isUndefined(this.node_info.server.version) &&
-            this.node_info.server.version >= 110000)
-            return true;
-
-          return false;
+          return indexSchemaObj.isVisible();
         },
         node:'column',
       },{
@@ -416,27 +419,7 @@ export default class IndexSchema extends BaseUISchema {
       }, {
         id: 'include', label: gettext('Include columns'),
         type: () => {
-          return {
-            type: 'select',
-            options: indexSchemaObj.fieldOptions.columnList,
-            optionsLoaded: (options) => { indexSchemaObj.fieldOptions.columnList = options; },
-            controlProps: {
-              allowClear: false,
-              multiple: true,
-              placeholder: gettext('Select the column(s)'),
-              width: 'style',
-              filter: (options) => {
-                let res = [];
-                if (options && _.isArray(options)) {
-                  _.each(options, function(d) {
-                    if(d.label != '')
-                      res.push({label: d.label, value: d.value, image:'icon-column'});
-                  });
-                }
-                return res;
-              }
-            }
-          };
+          return indexSchemaObj.getColumns();
         },
         group: gettext('Definition'),
         editable: false,
@@ -446,12 +429,7 @@ export default class IndexSchema extends BaseUISchema {
           return !indexSchemaObj.isNew(state);
         },
         visible: function() {
-          if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
-            && !_.isUndefined(this.node_info.server.version) &&
-            this.node_info.server.version >= 110000)
-            return true;
-
-          return false;
+          return indexSchemaObj.isVisible();
         },
         node:'column',
       },{

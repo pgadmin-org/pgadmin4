@@ -145,11 +145,36 @@ export default class BaseUISchema {
     return false;
   }
 
+  /* Check readonly on the basis of new state */
+  isReadOnly(state) {
+    if(!this.isNew(state)) {
+      return true;
+    }
+    return false;
+  }
+
   /* Get the server version */
   getServerVersion() {
     if(!_.isUndefined(this.nodeInfo) && !_.isUndefined(this.nodeInfo.server)
       && !_.isUndefined(this.nodeInfo.server.version)) {
       return this.nodeInfo.server.version;
     }
+  }
+
+  /* Get the filter options */
+  getFilterOptions(state, options) {
+    // Function is used to populate the filter options.
+    let res = [];
+    if (state && this.isNew(state)) {
+      options.forEach((option) => {
+        if(option && option.label == '') {
+          return;
+        }
+        res.push({ label: option.label, value: option.value });
+      });
+    } else {
+      res = options;
+    }
+    return res;
   }
 }

@@ -188,6 +188,13 @@ export default class TriggerSchema extends BaseUISchema {
     return flag;
   }
 
+  isDisable(state) {
+    if(!state.is_constraint_trigger) {
+      return true;
+    }
+    return false;
+  }
+
   get baseFields() {
     let obj = this;
     return [{
@@ -301,10 +308,7 @@ export default class TriggerSchema extends BaseUISchema {
         }
       },
       disabled: (state) => {
-        if(!state.is_constraint_trigger) {
-          return true;
-        }
-        return false;
+        return obj.isDisable(state);
       }
     },{
       id: 'tginitdeferred', label: gettext('Deferred?'),
@@ -331,10 +335,7 @@ export default class TriggerSchema extends BaseUISchema {
         }
       },
       disabled: (state) => {
-        if(!state.is_constraint_trigger) {
-          return true;
-        }
-        return false;
+        return obj.isDisable(state);
       }
     },{
       id: 'tfunction', label: gettext('Trigger function'),
