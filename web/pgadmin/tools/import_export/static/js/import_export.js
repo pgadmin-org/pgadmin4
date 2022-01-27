@@ -67,10 +67,11 @@ define([
         ),
         ()=>getMiscellaneousSchema(),
         {columns: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, { cacheLevel: 'column'}, ()=>true, (res)=>{
+          let columnsList = [];
           res.forEach(d => {
-            res.push({label: d.label, value: d.value, image:'icon-column', selected: true});
+            columnsList.push({label: d.label, value: d.value, image:'icon-column', selected: true});
           });
-          return res;
+          return columnsList;
         })}
       );
     },
