@@ -492,8 +492,10 @@ define([
 
         if (item_data.file_type == 'dir') {
           icon_type = 'fa fa-folder-open fm_folder_grid';
+          props.Size = '';
         } else if (item_data.file_type == 'drive') {
           icon_type = 'fa fa-hdd fm_drive';
+          props.Size = '';
         } else {
           icon_type = 'fa fa-file-alt fm_file_grid';
         }
@@ -591,9 +593,11 @@ define([
         if (item_data.file_type == 'dir') {
           class_type = 'tbl_folder';
           icon_type = 'fa fa-folder-open fm_folder_list';
+          props.Size = '';
         } else if (item_data.file_type == 'drive') {
           class_type = 'tbl_drive';
           icon_type = 'fa fa-hdd';
+          props.Size = '';
         } else {
           class_type = 'tbl_file';
           icon_type = 'fa fa-file-alt';
