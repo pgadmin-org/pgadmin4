@@ -175,8 +175,7 @@ export class ManageTreeNodes {
     // Replace the table with the last partition as in reality partition node is not child of the table
     if(_partitions.length > 0) _parent_path[0]  = _partitions[_partitions.length-1];
 
-    let _rev_arr = _parent_path.reverse();
-    return _rev_arr.join("/");
+    return _parent_path.reverse().join("/");
   }
 }
 

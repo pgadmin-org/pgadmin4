@@ -28,7 +28,7 @@ var initBrowserTree = async (pgBrowser) => {
   const host: IBasicFileSystemHost = {
     pathStyle: 'unix',
     getItems: async (path) => {
-      return await mtree.readNode(path);
+      return mtree.readNode(path);
     },
     sortComparator: (a: FileEntry | Directory, b: FileEntry | Directory) => {
       // No nee to sort columns
